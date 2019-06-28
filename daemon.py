@@ -18,12 +18,16 @@ from webfinger import webfingerLookup
 from person import personLookup
 from person import personKeyLookup
 import os
+import sys
 
 # domain name of this server
 thisDomain=''
 
 # List of domains to federate with
 federationList=[]
+
+# Avoid giant messages
+maxMessageLength=5000
 
 def readFollowList(filename: str):
     """Returns a list of ActivityPub addresses to follow
@@ -154,7 +158,11 @@ class PubServer(BaseHTTPRequestHandler):
             
         # read the message and convert it into a python dictionary
         length = int(self.headers.getheader('content-length'))
-        message = json.loads(self.rfile.read(length))
+        if length>maxMessageLength:
+            self.send_response(400)
+            self.end_headers()
+            return
+        message = json.loads(self.rfile.read(length))        
 
         if not self._permittedMessage(message):
             self._404()
