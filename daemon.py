@@ -84,6 +84,9 @@ class PubServer(BaseHTTPRequestHandler):
         if not message.get(testParam):
             return False
         actor=message[testParam]
+        # always allow the local domain
+        if thisDomain in actor:
+            return True
         permittedDomain=False
         for domain in federationList:
             if domain in actor:
