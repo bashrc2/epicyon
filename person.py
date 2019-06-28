@@ -176,4 +176,24 @@ def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True
-    
+
+def setBio(username: str, domain: str, bio: str) -> bool:
+    if len(bio)>32:
+        return False
+    handle=username.lower()+'@'+domain.lower()
+    baseDir=os.getcwd()
+    filename=baseDir+'/accounts/'+handle.lower()+'.json'
+    if not os.path.isfile(filename):
+        return False
+    personJson=None
+    with open(filename, 'r') as fp:
+        personJson=commentjson.load(fp)
+    if not personJson:
+        return False
+    if not personJson.get('publicKey'):
+        return False
+    personJson['publicKey']['summary']=bio
+    with open(filename, 'w') as fp:
+        commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+    return True
+

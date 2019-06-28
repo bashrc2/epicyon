@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from person import createPerson
 from person import setPreferredUsername
+from person import setBio
 from webfinger import webfingerHandle
 from posts import getUserPosts
 from session import createSession
@@ -29,6 +30,7 @@ session = createSession(useTor)
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
 setPreferredUsername(username,domain,'badger')
+setBio(username,domain,'Some personal info')
 runDaemon(domain,port,useTor)
 
 #testHttpsig()
