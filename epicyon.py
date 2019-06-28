@@ -17,13 +17,19 @@ import requests
 from pprint import pprint
 from httpsig import testHttpsig
 from daemon import runDaemon
+import socket
 
+username='testuser'
+#domain=socket.gethostname()
+domain='mydomain.com'
+port=6227
+https=True
 useTor=False
 session = createSession(useTor)
 
-privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson('testuser','mydomain.com',True,True)
-setPreferredUsername('testuser','mydomain.com','badger')
-runDaemon('mydomain.com',6227,False)
+privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
+setPreferredUsername(username,domain,'badger')
+runDaemon(domain,port,useTor)
 
 #testHttpsig()
 #sys.exit()
