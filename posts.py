@@ -36,13 +36,8 @@ def getUserUrl(wfRequest) -> str:
                     return link['href']
     return None
 
-def parseUserFeed(feedUrl,asHeader) -> None:
-    session = requests.session()
-    session.proxies = {}
-    headers=asHeader
-    headers['User-agent'] = "HotJava/1.1.2 FCS"
-    session.cookies.clear()
-    feed = session.get(feedUrl, headers=asHeader).json()
+def parseUserFeed(session,feedUrl,asHeader) -> None:
+    feed = getJson(session,feedUrl,asHeader,None)
 
     if 'orderedItems' in feed:
         for item in feed['orderedItems']:
@@ -55,7 +50,7 @@ def parseUserFeed(feedUrl,asHeader) -> None:
         nextUrl = feed['next']
 
     if nextUrl:
-        for item in parseUserFeed(nextUrl,asHeader):
+        for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
 
 def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,allowedDomains) -> {}:
@@ -70,7 +65,7 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
     feedUrl = userJson['outbox']
 
     i = 0
-    for item in parseUserFeed(feedUrl,asHeader):
+    for item in parseUserFeed(session,feedUrl,asHeader):
         if not item.get('type'):
             continue
         if item['type'] != 'Create':
@@ -206,9 +201,3 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         }
     }
     return newPost
-
-def postToInbox(session,postJson,inboxUrl: str):
-    """Post a json message to the inbox of another person
-    """
-    postResult = session.post(url = inboxUrl, data = postJson) 
-    return postResult.text

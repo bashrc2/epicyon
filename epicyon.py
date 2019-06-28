@@ -28,8 +28,6 @@ runDaemon('mydomain.com',6227,False)
 #testHttpsig()
 #sys.exit()
 
-privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson('testuser','mydomain.com',True,True)
-sys.exit()
 #pprint(person)
 #print('\n')
 #pprint(wfEndpoint)

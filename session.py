@@ -27,3 +27,9 @@ def getJson(session,url: str,headers,params):
     sessionHeaders['User-agent'] = "HotJava/1.1.2 FCS"
     session.cookies.clear()
     return session.get(url, headers=sessionHeaders, params=sessionParams).json()
+
+def postJson(session,postJson,inboxUrl: str):
+    """Post a json message to the inbox of another person
+    """
+    postResult = session.post(url = inboxUrl, data = postJson) 
+    return postResult.text
