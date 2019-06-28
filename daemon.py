@@ -17,6 +17,7 @@ from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from person import personLookup
 from person import personKeyLookup
+from inbox import inboxPermittedMessage
 import os
 import sys
 
@@ -74,44 +75,15 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
         return True
 
-    def permittedDir(self,path):
+    def _permittedDir(self,path):
         if path.startswith('/wfendpoints') or \
            path.startswith('/keys') or \
            path.startswith('/accounts'):
             return False
         return True
 
-    def _permittedMessage(self,message):
-        """ check that we are posting to a permitted domain
-        """
-        testParam='actor'
-        if not message.get(testParam):
-            return False
-        actor=message[testParam]
-        # always allow the local domain
-        if thisDomain in actor:
-            return True
-        permittedDomain=False
-        for domain in federationList:
-            if domain in actor:
-                permittedDomain=True
-                break
-        if not permittedDomain:
-            return False
-        if message.get('object'):
-            if message['object'].get('inReplyTo'):
-                inReplyTo=message['object']['inReplyTo']
-                permittedReplyDomain=False
-                for domain in federationList:
-                    if domain in inReplyTo:
-                        permittedReplyDomain=True
-                        break
-                if not permittedReplyDomain:
-                    return False            
-        return True
-
     def do_GET(self):
-        if not self.permittedDir(self.path):
+        if not self._permittedDir(self.path):
             self._404()
             return
         # get webfinger endpoint for a person
@@ -164,8 +136,9 @@ class PubServer(BaseHTTPRequestHandler):
             return
         message = json.loads(self.rfile.read(length))        
 
-        if not self._permittedMessage(message):
-            self._404()
+        if not inboxPermittedMessage(message,federationList):
+            self.send_response(403)
+            self.end_headers()
         else:                
             # add a property to the object, just to mess with data
             message['received'] = 'ok'
