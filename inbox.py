@@ -9,7 +9,7 @@ __status__ = "Production"
 import json
 import os
 
-def inboxPermittedMessage(self,messageJson,federationList) -> bool:
+def inboxPermittedMessage(messageJson,federationList) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
