@@ -77,6 +77,20 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
+    def _permittedMessage(self,message):
+        """ check that we are posting to a permitted domain
+        """
+        testParam='actor'
+        if not message.get(testParam):
+            return False
+        actor=message[testParam]
+        permittedDomain=False
+        for domain in allowedDomains:
+            if domain in actor:
+                permittedDomain=True
+                break
+        return permittedDomain
+    
     def do_GET(self):
         if not self.permittedDir(self.path):
             self._404()
@@ -126,13 +140,16 @@ class PubServer(BaseHTTPRequestHandler):
         # read the message and convert it into a python dictionary
         length = int(self.headers.getheader('content-length'))
         message = json.loads(self.rfile.read(length))
+
+        if not self._permittedMessage(message):
+            self._404()
+        else:                
+            # add a property to the object, just to mess with data
+            message['received'] = 'ok'
         
-        # add a property to the object, just to mess with data
-        message['received'] = 'ok'
-        
-        # send the message back
-        self._set_headers('application/json')
-        self.wfile.write(json.dumps(message).encode('utf-8'))
+            # send the message back
+            self._set_headers('application/json')
+            self.wfile.write(json.dumps(message).encode('utf-8'))
 
 def runDaemon(domain: str,port=80,allowedDomains,useTor=False) -> None:
     global thisDomain
