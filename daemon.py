@@ -19,7 +19,11 @@ from person import personLookup
 from person import personKeyLookup
 import os
 
+# domain name of this server
 thisDomain=''
+
+# List of domains to federate with
+federationList=[]
 
 def readFollowList(filename: str):
     """Returns a list of ActivityPub addresses to follow
@@ -130,9 +134,11 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json')
         self.wfile.write(json.dumps(message).encode('utf-8'))
 
-def runDaemon(domain: str,port=80,useTor=False) -> None:
+def runDaemon(domain: str,port=80,allowedDomains,useTor=False) -> None:
     global thisDomain
+    global federationList
     thisDomain=domain
+    federationList=allowedDomains
 
     if len(domain)==0:
         domain='127.0.0.1'

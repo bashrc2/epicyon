@@ -20,6 +20,7 @@ from httpsig import testHttpsig
 from daemon import runDaemon
 import socket
 
+allowedDomains=['mastodon.social']
 username='testuser'
 #domain=socket.gethostname()
 domain='mydomain.com'
@@ -31,7 +32,7 @@ session = createSession(useTor)
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
-runDaemon(domain,port,useTor)
+runDaemon(domain,port,allowedDomains,useTor)
 
 #testHttpsig()
 #sys.exit()
@@ -40,7 +41,6 @@ runDaemon(domain,port,useTor)
 #print('\n')
 #pprint(wfEndpoint)
 
-allowedDomains=['mastodon.social']
 handle="https://mastodon.social/@Gargron"
 wfRequest = webfingerHandle(session,handle,True)
 if not wfRequest:

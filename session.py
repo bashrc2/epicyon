@@ -28,8 +28,17 @@ def getJson(session,url: str,headers,params):
     session.cookies.clear()
     return session.get(url, headers=sessionHeaders, params=sessionParams).json()
 
-def postJson(session,postJson,inboxUrl: str):
+def postJson(session,postJson,allowedDomains,inboxUrl: str):
     """Post a json message to the inbox of another person
     """
+    # check that we are posting to a permitted domain
+    permittedDomain=False
+    for domain in allowedDomains:
+        if domain in inboxUrl:
+            permittedDomain=True
+            break
+    if not permittedDomain:
+        return None
+
     postResult = session.post(url = inboxUrl, data = postJson) 
     return postResult.text
