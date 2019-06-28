@@ -59,7 +59,7 @@ def createPerson(username: str,domain: str,https: bool, saveToFile: bool) -> (st
                            'type': 'Image',
                            'url': prefix+'://'+domain+'/users/'+username+'.png'},
                  'inbox': prefix+'://'+domain+'/users/'+username+'/inbox',
-                 'manuallyApprovesFollowers': True,
+                 'manuallyApprovesFollowers': False,
                  'name': username,
                  'outbox': prefix+'://'+domain+'/users/'+username+'/outbox',
                  'preferredUsername': ''+username,
