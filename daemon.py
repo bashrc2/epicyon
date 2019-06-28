@@ -92,8 +92,20 @@ class PubServer(BaseHTTPRequestHandler):
             if domain in actor:
                 permittedDomain=True
                 break
-        return permittedDomain
-    
+        if not permittedDomain:
+            return False
+        if message.get('object'):
+            if message['object'].get('inReplyTo'):
+                inReplyTo=message['object']['inReplyTo']
+                permittedReplyDomain=False
+                for domain in federationList:
+                    if domain in inReplyTo:
+                        permittedReplyDomain=True
+                        break
+                if not permittedReplyDomain:
+                    return False            
+        return True
+
     def do_GET(self):
         if not self.permittedDir(self.path):
             self._404()
