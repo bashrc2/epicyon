@@ -85,7 +85,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         actor=message[testParam]
         permittedDomain=False
-        for domain in allowedDomains:
+        for domain in federationList:
             if domain in actor:
                 permittedDomain=True
                 break
