@@ -206,3 +206,9 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         }
     }
     return newPost
+
+def postToInbox(session,postJson,inboxUrl: str):
+    """Post a json message to the inbox of another person
+    """
+    postResult = session.post(url = inboxUrl, data = postJson) 
+    return postResult.text
