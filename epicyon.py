@@ -20,7 +20,7 @@ from httpsig import testHttpsig
 from daemon import runDaemon
 import socket
 
-allowedDomains=['mastodon.social']
+federationList=['mastodon.social']
 username='testuser'
 #domain=socket.gethostname()
 domain='mydomain.com'
@@ -32,7 +32,7 @@ session = createSession(useTor)
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
-runDaemon(domain,port,allowedDomains,useTor)
+runDaemon(domain,port,federationList,useTor)
 
 #testHttpsig()
 #sys.exit()
@@ -52,5 +52,5 @@ if not wfRequest:
 maxMentions=10
 maxEmoji=10
 maxAttachments=5
-userPosts = getUserPosts(session,wfRequest,2,maxMentions,maxEmoji,maxAttachments,allowedDomains)
+userPosts = getUserPosts(session,wfRequest,2,maxMentions,maxEmoji,maxAttachments,federationList)
 print(str(userPosts))

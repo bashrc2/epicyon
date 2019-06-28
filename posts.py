@@ -16,10 +16,10 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
-def permitted(url: str,allowedDomains) -> bool:
+def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
     """
-    for domain in allowedDomains:
+    for domain in federationList:
         if domain in url:
             return True
     return False
@@ -53,7 +53,7 @@ def parseUserFeed(session,feedUrl,asHeader) -> None:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
 
-def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,allowedDomains) -> {}:
+def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,federationList) -> {}:
     userPosts={}
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     userUrl = getUserUrl(wfRequest)
@@ -85,7 +85,7 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
                         if tagItem.get('name') and tagItem.get('icon'):
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
-                                if permitted(tagItem['icon']['url'],allowedDomains):
+                                if permitted(tagItem['icon']['url'],federationList):
                                     emojiName=tagItem['name']
                                     emojiIcon=tagItem['icon']['url']
                                     emoji[emojiName]=emojiIcon
@@ -107,7 +107,7 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
             if item['object'].get('inReplyTo'):
                 if item['object']['inReplyTo']:
                     # No replies to non-permitted domains
-                    if not permitted(item['object']['inReplyTo'],allowedDomains):
+                    if not permitted(item['object']['inReplyTo'],federationList):
                         continue
                     inReplyTo = item['object']['inReplyTo']
 
@@ -115,7 +115,7 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
             if item['object'].get('conversation'):
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
-                    if permitted(item['object']['conversation'],allowedDomains):                        
+                    if permitted(item['object']['conversation'],federationList):                        
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -124,7 +124,7 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
                     for attach in item['object']['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
-                            if permitted(attach['url'],allowedDomains):
+                            if permitted(attach['url'],federationList):
                                 attachment.append([attach['name'],attach['url']])
 
             sensitive = False

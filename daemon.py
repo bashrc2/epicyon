@@ -154,11 +154,11 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('application/json')
             self.wfile.write(json.dumps(message).encode('utf-8'))
 
-def runDaemon(domain: str,port=80,allowedDomains,useTor=False) -> None:
+def runDaemon(domain: str,port=80,fedList,useTor=False) -> None:
     global thisDomain
     global federationList
     thisDomain=domain
-    federationList=allowedDomains
+    federationList=fedList.copy()
 
     if len(domain)==0:
         domain='127.0.0.1'
