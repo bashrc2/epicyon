@@ -31,7 +31,7 @@ from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
 
-federationList=['mastodon.social']
+federationList=['mastodon.social','wild.com','trees.com']
 username='testuser'
 #domain=socket.gethostname()
 domain='mydomain.com'
@@ -41,18 +41,18 @@ useTor=False
 session = createSession(useTor)
 
 clearFollows(username,domain)
-followPerson(username,domain,'badger','wild.com')
-followPerson(username,domain,'squirrel','secret.com')
-followPerson(username,domain,'rodent','drainpipe.com')
-followPerson(username,domain,'batman','mesh.com')
-followPerson(username,domain,'giraffe','trees.com')
+followPerson(username,domain,'badger','wild.com',federationList)
+followPerson(username,domain,'squirrel','secret.com',federationList)
+followPerson(username,domain,'rodent','drainpipe.com',federationList)
+followPerson(username,domain,'batman','mesh.com',federationList)
+followPerson(username,domain,'giraffe','trees.com',federationList)
 
 clearFollowers(username,domain)
-followerOfPerson(username,domain,'badger','wild.com')
-followerOfPerson(username,domain,'squirrel','secret.com')
-followerOfPerson(username,domain,'rodent','drainpipe.com')
-followerOfPerson(username,domain,'batman','mesh.com')
-followerOfPerson(username,domain,'giraffe','trees.com')
+followerOfPerson(username,domain,'badger','wild.com',federationList)
+followerOfPerson(username,domain,'squirrel','secret.com',federationList)
+followerOfPerson(username,domain,'rodent','drainpipe.com',federationList)
+followerOfPerson(username,domain,'batman','mesh.com',federationList)
+followerOfPerson(username,domain,'giraffe','trees.com',federationList)
 
 #unfollowPerson(username,domain,'squirrel','secret.com')
 #sys.exit()

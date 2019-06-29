@@ -36,7 +36,7 @@ maxMessageLength=5000
 maxPostsInFeed=20
 
 # number of follows/followers per page
-followsPerPage=2
+followsPerPage=12
 
 # Whether to use https
 useHttps=True

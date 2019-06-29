@@ -12,9 +12,11 @@ import os
 import sys
 from person import validUsername
 
-def followPerson(username: str, domain: str, followUsername: str, followDomain: str, followFile='following.txt') -> None:
+def followPerson(username: str, domain: str, followUsername: str, followDomain: str, federationList, followFile='following.txt') -> None:
     """Adds a person to the follow list
     """
+    if followDomain.lower().replace('\n','') not in federationList:
+        return
     handle=username.lower()+'@'+domain.lower()
     handleToFollow=followUsername.lower()+'@'+followDomain.lower()
     baseDir=os.getcwd()
@@ -30,8 +32,8 @@ def followPerson(username: str, domain: str, followUsername: str, followDomain: 
     with open(filename, "w") as followfile:
         followfile.write(handleToFollow+'\n')
 
-def followerOfPerson(username: str, domain: str, followerUsername: str, followerDomain: str) -> None:
-    followPerson(username, domain, followerUsername, followerDomain,'followers.txt')
+def followerOfPerson(username: str, domain: str, followerUsername: str, followerDomain: str, federationList) -> None:
+    followPerson(username, domain, followerUsername, followerDomain, federationList, 'followers.txt')
 
 def unfollowPerson(username: str, domain: str, followUsername: str, followDomain: str,followFile='following.txt') -> None:
     """Removes a person to the follow list
