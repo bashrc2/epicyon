@@ -24,6 +24,11 @@ from pprint import pprint
 from httpsig import testHttpsig
 from daemon import runDaemon
 import socket
+from follow import clearFollows
+from follow import followPerson
+from follow import followerOfPerson
+from follow import unfollowPerson
+from follow import unfollowerOfPerson
 
 federationList=['mastodon.social']
 username='testuser'
@@ -34,11 +39,18 @@ https=True
 useTor=False
 session = createSession(useTor)
 
-#asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+clearFollows(username,domain)
+followPerson(username,domain,'badger','wild.com')
+followPerson(username,domain,'squirrel','secret.com')
+followPerson(username,domain,'rodent','drainpipe.com')
+unfollowPerson(username,domain,'squirrel','secret.com')
+sys.exit()
+
+asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
 #userFollowing = getJson(session,"https://mastodon.social/users/Gargron/followers?page=true",asHeader,None)
-#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following?page=true",asHeader,None)
-#pprint(userFollowing)
-#sys.exit()
+userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following?page=true",asHeader,None)
+pprint(userFollowing)
+sys.exit()
 
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
