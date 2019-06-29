@@ -190,20 +190,26 @@ def deleteAllPosts(username: str, domain: str) -> None:
             elif os.path.isdir(filePath): shutil.rmtree(filePath)
         except Exception as e:
             print(e)
-    # TODO update output feed
 
-def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
-    """Creates a public post
+def getStatusNumber() -> (str,str):
+    """Returns the status number and published date
     """
-    prefix='https'
-    if not https:
-        prefix='http'
     currTime=datetime.datetime.utcnow()
     daysSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days
     # status is the number of seconds since epoch
     statusNumber=str((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     conversationDate=currTime.strftime("%Y-%m-%d")
+    return statusNumber,published
+            
+def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+    """Creates a public post
+    """
+    prefix='https'
+    if not https:
+        prefix='http'
+    statusNumber,published = getStatusNumber()
+    conversationDate=published.split('T')[0]
     conversationId=statusNumber
     postTo='https://www.w3.org/ns/activitystreams#Public'
     postCC=prefix+'://'+domain+'/users/'+username+'/followers'
