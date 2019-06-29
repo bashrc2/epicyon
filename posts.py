@@ -45,12 +45,12 @@ def parseUserFeed(session,feedUrl,asHeader) -> None:
     pprint(feedJson)
 
     if 'orderedItems' in feedJson:
-        for item in feed['orderedItems']:
+        for item in feedJson['orderedItems']:
             yield item
 
     nextUrl = None
     if 'first' in feedJson:
-        nextUrl = feed['first']
+        nextUrl = feedJson['first']
     elif 'next' in feedJson:
         nextUrl = feedJson['next']
 
