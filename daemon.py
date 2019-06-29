@@ -90,33 +90,47 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):
+        try:
+            if self.GETbusy:
+                self.send_response(400)
+                self.end_headers()
+                return                
+        except:
+            pass
+        self.GETbusy=True
         if not self._permittedDir(self.path):
             self._404()
+            self.GETbusy=False
             return
         # get webfinger endpoint for a person
         if self._webfinger():
+            self.GETbusy=False
             return
         # get outbox feed for a person
         outboxFeed=personOutboxJson(thisDomain,self.path,useHttps,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
+            self.GETbusy=False
             return            
         # look up a person
         getPerson = personLookup(thisDomain,self.path)
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
+            self.GETbusy=False
             return
         getPersonKey = personKeyLookup(thisDomain,self.path)
         if getPersonKey:
             self._set_headers('text/html; charset=utf-8')
             self.wfile.write(getPersonKey.encode('utf-8'))
+            self.GETbusy=False
             return
         # check that a json file was requested
         baseDir=os.getcwd()
         if not self.path.endswith('.json'):
             self._404()
+            self.GETbusy=False
             return
         # check that the file exists
         filename=baseDir+self.path
@@ -128,6 +142,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(contentJson).encode('utf8'))
         else:
             self._404()
+        self.GETbusy=False
 
     def do_HEAD(self):
         self._set_headers('application/json')
