@@ -38,16 +38,16 @@ privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
 #createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
-archivePosts(username,domain,4)
-outboxHeader,outboxJson=createOutbox(username,domain,https,3,None)
-pprint(outboxHeader)
-print('\n')
-pprint(outboxJson)
+#archivePosts(username,domain,4)
+#outboxHeader,outboxJson=createOutbox(username,domain,https,3,None)
+#pprint(outboxHeader)
+#print('\n')
+#pprint(outboxJson)
 
-#runDaemon(domain,port,federationList,useTor)
+runDaemon(domain,port,federationList,useTor)
 
 #testHttpsig()
-sys.exit()
+#sys.exit()
 
 #pprint(person)
 #print('\n')

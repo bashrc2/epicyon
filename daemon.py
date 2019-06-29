@@ -17,6 +17,7 @@ from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from person import personLookup
 from person import personKeyLookup
+from person import personOutboxJson
 from inbox import inboxPermittedMessage
 import os
 import sys
@@ -29,6 +30,12 @@ federationList=[]
 
 # Avoid giant messages
 maxMessageLength=5000
+
+# maximum number of posts to list in outbox feed
+maxPostsInFeed=20
+
+# Whether to use https
+useHttps=True
 
 def readFollowList(filename: str):
     """Returns a list of ActivityPub addresses to follow
@@ -89,6 +96,13 @@ class PubServer(BaseHTTPRequestHandler):
         # get webfinger endpoint for a person
         if self._webfinger():
             return
+        # get outbox feed for a person
+        outboxHeader,outboxFeed=personOutboxJson(thisDomain,self.path,useHttps,maxPostsInFeed)
+        if outboxHeader and outboxFeed:
+            self._set_headers('application/json')
+            outboxFeedList=[outboxHeader,outboxFeed]
+            self.wfile.write(json.dumps(outboxFeedList).encode('utf-8'))
+            return            
         # look up a person
         getPerson = personLookup(thisDomain,self.path)
         if getPerson:

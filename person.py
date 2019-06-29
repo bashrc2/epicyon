@@ -13,6 +13,7 @@ import fileinput
 from Crypto.PublicKey import RSA
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
+from posts import createOutbox
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -136,7 +137,7 @@ def personKeyLookup(domain: str,path: str) -> str:
 def personLookup(domain: str,path: str) -> {}:
     """Lookup the person for an given username
     """
-    notPersonLookup=['/inbox','/outbox','/followers','/following','/featured','.png','.jpg','.gif','.mpv','#main-key','/main-key']
+    notPersonLookup=['/inbox','/outbox','/outboxarchive','/followers','/following','/featured','.png','.jpg','.gif','.mpv','#main-key','/main-key']
     for ending in notPersonLookup:        
         if path.endswith(ending):
             return None
@@ -158,7 +159,24 @@ def personLookup(domain: str,path: str) -> {}:
     with open(filename, 'r') as fp:
         personJson=commentjson.load(fp)
     return personJson
-    
+
+def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> ({},{}):
+    """Obtain the outbox feed for the given person
+    """
+    if not path.endswith('/outbox'):
+        return None,None
+    username=None
+    if path.startswith('/users/'):
+        username=path.replace('/users/','',1).replace('/outbox','')
+    if path.startswith('/@'):
+        username=path.replace('/@','',1).replace('/outbox','')
+    if not username:
+        return None,None
+    if not validUsername(username):
+        return None,None
+    startMessageId=None
+    return createOutbox(username,domain,https,noOfItems,startMessageId)
+
 def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool:
     if len(preferredName)>32:
         return False
