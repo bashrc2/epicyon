@@ -290,20 +290,26 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
 
     # Insert posts
     for postFilename in postsInOutbox:
+        # Are we at the starting message ID yet?
         if startMessageId and prevPostFilename:
             if '#statuses#'+startMessageId in postFilename:
+                # update the prev entry for the last message id
                 postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
                 outboxHeader['prev']= \
                     prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
+        # get the full path of the post file
         filePath = os.path.join(outboxDir, postFilename)
         try:
             if os.path.isfile(filePath):
                 if postCtr <= noOfItems:
+                    # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
+                        # insert it into the outbox feed
                         if postCtr < noOfItems:
                             outboxItems['orderedItems'].append(p)
                         elif postCtr == noOfItems:
+                            # if this is the last post update the next message ID
                             if '/statuses/' in p['id']:
                                 postId = p['id'].split('/statuses/')[1].replace('/activity','')
                                 outboxHeader['next']= \
@@ -311,6 +317,7 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
                                     username+'/outbox?max_id='+ \
                                     postId+'&page=true'
                         postCtr += 1
+                # remember the last post filename for use with prev
                 prevPostFilename = postFilename
                 if postCtr > noOfItems:
                     break
