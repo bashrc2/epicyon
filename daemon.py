@@ -92,7 +92,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             if self.GETbusy:
-                self.send_response(400)
+                self.send_response(429)
                 self.end_headers()
                 return                
         except:
@@ -150,7 +150,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
             if self.POSTbusy:
-                self.send_response(400)
+                self.send_response(429)
                 self.end_headers()
                 return                
         except:
