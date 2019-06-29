@@ -154,7 +154,7 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
             break
     return userPosts
 
-def createOutboxDir(username: str,domain: str) -> (str,str):
+def createOutboxDir(username: str,domain: str) -> str:
     """Create an outbox for a person and returns the feed filename and directory
     """
     handle=username.lower()+'@'+domain.lower()
@@ -164,13 +164,12 @@ def createOutboxDir(username: str,domain: str) -> (str,str):
     outboxDir=baseDir+'/accounts/'+handle+'/outbox'
     if not os.path.isdir(outboxDir):
         os.mkdir(outboxDir)
-    outboxJsonFilename=baseDir+'/accounts/'+handle+'/outbox.json'
-    return outboxJsonFilename,outboxDir
+    return outboxDir
 
 def deleteAllPosts(username: str, domain: str) -> None:
     """Deletes all posts for a person
     """
-    outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
+    outboxDir = createOutboxDir(username,domain)
     for deleteFilename in os.listdir(outboxDir):
         filePath = os.path.join(outboxDir, deleteFilename)
         try:
@@ -242,11 +241,10 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         }
     }
     if saveToFile:
-        outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
+        outboxDir = createOutboxDir(username,domain)
         filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
-        # TODO update output feed
     return newPost
 
 def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessageId=None) -> ({},{}):
@@ -255,7 +253,7 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
     prefix='https'
     if not https:
         prefix='http'
-    outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
+    outboxDir = createOutboxDir(username,domain)
     outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
                     'first': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
                     'id': prefix+'://'+domain+'/users/'+username+'/outbox',
