@@ -12,11 +12,11 @@ import os
 import sys
 from person import validUsername
 
-def followPerson(username: str, domain: str, followUsername: str, followDomain: str, federationList, followFile='following.txt') -> None:
+def followPerson(username: str, domain: str, followUsername: str, followDomain: str, federationList, followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
     if followDomain.lower().replace('\n','') not in federationList:
-        return
+        return False
     handle=username.lower()+'@'+domain.lower()
     handleToFollow=followUsername.lower()+'@'+followDomain.lower()
     baseDir=os.getcwd()
@@ -25,15 +25,18 @@ def followPerson(username: str, domain: str, followUsername: str, followDomain: 
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
-            return
+            return True
         with open(filename, "a") as followfile:
             followfile.write(handleToFollow+'\n')
-            return
+            return True
     with open(filename, "w") as followfile:
         followfile.write(handleToFollow+'\n')
+    return True
 
-def followerOfPerson(username: str, domain: str, followerUsername: str, followerDomain: str, federationList) -> None:
-    followPerson(username, domain, followerUsername, followerDomain, federationList, 'followers.txt')
+def followerOfPerson(username: str, domain: str, followerUsername: str, followerDomain: str, federationList) -> bool:
+    """Adds a follower of the given person
+    """
+    return followPerson(username, domain, followerUsername, followerDomain, federationList, 'followers.txt')
 
 def unfollowPerson(username: str, domain: str, followUsername: str, followDomain: str,followFile='following.txt') -> None:
     """Removes a person to the follow list
@@ -55,6 +58,8 @@ def unfollowPerson(username: str, domain: str, followUsername: str, followDomain
                     f.write(line)
 
 def unfollowerOfPerson(username: str, domain: str, followerUsername: str, followerDomain: str) -> None:
+    """Remove a follower of a person
+    """
     unfollowPerson(username, domain, followerUsername, followerDomain,'followers.txt')
 
 def clearFollows(username: str, domain: str,followFile='following.txt') -> None:
@@ -69,9 +74,13 @@ def clearFollows(username: str, domain: str,followFile='following.txt') -> None:
         os.remove(filename)
 
 def clearFollowers(username: str, domain: str) -> None:
+    """Removes all followers
+    """
     clearFollows(username, domain,'followers.txt')
 
 def getNoOfFollows(username: str,domain: str, followFile='following.txt') -> int:
+    """Returns the number of follows or followers
+    """
     handle=username.lower()+'@'+domain.lower()
     baseDir=os.getcwd()
     filename=baseDir+'/accounts/'+handle+'/'+followFile
@@ -89,9 +98,13 @@ def getNoOfFollows(username: str,domain: str, followFile='following.txt') -> int
     return ctr
 
 def getNoOfFollowers(username: str,domain: str) -> int:
+    """Returns the number of followers of the given person
+    """
     return getNoOfFollows(username,domain,'followers.txt')
 
 def getFollowingFeed(domain: str,path: str,https: bool,followsPerPage=12,followFile='following') -> {}:
+    """Returns the following and followers feeds from GET requests
+    """
     if '/'+followFile not in path:
         return None
     # handle page numbers
