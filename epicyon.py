@@ -33,6 +33,10 @@ https=True
 useTor=False
 session = createSession(useTor)
 
+#asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+#userFollowing = getJson(session,"",asHeader,None)
+
+
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
 #deleteAllPosts(username,domain)
 setPreferredUsername(username,domain,'badger')

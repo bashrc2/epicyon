@@ -164,16 +164,16 @@ def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
     if not path.endswith('/outbox'):
-        return None,None
+        return None
     username=None
     if path.startswith('/users/'):
         username=path.replace('/users/','',1).replace('/outbox','')
     if path.startswith('/@'):
         username=path.replace('/@','',1).replace('/outbox','')
     if not username:
-        return None,None
+        return None
     if not validUsername(username):
-        return None,None
+        return None
     startMessageId=None
     return createOutbox(username,domain,https,noOfItems,startMessageId)
 
