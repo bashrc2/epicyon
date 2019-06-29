@@ -148,12 +148,21 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json')
         
     def do_POST(self):
+        try:
+            if self.POSTbusy:
+                self.send_response(400)
+                self.end_headers()
+                return                
+        except:
+            pass
+        self.POSTbusy=True
         ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
         
         # refuse to receive non-json content
         if ctype != 'application/json':
             self.send_response(400)
             self.end_headers()
+            self.POSTbusy=False
             return
             
         # read the message and convert it into a python dictionary
@@ -161,6 +170,7 @@ class PubServer(BaseHTTPRequestHandler):
         if length>maxMessageLength:
             self.send_response(400)
             self.end_headers()
+            self.POSTbusy=False
             return
         message = json.loads(self.rfile.read(length))        
 
@@ -174,6 +184,7 @@ class PubServer(BaseHTTPRequestHandler):
             # send the message back
             self._set_headers('application/json')
             self.wfile.write(json.dumps(message).encode('utf-8'))
+        self.POSTbusy=False
 
 def runDaemon(domain: str,port=80,fedList=[],useTor=False) -> None:
     global thisDomain
