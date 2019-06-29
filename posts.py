@@ -11,7 +11,7 @@ import json
 import commentjson
 import html
 import datetime
-import os
+import os, shutil
 from pprint import pprint
 from random import randint
 from session import getJson
@@ -167,8 +167,22 @@ def createOutboxDir(username: str,domain: str) -> (str,str):
     outboxJsonFilename=baseDir+'/accounts/'+handle+'/outbox.json'
     return outboxJsonFilename,outboxDir
 
+def deleteAllPosts(username: str, domain: str) -> None:
+    """Deletes all posts for a person
+    """
+    outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
+    for deleteFilename in os.listdir(outboxDir):
+        filePath = os.path.join(outboxDir, deleteFilename)
+        try:
+            if os.path.isfile(filePath):
+                os.unlink(filePath)
+            elif os.path.isdir(filePath): shutil.rmtree(filePath)
+        except Exception as e:
+            print(e)
+    # TODO update output feed
+
 def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
-    """Creates a post
+    """Creates a public post
     """
     prefix='https'
     if not https:
@@ -232,6 +246,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
+        # TODO update output feed
     return newPost
 
 def createOutbox(username: str,domain: str,https: bool,noOfItems: int):
