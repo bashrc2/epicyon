@@ -166,6 +166,18 @@ def createOutboxDir(username: str,domain: str) -> str:
         os.mkdir(outboxDir)
     return outboxDir
 
+def createOutboxArchive(username: str,domain: str) -> str:
+    """Creates an archive directory for outbox posts
+    """
+    handle=username.lower()+'@'+domain.lower()
+    baseDir=os.getcwd()
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        os.mkdir(baseDir+'/accounts/'+handle)
+    outboxArchiveDir=baseDir+'/accounts/'+handle+'/outboxarchive'
+    if not os.path.isdir(outboxArchiveDir):
+        os.mkdir(outboxArchiveDir)
+    return outboxArchiveDir
+
 def deleteAllPosts(username: str, domain: str) -> None:
     """Deletes all posts for a person
     """
@@ -322,3 +334,24 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
         except Exception as e:
             print(e)
     return outboxHeader,outboxItems
+
+def archivePosts(username: str,domain: str,maxPostsInOutbox=256) -> None:
+    """Retain a maximum number of posts within the outbox
+    Move any others to an archive directory
+    """
+    outboxDir = createOutboxDir(username,domain)
+    archiveDir = createOutboxArchive(username,domain)
+    postsInOutbox=sorted(os.listdir(outboxDir), reverse=False)
+    noOfPosts=len(postsInOutbox)
+    if noOfPosts<=maxPostsInOutbox:
+        return
+    
+    for postFilename in postsInOutbox:
+        filePath = os.path.join(outboxDir, postFilename)
+        if os.path.isfile(filePath):
+            archivePath = os.path.join(archiveDir, postFilename)
+            os.rename(filePath,archivePath)
+            # TODO: possibly archive any associated media files
+            noOfPosts -= 1
+            if noOfPosts <= maxPostsInOutbox:
+                break

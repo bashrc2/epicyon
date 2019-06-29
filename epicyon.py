@@ -14,6 +14,7 @@ from posts import getUserPosts
 from posts import createPublicPost
 from posts import deleteAllPosts
 from posts import createOutbox
+from posts import archivePosts
 from session import createSession
 import json
 import sys
@@ -37,6 +38,7 @@ privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
 #createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
+archivePosts(username,domain,4)
 outboxHeader,outboxJson=createOutbox(username,domain,https,3,None)
 pprint(outboxHeader)
 print('\n')
