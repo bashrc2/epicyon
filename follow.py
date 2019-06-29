@@ -10,6 +10,7 @@ import json
 from pprint import pprint
 import os
 import sys
+from person import validUsername
 
 def followPerson(username: str, domain: str, followUsername: str, followDomain: str, followFile='following.txt') -> None:
     """Adds a person to the follow list
@@ -67,3 +68,113 @@ def clearFollows(username: str, domain: str,followFile='following.txt') -> None:
 
 def clearFollowers(username: str, domain: str) -> None:
     clearFollows(username, domain,'followers.txt')
+
+def getNoOfFollows(username: str,domain: str, followFile='following.txt') -> int:
+    handle=username.lower()+'@'+domain.lower()
+    baseDir=os.getcwd()
+    filename=baseDir+'/accounts/'+handle+'/'+followFile
+    if not os.path.isfile(filename):
+        return 0
+    ctr = 0
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            if '#' not in line:
+                if '@' in line and '.' in line and not line.startswith('http'):
+                    ctr += 1
+                elif line.startswith('http') and '/users/' in line:
+                    ctr += 1
+    return ctr
+
+def getNoOfFollowers(username: str,domain: str) -> int:
+    return getNoOfFollows(username,domain,'followers.txt')
+
+def getFollowingFeed(domain: str,path: str,https: bool,followsPerPage=12,followFile='following') -> {}:
+    if '/'+followFile not in path:
+        return None
+    # handle page numbers
+    headerOnly=True
+    pageNumber=None    
+    if '?page=' in path:
+        pageNumber=path.split('?page=')[1]
+        if pageNumber=='true':
+            pageNumber=1
+        else:
+            try:
+                pageNumber=int(pageNumber)
+            except:
+                pass
+        path=path.split('?page=')[0]
+        headerOnly=False
+    
+    if not path.endswith('/'+followFile):
+        return None
+    username=None
+    if path.startswith('/users/'):
+        username=path.replace('/users/','',1).replace('/'+followFile,'')
+    if path.startswith('/@'):
+        username=path.replace('/@','',1).replace('/'+followFile,'')
+    if not username:
+        return None
+    if not validUsername(username):
+        return None
+            
+    prefix='https'
+    if not https:
+        prefix='http'
+
+    if headerOnly:
+        following = {
+            '@context': 'https://www.w3.org/ns/activitystreams',
+            'first': prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page=1',
+            'id': prefix+'://'+domain+'/users/'+username+'/'+followFile,
+            'totalItems': getNoOfFollows(username,domain),
+            'type': 'OrderedCollection'}
+        return following
+
+    if not pageNumber:
+        pageNumber=1
+
+    nextPageNumber=int(pageNumber+1)
+    following = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page='+str(pageNumber),
+        'orderedItems': [],
+        'partOf': prefix+'://'+domain+'/users/'+username+'/'+followFile,
+        'totalItems': 0,
+        'type': 'OrderedCollectionPage'}        
+
+    baseDir=os.getcwd()
+    handle=username.lower()+'@'+domain.lower()
+    filename=baseDir+'/accounts/'+handle+'/'+followFile+'.txt'
+    if not os.path.isfile(filename):
+        return following
+    currPage=1
+    pageCtr=0
+    totalCtr=0
+    with open(filename, "r") as f:
+        lines = f.readlines()
+        for line in lines:
+            if '#' not in line:
+                if '@' in line and '.' in line and not line.startswith('http'):
+                    pageCtr += 1
+                    totalCtr += 1
+                    if currPage==pageNumber:
+                        url = prefix + '://' + line.lower().replace('\n','').split('@')[1] + \
+                            '/users/' + line.lower().replace('\n','').split('@')[0]
+                        following['orderedItems'].append(url)
+                elif line.startswith('http') and '/users/' in line:
+                    pageCtr += 1
+                    totalCtr += 1
+                    if currPage==pageNumber:
+                        following['orderedItems'].append(line.lower().replace('\n',''))
+            if pageCtr>=followsPerPage:
+                pageCtr=0
+                currPage += 1
+    following['totalItems']=totalCtr
+    lastPage=int(totalCtr/followsPerPage)
+    if lastPage<1:
+        lastPage=1
+    if nextPageNumber>lastPage:
+        following['next']=prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page='+str(lastPage)
+    return following

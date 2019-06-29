@@ -25,6 +25,7 @@ from httpsig import testHttpsig
 from daemon import runDaemon
 import socket
 from follow import clearFollows
+from follow import clearFollowers
 from follow import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
@@ -43,14 +44,25 @@ clearFollows(username,domain)
 followPerson(username,domain,'badger','wild.com')
 followPerson(username,domain,'squirrel','secret.com')
 followPerson(username,domain,'rodent','drainpipe.com')
-unfollowPerson(username,domain,'squirrel','secret.com')
-sys.exit()
+followPerson(username,domain,'batman','mesh.com')
+followPerson(username,domain,'giraffe','trees.com')
 
-asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+clearFollowers(username,domain)
+followerOfPerson(username,domain,'badger','wild.com')
+followerOfPerson(username,domain,'squirrel','secret.com')
+followerOfPerson(username,domain,'rodent','drainpipe.com')
+followerOfPerson(username,domain,'batman','mesh.com')
+followerOfPerson(username,domain,'giraffe','trees.com')
+
+#unfollowPerson(username,domain,'squirrel','secret.com')
+#sys.exit()
+
+#asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
 #userFollowing = getJson(session,"https://mastodon.social/users/Gargron/followers?page=true",asHeader,None)
-userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following?page=true",asHeader,None)
-pprint(userFollowing)
-sys.exit()
+#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following",asHeader,None)
+#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following?page=1",asHeader,None)
+#pprint(userFollowing)
+#sys.exit()
 
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)

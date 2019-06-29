@@ -19,6 +19,7 @@ from person import personLookup
 from person import personKeyLookup
 from person import personOutboxJson
 from inbox import inboxPermittedMessage
+from follow import getFollowingFeed
 import os
 import sys
 
@@ -33,6 +34,9 @@ maxMessageLength=5000
 
 # maximum number of posts to list in outbox feed
 maxPostsInFeed=20
+
+# number of follows/followers per page
+followsPerPage=2
 
 # Whether to use https
 useHttps=True
@@ -49,6 +53,7 @@ def readFollowList(filename: str):
             username,domain = parseHandle(u)
             if username:
                 followlist.append(username+'@'+domain)
+    followUsers.close()
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
@@ -112,6 +117,18 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.GETbusy=False
+            return
+        following=getFollowingFeed(thisDomain,self.path,useHttps,followsPerPage)
+        if following:
+            self._set_headers('application/json')
+            self.wfile.write(json.dumps(following).encode('utf-8'))
+            self.GETbusy=False
+            return            
+        followers=getFollowingFeed(thisDomain,self.path,useHttps,followsPerPage,'followers')
+        if followers:
+            self._set_headers('application/json')
+            self.wfile.write(json.dumps(followers).encode('utf-8'))
+            self.GETbusy=False
             return            
         # look up a person
         getPerson = personLookup(thisDomain,self.path)
@@ -127,12 +144,12 @@ class PubServer(BaseHTTPRequestHandler):
             self.GETbusy=False
             return
         # check that a json file was requested
-        baseDir=os.getcwd()
         if not self.path.endswith('.json'):
             self._404()
             self.GETbusy=False
             return
         # check that the file exists
+        baseDir=os.getcwd()
         filename=baseDir+self.path
         if os.path.isfile(filename):
             self._set_headers('application/json')
