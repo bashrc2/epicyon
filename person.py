@@ -166,8 +166,11 @@ def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
     if not '/outbox' in path:
         return None
 
+    # Only show the header by default
+    headerOnly=True
+
     # handle page numbers
-    pageNumber=None
+    pageNumber=None    
     if '?page=' in path:
         pageNumber=path.split('?page=')[1]
         if pageNumber=='true':
@@ -178,6 +181,7 @@ def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
             except:
                 pass
         path=path.split('?page=')[0]
+        headerOnly=False
 
     if not path.endswith('/outbox'):
         return None
