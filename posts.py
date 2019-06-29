@@ -167,7 +167,7 @@ def createOutboxDir(username: str,domain: str) -> (str,str):
     outboxJsonFilename=baseDir+'/accounts/'+handle+'/outbox.json'
     return outboxJsonFilename,outboxDir
 
-def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool) -> {}:
+def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, subject=None) -> {}:
     """Creates a post
     """
     prefix='https'
@@ -175,6 +175,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         prefix='http'
     currTime=datetime.datetime.utcnow()
     daysSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days
+    # status is the number of seconds since epoch
     statusNumber=str((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     conversationDate=currTime.strftime("%Y-%m-%d")
@@ -185,6 +186,10 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         postTo=postCC
         postCC=''
     newPostId=prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber
+    sensitive=False
+    if subject:
+        summary=subject
+        sensitive=True
     newPost = {
         'id': newPostId+'/activity',
         'type': 'Create',
@@ -194,14 +199,14 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         'cc': [prefix+'://'+domain+'/users/'+username+'/followers'],
         'object': {'id': newPostId,
                    'type': 'Note',
-                   'summary': None,
+                   'summary': summary,
                    'inReplyTo': None,
                    'published': published,
                    'url': prefix+'://'+domain+'/@'+username+'/'+statusNumber,
                    'attributedTo': prefix+'://'+domain+'/users/'+username,
                    'to': ['https://www.w3.org/ns/activitystreams#Public'],
                    'cc': [prefix+'://'+domain+'/users/'+username+'/followers'],
-                   'sensitive': False,
+                   'sensitive': sensitive,
                    'atomUri': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
                    'inReplyToAtomUri': None,
                    'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
