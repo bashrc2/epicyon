@@ -97,11 +97,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             return
         # get outbox feed for a person
-        outboxHeader,outboxFeed=personOutboxJson(thisDomain,self.path,useHttps,maxPostsInFeed)
-        if outboxHeader and outboxFeed:
+        outboxFeed=personOutboxJson(thisDomain,self.path,useHttps,maxPostsInFeed)
+        if outboxFeed:
             self._set_headers('application/json')
-            outboxFeedList=[outboxHeader,outboxFeed]
-            self.wfile.write(json.dumps(outboxFeedList).encode('utf-8'))
+            self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             return            
         # look up a person
         getPerson = personLookup(thisDomain,self.path)

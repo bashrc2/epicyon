@@ -160,7 +160,7 @@ def personLookup(domain: str,path: str) -> {}:
         personJson=commentjson.load(fp)
     return personJson
 
-def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> ({},{}):
+def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
     if not path.endswith('/outbox'):

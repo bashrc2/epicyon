@@ -259,7 +259,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
-def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessageId=None) -> ({},{}):
+def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessageId=None) -> []:
     """Constructs the outbox feed
     """
     prefix='https'
@@ -333,7 +333,7 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
                     break
         except Exception as e:
             print(e)
-    return outboxHeader,outboxItems
+    return [outboxHeader,outboxItems]
 
 def archivePosts(username: str,domain: str,maxPostsInOutbox=256) -> None:
     """Retain a maximum number of posts within the outbox
