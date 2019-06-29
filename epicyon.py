@@ -13,6 +13,7 @@ from webfinger import webfingerHandle
 from posts import getUserPosts
 from posts import createPublicPost
 from posts import deleteAllPosts
+from posts import createOutbox
 from session import createSession
 import json
 import sys
@@ -32,10 +33,14 @@ useTor=False
 session = createSession(useTor)
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
-deleteAllPosts(username,domain)
+#deleteAllPosts(username,domain)
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
-createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
+#createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
+outboxHeader,outboxJson=createOutbox(username,domain,https,3,None)
+pprint(outboxHeader)
+print('\n')
+pprint(outboxJson)
 
 #runDaemon(domain,port,federationList,useTor)
 

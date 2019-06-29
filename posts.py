@@ -249,25 +249,71 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         # TODO update output feed
     return newPost
 
-def createOutbox(username: str,domain: str,https: bool,noOfItems: int):
+def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessageId=None) -> ({},{}):
+    """Constructs the outbox feed
+    """
     prefix='https'
     if not https:
         prefix='http'
     outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
-    outboxItems=0
     outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
                     'first': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
                     'id': prefix+'://'+domain+'/users/'+username+'/outbox',
                     'last': prefix+'://'+domain+'/users/'+username+'/outbox?min_id=0&page=true',
-                    'totalItems': str(outboxItems),
+                    'totalItems': 0,
                     'type': 'OrderedCollection'}
-    maxMessageId=100000000000000000
-    minMessageId=100000000000000000
     outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
                    'id': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
-                   'next': prefix+'://'+domain+'/users/'+username+'/outbox?max_id='+str(maxMessageId)+'&page=true',
                    'orderedItems': [
                    ],
                    'partOf': prefix+'://'+domain+'/users/'+username+'/outbox',
-                   'prev': prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+str(minMessageId)+'&page=true',
                    'type': 'OrderedCollectionPage'}
+
+    # counter for posts loop
+    postCtr=0
+
+    # post filenames sorted in descending order
+    postsInOutbox=sorted(os.listdir(outboxDir), reverse=True)
+
+    # number of posts in outbox
+    outboxHeader['totalItems']=len(postsInOutbox)
+    prevPostFilename=None
+
+    # Generate first and last entries within header
+    if len(postsInOutbox)>0:
+        postId = postsInOutbox[len(postsInOutbox)-1].split('#statuses#')[1].replace('#activity','')
+        outboxHeader['last']= \
+            prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
+        postId = postsInOutbox[0].split('#statuses#')[1].replace('#activity','')
+        outboxHeader['first']= \
+            prefix+'://'+domain+'/users/'+username+'/outbox?max_id='+postId+'&page=true'
+
+    # Insert posts
+    for postFilename in postsInOutbox:
+        if startMessageId and prevPostFilename:
+            if '#statuses#'+startMessageId in postFilename:
+                postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
+                outboxHeader['prev']= \
+                    prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
+        filePath = os.path.join(outboxDir, postFilename)
+        try:
+            if os.path.isfile(filePath):
+                if postCtr <= noOfItems:
+                    with open(filePath, 'r') as fp:
+                        p=commentjson.load(fp)
+                        if postCtr < noOfItems:
+                            outboxItems['orderedItems'].append(p)
+                        elif postCtr == noOfItems:
+                            if '/statuses/' in p['id']:
+                                postId = p['id'].split('/statuses/')[1].replace('/activity','')
+                                outboxHeader['next']= \
+                                    prefix+'://'+domain+'/users/'+ \
+                                    username+'/outbox?max_id='+ \
+                                    postId+'&page=true'
+                        postCtr += 1
+                prevPostFilename = postFilename
+                if postCtr > noOfItems:
+                    break
+        except Exception as e:
+            print(e)
+    return outboxHeader,outboxItems
