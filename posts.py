@@ -275,7 +275,7 @@ def createOutbox(username: str,domain: str,https: bool,itemsPerPage: int,headerO
     outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
                     'first': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
                     'id': prefix+'://'+domain+'/users/'+username+'/outbox',
-                    'last': prefix+'://'+domain+'/users/'+username+'/outbox?min_id=0&page=true',
+                    'last': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
                     'totalItems': 0,
                     'type': 'OrderedCollection'}
     outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
@@ -295,20 +295,20 @@ def createOutbox(username: str,domain: str,https: bool,itemsPerPage: int,headerO
     outboxHeader['totalItems']=len(postsInOutbox)
     prevPostFilename=None
 
+    if not pageNumber:
+        pageNumber=1
+
     # Generate first and last entries within header
     if len(postsInOutbox)>0:
-        postId = postsInOutbox[len(postsInOutbox)-1].split('#statuses#')[1].replace('#activity','')
+        lastPage=int(len(postsInOutbox)/itemsPerPage)
+        if lastPage<1:
+            lastPage=1
         outboxHeader['last']= \
-            prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
-        postId = postsInOutbox[0].split('#statuses#')[1].replace('#activity','')
-        outboxHeader['first']= \
-            prefix+'://'+domain+'/users/'+username+'/outbox?max_id='+postId+'&page=true'
+            prefix+'://'+domain+'/users/'+username+'/outbox?page='+str(lastPage)
 
     # Insert posts
     currPage=1
     postsCtr=0
-    if not pageNumber:
-        pageNumber=1
     for postFilename in postsInOutbox:
         # Are we at the starting page yet?
         if prevPostFilename and currPage==pageNumber and postsCtr==0:

@@ -47,7 +47,7 @@ setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
 #createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
 #archivePosts(username,domain,4)
-outboxJson=createOutbox(username,domain,https,2,False,None)
+outboxJson=createOutbox(username,domain,https,2,True,None)
 pprint(outboxJson)
 
 #runDaemon(domain,port,federationList,useTor)
