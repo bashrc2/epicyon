@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import json
 import os
+import datetime
 
 def inboxPermittedMessage(messageJson,federationList) -> bool:
     """ check that we are receiving from a permitted domain
@@ -40,3 +41,46 @@ def inboxPermittedMessage(messageJson,federationList) -> bool:
                 return False
 
     return True
+
+def receivePublicMessage(message) -> bool:
+    print("TODO")
+
+def validPublishedDate(published):
+    currTime=datetime.datetime.utcnow()
+    pubDate=datetime.datetime.strptime(published,"%Y-%m-%dT%H:%M:%SZ")
+    daysSincePublished = (currTime - pubTime).days
+    if daysSincePublished>30:
+        return False
+    return True
+
+def receiveMessage(message):
+    if not message.get('type'):
+        return
+    if message['type']!='Create':
+        return
+    if not message.get('published'):
+        return
+    # is the message too old?
+    if not validPublishedDate(message['published']):
+        return
+    if not message.get('to'):
+        return
+    if not message.get('id'):
+        return
+    for recipient in message['to']:
+        if recipient.endswith('/activitystreams#Public'):
+            receivePublicMessage(message)
+            continue
+        
+        username=''
+        domain=''
+        messageId=message['id'].replace('/','_')
+        handle=username.lower()+'@'+domain.lower()
+        baseDir=os.getcwd()    
+        if not os.path.isdir(baseDir+'/accounts/'+handle):
+            os.mkdir(baseDir+'/accounts/'+handle)
+        if not os.path.isdir(baseDir+'/accounts/'+handle+'/inbox'):
+            os.mkdir(baseDir+'/accounts/'+handle+'/inbox')
+            filename=baseDir+'/accounts/'+handle+'/inbox/'+messageId+'.json'
+            with open(filename, 'w') as fp:
+                commentjson.dump(personJson, fp, indent=4, sort_keys=False)

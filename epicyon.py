@@ -11,6 +11,7 @@ from person import setPreferredUsername
 from person import setBio
 from webfinger import webfingerHandle
 from posts import getUserPosts
+from posts import createPublicPost
 from session import createSession
 import json
 import sys
@@ -32,10 +33,12 @@ session = createSession(useTor)
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
-runDaemon(domain,port,federationList,useTor)
+createPublicPost(username, domain, https, "G'day world!", False, True)
+
+#runDaemon(domain,port,federationList,useTor)
 
 #testHttpsig()
-#sys.exit()
+sys.exit()
 
 #pprint(person)
 #print('\n')
@@ -53,4 +56,4 @@ maxMentions=10
 maxEmoji=10
 maxAttachments=5
 userPosts = getUserPosts(session,wfRequest,2,maxMentions,maxEmoji,maxAttachments,federationList)
-print(str(userPosts))
+#print(str(userPosts))

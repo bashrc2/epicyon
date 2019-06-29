@@ -8,7 +8,11 @@ __status__ = "Production"
 
 import requests
 import json
+import commentjson
 import html
+import datetime
+import os
+from pprint import pprint
 from random import randint
 from session import getJson
 try: 
@@ -37,17 +41,18 @@ def getUserUrl(wfRequest) -> str:
     return None
 
 def parseUserFeed(session,feedUrl,asHeader) -> None:
-    feed = getJson(session,feedUrl,asHeader,None)
+    feedJson = getJson(session,feedUrl,asHeader,None)
+    pprint(feedJson)
 
-    if 'orderedItems' in feed:
+    if 'orderedItems' in feedJson:
         for item in feed['orderedItems']:
             yield item
 
     nextUrl = None
-    if 'first' in feed:
+    if 'first' in feedJson:
         nextUrl = feed['first']
-    elif 'next' in feed:
-        nextUrl = feed['next']
+    elif 'next' in feedJson:
+        nextUrl = feedJson['next']
 
     if nextUrl:
         for item in parseUserFeed(session,nextUrl,asHeader):
@@ -149,28 +154,45 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
             break
     return userPosts
 
-def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool) -> {}:
+def createOutboxDir(username: str,domain: str) -> (str,str):
+    """Create an outbox for a person and returns the feed filename and directory
+    """
+    handle=username.lower()+'@'+domain.lower()
+    baseDir=os.getcwd()
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        os.mkdir(baseDir+'/accounts/'+handle)
+    outboxDir=baseDir+'/accounts/'+handle+'/outbox'
+    if not os.path.isdir(outboxDir):
+        os.mkdir(outboxDir)
+    outboxJsonFilename=baseDir+'/accounts/'+handle+'/outbox.json'
+    return outboxJsonFilename,outboxDir
+
+def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool) -> {}:
+    """Creates a post
+    """
     prefix='https'
     if not https:
         prefix='http'
-    statusNumber=str(randint(100000000000000000,999999999999999999))
     currTime=datetime.datetime.utcnow()
+    daysSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days
+    statusNumber=str((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     conversationDate=currTime.strftime("%Y-%m-%d")
-    conversationId=str(randint(100000000,999999999))
+    conversationId=statusNumber
     postTo='https://www.w3.org/ns/activitystreams#Public'
     postCC=prefix+'://'+domain+'/users/'+username+'/followers'
     if followersOnly:
         postTo=postCC
         postCC=''
+    newPostId=prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber
     newPost = {
-        'id': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber+'/activity',
+        'id': newPostId+'/activity',
         'type': 'Create',
         'actor': prefix+'://'+domain+'/users/'+username,
         'published': published,
         'to': ['https://www.w3.org/ns/activitystreams#Public'],
         'cc': [prefix+'://'+domain+'/users/'+username+'/followers'],
-        'object': {'id': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
+        'object': {'id': newPostId,
                    'type': 'Note',
                    'summary': None,
                    'inReplyTo': None,
@@ -200,4 +222,32 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
                    #}
         }
     }
+    if saveToFile:
+        outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
+        filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
+        with open(filename, 'w') as fp:
+            commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
+
+def createOutbox(username: str,domain: str,https: bool,noOfItems: int):
+    prefix='https'
+    if not https:
+        prefix='http'
+    outboxJsonFilename,outboxDir = createOutboxDir(username,domain)
+    outboxItems=0
+    outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
+                    'first': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
+                    'id': prefix+'://'+domain+'/users/'+username+'/outbox',
+                    'last': prefix+'://'+domain+'/users/'+username+'/outbox?min_id=0&page=true',
+                    'totalItems': str(outboxItems),
+                    'type': 'OrderedCollection'}
+    maxMessageId=100000000000000000
+    minMessageId=100000000000000000
+    outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
+                   'id': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
+                   'next': prefix+'://'+domain+'/users/'+username+'/outbox?max_id='+str(maxMessageId)+'&page=true',
+                   'orderedItems': [
+                   ],
+                   'partOf': prefix+'://'+domain+'/users/'+username+'/outbox',
+                   'prev': prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+str(minMessageId)+'&page=true',
+                   'type': 'OrderedCollectionPage'}
