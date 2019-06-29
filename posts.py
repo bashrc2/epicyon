@@ -259,13 +259,19 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
-def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessageId=None) -> []:
+def createOutbox(username: str,domain: str,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
     """
     prefix='https'
     if not https:
         prefix='http'
     outboxDir = createOutboxDir(username,domain)
+    pageStr='?page=true'
+    if pageNumber:
+        try:
+            pageStr='?page='+str(pageNumber)
+        except:
+            pass
     outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
                     'first': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
                     'id': prefix+'://'+domain+'/users/'+username+'/outbox',
@@ -273,14 +279,14 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
                     'totalItems': 0,
                     'type': 'OrderedCollection'}
     outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
-                   'id': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
+                   'id': prefix+'://'+domain+'/users/'+username+'/outbox'+pageStr,
                    'orderedItems': [
                    ],
                    'partOf': prefix+'://'+domain+'/users/'+username+'/outbox',
                    'type': 'OrderedCollectionPage'}
 
     # counter for posts loop
-    postCtr=0
+    postsOnPageCtr=0
 
     # post filenames sorted in descending order
     postsInOutbox=sorted(os.listdir(outboxDir), reverse=True)
@@ -299,26 +305,30 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
             prefix+'://'+domain+'/users/'+username+'/outbox?max_id='+postId+'&page=true'
 
     # Insert posts
+    currPage=1
+    postsCtr=0
+    if not pageNumber:
+        pageNumber=1
     for postFilename in postsInOutbox:
-        # Are we at the starting message ID yet?
-        if startMessageId and prevPostFilename:
-            if '#statuses#'+startMessageId in postFilename:
-                # update the prev entry for the last message id
-                postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
-                outboxHeader['prev']= \
-                    prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
+        # Are we at the starting page yet?
+        if prevPostFilename and currPage==pageNumber and postsCtr==0:
+            # update the prev entry for the last message id
+            postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
+            outboxHeader['prev']= \
+                prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
         # get the full path of the post file
         filePath = os.path.join(outboxDir, postFilename)
         try:
             if os.path.isfile(filePath):
-                if postCtr <= noOfItems:
+                if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
                         # insert it into the outbox feed
-                        if postCtr < noOfItems:
-                            outboxItems['orderedItems'].append(p)
-                        elif postCtr == noOfItems:
+                        if postsOnPageCtr < itemsPerPage:
+                            if not headerOnly:
+                                outboxItems['orderedItems'].append(p)
+                        elif postsOnPageCtr == itemsPerPage:
                             # if this is the last post update the next message ID
                             if '/statuses/' in p['id']:
                                 postId = p['id'].split('/statuses/')[1].replace('/activity','')
@@ -326,14 +336,21 @@ def createOutbox(username: str,domain: str,https: bool,noOfItems: int,startMessa
                                     prefix+'://'+domain+'/users/'+ \
                                     username+'/outbox?max_id='+ \
                                     postId+'&page=true'
-                        postCtr += 1
+                        postsOnPageCtr += 1
                 # remember the last post filename for use with prev
                 prevPostFilename = postFilename
-                if postCtr > noOfItems:
+                if postsOnPageCtr > itemsPerPage:
                     break
+                # count the pages
+                postsCtr += 1
+                if postsCtr >= itemsPerPage:
+                    postsCtr = 0
+                    currPage += 1
         except Exception as e:
             print(e)
-    return [outboxHeader,outboxItems]
+    if headerOnly:
+        return outboxHeader
+    return outboxItems
 
 def archivePosts(username: str,domain: str,maxPostsInOutbox=256) -> None:
     """Retain a maximum number of posts within the outbox

@@ -16,6 +16,7 @@ from posts import deleteAllPosts
 from posts import createOutbox
 from posts import archivePosts
 from session import createSession
+from session import getJson
 import json
 import sys
 import requests
@@ -34,7 +35,10 @@ useTor=False
 session = createSession(useTor)
 
 #asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-#userFollowing = getJson(session,"",asHeader,None)
+#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/followers?page=true",asHeader,None)
+#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following?page=true",asHeader,None)
+#pprint(userFollowing)
+#sys.exit()
 
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
@@ -43,13 +47,13 @@ setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
 #createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
 #archivePosts(username,domain,4)
-#outboxJson=createOutbox(username,domain,https,3,None)
-#pprint(outboxJson)
+outboxJson=createOutbox(username,domain,https,2,False,None)
+pprint(outboxJson)
 
-runDaemon(domain,port,federationList,useTor)
+#runDaemon(domain,port,federationList,useTor)
 
 #testHttpsig()
-#sys.exit()
+sys.exit()
 
 #pprint(person)
 #print('\n')

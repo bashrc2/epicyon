@@ -163,6 +163,22 @@ def personLookup(domain: str,path: str) -> {}:
 def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
+    if not '/outbox' in path:
+        return None
+
+    # handle page numbers
+    pageNumber=None
+    if '?page=' in path:
+        pageNumber=path.split('?page=')[1]
+        if pageNumber=='true':
+            pageNumber=1
+        else:
+            try:
+                pageNumber=int(pageNumber)
+            except:
+                pass
+        path=path.split('?page=')[0]
+
     if not path.endswith('/outbox'):
         return None
     username=None
@@ -174,8 +190,7 @@ def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
         return None
     if not validUsername(username):
         return None
-    startMessageId=None
-    return createOutbox(username,domain,https,noOfItems,startMessageId)
+    return createOutbox(username,domain,https,noOfItems,headerOnly,pageNumber)
 
 def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool:
     if len(preferredName)>32:
