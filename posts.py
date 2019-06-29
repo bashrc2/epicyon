@@ -167,7 +167,7 @@ def createOutboxDir(username: str,domain: str) -> (str,str):
     outboxJsonFilename=baseDir+'/accounts/'+handle+'/outbox.json'
     return outboxJsonFilename,outboxDir
 
-def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, subject=None) -> {}:
+def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a post
     """
     prefix='https'
@@ -200,7 +200,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         'object': {'id': newPostId,
                    'type': 'Note',
                    'summary': summary,
-                   'inReplyTo': None,
+                   'inReplyTo': inReplyTo,
                    'published': published,
                    'url': prefix+'://'+domain+'/@'+username+'/'+statusNumber,
                    'attributedTo': prefix+'://'+domain+'/users/'+username,
@@ -208,7 +208,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
                    'cc': [prefix+'://'+domain+'/users/'+username+'/followers'],
                    'sensitive': sensitive,
                    'atomUri': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
-                   'inReplyToAtomUri': None,
+                   'inReplyToAtomUri': inReplyToAtomUri,
                    'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
                    'content': content,
                    'contentMap': {
