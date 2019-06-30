@@ -31,9 +31,11 @@ def getPersonFromCache(personUrl: str):
     """Get an actor from the cache
     """
     if personCache.get(personUrl):
+        # how old is the cached data?
         currTime=datetime.datetime.utcnow()
         cacheTime=datetime.strptime(personCache[personUrl]['timestamp'].replace('T',' '))
         daysSinceCached=(currTime - cacheTime).days
+        # return cached value if it has not expired
         if daysSinceCached <= 2:
             return personCache[personUrl]['actor']        
     return None
