@@ -108,37 +108,3 @@ def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, path: str, 
         return True
     except (ValueError, TypeError):
         return False
-
-def testHttpsigBase(withDigest):
-    print('testHttpsig(' + str(withDigest) + ')')
-    username='socrates'
-    domain='argumentative.social'
-    https=True
-    port=80
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,False)
-    messageBodyJson = '{"a key": "a value", "another key": "A string"}'
-    if not withDigest:
-        headers = {'host': domain}
-    else:
-        bodyDigest = base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
-        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
-    path='/inbox'
-    signatureHeader = signPostHeaders(privateKeyPem, username, domain, path, https, None)
-    headers['signature'] = signatureHeader
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox' ,False, messageBodyJson)
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJson) == False
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJson) == False
-    if not withDigest:
-        # fake domain
-        headers = {'host': 'bogon.domain'}
-    else:
-        # correct domain but fake message
-        messageBodyJson = '{"a key": "a value", "another key": "Fake GNUs"}'
-        bodyDigest = base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
-        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
-    headers['signature'] = signatureHeader
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJson) == False
-
-def testHttpsig():
-    testHttpsigBase(False)
-    testHttpsigBase(True)

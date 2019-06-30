@@ -12,8 +12,9 @@ import json
 import cgi
 from pprint import pprint
 from session import createSession
-from httpsig import testHttpsig
-from cache import testCache
+from tests import testHttpsig
+from tests import testCache
+from tests import testThreads
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from person import personLookup
@@ -21,7 +22,6 @@ from person import personKeyLookup
 from person import personOutboxJson
 from inbox import inboxPermittedMessage
 from follow import getFollowingFeed
-from threads import testThreads
 import os
 import sys
 

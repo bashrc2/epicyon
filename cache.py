@@ -46,13 +46,4 @@ def getWebfingerFromCache(handle: str):
     if cachedWebfingers.get(handle):
         return cachedWebfingers[handle]
     return None
-
-def testCache():
-    print('testCache')
-    personUrl="cat@cardboard.box"
-    personJson={ "id": 123456, "test": "This is a test" }
-    storePersonInCache(personUrl,personJson)
-    result=getPersonFromCache(personUrl)
-    assert result['id']==123456
-    assert result['test']=='This is a test'
     

@@ -22,7 +22,7 @@ import json
 import sys
 import requests
 from pprint import pprint
-from httpsig import testHttpsig
+from tests import testHttpsig
 from daemon import runDaemon
 import socket
 from follow import clearFollows

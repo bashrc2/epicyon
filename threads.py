@@ -40,17 +40,3 @@ class threadWithTrace(threading.Thread):
   
     def kill(self): 
         self.killed = True
-
-def testThreadsFunction(param: str):
-    for i in range(10000):
-        time.sleep(2)
-
-def testThreads():
-    print('testThreads')
-    thr = threadWithTrace(target=testThreadsFunction,args=('test',),daemon=True)
-    thr.start()
-    assert thr.isAlive()==True
-    time.sleep(1)
-    thr.kill()
-    thr.join()
-    assert thr.isAlive()==False
