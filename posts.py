@@ -11,15 +11,17 @@ import json
 import commentjson
 import html
 import datetime
-import os, shutil
+import os
+import shutil
 import threading
+import sys
+import trace
+from cache import storePersonInCache
+from cache import getPersonFromCache
 from pprint import pprint
 from random import randint
 from session import getJson
 from session import postJson
-from person import getPersonFromCache
-from person import storePersonInCache
-from person import getPersonKey
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -30,6 +32,51 @@ sendThreads = []
 
 # stores the results from recent post sending attempts
 postLog = []
+
+class threadWithTrace(threading.Thread): 
+    def __init__(self, *args, **keywords): 
+        threading.Thread.__init__(self, *args, **keywords) 
+        self.killed = False
+  
+    def start(self): 
+        self.__run_backup = self.run 
+        self.run = self.__run       
+        threading.Thread.start(self) 
+  
+    def __run(self): 
+        sys.settrace(self.globaltrace) 
+        self.__run_backup() 
+        self.run = self.__run_backup 
+  
+    def globaltrace(self, frame, event, arg): 
+        if event == 'call': 
+            return self.localtrace
+        else:
+            return None
+
+    def localtrace(self, frame, event, arg): 
+        if self.killed: 
+            if event == 'line': 
+                raise SystemExit() 
+        return self.localtrace 
+  
+    def kill(self): 
+        self.killed = True
+
+def getPersonKey(username: str,domain: str,keyType='public'):
+    """Returns the public or private key of a person
+    """
+    handle=username+'@'+domain
+    baseDir=os.getcwd()
+    keyFilename=baseDir+'/keys/'+keyType+'/'+handle.lower()+'.key'
+    if not os.path.isfile(keyFilename):
+        return ''
+    keyPem=''
+    with open(keyFilename, "r") as pemFile:
+        keyPem=pemFile.read()
+    if len(keyPem)<20:
+        return ''
+    return keyPem
 
 def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
@@ -74,7 +121,7 @@ def getPersonBox(session,wfRequest,boxName='inbox'):
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
-    personJson=getPersonFromCache(personUrl)
+    personJson = getPersonFromCache(personUrl)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
     if not personJson.get(boxName):
@@ -307,7 +354,7 @@ def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,signature
     tries=0
     backoffTime=60
     for attempt in range(20):
-        postResult = postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader):
+        postResult = postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader)
         if postResult:
             postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
@@ -358,9 +405,9 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
-        sendThreads[0].stop()
+        sendThreads[0].kill()
         sendThreads.pop(0)
-    thr = threading.Thread(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,signatureHeader.copy()),daemon=True)
+    thr = threadWithTrace(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,signatureHeader.copy()),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0

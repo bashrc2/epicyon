@@ -14,6 +14,8 @@ import json
 import commentjson
 import os
 from session import getJson
+from cache import storeWebfingerInCache
+from cache import getWebfingerFromCache
 
 def parseHandle(handle):
     if '.' not in handle:
@@ -31,14 +33,14 @@ def parseHandle(handle):
 
     return username, domain
 
-cachedWebfingers = {}
 
 def webfingerHandle(session,handle: str,https: bool):
     username, domain = parseHandle(handle)
     if not username:
         return None
-    if cachedWebfingers.get(username+'@'+domain):
-        return cachedWebfingers[username+'@'+domain]
+    wf=getWebfingerFromCache(username+'@'+domain)
+    if wf:
+        return wf
     prefix='https'
     if not https:
         prefix='http'    
@@ -50,7 +52,7 @@ def webfingerHandle(session,handle: str,https: bool):
     #except:
     #    print("Unable to webfinger " + url)
     #    return None
-    cachedWebfingers[username+'@'+domain] = result
+    storeWebfingerInCache(username+'@'+domain, result)
     return result
 
 def generateMagicKey(publicKeyPem):

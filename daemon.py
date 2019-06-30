@@ -137,10 +137,10 @@ class PubServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.GETbusy=False
             return
-        getPersonKey = personKeyLookup(thisDomain,self.path)
-        if getPersonKey:
+        personKey = personKeyLookup(thisDomain,self.path)
+        if personKey:
             self._set_headers('text/html; charset=utf-8')
-            self.wfile.write(getPersonKey.encode('utf-8'))
+            self.wfile.write(personKey.encode('utf-8'))
             self.GETbusy=False
             return
         # check that a json file was requested
