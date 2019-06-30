@@ -12,6 +12,7 @@ import commentjson
 import html
 import datetime
 import os, shutil
+import threading
 from pprint import pprint
 from random import randint
 from session import getJson
@@ -24,6 +25,9 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
+# Contains threads for posts being sent
+sendThreads = []
+    
 def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
     """
@@ -294,6 +298,15 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         prefix='http'
     return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
+def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,signatureHeader) -> None:
+    tries=0
+    backoffTime=600
+    for attempt in range(12):
+        if postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader):
+            break
+        time.sleep(backoffTime)
+        backoffTime *= 2
+
 def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
@@ -325,9 +338,14 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
     signatureHeader = signPostHeaders(privateKeyPem, username, domain, '/inbox', https, postJsonObject)
     signatureHeader['Content-type'] = 'application/json'
 
-    # TODO this should be replaced by a send buffer
-    postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader)
-
+    # Keep the number of threads being used small
+    if len(sendThreads)>10:
+        thr=sendThreads[0]        
+        thr.stop()
+        sendThreads.remove(thr)
+    thr = threading.Thread(target=threadSendPost,args=(session,postJsonObject,federationList,inboxUrl,signatureHeader),daemon=True)
+    sendThreads.append(thr)
+    thr.start()
     return 0
 
 def createOutbox(username: str,domain: str,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
