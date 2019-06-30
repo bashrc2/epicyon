@@ -21,6 +21,11 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
+# cache of actor json
+# If there are repeated lookups then this helps prevent a lot
+# of needless network traffic
+personCache = {}
+    
 def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
     """
@@ -64,7 +69,10 @@ def getPersonBox(session,wfRequest,boxName='inbox'):
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
-    personJson = getJson(session,personUrl,asHeader,None)
+    if personCache.get(personUrl):
+        personJson=personCache[personUrl]
+    else:
+        personJson = getJson(session,personUrl,asHeader,None)
     if not personJson.get(boxName):
         return personPosts
     personId=None
@@ -74,6 +82,9 @@ def getPersonBox(session,wfRequest,boxName='inbox'):
     if personJson.get('publicKey'):
         if personJson['publicKey'].get('publicKeyPem'):
             pubKey=personJson['publicKey']['publicKeyPem']
+
+    personCache[personUrl]=personJson
+
     return personJson[boxName],pubKey,personId
 
 def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,federationList) -> {}:
