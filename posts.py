@@ -27,7 +27,10 @@ except ImportError:
 
 # Contains threads for posts being sent
 sendThreads = []
-    
+
+# stores the results from recent post sending attempts
+postLog = []
+
 def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
     """
@@ -299,10 +302,25 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
     return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,signatureHeader) -> None:
+    """Sends a post with exponential backoff
+    """
     tries=0
-    backoffTime=600
-    for attempt in range(12):
-        if postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader):
+    backoffTime=60
+    for attempt in range(20):
+        postResult = postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader):
+        if postResult:
+            postLog.append(postJsonObject['published']+' '+postResult+'\n')
+            # keep the length of the log finite
+            # Don't accumulate massive files on systems with limited resources
+            while len(postLog)>64:
+                postlog.pop(0)
+            # save the log file
+            baseDir=os.getcwd()
+            filename=baseDir+'/post.log'
+            with open(filename, "w") as logFile:
+                for line in postLog:
+                    print(line, file=logFile)
+            # our work here is done
             break
         time.sleep(backoffTime)
         backoffTime *= 2
@@ -342,7 +360,7 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
     if len(sendThreads)>10:
         thr=sendThreads[0]        
         thr.stop()
-        sendThreads.remove(thr)
+        sendThreads.pop(0)
     thr = threading.Thread(target=threadSendPost,args=(session,postJsonObject,federationList,inboxUrl,signatureHeader),daemon=True)
     sendThreads.append(thr)
     thr.start()
