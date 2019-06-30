@@ -357,7 +357,7 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
     signatureHeader['Content-type'] = 'application/json'
 
     # Keep the number of threads being used small
-    if len(sendThreads)>10:
+    while len(sendThreads)>10:
         sendThreads[0].stop()
         sendThreads.pop(0)
     thr = threading.Thread(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,signatureHeader.copy()),daemon=True)
