@@ -12,13 +12,11 @@ import commentjson
 import html
 import datetime
 import os, shutil
-import base64
 from pprint import pprint
 from random import randint
 from session import getJson
 from session import postJson
 from person import getPersonKey
-from Crypto.Hash import SHA256
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -328,13 +326,11 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
         return 5
 
     # construct the http header
-    bodyDigest = base64.b64encode(SHA256.new(postJsonObject.encode()).digest())
-    headers = {'Content-type': 'application/json', 'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
     signatureHeader = signPostHeaders(privateKeyPem, username, domain, '/inbox', https, postJsonObject)
-    headers['signature'] = signatureHeader
+    signatureHeader['Content-type'] = 'application/json'
 
     # TODO this should be replaced by a send buffer
-    postJson(session,postJsonObject,federationList,inboxUrl,headers)
+    postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader)
 
     return 0
 
