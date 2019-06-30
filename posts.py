@@ -16,16 +16,13 @@ from pprint import pprint
 from random import randint
 from session import getJson
 from session import postJson
+from person import getPersonFromCache
+from person import storePersonInCache
 from person import getPersonKey
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
     from bs4 import BeautifulSoup
-
-# cache of actor json
-# If there are repeated lookups then this helps prevent a lot
-# of needless network traffic
-personCache = {}
 
 def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
@@ -64,15 +61,14 @@ def parseUserFeed(session,feedUrl,asHeader) -> None:
     if nextUrl:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
-
+    
 def getPersonBox(session,wfRequest,boxName='inbox'):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
-    if personCache.get(personUrl):
-        personJson=personCache[personUrl]
-    else:
+    personJson=getPersonFromCache(personUrl)
+    if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
     if not personJson.get(boxName):
         return personPosts
@@ -84,7 +80,7 @@ def getPersonBox(session,wfRequest,boxName='inbox'):
         if personJson['publicKey'].get('publicKeyPem'):
             pubKey=personJson['publicKey']['publicKeyPem']
 
-    personCache[personUrl]=personJson
+    storePersonInCache(personUrl,personJson)
 
     return personJson[boxName],pubKey,personId
 

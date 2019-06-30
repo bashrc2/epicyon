@@ -15,6 +15,19 @@ from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createOutbox
 
+# cache of actor json
+# If there are repeated lookups then this helps prevent a lot
+# of needless network traffic
+personCache = {}
+
+def storePersonInCache(personUrl: str,personJson) -> None:
+    personCache[personUrl]=personJson
+
+def getPersonFromCache(personUrl: str):
+    if personCache.get(personUrl):
+        return personCache[personUrl]
+    return None
+
 def getPersonKey(username: str,domain: str,keyType='public'):
     """Returns the public or private key of a person
     """
