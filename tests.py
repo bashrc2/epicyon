@@ -25,6 +25,9 @@ from posts import createPublicPost
 from follow import followPerson
 from follow import followerOfPerson
 
+testServerAliceRunning = False
+testServerBobRunning = False
+
 def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
     username='socrates'
@@ -101,6 +104,8 @@ def createServerAlice(path: str,port: int):
     createPublicPost(username, domain, https, "No wise fish would go anywhere without a porpoise", False, True)
     createPublicPost(username, domain, https, "Curiouser and curiouser!", False, True)
     createPublicPost(username, domain, https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
+    global testServerAliceRunning
+    testServerAliceRunning = True
     print('Server running: Alice')
     runDaemon(domain,port,https,federationList,useTor)
 
@@ -123,11 +128,19 @@ def createServerBob(path: str,port: int):
     createPublicPost(username, domain, https, "It's your life, live it your way.", False, True)
     createPublicPost(username, domain, https, "One of the things I've realised is that I am very simple", False, True)
     createPublicPost(username, domain, https, "Quantum physics is a bit of a passion of mine", False, True)
+    global testServerBobRunning
+    testServerBobRunning = True
     print('Server running: Bob')
     runDaemon(domain,port,https,federationList,useTor)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
+
+    global testServerAliceRunning
+    global testServerBobRunning
+    testServerAliceRunning = False
+    testServerBobRunning = False
+
     baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/.tests'):
         os.mkdir(baseDir+'/.tests')
@@ -141,7 +154,11 @@ def testPostMessageBetweenServers():
     thrBob.start()
     assert thrBob.isAlive()==True
 
-    time.sleep(10)
+    # wait for both servers to be running
+    while not (testServerAliceRunning and testServerBobRunning):
+        time.sleep(1)
+        
+    time.sleep(3)
 
     # stop the servers
     thrAlice.kill()
