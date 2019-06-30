@@ -31,6 +31,10 @@ from follow import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
+from tests import testPostMessageBetweenServers
+from tests import runAllTests
+
+runAllTests()
 
 federationList=['mastodon.social','wild.com','trees.com','127.0.0.1']
 username='testuser'
@@ -75,10 +79,11 @@ setBio(username,domain,'Some personal info')
 #outboxJson=createOutbox(username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-runDaemon(domain,port,https,federationList,useTor)
+testPostMessageBetweenServers()
+#runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-#sys.exit()
+sys.exit()
 
 #pprint(person)
 #print('\n')

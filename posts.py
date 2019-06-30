@@ -264,6 +264,7 @@ def createPostBase(username: str, domain: str, toUrl: str, ccUrl: str, https: bo
         postCC=''
     newPostId=prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber
     sensitive=False
+    summary=None
     if subject:
         summary=subject
         sensitive=True

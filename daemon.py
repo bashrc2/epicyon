@@ -12,9 +12,6 @@ import json
 import cgi
 from pprint import pprint
 from session import createSession
-from tests import testHttpsig
-from tests import testCache
-from tests import testThreads
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from person import personLookup
@@ -204,12 +201,6 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
         print('Invalid domain: ' + domain)
         return
     session = createSession(useTor)
-
-    print('Running tests...')
-    testHttpsig()
-    testCache()
-    testThreads()
-    print('Tests succeeded\n')
 
     serverAddress = ('', port)
     httpd = HTTPServer(serverAddress, PubServer)

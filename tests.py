@@ -8,6 +8,8 @@ __status__ = "Production"
 
 import base64
 import time
+import os
+import shutil
 from person import createPerson
 from Crypto.Hash import SHA256
 from httpsig import signPostHeaders
@@ -15,6 +17,13 @@ from httpsig import verifyPostHeaders
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from threads import threadWithTrace
+from daemon import runDaemon
+from session import createSession
+from person import createPerson
+from posts import deleteAllPosts
+from posts import createPublicPost
+from follow import followPerson
+from follow import followerOfPerson
 
 def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
@@ -72,3 +81,82 @@ def testThreads():
     thr.kill()
     thr.join()
     assert thr.isAlive()==False
+
+def createServerAlice(path: str,port: int):
+    print('Creating test server: Alice on port '+str(port))
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+    os.chdir(path)
+    federationList=['127.0.0.1']
+    username='alice'
+    domain='127.0.0.1'
+    https=False
+    useTor=False
+    session = createSession(useTor)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,True)
+    deleteAllPosts(username,domain)
+    followPerson(username,domain,'bob','127.0.0.1:61936',federationList)
+    followerOfPerson(username,domain,'bob','127.0.0.1:61936',federationList)
+    createPublicPost(username, domain, https, "No wise fish would go anywhere without a porpoise", False, True)
+    createPublicPost(username, domain, https, "Curiouser and curiouser!", False, True)
+    createPublicPost(username, domain, https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
+    print('Server running: Alice')
+    runDaemon(domain,port,https,federationList,useTor)
+
+def createServerBob(path: str,port: int):
+    print('Creating test server: Bob on port '+str(port))
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+    os.chdir(path)
+    federationList=['127.0.0.1']
+    username='alice'
+    domain='127.0.0.1'
+    https=False
+    useTor=False
+    session = createSession(useTor)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,True)
+    deleteAllPosts(username,domain)
+    followPerson(username,domain,'alice','127.0.0.1:61935',federationList)
+    followerOfPerson(username,domain,'alice','127.0.0.1:61935',federationList)
+    createPublicPost(username, domain, https, "It's your life, live it your way.", False, True)
+    createPublicPost(username, domain, https, "One of the things I've realised is that I am very simple", False, True)
+    createPublicPost(username, domain, https, "Quantum physics is a bit of a passion of mine", False, True)
+    print('Server running: Bob')
+    runDaemon(domain,port,https,federationList,useTor)
+
+def testPostMessageBetweenServers():
+    print('Testing sending message from one server to the inbox of another')
+    baseDir=os.getcwd()
+    if not os.path.isdir(baseDir+'/.tests'):
+        os.mkdir(baseDir+'/.tests')
+
+    # create the servers
+    thrAlice = threadWithTrace(target=createServerAlice,args=(baseDir+'/.tests/alice',61935),daemon=True)
+    thrAlice.start()
+    assert thrAlice.isAlive()==True
+
+    thrBob = threadWithTrace(target=createServerBob,args=(baseDir+'/.tests/bob',61936),daemon=True)
+    thrBob.start()
+    assert thrBob.isAlive()==True
+
+    time.sleep(10)
+
+    # stop the servers
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.isAlive()==False
+
+    thrBob.kill()
+    thrBob.join()
+    assert thrBob.isAlive()==False
+
+def runAllTests():
+    print('Running tests...')
+    testHttpsig()
+    testCache()
+    testThreads()
+    print('Tests succeeded\n')
+
+        
