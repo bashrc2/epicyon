@@ -12,10 +12,13 @@ import commentjson
 import html
 import datetime
 import os, shutil
+import base64
 from pprint import pprint
 from random import randint
 from session import getJson
+from session import postJson
 from person import getPersonKey
+from Crypto.Hash import SHA256
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -25,7 +28,7 @@ except ImportError:
 # If there are repeated lookups then this helps prevent a lot
 # of needless network traffic
 personCache = {}
-    
+
 def permitted(url: str,federationList) -> bool:
     """Is a url from one of the permitted domains?
     """
@@ -297,7 +300,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         prefix='http'
     return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
-def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
     prefix='https'
@@ -324,9 +327,14 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
     if len(privateKeyPem)==0:
         return 5
 
+    # construct the http header
+    bodyDigest = base64.b64encode(SHA256.new(postJsonObject.encode()).digest())
+    headers = {'Content-type': 'application/json', 'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
     signatureHeader = signPostHeaders(privateKeyPem, username, domain, '/inbox', https, postJsonObject)
+    headers['signature'] = signatureHeader
 
-    # TODO
+    # TODO this should be replaced by a send buffer
+    postJson(session,postJsonObject,federationList,inboxUrl,headers)
 
     return 0
 
