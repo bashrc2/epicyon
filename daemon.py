@@ -69,7 +69,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.wfile.write(wfResult.encode('utf-8'))
             return
 
-        wfResult=webfingerLookup(self.path)
+        wfResult=webfingerLookup(self.path,self.server.baseDir)
         if wfResult:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(wfResult).encode('utf-8'))
@@ -103,7 +103,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.GETbusy=False
             return
         # get outbox feed for a person
-        outboxFeed=personOutboxJson(self.server.domain,self.server.port,self.path,self.server.https,maxPostsInFeed)
+        outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
@@ -122,13 +122,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.GETbusy=False
             return            
         # look up a person
-        getPerson = personLookup(self.server.domain,self.path)
+        getPerson = personLookup(self.server.domain,self.path,self.server.baseDir)
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.GETbusy=False
             return
-        personKey = personKeyLookup(self.server.domain,self.path)
+        personKey = personKeyLookup(self.server.domain,self.path,self.server.baseDir)
         if personKey:
             self._set_headers('text/html; charset=utf-8')
             self.wfile.write(personKey.encode('utf-8'))
@@ -140,8 +140,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.GETbusy=False
             return
         # check that the file exists
-        baseDir=os.getcwd()
-        filename=baseDir+self.path
+        filename=self.server.baseDir+self.path
         if os.path.isfile(filename):
             self._set_headers('application/json')
             with open(filename, 'r', encoding='utf8') as File:
@@ -208,5 +207,6 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     httpd.port=port
     httpd.https=https
     httpd.federationList=fedList.copy()
+    httpd.baseDir=os.getcwd()
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.serve_forever()

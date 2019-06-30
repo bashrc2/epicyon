@@ -45,9 +45,13 @@ def webfingerHandle(session,handle: str,https: bool):
     if not https:
         prefix='http'    
     url = '{}://{}/.well-known/webfinger'.format(prefix,domain)
+    if ':' in domain:
+        domain=domain.split(':')[0]
     par = {'resource': 'acct:{}'.format(username+'@'+domain)}
     hdr = {'Accept': 'application/jrd+json'}
     #try:
+    print("webfinger url = "+url)
+    print("webfinger par = "+str(par))
     result = getJson(session, url, hdr, par)
     #except:
     #    print("Unable to webfinger " + url)
@@ -64,11 +68,10 @@ def generateMagicKey(publicKeyPem):
     pubexp = base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
 
-def storeWebfingerEndpoint(username: str,domain: str,wfJson) -> bool:
+def storeWebfingerEndpoint(username: str,domain: str,baseDir: str,wfJson) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
     handle=username+'@'+domain
-    baseDir=os.getcwd()
     wfSubdir='/wfendpoints'
     if not os.path.isdir(baseDir+wfSubdir):
         os.mkdir(baseDir+wfSubdir)
@@ -140,25 +143,27 @@ def webfingerMeta() -> str:
         " </Link>" \
         "</XRD>"
 
-def webfingerLookup(path: str):
+def webfingerLookup(path: str,baseDir: str):
     """Lookup the webfinger endpoint for an account
     """
     if not path.startswith('/.well-known/webfinger?'):
         return None
     handle=None
+    print('************** '+path)
     if 'resource=acct:' in path:
         handle=path.split('resource=acct:')[1].strip()        
     else:
         if 'resource=acct%3A' in path:
             handle=path.split('resource=acct%3A')[1].replace('%40','@').strip()
+    print('************** handle: '+handle)
     if not handle:
         return None
     if '&' in handle:
         handle=handle.split('&')[0].strip()
     if '@' not in handle:
         return None
-    baseDir=os.getcwd()
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
+    print('************** filename: '+filename)
     if not os.path.isfile(filename):
         return None
     wfJson={"user": "unknown"}

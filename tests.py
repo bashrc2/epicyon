@@ -22,6 +22,7 @@ from session import createSession
 from person import createPerson
 from posts import deleteAllPosts
 from posts import createPublicPost
+from posts import sendPost
 from follow import followPerson
 from follow import followerOfPerson
 
@@ -34,7 +35,8 @@ def testHttpsigBase(withDigest):
     domain='argumentative.social'
     https=True
     port=80
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,False)
+    baseDir=os.getcwd()
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domain,port,https,False)
     messageBodyJson = '{"a key": "a value", "another key": "A string"}'
     if not withDigest:
         headers = {'host': domain}
@@ -96,9 +98,8 @@ def createServerAlice(path: str,port: int):
     domain='127.0.0.1'
     https=False
     useTor=False
-    session = createSession(useTor)
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,True)
-    deleteAllPosts(username,domain)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
+    deleteAllPosts(username,domain,path)
     followPerson(username,domain,'bob','127.0.0.1:61936',federationList)
     followerOfPerson(username,domain,'bob','127.0.0.1:61936',federationList)
     createPublicPost(username, domain, https, "No wise fish would go anywhere without a porpoise", False, True)
@@ -120,9 +121,8 @@ def createServerBob(path: str,port: int):
     domain='127.0.0.1'
     https=False
     useTor=False
-    session = createSession(useTor)
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,True)
-    deleteAllPosts(username,domain)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
+    deleteAllPosts(username,domain,path)
     followPerson(username,domain,'alice','127.0.0.1:61935',federationList)
     followerOfPerson(username,domain,'alice','127.0.0.1:61935',federationList)
     createPublicPost(username, domain, https, "It's your life, live it your way.", False, True)
@@ -141,16 +141,24 @@ def testPostMessageBetweenServers():
     testServerAliceRunning = False
     testServerBobRunning = False
 
+    https=False
+    useTor=False
+    federationList=['127.0.0.1']
+
     baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/.tests'):
         os.mkdir(baseDir+'/.tests')
 
     # create the servers
-    thrAlice = threadWithTrace(target=createServerAlice,args=(baseDir+'/.tests/alice',61935),daemon=True)
+    aliceDir=baseDir+'/.tests/alice'
+    alicePort=61935
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,alicePort),daemon=True)
     thrAlice.start()
     assert thrAlice.isAlive()==True
 
-    thrBob = threadWithTrace(target=createServerBob,args=(baseDir+'/.tests/bob',61936),daemon=True)
+    bobDir=baseDir+'/.tests/bob'
+    bobPort=61936
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobPort),daemon=True)
     thrBob.start()
     assert thrBob.isAlive()==True
 
@@ -160,6 +168,19 @@ def testPostMessageBetweenServers():
         
     time.sleep(3)
 
+    print('Alice sends to Bob')
+    os.chdir(aliceDir)
+    sessionAlice = createSession(useTor)
+    inReplyTo=None
+    inReplyToAtomUri=None
+    subject=None
+    aliceSendThreads = []
+    alicePostLog = []
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, '', https, 'Why is a mouse when it spins?', False, True, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
+    print('sendResult: '+str(sendResult))
+
+    time.sleep(3)
+    
     # stop the servers
     thrAlice.kill()
     thrAlice.join()

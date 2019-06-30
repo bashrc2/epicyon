@@ -21,7 +21,7 @@ def generateRSAKey() -> (str,str):
     publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
 
-def createPerson(username: str,domain: str,port: int,https: bool, saveToFile: bool) -> (str,str,{},{}):
+def createPerson(baseDir: str,username: str,domain: str,port: int,https: bool, saveToFile: bool) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     prefix='https'
@@ -31,7 +31,7 @@ def createPerson(username: str,domain: str,port: int,https: bool, saveToFile: bo
     privateKeyPem,publicKeyPem=generateRSAKey()
     webfingerEndpoint=createWebfingerEndpoint(username,domain,port,https,publicKeyPem)
     if saveToFile:
-        storeWebfingerEndpoint(username,domain,webfingerEndpoint)
+        storeWebfingerEndpoint(username,domain,baseDir,webfingerEndpoint)
 
     handle=username.lower()+'@'+domain.lower()
     if port!=80 and port!=443:
@@ -79,7 +79,6 @@ def createPerson(username: str,domain: str,port: int,https: bool, saveToFile: bo
 
     if saveToFile:
         # save person to file
-        baseDir=os.getcwd()
         peopleSubdir='/accounts'
         if not os.path.isdir(baseDir+peopleSubdir):
             os.mkdir(baseDir+peopleSubdir)
@@ -114,7 +113,7 @@ def validUsername(username):
             return False
     return True
 
-def personKeyLookup(domain: str,path: str) -> str:
+def personKeyLookup(domain: str,path: str,baseDir: str) -> str:
     """Lookup the public key of the person with a given username
     """
     if not path.endswith('/main-key'):
@@ -125,7 +124,6 @@ def personKeyLookup(domain: str,path: str) -> str:
     if not validUsername(username):
         return None
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return None
@@ -137,7 +135,7 @@ def personKeyLookup(domain: str,path: str) -> str:
             return personJson['publicKey']['publicKeyPem']
     return None
     
-def personLookup(domain: str,path: str) -> {}:
+def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """Lookup the person for an given username
     """
     notPersonLookup=['/inbox','/outbox','/outboxarchive','/followers','/following','/featured','.png','.jpg','.gif','.mpv','#main-key','/main-key']
@@ -154,7 +152,6 @@ def personLookup(domain: str,path: str) -> {}:
     if not validUsername(username):
         return None
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return None
@@ -163,7 +160,7 @@ def personLookup(domain: str,path: str) -> {}:
         personJson=commentjson.load(fp)
     return personJson
 
-def personOutboxJson(domain: str,port: int,path: str,https: bool,noOfItems: int) -> []:
+def personOutboxJson(baseDir: str,domain: str,port: int,path: str,https: bool,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
     if not '/outbox' in path:
@@ -197,7 +194,7 @@ def personOutboxJson(domain: str,port: int,path: str,https: bool,noOfItems: int)
         return None
     if not validUsername(username):
         return None
-    return createOutbox(username,domain,port,https,noOfItems,headerOnly,pageNumber)
+    return createOutbox(baseDir,username,domain,port,https,noOfItems,headerOnly,pageNumber)
 
 def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool:
     if len(preferredName)>32:

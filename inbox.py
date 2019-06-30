@@ -53,7 +53,7 @@ def validPublishedDate(published):
         return False
     return True
 
-def receiveMessage(message):
+def receiveMessage(message,baseDir: str):
     if not message.get('type'):
         return
     if message['type']!='Create':
@@ -76,7 +76,6 @@ def receiveMessage(message):
         domain=''
         messageId=message['id'].replace('/','_')
         handle=username.lower()+'@'+domain.lower()
-        baseDir=os.getcwd()    
         if not os.path.isdir(baseDir+'/accounts/'+handle):
             os.mkdir(baseDir+'/accounts/'+handle)
         if not os.path.isdir(baseDir+'/accounts/'+handle+'/inbox'):

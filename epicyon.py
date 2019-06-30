@@ -19,6 +19,7 @@ from posts import sendPost
 from session import createSession
 from session import getJson
 import json
+import os
 import sys
 import requests
 from pprint import pprint
@@ -43,7 +44,9 @@ domain='127.0.0.1'
 port=6227
 https=False
 useTor=False
+baseDir=os.getcwd()
 session = createSession(useTor)
+
 
 clearFollows(username,domain)
 followPerson(username,domain,'badger','wild.com',federationList)
@@ -70,17 +73,17 @@ followerOfPerson(username,domain,'giraffe','trees.com',federationList)
 #sys.exit()
 
 
-privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,True)
+privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domain,port,https,True)
 #deleteAllPosts(username,domain)
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')
 #createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
-#archivePosts(username,domain,4)
-#outboxJson=createOutbox(username,domain,port,https,2,True,None)
+#archivePosts(username,domain,baseDir,4)
+#outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-testPostMessageBetweenServers()
-#runDaemon(domain,port,https,federationList,useTor)
+#testPostMessageBetweenServers()
+runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
 sys.exit()

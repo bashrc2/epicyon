@@ -23,22 +23,16 @@ from pprint import pprint
 from random import randint
 from session import getJson
 from session import postJson
+from webfinger import webfingerHandle
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
     from bs4 import BeautifulSoup
 
-# Contains threads for posts being sent
-sendThreads = []
-
-# stores the results from recent post sending attempts
-postLog = []
-
-def getPersonKey(username: str,domain: str,keyType='public'):
+def getPersonKey(username: str,domain: str,baseDir: str,keyType='public'):
     """Returns the public or private key of a person
     """
     handle=username+'@'+domain
-    baseDir=os.getcwd()
     keyFilename=baseDir+'/keys/'+keyType+'/'+handle.lower()+'.key'
     if not os.path.isfile(keyFilename):
         return ''
@@ -200,11 +194,10 @@ def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,
             break
     return userPosts
 
-def createOutboxDir(username: str,domain: str) -> str:
+def createOutboxDir(username: str,domain: str,baseDir: str) -> str:
     """Create an outbox for a person and returns the feed filename and directory
     """
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     outboxDir=baseDir+'/accounts/'+handle+'/outbox'
@@ -212,11 +205,10 @@ def createOutboxDir(username: str,domain: str) -> str:
         os.mkdir(outboxDir)
     return outboxDir
 
-def createOutboxArchive(username: str,domain: str) -> str:
+def createOutboxArchive(username: str,domain: str,baseDir: str) -> str:
     """Creates an archive directory for outbox posts
     """
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     outboxArchiveDir=baseDir+'/accounts/'+handle+'/outboxarchive'
@@ -224,10 +216,10 @@ def createOutboxArchive(username: str,domain: str) -> str:
         os.mkdir(outboxArchiveDir)
     return outboxArchiveDir
 
-def deleteAllPosts(username: str, domain: str) -> None:
+def deleteAllPosts(username: str, domain: str,baseDir: str) -> None:
     """Deletes all posts for a person
     """
-    outboxDir = createOutboxDir(username,domain)
+    outboxDir = createOutboxDir(username,domain,baseDir)
     for deleteFilename in os.listdir(outboxDir):
         filePath = os.path.join(outboxDir, deleteFilename)
         try:
@@ -248,7 +240,7 @@ def getStatusNumber() -> (str,str):
     conversationDate=currTime.strftime("%Y-%m-%d")
     return statusNumber,published
             
-def createPostBase(username: str, domain: str, toUrl: str, ccUrl: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+def createPostBase(baseDir: str,username: str, domain: str, toUrl: str, ccUrl: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a public post
     """
     prefix='https'
@@ -306,7 +298,7 @@ def createPostBase(username: str, domain: str, toUrl: str, ccUrl: str, https: bo
         }
     }
     if saveToFile:
-        outboxDir = createOutboxDir(username,domain)
+        outboxDir = createOutboxDir(username,domain,baseDir)
         filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
@@ -320,7 +312,7 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         prefix='http'
     return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
-def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,signatureHeader) -> None:
+def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,baseDir: str,signatureHeader,postLog) -> None:
     """Sends a post with exponential backoff
     """
     tries=0
@@ -334,7 +326,6 @@ def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,signature
             while len(postLog)>64:
                 postlog.pop(0)
             # save the log file
-            baseDir=os.getcwd()
             filename=baseDir+'/post.log'
             with open(filename, "w") as logFile:
                 for line in postLog:
@@ -344,19 +335,24 @@ def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,signature
         time.sleep(backoffTime)
         backoffTime *= 2
 
-def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: str, toDomain: str, toPort: int, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList, sendThreads, postLog, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
     prefix='https'
     if not https:
         prefix='http'
 
-    # lookup the inbox
-    handle=prefix+'://'+domain+'/@'+username
-    wfRequest = webfingerHandle(session,handle,True)
+    if toPort!=80 and toPort!=443:
+        toDomain=toDomain+':'+str(toPort)        
+
+    handle=prefix+'://'+toDomain+'/@'+toUsername
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,https)
     if not wfRequest:
         return 1
 
+    # get the actor inbox for the To handle
     inboxUrl,pubKey,toPersonId = getPersonBox(session,wfRequest,'inbox')
     if not inboxUrl:
         return 2
@@ -367,7 +363,8 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
 
     postJsonObject=createPostBase(username, domain, toPersonId, cc, https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
-    privateKeyPem=getPersonKey(username,domain,'private')
+    # get the senders private key
+    privateKeyPem=getPersonKey(username,domain,baseDir,'private')
     if len(privateKeyPem)==0:
         return 5
 
@@ -379,19 +376,19 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
     while len(sendThreads)>10:
         sendThreads[0].kill()
         sendThreads.pop(0)
-    thr = threadWithTrace(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,signatureHeader.copy()),daemon=True)
+    thr = threadWithTrace(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,baseDir,signatureHeader.copy(),postLog),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0
 
-def createOutbox(username: str,domain: str,port: int,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
     """
     prefix='https'
     if not https:
         prefix='http'
 
-    outboxDir = createOutboxDir(username,domain)
+    outboxDir = createOutboxDir(username,domain,baseDir)
 
     if port!=80 and port!=443:
         domain = domain+':'+str(port)
@@ -482,12 +479,12 @@ def createOutbox(username: str,domain: str,port: int,https: bool,itemsPerPage: i
         return outboxHeader
     return outboxItems
 
-def archivePosts(username: str,domain: str,maxPostsInOutbox=256) -> None:
+def archivePosts(username: str,domain: str,baseDir: str,maxPostsInOutbox=256) -> None:
     """Retain a maximum number of posts within the outbox
     Move any others to an archive directory
     """
-    outboxDir = createOutboxDir(username,domain)
-    archiveDir = createOutboxArchive(username,domain)
+    outboxDir = createOutboxDir(username,domain,baseDir)
+    archiveDir = createOutboxArchive(username,domain,baseDir)
     postsInOutbox=sorted(os.listdir(outboxDir), reverse=False)
     noOfPosts=len(postsInOutbox)
     if noOfPosts<=maxPostsInOutbox:
