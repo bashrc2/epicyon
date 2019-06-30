@@ -32,10 +32,10 @@ from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
 
-federationList=['mastodon.social','wild.com','trees.com']
+federationList=['mastodon.social','wild.com','trees.com','127.0.0.1']
 username='testuser'
 #domain=socket.gethostname()
-domain='mydomain.com'
+domain='127.0.0.1'
 port=6227
 https=True
 useTor=False

@@ -33,7 +33,7 @@ def getPersonFromCache(personUrl: str):
     if personCache.get(personUrl):
         # how old is the cached data?
         currTime=datetime.datetime.utcnow()
-        cacheTime=datetime.strptime(personCache[personUrl]['timestamp'].replace('T',' '))
+        cacheTime=datetime.datetime.strptime(personCache[personUrl]['timestamp'],"%Y-%m-%dT%H:%M:%SZ")
         daysSinceCached=(currTime - cacheTime).days
         # return cached value if it has not expired
         if daysSinceCached <= 2:
@@ -46,3 +46,13 @@ def getWebfingerFromCache(handle: str):
     if cachedWebfingers.get(handle):
         return cachedWebfingers[handle]
     return None
+
+def testCache():
+    print('testCache')
+    personUrl="cat@cardboard.box"
+    personJson={ "id": 123456, "test": "This is a test" }
+    storePersonInCache(personUrl,personJson)
+    result=getPersonFromCache(personUrl)
+    assert result['id']==123456
+    assert result['test']=='This is a test'
+    

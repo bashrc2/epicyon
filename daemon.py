@@ -13,6 +13,7 @@ import cgi
 from pprint import pprint
 from session import createSession
 from httpsig import testHttpsig
+from cache import testCache
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from person import personLookup
@@ -218,6 +219,7 @@ def runDaemon(domain: str,port=80,fedList=[],useTor=False) -> None:
 
     print('Running tests...')
     testHttpsig()
+    testCache()
     print('Tests succeeded\n')
 
     serverAddress = ('', port)
