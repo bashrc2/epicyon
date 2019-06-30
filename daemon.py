@@ -21,6 +21,7 @@ from person import personKeyLookup
 from person import personOutboxJson
 from inbox import inboxPermittedMessage
 from follow import getFollowingFeed
+from threads import testThreads
 import os
 import sys
 
@@ -220,6 +221,7 @@ def runDaemon(domain: str,port=80,fedList=[],useTor=False) -> None:
     print('Running tests...')
     testHttpsig()
     testCache()
+    testThreads()
     print('Tests succeeded\n')
 
     serverAddress = ('', port)
