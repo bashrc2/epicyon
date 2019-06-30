@@ -15,6 +15,21 @@ from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createOutbox
 
+def getPersonKey(username: str,domain: str,keyType='public'):
+    """Returns the public or private key of a person
+    """
+    handle=username+'@'+domain
+    baseDir=os.getcwd()
+    keyFilename=baseDir+'/keys/'+keyType+'/'+handle.lower()+'.key'
+    if not os.path.isfile(keyFilename):
+        return ''
+    keyPem=''
+    with open(keyFilename, "r") as pemFile:
+        keyPem=pemFile.read()
+    if len(keyPem)<20:
+        return ''
+    return keyPem
+
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
     privateKeyPem = key.exportKey("PEM").decode("utf-8")

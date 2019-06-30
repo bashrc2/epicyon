@@ -15,6 +15,7 @@ import os, shutil
 from pprint import pprint
 from random import randint
 from session import getJson
+from person import getPersonKey
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -58,16 +59,28 @@ def parseUserFeed(session,feedUrl,asHeader) -> None:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
 
+def getPersonBox(session,wfRequest,boxName='inbox'):
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    personUrl = getUserUrl(wfRequest)
+    if not personUrl:
+        return None
+    personJson = getJson(session,personUrl,asHeader,None)
+    if not personJson.get(boxName):
+        return personPosts
+    personId=None
+    if personJson.get('id'):
+        personId=personJson['id']
+    pubKey=None
+    if personJson.get('publicKey'):
+        if personJson['publicKey'].get('publicKeyPem'):
+            pubKey=personJson['publicKey']['publicKeyPem']
+    return personJson[boxName],pubKey,personId
+
 def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,federationList) -> {}:
     userPosts={}
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    userUrl = getUserUrl(wfRequest)
-    if not userUrl:
+    feedUrl,pubKey,personId = getPersonBox(session,wfRequest,'outbox')
+    if not feedUrl:
         return userPosts
-    userJson = getJson(session,userUrl,asHeader,None)
-    if not userJson.get('outbox'):
-        return userPosts
-    feedUrl = userJson['outbox']
 
     i = 0
     for item in parseUserFeed(session,feedUrl,asHeader):
@@ -202,7 +215,7 @@ def getStatusNumber() -> (str,str):
     conversationDate=currTime.strftime("%Y-%m-%d")
     return statusNumber,published
             
-def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+def createPostBase(username: str, domain: str, toUrl: str, ccUrl: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a public post
     """
     prefix='https'
@@ -226,8 +239,8 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         'type': 'Create',
         'actor': prefix+'://'+domain+'/users/'+username,
         'published': published,
-        'to': ['https://www.w3.org/ns/activitystreams#Public'],
-        'cc': [prefix+'://'+domain+'/users/'+username+'/followers'],
+        'to': [toUrl],
+        'cc': [ccUrl],
         'object': {'id': newPostId,
                    'type': 'Note',
                    'summary': summary,
@@ -235,8 +248,8 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
                    'published': published,
                    'url': prefix+'://'+domain+'/@'+username+'/'+statusNumber,
                    'attributedTo': prefix+'://'+domain+'/users/'+username,
-                   'to': ['https://www.w3.org/ns/activitystreams#Public'],
-                   'cc': [prefix+'://'+domain+'/users/'+username+'/followers'],
+                   'to': [toUrl],
+                   'cc': [ccUrl],
                    'sensitive': sensitive,
                    'atomUri': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
                    'inReplyToAtomUri': inReplyToAtomUri,
@@ -264,6 +277,47 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         with open(filename, 'w') as fp:
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
+
+def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+    """Public post to the outbox
+    """
+    prefix='https'
+    if not https:
+        prefix='http'
+    return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
+
+def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+    """Post to another inbox
+    """
+    prefix='https'
+    if not https:
+        prefix='http'
+
+    # lookup the inbox
+    handle=prefix+'://'+domain+'/@'+username
+    wfRequest = webfingerHandle(session,handle,True)
+    if not wfRequest:
+        return 1
+
+    inboxUrl,pubKey,toPersonId = getPersonBox(session,wfRequest,'inbox')
+    if not inboxUrl:
+        return 2
+    if not pubKey:
+        return 3
+    if not toPersonId:
+        return 4
+
+    postJsonObject=createPostBase(username, domain, toPersonId, cc, https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
+
+    privateKeyPem=getPersonKey(username,domain,'private')
+    if len(privateKeyPem)==0:
+        return 5
+
+    signatureHeader = signPostHeaders(privateKeyPem, username, domain, '/inbox', https, postJsonObject)
+
+    # TODO
+
+    return 0
 
 def createOutbox(username: str,domain: str,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
