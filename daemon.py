@@ -43,6 +43,9 @@ followsPerPage=12
 # Whether to use https
 useHttps=True
 
+# port number to use
+usePort=80
+
 def readFollowList(filename: str):
     """Returns a list of ActivityPub addresses to follow
     """
@@ -114,19 +117,19 @@ class PubServer(BaseHTTPRequestHandler):
             self.GETbusy=False
             return
         # get outbox feed for a person
-        outboxFeed=personOutboxJson(thisDomain,self.path,useHttps,maxPostsInFeed)
+        outboxFeed=personOutboxJson(thisDomain,usePort,self.path,useHttps,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.GETbusy=False
             return
-        following=getFollowingFeed(thisDomain,self.path,useHttps,followsPerPage)
+        following=getFollowingFeed(thisDomain,usePort,self.path,useHttps,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
             self.GETbusy=False
             return            
-        followers=getFollowingFeed(thisDomain,self.path,useHttps,followsPerPage,'followers')
+        followers=getFollowingFeed(thisDomain,usePort,self.path,useHttps,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
@@ -205,10 +208,14 @@ class PubServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(message).encode('utf-8'))
         self.POSTbusy=False
 
-def runDaemon(domain: str,port=80,fedList=[],useTor=False) -> None:
+def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     global thisDomain
     global federationList
+    global usePort
+    global useHttps
     thisDomain=domain
+    usePort=port
+    useHttps=https
     federationList=fedList.copy()
 
     if len(domain)==0:

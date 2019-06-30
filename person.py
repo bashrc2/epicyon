@@ -163,7 +163,7 @@ def personLookup(domain: str,path: str) -> {}:
         personJson=commentjson.load(fp)
     return personJson
 
-def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
+def personOutboxJson(domain: str,port: int,path: str,https: bool,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
     if not '/outbox' in path:
@@ -197,7 +197,7 @@ def personOutboxJson(domain: str,path: str,https: bool,noOfItems: int) -> []:
         return None
     if not validUsername(username):
         return None
-    return createOutbox(username,domain,https,noOfItems,headerOnly,pageNumber)
+    return createOutbox(username,domain,port,https,noOfItems,headerOnly,pageNumber)
 
 def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool:
     if len(preferredName)>32:

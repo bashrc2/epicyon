@@ -383,13 +383,18 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
     thr.start()
     return 0
 
-def createOutbox(username: str,domain: str,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+def createOutbox(username: str,domain: str,port: int,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
     """
     prefix='https'
     if not https:
         prefix='http'
+
     outboxDir = createOutboxDir(username,domain)
+
+    if port!=80 and port!=443:
+        domain = domain+':'+str(port)
+        
     pageStr='?page=true'
     if pageNumber:
         try:

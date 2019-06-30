@@ -102,7 +102,7 @@ def getNoOfFollowers(username: str,domain: str) -> int:
     """
     return getNoOfFollows(username,domain,'followers.txt')
 
-def getFollowingFeed(domain: str,path: str,https: bool,followsPerPage=12,followFile='following') -> {}:
+def getFollowingFeed(domain: str,port: int,path: str,https: bool,followsPerPage=12,followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests
     """
     if '/'+followFile not in path:
@@ -137,6 +137,9 @@ def getFollowingFeed(domain: str,path: str,https: bool,followsPerPage=12,followF
     prefix='https'
     if not https:
         prefix='http'
+
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
 
     if headerOnly:
         following = {
