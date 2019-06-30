@@ -361,7 +361,7 @@ def sendPost(session,username: str, domain: str, toUsername: str, toDomain: str,
         thr=sendThreads[0]        
         thr.stop()
         sendThreads.pop(0)
-    thr = threading.Thread(target=threadSendPost,args=(session,postJsonObject,federationList,inboxUrl,signatureHeader),daemon=True)
+    thr = threading.Thread(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,signatureHeader.copy()),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0
