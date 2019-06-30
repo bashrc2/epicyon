@@ -25,12 +25,6 @@ from threads import testThreads
 import os
 import sys
 
-# domain name of this server
-thisDomain=''
-
-# List of domains to federate with
-federationList=[]
-
 # Avoid giant messages
 maxMessageLength=5000
 
@@ -39,12 +33,6 @@ maxPostsInFeed=20
 
 # number of follows/followers per page
 followsPerPage=12
-
-# Whether to use https
-useHttps=True
-
-# port number to use
-usePort=80
 
 def readFollowList(filename: str):
     """Returns a list of ActivityPub addresses to follow
@@ -99,7 +87,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
-    def do_GET(self):
+    def do_GET(self):        
         try:
             if self.GETbusy:
                 self.send_response(429)
@@ -108,6 +96,7 @@ class PubServer(BaseHTTPRequestHandler):
         except:
             pass
         self.GETbusy=True
+
         if not self._permittedDir(self.path):
             self._404()
             self.GETbusy=False
@@ -117,32 +106,32 @@ class PubServer(BaseHTTPRequestHandler):
             self.GETbusy=False
             return
         # get outbox feed for a person
-        outboxFeed=personOutboxJson(thisDomain,usePort,self.path,useHttps,maxPostsInFeed)
+        outboxFeed=personOutboxJson(self.server.domain,self.server.port,self.path,self.server.https,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.GETbusy=False
             return
-        following=getFollowingFeed(thisDomain,usePort,self.path,useHttps,followsPerPage)
+        following=getFollowingFeed(self.server.domain,self.server.port,self.path,self.server.https,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
             self.GETbusy=False
             return            
-        followers=getFollowingFeed(thisDomain,usePort,self.path,useHttps,followsPerPage,'followers')
+        followers=getFollowingFeed(self.server.domain,self.server.port,self.path,self.server.https,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
             self.GETbusy=False
             return            
         # look up a person
-        getPerson = personLookup(thisDomain,self.path)
+        getPerson = personLookup(self.server.domain,self.path)
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.GETbusy=False
             return
-        personKey = personKeyLookup(thisDomain,self.path)
+        personKey = personKeyLookup(self.server.domain,self.path)
         if personKey:
             self._set_headers('text/html; charset=utf-8')
             self.wfile.write(personKey.encode('utf-8'))
@@ -196,7 +185,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         message = json.loads(self.rfile.read(length))        
 
-        if not inboxPermittedMessage(message,federationList):
+        if not inboxPermittedMessage(message,self.server.federationList):
             self.send_response(403)
             self.end_headers()
         else:                
@@ -209,15 +198,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.POSTbusy=False
 
 def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
-    global thisDomain
-    global federationList
-    global usePort
-    global useHttps
-    thisDomain=domain
-    usePort=port
-    useHttps=https
-    federationList=fedList.copy()
-
     if len(domain)==0:
         domain='127.0.0.1'
     if '.' not in domain:
@@ -233,5 +213,9 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
 
     serverAddress = ('', port)
     httpd = HTTPServer(serverAddress, PubServer)
-    print('Running ActivityPub daemon on ' + thisDomain + ' port ' + str(port))
+    httpd.domain=domain
+    httpd.port=port
+    httpd.https=https
+    httpd.federationList=fedList.copy()
+    print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.serve_forever()
