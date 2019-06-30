@@ -6,6 +6,8 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import datetime
+
 # cache of actor json
 # If there are repeated lookups then this helps prevent a lot
 # of needless network traffic
@@ -17,7 +19,8 @@ cachedWebfingers = {}
 def storePersonInCache(personUrl: str,personJson) -> None:
     """Store an actor in the cache
     """
-    personCache[personUrl]=personJson
+    currTime=datetime.datetime.utcnow()
+    personCache[personUrl]={ "actor": personJson, "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ") }
 
 def storeWebfingerInCache(handle: str,wf) -> None:
     """Store a webfinger endpoint in the cache
@@ -28,7 +31,11 @@ def getPersonFromCache(personUrl: str):
     """Get an actor from the cache
     """
     if personCache.get(personUrl):
-        return personCache[personUrl]
+        currTime=datetime.datetime.utcnow()
+        cacheTime=datetime.strptime(personCache[personUrl]['timestamp'].replace('T',' '))
+        daysSinceCached=(currTime - cacheTime).days
+        if daysSinceCached <= 2:
+            return personCache[personUrl]['actor']        
     return None
 
 def getWebfingerFromCache(handle: str):
