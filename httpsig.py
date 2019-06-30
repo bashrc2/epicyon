@@ -114,7 +114,8 @@ def testHttpsigBase(withDigest):
     username='socrates'
     domain='argumentative.social'
     https=True
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,False)
+    port=80
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,False)
     messageBodyJson = '{"a key": "a value", "another key": "A string"}'
     if not withDigest:
         headers = {'host': domain}

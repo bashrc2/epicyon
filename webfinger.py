@@ -77,13 +77,16 @@ def storeWebfingerEndpoint(username: str,domain: str,wfJson) -> bool:
         commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
     return True
 
-def createWebfingerEndpoint(username,domain,https,publicKeyPem) -> {}:
+def createWebfingerEndpoint(username,domain,port,https,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
     prefix='https'
     if not https:
         prefix='http'
         
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+
     account = {
         "aliases": [
             prefix+"://"+domain+"/@"+username,

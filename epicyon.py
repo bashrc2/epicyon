@@ -66,7 +66,7 @@ followerOfPerson(username,domain,'giraffe','trees.com',federationList)
 #sys.exit()
 
 
-privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,https,True)
+privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(username,domain,port,https,True)
 #deleteAllPosts(username,domain)
 setPreferredUsername(username,domain,'badger')
 setBio(username,domain,'Some personal info')

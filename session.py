@@ -9,6 +9,8 @@ __status__ = "Production"
 import requests
 import json
 
+baseDirectory=None
+
 def createSession(onionRoute: bool):
     session = requests.session()
     if onionRoute:
@@ -42,3 +44,6 @@ def postJson(session,postJsonObject,federationList,inboxUrl: str,headers) -> str
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
     return postResult.text
+
+def getBaseDirectory():
+    baseDirectory = os.getcwd()

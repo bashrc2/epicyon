@@ -21,7 +21,7 @@ def generateRSAKey() -> (str,str):
     publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
 
-def createPerson(username: str,domain: str,https: bool, saveToFile: bool) -> (str,str,{},{}):
+def createPerson(username: str,domain: str,port: int,https: bool, saveToFile: bool) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     prefix='https'
@@ -29,10 +29,14 @@ def createPerson(username: str,domain: str,https: bool, saveToFile: bool) -> (st
         prefix='http'
 
     privateKeyPem,publicKeyPem=generateRSAKey()
-    webfingerEndpoint=createWebfingerEndpoint(username,domain,https,publicKeyPem)
+    webfingerEndpoint=createWebfingerEndpoint(username,domain,port,https,publicKeyPem)
     if saveToFile:
         storeWebfingerEndpoint(username,domain,webfingerEndpoint)
-        
+
+    handle=username.lower()+'@'+domain.lower()
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+
     newPerson = {'@context': ['https://www.w3.org/ns/activitystreams',
                               'https://w3id.org/security/v1',
                               {'Emoji': 'toot:Emoji',
@@ -75,7 +79,6 @@ def createPerson(username: str,domain: str,https: bool, saveToFile: bool) -> (st
 
     if saveToFile:
         # save person to file
-        handle=username.lower()+'@'+domain.lower()
         baseDir=os.getcwd()
         peopleSubdir='/accounts'
         if not os.path.isdir(baseDir+peopleSubdir):
