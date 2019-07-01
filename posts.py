@@ -311,13 +311,13 @@ def createPostBase(baseDir: str,username: str, domain: str, toUrl: str, ccUrl: s
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
-def createPublicPost(username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+def createPublicPost(baseDir: str,username: str, domain: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
     prefix='https'
     if not https:
         prefix='http'
-    return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
+    return createPostBase(baseDir,username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str,baseDir: str,signatureHeaderJson: {},postLog: []) -> None:
     """Sends a post with exponential backoff
@@ -372,7 +372,7 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsern
 
     print('*************Creating post')
     print('toPersonId: '+toPersonId)
-    postJsonObject=createPostBase(username, domain, toPersonId, cc, https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
+    postJsonObject=createPostBase(baseDir,username, domain, toPersonId, cc, https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
     # get the senders private key
     privateKeyPem=getPersonKey(username,domain,baseDir,'private')
