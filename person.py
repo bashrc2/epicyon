@@ -106,7 +106,7 @@ def createPerson(baseDir: str,username: str,domain: str,port: int,https: bool, s
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
-def validUsername(username):
+def validUsername(username: str) -> bool:
     forbiddenChars=['.',' ','/','?',':',';','@']
     for c in forbiddenChars:
         if c in username:

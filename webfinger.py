@@ -17,7 +17,7 @@ from session import getJson
 from cache import storeWebfingerInCache
 from cache import getWebfingerFromCache
 
-def parseHandle(handle):
+def parseHandle(handle: str) -> (str,str):
     if '.' not in handle:
         return None, None
     if '/@' in handle:
@@ -34,7 +34,7 @@ def parseHandle(handle):
     return username, domain
 
 
-def webfingerHandle(session,handle: str,https: bool):
+def webfingerHandle(session,handle: str,https: bool) -> {}:
     username, domain = parseHandle(handle)
     if not username:
         return None
@@ -57,7 +57,7 @@ def webfingerHandle(session,handle: str,https: bool):
     storeWebfingerInCache(username+'@'+domain, result)
     return result
 
-def generateMagicKey(publicKeyPem):
+def generateMagicKey(publicKeyPem) -> str:
     """See magic_key method in
        https://github.com/tootsuite/mastodon/blob/707ddf7808f90e3ab042d7642d368c2ce8e95e6f/app/models/account.rb
     """
@@ -66,7 +66,7 @@ def generateMagicKey(publicKeyPem):
     pubexp = base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
 
-def storeWebfingerEndpoint(username: str,domain: str,baseDir: str,wfJson) -> bool:
+def storeWebfingerEndpoint(username: str,domain: str,baseDir: str,wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
     handle=username+'@'+domain
@@ -78,7 +78,7 @@ def storeWebfingerEndpoint(username: str,domain: str,baseDir: str,wfJson) -> boo
         commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
     return True
 
-def createWebfingerEndpoint(username,domain,port,https,publicKeyPem) -> {}:
+def createWebfingerEndpoint(username: str,domain: str,port: int,https: bool,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
     prefix='https'
@@ -141,7 +141,7 @@ def webfingerMeta() -> str:
         " </Link>" \
         "</XRD>"
 
-def webfingerLookup(path: str,baseDir: str):
+def webfingerLookup(path: str,baseDir: str) -> {}:
     """Lookup the webfinger endpoint for an account
     """
     if not path.startswith('/.well-known/webfinger?'):

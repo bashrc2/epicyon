@@ -23,8 +23,12 @@ from person import createPerson
 from posts import deleteAllPosts
 from posts import createPublicPost
 from posts import sendPost
+from follow import clearFollows
+from follow import clearFollowers
 from follow import followPerson
 from follow import followerOfPerson
+from follow import unfollowPerson
+from follow import unfollowerOfPerson
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -185,7 +189,7 @@ def testPostMessageBetweenServers():
     sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, '', https, 'Why is a mouse when it spins?', False, True, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
-    time.sleep(5)
+    time.sleep(15)
     
     # stop the servers
     thrAlice.kill()

@@ -15,7 +15,7 @@ from requests.auth import AuthBase
 import base64
 import json
 
-def signPostHeaders(privateKeyPem: str, username: str, domain: str, port: int,path: str, https: bool, messageBodyJson) -> str:
+def signPostHeaders(privateKeyPem: str, username: str, domain: str, port: int,path: str, https: bool, messageBodyJson: {}) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
@@ -59,7 +59,7 @@ def signPostHeaders(privateKeyPem: str, username: str, domain: str, port: int,pa
         [f'{k}="{v}"' for k, v in signatureDict.items()])
     return signatureHeader
 
-def createSignedHeader(privateKeyPem: str,username: str,domain: str,port: int,path: str,https: bool,withDigest: bool,messageBodyJson) -> {}:
+def createSignedHeader(privateKeyPem: str,username: str,domain: str,port: int,path: str,https: bool,withDigest: bool,messageBodyJson: {}) -> {}:
     headerDomain=domain
 
     if port!=80 and port!=443:
@@ -74,6 +74,7 @@ def createSignedHeader(privateKeyPem: str,username: str,domain: str,port: int,pa
     path='/inbox'
     signatureHeader = signPostHeaders(privateKeyPem, username, domain, port, path, https, None)
     headers['signature'] = signatureHeader
+    headers['Content-type'] = 'application/json'
     return headers
 
 def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, path: str, GETmethod: bool, messageBodyJsonStr: str) -> bool:

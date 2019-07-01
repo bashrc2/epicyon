@@ -12,7 +12,7 @@ import os
 import sys
 from person import validUsername
 
-def followPerson(baseDir: str,username: str, domain: str, followUsername: str, followDomain: str, federationList, followFile='following.txt') -> bool:
+def followPerson(baseDir: str,username: str, domain: str, followUsername: str, followDomain: str, federationList: [], followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
     if followDomain.lower().replace('\n','') not in federationList:
@@ -32,7 +32,7 @@ def followPerson(baseDir: str,username: str, domain: str, followUsername: str, f
         followfile.write(handleToFollow+'\n')
     return True
 
-def followerOfPerson(baseDir: str,username: str, domain: str, followerUsername: str, followerDomain: str, federationList) -> bool:
+def followerOfPerson(baseDir: str,username: str, domain: str, followerUsername: str, followerDomain: str, federationList: []) -> bool:
     """Adds a follower of the given person
     """
     return followPerson(baseDir,username, domain, followerUsername, followerDomain, federationList, 'followers.txt')

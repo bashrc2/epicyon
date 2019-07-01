@@ -87,7 +87,7 @@ testPostMessageBetweenServers()
 #runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-#sys.exit()
+sys.exit()
 
 #pprint(person)
 #print('\n')

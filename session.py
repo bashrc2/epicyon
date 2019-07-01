@@ -19,7 +19,7 @@ def createSession(onionRoute: bool):
         session.proxies['https'] = 'socks5h://localhost:9050'
     return session
 
-def getJson(session,url: str,headers,params):
+def getJson(session,url: str,headers: {},params: {}) -> {}:
     sessionParams={}
     sessionHeaders={}
     if headers:
@@ -30,7 +30,7 @@ def getJson(session,url: str,headers,params):
     session.cookies.clear()
     return session.get(url, headers=sessionHeaders, params=sessionParams).json()
 
-def postJson(session,postJsonObject,federationList,inboxUrl: str,headers) -> str:
+def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers: {}) -> str:
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
@@ -44,6 +44,3 @@ def postJson(session,postJsonObject,federationList,inboxUrl: str,headers) -> str
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
     return postResult.text
-
-def getBaseDirectory():
-    baseDirectory = os.getcwd()

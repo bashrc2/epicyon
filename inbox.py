@@ -10,7 +10,7 @@ import json
 import os
 import datetime
 
-def inboxPermittedMessage(messageJson,federationList) -> bool:
+def inboxPermittedMessage(messageJson: {},federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
@@ -42,7 +42,7 @@ def inboxPermittedMessage(messageJson,federationList) -> bool:
 
     return True
 
-def receivePublicMessage(message) -> bool:
+def receivePublicMessage(message: {}) -> bool:
     print("TODO")
 
 def validPublishedDate(published):
@@ -53,7 +53,7 @@ def validPublishedDate(published):
         return False
     return True
 
-def receiveMessage(message,baseDir: str):
+def receiveMessage(message: {},baseDir: str):
     if not message.get('type'):
         return
     if message['type']!='Create':

@@ -16,7 +16,7 @@ personCache = {}
 # cached webfinger endpoints
 cachedWebfingers = {}
 
-def storePersonInCache(personUrl: str,personJson) -> None:
+def storePersonInCache(personUrl: str,personJson: {}) -> None:
     """Store an actor in the cache
     """
     currTime=datetime.datetime.utcnow()
@@ -27,7 +27,7 @@ def storeWebfingerInCache(handle: str,wf) -> None:
     """
     cachedWebfingers[handle]=wf
 
-def getPersonFromCache(personUrl: str):
+def getPersonFromCache(personUrl: str) -> {}:
     """Get an actor from the cache
     """
     if personCache.get(personUrl):
@@ -40,7 +40,7 @@ def getPersonFromCache(personUrl: str):
             return personCache[personUrl]['actor']        
     return None
 
-def getWebfingerFromCache(handle: str):
+def getWebfingerFromCache(handle: str) -> {}:
     """Get webfinger endpoint from the cache
     """
     if cachedWebfingers.get(handle):

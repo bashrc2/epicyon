@@ -44,7 +44,7 @@ def getPersonKey(username: str,domain: str,baseDir: str,keyType='public'):
         return ''
     return keyPem
 
-def permitted(url: str,federationList) -> bool:
+def permitted(url: str,federationList: []) -> bool:
     """Is a url from one of the permitted domains?
     """
     for domain in federationList:
@@ -64,7 +64,7 @@ def getUserUrl(wfRequest) -> str:
                     return link['href']
     return None
 
-def parseUserFeed(session,feedUrl,asHeader) -> None:
+def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
     feedJson = getJson(session,feedUrl,asHeader,None)
     pprint(feedJson)
 
@@ -90,7 +90,6 @@ def getPersonBox(session,wfRequest,boxName='inbox') -> (str,str,str,str):
     personJson = getPersonFromCache(personUrl)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
-    pprint(personJson)
     if not personJson.get(boxName):
         return personPosts
     personId=None
@@ -108,7 +107,7 @@ def getPersonBox(session,wfRequest,boxName='inbox') -> (str,str,str,str):
 
     return personJson[boxName],pubKeyId,pubKey,personId
 
-def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,federationList) -> {}:
+def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: []) -> {}:
     userPosts={}
     feedUrl,pubKeyId,pubKey,personId = getPersonBox(session,wfRequest,'outbox')
     if not feedUrl:
@@ -317,13 +316,13 @@ def createPublicPost(username: str, domain: str, https: bool, content: str, foll
         prefix='http'
     return createPostBase(username, domain, 'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
-def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,baseDir: str,signatureHeader,postLog) -> None:
+def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str,baseDir: str,signatureHeaderJson: {},postLog: []) -> None:
     """Sends a post with exponential backoff
     """
     tries=0
     backoffTime=60
     for attempt in range(20):
-        postResult = postJson(session,postJsonObject,federationList,inboxUrl,signatureHeader)
+        postResult = postJson(session,postJsonObject,federationList,inboxUrl,signatureHeaderJson)
         if postResult:
             postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
@@ -340,7 +339,7 @@ def threadSendPost(session,postJsonObject,federationList,inboxUrl: str,baseDir: 
         time.sleep(backoffTime)
         backoffTime *= 2
 
-def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: str, toDomain: str, toPort: int, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList, sendThreads, postLog, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsername: str, toDomain: str, toPort: int, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList: [], sendThreads: [], postLog: [], inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
     prefix='https'
@@ -377,7 +376,6 @@ def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: 
 
     # construct the http header
     signatureHeaderJson = createSignedHeader(privateKeyPem, username, domain, port, '/inbox', https, withDigest, postJsonObject)
-    signatureHeaderJson['Content-type'] = 'application/json'
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
