@@ -239,7 +239,7 @@ def getStatusNumber() -> (str,str):
     currTime=datetime.datetime.utcnow()
     daysSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days
     # status is the number of seconds since epoch
-    statusNumber=str((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)
+    statusNumber=str(((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)*1000000 + currTime.microsecond)
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     conversationDate=currTime.strftime("%Y-%m-%d")
     return statusNumber,published
@@ -310,6 +310,8 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int,toUrl: str
             newPost['cc']=ccUrl
             newPost['object']['cc']=ccUrl
     if saveToFile:
+        if ':' in domain:
+            domain=domain.split(':')[0]
         outboxDir = createOutboxDir(username,domain,baseDir)
         filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
