@@ -12,14 +12,13 @@ import os
 import sys
 from person import validUsername
 
-def followPerson(username: str, domain: str, followUsername: str, followDomain: str, federationList, followFile='following.txt') -> bool:
+def followPerson(baseDir: str,username: str, domain: str, followUsername: str, followDomain: str, federationList, followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
     if followDomain.lower().replace('\n','') not in federationList:
         return False
     handle=username.lower()+'@'+domain.lower()
     handleToFollow=followUsername.lower()+'@'+followDomain.lower()
-    baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
@@ -33,17 +32,16 @@ def followPerson(username: str, domain: str, followUsername: str, followDomain: 
         followfile.write(handleToFollow+'\n')
     return True
 
-def followerOfPerson(username: str, domain: str, followerUsername: str, followerDomain: str, federationList) -> bool:
+def followerOfPerson(baseDir: str,username: str, domain: str, followerUsername: str, followerDomain: str, federationList) -> bool:
     """Adds a follower of the given person
     """
-    return followPerson(username, domain, followerUsername, followerDomain, federationList, 'followers.txt')
+    return followPerson(baseDir,username, domain, followerUsername, followerDomain, federationList, 'followers.txt')
 
-def unfollowPerson(username: str, domain: str, followUsername: str, followDomain: str,followFile='following.txt') -> None:
+def unfollowPerson(baseDir: str,username: str, domain: str, followUsername: str, followDomain: str,followFile='following.txt') -> None:
     """Removes a person to the follow list
     """
     handle=username.lower()+'@'+domain.lower()
     handleToUnfollow=followUsername.lower()+'@'+followDomain.lower()
-    baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
@@ -62,27 +60,25 @@ def unfollowerOfPerson(username: str, domain: str, followerUsername: str, follow
     """
     unfollowPerson(username, domain, followerUsername, followerDomain,'followers.txt')
 
-def clearFollows(username: str, domain: str,followFile='following.txt') -> None:
+def clearFollows(baseDir: str,username: str, domain: str,followFile='following.txt') -> None:
     """Removes all follows
     """
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if os.path.isfile(filename):
         os.remove(filename)
 
-def clearFollowers(username: str, domain: str) -> None:
+def clearFollowers(baseDir: str,username: str, domain: str) -> None:
     """Removes all followers
     """
-    clearFollows(username, domain,'followers.txt')
+    clearFollows(baseDir,username, domain,'followers.txt')
 
-def getNoOfFollows(username: str,domain: str, followFile='following.txt') -> int:
+def getNoOfFollows(baseDir: str,username: str,domain: str, followFile='following.txt') -> int:
     """Returns the number of follows or followers
     """
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
         return 0
@@ -102,7 +98,7 @@ def getNoOfFollowers(username: str,domain: str) -> int:
     """
     return getNoOfFollows(username,domain,'followers.txt')
 
-def getFollowingFeed(domain: str,port: int,path: str,https: bool,followsPerPage=12,followFile='following') -> {}:
+def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool,followsPerPage=12,followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests
     """
     if '/'+followFile not in path:
@@ -162,7 +158,6 @@ def getFollowingFeed(domain: str,port: int,path: str,https: bool,followsPerPage=
         'totalItems': 0,
         'type': 'OrderedCollectionPage'}        
 
-    baseDir=os.getcwd()
     handle=username.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle+'/'+followFile+'.txt'
     if not os.path.isfile(filename):

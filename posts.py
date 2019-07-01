@@ -374,7 +374,7 @@ def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: 
     # construct the http header
     signatureHeaderJson = createSignedHeader(privateKeyPem, username, domain, port, '/inbox', https, withDigest, postJsonObject)
     signatureHeaderJson['Content-type'] = 'application/json'
-    print("*************signatureHeaderJson "+str(signatureHeaderJson))
+
     # Keep the number of threads being used small
     while len(sendThreads)>10:
         sendThreads[0].kill()

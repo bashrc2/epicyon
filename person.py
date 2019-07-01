@@ -196,11 +196,10 @@ def personOutboxJson(baseDir: str,domain: str,port: int,path: str,https: bool,no
         return None
     return createOutbox(baseDir,username,domain,port,https,noOfItems,headerOnly,pageNumber)
 
-def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool:
+def setPreferredUsername(baseDir: str,username: str, domain: str, preferredName: str) -> bool:
     if len(preferredName)>32:
         return False
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return False
@@ -214,11 +213,10 @@ def setPreferredUsername(username: str, domain: str, preferredName: str) -> bool
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True
 
-def setBio(username: str, domain: str, bio: str) -> bool:
+def setBio(baseDir: str,username: str, domain: str, bio: str) -> bool:
     if len(bio)>32:
         return False
     handle=username.lower()+'@'+domain.lower()
-    baseDir=os.getcwd()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return False

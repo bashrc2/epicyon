@@ -48,19 +48,19 @@ baseDir=os.getcwd()
 session = createSession(useTor)
 
 
-clearFollows(username,domain)
-followPerson(username,domain,'badger','wild.com',federationList)
-followPerson(username,domain,'squirrel','secret.com',federationList)
-followPerson(username,domain,'rodent','drainpipe.com',federationList)
-followPerson(username,domain,'batman','mesh.com',federationList)
-followPerson(username,domain,'giraffe','trees.com',federationList)
+clearFollows(baseDir,username,domain)
+followPerson(baseDir,username,domain,'badger','wild.com',federationList)
+followPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
+followPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
+followPerson(baseDir,username,domain,'batman','mesh.com',federationList)
+followPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
 
-clearFollowers(username,domain)
-followerOfPerson(username,domain,'badger','wild.com',federationList)
-followerOfPerson(username,domain,'squirrel','secret.com',federationList)
-followerOfPerson(username,domain,'rodent','drainpipe.com',federationList)
-followerOfPerson(username,domain,'batman','mesh.com',federationList)
-followerOfPerson(username,domain,'giraffe','trees.com',federationList)
+clearFollowers(baseDir,username,domain)
+followerOfPerson(baseDir,username,domain,'badger','wild.com',federationList)
+followerOfPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
+followerOfPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
+followerOfPerson(baseDir,username,domain,'batman','mesh.com',federationList)
+followerOfPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
 
 #unfollowPerson(username,domain,'squirrel','secret.com')
 #sys.exit()
@@ -75,18 +75,18 @@ followerOfPerson(username,domain,'giraffe','trees.com',federationList)
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domain,port,https,True)
 #deleteAllPosts(username,domain)
-setPreferredUsername(username,domain,'badger')
-setBio(username,domain,'Some personal info')
+setPreferredUsername(baseDir,username,domain,'badger')
+setBio(baseDir,username,domain,'Some personal info')
 #createPublicPost(username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
 #archivePosts(username,domain,baseDir,4)
 #outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-testPostMessageBetweenServers()
+#testPostMessageBetweenServers()
 #runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-sys.exit()
+#sys.exit()
 
 #pprint(person)
 #print('\n')
@@ -96,9 +96,9 @@ handle="https://mastodon.social/@Gargron"
 wfRequest = webfingerHandle(session,handle,True)
 if not wfRequest:
     sys.exit()
-#wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
-#print(str(wfResult))
-#sys.exit()
+wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
+print(str(wfResult))
+sys.exit()
 
 maxMentions=10
 maxEmoji=10
