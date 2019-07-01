@@ -9,7 +9,7 @@ __status__ = "Production"
 from http.server import BaseHTTPRequestHandler, HTTPServer
 #import socketserver
 import json
-import cgi
+import time
 from pprint import pprint
 from session import createSession
 from webfinger import webfingerMeta
@@ -17,6 +17,7 @@ from webfinger import webfingerLookup
 from person import personLookup
 from person import personKeyLookup
 from person import personOutboxJson
+from posts import getPersonPubKey
 from inbox import inboxPermittedMessage
 from follow import getFollowingFeed
 import os
@@ -85,59 +86,59 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):        
-        try:
-            if self.GETbusy:
+        if self.server.GETbusy:
+            currTimeGET=int(time.time())
+            if currTimeGET-self.server.lastGET<10:
                 self.send_response(429)
                 self.end_headers()
-                return                
-        except:
-            pass
-        self.GETbusy=True
+                return
+            self.server.lastGET=currTimeGET
+        self.server.GETbusy=True
 
         if not self._permittedDir(self.path):
             self._404()
-            self.GETbusy=False
+            self.server.GETbusy=False
             return
         # get webfinger endpoint for a person
         if self._webfinger():
-            self.GETbusy=False
+            self.server.GETbusy=False
             return
         # get outbox feed for a person
         outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
-            self.GETbusy=False
+            self.server.GETbusy=False
             return
         following=getFollowingFeed(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
-            self.GETbusy=False
+            self.server.GETbusy=False
             return            
         followers=getFollowingFeed(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
-            self.GETbusy=False
+            self.server.GETbusy=False
             return            
         # look up a person
         getPerson = personLookup(self.server.domain,self.path,self.server.baseDir)
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
-            self.GETbusy=False
+            self.server.GETbusy=False
             return
         personKey = personKeyLookup(self.server.domain,self.path,self.server.baseDir)
         if personKey:
             self._set_headers('text/html; charset=utf-8')
             self.wfile.write(personKey.encode('utf-8'))
-            self.GETbusy=False
+            self.server.GETbusy=False
             return
         # check that a json file was requested
         if not self.path.endswith('.json'):
             self._404()
-            self.GETbusy=False
+            self.server.GETbusy=False
             return
         # check that the file exists
         filename=self.server.baseDir+self.path
@@ -149,27 +150,26 @@ class PubServer(BaseHTTPRequestHandler):
                 self.wfile.write(json.dumps(contentJson).encode('utf8'))
         else:
             self._404()
-        self.GETbusy=False
+        self.server.GETbusy=False
 
     def do_HEAD(self):
         self._set_headers('application/json')
         
     def do_POST(self):
-        print('**************** POST recieved!')
-        try:
-            if self.POSTbusy:
+        if self.server.POSTbusy:
+            currTimePOST=int(time.time())
+            if currTimePOST-self.server.lastPOST<10:
                 self.send_response(429)
                 self.end_headers()
-                return                
-        except:
-            pass
+                return              
+            self.server.lastPOST=currTimePOST
         print('**************** POST ready to receive')
-        self.POSTbusy=True
+        self.server.POSTbusy=True
         if not self.headers.get('Content-type'):
             print('**************** No Content-type')
             self.send_response(400)
             self.end_headers()
-            self.POSTbusy=False
+            self.server.POSTbusy=False
             return
         print('*****************headers: '+str(self.headers))
         
@@ -178,7 +178,7 @@ class PubServer(BaseHTTPRequestHandler):
             print("**************** That's no Json!")
             self.send_response(400)
             self.end_headers()
-            self.POSTbusy=False
+            self.server.POSTbusy=False
             return
             
         # read the message and convert it into a python dictionary
@@ -187,7 +187,7 @@ class PubServer(BaseHTTPRequestHandler):
         if length>maxMessageLength:
             self.send_response(400)
             self.end_headers()
-            self.POSTbusy=False
+            self.server.POSTbusy=False
             return
         print('**************** Reading message')
         messageBytes=self.rfile.read(length)
@@ -197,9 +197,34 @@ class PubServer(BaseHTTPRequestHandler):
             print('**************** Ah Ah Ah')
             self.send_response(403)
             self.end_headers()
-            self.POSTbusy=False
+            self.server.POSTbusy=False
             return
+
         
+        print('**************** POST get handle')
+        handle=''
+        print('**************** POST create session')
+        currSessionTime=int(time.time())
+        if currSessionTime-self.server.sessionLastUpdate>600:
+            self.server.sessionLastUpdate=currSessionTime
+            self.server.session = createSession(self.server.useTor)
+        print('**************** POST webfinger the handle')
+        wfRequest = webfingerHandle(self.server.session,handle,self.server.https,self.server.cachedWebfingers)
+        if not wfRequest:
+            print('**************** POST unknown webfinger')
+            self.send_response(401)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return        
+        print('**************** POST get public key')
+        pubKey=getPersonPubKey(self.server.session,wfRequest,self.server.personCache)
+        if not pubKey:
+            print('**************** POST no sender public key')
+            self.send_response(401)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+        print('**************** POST check signature')
         print('**************** POST valid')
         pprint(messageJson)
         # add a property to the object, just to mess with data
@@ -210,7 +235,7 @@ class PubServer(BaseHTTPRequestHandler):
         #self.wfile.write(json.dumps(message).encode('utf-8'))
         self.send_response(200)
         self.end_headers()
-        self.POSTbusy=False
+        self.server.POSTbusy=False
 
 def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     if len(domain)==0:
@@ -218,7 +243,6 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     if '.' not in domain:
         print('Invalid domain: ' + domain)
         return
-    session = createSession(useTor)
 
     serverAddress = ('', port)
     httpd = HTTPServer(serverAddress, PubServer)
@@ -227,5 +251,14 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     httpd.https=https
     httpd.federationList=fedList.copy()
     httpd.baseDir=os.getcwd()
+    httpd.personCache={}
+    httpd.cachedWebfingers={}
+    httpd.useTor=useTor
+    httpd.session = createSession(useTor)
+    httpd.sessionLastUpdate=int(time.time())
+    httpd.lastGET=0
+    httpd.lastPOST=0
+    httpd.GETbusy=False
+    httpd.POSTbusy=False
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.serve_forever()

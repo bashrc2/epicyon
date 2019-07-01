@@ -34,11 +34,11 @@ def parseHandle(handle: str) -> (str,str):
     return username, domain
 
 
-def webfingerHandle(session,handle: str,https: bool) -> {}:
+def webfingerHandle(session,handle: str,https: bool,cachedWebfingers: {}) -> {}:
     username, domain = parseHandle(handle)
     if not username:
         return None
-    wf=getWebfingerFromCache(username+'@'+domain)
+    wf=getWebfingerFromCache(username+'@'+domain,cachedWebfingers)
     if wf:
         return wf
     prefix='https'
@@ -54,7 +54,7 @@ def webfingerHandle(session,handle: str,https: bool) -> {}:
     #except:
     #    print("Unable to webfinger " + url)
     #    return None
-    storeWebfingerInCache(username+'@'+domain, result)
+    storeWebfingerInCache(username+'@'+domain, result,cachedWebfingers)
     return result
 
 def generateMagicKey(publicKeyPem) -> str:

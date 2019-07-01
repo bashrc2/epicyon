@@ -47,7 +47,8 @@ https=False
 useTor=False
 baseDir=os.getcwd()
 session = createSession(useTor)
-
+personCache={}
+cachedWebfingers={}
 
 clearFollows(baseDir,username,domain)
 followPerson(baseDir,username,domain,'badger','wild.com',federationList)
@@ -94,11 +95,11 @@ sys.exit()
 #pprint(wfEndpoint)
 
 handle="https://mastodon.social/@Gargron"
-wfRequest = webfingerHandle(session,handle,True)
+wfRequest = webfingerHandle(session,handle,True,cachedWebfingers)
 if not wfRequest:
     sys.exit()
 
-personJson,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest)
+personJson,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest,personCache)
 pprint(personJson)
 sys.exit()
 

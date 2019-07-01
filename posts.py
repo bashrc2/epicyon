@@ -82,12 +82,12 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
     
-def getPersonBox(session,wfRequest,boxName='inbox') -> (str,str,str,str):
+def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
-    personJson = getPersonFromCache(personUrl)
+    personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
     if not personJson.get(boxName):
@@ -103,13 +103,30 @@ def getPersonBox(session,wfRequest,boxName='inbox') -> (str,str,str,str):
         if personJson['publicKey'].get('publicKeyPem'):
             pubKey=personJson['publicKey']['publicKeyPem']
 
-    storePersonInCache(personUrl,personJson)
+    storePersonInCache(personUrl,personJson,personCache)
 
     return personJson[boxName],pubKeyId,pubKey,personId
 
-def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: []) -> {}:
+def getPersonPubKey(session,wfRequest,personCache: {}) -> str:
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    personUrl = getUserUrl(wfRequest)
+    if not personUrl:
+        return None
+    personJson = getPersonFromCache(personUrl,personCache)
+    if not personJson:
+        personJson = getJson(session,personUrl,asHeader,None)
+    pubKey=None
+    if personJson.get('publicKey'):
+        if personJson['publicKey'].get('publicKeyPem'):
+            pubKey=personJson['publicKey']['publicKeyPem']
+
+    storePersonInCache(personUrl,personJson,personCache)
+
+    return pubKey
+
+def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: [],personCache: {}) -> {}:
     userPosts={}
-    feedUrl,pubKeyId,pubKey,personId = getPersonBox(session,wfRequest,'outbox')
+    feedUrl,pubKeyId,pubKey,personId = getPersonBox(session,wfRequest,personCache,'outbox')
     if not feedUrl:
         return userPosts
 
@@ -349,7 +366,7 @@ def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str,b
         time.sleep(backoffTime)
         backoffTime *= 2
 
-def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsername: str, toDomain: str, toPort: int, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList: [], sendThreads: [], postLog: [], inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsername: str, toDomain: str, toPort: int, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList: [], sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {},inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
     prefix='https'
@@ -364,12 +381,12 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsern
     handle=prefix+'://'+toDomain+'/@'+toUsername
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,https)
+    wfRequest = webfingerHandle(session,handle,https,cachedWebfingers)
     if not wfRequest:
         return 1
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId = getPersonBox(session,wfRequest,'inbox')
+    inboxUrl,pubKeyId,pubKey,toPersonId = getPersonBox(session,wfRequest,personCache,'inbox')
     if not inboxUrl:
         return 2
     if not pubKey:

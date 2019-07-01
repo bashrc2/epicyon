@@ -78,8 +78,9 @@ def testCache():
     print('testCache')
     personUrl="cat@cardboard.box"
     personJson={ "id": 123456, "test": "This is a test" }
-    storePersonInCache(personUrl,personJson)
-    result=getPersonFromCache(personUrl)
+    personCache={}
+    storePersonInCache(personUrl,personJson,personCache)
+    result=getPersonFromCache(personUrl,personCache)
     assert result['id']==123456
     assert result['test']=='This is a test'
 
@@ -189,7 +190,9 @@ def testPostMessageBetweenServers():
     followersOnly=False
     saveToFile=True
     ccUrl=None
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
+    alicePersonCache={}
+    aliceCachedWebfingers={}
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     time.sleep(15)
