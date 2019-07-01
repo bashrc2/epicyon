@@ -117,7 +117,7 @@ def createServerBob(path: str,port: int):
     os.mkdir(path)
     os.chdir(path)
     federationList=['127.0.0.1']
-    username='alice'
+    username='bob'
     domain='127.0.0.1'
     https=False
     useTor=False
