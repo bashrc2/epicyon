@@ -16,6 +16,7 @@ from posts import deleteAllPosts
 from posts import createOutbox
 from posts import archivePosts
 from posts import sendPost
+from posts import getPersonBox
 from session import createSession
 from session import getJson
 import json
@@ -82,7 +83,7 @@ setBio(baseDir,username,domain,'Some personal info')
 #outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-#testPostMessageBetweenServers()
+testPostMessageBetweenServers()
 #runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
@@ -96,6 +97,11 @@ handle="https://mastodon.social/@Gargron"
 wfRequest = webfingerHandle(session,handle,True)
 if not wfRequest:
     sys.exit()
+
+personJson,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest)
+pprint(personJson)
+sys.exit()
+
 wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
 print(str(wfResult))
 sys.exit()

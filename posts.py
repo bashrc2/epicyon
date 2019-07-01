@@ -82,7 +82,7 @@ def parseUserFeed(session,feedUrl,asHeader) -> None:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
     
-def getPersonBox(session,wfRequest,boxName='inbox'):
+def getPersonBox(session,wfRequest,boxName='inbox') -> (str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
@@ -90,23 +90,27 @@ def getPersonBox(session,wfRequest,boxName='inbox'):
     personJson = getPersonFromCache(personUrl)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
+    pprint(personJson)
     if not personJson.get(boxName):
         return personPosts
     personId=None
     if personJson.get('id'):
         personId=personJson['id']
+    pubKeyId=None
     pubKey=None
     if personJson.get('publicKey'):
+        if personJson['publicKey'].get('id'):
+            pubKeyId=personJson['publicKey']['id']
         if personJson['publicKey'].get('publicKeyPem'):
             pubKey=personJson['publicKey']['publicKeyPem']
 
     storePersonInCache(personUrl,personJson)
 
-    return personJson[boxName],pubKey,personId
+    return personJson[boxName],pubKeyId,pubKey,personId
 
 def getUserPosts(session,wfRequest,maxPosts,maxMentions,maxEmoji,maxAttachments,federationList) -> {}:
     userPosts={}
-    feedUrl,pubKey,personId = getPersonBox(session,wfRequest,'outbox')
+    feedUrl,pubKeyId,pubKey,personId = getPersonBox(session,wfRequest,'outbox')
     if not feedUrl:
         return userPosts
 
@@ -356,7 +360,7 @@ def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: 
         return 1
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKey,toPersonId = getPersonBox(session,wfRequest,'inbox')
+    inboxUrl,pubKeyId,pubKey,toPersonId = getPersonBox(session,wfRequest,'inbox')
     if not inboxUrl:
         return 2
     if not pubKey:

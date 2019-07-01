@@ -109,13 +109,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.GETbusy=False
             return
-        following=getFollowingFeed(self.server.domain,self.server.port,self.path,self.server.https,followsPerPage)
+        following=getFollowingFeed(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
             self.GETbusy=False
             return            
-        followers=getFollowingFeed(self.server.domain,self.server.port,self.path,self.server.https,followsPerPage,'followers')
+        followers=getFollowingFeed(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))

@@ -106,8 +106,8 @@ def createServerAlice(path: str,port: int):
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
     deleteAllPosts(username,domain,path)
-    followPerson(username,domain,'bob','127.0.0.1:61936',federationList)
-    followerOfPerson(username,domain,'bob','127.0.0.1:61936',federationList)
+    followPerson(path,username,domain,'bob','127.0.0.1:61936',federationList)
+    followerOfPerson(path,username,domain,'bob','127.0.0.1:61936',federationList)
     createPublicPost(username, domain, https, "No wise fish would go anywhere without a porpoise", False, True)
     createPublicPost(username, domain, https, "Curiouser and curiouser!", False, True)
     createPublicPost(username, domain, https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
@@ -129,8 +129,8 @@ def createServerBob(path: str,port: int):
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
     deleteAllPosts(username,domain,path)
-    followPerson(username,domain,'alice','127.0.0.1:61935',federationList)
-    followerOfPerson(username,domain,'alice','127.0.0.1:61935',federationList)
+    followPerson(path,username,domain,'alice','127.0.0.1:61935',federationList)
+    followerOfPerson(path,username,domain,'alice','127.0.0.1:61935',federationList)
     createPublicPost(username, domain, https, "It's your life, live it your way.", False, True)
     createPublicPost(username, domain, https, "One of the things I've realised is that I am very simple", False, True)
     createPublicPost(username, domain, https, "Quantum physics is a bit of a passion of mine", False, True)
