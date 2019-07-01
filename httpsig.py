@@ -7,7 +7,6 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-from person import createPerson
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 #from Crypto.Signature import PKCS1_v1_5
@@ -16,14 +15,18 @@ from requests.auth import AuthBase
 import base64
 import json
 
-def signPostHeaders(privateKeyPem: str, username: str, domain: str, path: str, https: bool, messageBodyJson) -> str:
+def signPostHeaders(privateKeyPem: str, username: str, domain: str, port: int,path: str, https: bool, messageBodyJson) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
     prefix='https'
     if not https:
-        prefix='http'    
-    keyID = prefix+'://'+domain+'/'+username+'#main-key'
+        prefix='http'
+
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+
+    keyID = prefix+'://'+domain+'/users/'+username+'/main-key'
     if not messageBodyJson:
         headers = {'host': domain}
     else:
@@ -56,14 +59,31 @@ def signPostHeaders(privateKeyPem: str, username: str, domain: str, path: str, h
         [f'{k}="{v}"' for k, v in signatureDict.items()])
     return signatureHeader
 
-def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, path: str, GETmethod: bool, messageBodyJson: str) -> bool:
+def createSignedHeader(privateKeyPem: str,username: str,domain: str,port: int,path: str,https: bool,withDigest: bool,messageBodyJson) -> {}:
+    headerDomain=domain
+
+    if port!=80 and port!=443:
+        headerDomain=headerDomain+':'+str(port)
+
+    if not withDigest:
+        headers = {'host': headerDomain}
+    else:
+        messageBodyJsonStr=json.dumps(messageBodyJson)
+        bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
+        headers = {'host': headerDomain, 'digest': f'SHA-256={bodyDigest}'}        
+    path='/inbox'
+    signatureHeader = signPostHeaders(privateKeyPem, username, domain, port, path, https, None)
+    headers['signature'] = signatureHeader
+    return headers
+
+def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, path: str, GETmethod: bool, messageBodyJsonStr: str) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
     publicKeyPem - the public key from an rsa key pair
     headers - should be a dictionary of request headers
     path - the relative url that was requested from this site
     GETmethod - GET or POST
-    messageBodyJson - the received request body (used for digest)
+    messageBodyJsonStr - the received request body (used for digest)
     """
     if GETmethod:
         method='GET'
@@ -90,7 +110,7 @@ def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, path: str, 
             signedHeaderList.append(
                 f'(request-target): {method.lower()} {path}')
         elif signedHeader == 'digest':
-            bodyDigest = base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
+            bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
         else:
             signedHeaderList.append(

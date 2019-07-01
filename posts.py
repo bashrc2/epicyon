@@ -24,6 +24,7 @@ from random import randint
 from session import getJson
 from session import postJson
 from webfinger import webfingerHandle
+from httpsig import createSignedHeader
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -342,6 +343,8 @@ def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: 
     if not https:
         prefix='http'
 
+    withDigest=True
+
     if toPort!=80 and toPort!=443:
         toDomain=toDomain+':'+str(toPort)        
 
@@ -369,14 +372,14 @@ def sendPost(session,baseDir,username: str, domain: str, port: int, toUsername: 
         return 5
 
     # construct the http header
-    signatureHeader = signPostHeaders(privateKeyPem, username, domain, '/inbox', https, postJsonObject)
-    signatureHeader['Content-type'] = 'application/json'
-
+    signatureHeaderJson = createSignedHeader(privateKeyPem, username, domain, port, '/inbox', https, withDigest, postJsonObject)
+    signatureHeaderJson['Content-type'] = 'application/json'
+    print("*************signatureHeaderJson "+str(signatureHeaderJson))
     # Keep the number of threads being used small
     while len(sendThreads)>10:
         sendThreads[0].kill()
         sendThreads.pop(0)
-    thr = threadWithTrace(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,baseDir,signatureHeader.copy(),postLog),daemon=True)
+    thr = threadWithTrace(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,baseDir,signatureHeaderJson.copy(),postLog),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0

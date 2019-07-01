@@ -34,31 +34,37 @@ def testHttpsigBase(withDigest):
     username='socrates'
     domain='argumentative.social'
     https=True
-    port=80
+    port=5576
     baseDir=os.getcwd()
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domain,port,https,False)
-    messageBodyJson = '{"a key": "a value", "another key": "A string"}'
+    messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
+
+    headersDomain=domain
+    if port!=80 and port !=443:
+        headersDomain=domain+':'+str(port)
+
     if not withDigest:
-        headers = {'host': domain}
+        headers = {'host': headersDomain}
     else:
-        bodyDigest = base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
-        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
+        bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
+        headers = {'host': headersDomain, 'digest': f'SHA-256={bodyDigest}'}
+
     path='/inbox'
-    signatureHeader = signPostHeaders(privateKeyPem, username, domain, path, https, None)
+    signatureHeader = signPostHeaders(privateKeyPem, username, domain, port, path, https, None)
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox' ,False, messageBodyJson)
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJson) == False
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJson) == False
+    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox' ,False, messageBodyJsonStr)
+    assert verifyPostHeaders(https, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJsonStr) == False
+    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
         headers = {'host': 'bogon.domain'}
     else:
         # correct domain but fake message
-        messageBodyJson = '{"a key": "a value", "another key": "Fake GNUs"}'
-        bodyDigest = base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
+        messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs"}'
+        bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
         headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJson) == False
+    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
 
 def testHttpsig():
     testHttpsigBase(False)
@@ -179,7 +185,7 @@ def testPostMessageBetweenServers():
     sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, '', https, 'Why is a mouse when it spins?', False, True, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
-    time.sleep(3)
+    time.sleep(5)
     
     # stop the servers
     thrAlice.kill()
