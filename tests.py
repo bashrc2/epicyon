@@ -112,9 +112,9 @@ def createServerAlice(path: str,port: int):
     deleteAllPosts(username,domain,path)
     followPerson(path,username,domain,'bob','127.0.0.1:61936',federationList)
     followerOfPerson(path,username,domain,'bob','127.0.0.1:61936',federationList)
-    createPublicPost(path,username, domain, https, "No wise fish would go anywhere without a porpoise", False, True)
-    createPublicPost(path,username, domain, https, "Curiouser and curiouser!", False, True)
-    createPublicPost(path,username, domain, https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
+    createPublicPost(path,username, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
+    createPublicPost(path,username, domain, port,https, "Curiouser and curiouser!", False, True)
+    createPublicPost(path,username, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
@@ -135,9 +135,9 @@ def createServerBob(path: str,port: int):
     deleteAllPosts(username,domain,path)
     followPerson(path,username,domain,'alice','127.0.0.1:61935',federationList)
     followerOfPerson(path,username,domain,'alice','127.0.0.1:61935',federationList)
-    createPublicPost(path,username, domain, https, "It's your life, live it your way.", False, True)
-    createPublicPost(path,username, domain, https, "One of the things I've realised is that I am very simple", False, True)
-    createPublicPost(path,username, domain, https, "Quantum physics is a bit of a passion of mine", False, True)
+    createPublicPost(path,username, domain, port,https, "It's your life, live it your way.", False, True)
+    createPublicPost(path,username, domain, port,https, "One of the things I've realised is that I am very simple", False, True)
+    createPublicPost(path,username, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')

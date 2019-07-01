@@ -78,7 +78,7 @@ privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domai
 #deleteAllPosts(username,domain)
 setPreferredUsername(baseDir,username,domain,'badger')
 setBio(baseDir,username,domain,'Some personal info')
-#createPublicPost(baseDir,username, domain, https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
+#createPublicPost(baseDir,username, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
 #archivePosts(username,domain,baseDir,4)
 #outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
