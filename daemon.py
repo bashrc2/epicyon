@@ -155,6 +155,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json')
         
     def do_POST(self):
+        print('**************** POST recieved!')
         try:
             if self.POSTbusy:
                 self.send_response(429)
@@ -162,35 +163,53 @@ class PubServer(BaseHTTPRequestHandler):
                 return                
         except:
             pass
+        print('**************** POST ready to receive')
         self.POSTbusy=True
-        ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
+        if not self.headers.get('Content-type'):
+            print('**************** No Content-type')
+            self.send_response(400)
+            self.end_headers()
+            self.POSTbusy=False
+            return
+        print('*****************headers: '+str(self.headers))
         
         # refuse to receive non-json content
-        if ctype != 'application/json':
+        if self.headers['Content-type'] != 'application/json':
+            print("**************** That's no Json!")
             self.send_response(400)
             self.end_headers()
             self.POSTbusy=False
             return
             
         # read the message and convert it into a python dictionary
-        length = int(self.headers.getheader('content-length'))
+        length = int(self.headers['Content-length'])
+        print('**************** content-length: '+str(length))
         if length>maxMessageLength:
             self.send_response(400)
             self.end_headers()
             self.POSTbusy=False
             return
-        message = json.loads(self.rfile.read(length))        
+        print('**************** Reading message')
+        messageBytes=self.rfile.read(length)
+        messageJson = json.loads(messageBytes)
 
-        if not inboxPermittedMessage(message,self.server.federationList):
+        if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList):
+            print('**************** Ah Ah Ah')
             self.send_response(403)
             self.end_headers()
-        else:                
-            # add a property to the object, just to mess with data
-            message['received'] = 'ok'
+            self.POSTbusy=False
+            return
         
-            # send the message back
-            self._set_headers('application/json')
-            self.wfile.write(json.dumps(message).encode('utf-8'))
+        print('**************** POST valid')
+        pprint(messageJson)
+        # add a property to the object, just to mess with data
+        #message['received'] = 'ok'
+        
+        # send the message back
+        #self._set_headers('application/json')
+        #self.wfile.write(json.dumps(message).encode('utf-8'))
+        self.send_response(200)
+        self.end_headers()
         self.POSTbusy=False
 
 def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:

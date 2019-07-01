@@ -10,7 +10,7 @@ import json
 import os
 import datetime
 
-def inboxPermittedMessage(messageJson: {},federationList: []) -> bool:
+def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
@@ -18,7 +18,7 @@ def inboxPermittedMessage(messageJson: {},federationList: []) -> bool:
         return False
     actor=messageJson[testParam]
     # always allow the local domain
-    if thisDomain in actor:
+    if domain in actor:
         return True
 
     permittedDomain=False

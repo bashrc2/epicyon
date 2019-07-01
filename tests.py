@@ -176,7 +176,7 @@ def testPostMessageBetweenServers():
     while not (testServerAliceRunning and testServerBobRunning):
         time.sleep(1)
         
-    time.sleep(3)
+    time.sleep(5)
 
     print('Alice sends to Bob')
     os.chdir(aliceDir)
