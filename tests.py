@@ -186,7 +186,10 @@ def testPostMessageBetweenServers():
     subject=None
     aliceSendThreads = []
     alicePostLog = []
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, None, https, 'Why is a mouse when it spins?', False, True, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
+    followersOnly=False
+    saveToFile=True
+    ccUrl=None
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     time.sleep(15)
