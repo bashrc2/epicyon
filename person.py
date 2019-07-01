@@ -123,6 +123,8 @@ def personKeyLookup(domain: str,path: str,baseDir: str) -> str:
     username=path.replace('/users/','',1).replace('/main-key','')
     if not validUsername(username):
         return None
+    if ':' in domain:
+        domain=domain.split(':')[0]
     handle=username.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
@@ -151,6 +153,8 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         return None
     if not validUsername(username):
         return None
+    if ':' in domain:
+        domain=domain.split(':')[0]
     handle=username.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):

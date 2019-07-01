@@ -107,9 +107,8 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
 
     return personJson[boxName],pubKeyId,pubKey,personId
 
-def getPersonPubKey(session,wfRequest,personCache: {}) -> str:
+def getPersonPubKey(session,personUrl: str,personCache: {}) -> str:
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
     personJson = getPersonFromCache(personUrl,personCache)
@@ -121,7 +120,6 @@ def getPersonPubKey(session,wfRequest,personCache: {}) -> str:
             pubKey=personJson['publicKey']['publicKeyPem']
 
     storePersonInCache(personUrl,personJson,personCache)
-
     return pubKey
 
 def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: [],personCache: {}) -> {}:

@@ -98,21 +98,19 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,port: int):
+def createServerAlice(path: str,domain: str,port: int,federationList: []):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
-    federationList=['127.0.0.1']
     username='alice'
-    domain='127.0.0.1'
     https=False
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
     deleteAllPosts(username,domain,path)
-    followPerson(path,username,domain,'bob','127.0.0.1:61936',federationList)
-    followerOfPerson(path,username,domain,'bob','127.0.0.1:61936',federationList)
+    followPerson(path,username,domain,'bob','127.0.10.2:61936',federationList)
+    followerOfPerson(path,username,domain,'bob','127.0.10.2:61936',federationList)
     createPublicPost(path,username, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
     createPublicPost(path,username, domain, port,https, "Curiouser and curiouser!", False, True)
     createPublicPost(path,username, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
@@ -121,21 +119,19 @@ def createServerAlice(path: str,port: int):
     print('Server running: Alice')
     runDaemon(domain,port,https,federationList,useTor)
 
-def createServerBob(path: str,port: int):
+def createServerBob(path: str,domain: str,port: int,federationList: []):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
-    federationList=['127.0.0.1']
     username='bob'
-    domain='127.0.0.1'
     https=False
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
     deleteAllPosts(username,domain,path)
-    followPerson(path,username,domain,'alice','127.0.0.1:61935',federationList)
-    followerOfPerson(path,username,domain,'alice','127.0.0.1:61935',federationList)
+    followPerson(path,username,domain,'alice','127.0.10.1:61935',federationList)
+    followerOfPerson(path,username,domain,'alice','127.0.10.1:61935',federationList)
     createPublicPost(path,username, domain, port,https, "It's your life, live it your way.", False, True)
     createPublicPost(path,username, domain, port,https, "One of the things I've realised is that I am very simple", False, True)
     createPublicPost(path,username, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True)
@@ -154,7 +150,7 @@ def testPostMessageBetweenServers():
 
     https=False
     useTor=False
-    federationList=['127.0.0.1']
+    federationList=['127.0.0.1','127.0.10.1','127.0.10.2']
 
     baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/.tests'):
@@ -162,22 +158,25 @@ def testPostMessageBetweenServers():
 
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
+    aliceDomain='127.0.10.1'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,alicePort),daemon=True)
-    thrAlice.start()
-    assert thrAlice.isAlive()==True
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.10.2'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobPort),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList),daemon=True)
+
+    thrAlice.start()
     thrBob.start()
+    assert thrAlice.isAlive()==True
     assert thrBob.isAlive()==True
 
     # wait for both servers to be running
     while not (testServerAliceRunning and testServerBobRunning):
         time.sleep(1)
         
-    time.sleep(5)
+    time.sleep(6)
 
     print('Alice sends to Bob')
     os.chdir(aliceDir)
@@ -192,10 +191,11 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
-    time.sleep(15)
+    for i in range(10):
+        time.sleep(1)
     
     # stop the servers
     thrAlice.kill()

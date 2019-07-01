@@ -38,23 +38,24 @@ def webfingerHandle(session,handle: str,https: bool,cachedWebfingers: {}) -> {}:
     username, domain = parseHandle(handle)
     if not username:
         return None
-    wf=getWebfingerFromCache(username+'@'+domain,cachedWebfingers)
+    wfDomain=domain
+    if ':' in wfDomain:
+        wfDomain=wfDomain.split(':')[0]
+    print('***********cachedWebfingers '+str(cachedWebfingers))
+    wf=getWebfingerFromCache(username+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf
     prefix='https'
     if not https:
-        prefix='http'    
+        prefix='http'
     url = '{}://{}/.well-known/webfinger'.format(prefix,domain)
-    if ':' in domain:
-        domain=domain.split(':')[0]
-    par = {'resource': 'acct:{}'.format(username+'@'+domain)}
+    par = {'resource': 'acct:{}'.format(username+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}
     #try:
     result = getJson(session, url, hdr, par)
     #except:
-    #    print("Unable to webfinger " + url)
-    #    return None
-    storeWebfingerInCache(username+'@'+domain, result,cachedWebfingers)
+    #    print("Unable to webfinger " + url + ' ' + str(hdr) + ' ' + str(par))
+    storeWebfingerInCache(username+'@'+wfDomain,result,cachedWebfingers)
     return result
 
 def generateMagicKey(publicKeyPem) -> str:
@@ -144,23 +145,33 @@ def webfingerMeta() -> str:
 def webfingerLookup(path: str,baseDir: str) -> {}:
     """Lookup the webfinger endpoint for an account
     """
+    print('############### _webfinger lookup 1')
     if not path.startswith('/.well-known/webfinger?'):
         return None
+    print('############### _webfinger lookup 2')
     handle=None
     if 'resource=acct:' in path:
+        print('############### _webfinger lookup 3')
         handle=path.split('resource=acct:')[1].strip()        
     else:
+        print('############### _webfinger lookup 4')
         if 'resource=acct%3A' in path:
-            handle=path.split('resource=acct%3A')[1].replace('%40','@').strip()
+            print('############### _webfinger lookup 5')
+            handle=path.split('resource=acct%3A')[1].replace('%40','@').strip()            
+    print('############### _webfinger lookup 6')
     if not handle:
         return None
+    print('############### _webfinger lookup 7')
     if '&' in handle:
         handle=handle.split('&')[0].strip()
+    print('############### _webfinger lookup 8')
     if '@' not in handle:
         return None
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
+    print('############### _webfinger lookup 9: '+filename)
     if not os.path.isfile(filename):
         return None
+    print('############### _webfinger lookup 10')
     wfJson={"user": "unknown"}
     with open(filename, 'r') as fp:
         wfJson=commentjson.load(fp)
