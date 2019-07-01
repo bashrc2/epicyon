@@ -246,7 +246,7 @@ def getStatusNumber() -> (str,str):
     return statusNumber,published
             
 def createPostBase(baseDir: str,username: str, domain: str, toUrl: str, ccUrl: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
-    """Creates a public post
+    """Creates a message
     """
     prefix='https'
     if not https:
@@ -271,7 +271,6 @@ def createPostBase(baseDir: str,username: str, domain: str, toUrl: str, ccUrl: s
         'actor': prefix+'://'+domain+'/users/'+username,
         'published': published,
         'to': [toUrl],
-        'cc': [ccUrl],
         'object': {'id': newPostId,
                    'type': 'Note',
                    'summary': summary,
@@ -280,7 +279,6 @@ def createPostBase(baseDir: str,username: str, domain: str, toUrl: str, ccUrl: s
                    'url': prefix+'://'+domain+'/@'+username+'/'+statusNumber,
                    'attributedTo': prefix+'://'+domain+'/users/'+username,
                    'to': [toUrl],
-                   'cc': [ccUrl],
                    'sensitive': sensitive,
                    'atomUri': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
                    'inReplyToAtomUri': inReplyToAtomUri,
@@ -302,6 +300,10 @@ def createPostBase(baseDir: str,username: str, domain: str, toUrl: str, ccUrl: s
                    #}
         }
     }
+    if ccUrl:
+        if len(ccUrl)>0:
+            newPost['cc']=ccUrl
+            newPost['object']['cc']=ccUrl
     if saveToFile:
         outboxDir = createOutboxDir(username,domain,baseDir)
         filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
@@ -368,6 +370,8 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsern
     if not toPersonId:
         return 4
 
+    print('*************Creating post')
+    print('toPersonId: '+toPersonId)
     postJsonObject=createPostBase(username, domain, toPersonId, cc, https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
 
     # get the senders private key

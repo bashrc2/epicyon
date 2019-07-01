@@ -186,7 +186,7 @@ def testPostMessageBetweenServers():
     subject=None
     aliceSendThreads = []
     alicePostLog = []
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, '', https, 'Why is a mouse when it spins?', False, True, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', '127.0.0.1', alicePort, 'bob', '127.0.0.1', bobPort, None, https, 'Why is a mouse when it spins?', False, True, federationList, aliceSendThreads, alicePostLog, inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     time.sleep(15)
