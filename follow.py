@@ -20,8 +20,8 @@ def followPerson(baseDir: str,username: str, domain: str, followUsername: str, f
         return False
     handle=username.lower()+'@'+domain.lower()
     handleToFollow=followUsername.lower()+'@'+followDomain.lower()
-    if not os.path.isdir(baseDir+'/accounts):
-        os.mkdir(baseDir+'/accounts)
+    if not os.path.isdir(baseDir+'/accounts'):
+        os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
@@ -45,8 +45,8 @@ def unfollowPerson(baseDir: str,username: str, domain: str, followUsername: str,
     """
     handle=username.lower()+'@'+domain.lower()
     handleToUnfollow=followUsername.lower()+'@'+followDomain.lower()
-    if not os.path.isdir(baseDir+'/accounts):
-        os.mkdir(baseDir+'/accounts)
+    if not os.path.isdir(baseDir+'/accounts'):
+        os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
@@ -69,8 +69,8 @@ def clearFollows(baseDir: str,username: str, domain: str,followFile='following.t
     """Removes all follows
     """
     handle=username.lower()+'@'+domain.lower()
-    if not os.path.isdir(baseDir+'/accounts):
-        os.mkdir(baseDir+'/accounts)
+    if not os.path.isdir(baseDir+'/accounts'):
+        os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
