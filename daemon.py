@@ -209,7 +209,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check the necessary properties are available
         print('**************** Check message has params')
-        if not inboxMessageHasParams(messageJson)::
+        if not inboxMessageHasParams(messageJson):
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
