@@ -11,6 +11,15 @@ import os
 import datetime
 from utils import urlPermitted
 
+def inboxMessageHasParams(messageJson: {}) -> bool:
+    """Checks whether an incoming message contains expected parameters
+    """
+    expectedParams=['type','to','actor','object']
+    for param in expectedParams:
+        if not messageJson.get(param):
+            return False
+    return True
+
 def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """

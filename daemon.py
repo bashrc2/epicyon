@@ -20,6 +20,7 @@ from person import personKeyLookup
 from person import personOutboxJson
 from posts import getPersonPubKey
 from inbox import inboxPermittedMessage
+from inbox import inboxMessageHasParams
 from follow import getFollowingFeed
 import os
 import sys
@@ -205,6 +206,14 @@ class PubServer(BaseHTTPRequestHandler):
         print('**************** Reading message')
         messageBytes=self.rfile.read(length)
         messageJson = json.loads(messageBytes)
+
+        # check the necessary properties are available
+        print('**************** Check message has params')
+        if not inboxMessageHasParams(messageJson)::
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
 
         if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList):
             print('**************** Ah Ah Ah')
