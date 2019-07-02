@@ -11,11 +11,12 @@ from pprint import pprint
 import os
 import sys
 from person import validUsername
+from utils import domainPermitted
 
 def followPerson(baseDir: str,username: str, domain: str, followUsername: str, followDomain: str, federationList: [], followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
-    if followDomain.lower().replace('\n','') not in federationList:
+    if not domainPermitted(followDomain.lower().replace('\n',''), federationList):
         return False
     handle=username.lower()+'@'+domain.lower()
     handleToFollow=followUsername.lower()+'@'+followDomain.lower()

@@ -30,3 +30,18 @@ def createOutboxDir(username: str,domain: str,baseDir: str) -> str:
     if not os.path.isdir(outboxDir):
         os.mkdir(outboxDir)
     return outboxDir
+
+def domainPermitted(domain: str, federationList: []):
+    if len(federationList)==0:
+        return True
+    if domain in federationList:
+        return True
+    return False
+
+def urlPermitted(url: str, federationList: []):
+    if len(federationList)==0:
+        return True
+    for domain in federationList:
+        if domain in url:
+            return True
+    return False

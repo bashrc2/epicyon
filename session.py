@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import requests
 from requests_toolbelt.adapters.source import SourceAddressAdapter
+from utils import urlPermitted
 import json
 
 baseDirectory=None
@@ -40,12 +41,7 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
     """Post a json message to the inbox of another person
     """
     # check that we are posting to a permitted domain
-    permittedDomain=False
-    for domain in federationList:
-        if domain in inboxUrl:
-            permittedDomain=True
-            break
-    if not permittedDomain:
+    if not urlPermitted(inboxUrl,federationList):
         return None
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)

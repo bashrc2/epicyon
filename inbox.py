@@ -9,6 +9,7 @@ __status__ = "Production"
 import json
 import os
 import datetime
+from utils import urlPermitted
 
 def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
@@ -21,23 +22,13 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
     if domain in actor:
         return True
 
-    permittedDomain=False
-    for domain in federationList:
-        if domain in actor:
-            permittedDomain=True
-            break
-    if not permittedDomain:
+    if not urlPermitted(actor,federationList):
         return False
 
     if messageJson.get('object'):
         if messageJson['object'].get('inReplyTo'):
             inReplyTo=messageJson['object']['inReplyTo']
-            permittedReplyDomain=False
-            for domain in federationList:
-                if domain in inReplyTo:
-                    permittedReplyDomain=True
-                    break
-            if not permittedReplyDomain:
+            if not urlPermitted(inReplyTo, federationList):
                 return False
 
     return True

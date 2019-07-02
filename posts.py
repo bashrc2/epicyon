@@ -28,6 +28,7 @@ from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from utils import getStatusNumber
 from utils import createOutboxDir
+from utils import urlPermitted
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -46,14 +47,6 @@ def getPersonKey(username: str,domain: str,baseDir: str,keyType='public'):
     if len(keyPem)<20:
         return ''
     return keyPem
-
-def permitted(url: str,federationList: []) -> bool:
-    """Is a url from one of the permitted domains?
-    """
-    for domain in federationList:
-        if domain in url:
-            return True
-    return False
     
 def cleanHtml(rawHtml: str) -> str:
     text = BeautifulSoup(rawHtml, 'html.parser').get_text()
@@ -153,7 +146,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int,maxEmoji: int
                         if tagItem.get('name') and tagItem.get('icon'):
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
-                                if permitted(tagItem['icon']['url'],federationList):
+                                if urlPermitted(tagItem['icon']['url'],federationList):
                                     emojiName=tagItem['name']
                                     emojiIcon=tagItem['icon']['url']
                                     emoji[emojiName]=emojiIcon
@@ -175,7 +168,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int,maxEmoji: int
             if item['object'].get('inReplyTo'):
                 if item['object']['inReplyTo']:
                     # No replies to non-permitted domains
-                    if not permitted(item['object']['inReplyTo'],federationList):
+                    if not urlPermitted(item['object']['inReplyTo'],federationList):
                         continue
                     inReplyTo = item['object']['inReplyTo']
 
@@ -183,7 +176,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int,maxEmoji: int
             if item['object'].get('conversation'):
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
-                    if permitted(item['object']['conversation'],federationList):                        
+                    if urlPermitted(item['object']['conversation'],federationList):                        
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -192,7 +185,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int,maxEmoji: int
                     for attach in item['object']['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
-                            if permitted(attach['url'],federationList):
+                            if urlPermitted(attach['url'],federationList):
                                 attachment.append([attach['name'],attach['url']])
 
             sensitive = False
