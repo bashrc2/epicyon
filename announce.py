@@ -10,13 +10,17 @@ import json
 import commentjson
 from utils import getStatusNumber
 from utils import createOutboxDir
+from utils import urlPermitted
 
-def createAnnounce(baseDir: str,username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool, objectUrl: str, saveToFile: bool) -> {}:
+def createAnnounce(baseDir: str,federationList: [],username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool, objectUrl: str, saveToFile: bool) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the followers url
     objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
     """
+    if not urlPermitted(objectUrl,federationList):
+        return None
+
     prefix='https'
     if not https:
         prefix='http'
@@ -48,7 +52,7 @@ def createAnnounce(baseDir: str,username: str, domain: str, port: int,toUrl: str
             commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
     return newAnnounce
 
-def announcePublic(baseDir: str,username: str, domain: str, port: int, https: bool, objectUrl: str, saveToFile: bool) -> {}:
+def announcePublic(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, objectUrl: str, saveToFile: bool) -> {}:
     """Makes a public announcement
     """
     prefix='https'
@@ -63,7 +67,7 @@ def announcePublic(baseDir: str,username: str, domain: str, port: int, https: bo
     ccUrl = prefix + '://'+fromDomain+'/users/'+username+'/followers'
     return createAnnounce(baseDir,username, domain, port,toUrl, ccUrl, https, objectUrl, saveToFile)
 
-def repeatMessage(baseDir: str,username: str, domain: str, port: int, https: bool, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, announceHttps: bool, saveToFile: bool) -> {}:
+def repeatMessage(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, announceHttps: bool, saveToFile: bool) -> {}:
     """Repeats a given status message
     """
     prefix='https'
