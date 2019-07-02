@@ -31,8 +31,7 @@ def like(baseDir: str,federationList: [],username: str,domain: str,port: int,toU
         'actor': prefix+'://'+domain+'/users/'+username,
         'object': objectUrl,
         'to': [toUrl],
-        'cc': [],
-        'published': published
+        'cc': []
     }
     if ccUrl:
         if len(ccUrl)>0:

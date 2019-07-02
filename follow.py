@@ -200,6 +200,8 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool,fo
     return following
 
 def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> bool:
+    """Receives a follow request within the POST section of HTTPServer
+    """
     if not messageJson['type'].startswith('Follow'):
         return False
     if '/users/' not in messageJson['actor']:
@@ -222,3 +224,32 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
             return False
     return followerOfPerson(baseDir,username,domain,usernameToFollow,domainToFollow,federationList)
+
+def sendFollowRequest(baseDir: str,username: str, domain: str, port: int,https: bool,followUsername: str, followDomain: str, followPort: bool,followHttps: bool,federationList: []):
+    if not domainPermitted(followDomain,federationList):
+        return None
+
+    prefix='https'
+    if not https:
+        prefix='http'
+
+    followPrefix='https'
+    if not followHttps:
+        followPrefix='http'
+
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+
+    if followPort!=80 and followPort!=443:
+        followDomain=followDomain+':'+str(followPort)
+
+    newFollow = {
+        'type': 'Follow',
+        'actor': prefix+'://'+domain+'/users/'+username,
+        'object': followPrefix+'://'+followDomain+'/users/'+followUsername,
+        'to': [toUrl],
+        'cc': []
+    }
+    if ccUrl:
+        if len(ccUrl)>0:
+            newFollow['cc']=ccUrl

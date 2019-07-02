@@ -33,8 +33,7 @@ def createAcceptReject(baseDir: str,federationList: [],username: str,domain: str
         'actor': prefix+'://'+domain+'/users/'+username,
         'to': [toUrl],
         'cc': [],
-        'object': objectUrl,
-        'published': published
+        'object': objectUrl
     }
     if ccUrl:
         if len(ccUrl)>0:
