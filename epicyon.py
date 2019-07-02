@@ -41,7 +41,7 @@ runAllTests()
 federationList=['mastodon.social','wild.com','trees.com','127.0.0.1']
 username='testuser'
 #domain=socket.gethostname()
-domain='127.0.0.1'
+domain='0.0.0.0'
 port=6227
 https=False
 useTor=False
@@ -85,10 +85,10 @@ setBio(baseDir,username,domain,'Some personal info')
 #pprint(outboxJson)
 
 #testPostMessageBetweenServers()
-#runDaemon(domain,port,https,federationList,useTor)
+runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-#sys.exit()
+sys.exit()
 
 #pprint(person)
 #print('\n')
