@@ -84,8 +84,8 @@ setBio(baseDir,username,domain,'Some personal info')
 #outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-testPostMessageBetweenServers()
-#runDaemon(domain,port,https,federationList,useTor)
+#testPostMessageBetweenServers()
+runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
 sys.exit()
