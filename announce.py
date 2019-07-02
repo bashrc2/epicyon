@@ -67,8 +67,8 @@ def announcePublic(baseDir: str,federationList: [],username: str, domain: str, p
     ccUrl = prefix + '://'+fromDomain+'/users/'+username+'/followers'
     return createAnnounce(baseDir,username, domain, port,toUrl, ccUrl, https, objectUrl, saveToFile)
 
-def repeatMessage(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, announceHttps: bool, saveToFile: bool) -> {}:
-    """Repeats a given status message
+def repeatPost(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, announceHttps: bool, saveToFile: bool) -> {}:
+    """Repeats a given status post
     """
     prefix='https'
     if not announceHttps:

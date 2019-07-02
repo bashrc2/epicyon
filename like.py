@@ -10,7 +10,7 @@ import json
 import commentjson
 from utils import urlPermitted
 
-def like(baseDir: str,federationList: [],username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool,objectUrl: str, saveToFile: bool) -> {}:
+def like(baseDir: str,federationList: [],username: str,domain: str,port: int,toUrl: str,ccUrl: str,https: bool,objectUrl: str,saveToFile: bool) -> {}:
     """Creates a like
     Typically toUrl will be a followers collection
     and ccUrl might be a specific person whose post was liked
@@ -42,3 +42,18 @@ def like(baseDir: str,federationList: [],username: str, domain: str, port: int,t
             domain=domain.split(':')[0]
         # TODO update likes collection
     return newLike
+
+def likePost(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, likeUsername: str, likeDomain: str, likePort: int, likeStatusNumber: int, likeHttps: bool,saveToFile: bool) -> {}:
+    """Likes a given status post
+    """
+    prefix='https'
+    if not likeHttps:
+        prefix='http'
+
+    likeDomain=likeDomain
+    if likePort!=80 and likePort!=443:
+        likeDomain=likeDomain+':'+str(likePort)
+
+    objectUrl = prefix + '://'+likeDomain+'/users/'+likeUsername+'/statuses/'+str(likeStatusNumber)
+
+    return like(baseDir,federationList,username,domain,port,toUrl,ccUrl,https,objectUrl,saveToFile)
