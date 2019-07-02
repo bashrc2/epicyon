@@ -63,3 +63,18 @@ def announcePublic(baseDir: str,username: str, domain: str, port: int, https: bo
     ccUrl = prefix + '://'+fromDomain+'/users/'+username+'/followers'
     return createAnnounce(baseDir,username, domain, port,toUrl, ccUrl, https, objectUrl, saveToFile)
 
+def repeatMessage(baseDir: str,username: str, domain: str, port: int, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, https: bool, saveToFile: bool) -> {}:
+    """Repeats a given status message
+    """
+    prefix='https'
+    if not https:
+        prefix='http'
+
+    announcedDomain=announceDomain
+    if announcePort!=80 and announcePort!=443:
+        announcedDomain=announcedDomain+':'+str(announcePort)
+
+    objectUrl = prefix + '://'+announcedDomain+'/users/'+announceUsername+'/statuses/'+str(announceStatusNumber)
+
+    return announcePublic(baseDir,username, domain, port, https, objectUrl, saveToFile)
+
