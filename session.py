@@ -15,8 +15,8 @@ baseDirectory=None
 
 def createSession(domain: str, port: int, onionRoute: bool):
     session = requests.session()
-    if domain.startswith('127.') or domain.startswith('192.') or domain.startswith('10.'):
-        session.mount('http://', SourceAddressAdapter(domain))
+    #if domain.startswith('127.') or domain.startswith('192.') or domain.startswith('10.'):
+    #    session.mount('http://', SourceAddressAdapter(domain))
         #session.mount('http://', SourceAddressAdapter((domain, port)))
     if onionRoute:
         session.proxies = {}

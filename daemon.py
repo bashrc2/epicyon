@@ -92,7 +92,7 @@ class PubServer(BaseHTTPRequestHandler):
         return True
 
     def do_GET(self):
-        print('############### GET from '+self.server.baseDir)
+        print('############### GET from '+self.server.baseDir+' path: '+self.path)
         if self.server.GETbusy:
             currTimeGET=int(time.time())
             if currTimeGET-self.server.lastGET<10:
@@ -223,13 +223,16 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         pprint(messageJson)
-        print('**************** POST get actor url from '+self.server.baseDir)
-        personUrl=messageJson['object']['attributedTo']
+
         print('**************** POST create session')
         currSessionTime=int(time.time())
-        if currSessionTime-self.server.sessionLastUpdate>600:
+        if currSessionTime-self.server.sessionLastUpdate>1200:
             self.server.sessionLastUpdate=currSessionTime
             self.server.session = createSession(self.server.domain,self.server.port,self.server.useTor)
+            print('**************** POST started new session')
+
+        print('**************** POST get actor url from '+self.server.baseDir)
+        personUrl=messageJson['actor']
         print('**************** POST get public key of '+personUrl+' from '+self.server.baseDir)
         pubKey=getPersonPubKey(self.server.session,personUrl,self.server.personCache)
         if not pubKey:
@@ -276,8 +279,8 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     httpd.personCache={}
     httpd.cachedWebfingers={}
     httpd.useTor=useTor
-    httpd.session = createSession(domain,port,useTor)
-    httpd.sessionLastUpdate=int(time.time())
+    httpd.session = None
+    httpd.sessionLastUpdate=0
     httpd.lastGET=0
     httpd.lastPOST=0
     httpd.GETbusy=False

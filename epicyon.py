@@ -35,7 +35,6 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from tests import testPostMessageBetweenServers
 from tests import runAllTests
-from announce import announcePublic
 
 runAllTests()
 
@@ -85,11 +84,11 @@ setBio(baseDir,username,domain,'Some personal info')
 #outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-#testPostMessageBetweenServers()
+testPostMessageBetweenServers()
 #runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-#sys.exit()
+sys.exit()
 
 #pprint(person)
 #print('\n')
