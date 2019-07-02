@@ -198,3 +198,27 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool,fo
     if nextPageNumber>lastPage:
         following['next']=prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page='+str(lastPage)
     return following
+
+def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> bool:
+    if not messageJson['type'].startswith('Follow'):
+        return False
+    if '/users/' not in messageJson['actor']:
+        return False
+    domain=messageJson['actor'].split('/users/')[0].replace('https://','').replace('http://','')
+    if not domainPermitted(domain,federationList):
+        return False
+    username=messageJson['actor'].split('/users/')[1].replace('@','')
+    handle=username.lower()+'@'+domain.lower()
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        return False
+    if '/users/' not in messageJson['object']:
+        return False
+    domainToFollow=messageJson['object'].split('/users/')[0].replace('https://','').replace('http://','')
+    if not domainPermitted(domainToFollow,federationList):
+        return False
+    usernameToFollow=messageJson['object'].split('/users/')[1].replace('@','')
+    handleToFollow=usernameToFollow.lower()+'@'+domainToFollow.lower()
+    if domainToFollow==domain:
+        if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
+            return False
+    return followerOfPerson(baseDir,username,domain,usernameToFollow,domainToFollow,federationList)

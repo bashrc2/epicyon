@@ -249,6 +249,12 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return            
         print('**************** POST valid')
+        if receiveFollowRequest(self.server.baseDir,messageJson,self.server.federationList):
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return            
+
         pprint(messageJson)
         # add a property to the object, just to mess with data
         #message['received'] = 'ok'
