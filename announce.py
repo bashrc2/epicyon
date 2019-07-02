@@ -63,11 +63,11 @@ def announcePublic(baseDir: str,username: str, domain: str, port: int, https: bo
     ccUrl = prefix + '://'+fromDomain+'/users/'+username+'/followers'
     return createAnnounce(baseDir,username, domain, port,toUrl, ccUrl, https, objectUrl, saveToFile)
 
-def repeatMessage(baseDir: str,username: str, domain: str, port: int, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, https: bool, saveToFile: bool) -> {}:
+def repeatMessage(baseDir: str,username: str, domain: str, port: int, https: bool, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, announceHttps: bool, saveToFile: bool) -> {}:
     """Repeats a given status message
     """
     prefix='https'
-    if not https:
+    if not announceHttps:
         prefix='http'
 
     announcedDomain=announceDomain
