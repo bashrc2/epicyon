@@ -21,10 +21,12 @@ def parseHandle(handle: str) -> (str,str):
     if '.' not in handle:
         return None, None
     if '/@' in handle:
-        domain, username = handle.replace('https://','').replace('http://','').split('/@')
+        domain, username = \
+            handle.replace('https://','').replace('http://','').split('/@')
     else:
         if '/users/' in handle:
-            domain, username = handle.replace('https://','').replace('http://','').split('/users/')
+            domain, username = \
+                handle.replace('https://','').replace('http://','').split('/users/')
         else:
             if '@' in handle:
                 username, domain = handle.split('@')
@@ -67,7 +69,8 @@ def generateMagicKey(publicKeyPem) -> str:
     pubexp = base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
 
-def storeWebfingerEndpoint(username: str,domain: str,baseDir: str,wfJson: {}) -> bool:
+def storeWebfingerEndpoint(username: str,domain: str,baseDir: str, \
+                           wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
     handle=username+'@'+domain
@@ -79,7 +82,8 @@ def storeWebfingerEndpoint(username: str,domain: str,baseDir: str,wfJson: {}) ->
         commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
     return True
 
-def createWebfingerEndpoint(username: str,domain: str,port: int,https: bool,publicKeyPem) -> {}:
+def createWebfingerEndpoint(username: str,domain: str,port: int, \
+                            https: bool,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
     prefix='https'

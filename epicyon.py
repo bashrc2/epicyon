@@ -85,10 +85,10 @@ setBio(baseDir,username,domain,'Some personal info')
 #pprint(outboxJson)
 
 #testPostMessageBetweenServers()
-runDaemon(domain,port,https,federationList,useTor)
+#runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-sys.exit()
+#sys.exit()
 
 #pprint(person)
 #print('\n')
@@ -110,5 +110,5 @@ wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
 maxMentions=10
 maxEmoji=10
 maxAttachments=5
-userPosts = getPosts(session,personUrl,10,maxMentions,maxEmoji,maxAttachments,federationList,personCache)
+userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji,maxAttachments,federationList,personCache)
 #print(str(userPosts))

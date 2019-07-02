@@ -118,7 +118,9 @@ def getPersonPubKey(session,personUrl: str,personCache: {}) -> str:
     storePersonInCache(personUrl,personJson,personCache)
     return pubKey
 
-def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: [],personCache: {}) -> {}:
+def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
+             maxEmoji: int,maxAttachments: int,federationList: [], \
+             personCache: {}) -> {}:
     personPosts={}
     if not outboxUrl:
         return personPosts
@@ -234,7 +236,10 @@ def deleteAllPosts(username: str, domain: str,baseDir: str) -> None:
         except Exception as e:
             print(e)
             
-def createPostBase(baseDir: str,username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+def createPostBase(baseDir: str,username: str, domain: str, port: int, \
+                   toUrl: str, ccUrl: str, https: bool, content: str, \
+                   followersOnly: bool, saveToFile: bool, \
+                   inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
     prefix='https'
@@ -308,21 +313,29 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int,toUrl: str
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
-def createPublicPost(baseDir: str,username: str, domain: str, port: int,https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+def createPublicPost(baseDir: str,username: str, domain: str, port: int,https: bool, \
+                     content: str, followersOnly: bool, saveToFile: bool, \
+                     inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
     prefix='https'
     if not https:
         prefix='http'
-    return createPostBase(baseDir,username, domain, port,'https://www.w3.org/ns/activitystreams#Public', prefix+'://'+domain+'/users/'+username+'/followers', https, content, followersOnly, saveToFile, inReplyTo, inReplyToAtomUri, subject)
+    return createPostBase(baseDir,username, domain, port, \
+                          'https://www.w3.org/ns/activitystreams#Public', \
+                          prefix+'://'+domain+'/users/'+username+'/followers', \
+                          https, content, followersOnly, saveToFile, \
+                          inReplyTo, inReplyToAtomUri, subject)
 
-def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str,baseDir: str,signatureHeaderJson: {},postLog: []) -> None:
+def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str, \
+                   baseDir: str,signatureHeaderJson: {},postLog: []) -> None:
     """Sends a post with exponential backoff
     """
     tries=0
     backoffTime=60
     for attempt in range(20):
-        postResult = postJson(session,postJsonObject,federationList,inboxUrl,signatureHeaderJson)
+        postResult = postJson(session,postJsonObject,federationList, \
+                              inboxUrl,signatureHeaderJson)
         if postResult:
             postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
@@ -339,7 +352,12 @@ def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str,b
         time.sleep(backoffTime)
         backoffTime *= 2
 
-def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsername: str, toDomain: str, toPort: int, cc: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, federationList: [], sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {},inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+def sendPost(session,baseDir: str,username: str, domain: str, port: int, \
+             toUsername: str, toDomain: str, toPort: int, cc: str, \
+             https: bool, content: str, followersOnly: bool, \
+             saveToFile: bool, federationList: [], sendThreads: [], \
+             postLog: [], cachedWebfingers: {},personCache: {}, \
+             inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
     prefix='https'
@@ -359,7 +377,8 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsern
         return 1
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId = getPersonBox(session,wfRequest,personCache,'inbox')
+    inboxUrl,pubKeyId,pubKey,toPersonId = \
+        getPersonBox(session,wfRequest,personCache,'inbox')
     if not inboxUrl:
         return 2
     if not pubKey:
@@ -367,7 +386,11 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsern
     if not toPersonId:
         return 4
 
-    postJsonObject=createPostBase(baseDir,username,domain,port,toPersonId,cc,https,content,followersOnly,saveToFile,inReplyTo,inReplyToAtomUri,subject)
+    postJsonObject=createPostBase(baseDir,username,domain,port, \
+                                  toPersonId,cc,https,content, \
+                                  followersOnly,saveToFile, \
+                                  inReplyTo,inReplyToAtomUri, \
+                                  subject)
 
     # get the senders private key
     privateKeyPem=getPersonKey(username,domain,baseDir,'private')
@@ -375,18 +398,26 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, toUsern
         return 5
 
     # construct the http header
-    signatureHeaderJson = createSignedHeader(privateKeyPem, username, domain, port, '/inbox', https, withDigest, postJsonObject)
+    signatureHeaderJson = \
+        createSignedHeader(privateKeyPem, username, domain, port, \
+                           '/inbox', https, withDigest, postJsonObject)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
         sendThreads[0].kill()
         sendThreads.pop(0)
-    thr = threadWithTrace(target=threadSendPost,args=(session,postJsonObject.copy(),federationList,inboxUrl,baseDir,signatureHeaderJson.copy(),postLog),daemon=True)
+    thr = threadWithTrace(target=threadSendPost,args=(session, \
+                                                      postJsonObject.copy(), \
+                                                      federationList, \
+                                                      inboxUrl,baseDir, \
+                                                      signatureHeaderJson.copy(), \
+                                                      postLog),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0
 
-def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool,itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
+                 itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
     """
     prefix='https'
@@ -484,7 +515,8 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool,it
         return outboxHeader
     return outboxItems
 
-def archivePosts(username: str,domain: str,baseDir: str,maxPostsInOutbox=256) -> None:
+def archivePosts(username: str,domain: str,baseDir: str, \
+                 maxPostsInOutbox=256) -> None:
     """Retain a maximum number of posts within the outbox
     Move any others to an archive directory
     """

@@ -21,7 +21,8 @@ def generateRSAKey() -> (str,str):
     publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
 
-def createPerson(baseDir: str,username: str,domain: str,port: int,https: bool, saveToFile: bool) -> (str,str,{},{}):
+def createPerson(baseDir: str,username: str,domain: str,port: int, \
+                 https: bool, saveToFile: bool) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     prefix='https'
@@ -29,7 +30,8 @@ def createPerson(baseDir: str,username: str,domain: str,port: int,https: bool, s
         prefix='http'
 
     privateKeyPem,publicKeyPem=generateRSAKey()
-    webfingerEndpoint=createWebfingerEndpoint(username,domain,port,https,publicKeyPem)
+    webfingerEndpoint= \
+        createWebfingerEndpoint(username,domain,port,https,publicKeyPem)
     if saveToFile:
         storeWebfingerEndpoint(username,domain,baseDir,webfingerEndpoint)
 
@@ -140,7 +142,10 @@ def personKeyLookup(domain: str,path: str,baseDir: str) -> str:
 def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """Lookup the person for an given username
     """
-    notPersonLookup=['/inbox','/outbox','/outboxarchive','/followers','/following','/featured','.png','.jpg','.gif','.mpv','#main-key','/main-key']
+    notPersonLookup=['/inbox','/outbox','/outboxarchive', \
+                     '/followers','/following','/featured', \
+                     '.png','.jpg','.gif','.mpv', \
+                     '#main-key','/main-key']
     for ending in notPersonLookup:        
         if path.endswith(ending):
             return None
@@ -164,7 +169,8 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         personJson=commentjson.load(fp)
     return personJson
 
-def personOutboxJson(baseDir: str,domain: str,port: int,path: str,https: bool,noOfItems: int) -> []:
+def personOutboxJson(baseDir: str,domain: str,port: int,path: str, \
+                     https: bool,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
     if not '/outbox' in path:
@@ -198,9 +204,11 @@ def personOutboxJson(baseDir: str,domain: str,port: int,path: str,https: bool,no
         return None
     if not validUsername(username):
         return None
-    return createOutbox(baseDir,username,domain,port,https,noOfItems,headerOnly,pageNumber)
+    return createOutbox(baseDir,username,domain,port,https, \
+                        noOfItems,headerOnly,pageNumber)
 
-def setPreferredUsername(baseDir: str,username: str, domain: str, preferredName: str) -> bool:
+def setPreferredUsername(baseDir: str,username: str, domain: str, \
+                         preferredName: str) -> bool:
     if len(preferredName)>32:
         return False
     handle=username.lower()+'@'+domain.lower()

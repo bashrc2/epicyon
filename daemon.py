@@ -116,32 +116,40 @@ class PubServer(BaseHTTPRequestHandler):
             return
         print('############### _webfinger end')
         # get outbox feed for a person
-        outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,maxPostsInFeed)
+        outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain, \
+                                    self.server.port,self.path, \
+                                    self.server.https,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.server.GETbusy=False
             return
-        following=getFollowingFeed(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,followsPerPage)
+        following=getFollowingFeed(self.server.baseDir,self.server.domain, \
+                                   self.server.port,self.path, \
+                                   self.server.https,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
             self.server.GETbusy=False
             return            
-        followers=getFollowingFeed(self.server.baseDir,self.server.domain,self.server.port,self.path,self.server.https,followsPerPage,'followers')
+        followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
+                                   self.server.port,self.path, \
+                                   self.server.https,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
             self.server.GETbusy=False
             return            
         # look up a person
-        getPerson = personLookup(self.server.domain,self.path,self.server.baseDir)
+        getPerson = personLookup(self.server.domain,self.path, \
+                                 self.server.baseDir)
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.server.GETbusy=False
             return
-        personKey = personKeyLookup(self.server.domain,self.path,self.server.baseDir)
+        personKey = personKeyLookup(self.server.domain,self.path, \
+                                    self.server.baseDir)
         if personKey:
             self._set_headers('text/html; charset=utf-8')
             self.wfile.write(personKey.encode('utf-8'))
@@ -228,13 +236,16 @@ class PubServer(BaseHTTPRequestHandler):
         currSessionTime=int(time.time())
         if currSessionTime-self.server.sessionLastUpdate>1200:
             self.server.sessionLastUpdate=currSessionTime
-            self.server.session = createSession(self.server.domain,self.server.port,self.server.useTor)
+            self.server.session = \
+                createSession(self.server.domain,self.server.port, \
+                              self.server.useTor)
             print('**************** POST started new session')
 
         print('**************** POST get actor url from '+self.server.baseDir)
         personUrl=messageJson['actor']
         print('**************** POST get public key of '+personUrl+' from '+self.server.baseDir)
-        pubKey=getPersonPubKey(self.server.session,personUrl,self.server.personCache)
+        pubKey=getPersonPubKey(self.server.session,personUrl, \
+                               self.server.personCache)
         if not pubKey:
             print('**************** POST no sender public key')
             self.send_response(401)
@@ -242,14 +253,16 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
         print('**************** POST check signature')
-        if not verifyPostHeaders(self.server.https, pubKey, self.headers, '/inbox' ,False, json.dumps(messageJson)):
+        if not verifyPostHeaders(self.server.https, pubKey, self.headers, \
+                                 '/inbox' ,False, json.dumps(messageJson)):
             print('**************** POST signature verification failed')
             self.send_response(401)
             self.end_headers()
             self.server.POSTbusy=False
             return            
         print('**************** POST valid')
-        if receiveFollowRequest(self.server.baseDir,messageJson,self.server.federationList):
+        if receiveFollowRequest(self.server.baseDir,messageJson, \
+                                self.server.federationList):
             self.send_response(200)
             self.end_headers()
             self.server.POSTbusy=False

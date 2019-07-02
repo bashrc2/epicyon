@@ -237,8 +237,8 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
 
 def sendFollowRequest(baseDir: str,username: str,domain: str,port: int,https: bool, \
                       followUsername: str,followDomain: str,followPort: bool,followHttps: bool, \
-                      federationList: []):
-    """Sends a follow request
+                      federationList: []) -> {}:
+    """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain,federationList):
         return None
@@ -268,3 +268,4 @@ def sendFollowRequest(baseDir: str,username: str,domain: str,port: int,https: bo
     if ccUrl:
         if len(ccUrl)>0:
             newFollow['cc']=ccUrl
+    return newFollow

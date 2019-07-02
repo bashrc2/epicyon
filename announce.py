@@ -12,7 +12,10 @@ from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
 
-def createAnnounce(baseDir: str,federationList: [],username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool, objectUrl: str, saveToFile: bool) -> {}:
+def createAnnounce(baseDir: str,federationList: [], \
+                   username: str, domain: str, port: int, \
+                   toUrl: str, ccUrl: str, https: bool, \
+                   objectUrl: str, saveToFile: bool) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the followers url
@@ -52,7 +55,9 @@ def createAnnounce(baseDir: str,federationList: [],username: str, domain: str, p
             commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
     return newAnnounce
 
-def announcePublic(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, objectUrl: str, saveToFile: bool) -> {}:
+def announcePublic(baseDir: str,federationList: [], \
+                   username: str, domain: str, port: int, https: bool, \
+                   objectUrl: str, saveToFile: bool) -> {}:
     """Makes a public announcement
     """
     prefix='https'
@@ -65,9 +70,14 @@ def announcePublic(baseDir: str,federationList: [],username: str, domain: str, p
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = prefix + '://'+fromDomain+'/users/'+username+'/followers'
-    return createAnnounce(baseDir,username, domain, port,toUrl, ccUrl, https, objectUrl, saveToFile)
+    return createAnnounce(baseDir,username, domain, port, \
+                          toUrl, ccUrl, https, objectUrl, saveToFile)
 
-def repeatPost(baseDir: str,federationList: [],username: str, domain: str, port: int, https: bool, announceUsername: str, announceDomain: str, announcePort: int, announceStatusNumber: int, announceHttps: bool, saveToFile: bool) -> {}:
+def repeatPost(baseDir: str,federationList: [], \
+               username: str, domain: str, port: int, https: bool, \
+               announceUsername: str, announceDomain: str, \
+               announcePort: int, announceHttps: bool, \
+               announceStatusNumber: int, saveToFile: bool) -> {}:
     """Repeats a given status post
     """
     prefix='https'
@@ -78,7 +88,8 @@ def repeatPost(baseDir: str,federationList: [],username: str, domain: str, port:
     if announcePort!=80 and announcePort!=443:
         announcedDomain=announcedDomain+':'+str(announcePort)
 
-    objectUrl = prefix + '://'+announcedDomain+'/users/'+announceUsername+'/statuses/'+str(announceStatusNumber)
+    objectUrl = prefix + '://'+announcedDomain+'/users/'+ \
+        announceUsername+'/statuses/'+str(announceStatusNumber)
 
     return announcePublic(baseDir,username, domain, port, https, objectUrl, saveToFile)
 
