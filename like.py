@@ -10,7 +10,7 @@ import json
 import commentjson
 from utils import urlPermitted
 
-def like(baseDir: str,federationList: [],username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool, comment: str,objectUrl: str, saveToFile: bool) -> {}:
+def like(baseDir: str,federationList: [],username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool,objectUrl: str, saveToFile: bool) -> {}:
     """Creates a like
     Typically toUrl will be a followers collection
     and ccUrl might be a specific person whose post was liked
@@ -29,7 +29,6 @@ def like(baseDir: str,federationList: [],username: str, domain: str, port: int,t
     newLike = {
         'type': 'Like',
         'actor': prefix+'://'+domain+'/users/'+username,
-        'name': comment,
         'object': objectUrl,
         'to': [toUrl],
         'cc': [],
