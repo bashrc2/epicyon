@@ -9,5 +9,5 @@ Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tut
 ## Install
 
 ``` bash
-sudo pacman -S python-pysocks python-pycryptodome python-beautifulsoup4
+sudo pacman -S python-pysocks python-pycryptodome python-beautifulsoup4 python-requests-toolbelt
 ```

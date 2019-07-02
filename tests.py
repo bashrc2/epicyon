@@ -109,8 +109,8 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
     deleteAllPosts(username,domain,path)
-    followPerson(path,username,domain,'bob','127.0.10.2:61936',federationList)
-    followerOfPerson(path,username,domain,'bob','127.0.10.2:61936',federationList)
+    followPerson(path,username,domain,'bob','127.0.0.100:61936',federationList)
+    followerOfPerson(path,username,domain,'bob','127.0.0.100:61936',federationList)
     createPublicPost(path,username, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
     createPublicPost(path,username, domain, port,https, "Curiouser and curiouser!", False, True)
     createPublicPost(path,username, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
@@ -130,8 +130,8 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
     deleteAllPosts(username,domain,path)
-    followPerson(path,username,domain,'alice','127.0.10.1:61935',federationList)
-    followerOfPerson(path,username,domain,'alice','127.0.10.1:61935',federationList)
+    followPerson(path,username,domain,'alice','127.0.0.50:61935',federationList)
+    followerOfPerson(path,username,domain,'alice','127.0.0.50:61935',federationList)
     createPublicPost(path,username, domain, port,https, "It's your life, live it your way.", False, True)
     createPublicPost(path,username, domain, port,https, "One of the things I've realised is that I am very simple", False, True)
     createPublicPost(path,username, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True)
@@ -150,7 +150,7 @@ def testPostMessageBetweenServers():
 
     https=False
     useTor=False
-    federationList=['127.0.0.1','127.0.10.1','127.0.10.2']
+    federationList=['127.0.0.50','127.0.0.100']
 
     baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/.tests'):
@@ -158,12 +158,12 @@ def testPostMessageBetweenServers():
 
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
-    aliceDomain='127.0.10.1'
+    aliceDomain='127.0.0.50'
     alicePort=61935
     thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
-    bobDomain='127.0.10.2'
+    bobDomain='127.0.0.100'
     bobPort=61936
     thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList),daemon=True)
 
@@ -180,7 +180,7 @@ def testPostMessageBetweenServers():
 
     print('Alice sends to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(useTor)
+    sessionAlice = createSession(aliceDomain,alicePort,useTor)
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None

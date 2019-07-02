@@ -26,6 +26,8 @@ from session import getJson
 from session import postJson
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import getStatusNumber
+from utils import createOutboxDir
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -113,6 +115,7 @@ def getPersonPubKey(session,personUrl: str,personCache: {}) -> str:
         return None
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
+        print('************Obtaining public key for '+personUrl)
         personJson = getJson(session,personUrl,asHeader,None)
     pubKey=None
     if personJson.get('publicKey'):
@@ -122,14 +125,15 @@ def getPersonPubKey(session,personUrl: str,personCache: {}) -> str:
     storePersonInCache(personUrl,personJson,personCache)
     return pubKey
 
-def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: [],personCache: {}) -> {}:
-    userPosts={}
-    feedUrl,pubKeyId,pubKey,personId = getPersonBox(session,wfRequest,personCache,'outbox')
-    if not feedUrl:
-        return userPosts
+def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int,maxEmoji: int,maxAttachments: int,federationList: [],personCache: {}) -> {}:
+    personPosts={}
+    if not outboxUrl:
+        return personPosts
 
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     i = 0
-    for item in parseUserFeed(session,feedUrl,asHeader):
+    for item in parseUserFeed(session,outboxUrl,asHeader):
+        pprint(item)
         if not item.get('type'):
             continue
         if item['type'] != 'Create':
@@ -137,7 +141,7 @@ def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: 
         if not item.get('object'):
             continue
         published = item['object']['published']
-        if not userPosts.get(published):
+        if not personPosts.get(published):
             content = item['object']['content']
 
             mentions=[]
@@ -195,7 +199,7 @@ def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: 
             if item['object'].get('sensitive'):
                 sensitive = item['object']['sensitive']
             
-            userPosts[published] = {
+            personPosts[published] = {
                 "sensitive": sensitive,
                 "inreplyto": inReplyTo,
                 "summary": summary,
@@ -211,18 +215,7 @@ def getUserPosts(session,wfRequest: {},maxPosts: int,maxMentions: int,maxEmoji: 
 
         if i == maxPosts:
             break
-    return userPosts
-
-def createOutboxDir(username: str,domain: str,baseDir: str) -> str:
-    """Create an outbox for a person and returns the feed filename and directory
-    """
-    handle=username.lower()+'@'+domain.lower()
-    if not os.path.isdir(baseDir+'/accounts/'+handle):
-        os.mkdir(baseDir+'/accounts/'+handle)
-    outboxDir=baseDir+'/accounts/'+handle+'/outbox'
-    if not os.path.isdir(outboxDir):
-        os.mkdir(outboxDir)
-    return outboxDir
+    return personPosts
 
 def createOutboxArchive(username: str,domain: str,baseDir: str) -> str:
     """Creates an archive directory for outbox posts
@@ -247,17 +240,6 @@ def deleteAllPosts(username: str, domain: str,baseDir: str) -> None:
             elif os.path.isdir(filePath): shutil.rmtree(filePath)
         except Exception as e:
             print(e)
-
-def getStatusNumber() -> (str,str):
-    """Returns the status number and published date
-    """
-    currTime=datetime.datetime.utcnow()
-    daysSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days
-    # status is the number of seconds since epoch
-    statusNumber=str(((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)*1000000 + currTime.microsecond)
-    published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    conversationDate=currTime.strftime("%Y-%m-%d")
-    return statusNumber,published
             
 def createPostBase(baseDir: str,username: str, domain: str, port: int,toUrl: str, ccUrl: str, https: bool, content: str, followersOnly: bool, saveToFile: bool, inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message

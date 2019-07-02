@@ -7,12 +7,16 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import requests
+from requests_toolbelt.adapters.source import SourceAddressAdapter
 import json
 
 baseDirectory=None
 
-def createSession(onionRoute: bool):
+def createSession(domain: str, port: int, onionRoute: bool):
     session = requests.session()
+    if domain.startswith('127.') or domain.startswith('192.') or domain.startswith('10.'):
+        session.mount('http://', SourceAddressAdapter(domain))
+        #session.mount('http://', SourceAddressAdapter((domain, port)))
     if onionRoute:
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:9050'

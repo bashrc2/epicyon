@@ -220,7 +220,7 @@ class PubServer(BaseHTTPRequestHandler):
         currSessionTime=int(time.time())
         if currSessionTime-self.server.sessionLastUpdate>600:
             self.server.sessionLastUpdate=currSessionTime
-            self.server.session = createSession(self.server.useTor)
+            self.server.session = createSession(self.server.domain,self.server.port,self.server.useTor)
         print('**************** POST get public key of '+personUrl+' from '+self.server.baseDir)
         pubKey=getPersonPubKey(self.server.session,personUrl,self.server.personCache)
         if not pubKey:
@@ -230,6 +230,12 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
         print('**************** POST check signature')
+        if not verifyPostHeaders(self.server.https, pubKey, self.headers, '/inbox' ,False, json.dumps(messageJson)):
+            print('**************** POST signature verification failed')
+            self.send_response(401)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return            
         print('**************** POST valid')
         pprint(messageJson)
         # add a property to the object, just to mess with data
@@ -261,7 +267,7 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     httpd.personCache={}
     httpd.cachedWebfingers={}
     httpd.useTor=useTor
-    httpd.session = createSession(useTor)
+    httpd.session = createSession(domain,port,useTor)
     httpd.sessionLastUpdate=int(time.time())
     httpd.lastGET=0
     httpd.lastPOST=0

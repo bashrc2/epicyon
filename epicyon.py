@@ -10,7 +10,7 @@ from person import createPerson
 from person import setPreferredUsername
 from person import setBio
 from webfinger import webfingerHandle
-from posts import getUserPosts
+from posts import getPosts
 from posts import createPublicPost
 from posts import deleteAllPosts
 from posts import createOutbox
@@ -35,6 +35,7 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from tests import testPostMessageBetweenServers
 from tests import runAllTests
+from announce import announcePublic
 
 runAllTests()
 
@@ -46,7 +47,7 @@ port=6227
 https=False
 useTor=False
 baseDir=os.getcwd()
-session = createSession(useTor)
+session = createSession(domain,port,useTor)
 personCache={}
 cachedWebfingers={}
 
@@ -84,11 +85,11 @@ setBio(baseDir,username,domain,'Some personal info')
 #outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
-testPostMessageBetweenServers()
+#testPostMessageBetweenServers()
 #runDaemon(domain,port,https,federationList,useTor)
 
 #testHttpsig()
-sys.exit()
+#sys.exit()
 
 #pprint(person)
 #print('\n')
@@ -99,16 +100,16 @@ wfRequest = webfingerHandle(session,handle,True,cachedWebfingers)
 if not wfRequest:
     sys.exit()
 
-personJson,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest,personCache)
-pprint(personJson)
-sys.exit()
+personUrl,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest,personCache,'outbox')
+#pprint(personUrl)
+#sys.exit()
 
 wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
-print(str(wfResult))
-sys.exit()
+#print(str(wfResult))
+#sys.exit()
 
 maxMentions=10
 maxEmoji=10
 maxAttachments=5
-userPosts = getUserPosts(session,wfRequest,2,maxMentions,maxEmoji,maxAttachments,federationList)
+userPosts = getPosts(session,personUrl,10,maxMentions,maxEmoji,maxAttachments,federationList,personCache)
 #print(str(userPosts))
