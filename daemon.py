@@ -230,25 +230,34 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        # remove any trailing slashes from the path
+        self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox')
+
+        # if this is a POST to teh outbox then check authentication
+        self.outboxAuthenticated=False
+        self.postToNickname=None
         if self.path.endswith('/outbox'):
             if '/users/' in self.path:
                 if self.headers.get('Authorization'):
                     nickname=self.path.split('/users/')[1].replace('/inbox','')
                     if nickname==nicknameFromBasicAuth(self.headers['Authorization']):
                         if authorize(self.server.baseDir,self.headers['Authorization']):
+                            self.outboxAuthenticated=True
+                            self.postToNickname=nickname
                             # TODO
                             print('c2s posts not supported yet')
                             self.send_response(405)
                             self.end_headers()
                             self.server.POSTbusy=False
                             return
-            self.send_response(405)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
+            if not self.outboxAuthenticated:
+                self.send_response(405)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
 
         # check that the post is to an expected path
-        if not (self.path=='/outbox' or self.path.endswith('/inbox')):
+        if not (self.path.endswith('/outbox') or self.path.endswith('/inbox')):
             print('Attempt to POST to invalid path '+self.path)
             self.send_response(400)
             self.end_headers()
@@ -271,15 +280,28 @@ class PubServer(BaseHTTPRequestHandler):
         messageBytes=self.rfile.read(length)
         messageJson = json.loads(messageBytes)
 
+        # https://www.w3.org/TR/activitypub/#object-without-create
+        if self.outboxAuthenticated:
+            if not messageJson.get('object'):
+                if messageJson.get('type'):
+                    if messageJson['type']!='Create':
+                        messageJson=outboxMessageCreateWrap(self.server.httpPrefix,self.postToNickname,self.server.domain,messageJson)
+                else:
+                    self.send_response(403)
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return
+
         # check the necessary properties are available
         if self.server.debug:
             print('DEBUG: Check message has params')
 
-        if not inboxMessageHasParams(messageJson):
-            self.send_response(403)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
+        if self.path.endswith('/inbox'):
+            if not inboxMessageHasParams(messageJson):
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
 
         if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList):
             if self.server.debug:

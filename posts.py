@@ -347,6 +347,30 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
+def outboxMessageCreateWrap(httpPrefix str,nickname: str,domain: str,messageJson: {}) -> {}:
+    """Wraps a received message in a Create
+    https://www.w3.org/TR/activitypub/#object-without-create
+    """
+
+    statusNumber,published = getStatusNumber()
+    if messageJson.get('published'):
+        published = messageJson['published']
+    newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    cc=[]
+    if messageJson.get('cc'):
+        cc=messageJson['cc']
+    newPost = {
+        'id': newPostId+'/activity',
+        'type': 'Create',
+        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'published': published,
+        'to': messageJson['to'],
+        'cc': cc,
+        'object': messageJson
+    }
+    newPost['object']['id']=newPost['id']
+    return newPost
+
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
