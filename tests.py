@@ -228,11 +228,24 @@ def testFollows():
     followPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
 
     f = open(baseDir+'/accounts/'+username+'@'+domain+'/following.txt', "r")
+    domainFound=False
     for followingDomain in f:
         testDomain=followingDomain.split('@')[1].replace('\n','')
+        if testDomain=='mesh.com':
+            domainFound=True
         if testDomain not in federationList:
             print(testDomain)
             assert(False)
+
+    assert(domainFound)
+    unfollowPerson(baseDir,username,domain,'batman','mesh.com')
+
+    domainFound=False
+    for followingDomain in f:
+        testDomain=followingDomain.split('@')[1].replace('\n','')
+        if testDomain=='mesh.com':
+            domainFound=True
+    assert(domainFound==False)
 
     clearFollowers(baseDir,username,domain)
     followerOfPerson(baseDir,username,domain,'badger','wild.com',federationList)

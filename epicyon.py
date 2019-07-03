@@ -93,20 +93,6 @@ session = createSession(domain,port,useTor)
 personCache={}
 cachedWebfingers={}
 
-clearFollows(baseDir,username,domain)
-followPerson(baseDir,username,domain,'badger','wild.com',federationList)
-followPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
-followPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
-followPerson(baseDir,username,domain,'batman','mesh.com',federationList)
-followPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
-
-clearFollowers(baseDir,username,domain)
-followerOfPerson(baseDir,username,domain,'badger','wild.com',federationList)
-followerOfPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
-followerOfPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
-followerOfPerson(baseDir,username,domain,'batman','mesh.com',federationList)
-followerOfPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
-
 #unfollowPerson(username,domain,'squirrel','secret.com')
 #sys.exit()
 
