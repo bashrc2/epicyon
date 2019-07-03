@@ -14,6 +14,7 @@ from Crypto.PublicKey import RSA
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createOutbox
+from auth import storeBasicCredentials
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -22,7 +23,7 @@ def generateRSAKey() -> (str,str):
     return privateKeyPem,publicKeyPem
 
 def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
-                 httpPrefix: str, saveToFile: bool) -> (str,str,{},{}):
+                 httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     privateKeyPem,publicKeyPem=generateRSAKey()
@@ -101,6 +102,9 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         filename=baseDir+publicKeysSubdir+'/'+handle+'.pem'
         with open(filename, "w") as text_file:
             print(publicKeyPem, file=text_file)
+
+        if password:
+            storeBasicCredentials(baseDir,nickname,password)
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
