@@ -43,7 +43,7 @@ def authorizeBasic(baseDir: str,authHeader: str) -> bool:
     """
     if ' ' not in authHeader:
         return False
-    base64Str = authHeader.split(' ')[1]
+    base64Str = authHeader.split(' ')[1].replace('\n','')
     plain = base64.b64decode(base64Str).decode('utf8')
     if ':' not in plain:
         return False
