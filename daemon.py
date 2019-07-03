@@ -108,24 +108,32 @@ class PubServer(BaseHTTPRequestHandler):
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
         if not messageJson.get('object'):
-            if messageJson.get('type'):
+            if messageJson.get('type') and messageJson.get('content'):
                 if messageJson['type']!='Create':
                     # https://www.w3.org/TR/activitypub/#object-without-create
+                    if self.server.debug:
+                        print('DEBUG POST to outbox: Adding Create wrapper')
                     messageJson= \
                         outboxMessageCreateWrap(self.server.httpPrefix, \
                                                 self.postToNickname, \
                                                 self.server.domain,messageJson)
-        if not (messageJson.get('id') and \
-                messageJson.get('type') and \
-                messageJson.get('actor') and \
-                messageJson.get('object') and \
-                messageJson.get('atomUri') and \
-                messageJson.get('to')):
+        if messageJson['type']=='Create':
+            if not (messageJson.get('id') and \
+                    messageJson.get('type') and \
+                    messageJson.get('actor') and \
+                    messageJson.get('object') and \
+                    messageJson.get('atomUri') and \
+                    messageJson.get('to')):
+                if self.server.debug:
+                    print('DEBUG POST to outbox: Create does not have the required parameters')
+                return False
+            # https://www.w3.org/TR/activitypub/#create-activity-outbox
+            messageJson['object']['attributedTo']=messageJson['actor']
+        permittedOutboxTypes=['Create','Announce','Like','Follow','Undo','Update','Add','Remove','Block','Delete']
+        if messageJson['type'] not in permittedOutboxTypes:
+            if self.server.debug:
+                print('DEBUG POST to outbox: '+messageJson['type']+' is not a permitted activity type')
             return False
-        if messageJson['type']!='Create':
-            return False
-        # https://www.w3.org/TR/activitypub/#create-activity-outbox
-        messageJson['object']['attributedTo']=messageJson['actor']
         savePostToOutbox(self.server.baseDir,messageJson['id'],self.postToNickname,self.server.domain,messageJson)
         return True
 
