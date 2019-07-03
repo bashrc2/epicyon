@@ -226,15 +226,18 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        if self.path=='/outbox':
-            if self.headers.get('Authorization'):
-                if authorize(self.server.baseDir,self.headers['Authorization']):
-                    # TODO
-                    print('c2s posts not supported yet')
-                    self.send_response(401)
-                    self.end_headers()
-                    self.server.POSTbusy=False
-                    return
+        if self.path.endswith('/outbox'):
+            if '/users/' in self.path:
+                if self.headers.get('Authorization'):
+                    nickname=self.path.split('/users/')[1].replace('/inbox','')
+                    if nickname==nicknameFromBasicAuth(self.headers['Authorization']):
+                        if authorize(self.server.baseDir,self.headers['Authorization']):
+                            # TODO
+                            print('c2s posts not supported yet')
+                            self.send_response(401)
+                            self.end_headers()
+                            self.server.POSTbusy=False
+                            return
             self.send_response(401)
             self.end_headers()
             self.server.POSTbusy=False
