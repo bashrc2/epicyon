@@ -215,16 +215,16 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        # TODO
         if self.path=='/outbox':
             if self.headers.get('Authorization'):
                 if authorize(self.server.baseDir,self.headers['Authorization']):
+                    # TODO
                     print('c2s posts not supported yet')
-                    self.send_response(400)
+                    self.send_response(401)
                     self.end_headers()
                     self.server.POSTbusy=False
                     return
-            self.send_response(400)
+            self.send_response(401)
             self.end_headers()
             self.server.POSTbusy=False
             return
