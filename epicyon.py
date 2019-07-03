@@ -49,7 +49,7 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
     
 parser = argparse.ArgumentParser(description='ActivityPub Server')
-parser.add_argument('-d','--domain', dest='domain', type=str,default=None,
+parser.add_argument('-d','--domain', dest='domain', type=str,default='localhost',
                     help='Domain name of the server')
 parser.add_argument('-p','--port', dest='port', type=int,default=8085,
                     help='Port number to run on')
@@ -61,9 +61,9 @@ parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
                     help='Show raw json of posts for the given handle')
 parser.add_argument('-f','--federate', nargs='+',dest='federationList',
                     help='Specify federation list separated by spaces')
-parser.add_argument("--https", type=str2bool, nargs='?',
+parser.add_argument("--http", type=str2bool, nargs='?',
                         const=True, default=False,
-                        help="Use https")
+                        help="Use http only")
 parser.add_argument("--tor", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Route via Tor")
@@ -103,7 +103,9 @@ if not args.domain:
 nickname='admin'
 domain=args.domain
 port=args.port
-https=args.https
+https=True
+if args.http:
+    https=False
 useTor=args.tor
 baseDir=args.baseDir
 if baseDir.endswith('/'):
@@ -113,5 +115,8 @@ if baseDir.endswith('/'):
 federationList=[]
 if args.federationList:
     federationList=args.federationList.copy()
+
+if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
 
 runDaemon(domain,port,https,federationList,useTor)

@@ -285,8 +285,9 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
-        print('Invalid domain: ' + domain)
-        return
+        if domain != 'localhost':
+            print('Invalid domain: ' + domain)
+            return
 
     serverAddress = ('', port)
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
