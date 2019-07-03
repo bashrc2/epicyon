@@ -57,6 +57,8 @@ parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
                     help='Directory in which to store posts')
 parser.add_argument('--posts', dest='posts', type=str,default=None,
                     help='Show posts for the given handle')
+parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
+                    help='Show raw json of posts for the given handle')
 parser.add_argument('-f','--federate', nargs='+',dest='federationList',
                     help='Specify federation list separated by spaces')
 parser.add_argument("--https", type=str2bool, nargs='?',
@@ -85,7 +87,13 @@ if args.testsnetwork:
 if args.posts:
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain)
+    getPublicPostsOfPerson(nickname,domain,False,True)
+    sys.exit()
+
+if args.postsraw:
+    nickname=args.postsraw.split('@')[0]
+    domain=args.postsraw.split('@')[1]
+    getPublicPostsOfPerson(nickname,domain,True,False)
     sys.exit()
 
 if not args.domain:

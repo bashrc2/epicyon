@@ -43,7 +43,7 @@ def webfingerHandle(session,handle: str,https: bool,cachedWebfingers: {}) -> {}:
     wfDomain=domain
     if ':' in wfDomain:
         wfDomain=wfDomain.split(':')[0]
-    print('***********cachedWebfingers '+str(cachedWebfingers))
+    #print('***********cachedWebfingers '+str(cachedWebfingers))
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf

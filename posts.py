@@ -121,15 +121,25 @@ def getPersonPubKey(session,personUrl: str,personCache: {}) -> str:
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int,federationList: [], \
-             personCache: {}) -> {}:
+             personCache: {},raw: bool,simple: bool) -> {}:
     personPosts={}
     if not outboxUrl:
         return personPosts
 
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    if raw:
+        result = []
+        i = 0
+        for item in parseUserFeed(session,outboxUrl,asHeader):
+            result.append(item)
+            i += 1
+            if i == maxPosts:
+                break
+        pprint(result)
+        return None
+
     i = 0
     for item in parseUserFeed(session,outboxUrl,asHeader):
-        pprint(item)
         if not item.get('type'):
             continue
         if item['type'] != 'Create':
@@ -194,19 +204,21 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             sensitive = False
             if item['object'].get('sensitive'):
                 sensitive = item['object']['sensitive']
-            
-            personPosts[published] = {
-                "sensitive": sensitive,
-                "inreplyto": inReplyTo,
-                "summary": summary,
-                "html": content,
-                "plaintext": cleanHtml(content),
-                "attachment": attachment,
-                "mentions": mentions,
-                "emoji": emoji,
-                "conversation": conversation
-            }
-            #print(str(item)+'\n')
+
+            if simple:
+                print(cleanHtml(content)+'\n')
+            else:
+                personPosts[published] = {
+                    "sensitive": sensitive,
+                    "inreplyto": inReplyTo,
+                    "summary": summary,
+                    "html": content,
+                    "plaintext": cleanHtml(content),
+                    "attachment": attachment,
+                    "mentions": mentions,
+                    "emoji": emoji,
+                    "conversation": conversation
+                }
         i += 1
 
         if i == maxPosts:
@@ -538,7 +550,7 @@ def archivePosts(nickname: str,domain: str,baseDir: str, \
             if noOfPosts <= maxPostsInOutbox:
                 break
 
-def getPublicPostsOfPerson(nickname,domain):
+def getPublicPostsOfPerson(nickname,domain,raw,simple):
     """ This is really just for test purposes
     """
     useTor=True
@@ -559,5 +571,5 @@ def getPublicPostsOfPerson(nickname,domain):
     maxMentions=10
     maxEmoji=10
     maxAttachments=5
-    userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji,maxAttachments,federationList,personCache)
+    userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji,maxAttachments,federationList,personCache,raw,simple)
     #print(str(userPosts))
