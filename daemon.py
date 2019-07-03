@@ -22,6 +22,7 @@ from posts import getPersonPubKey
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from follow import getFollowingFeed
+from auth import authorize
 import os
 import sys
 
@@ -216,7 +217,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         # TODO
         if self.path=='/outbox':
-            print('c2s posts not supported yet')
+            if self.headers.get('Authorization'):
+                if authorize(self.server.baseDir,self.headers['Authorization']):
+                    print('c2s posts not supported yet')
+                    self.send_response(400)
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False

@@ -32,6 +32,9 @@ from follow import unfollowerOfPerson
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
+from auth import createBasicAuthHeader
+from auth import authorizeBasic
+from auth import storeBasicCredentials
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -295,13 +298,38 @@ def testCreatePerson():
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
+def testAuthentication():
+    print('testAuthentication')
+    currDir=os.getcwd()
+    nickname='test8743'
+    password='SuperSecretPassword12345'
+
+    baseDir=currDir+'/.tests_authentication'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)
+
+    assert storeBasicCredentials(baseDir,'othernick','otherpass')
+    assert storeBasicCredentials(baseDir,'bad:nick','otherpass')==False
+    assert storeBasicCredentials(baseDir,'badnick','otherpa:ss')==False
+    assert storeBasicCredentials(baseDir,nickname,password)
+
+    authHeader=createBasicAuthHeader(nickname,password)
+    assert authorizeBasic(baseDir,authHeader)
+
+    authHeader=createBasicAuthHeader(nickname,password+'1')
+    assert authorizeBasic(baseDir,authHeader)==False
+
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+    
 def runAllTests():
     print('Running tests...')
     testHttpsig()
     testCache()
     testThreads()
     testCreatePerson()
+    testAuthentication()
     testFollows()
-    print('Tests succeeded\n')
-
-        
+    print('Tests succeeded\n')        
