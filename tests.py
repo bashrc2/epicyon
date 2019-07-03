@@ -22,6 +22,7 @@ from session import createSession
 from posts import deleteAllPosts
 from posts import createPublicPost
 from posts import sendPost
+from posts import archivePosts
 from follow import clearFollows
 from follow import clearFollowers
 from follow import followPerson
@@ -284,6 +285,8 @@ def testCreatePerson():
     deleteAllPosts(baseDir,nickname,domain)
     setPreferredNickname(baseDir,nickname,domain,'badger')
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
+    archivePosts(nickname,domain,baseDir,4)
+    createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
