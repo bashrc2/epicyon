@@ -149,34 +149,24 @@ def webfingerMeta() -> str:
 def webfingerLookup(path: str,baseDir: str) -> {}:
     """Lookup the webfinger endpoint for an account
     """
-    print('############### _webfinger lookup 1')
     if not path.startswith('/.well-known/webfinger?'):
         return None
-    print('############### _webfinger lookup 2')
     handle=None
     if 'resource=acct:' in path:
-        print('############### _webfinger lookup 3')
         handle=path.split('resource=acct:')[1].strip()        
     else:
-        print('############### _webfinger lookup 4')
         if 'resource=acct%3A' in path:
-            print('############### _webfinger lookup 5')
             handle=path.split('resource=acct%3A')[1].replace('%40','@').strip()            
-    print('############### _webfinger lookup 6')
     if not handle:
         return None
-    print('############### _webfinger lookup 7')
     if '&' in handle:
         handle=handle.split('&')[0].strip()
-    print('############### _webfinger lookup 8')
     if '@' not in handle:
         return None
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
-    print('############### _webfinger lookup 9: '+filename)
     if not os.path.isfile(filename):
         return None
-    print('############### _webfinger lookup 10')
-    wfJson={"user": "unknown"}
+    wfJson={"nickname": "unknown"}
     with open(filename, 'r') as fp:
         wfJson=commentjson.load(fp)
     return wfJson
