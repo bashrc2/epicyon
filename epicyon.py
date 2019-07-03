@@ -61,6 +61,9 @@ parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
                     help='Show raw json of posts for the given handle')
 parser.add_argument('-f','--federate', nargs='+',dest='federationList',
                     help='Specify federation list separated by spaces')
+parser.add_argument("--debug", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Show debug messages")
 parser.add_argument("--http", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Use http only")
@@ -74,6 +77,10 @@ parser.add_argument("--testsnetwork", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Run network unit tests")
 args = parser.parse_args()
+
+debug=False
+if args.debug:
+    debug=True
 
 if args.tests:
     runAllTests()
@@ -99,7 +106,7 @@ if args.postsraw:
 if not args.domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
-    
+
 nickname='admin'
 domain=args.domain
 port=args.port
@@ -120,4 +127,4 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     print('Creating default admin account '+nickname+'@'+domain)
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
 
-runDaemon(domain,port,https,federationList,useTor)
+runDaemon(domain,port,https,federationList,useTor,debug)

@@ -121,7 +121,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(domain,port,https,federationList,useTor)
+    runDaemon(domain,port,https,federationList,useTor,True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: []):
     print('Creating test server: Bob on port '+str(port))
@@ -143,7 +143,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(domain,port,https,federationList,useTor)
+    runDaemon(domain,port,https,federationList,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
