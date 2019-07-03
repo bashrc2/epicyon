@@ -119,13 +119,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         # get webfinger endpoint for a person
-        if self.server.debug:
-            print('DEBUG: GET webfinger start')
         if self._webfinger():
             self.server.GETbusy=False
             return
-        if self.server.debug:
-            print('DEBUG: GET webfinger end')
         # get outbox feed for a person
         outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain, \
                                     self.server.port,self.path, \
