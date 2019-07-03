@@ -122,6 +122,7 @@ if baseDir.endswith('/'):
 federationList=[]
 if args.federationList:
     federationList=args.federationList.copy()
+    print('Federating with: '+str(federationList))
 
 if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     print('Creating default admin account '+nickname+'@'+domain)
