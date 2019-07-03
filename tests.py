@@ -321,6 +321,12 @@ def testAuthentication():
     authHeader=createBasicAuthHeader(nickname,password+'1')
     assert authorizeBasic(baseDir,authHeader)==False
 
+    password='someOtherPassword'
+    assert storeBasicCredentials(baseDir,nickname,password)
+
+    authHeader=createBasicAuthHeader(nickname,password)
+    assert authorizeBasic(baseDir,authHeader)
+
     os.chdir(currDir)
     shutil.rmtree(baseDir)
     
