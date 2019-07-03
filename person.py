@@ -51,7 +51,11 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                                'toot': 'http://joinmastodon.org/ns#',
                                'value': 'schema:value'}],
                  'attachment': [],
-                 'endpoints': {'sharedInbox': httpPrefix+'://'+domain+'/inbox'},
+                 'endpoints': {
+                     'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints'
+                     'sharedInbox': httpPrefix+'://'+domain+'/inbox',
+                     'uploadMedia': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints/uploadMedia'
+                 },
                  'featured': httpPrefix+'://'+domain+'/users/'+nickname+'/collections/featured',
                  'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
                  'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
