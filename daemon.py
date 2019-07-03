@@ -23,6 +23,7 @@ from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from follow import getFollowingFeed
 from auth import authorize
+from auth import nicknameFromBasicAuth
 import os
 import sys
 
@@ -122,6 +123,20 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
+        # get the inbox for a given person
+        if self.path.endswith('/inbox'):
+            if '/users/' in self.path:
+                if self.headers.get('Authorization'):
+                    nickname=self.path.split('/users/')[1].replace('/inbox','')
+                    if nickname==nicknameFromBasicAuth(self.headers['Authorization']):
+                        if authorize(self.server.baseDir,self.headers['Authorization']):
+                            # TODO
+                            print('inbox access not supported yet')
+                            self.send_response(401)
+                            self.end_headers()
+                            self.server.POSTbusy=False
+                            return
+        
         # get outbox feed for a person
         outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain, \
                                     self.server.port,self.path, \
