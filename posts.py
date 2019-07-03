@@ -251,7 +251,7 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
             
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, https: bool, content: str, \
-                   followersOnly: bool, saveToFile: bool, \
+                   followersOnly: bool, saveToFile: bool, clientToServer: bool, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
@@ -276,43 +276,68 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     if subject:
         summary=subject
         sensitive=True
-    newPost = {
-        'id': newPostId+'/activity',
-        'type': 'Create',
-        'actor': prefix+'://'+domain+'/users/'+nickname,
-        'published': published,
-        'to': [toUrl],
-        'cc': [],
-        'object': {'id': newPostId,
-                   'type': 'Note',
-                   'summary': summary,
-                   'inReplyTo': inReplyTo,
-                   'published': published,
-                   'url': prefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
-                   'attributedTo': prefix+'://'+domain+'/users/'+nickname,
-                   'to': [toUrl],
-                   'cc': [],
-                   'sensitive': sensitive,
-                   'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
-                   'inReplyToAtomUri': inReplyToAtomUri,
-                   'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
-                   'content': content,
-                   'contentMap': {
-                       'en': content
-                   },
-                   'attachment': [],
-                   'tag': [],
-                   'replies': {}
-                   #    'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
-                   #    'type': 'Collection',
-                   #    'first': {
-                   #        'type': 'CollectionPage',
-                   #        'partOf': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
-                   #        'items': []
-                   #    }
-                   #}
+    if not clientToServer:
+        newPost = {
+            'id': newPostId+'/activity',
+            'type': 'Create',
+            'actor': prefix+'://'+domain+'/users/'+nickname,
+            'published': published,
+            'to': [toUrl],
+            'cc': [],
+            'object': {
+                'id': newPostId,
+                'type': 'Note',
+                'summary': summary,
+                'inReplyTo': inReplyTo,
+                'published': published,
+                'url': prefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
+                'attributedTo': prefix+'://'+domain+'/users/'+nickname,
+                'to': [toUrl],
+                'cc': [],
+                'sensitive': sensitive,
+                'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+                'inReplyToAtomUri': inReplyToAtomUri,
+                'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
+                'content': content,
+                'contentMap': {
+                    'en': content
+                },
+                'attachment': [],
+                'tag': [],
+                'replies': {}
+                #    'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                #    'type': 'Collection',
+                #    'first': {
+                #        'type': 'CollectionPage',
+                #        'partOf': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                #        'items': []
+                #    }
+                #}
+            }
         }
-    }
+    else:
+        newPost = {
+            'id': newPostId,
+            'type': 'Note',
+            'summary': summary,
+            'inReplyTo': inReplyTo,
+            'published': published,
+            'url': prefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
+            'attributedTo': prefix+'://'+domain+'/users/'+nickname,
+            'to': [toUrl],
+            'cc': [],
+            'sensitive': sensitive,
+            'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+            'inReplyToAtomUri': inReplyToAtomUri,
+            'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
+            'content': content,
+            'contentMap': {
+                'en': content
+            },
+            'attachment': [],
+            'tag': [],
+            'replies': {}
+        }
     if ccUrl:
         if len(ccUrl)>0:
             newPost['cc']=ccUrl
@@ -326,8 +351,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
-def createPublicPost(baseDir: str,nickname: str, domain: str, port: int,https: bool, \
-                     content: str, followersOnly: bool, saveToFile: bool, \
+def createPublicPost(baseDir: str,
+                     nickname: str, domain: str, port: int,https: bool, \
+                     content: str, followersOnly: bool, saveToFile: bool,
+                     clientToServer: bool, \
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
@@ -337,7 +364,7 @@ def createPublicPost(baseDir: str,nickname: str, domain: str, port: int,https: b
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
                           prefix+'://'+domain+'/users/'+nickname+'/followers', \
-                          https, content, followersOnly, saveToFile, \
+                          https, content, followersOnly, saveToFile, clientToServer, \
                           inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str, \
@@ -368,8 +395,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str, 
 def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
              https: bool, content: str, followersOnly: bool, \
-             saveToFile: bool, federationList: [], sendThreads: [], \
-             postLog: [], cachedWebfingers: {},personCache: {}, \
+             saveToFile: bool, clientToServer: bool, federationList: [], \
+             sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
              inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
@@ -399,21 +426,27 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     if not toPersonId:
         return 4
 
-    postJsonObject=createPostBase(baseDir,nickname,domain,port, \
-                                  toPersonId,cc,https,content, \
-                                  followersOnly,saveToFile, \
-                                  inReplyTo,inReplyToAtomUri, \
-                                  subject)
+    postJsonObject = \
+            createPostBase(baseDir,nickname,domain,port, \
+                           toPersonId,cc,https,content, \
+                           followersOnly,saveToFile,clientToServer, \
+                           inReplyTo,inReplyToAtomUri, \
+                           subject)
 
     # get the senders private key
     privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
     if len(privateKeyPem)==0:
         return 5
 
+    if not clientToServer:
+        postPath='/inbox'
+    else:
+        postPath='/outbox'
+            
     # construct the http header
     signatureHeaderJson = \
         createSignedHeader(privateKeyPem, nickname, domain, port, \
-                           '/inbox', https, withDigest, postJsonObject)
+                           postPath, https, withDigest, postJsonObject)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:

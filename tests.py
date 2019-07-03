@@ -110,13 +110,14 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     nickname='alice'
     https=False
     useTor=False
+    clientToServer=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
     deleteAllPosts(path,nickname,domain)
     followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
-    createPublicPost(path,nickname, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
-    createPublicPost(path,nickname, domain, port,https, "Curiouser and curiouser!", False, True)
-    createPublicPost(path,nickname, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
+    createPublicPost(path,nickname, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,https, "Curiouser and curiouser!", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
@@ -131,13 +132,14 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     nickname='bob'
     https=False
     useTor=False
+    clientToServer=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
     deleteAllPosts(path,nickname,domain)
     followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
-    createPublicPost(path,nickname, domain, port,https, "It's your life, live it your way.", False, True)
-    createPublicPost(path,nickname, domain, port,https, "One of the things I've realised is that I am very simple", False, True)
-    createPublicPost(path,nickname, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True)
+    createPublicPost(path,nickname, domain, port,https, "It's your life, live it your way.", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,https, "One of the things I've realised is that I am very simple", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True, clientToServer)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
@@ -191,10 +193,11 @@ def testPostMessageBetweenServers():
     alicePostLog = []
     followersOnly=False
     saveToFile=True
+    clientToServer=False
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     for i in range(10):
@@ -275,6 +278,7 @@ def testCreatePerson():
     domain='badgerdomain.com'
     port=80
     https=True
+    clientToServer=False
     baseDir=currDir+'/.tests_createperson'
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
@@ -286,7 +290,7 @@ def testCreatePerson():
     setPreferredNickname(baseDir,nickname,domain,'badger')
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
     archivePosts(nickname,domain,baseDir,4)
-    createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
+    createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, clientToServer, None, None, 'Not suitable for Vogons')
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
