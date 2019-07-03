@@ -21,7 +21,7 @@ def generateRSAKey() -> (str,str):
     publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
 
-def createPerson(baseDir: str,username: str,domain: str,port: int, \
+def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  https: bool, saveToFile: bool) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
@@ -31,11 +31,11 @@ def createPerson(baseDir: str,username: str,domain: str,port: int, \
 
     privateKeyPem,publicKeyPem=generateRSAKey()
     webfingerEndpoint= \
-        createWebfingerEndpoint(username,domain,port,https,publicKeyPem)
+        createWebfingerEndpoint(nickname,domain,port,https,publicKeyPem)
     if saveToFile:
-        storeWebfingerEndpoint(username,domain,baseDir,webfingerEndpoint)
+        storeWebfingerEndpoint(nickname,domain,baseDir,webfingerEndpoint)
 
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -55,28 +55,28 @@ def createPerson(baseDir: str,username: str,domain: str,port: int, \
                                'value': 'schema:value'}],
                  'attachment': [],
                  'endpoints': {'sharedInbox': prefix+'://'+domain+'/inbox'},
-                 'featured': prefix+'://'+domain+'/users/'+username+'/collections/featured',
-                 'followers': prefix+'://'+domain+'/users/'+username+'/followers',
-                 'following': prefix+'://'+domain+'/users/'+username+'/following',
+                 'featured': prefix+'://'+domain+'/users/'+nickname+'/collections/featured',
+                 'followers': prefix+'://'+domain+'/users/'+nickname+'/followers',
+                 'following': prefix+'://'+domain+'/users/'+nickname+'/following',
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
-                          'url': prefix+'://'+domain+'/users/'+username+'_icon.png'},
-                 'id': prefix+'://'+domain+'/users/'+username,
+                          'url': prefix+'://'+domain+'/users/'+nickname+'_icon.png'},
+                 'id': prefix+'://'+domain+'/users/'+nickname,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
-                           'url': prefix+'://'+domain+'/users/'+username+'.png'},
-                 'inbox': prefix+'://'+domain+'/users/'+username+'/inbox',
+                           'url': prefix+'://'+domain+'/users/'+nickname+'.png'},
+                 'inbox': prefix+'://'+domain+'/users/'+nickname+'/inbox',
                  'manuallyApprovesFollowers': False,
-                 'name': username,
-                 'outbox': prefix+'://'+domain+'/users/'+username+'/outbox',
-                 'preferredUsername': ''+username,
-                 'publicKey': {'id': prefix+'://'+domain+'/users/'+username+'/main-key',
-                               'owner': prefix+'://'+domain+'/users/'+username,
+                 'name': nickname,
+                 'outbox': prefix+'://'+domain+'/users/'+nickname+'/outbox',
+                 'preferredNickname': ''+nickname,
+                 'publicKey': {'id': prefix+'://'+domain+'/users/'+nickname+'/main-key',
+                               'owner': prefix+'://'+domain+'/users/'+nickname,
                                'publicKeyPem': publicKeyPem,
                                'summary': '',
                                'tag': [],
                                'type': 'Person',
-                               'url': prefix+'://'+domain+'/@'+username}
+                               'url': prefix+'://'+domain+'/@'+nickname}
     }
 
     if saveToFile:
@@ -108,26 +108,26 @@ def createPerson(baseDir: str,username: str,domain: str,port: int, \
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
-def validUsername(username: str) -> bool:
+def validNickname(nickname: str) -> bool:
     forbiddenChars=['.',' ','/','?',':',';','@']
     for c in forbiddenChars:
-        if c in username:
+        if c in nickname:
             return False
     return True
 
 def personKeyLookup(domain: str,path: str,baseDir: str) -> str:
-    """Lookup the public key of the person with a given username
+    """Lookup the public key of the person with a given nickname
     """
     if not path.endswith('/main-key'):
         return None
     if not path.startswith('/users/'):
         return None
-    username=path.replace('/users/','',1).replace('/main-key','')
-    if not validUsername(username):
+    nickname=path.replace('/users/','',1).replace('/main-key','')
+    if not validNickname(nickname):
         return None
     if ':' in domain:
         domain=domain.split(':')[0]
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return None
@@ -140,7 +140,7 @@ def personKeyLookup(domain: str,path: str,baseDir: str) -> str:
     return None
     
 def personLookup(domain: str,path: str,baseDir: str) -> {}:
-    """Lookup the person for an given username
+    """Lookup the person for an given nickname
     """
     notPersonLookup=['/inbox','/outbox','/outboxarchive', \
                      '/followers','/following','/featured', \
@@ -149,18 +149,18 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     for ending in notPersonLookup:        
         if path.endswith(ending):
             return None
-    username=None
+    nickname=None
     if path.startswith('/users/'):
-        username=path.replace('/users/','',1)
+        nickname=path.replace('/users/','',1)
     if path.startswith('/@'):
-        username=path.replace('/@','',1)
-    if not username:
+        nickname=path.replace('/@','',1)
+    if not nickname:
         return None
-    if not validUsername(username):
+    if not validNickname(nickname):
         return None
     if ':' in domain:
         domain=domain.split(':')[0]
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return None
@@ -195,23 +195,23 @@ def personOutboxJson(baseDir: str,domain: str,port: int,path: str, \
 
     if not path.endswith('/outbox'):
         return None
-    username=None
+    nickname=None
     if path.startswith('/users/'):
-        username=path.replace('/users/','',1).replace('/outbox','')
+        nickname=path.replace('/users/','',1).replace('/outbox','')
     if path.startswith('/@'):
-        username=path.replace('/@','',1).replace('/outbox','')
-    if not username:
+        nickname=path.replace('/@','',1).replace('/outbox','')
+    if not nickname:
         return None
-    if not validUsername(username):
+    if not validNickname(nickname):
         return None
-    return createOutbox(baseDir,username,domain,port,https, \
+    return createOutbox(baseDir,nickname,domain,port,https, \
                         noOfItems,headerOnly,pageNumber)
 
-def setPreferredUsername(baseDir: str,username: str, domain: str, \
+def setPreferredNickname(baseDir: str,nickname: str, domain: str, \
                          preferredName: str) -> bool:
     if len(preferredName)>32:
         return False
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return False
@@ -220,15 +220,15 @@ def setPreferredUsername(baseDir: str,username: str, domain: str, \
         personJson=commentjson.load(fp)
     if not personJson:
         return False
-    personJson['preferredUsername']=preferredName
+    personJson['preferredNickname']=preferredName
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True
 
-def setBio(baseDir: str,username: str, domain: str, bio: str) -> bool:
+def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
     if len(bio)>32:
         return False
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return False

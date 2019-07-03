@@ -35,12 +35,12 @@ testServerBobRunning = False
 
 def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
-    username='socrates'
+    nickname='socrates'
     domain='argumentative.social'
     https=True
     port=5576
     baseDir=os.getcwd()
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domain,port,https,False)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,False)
     messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
 
     headersDomain=domain
@@ -54,7 +54,7 @@ def testHttpsigBase(withDigest):
         headers = {'host': headersDomain, 'digest': f'SHA-256={bodyDigest}'}
 
     path='/inbox'
-    signatureHeader = signPostHeaders(privateKeyPem, username, domain, port, path, https, None)
+    signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, path, https, None)
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox' ,False, messageBodyJsonStr)
     assert verifyPostHeaders(https, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJsonStr) == False
@@ -104,16 +104,16 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
-    username='alice'
+    nickname='alice'
     https=False
     useTor=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
-    deleteAllPosts(username,domain,path)
-    followPerson(path,username,domain,'bob','127.0.0.100:61936',federationList)
-    followerOfPerson(path,username,domain,'bob','127.0.0.100:61936',federationList)
-    createPublicPost(path,username, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
-    createPublicPost(path,username, domain, port,https, "Curiouser and curiouser!", False, True)
-    createPublicPost(path,username, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
+    deleteAllPosts(nickname,domain,path)
+    followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
+    followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
+    createPublicPost(path,nickname, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
+    createPublicPost(path,nickname, domain, port,https, "Curiouser and curiouser!", False, True)
+    createPublicPost(path,nickname, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
@@ -125,16 +125,16 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
         shutil.rmtree(path)
     os.mkdir(path)
     os.chdir(path)
-    username='bob'
+    nickname='bob'
     https=False
     useTor=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,username,domain,port,https,True)
-    deleteAllPosts(username,domain,path)
-    followPerson(path,username,domain,'alice','127.0.0.50:61935',federationList)
-    followerOfPerson(path,username,domain,'alice','127.0.0.50:61935',federationList)
-    createPublicPost(path,username, domain, port,https, "It's your life, live it your way.", False, True)
-    createPublicPost(path,username, domain, port,https, "One of the things I've realised is that I am very simple", False, True)
-    createPublicPost(path,username, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
+    deleteAllPosts(nickname,domain,path)
+    followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
+    followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
+    createPublicPost(path,nickname, domain, port,https, "It's your life, live it your way.", False, True)
+    createPublicPost(path,nickname, domain, port,https, "One of the things I've realised is that I am very simple", False, True)
+    createPublicPost(path,nickname, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
@@ -208,7 +208,7 @@ def testPostMessageBetweenServers():
 
 def testFollows():
     currDir=os.getcwd()
-    username='test529'
+    nickname='test529'
     domain='testdomain.com'
     port=80
     https=True
@@ -218,16 +218,16 @@ def testFollows():
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    createPerson(baseDir,username,domain,port,https,True)
+    createPerson(baseDir,nickname,domain,port,https,True)
 
-    clearFollows(baseDir,username,domain)
-    followPerson(baseDir,username,domain,'badger','wild.com',federationList)
-    followPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
-    followPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
-    followPerson(baseDir,username,domain,'batman','mesh.com',federationList)
-    followPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
+    clearFollows(baseDir,nickname,domain)
+    followPerson(baseDir,nickname,domain,'badger','wild.com',federationList)
+    followPerson(baseDir,nickname,domain,'squirrel','secret.com',federationList)
+    followPerson(baseDir,nickname,domain,'rodent','drainpipe.com',federationList)
+    followPerson(baseDir,nickname,domain,'batman','mesh.com',federationList)
+    followPerson(baseDir,nickname,domain,'giraffe','trees.com',federationList)
 
-    f = open(baseDir+'/accounts/'+username+'@'+domain+'/following.txt', "r")
+    f = open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt', "r")
     domainFound=False
     for followingDomain in f:
         testDomain=followingDomain.split('@')[1].replace('\n','')
@@ -238,7 +238,7 @@ def testFollows():
             assert(False)
 
     assert(domainFound)
-    unfollowPerson(baseDir,username,domain,'batman','mesh.com')
+    unfollowPerson(baseDir,nickname,domain,'batman','mesh.com')
 
     domainFound=False
     for followingDomain in f:
@@ -247,14 +247,14 @@ def testFollows():
             domainFound=True
     assert(domainFound==False)
 
-    clearFollowers(baseDir,username,domain)
-    followerOfPerson(baseDir,username,domain,'badger','wild.com',federationList)
-    followerOfPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
-    followerOfPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
-    followerOfPerson(baseDir,username,domain,'batman','mesh.com',federationList)
-    followerOfPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
+    clearFollowers(baseDir,nickname,domain)
+    followerOfPerson(baseDir,nickname,domain,'badger','wild.com',federationList)
+    followerOfPerson(baseDir,nickname,domain,'squirrel','secret.com',federationList)
+    followerOfPerson(baseDir,nickname,domain,'rodent','drainpipe.com',federationList)
+    followerOfPerson(baseDir,nickname,domain,'batman','mesh.com',federationList)
+    followerOfPerson(baseDir,nickname,domain,'giraffe','trees.com',federationList)
 
-    f = open(baseDir+'/accounts/'+username+'@'+domain+'/followers.txt', "r")
+    f = open(baseDir+'/accounts/'+nickname+'@'+domain+'/followers.txt', "r")
     for followerDomain in f:
         testDomain=followerDomain.split('@')[1].replace('\n','')
         if testDomain not in federationList:

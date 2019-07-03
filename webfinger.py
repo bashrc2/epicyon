@@ -21,43 +21,43 @@ def parseHandle(handle: str) -> (str,str):
     if '.' not in handle:
         return None, None
     if '/@' in handle:
-        domain, username = \
+        domain, nickname = \
             handle.replace('https://','').replace('http://','').split('/@')
     else:
         if '/users/' in handle:
-            domain, username = \
+            domain, nickname = \
                 handle.replace('https://','').replace('http://','').split('/users/')
         else:
             if '@' in handle:
-                username, domain = handle.split('@')
+                nickname, domain = handle.split('@')
             else:
                 return None, None
 
-    return username, domain
+    return nickname, domain
 
 
 def webfingerHandle(session,handle: str,https: bool,cachedWebfingers: {}) -> {}:
-    username, domain = parseHandle(handle)
-    if not username:
+    nickname, domain = parseHandle(handle)
+    if not nickname:
         return None
     wfDomain=domain
     if ':' in wfDomain:
         wfDomain=wfDomain.split(':')[0]
     print('***********cachedWebfingers '+str(cachedWebfingers))
-    wf=getWebfingerFromCache(username+'@'+wfDomain,cachedWebfingers)
+    wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf
     prefix='https'
     if not https:
         prefix='http'
     url = '{}://{}/.well-known/webfinger'.format(prefix,domain)
-    par = {'resource': 'acct:{}'.format(username+'@'+wfDomain)}
+    par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}
     #try:
     result = getJson(session, url, hdr, par)
     #except:
     #    print("Unable to webfinger " + url + ' ' + str(hdr) + ' ' + str(par))
-    storeWebfingerInCache(username+'@'+wfDomain,result,cachedWebfingers)
+    storeWebfingerInCache(nickname+'@'+wfDomain,result,cachedWebfingers)
     return result
 
 def generateMagicKey(publicKeyPem) -> str:
@@ -69,11 +69,11 @@ def generateMagicKey(publicKeyPem) -> str:
     pubexp = base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
 
-def storeWebfingerEndpoint(username: str,domain: str,baseDir: str, \
+def storeWebfingerEndpoint(nickname: str,domain: str,baseDir: str, \
                            wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
-    handle=username+'@'+domain
+    handle=nickname+'@'+domain
     wfSubdir='/wfendpoints'
     if not os.path.isdir(baseDir+wfSubdir):
         os.mkdir(baseDir+wfSubdir)
@@ -82,7 +82,7 @@ def storeWebfingerEndpoint(username: str,domain: str,baseDir: str, \
         commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
     return True
 
-def createWebfingerEndpoint(username: str,domain: str,port: int, \
+def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                             https: bool,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
@@ -95,22 +95,22 @@ def createWebfingerEndpoint(username: str,domain: str,port: int, \
 
     account = {
         "aliases": [
-            prefix+"://"+domain+"/@"+username,
-            prefix+"://"+domain+"/users/"+username
+            prefix+"://"+domain+"/@"+nickname,
+            prefix+"://"+domain+"/users/"+nickname
         ],
         "links": [
             {
-                "href": prefix+"://"+domain+"/@"+username,
+                "href": prefix+"://"+domain+"/@"+nickname,
                 "rel": "http://webfinger.net/rel/profile-page",
                 "type": "text/html"
             },
             {
-                "href": prefix+"://"+domain+"/users/"+username+".atom",
+                "href": prefix+"://"+domain+"/users/"+nickname+".atom",
                 "rel": "http://schemas.google.com/g/2010#updates-from",
                 "type": "application/atom+xml"
             },
             {
-                "href": prefix+"://"+domain+"/users/"+username,
+                "href": prefix+"://"+domain+"/users/"+nickname,
                 "rel": "self",
                 "type": "application/activity+json"
             },
@@ -127,7 +127,7 @@ def createWebfingerEndpoint(username: str,domain: str,port: int, \
                 "template": prefix+"://"+domain+"/authorize_interaction?uri={uri}"
             }
         ],
-        "subject": "acct:"+username+"@"+domain
+        "subject": "acct:"+nickname+"@"+domain
     }
     return account
 

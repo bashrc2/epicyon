@@ -13,7 +13,7 @@ from utils import createOutboxDir
 from utils import urlPermitted
 
 def createAnnounce(baseDir: str,federationList: [], \
-                   username: str, domain: str, port: int, \
+                   nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, https: bool, \
                    objectUrl: str, saveToFile: bool) -> {}:
     """Creates an announce message
@@ -32,10 +32,10 @@ def createAnnounce(baseDir: str,federationList: [], \
         domain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
-    newAnnounceId=prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber
+    newAnnounceId=prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     newAnnounce = {
-        'actor': prefix+'://'+domain+'/users/'+username,
-        'atomUri': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
+        'actor': prefix+'://'+domain+'/users/'+nickname,
+        'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
         'cc': [],
         'id': newAnnounceId+'/activity',
         'object': objectUrl,
@@ -49,14 +49,14 @@ def createAnnounce(baseDir: str,federationList: [], \
     if saveToFile:
         if ':' in domain:
             domain=domain.split(':')[0]
-        outboxDir = createOutboxDir(username,domain,baseDir)
+        outboxDir = createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newAnnounceId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
     return newAnnounce
 
 def announcePublic(baseDir: str,federationList: [], \
-                   username: str, domain: str, port: int, https: bool, \
+                   nickname: str, domain: str, port: int, https: bool, \
                    objectUrl: str, saveToFile: bool) -> {}:
     """Makes a public announcement
     """
@@ -69,13 +69,13 @@ def announcePublic(baseDir: str,federationList: [], \
         fromDomain=fromDomain+':'+str(port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = prefix + '://'+fromDomain+'/users/'+username+'/followers'
-    return createAnnounce(baseDir,username, domain, port, \
+    ccUrl = prefix + '://'+fromDomain+'/users/'+nickname+'/followers'
+    return createAnnounce(baseDir,nickname, domain, port, \
                           toUrl, ccUrl, https, objectUrl, saveToFile)
 
 def repeatPost(baseDir: str,federationList: [], \
-               username: str, domain: str, port: int, https: bool, \
-               announceUsername: str, announceDomain: str, \
+               nickname: str, domain: str, port: int, https: bool, \
+               announceNickname: str, announceDomain: str, \
                announcePort: int, announceHttps: bool, \
                announceStatusNumber: int, saveToFile: bool) -> {}:
     """Repeats a given status post
@@ -89,7 +89,7 @@ def repeatPost(baseDir: str,federationList: [], \
         announcedDomain=announcedDomain+':'+str(announcePort)
 
     objectUrl = prefix + '://'+announcedDomain+'/users/'+ \
-        announceUsername+'/statuses/'+str(announceStatusNumber)
+        announceNickname+'/statuses/'+str(announceStatusNumber)
 
-    return announcePublic(baseDir,username, domain, port, https, objectUrl, saveToFile)
+    return announcePublic(baseDir,nickname, domain, port, https, objectUrl, saveToFile)
 

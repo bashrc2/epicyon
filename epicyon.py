@@ -7,7 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 from person import createPerson
-from person import setPreferredUsername
+from person import setPreferredNickname
 from person import setBio
 from webfinger import webfingerHandle
 from posts import getPosts
@@ -73,7 +73,7 @@ if args.tests:
 print(args.domain)
 print(str(args.federationList))
 
-username='admin'
+nickname='admin'
 domain=args.domain
 port=args.port
 https=args.https
@@ -93,24 +93,13 @@ session = createSession(domain,port,useTor)
 personCache={}
 cachedWebfingers={}
 
-#unfollowPerson(username,domain,'squirrel','secret.com')
-#sys.exit()
-
-#asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/followers?page=true",asHeader,None)
-#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following",asHeader,None)
-#userFollowing = getJson(session,"https://mastodon.social/users/Gargron/following?page=1",asHeader,None)
-#pprint(userFollowing)
-#sys.exit()
-
-
-privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,username,domain,port,https,True)
-#deleteAllPosts(username,domain)
-setPreferredUsername(baseDir,username,domain,'badger')
-setBio(baseDir,username,domain,'Some personal info')
-#createPublicPost(baseDir,username, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
-#archivePosts(username,domain,baseDir,4)
-#outboxJson=createOutbox(baseDir,username,domain,port,https,2,True,None)
+privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
+#deleteAllPosts(nickname,domain)
+setPreferredNickname(baseDir,nickname,domain,'badger')
+setBio(baseDir,nickname,domain,'Some personal info')
+#createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
+#archivePosts(nickname,domain,baseDir,4)
+#outboxJson=createOutbox(baseDir,nickname,domain,port,https,2,True,None)
 #pprint(outboxJson)
 
 #testPostMessageBetweenServers()

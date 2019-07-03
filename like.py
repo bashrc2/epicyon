@@ -10,7 +10,7 @@ import json
 import commentjson
 from utils import urlPermitted
 
-def like(baseDir: str,federationList: [],username: str,domain: str,port: int, \
+def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          toUrl: str,ccUrl: str,https: bool,objectUrl: str,saveToFile: bool) -> {}:
     """Creates a like
     Typically toUrl will be a followers collection
@@ -29,7 +29,7 @@ def like(baseDir: str,federationList: [],username: str,domain: str,port: int, \
 
     newLike = {
         'type': 'Like',
-        'actor': prefix+'://'+domain+'/users/'+username,
+        'actor': prefix+'://'+domain+'/users/'+nickname,
         'object': objectUrl,
         'to': [toUrl],
         'cc': []
@@ -44,8 +44,8 @@ def like(baseDir: str,federationList: [],username: str,domain: str,port: int, \
     return newLike
 
 def likePost(baseDir: str,federationList: [], \
-             username: str, domain: str, port: int, https: bool, \n
-             likeUsername: str, likeDomain: str, likePort: int, likeHttps: bool, \n
+             nickname: str, domain: str, port: int, https: bool, \n
+             likeNickname: str, likeDomain: str, likePort: int, likeHttps: bool, \n
              likeStatusNumber: int,saveToFile: bool) -> {}:
     """Likes a given status post
     """
@@ -57,6 +57,6 @@ def likePost(baseDir: str,federationList: [], \
     if likePort!=80 and likePort!=443:
         likeDomain=likeDomain+':'+str(likePort)
 
-    objectUrl = prefix + '://'+likeDomain+'/users/'+likeUsername+'/statuses/'+str(likeStatusNumber)
+    objectUrl = prefix + '://'+likeDomain+'/users/'+likeNickname+'/statuses/'+str(likeStatusNumber)
 
-    return like(baseDir,federationList,username,domain,port,toUrl,ccUrl,https,objectUrl,saveToFile)
+    return like(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,https,objectUrl,saveToFile)

@@ -10,18 +10,18 @@ import json
 from pprint import pprint
 import os
 import sys
-from person import validUsername
+from person import validNickname
 from utils import domainPermitted
 
-def followPerson(baseDir: str,username: str, domain: str, \
-                 followUsername: str, followDomain: str, \
+def followPerson(baseDir: str,nickname: str, domain: str, \
+                 followNickname: str, followDomain: str, \
                  federationList: [], followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
     if not domainPermitted(followDomain.lower().replace('\n',''), federationList):
         return False
-    handle=username.lower()+'@'+domain.lower()
-    handleToFollow=followUsername.lower()+'@'+followDomain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
+    handleToFollow=followNickname.lower()+'@'+followDomain.lower()
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
@@ -37,22 +37,22 @@ def followPerson(baseDir: str,username: str, domain: str, \
         followfile.write(handleToFollow+'\n')
     return True
 
-def followerOfPerson(baseDir: str,username: str, domain: str, \
-                     followerUsername: str, followerDomain: str, \
+def followerOfPerson(baseDir: str,nickname: str, domain: str, \
+                     followerNickname: str, followerDomain: str, \
                      federationList: []) -> bool:
     """Adds a follower of the given person
     """
-    return followPerson(baseDir,username, domain, \
-                        followerUsername, followerDomain, \
+    return followPerson(baseDir,nickname, domain, \
+                        followerNickname, followerDomain, \
                         federationList, 'followers.txt')
 
-def unfollowPerson(baseDir: str,username: str, domain: str, \
-                   followUsername: str, followDomain: str, \
+def unfollowPerson(baseDir: str,nickname: str, domain: str, \
+                   followNickname: str, followDomain: str, \
                    followFile='following.txt') -> None:
     """Removes a person to the follow list
     """
-    handle=username.lower()+'@'+domain.lower()
-    handleToUnfollow=followUsername.lower()+'@'+followDomain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
+    handleToUnfollow=followNickname.lower()+'@'+followDomain.lower()
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
@@ -68,16 +68,16 @@ def unfollowPerson(baseDir: str,username: str, domain: str, \
                 if line.strip("\n") != handleToUnfollow:
                     f.write(line)
 
-def unfollowerOfPerson(baseDir: str,username: str,domain: str, \
-                       followerUsername: str,followerDomain: str) -> None:
+def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \
+                       followerNickname: str,followerDomain: str) -> None:
     """Remove a follower of a person
     """
-    unfollowPerson(baseDir,username,domain,followerUsername,followerDomain,'followers.txt')
+    unfollowPerson(baseDir,nickname,domain,followerNickname,followerDomain,'followers.txt')
 
-def clearFollows(baseDir: str,username: str,domain: str,followFile='following.txt') -> None:
+def clearFollows(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> None:
     """Removes all follows
     """
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
@@ -86,15 +86,15 @@ def clearFollows(baseDir: str,username: str,domain: str,followFile='following.tx
     if os.path.isfile(filename):
         os.remove(filename)
 
-def clearFollowers(baseDir: str,username: str,domain: str) -> None:
+def clearFollowers(baseDir: str,nickname: str,domain: str) -> None:
     """Removes all followers
     """
-    clearFollows(baseDir,username, domain,'followers.txt')
+    clearFollows(baseDir,nickname, domain,'followers.txt')
 
-def getNoOfFollows(baseDir: str,username: str,domain: str,followFile='following.txt') -> int:
+def getNoOfFollows(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> int:
     """Returns the number of follows or followers
     """
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
         return 0
@@ -109,10 +109,10 @@ def getNoOfFollows(baseDir: str,username: str,domain: str,followFile='following.
                     ctr += 1
     return ctr
 
-def getNoOfFollowers(baseDir: str,username: str,domain: str) -> int:
+def getNoOfFollowers(baseDir: str,nickname: str,domain: str) -> int:
     """Returns the number of followers of the given person
     """
-    return getNoOfFollows(baseDir,username,domain,'followers.txt')
+    return getNoOfFollows(baseDir,nickname,domain,'followers.txt')
 
 def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
                      followsPerPage=12,followFile='following') -> {}:
@@ -137,14 +137,14 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     
     if not path.endswith('/'+followFile):
         return None
-    username=None
+    nickname=None
     if path.startswith('/users/'):
-        username=path.replace('/users/','',1).replace('/'+followFile,'')
+        nickname=path.replace('/users/','',1).replace('/'+followFile,'')
     if path.startswith('/@'):
-        username=path.replace('/@','',1).replace('/'+followFile,'')
-    if not username:
+        nickname=path.replace('/@','',1).replace('/'+followFile,'')
+    if not nickname:
         return None
-    if not validUsername(username):
+    if not validNickname(nickname):
         return None
             
     prefix='https'
@@ -157,9 +157,9 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     if headerOnly:
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page=1',
-            'id': prefix+'://'+domain+'/users/'+username+'/'+followFile,
-            'totalItems': getNoOfFollows(username,domain),
+            'first': prefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page=1',
+            'id': prefix+'://'+domain+'/users/'+nickname+'/'+followFile,
+            'totalItems': getNoOfFollows(nickname,domain),
             'type': 'OrderedCollection'}
         return following
 
@@ -169,13 +169,13 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     nextPageNumber=int(pageNumber+1)
     following = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page='+str(pageNumber),
+        'id': prefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(pageNumber),
         'orderedItems': [],
-        'partOf': prefix+'://'+domain+'/users/'+username+'/'+followFile,
+        'partOf': prefix+'://'+domain+'/users/'+nickname+'/'+followFile,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'}        
 
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle+'/'+followFile+'.txt'
     if not os.path.isfile(filename):
         return following
@@ -206,7 +206,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     if lastPage<1:
         lastPage=1
     if nextPageNumber>lastPage:
-        following['next']=prefix+'://'+domain+'/users/'+username+'/'+followFile+'?page='+str(lastPage)
+        following['next']=prefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
     return following
 
 def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> bool:
@@ -219,8 +219,8 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
     domain=messageJson['actor'].split('/users/')[0].replace('https://','').replace('http://','')
     if not domainPermitted(domain,federationList):
         return False
-    username=messageJson['actor'].split('/users/')[1].replace('@','')
-    handle=username.lower()+'@'+domain.lower()
+    nickname=messageJson['actor'].split('/users/')[1].replace('@','')
+    handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         return False
     if '/users/' not in messageJson['object']:
@@ -228,15 +228,15 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
     domainToFollow=messageJson['object'].split('/users/')[0].replace('https://','').replace('http://','')
     if not domainPermitted(domainToFollow,federationList):
         return False
-    usernameToFollow=messageJson['object'].split('/users/')[1].replace('@','')
-    handleToFollow=usernameToFollow.lower()+'@'+domainToFollow.lower()
+    nicknameToFollow=messageJson['object'].split('/users/')[1].replace('@','')
+    handleToFollow=nicknameToFollow.lower()+'@'+domainToFollow.lower()
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
             return False
-    return followerOfPerson(baseDir,username,domain,usernameToFollow,domainToFollow,federationList)
+    return followerOfPerson(baseDir,nickname,domain,nicknameToFollow,domainToFollow,federationList)
 
-def sendFollowRequest(baseDir: str,username: str,domain: str,port: int,https: bool, \
-                      followUsername: str,followDomain: str,followPort: bool,followHttps: bool, \
+def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
+                      followNickname: str,followDomain: str,followPort: bool,followHttps: bool, \
                       federationList: []) -> {}:
     """Gets the json object for sending a follow request
     """
@@ -259,8 +259,8 @@ def sendFollowRequest(baseDir: str,username: str,domain: str,port: int,https: bo
 
     newFollow = {
         'type': 'Follow',
-        'actor': prefix+'://'+domain+'/users/'+username,
-        'object': followPrefix+'://'+followDomain+'/users/'+followUsername,
+        'actor': prefix+'://'+domain+'/users/'+nickname,
+        'object': followPrefix+'://'+followDomain+'/users/'+followNickname,
         'to': [toUrl],
         'cc': []
     }

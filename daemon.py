@@ -43,9 +43,9 @@ def readFollowList(filename: str):
     followUsers = open(filename, "r")    
     for u in followUsers:
         if u not in followlist:
-            username,domain = parseHandle(u)
-            if username:
-                followlist.append(username+'@'+domain)
+            nickname,domain = parseHandle(u)
+            if nickname:
+                followlist.append(nickname+'@'+domain)
     followUsers.close()
     return followlist
 

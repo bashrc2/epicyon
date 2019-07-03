@@ -15,7 +15,7 @@ from requests.auth import AuthBase
 import base64
 import json
 
-def signPostHeaders(privateKeyPem: str, username: str, domain: str, \
+def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
                     port: int,path: str, \
                     https: bool, messageBodyJson: {}) -> str:
     """Returns a raw signature string that can be plugged into a header and
@@ -28,7 +28,7 @@ def signPostHeaders(privateKeyPem: str, username: str, domain: str, \
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
-    keyID = prefix+'://'+domain+'/users/'+username+'/main-key'
+    keyID = prefix+'://'+domain+'/users/'+nickname+'/main-key'
     if not messageBodyJson:
         headers = {'host': domain}
     else:
@@ -62,7 +62,7 @@ def signPostHeaders(privateKeyPem: str, username: str, domain: str, \
         [f'{k}="{v}"' for k, v in signatureDict.items()])
     return signatureHeader
 
-def createSignedHeader(privateKeyPem: str,username: str,domain: str,port: int, \
+def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
                        path: str,https: bool,withDigest: bool, \
                        messageBodyJson: {}) -> {}:
     headerDomain=domain
@@ -78,7 +78,7 @@ def createSignedHeader(privateKeyPem: str,username: str,domain: str,port: int, \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
         headers = {'host': headerDomain, 'digest': f'SHA-256={bodyDigest}'}        
     path='/inbox'
-    signatureHeader = signPostHeaders(privateKeyPem, username, domain, port, \
+    signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
                                       path, https, None)
     headers['signature'] = signatureHeader
     headers['Content-type'] = 'application/json'

@@ -20,10 +20,10 @@ def getStatusNumber() -> (str,str):
     conversationDate=currTime.strftime("%Y-%m-%d")
     return statusNumber,published
 
-def createOutboxDir(username: str,domain: str,baseDir: str) -> str:
+def createOutboxDir(nickname: str,domain: str,baseDir: str) -> str:
     """Create an outbox for a person and returns the feed filename and directory
     """
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     outboxDir=baseDir+'/accounts/'+handle+'/outbox'

@@ -34,10 +34,10 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
-def getPersonKey(username: str,domain: str,baseDir: str,keyType='public'):
+def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public'):
     """Returns the public or private key of a person
     """
-    handle=username+'@'+domain
+    handle=nickname+'@'+domain
     keyFilename=baseDir+'/keys/'+keyType+'/'+handle.lower()+'.key'
     if not os.path.isfile(keyFilename):
         return ''
@@ -212,10 +212,10 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             break
     return personPosts
 
-def createOutboxArchive(username: str,domain: str,baseDir: str) -> str:
+def createOutboxArchive(nickname: str,domain: str,baseDir: str) -> str:
     """Creates an archive directory for outbox posts
     """
-    handle=username.lower()+'@'+domain.lower()
+    handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     outboxArchiveDir=baseDir+'/accounts/'+handle+'/outboxarchive'
@@ -223,10 +223,10 @@ def createOutboxArchive(username: str,domain: str,baseDir: str) -> str:
         os.mkdir(outboxArchiveDir)
     return outboxArchiveDir
 
-def deleteAllPosts(username: str, domain: str,baseDir: str) -> None:
+def deleteAllPosts(nickname: str, domain: str,baseDir: str) -> None:
     """Deletes all posts for a person
     """
-    outboxDir = createOutboxDir(username,domain,baseDir)
+    outboxDir = createOutboxDir(nickname,domain,baseDir)
     for deleteFilename in os.listdir(outboxDir):
         filePath = os.path.join(outboxDir, deleteFilename)
         try:
@@ -236,7 +236,7 @@ def deleteAllPosts(username: str, domain: str,baseDir: str) -> None:
         except Exception as e:
             print(e)
             
-def createPostBase(baseDir: str,username: str, domain: str, port: int, \
+def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, https: bool, content: str, \
                    followersOnly: bool, saveToFile: bool, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
@@ -253,11 +253,11 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int, \
     conversationDate=published.split('T')[0]
     conversationId=statusNumber
     postTo='https://www.w3.org/ns/activitystreams#Public'
-    postCC=prefix+'://'+domain+'/users/'+username+'/followers'
+    postCC=prefix+'://'+domain+'/users/'+nickname+'/followers'
     if followersOnly:
         postTo=postCC
         postCC=''
-    newPostId=prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber
+    newPostId=prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     sensitive=False
     summary=None
     if subject:
@@ -266,7 +266,7 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int, \
     newPost = {
         'id': newPostId+'/activity',
         'type': 'Create',
-        'actor': prefix+'://'+domain+'/users/'+username,
+        'actor': prefix+'://'+domain+'/users/'+nickname,
         'published': published,
         'to': [toUrl],
         'cc': [],
@@ -275,12 +275,12 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int, \
                    'summary': summary,
                    'inReplyTo': inReplyTo,
                    'published': published,
-                   'url': prefix+'://'+domain+'/@'+username+'/'+statusNumber,
-                   'attributedTo': prefix+'://'+domain+'/users/'+username,
+                   'url': prefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
+                   'attributedTo': prefix+'://'+domain+'/users/'+nickname,
                    'to': [toUrl],
                    'cc': [],
                    'sensitive': sensitive,
-                   'atomUri': prefix+'://'+domain+'/users/'+username+'/statuses/'+statusNumber,
+                   'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
                    'inReplyToAtomUri': inReplyToAtomUri,
                    'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
                    'content': content,
@@ -290,11 +290,11 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int, \
                    'attachment': [],
                    'tag': [],
                    'replies': {}
-                   #    'id': 'https://'+domain+'/users/'+username+'/statuses/'+statusNumber+'/replies',
+                   #    'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
                    #    'type': 'Collection',
                    #    'first': {
                    #        'type': 'CollectionPage',
-                   #        'partOf': 'https://'+domain+'/users/'+username+'/statuses/'+statusNumber+'/replies',
+                   #        'partOf': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
                    #        'items': []
                    #    }
                    #}
@@ -307,13 +307,13 @@ def createPostBase(baseDir: str,username: str, domain: str, port: int, \
     if saveToFile:
         if ':' in domain:
             domain=domain.split(':')[0]
-        outboxDir = createOutboxDir(username,domain,baseDir)
+        outboxDir = createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newPost, fp, indent=4, sort_keys=False)
     return newPost
 
-def createPublicPost(baseDir: str,username: str, domain: str, port: int,https: bool, \
+def createPublicPost(baseDir: str,nickname: str, domain: str, port: int,https: bool, \
                      content: str, followersOnly: bool, saveToFile: bool, \
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
@@ -321,9 +321,9 @@ def createPublicPost(baseDir: str,username: str, domain: str, port: int,https: b
     prefix='https'
     if not https:
         prefix='http'
-    return createPostBase(baseDir,username, domain, port, \
+    return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
-                          prefix+'://'+domain+'/users/'+username+'/followers', \
+                          prefix+'://'+domain+'/users/'+nickname+'/followers', \
                           https, content, followersOnly, saveToFile, \
                           inReplyTo, inReplyToAtomUri, subject)
 
@@ -352,8 +352,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str, 
         time.sleep(backoffTime)
         backoffTime *= 2
 
-def sendPost(session,baseDir: str,username: str, domain: str, port: int, \
-             toUsername: str, toDomain: str, toPort: int, cc: str, \
+def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
+             toNickname: str, toDomain: str, toPort: int, cc: str, \
              https: bool, content: str, followersOnly: bool, \
              saveToFile: bool, federationList: [], sendThreads: [], \
              postLog: [], cachedWebfingers: {},personCache: {}, \
@@ -369,7 +369,7 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, \
     if toPort!=80 and toPort!=443:
         toDomain=toDomain+':'+str(toPort)        
 
-    handle=prefix+'://'+toDomain+'/@'+toUsername
+    handle=prefix+'://'+toDomain+'/@'+toNickname
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session,handle,https,cachedWebfingers)
@@ -386,20 +386,20 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, \
     if not toPersonId:
         return 4
 
-    postJsonObject=createPostBase(baseDir,username,domain,port, \
+    postJsonObject=createPostBase(baseDir,nickname,domain,port, \
                                   toPersonId,cc,https,content, \
                                   followersOnly,saveToFile, \
                                   inReplyTo,inReplyToAtomUri, \
                                   subject)
 
     # get the senders private key
-    privateKeyPem=getPersonKey(username,domain,baseDir,'private')
+    privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
     if len(privateKeyPem)==0:
         return 5
 
     # construct the http header
     signatureHeaderJson = \
-        createSignedHeader(privateKeyPem, username, domain, port, \
+        createSignedHeader(privateKeyPem, nickname, domain, port, \
                            '/inbox', https, withDigest, postJsonObject)
 
     # Keep the number of threads being used small
@@ -416,7 +416,7 @@ def sendPost(session,baseDir: str,username: str, domain: str, port: int, \
     thr.start()
     return 0
 
-def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
+def createOutbox(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
     """
@@ -424,7 +424,7 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
     if not https:
         prefix='http'
 
-    outboxDir = createOutboxDir(username,domain,baseDir)
+    outboxDir = createOutboxDir(nickname,domain,baseDir)
 
     if port!=80 and port!=443:
         domain = domain+':'+str(port)
@@ -436,16 +436,16 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
         except:
             pass
     outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
-                    'first': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
-                    'id': prefix+'://'+domain+'/users/'+username+'/outbox',
-                    'last': prefix+'://'+domain+'/users/'+username+'/outbox?page=true',
+                    'first': prefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
+                    'id': prefix+'://'+domain+'/users/'+nickname+'/outbox',
+                    'last': prefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
                     'totalItems': 0,
                     'type': 'OrderedCollection'}
     outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
-                   'id': prefix+'://'+domain+'/users/'+username+'/outbox'+pageStr,
+                   'id': prefix+'://'+domain+'/users/'+nickname+'/outbox'+pageStr,
                    'orderedItems': [
                    ],
-                   'partOf': prefix+'://'+domain+'/users/'+username+'/outbox',
+                   'partOf': prefix+'://'+domain+'/users/'+nickname+'/outbox',
                    'type': 'OrderedCollectionPage'}
 
     # counter for posts loop
@@ -467,7 +467,7 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
         if lastPage<1:
             lastPage=1
         outboxHeader['last']= \
-            prefix+'://'+domain+'/users/'+username+'/outbox?page='+str(lastPage)
+            prefix+'://'+domain+'/users/'+nickname+'/outbox?page='+str(lastPage)
 
     # Insert posts
     currPage=1
@@ -478,7 +478,7 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
             # update the prev entry for the last message id
             postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
             outboxHeader['prev']= \
-                prefix+'://'+domain+'/users/'+username+'/outbox?min_id='+postId+'&page=true'
+                prefix+'://'+domain+'/users/'+nickname+'/outbox?min_id='+postId+'&page=true'
         # get the full path of the post file
         filePath = os.path.join(outboxDir, postFilename)
         try:
@@ -497,7 +497,7 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
                                 postId = p['id'].split('/statuses/')[1].replace('/activity','')
                                 outboxHeader['next']= \
                                     prefix+'://'+domain+'/users/'+ \
-                                    username+'/outbox?max_id='+ \
+                                    nickname+'/outbox?max_id='+ \
                                     postId+'&page=true'
                         postsOnPageCtr += 1
                 # remember the last post filename for use with prev
@@ -515,13 +515,13 @@ def createOutbox(baseDir: str,username: str,domain: str,port: int,https: bool, \
         return outboxHeader
     return outboxItems
 
-def archivePosts(username: str,domain: str,baseDir: str, \
+def archivePosts(nickname: str,domain: str,baseDir: str, \
                  maxPostsInOutbox=256) -> None:
     """Retain a maximum number of posts within the outbox
     Move any others to an archive directory
     """
-    outboxDir = createOutboxDir(username,domain,baseDir)
-    archiveDir = createOutboxArchive(username,domain,baseDir)
+    outboxDir = createOutboxDir(nickname,domain,baseDir)
+    archiveDir = createOutboxArchive(nickname,domain,baseDir)
     postsInOutbox=sorted(os.listdir(outboxDir), reverse=False)
     noOfPosts=len(postsInOutbox)
     if noOfPosts<=maxPostsInOutbox:
