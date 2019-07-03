@@ -35,17 +35,60 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from tests import testPostMessageBetweenServers
 from tests import runAllTests
+import argparse
 
-runAllTests()
+def str2bool(v):
+    if isinstance(v, bool):
+       return v
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
 
-federationList=['mastodon.social','wild.com','trees.com','127.0.0.1']
-username='testuser'
-#domain=socket.gethostname()
-domain='0.0.0.0'
-port=6227
-https=False
-useTor=False
-baseDir=os.getcwd()
+parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('-d','--domain', dest='domain', type=str,default='localhost',
+                    help='Domain name of the server')
+parser.add_argument('-p','--port', dest='port', type=int,default=80,
+                    help='Port number to run on')
+parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
+                    help='Directory in which to store posts')
+parser.add_argument('-f','--federate', nargs='+',dest='federationList',
+                    help='Specify federation list separated by spaces')
+parser.add_argument("--https", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Use https")
+parser.add_argument("--tor", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Route via Tor")
+parser.add_argument("--tests", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Run unit tests")
+args = parser.parse_args()
+if args.tests:
+    runAllTests()
+    sys.exit()
+    
+print(args.domain)
+print(str(args.federationList))
+
+username='admin'
+domain=args.domain
+port=args.port
+https=args.https
+useTor=args.tor
+baseDir=args.baseDir
+if baseDir.endswith('/'):
+    print("--path option should not end with '/'")
+    sys.exit()
+
+federationList=[]
+if args.federationList:
+    federationList=args.federationList.copy()
+print(baseDir)
+sys.exit()
+
 session = createSession(domain,port,useTor)
 personCache={}
 cachedWebfingers={}

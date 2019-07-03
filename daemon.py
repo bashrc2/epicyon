@@ -283,12 +283,12 @@ class PubServer(BaseHTTPRequestHandler):
 
 def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False) -> None:
     if len(domain)==0:
-        domain='127.0.0.1'
+        domain='localhost'
     if '.' not in domain:
         print('Invalid domain: ' + domain)
         return
 
-    serverAddress = (domain, port)
+    serverAddress = ('', port)
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
     httpd.domain=domain
     httpd.port=port

@@ -206,11 +206,57 @@ def testPostMessageBetweenServers():
     thrBob.join()
     assert thrBob.isAlive()==False
 
+def testFollows():
+    currDir=os.getcwd()
+    username='test529'
+    domain='testdomain.com'
+    port=80
+    https=True
+    federationList=['wild.com','mesh.com']
+    baseDir=currDir+'/.tests_testfollows'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)
+    createPerson(baseDir,username,domain,port,https,True)
+
+    clearFollows(baseDir,username,domain)
+    followPerson(baseDir,username,domain,'badger','wild.com',federationList)
+    followPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
+    followPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
+    followPerson(baseDir,username,domain,'batman','mesh.com',federationList)
+    followPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
+
+    f = open(baseDir+'/accounts/'+username+'@'+domain+'/following.txt', "r")
+    for followingDomain in f:
+        testDomain=followingDomain.split('@')[1].replace('\n','')
+        if testDomain not in federationList:
+            print(testDomain)
+            assert(False)
+
+    clearFollowers(baseDir,username,domain)
+    followerOfPerson(baseDir,username,domain,'badger','wild.com',federationList)
+    followerOfPerson(baseDir,username,domain,'squirrel','secret.com',federationList)
+    followerOfPerson(baseDir,username,domain,'rodent','drainpipe.com',federationList)
+    followerOfPerson(baseDir,username,domain,'batman','mesh.com',federationList)
+    followerOfPerson(baseDir,username,domain,'giraffe','trees.com',federationList)
+
+    f = open(baseDir+'/accounts/'+username+'@'+domain+'/followers.txt', "r")
+    for followerDomain in f:
+        testDomain=followerDomain.split('@')[1].replace('\n','')
+        if testDomain not in federationList:
+            print(testDomain)
+            assert(False)
+
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+    
 def runAllTests():
     print('Running tests...')
     testHttpsig()
     testCache()
     testThreads()
+    testFollows()
     print('Tests succeeded\n')
 
         
