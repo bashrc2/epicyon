@@ -177,10 +177,10 @@ class PubServer(BaseHTTPRequestHandler):
         filename=self.server.baseDir+self.path
         if os.path.isfile(filename):
             self._set_headers('application/json')
-            with open(filename, 'r', encoding='utf8') as File:
+            with open(filename, 'r', encoding='utf-8') as File:
                 content = File.read()
                 contentJson=json.loads(content)
-                self.wfile.write(json.dumps(contentJson).encode('utf8'))
+                self.wfile.write(json.dumps(contentJson).encode('utf-8'))
         else:
             if self.server.debug:
                 print('DEBUG: GET Unknown file')

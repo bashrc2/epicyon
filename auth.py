@@ -36,7 +36,7 @@ def createBasicAuthHeader(nickname: str,password: str) -> str:
     """This is only used by tests
     """
     authStr=nickname.replace('\n','')+':'+password.replace('\n','')
-    return 'Basic '+base64.b64encode(authStr.encode('utf8')).decode('utf8')
+    return 'Basic '+base64.b64encode(authStr.encode('utf-8')).decode('utf-8')
 
 def authorizeBasic(baseDir: str,authHeader: str) -> bool:
     """HTTP basic auth
@@ -44,7 +44,7 @@ def authorizeBasic(baseDir: str,authHeader: str) -> bool:
     if ' ' not in authHeader:
         return False
     base64Str = authHeader.split(' ')[1].replace('\n','')
-    plain = base64.b64decode(base64Str).decode('utf8')
+    plain = base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
         return False
     nickname = plain.split(':')[0]
