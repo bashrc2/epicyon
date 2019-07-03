@@ -82,6 +82,12 @@ if args.testsnetwork:
     testPostMessageBetweenServers()
     sys.exit()
 
+if args.posts:
+    nickname=args.posts.split('@')[0]
+    domain=args.posts.split('@')[1]
+    getPublicPostsOfPerson(nickname,domain)
+    sys.exit()
+
 if not args.domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
@@ -99,11 +105,5 @@ if baseDir.endswith('/'):
 federationList=[]
 if args.federationList:
     federationList=args.federationList.copy()
-
-if args.posts:
-    nickname=args.posts.split('@')[0]
-    domain=args.posts.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain)
-    sys.exit()
 
 runDaemon(domain,port,https,federationList,useTor)

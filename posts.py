@@ -22,6 +22,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from pprint import pprint
 from random import randint
+from session import createSession
 from session import getJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -541,6 +542,7 @@ def getPublicPostsOfPerson(nickname,domain):
     """ This is really just for test purposes
     """
     useTor=True
+    port=443
     session = createSession(domain,port,useTor)
     personCache={}
     cachedWebfingers={}
