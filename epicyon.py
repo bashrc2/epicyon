@@ -17,6 +17,7 @@ from posts import createOutbox
 from posts import archivePosts
 from posts import sendPost
 from posts import getPersonBox
+from posts import getPublicPostsOfPerson
 from session import createSession
 from session import getJson
 import json
@@ -46,14 +47,16 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
-
+    
 parser = argparse.ArgumentParser(description='ActivityPub Server')
-parser.add_argument('-d','--domain', dest='domain', type=str,default='localhost',
+parser.add_argument('-d','--domain', dest='domain', type=str,default=None,
                     help='Domain name of the server')
-parser.add_argument('-p','--port', dest='port', type=int,default=80,
+parser.add_argument('-p','--port', dest='port', type=int,default=8085,
                     help='Port number to run on')
 parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
                     help='Directory in which to store posts')
+parser.add_argument('--posts', dest='posts', type=str,default=None,
+                    help='Show posts for the given handle')
 parser.add_argument('-f','--federate', nargs='+',dest='federationList',
                     help='Specify federation list separated by spaces')
 parser.add_argument("--https", type=str2bool, nargs='?',
@@ -65,14 +68,24 @@ parser.add_argument("--tor", type=str2bool, nargs='?',
 parser.add_argument("--tests", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Run unit tests")
+parser.add_argument("--testsnetwork", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Run network unit tests")
 args = parser.parse_args()
+
 if args.tests:
     runAllTests()
     sys.exit()
-    
-print(args.domain)
-print(str(args.federationList))
 
+if args.testsnetwork:
+    print('Network Tests')
+    testPostMessageBetweenServers()
+    sys.exit()
+
+if not args.domain:
+    print('Specify a domain with --domain [name]')
+    sys.exit()
+    
 nickname='admin'
 domain=args.domain
 port=args.port
@@ -87,44 +100,10 @@ federationList=[]
 if args.federationList:
     federationList=args.federationList.copy()
 
-session = createSession(domain,port,useTor)
-personCache={}
-cachedWebfingers={}
-
-privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
-#deleteAllPosts(baseDir,nickname,domain)
-setPreferredNickname(baseDir,nickname,domain,'badger')
-setBio(baseDir,nickname,domain,'Some personal info')
-#createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')
-#archivePosts(nickname,domain,baseDir,4)
-#outboxJson=createOutbox(baseDir,nickname,domain,port,https,2,True,None)
-#pprint(outboxJson)
-
-#testPostMessageBetweenServers()
-runDaemon(domain,port,https,federationList,useTor)
-
-#testHttpsig()
-sys.exit()
-
-#pprint(person)
-#print('\n')
-#pprint(wfEndpoint)
-
-handle="https://mastodon.social/@Gargron"
-wfRequest = webfingerHandle(session,handle,True,cachedWebfingers)
-if not wfRequest:
+if args.posts:
+    nickname=args.posts.split('@')[0]
+    domain=args.posts.split('@')[1]
+    getPublicPostsOfPerson(nickname,domain)
     sys.exit()
 
-personUrl,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest,personCache,'outbox')
-#pprint(personUrl)
-#sys.exit()
-
-wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
-#print(str(wfResult))
-#sys.exit()
-
-maxMentions=10
-maxEmoji=10
-maxAttachments=5
-userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji,maxAttachments,federationList,personCache)
-#print(str(userPosts))
+runDaemon(domain,port,https,federationList,useTor)

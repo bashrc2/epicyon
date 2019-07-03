@@ -536,3 +536,26 @@ def archivePosts(nickname: str,domain: str,baseDir: str, \
             noOfPosts -= 1
             if noOfPosts <= maxPostsInOutbox:
                 break
+
+def getPublicPostsOfPerson(nickname,domain):
+    """ This is really just for test purposes
+    """
+    useTor=True
+    session = createSession(domain,port,useTor)
+    personCache={}
+    cachedWebfingers={}
+    federationList=[]
+
+    handle="https://"+domain+"/@"+nickname
+    wfRequest = webfingerHandle(session,handle,True,cachedWebfingers)
+    if not wfRequest:
+        sys.exit()
+
+    personUrl,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest,personCache,'outbox')
+    wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
+
+    maxMentions=10
+    maxEmoji=10
+    maxAttachments=5
+    userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji,maxAttachments,federationList,personCache)
+    #print(str(userPosts))
