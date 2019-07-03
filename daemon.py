@@ -107,16 +107,17 @@ class PubServer(BaseHTTPRequestHandler):
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
-        if not messageJson.get('object'):
-            if messageJson.get('type') and messageJson.get('content'):
-                if messageJson['type']!='Create':
-                    # https://www.w3.org/TR/activitypub/#object-without-create
-                    if self.server.debug:
-                        print('DEBUG POST to outbox: Adding Create wrapper')
-                    messageJson= \
-                        outboxMessageCreateWrap(self.server.httpPrefix, \
-                                                self.postToNickname, \
-                                                self.server.domain,messageJson)
+        if not messageJson.get('type'):
+            return False
+        if not messageJson.get('object') and messageJson.get('content'):
+            if messageJson['type']!='Create':
+                # https://www.w3.org/TR/activitypub/#object-without-create
+                if self.server.debug:
+                    print('DEBUG POST to outbox: Adding Create wrapper')
+                messageJson= \
+                    outboxMessageCreateWrap(self.server.httpPrefix, \
+                                            self.postToNickname, \
+                                            self.server.domain,messageJson)
         if messageJson['type']=='Create':
             if not (messageJson.get('id') and \
                     messageJson.get('type') and \
@@ -134,7 +135,11 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG POST to outbox: '+messageJson['type']+' is not a permitted activity type')
             return False
-        savePostToOutbox(self.server.baseDir,messageJson['id'],self.postToNickname,self.server.domain,messageJson)
+        if messageJson.get('id'):
+            postId=messageJson['id']
+        else:
+            postId=None
+        savePostToOutbox(self.server.baseDir,postId,self.postToNickname,self.server.domain,messageJson)
         return True
 
     def do_GET(self):

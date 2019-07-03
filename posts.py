@@ -249,11 +249,19 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
         except Exception as e:
             print(e)
 
-def savePostToOutbox(baseDir: str,postId: str,nickname: str, domain: str,postJson: {}) -> None:
+def savePostToOutbox(baseDir: str,httpPrefix: str,postId: str,nickname: str, domain: str,postJson: {}) -> None:
     """Saves the give json to the outbox
     """
     if ':' in domain:
         domain=domain.split(':')[0]
+    if not postId:
+        statusNumber,published = getStatusNumber()
+        postId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+        postJson['id']=postId+'/activity'
+    if postJson.get('object'):
+        postJson['object']['id']=postId
+        postJson['object']['atomUri']=postId
+         
     outboxDir = createOutboxDir(nickname,domain,baseDir)
     filename=outboxDir+'/'+postId.replace('/','#')+'.json'
     with open(filename, 'w') as fp:
@@ -301,7 +309,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 'to': [toUrl],
                 'cc': [],
                 'sensitive': sensitive,
-                'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+                'atomUri': newPostId,
                 'inReplyToAtomUri': inReplyToAtomUri,
                 'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
                 'content': content,
@@ -333,7 +341,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             'to': [toUrl],
             'cc': [],
             'sensitive': sensitive,
-            'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+            'atomUri': newPostId,
             'inReplyToAtomUri': inReplyToAtomUri,
             'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
             'content': content,
@@ -349,7 +357,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost['cc']=ccUrl
             newPost['object']['cc']=ccUrl
     if saveToFile:
-        savePostToOutbox(baseDir,newPostId,nickname,domain,newPost)
+        savePostToOutbox(baseDir,httpPrefix,newPostId,nickname,domain,newPost)
     return newPost
 
 def outboxMessageCreateWrap(httpPrefix str,nickname: str,domain: str,messageJson: {}) -> {}:
