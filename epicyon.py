@@ -86,8 +86,6 @@ if baseDir.endswith('/'):
 federationList=[]
 if args.federationList:
     federationList=args.federationList.copy()
-print(baseDir)
-sys.exit()
 
 session = createSession(domain,port,useTor)
 personCache={}

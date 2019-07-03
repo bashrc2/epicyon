@@ -69,7 +69,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  'manuallyApprovesFollowers': False,
                  'name': nickname,
                  'outbox': prefix+'://'+domain+'/users/'+nickname+'/outbox',
-                 'preferredNickname': ''+nickname,
+                 'preferredUsername': ''+nickname,
                  'publicKey': {'id': prefix+'://'+domain+'/users/'+nickname+'/main-key',
                                'owner': prefix+'://'+domain+'/users/'+nickname,
                                'publicKeyPem': publicKeyPem,
@@ -220,7 +220,7 @@ def setPreferredNickname(baseDir: str,nickname: str, domain: str, \
         personJson=commentjson.load(fp)
     if not personJson:
         return False
-    personJson['preferredNickname']=preferredName
+    personJson['preferredUsername']=preferredName
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True
