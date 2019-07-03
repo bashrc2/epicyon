@@ -248,7 +248,17 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
             elif os.path.isdir(filePath): shutil.rmtree(filePath)
         except Exception as e:
             print(e)
-            
+
+def savePostToOutbox(baseDir: str,postId: str,nickname: str, domain: str,postJson: {}) -> None:
+    """Saves the give json to the outbox
+    """
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    outboxDir = createOutboxDir(nickname,domain,baseDir)
+    filename=outboxDir+'/'+postId.replace('/','#')+'.json'
+    with open(filename, 'w') as fp:
+        commentjson.dump(postJson, fp, indent=4, sort_keys=False)
+
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
                    followersOnly: bool, saveToFile: bool, clientToServer: bool, \
@@ -339,12 +349,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost['cc']=ccUrl
             newPost['object']['cc']=ccUrl
     if saveToFile:
-        if ':' in domain:
-            domain=domain.split(':')[0]
-        outboxDir = createOutboxDir(nickname,domain,baseDir)
-        filename=outboxDir+'/'+newPostId.replace('/','#')+'.json'
-        with open(filename, 'w') as fp:
-            commentjson.dump(newPost, fp, indent=4, sort_keys=False)
+        savePostToOutbox(baseDir,newPostId,nickname,domain,newPost)
     return newPost
 
 def outboxMessageCreateWrap(httpPrefix str,nickname: str,domain: str,messageJson: {}) -> {}:
@@ -369,6 +374,8 @@ def outboxMessageCreateWrap(httpPrefix str,nickname: str,domain: str,messageJson
         'object': messageJson
     }
     newPost['object']['id']=newPost['id']
+    newPost['object']['url']=httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber
+    newPost['object']['atomUri']=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     return newPost
 
 def createPublicPost(baseDir: str,

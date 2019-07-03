@@ -19,6 +19,8 @@ from person import personLookup
 from person import personKeyLookup
 from person import personOutboxJson
 from posts import getPersonPubKey
+from posts import outboxMessageCreateWrap
+from posts import savePostToOutbox
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from follow import getFollowingFeed
@@ -52,12 +54,12 @@ def readFollowList(filename: str):
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    def _set_headers(self,fileFormat):
+    def _set_headers(self,fileFormat: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.end_headers()
 
-    def _404(self):
+    def _404(self) -> None:
         self.send_response(404)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.end_headers()
@@ -90,11 +92,41 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
         return True
 
-    def _permittedDir(self,path):
+    def _permittedDir(self,path: str) -> bool:
+        """These are special paths which should not be accessible
+        directly via GET or POST
+        """
         if path.startswith('/wfendpoints') or \
            path.startswith('/keys') or \
            path.startswith('/accounts'):
             return False
+        return True
+
+    def _postToOutbox(messageJson: {}) -> bool:
+        """post is received by the outbox
+        Client to server message post
+        https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
+        """
+        if not messageJson.get('object'):
+            if messageJson.get('type'):
+                if messageJson['type']!='Create':
+                    # https://www.w3.org/TR/activitypub/#object-without-create
+                    messageJson= \
+                        outboxMessageCreateWrap(self.server.httpPrefix, \
+                                                self.postToNickname, \
+                                                self.server.domain,messageJson)
+        if not (messageJson.get('id') and \
+                messageJson.get('type') and \
+                messageJson.get('actor') and \
+                messageJson.get('object') and \
+                messageJson.get('atomUri') and \
+                messageJson.get('to')):
+            return False
+        if messageJson['type']!='Create':
+            return False
+        # https://www.w3.org/TR/activitypub/#create-activity-outbox
+        messageJson['object']['attributedTo']=messageJson['actor']
+        savePostToOutbox(self.server.baseDir,messageJson['id'],self.postToNickname,self.server.domain,messageJson)
         return True
 
     def do_GET(self):
@@ -282,15 +314,17 @@ class PubServer(BaseHTTPRequestHandler):
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if not messageJson.get('object'):
-                if messageJson.get('type'):
-                    if messageJson['type']!='Create':
-                        messageJson=outboxMessageCreateWrap(self.server.httpPrefix,self.postToNickname,self.server.domain,messageJson)
-                else:
-                    self.send_response(403)
-                    self.end_headers()
-                    self.server.POSTbusy=False
-                    return
+            if self._postToOutbox(messageJson):
+                self.send_header('Location',messageJson['object']['atomUri'])
+                self.send_response(201)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
+            else:
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
 
         # check the necessary properties are available
         if self.server.debug:
