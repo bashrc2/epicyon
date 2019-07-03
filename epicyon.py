@@ -117,6 +117,7 @@ if args.federationList:
     federationList=args.federationList.copy()
 
 if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+    print('Creating default admin account '+nickname+'@'+domain)
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
 
 runDaemon(domain,port,https,federationList,useTor)
