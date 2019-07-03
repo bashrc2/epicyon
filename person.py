@@ -22,16 +22,12 @@ def generateRSAKey() -> (str,str):
     return privateKeyPem,publicKeyPem
 
 def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
-                 https: bool, saveToFile: bool) -> (str,str,{},{}):
+                 httpPrefix: str, saveToFile: bool) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-
     privateKeyPem,publicKeyPem=generateRSAKey()
     webfingerEndpoint= \
-        createWebfingerEndpoint(nickname,domain,port,https,publicKeyPem)
+        createWebfingerEndpoint(nickname,domain,port,httpPrefix,publicKeyPem)
     if saveToFile:
         storeWebfingerEndpoint(nickname,domain,baseDir,webfingerEndpoint)
 
@@ -54,29 +50,29 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                                'toot': 'http://joinmastodon.org/ns#',
                                'value': 'schema:value'}],
                  'attachment': [],
-                 'endpoints': {'sharedInbox': prefix+'://'+domain+'/inbox'},
-                 'featured': prefix+'://'+domain+'/users/'+nickname+'/collections/featured',
-                 'followers': prefix+'://'+domain+'/users/'+nickname+'/followers',
-                 'following': prefix+'://'+domain+'/users/'+nickname+'/following',
+                 'endpoints': {'sharedInbox': httpPrefix+'://'+domain+'/inbox'},
+                 'featured': httpPrefix+'://'+domain+'/users/'+nickname+'/collections/featured',
+                 'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
+                 'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
-                          'url': prefix+'://'+domain+'/users/'+nickname+'_icon.png'},
-                 'id': prefix+'://'+domain+'/users/'+nickname,
+                          'url': httpPrefix+'://'+domain+'/users/'+nickname+'_icon.png'},
+                 'id': httpPrefix+'://'+domain+'/users/'+nickname,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
-                           'url': prefix+'://'+domain+'/users/'+nickname+'.png'},
-                 'inbox': prefix+'://'+domain+'/users/'+nickname+'/inbox',
+                           'url': httpPrefix+'://'+domain+'/users/'+nickname+'.png'},
+                 'inbox': httpPrefix+'://'+domain+'/users/'+nickname+'/inbox',
                  'manuallyApprovesFollowers': False,
                  'name': nickname,
-                 'outbox': prefix+'://'+domain+'/users/'+nickname+'/outbox',
+                 'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
                  'preferredUsername': ''+nickname,
-                 'publicKey': {'id': prefix+'://'+domain+'/users/'+nickname+'/main-key',
-                               'owner': prefix+'://'+domain+'/users/'+nickname,
+                 'publicKey': {'id': httpPrefix+'://'+domain+'/users/'+nickname+'/main-key',
+                               'owner': httpPrefix+'://'+domain+'/users/'+nickname,
                                'publicKeyPem': publicKeyPem,
                                'summary': '',
                                'tag': [],
                                'type': 'Person',
-                               'url': prefix+'://'+domain+'/@'+nickname}
+                               'url': httpPrefix+'://'+domain+'/@'+nickname}
     }
 
     if saveToFile:
@@ -170,7 +166,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     return personJson
 
 def personOutboxJson(baseDir: str,domain: str,port: int,path: str, \
-                     https: bool,noOfItems: int) -> []:
+                     httpPrefix: str,noOfItems: int) -> []:
     """Obtain the outbox feed for the given person
     """
     if not '/outbox' in path:
@@ -204,7 +200,7 @@ def personOutboxJson(baseDir: str,domain: str,port: int,path: str, \
         return None
     if not validNickname(nickname):
         return None
-    return createOutbox(baseDir,nickname,domain,port,https, \
+    return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
                         noOfItems,headerOnly,pageNumber)
 
 def setPreferredNickname(baseDir: str,nickname: str, domain: str, \

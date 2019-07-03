@@ -114,7 +114,7 @@ def getNoOfFollowers(baseDir: str,nickname: str,domain: str) -> int:
     """
     return getNoOfFollows(baseDir,nickname,domain,'followers.txt')
 
-def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
+def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,httpPrefix: str, \
                      followsPerPage=12,followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests
     """
@@ -147,18 +147,14 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     if not validNickname(nickname):
         return None
             
-    prefix='https'
-    if not https:
-        prefix='http'
-
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
     if headerOnly:
         following = {
             '@context': 'https://www.w3.org/ns/activitystreams',
-            'first': prefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page=1',
-            'id': prefix+'://'+domain+'/users/'+nickname+'/'+followFile,
+            'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page=1',
+            'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile,
             'totalItems': getNoOfFollows(nickname,domain),
             'type': 'OrderedCollection'}
         return following
@@ -169,9 +165,9 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     nextPageNumber=int(pageNumber+1)
     following = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': prefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(pageNumber),
+        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(pageNumber),
         'orderedItems': [],
-        'partOf': prefix+'://'+domain+'/users/'+nickname+'/'+followFile,
+        'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile,
         'totalItems': 0,
         'type': 'OrderedCollectionPage'}        
 
@@ -190,10 +186,10 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
                     pageCtr += 1
                     totalCtr += 1
                     if currPage==pageNumber:
-                        url = prefix + '://' + line.lower().replace('\n','').split('@')[1] + \
+                        url = httpPrefix + '://' + line.lower().replace('\n','').split('@')[1] + \
                             '/users/' + line.lower().replace('\n','').split('@')[0]
                         following['orderedItems'].append(url)
-                elif line.startswith('http') and '/users/' in line:
+                elif (line.startswith('http') or line.startswith('dat')) and '/users/' in line:
                     pageCtr += 1
                     totalCtr += 1
                     if currPage==pageNumber:
@@ -206,7 +202,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,https: bool, \
     if lastPage<1:
         lastPage=1
     if nextPageNumber>lastPage:
-        following['next']=prefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
+        following['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
     return following
 
 def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> bool:
@@ -216,7 +212,7 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
         return False
     if '/users/' not in messageJson['actor']:
         return False
-    domain=messageJson['actor'].split('/users/')[0].replace('https://','').replace('http://','')
+    domain=messageJson['actor'].split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
     if not domainPermitted(domain,federationList):
         return False
     nickname=messageJson['actor'].split('/users/')[1].replace('@','')
@@ -225,7 +221,7 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
         return False
     if '/users/' not in messageJson['object']:
         return False
-    domainToFollow=messageJson['object'].split('/users/')[0].replace('https://','').replace('http://','')
+    domainToFollow=messageJson['object'].split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
     if not domainPermitted(domainToFollow,federationList):
         return False
     nicknameToFollow=messageJson['object'].split('/users/')[1].replace('@','')
@@ -235,21 +231,13 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
             return False
     return followerOfPerson(baseDir,nickname,domain,nicknameToFollow,domainToFollow,federationList)
 
-def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
-                      followNickname: str,followDomain: str,followPort: bool,followHttps: bool, \
+def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                      followNickname: str,followDomain: str,followPort: bool,followHttpPrefix: str, \
                       federationList: []) -> {}:
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain,federationList):
         return None
-
-    prefix='https'
-    if not https:
-        prefix='http'
-
-    followPrefix='https'
-    if not followHttps:
-        followPrefix='http'
 
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
@@ -259,8 +247,8 @@ def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,https: bo
 
     newFollow = {
         'type': 'Follow',
-        'actor': prefix+'://'+domain+'/users/'+nickname,
-        'object': followPrefix+'://'+followDomain+'/users/'+followNickname,
+        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'object': followHttpPrefix+'://'+followDomain+'/users/'+followNickname,
         'to': [toUrl],
         'cc': []
     }

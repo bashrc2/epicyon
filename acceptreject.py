@@ -12,7 +12,7 @@ from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
 
-def createAcceptReject(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,https: bool,objectUrl: str,acceptType: str) -> {}:
+def createAcceptReject(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str,acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the followers url
@@ -21,16 +21,12 @@ def createAcceptReject(baseDir: str,federationList: [],nickname: str,domain: str
     if not urlPermitted(objectUrl,federationList):
         return None
 
-    prefix='https'
-    if not https:
-        prefix='http'
-
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
     newAccept = {
         'type': acceptType,
-        'actor': prefix+'://'+domain+'/users/'+nickname,
+        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'to': [toUrl],
         'cc': [],
         'object': objectUrl
@@ -40,8 +36,8 @@ def createAcceptReject(baseDir: str,federationList: [],nickname: str,domain: str
             newAccept['cc']=ccUrl
     return newAccept
 
-def createAccept(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,https: bool,objectUrl: str) -> {}:
-    return createAcceptReject(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,https,objectUrl,'Accept')
+def createAccept(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
+    return createAcceptReject(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Accept')
 
-def createReject(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,https: bool,objectUrl: str) -> {}:
-    return createAcceptReject(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,https,objectUrl,'Reject')
+def createReject(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
+    return createAcceptReject(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Reject')

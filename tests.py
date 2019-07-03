@@ -43,10 +43,10 @@ def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
     nickname='socrates'
     domain='argumentative.social'
-    https=True
+    httpPrefix='https'
     port=5576
     baseDir=os.getcwd()
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,False)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,False)
     messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
 
     headersDomain=domain
@@ -60,11 +60,11 @@ def testHttpsigBase(withDigest):
         headers = {'host': headersDomain, 'digest': f'SHA-256={bodyDigest}'}
 
     path='/inbox'
-    signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, path, https, None)
+    signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, path, httpPrefix, None)
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox' ,False, messageBodyJsonStr)
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJsonStr) == False
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/inbox' ,False, messageBodyJsonStr)
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
         headers = {'host': 'bogon.domain'}
@@ -74,7 +74,7 @@ def testHttpsigBase(withDigest):
         bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
         headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(https, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
 
 def testHttpsig():
     testHttpsigBase(False)
@@ -111,20 +111,20 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     os.mkdir(path)
     os.chdir(path)
     nickname='alice'
-    https=False
+    httpPrefix=False
     useTor=False
     clientToServer=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
     deleteAllPosts(path,nickname,domain)
     followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
-    createPublicPost(path,nickname, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,https, "Curiouser and curiouser!", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,https, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(domain,port,https,federationList,useTor,True)
+    runDaemon(domain,port,httpPrefix,federationList,useTor,True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: []):
     print('Creating test server: Bob on port '+str(port))
@@ -133,20 +133,20 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     os.mkdir(path)
     os.chdir(path)
     nickname='bob'
-    https=False
+    httpPrefix='http'
     useTor=False
     clientToServer=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
     deleteAllPosts(path,nickname,domain)
     followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
-    createPublicPost(path,nickname, domain, port,https, "It's your life, live it your way.", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,https, "One of the things I've realised is that I am very simple", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,https, "Quantum physics is a bit of a passion of mine", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(domain,port,https,federationList,useTor,True)
+    runDaemon(domain,port,httpPrefix,federationList,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
@@ -156,7 +156,7 @@ def testPostMessageBetweenServers():
     testServerAliceRunning = False
     testServerBobRunning = False
 
-    https=False
+    httpPrefix='http'
     useTor=False
     federationList=['127.0.0.50','127.0.0.100']
 
@@ -200,7 +200,7 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, https, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     for i in range(10):
@@ -221,14 +221,14 @@ def testFollows():
     nickname='test529'
     domain='testdomain.com'
     port=80
-    https=True
+    httpPrefix='https'
     federationList=['wild.com','mesh.com']
     baseDir=currDir+'/.tests_testfollows'
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    createPerson(baseDir,nickname,domain,port,https,True)
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True)
 
     clearFollows(baseDir,nickname,domain)
     followPerson(baseDir,nickname,domain,'badger','wild.com',federationList)
@@ -280,7 +280,7 @@ def testCreatePerson():
     nickname='test382'
     domain='badgerdomain.com'
     port=80
-    https=True
+    httpPrefix='https'
     clientToServer=False
     baseDir=currDir+'/.tests_createperson'
     if os.path.isdir(baseDir):
@@ -288,12 +288,12 @@ def testCreatePerson():
     os.mkdir(baseDir)
     os.chdir(baseDir)
     
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True)
     deleteAllPosts(baseDir,nickname,domain)
     setPreferredNickname(baseDir,nickname,domain,'badger')
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
     archivePosts(nickname,domain,baseDir,4)
-    createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, clientToServer, None, None, 'Not suitable for Vogons')
+    createPublicPost(baseDir,nickname, domain, port,httpPrefix, "G'day world!", False, True, clientToServer, None, None, 'Not suitable for Vogons')
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)

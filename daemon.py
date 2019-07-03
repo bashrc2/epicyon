@@ -129,7 +129,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get outbox feed for a person
         outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain, \
                                     self.server.port,self.path, \
-                                    self.server.https,maxPostsInFeed)
+                                    self.server.httpPrefix,maxPostsInFeed)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
@@ -137,7 +137,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         following=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
-                                   self.server.https,followsPerPage)
+                                   self.server.httpPrefix,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
@@ -145,7 +145,7 @@ class PubServer(BaseHTTPRequestHandler):
             return            
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
-                                   self.server.https,followsPerPage,'followers')
+                                   self.server.httpPrefix,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
@@ -305,7 +305,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: POST check signature')
 
-        if not verifyPostHeaders(self.server.https, pubKey, self.headers, \
+        if not verifyPostHeaders(self.server.httpPrefix, pubKey, self.headers, \
                                  '/inbox' ,False, json.dumps(messageJson)):
             print('**************** POST signature verification failed')
             self.send_response(401)
@@ -336,7 +336,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
-def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False,debug=False) -> None:
+def runDaemon(domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -348,7 +348,7 @@ def runDaemon(domain: str,port=80,https=True,fedList=[],useTor=False,debug=False
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
     httpd.domain=domain
     httpd.port=port
-    httpd.https=https
+    httpd.httpPrefix=httpPrefix
     httpd.debug=debug
     httpd.federationList=fedList.copy()
     httpd.baseDir=os.getcwd()

@@ -14,7 +14,7 @@ from utils import urlPermitted
 
 def createAnnounce(baseDir: str,federationList: [], \
                    nickname: str, domain: str, port: int, \
-                   toUrl: str, ccUrl: str, https: bool, \
+                   toUrl: str, ccUrl: str, httpPrefix: str, \
                    objectUrl: str, saveToFile: bool) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
@@ -24,18 +24,14 @@ def createAnnounce(baseDir: str,federationList: [], \
     if not urlPermitted(objectUrl,federationList):
         return None
 
-    prefix='https'
-    if not https:
-        prefix='http'
-
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
-    newAnnounceId=prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    newAnnounceId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     newAnnounce = {
-        'actor': prefix+'://'+domain+'/users/'+nickname,
-        'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
         'cc': [],
         'id': newAnnounceId+'/activity',
         'object': objectUrl,
@@ -56,40 +52,32 @@ def createAnnounce(baseDir: str,federationList: [], \
     return newAnnounce
 
 def announcePublic(baseDir: str,federationList: [], \
-                   nickname: str, domain: str, port: int, https: bool, \
+                   nickname: str, domain: str, port: int, httpPrefix: str, \
                    objectUrl: str, saveToFile: bool) -> {}:
     """Makes a public announcement
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-
     fromDomain=domain
     if port!=80 and port!=443:
         fromDomain=fromDomain+':'+str(port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = prefix + '://'+fromDomain+'/users/'+nickname+'/followers'
+    ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
     return createAnnounce(baseDir,nickname, domain, port, \
-                          toUrl, ccUrl, https, objectUrl, saveToFile)
+                          toUrl, ccUrl, httpPrefix, objectUrl, saveToFile)
 
 def repeatPost(baseDir: str,federationList: [], \
-               nickname: str, domain: str, port: int, https: bool, \
+               nickname: str, domain: str, port: int, httpPrefix: str, \
                announceNickname: str, announceDomain: str, \
-               announcePort: int, announceHttps: bool, \
+               announcePort: int, announceHttpsPrefix: str, \
                announceStatusNumber: int, saveToFile: bool) -> {}:
     """Repeats a given status post
     """
-    prefix='https'
-    if not announceHttps:
-        prefix='http'
-
     announcedDomain=announceDomain
     if announcePort!=80 and announcePort!=443:
         announcedDomain=announcedDomain+':'+str(announcePort)
 
-    objectUrl = prefix + '://'+announcedDomain+'/users/'+ \
+    objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
 
-    return announcePublic(baseDir,nickname, domain, port, https, objectUrl, saveToFile)
+    return announcePublic(baseDir,nickname, domain, port, httpPrefix, objectUrl, saveToFile)
 

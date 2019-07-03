@@ -67,6 +67,9 @@ parser.add_argument("--debug", type=str2bool, nargs='?',
 parser.add_argument("--http", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Use http only")
+parser.add_argument("--dat", type=str2bool, nargs='?',
+                        const=True, default=False,
+                        help="Use dat protocol only")
 parser.add_argument("--tor", type=str2bool, nargs='?',
                         const=True, default=False,
                         help="Route via Tor")
@@ -110,9 +113,11 @@ if not args.domain:
 nickname='admin'
 domain=args.domain
 port=args.port
-https=True
+httpPrefix='https'
 if args.http:
-    https=False
+    httpPrefix='http'
+if args.dat:
+    httpPrefix='dat'
 useTor=args.tor
 baseDir=args.baseDir
 if baseDir.endswith('/'):
@@ -126,6 +131,6 @@ if args.federationList:
 
 if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     print('Creating default admin account '+nickname+'@'+domain)
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True)
 
-runDaemon(domain,port,https,federationList,useTor,debug)
+runDaemon(domain,port,httpPrefix,federationList,useTor,debug)

@@ -11,7 +11,7 @@ import commentjson
 from utils import urlPermitted
 
 def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
-         toUrl: str,ccUrl: str,https: bool,objectUrl: str,saveToFile: bool) -> {}:
+         toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str,saveToFile: bool) -> {}:
     """Creates a like
     Typically toUrl will be a followers collection
     and ccUrl might be a specific person whose post was liked
@@ -20,16 +20,12 @@ def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
     if not urlPermitted(objectUrl,federationList):
         return None
 
-    prefix='https'
-    if not https:
-        prefix='http'
-
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
     newLike = {
         'type': 'Like',
-        'actor': prefix+'://'+domain+'/users/'+nickname,
+        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'object': objectUrl,
         'to': [toUrl],
         'cc': []
@@ -44,19 +40,15 @@ def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
     return newLike
 
 def likePost(baseDir: str,federationList: [], \
-             nickname: str, domain: str, port: int, https: bool, \n
+             nickname: str, domain: str, port: int, httpPrefix: str, \n
              likeNickname: str, likeDomain: str, likePort: int, likeHttps: bool, \n
              likeStatusNumber: int,saveToFile: bool) -> {}:
     """Likes a given status post
     """
-    prefix='https'
-    if not likeHttps:
-        prefix='http'
-
     likeDomain=likeDomain
     if likePort!=80 and likePort!=443:
         likeDomain=likeDomain+':'+str(likePort)
 
-    objectUrl = prefix + '://'+likeDomain+'/users/'+likeNickname+'/statuses/'+str(likeStatusNumber)
+    objectUrl = httpPrefix + '://'+likeDomain+'/users/'+likeNickname+'/statuses/'+str(likeStatusNumber)
 
-    return like(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,https,objectUrl,saveToFile)
+    return like(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,saveToFile)

@@ -22,11 +22,11 @@ def parseHandle(handle: str) -> (str,str):
         return None, None
     if '/@' in handle:
         domain, nickname = \
-            handle.replace('https://','').replace('http://','').split('/@')
+            handle.replace('https://','').replace('http://','').replace('dat://','').split('/@')
     else:
         if '/users/' in handle:
             domain, nickname = \
-                handle.replace('https://','').replace('http://','').split('/users/')
+                handle.replace('https://','').replace('http://','').replace('dat://','').split('/users/')
         else:
             if '@' in handle:
                 nickname, domain = handle.split('@')
@@ -36,7 +36,7 @@ def parseHandle(handle: str) -> (str,str):
     return nickname, domain
 
 
-def webfingerHandle(session,handle: str,https: bool,cachedWebfingers: {}) -> {}:
+def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) -> {}:
     nickname, domain = parseHandle(handle)
     if not nickname:
         return None
@@ -47,10 +47,7 @@ def webfingerHandle(session,handle: str,https: bool,cachedWebfingers: {}) -> {}:
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf
-    prefix='https'
-    if not https:
-        prefix='http'
-    url = '{}://{}/.well-known/webfinger'.format(prefix,domain)
+    url = '{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
     par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}
     #try:
@@ -83,39 +80,35 @@ def storeWebfingerEndpoint(nickname: str,domain: str,baseDir: str, \
     return True
 
 def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
-                            https: bool,publicKeyPem) -> {}:
+                            httpPrefix: str,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-        
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
     account = {
         "aliases": [
-            prefix+"://"+domain+"/@"+nickname,
-            prefix+"://"+domain+"/users/"+nickname
+            httpPrefix+"://"+domain+"/@"+nickname,
+            httpPrefix+"://"+domain+"/users/"+nickname
         ],
         "links": [
             {
-                "href": prefix+"://"+domain+"/@"+nickname,
+                "href": httpPrefix+"://"+domain+"/@"+nickname,
                 "rel": "http://webfinger.net/rel/profile-page",
                 "type": "text/html"
             },
             {
-                "href": prefix+"://"+domain+"/users/"+nickname+".atom",
+                "href": httpPrefix+"://"+domain+"/users/"+nickname+".atom",
                 "rel": "http://schemas.google.com/g/2010#updates-from",
                 "type": "application/atom+xml"
             },
             {
-                "href": prefix+"://"+domain+"/users/"+nickname,
+                "href": httpPrefix+"://"+domain+"/users/"+nickname,
                 "rel": "self",
                 "type": "application/activity+json"
             },
             {
-                "href": prefix+"://"+domain+"/api/salmon/1",
+                "href": httpPrefix+"://"+domain+"/api/salmon/1",
                 "rel": "salmon"
             },
             {
@@ -124,7 +117,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
             },
             {
                 "rel": "http://ostatus.org/schema/1.0/subscribe",
-                "template": prefix+"://"+domain+"/authorize_interaction?uri={uri}"
+                "template": httpPrefix+"://"+domain+"/authorize_interaction?uri={uri}"
             }
         ],
         "subject": "acct:"+nickname+"@"+domain

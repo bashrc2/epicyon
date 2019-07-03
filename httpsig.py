@@ -17,18 +17,14 @@ import json
 
 def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
                     port: int,path: str, \
-                    https: bool, messageBodyJson: {}) -> str:
+                    httpPrefix: str, messageBodyJson: {}) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
-    keyID = prefix+'://'+domain+'/users/'+nickname+'/main-key'
+    keyID = httpPrefix+'://'+domain+'/users/'+nickname+'/main-key'
     if not messageBodyJson:
         headers = {'host': domain}
     else:
@@ -63,7 +59,7 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     return signatureHeader
 
 def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
-                       path: str,https: bool,withDigest: bool, \
+                       path: str,httpPrefix: str,withDigest: bool, \
                        messageBodyJson: {}) -> {}:
     headerDomain=domain
 
@@ -79,12 +75,12 @@ def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
         headers = {'host': headerDomain, 'digest': f'SHA-256={bodyDigest}'}        
     path='/inbox'
     signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
-                                      path, https, None)
+                                      path, httpPrefix, None)
     headers['signature'] = signatureHeader
     headers['Content-type'] = 'application/json'
     return headers
 
-def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, \
+def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
                       path: str, GETmethod: bool, \
                       messageBodyJsonStr: str) -> bool:
     """Returns true or false depending on if the key that we plugged in here
@@ -100,10 +96,6 @@ def verifyPostHeaders(https: bool, publicKeyPem: str, headers: dict, \
     else:
         method='POST'
         
-    prefix='https'
-    if not https:
-        prefix='http'
-
     publicKeyPem = RSA.import_key(publicKeyPem)
     # Build a dictionary of the signature values
     signatureHeader = headers['signature']

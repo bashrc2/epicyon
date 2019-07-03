@@ -250,15 +250,11 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
             print(e)
             
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
-                   toUrl: str, ccUrl: str, https: bool, content: str, \
+                   toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
                    followersOnly: bool, saveToFile: bool, clientToServer: bool, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -266,11 +262,11 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     conversationDate=published.split('T')[0]
     conversationId=statusNumber
     postTo='https://www.w3.org/ns/activitystreams#Public'
-    postCC=prefix+'://'+domain+'/users/'+nickname+'/followers'
+    postCC=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
     if followersOnly:
         postTo=postCC
         postCC=''
-    newPostId=prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     sensitive=False
     summary=None
     if subject:
@@ -280,7 +276,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         newPost = {
             'id': newPostId+'/activity',
             'type': 'Create',
-            'actor': prefix+'://'+domain+'/users/'+nickname,
+            'actor': httpPrefix+'://'+domain+'/users/'+nickname,
             'published': published,
             'to': [toUrl],
             'cc': [],
@@ -290,12 +286,12 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 'summary': summary,
                 'inReplyTo': inReplyTo,
                 'published': published,
-                'url': prefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
-                'attributedTo': prefix+'://'+domain+'/users/'+nickname,
+                'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
+                'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
                 'to': [toUrl],
                 'cc': [],
                 'sensitive': sensitive,
-                'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+                'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
                 'inReplyToAtomUri': inReplyToAtomUri,
                 'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
                 'content': content,
@@ -322,12 +318,12 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             'summary': summary,
             'inReplyTo': inReplyTo,
             'published': published,
-            'url': prefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
-            'attributedTo': prefix+'://'+domain+'/users/'+nickname,
+            'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
+            'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
             'to': [toUrl],
             'cc': [],
             'sensitive': sensitive,
-            'atomUri': prefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+            'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
             'inReplyToAtomUri': inReplyToAtomUri,
             'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
             'content': content,
@@ -352,19 +348,16 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     return newPost
 
 def createPublicPost(baseDir: str,
-                     nickname: str, domain: str, port: int,https: bool, \
+                     nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
                      clientToServer: bool, \
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
-    prefix='https'
-    if not https:
-        prefix='http'
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
-                          prefix+'://'+domain+'/users/'+nickname+'/followers', \
-                          https, content, followersOnly, saveToFile, clientToServer, \
+                          httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          httpPrefix, content, followersOnly, saveToFile, clientToServer, \
                           inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str, \
@@ -394,25 +387,21 @@ def threadSendPost(session,postJsonObject: {},federationList: [],inboxUrl: str, 
 
 def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
-             https: bool, content: str, followersOnly: bool, \
+             httpPrefix: str, content: str, followersOnly: bool, \
              saveToFile: bool, clientToServer: bool, federationList: [], \
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
              inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
     """Post to another inbox
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-
     withDigest=True
 
     if toPort!=80 and toPort!=443:
         toDomain=toDomain+':'+str(toPort)        
 
-    handle=prefix+'://'+toDomain+'/@'+toNickname
+    handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,https,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
         return 1
 
@@ -428,7 +417,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
 
     postJsonObject = \
             createPostBase(baseDir,nickname,domain,port, \
-                           toPersonId,cc,https,content, \
+                           toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
                            inReplyTo,inReplyToAtomUri, \
                            subject)
@@ -446,7 +435,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     # construct the http header
     signatureHeaderJson = \
         createSignedHeader(privateKeyPem, nickname, domain, port, \
-                           postPath, https, withDigest, postJsonObject)
+                           postPath, httpPrefix, withDigest, postJsonObject)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
@@ -462,14 +451,10 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
-def createOutbox(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
+def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the outbox feed
     """
-    prefix='https'
-    if not https:
-        prefix='http'
-
     outboxDir = createOutboxDir(nickname,domain,baseDir)
 
     if port!=80 and port!=443:
@@ -482,16 +467,16 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
         except:
             pass
     outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
-                    'first': prefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
-                    'id': prefix+'://'+domain+'/users/'+nickname+'/outbox',
-                    'last': prefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
+                    'first': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
+                    'id': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
+                    'last': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
                     'totalItems': 0,
                     'type': 'OrderedCollection'}
     outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
-                   'id': prefix+'://'+domain+'/users/'+nickname+'/outbox'+pageStr,
+                   'id': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox'+pageStr,
                    'orderedItems': [
                    ],
-                   'partOf': prefix+'://'+domain+'/users/'+nickname+'/outbox',
+                   'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
                    'type': 'OrderedCollectionPage'}
 
     # counter for posts loop
@@ -513,7 +498,7 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
         if lastPage<1:
             lastPage=1
         outboxHeader['last']= \
-            prefix+'://'+domain+'/users/'+nickname+'/outbox?page='+str(lastPage)
+            httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?page='+str(lastPage)
 
     # Insert posts
     currPage=1
@@ -524,7 +509,7 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
             # update the prev entry for the last message id
             postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
             outboxHeader['prev']= \
-                prefix+'://'+domain+'/users/'+nickname+'/outbox?min_id='+postId+'&page=true'
+                httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?min_id='+postId+'&page=true'
         # get the full path of the post file
         filePath = os.path.join(outboxDir, postFilename)
         try:
@@ -542,7 +527,7 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,https: bool, \
                             if '/statuses/' in p['id']:
                                 postId = p['id'].split('/statuses/')[1].replace('/activity','')
                                 outboxHeader['next']= \
-                                    prefix+'://'+domain+'/users/'+ \
+                                    httpPrefix+'://'+domain+'/users/'+ \
                                     nickname+'/outbox?max_id='+ \
                                     postId+'&page=true'
                         postsOnPageCtr += 1
