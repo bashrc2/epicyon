@@ -132,10 +132,14 @@ class PubServer(BaseHTTPRequestHandler):
                         if authorize(self.server.baseDir,self.headers['Authorization']):
                             # TODO
                             print('inbox access not supported yet')
-                            self.send_response(401)
+                            self.send_response(405)
                             self.end_headers()
                             self.server.POSTbusy=False
                             return
+            self.send_response(405)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
         
         # get outbox feed for a person
         outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain, \
@@ -234,11 +238,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if authorize(self.server.baseDir,self.headers['Authorization']):
                             # TODO
                             print('c2s posts not supported yet')
-                            self.send_response(401)
+                            self.send_response(405)
                             self.end_headers()
                             self.server.POSTbusy=False
                             return
-            self.send_response(401)
+            self.send_response(405)
             self.end_headers()
             self.server.POSTbusy=False
             return
