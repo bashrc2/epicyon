@@ -19,7 +19,6 @@ from cache import getPersonFromCache
 from threads import threadWithTrace
 from daemon import runDaemon
 from session import createSession
-from person import createPerson
 from posts import deleteAllPosts
 from posts import createPublicPost
 from posts import sendPost
@@ -29,6 +28,9 @@ from follow import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
+from person import createPerson
+from person import setPreferredNickname
+from person import setBio
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -108,7 +110,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     https=False
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
-    deleteAllPosts(nickname,domain,path)
+    deleteAllPosts(path,nickname,domain)
     followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     createPublicPost(path,nickname, domain, port,https, "No wise fish would go anywhere without a porpoise", False, True)
@@ -129,7 +131,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     https=False
     useTor=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,https,True)
-    deleteAllPosts(nickname,domain,path)
+    deleteAllPosts(path,nickname,domain)
     followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     createPublicPost(path,nickname, domain, port,https, "It's your life, live it your way.", False, True)
@@ -207,6 +209,7 @@ def testPostMessageBetweenServers():
     assert thrBob.isAlive()==False
 
 def testFollows():
+    print('testFollows')
     currDir=os.getcwd()
     nickname='test529'
     domain='testdomain.com'
@@ -263,12 +266,34 @@ def testFollows():
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
+
+def testCreatePerson():
+    print('testCreatePerson')
+    currDir=os.getcwd()
+    nickname='test382'
+    domain='badgerdomain.com'
+    port=80
+    https=True
+    baseDir=currDir+'/.tests_createperson'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)
     
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
+    deleteAllPosts(baseDir,nickname,domain)
+    setPreferredNickname(baseDir,nickname,domain,'badger')
+    setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
+
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+
 def runAllTests():
     print('Running tests...')
     testHttpsig()
     testCache()
     testThreads()
+    testCreatePerson()
     testFollows()
     print('Tests succeeded\n')
 

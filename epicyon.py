@@ -92,7 +92,7 @@ personCache={}
 cachedWebfingers={}
 
 privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,https,True)
-#deleteAllPosts(nickname,domain)
+#deleteAllPosts(baseDir,nickname,domain)
 setPreferredNickname(baseDir,nickname,domain,'badger')
 setBio(baseDir,nickname,domain,'Some personal info')
 #createPublicPost(baseDir,nickname, domain, port,https, "G'day world!", False, True, None, None, 'Not suitable for Vogons')

@@ -223,7 +223,7 @@ def createOutboxArchive(nickname: str,domain: str,baseDir: str) -> str:
         os.mkdir(outboxArchiveDir)
     return outboxArchiveDir
 
-def deleteAllPosts(nickname: str, domain: str,baseDir: str) -> None:
+def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
     """Deletes all posts for a person
     """
     outboxDir = createOutboxDir(nickname,domain,baseDir)
