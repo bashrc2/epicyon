@@ -38,17 +38,6 @@ def createBasicAuthHeader(nickname: str,password: str) -> str:
     authStr=nickname.replace('\n','')+':'+password.replace('\n','')
     return 'Basic '+base64.b64encode(authStr.encode('utf-8')).decode('utf-8')
 
-def nicknameFromBasicAuth(authHeader: str) -> str:
-    """Returns the nickname from basic auth header
-    """
-    if ' ' not in authHeader:
-        return None
-    base64Str = authHeader.split(' ')[1].replace('\n','')
-    plain = base64.b64decode(base64Str).decode('utf-8')
-    if ':' not in plain:
-        return None
-    return plain.split(':')[0]
-
 def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     """HTTP basic auth
     """

@@ -25,7 +25,6 @@ from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from follow import getFollowingFeed
 from auth import authorize
-from auth import nicknameFromBasicAuth
 import os
 import sys
 
@@ -287,17 +286,15 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/outbox'):
             if '/users/' in self.path:
                 if self.headers.get('Authorization'):
-                    nickname=self.path.split('/users/')[1].replace('/inbox','')
-                    if nickname==nicknameFromBasicAuth(self.headers['Authorization']):
-                        if authorize(self.server.baseDir,self.headers['Authorization']):
-                            self.outboxAuthenticated=True
-                            self.postToNickname=nickname
-                            # TODO
-                            print('c2s posts not supported yet')
-                            self.send_response(405)
-                            self.end_headers()
-                            self.server.POSTbusy=False
-                            return
+                    if authorize(self.server.baseDir,self.path,self.headers['Authorization'],self.server.debug):
+                        self.outboxAuthenticated=True
+                        self.postToNickname=nickname
+                        # TODO
+                        print('c2s posts not supported yet')
+                        self.send_response(405)
+                        self.end_headers()
+                        self.server.POSTbusy=False
+                        return
             if not self.outboxAuthenticated:
                 self.send_response(405)
                 self.end_headers()

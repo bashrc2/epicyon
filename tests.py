@@ -35,7 +35,6 @@ from person import setBio
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
-from auth import nicknameFromBasicAuth
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -317,7 +316,6 @@ def testAuthentication():
     assert storeBasicCredentials(baseDir,nickname,password)
 
     authHeader=createBasicAuthHeader(nickname,password)
-    assert nickname==nicknameFromBasicAuth(authHeader)
     assert authorizeBasic(baseDir,'/users/'+nickname+'/inbox',authHeader,False)
     assert authorizeBasic(baseDir,'/users/'+nickname,authHeader,False)==False
     assert authorizeBasic(baseDir,'/users/othernick/inbox',authHeader,False)==False
