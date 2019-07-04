@@ -33,9 +33,12 @@ def getJson(session,url: str,headers: {},params: {}) -> {}:
         sessionParams=params
     sessionHeaders['User-agent'] = "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5 Build/LMY48B; wv)"
     session.cookies.clear()
-    result=session.get(url, headers=sessionHeaders, params=sessionParams)
-    #print("*****result "+url+' ' + str(result))
-    return result.json()
+    try:
+        result=session.get(url, headers=sessionHeaders, params=sessionParams)
+        return result.json()
+    except:
+        pass
+    return None
 
 def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers: {}) -> str:
     """Post a json message to the inbox of another person

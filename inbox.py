@@ -125,7 +125,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
 
             # Try a few times to obtain teh public key
             pubKey=None
-            for tries in range(5):
+            for tries in range(8):
                 keyId=None
                 signatureParams=queueJson['headers'].split(',')
                 for signatureItem in signatureParams:
@@ -141,13 +141,18 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
                     continue
 
                 pubKey=getPersonPubKey(session,keyId,personCache,debug)
-                if not pubKey:
-                    if debug:
-                        print('DEBUG: Retry '+str(tries+1)+' obtaining public key for '+queueJson['keyId'])
-                    time.sleep(5)
+                print('********* pubkey7825 '+str(pubKey))
+                if pubKey:
+                    print('DEBUG: public key: '+str(pubKey))
+                    break
+                    
+                if debug:
+                    print('DEBUG: Retry '+str(tries+1)+' obtaining public key for '+keyId)
+                time.sleep(5)
+
             if not pubKey:
                 if debug:
-                    print('DEBUG: public key could not be obtained from '+queueJson['keyId'])
+                    print('DEBUG: public key could not be obtained from '+keyId)
                 os.remove(queueFilename)
                 queue.pop(0)
                 continue
@@ -163,18 +168,22 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
                 queue.pop(0)
                 continue
 
+            if debug:
+                print('DEBUG: Signature check success')
+
             if receiveFollowRequest(baseDir, \
                                     queueJson.post, \
                                     federationList):
             
                 if debug:
-                    print('DEBUG: Follow accepted from '+queueJson['keyId'])
+                    print('DEBUG: Follow accepted from '+keyId)
                     os.remove(queueFilename)
                     queue.pop(0)
                     continue
                     
             if debug:
                 print('DEBUG: Queue post accepted')
+
             # move to the destination inbox
             os.rename(queueFilename,queueJson['destination'])
             queue.pop(0)

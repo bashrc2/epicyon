@@ -50,9 +50,10 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
     par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}
-    #try:
-    result = getJson(session, url, hdr, par)
-    #except:
+    try:
+        result = getJson(session, url, hdr, par)
+    except:
+        return None
     #    print("Unable to webfinger " + url + ' ' + str(hdr) + ' ' + str(par))
     storeWebfingerInCache(nickname+'@'+wfDomain,result,cachedWebfingers)
     return result

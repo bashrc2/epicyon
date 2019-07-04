@@ -63,6 +63,8 @@ def getUserUrl(wfRequest) -> str:
 
 def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
     feedJson = getJson(session,feedUrl,asHeader,None)
+    if not feedJson:
+        return
 
     if 'orderedItems' in feedJson:
         for item in feedJson['orderedItems']:
@@ -86,6 +88,8 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
+        if not personJson:
+            return None
     if not personJson.get(boxName):
         return personPosts
     personId=None
@@ -113,6 +117,8 @@ def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
         personJson = getJson(session,personUrl,asHeader,None)
+        if not personJson:
+            return None
     pubKey=None
     if personJson.get('publicKey'):
         if personJson['publicKey'].get('publicKeyPem'):
@@ -644,8 +650,9 @@ def getPublicPostsOfPerson(nickname,domain,raw,simple):
     cachedWebfingers={}
     federationList=[]
 
-    handle="https://"+domain+"/@"+nickname
-    wfRequest = webfingerHandle(session,handle,True,cachedWebfingers)
+    httpPrefix='https'
+    handle=httpPrefix+"://"+domain+"/@"+nickname
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
         sys.exit()
 
