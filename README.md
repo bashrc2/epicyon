@@ -6,8 +6,7 @@ Based on the specification: https://www.w3.org/TR/activitypub
 
 Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tutorial.txt
 
-Goals
-=====
+## Goals
 
  * A minimal ActivityPub server, comparable to an email MTA.
  * Server-to-server and client-to-server protocols supported.
