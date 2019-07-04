@@ -65,14 +65,24 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,keyId: str,nickname: str, 
 
     currTime=datetime.datetime.utcnow()
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    inboxQueueDir = createInboxQueueDir(nickname,domain,baseDir)
+
+    handle=nickname+'@'+domain
+    destination=baseDir+'/accounts/'+handle+'/inbox/'+postId.replace('/','#')+'.json'
+    if os.path.isfile(destination):
+        # inbox item already exists
+        return None
+    filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
+
     newBufferItem = {
         'published': published,
         'keyId': keyid,
-        'post': postJson
+        'post': postJson,
+        'filename': filename,
+        'destination': destination
     }
     
-    inboxQueueDir = createInboxQueueDir(nickname,domain,baseDir)
-    filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
     with open(filename, 'w') as fp:
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
