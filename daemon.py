@@ -16,10 +16,10 @@ from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from person import personLookup
-from person import personOutboxJson
+from person import personBoxJson
 from posts import getPersonPubKey
 from posts import outboxMessageCreateWrap
-from posts import savePostToOutbox
+from posts import savePostToBox
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -142,7 +142,7 @@ class PubServer(BaseHTTPRequestHandler):
             postId=messageJson['id']
         else:
             postId=None
-        savePostToOutbox(self.server.baseDir,postId,self.postToNickname,self.server.domain,messageJson)
+        savePostToBox(self.server.baseDir,postId,self.postToNickname,self.server.domain,messageJson,'outbox')
         return True
 
     def do_GET(self):
@@ -175,13 +175,20 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/inbox'):
             if '/users/' in self.path:
                 if self.headers.get('Authorization'):
-                    if authorize(self.server.baseDir,self.path,self.headers['Authorization'],self.server.debug):
-                        # TODO
-                        print('inbox access not supported yet')
-                        self.send_response(405)
-                        self.end_headers()
-                        self.server.POSTbusy=False
-                        return
+                    if authorize(self.server.baseDir,self.path, \
+                                 self.headers['Authorization'], \
+                                 self.server.debug):
+                        inboxFeed=personBoxJson(self.server.baseDir, \
+                                                self.server.domain, \
+                                                self.server.port, \
+                                                self.path, \
+                                                self.server.httpPrefix, \
+                                                maxPostsInFeed, 'inbox')
+                        if inboxFeed:
+                            self._set_headers('application/json')
+                            self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
+                            self.server.GETbusy=False
+                            return
                     else:
                         if self.server.debug:
                             print('DEBUG: '+nickname+' was not authorized to access '+self.path)
@@ -193,9 +200,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         
         # get outbox feed for a person
-        outboxFeed=personOutboxJson(self.server.baseDir,self.server.domain, \
-                                    self.server.port,self.path, \
-                                    self.server.httpPrefix,maxPostsInFeed)
+        outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
+                                 self.server.port,self.path, \
+                                 self.server.httpPrefix, \
+                                 maxPostsInFeed, 'outbox')
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))

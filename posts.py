@@ -28,7 +28,7 @@ from session import postJson
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from utils import getStatusNumber
-from utils import createOutboxDir
+from utils import createPersonDir
 from utils import urlPermitted
 try: 
     from BeautifulSoup import BeautifulSoup
@@ -234,23 +234,25 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             break
     return personPosts
 
-def createOutboxArchive(nickname: str,domain: str,baseDir: str) -> str:
-    """Creates an archive directory for outbox posts
+def createBoxArchive(nickname: str,domain: str,baseDir: str,boxname: str) -> str:
+    """Creates an archive directory for inbox/outbox posts
     """
     handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
-    outboxArchiveDir=baseDir+'/accounts/'+handle+'/outboxarchive'
-    if not os.path.isdir(outboxArchiveDir):
-        os.mkdir(outboxArchiveDir)
-    return outboxArchiveDir
+    boxArchiveDir=baseDir+'/accounts/'+handle+'/'+boxname+'archive'
+    if not os.path.isdir(boxArchiveDir):
+        os.mkdir(boxArchiveDir)
+    return boxArchiveDir
 
-def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
-    """Deletes all posts for a person
+def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None:
+    """Deletes all posts for a person from inbox or outbox
     """
-    outboxDir = createOutboxDir(nickname,domain,baseDir)
-    for deleteFilename in os.listdir(outboxDir):
-        filePath = os.path.join(outboxDir, deleteFilename)
+    if boxname!='inbox' and boxname!='outbox':
+        return
+    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    for deleteFilename in os.listdir(boxDir):
+        filePath = os.path.join(boxDir, deleteFilename)
         try:
             if os.path.isfile(filePath):
                 os.unlink(filePath)
@@ -258,11 +260,14 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str) -> None:
         except Exception as e:
             print(e)
 
-def savePostToOutbox(baseDir: str,httpPrefix: str,postId: str,nickname: str, domain: str,postJson: {}) -> None:
-    """Saves the give json to the outbox
+def savePostToBox(baseDir: str,httpPrefix: str,postId: str,nickname: str, domain: str,postJson: {},boxname: str) -> None:
+    """Saves the give json to the give box
     """
+    if boxname!='inbox' and boxname!='outbox':
+        return
     if ':' in domain:
         domain=domain.split(':')[0]
+
     if not postId:
         statusNumber,published = getStatusNumber()
         postId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
@@ -271,8 +276,8 @@ def savePostToOutbox(baseDir: str,httpPrefix: str,postId: str,nickname: str, dom
         postJson['object']['id']=postId
         postJson['object']['atomUri']=postId
          
-    outboxDir = createOutboxDir(nickname,domain,baseDir)
-    filename=outboxDir+'/'+postId.replace('/','#')+'.json'
+    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    filename=boxDir+'/'+postId.replace('/','#')+'.json'
     with open(filename, 'w') as fp:
         commentjson.dump(postJson, fp, indent=4, sort_keys=False)
 
@@ -366,7 +371,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost['cc']=ccUrl
             newPost['object']['cc']=ccUrl
     if saveToFile:
-        savePostToOutbox(baseDir,httpPrefix,newPostId,nickname,domain,newPost)
+        savePostToBox(baseDir,httpPrefix,newPostId,nickname,domain,newPost,'outbox')
     return newPost
 
 def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str,messageJson: {}) -> {}:
@@ -499,11 +504,22 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
+def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                 itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+    return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
+                  itemsPerPage,headerOnly,pageNumber)
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
-    """Constructs the outbox feed
+    return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
+                  itemsPerPage,headerOnly,pageNumber)
+
+def createBoxBase(baseDir: str,boxname: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+    """Constructs the box feed
     """
-    outboxDir = createOutboxDir(nickname,domain,baseDir)
+    if boxname!='inbox' and boxname!='outbox':
+        return None
+    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
 
     if port!=80 and port!=443:
         domain = domain+':'+str(port)
@@ -514,69 +530,69 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: st
             pageStr='?page='+str(pageNumber)
         except:
             pass
-    outboxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
-                    'first': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
-                    'id': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
-                    'last': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?page=true',
-                    'totalItems': 0,
-                    'type': 'OrderedCollection'}
-    outboxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
-                   'id': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox'+pageStr,
-                   'orderedItems': [
-                   ],
-                   'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
-                   'type': 'OrderedCollectionPage'}
+    boxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
+                 'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+                 'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+                 'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+                 'totalItems': 0,
+                 'type': 'OrderedCollection'}
+    boxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
+                'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
+                'orderedItems': [
+                ],
+                'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+                'type': 'OrderedCollectionPage'}
 
     # counter for posts loop
     postsOnPageCtr=0
 
     # post filenames sorted in descending order
-    postsInOutbox=sorted(os.listdir(outboxDir), reverse=True)
+    postsInBox=sorted(os.listdir(boxDir), reverse=True)
 
-    # number of posts in outbox
-    outboxHeader['totalItems']=len(postsInOutbox)
+    # number of posts in box
+    boxHeader['totalItems']=len(postsInBox)
     prevPostFilename=None
 
     if not pageNumber:
         pageNumber=1
 
     # Generate first and last entries within header
-    if len(postsInOutbox)>0:
-        lastPage=int(len(postsInOutbox)/itemsPerPage)
+    if len(postsInBox)>0:
+        lastPage=int(len(postsInBox)/itemsPerPage)
         if lastPage<1:
             lastPage=1
-        outboxHeader['last']= \
-            httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?page='+str(lastPage)
+        boxHeader['last']= \
+            httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+str(lastPage)
 
     # Insert posts
     currPage=1
     postsCtr=0
-    for postFilename in postsInOutbox:
+    for postFilename in postsInBox:
         # Are we at the starting page yet?
         if prevPostFilename and currPage==pageNumber and postsCtr==0:
             # update the prev entry for the last message id
             postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
-            outboxHeader['prev']= \
-                httpPrefix+'://'+domain+'/users/'+nickname+'/outbox?min_id='+postId+'&page=true'
+            boxHeader['prev']= \
+                httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?min_id='+postId+'&page=true'
         # get the full path of the post file
-        filePath = os.path.join(outboxDir, postFilename)
+        filePath = os.path.join(boxDir, postFilename)
         try:
             if os.path.isfile(filePath):
                 if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
-                        # insert it into the outbox feed
+                        # insert it into the box feed
                         if postsOnPageCtr < itemsPerPage:
                             if not headerOnly:
-                                outboxItems['orderedItems'].append(p)
+                                boxItems['orderedItems'].append(p)
                         elif postsOnPageCtr == itemsPerPage:
                             # if this is the last post update the next message ID
                             if '/statuses/' in p['id']:
                                 postId = p['id'].split('/statuses/')[1].replace('/activity','')
-                                outboxHeader['next']= \
+                                boxHeader['next']= \
                                     httpPrefix+'://'+domain+'/users/'+ \
-                                    nickname+'/outbox?max_id='+ \
+                                    nickname+'/'+boxname+'?max_id='+ \
                                     postId+'&page=true'
                         postsOnPageCtr += 1
                 # remember the last post filename for use with prev
@@ -591,29 +607,31 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: st
         except Exception as e:
             print(e)
     if headerOnly:
-        return outboxHeader
-    return outboxItems
+        return boxHeader
+    return boxItems
 
 def archivePosts(nickname: str,domain: str,baseDir: str, \
-                 maxPostsInOutbox=256) -> None:
-    """Retain a maximum number of posts within the outbox
+                 boxname: str,maxPostsInBox=256) -> None:
+    """Retain a maximum number of posts within the given box
     Move any others to an archive directory
     """
-    outboxDir = createOutboxDir(nickname,domain,baseDir)
-    archiveDir = createOutboxArchive(nickname,domain,baseDir)
-    postsInOutbox=sorted(os.listdir(outboxDir), reverse=False)
-    noOfPosts=len(postsInOutbox)
-    if noOfPosts<=maxPostsInOutbox:
+    if boxname!='inbox' and boxname!='outbox':
+        return
+    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    archiveDir = createBoxArchive(nickname,domain,baseDir,boxname)
+    postsInBox=sorted(os.listdir(boxDir), reverse=False)
+    noOfPosts=len(postsInBox)
+    if noOfPosts<=maxPostsInBox:
         return
     
-    for postFilename in postsInOutbox:
-        filePath = os.path.join(outboxDir, postFilename)
+    for postFilename in postsInBox:
+        filePath = os.path.join(boxDir, postFilename)
         if os.path.isfile(filePath):
             archivePath = os.path.join(archiveDir, postFilename)
             os.rename(filePath,archivePath)
             # TODO: possibly archive any associated media files
             noOfPosts -= 1
-            if noOfPosts <= maxPostsInOutbox:
+            if noOfPosts <= maxPostsInBox:
                 break
 
 def getPublicPostsOfPerson(nickname,domain,raw,simple):

@@ -148,11 +148,14 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         personJson=commentjson.load(fp)
     return personJson
 
-def personOutboxJson(baseDir: str,domain: str,port: int,path: str, \
-                     httpPrefix: str,noOfItems: int) -> []:
-    """Obtain the outbox feed for the given person
+def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
+                  httpPrefix: str,noOfItems: int,boxname: str) -> []:
+    """Obtain the inbox/outbox feed for the given person
     """
-    if not '/outbox' in path:
+    if boxname!='inbox' and boxname!='outbox':
+        return None
+
+    if not '/'+boxname in path:
         return None
 
     # Only show the header by default
@@ -172,19 +175,61 @@ def personOutboxJson(baseDir: str,domain: str,port: int,path: str, \
         path=path.split('?page=')[0]
         headerOnly=False
 
-    if not path.endswith('/outbox'):
+    if not path.endswith('/'+boxname):
         return None
     nickname=None
     if path.startswith('/users/'):
-        nickname=path.replace('/users/','',1).replace('/outbox','')
+        nickname=path.replace('/users/','',1).replace('/'+boxname,'')
     if path.startswith('/@'):
-        nickname=path.replace('/@','',1).replace('/outbox','')
+        nickname=path.replace('/@','',1).replace('/'+boxname,'')
     if not nickname:
         return None
     if not validNickname(nickname):
         return None
+    if boxname=='inbox':
+        return createInbox(baseDir,nickname,domain,port,httpPrefix, \
+                           noOfItems,headerOnly,pageNumber)
     return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
                         noOfItems,headerOnly,pageNumber)
+
+def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
+                    httpPrefix: str,noOfItems: int) -> []:
+    """Obtain the inbox feed for the given person
+    Authentication is expected to have already happened
+    """
+    if not '/inbox' in path:
+        return None
+
+    # Only show the header by default
+    headerOnly=True
+
+    # handle page numbers
+    pageNumber=None    
+    if '?page=' in path:
+        pageNumber=path.split('?page=')[1]
+        if pageNumber=='true':
+            pageNumber=1
+        else:
+            try:
+                pageNumber=int(pageNumber)
+            except:
+                pass
+        path=path.split('?page=')[0]
+        headerOnly=False
+
+    if not path.endswith('/inbox'):
+        return None
+    nickname=None
+    if path.startswith('/users/'):
+        nickname=path.replace('/users/','',1).replace('/inbox','')
+    if path.startswith('/@'):
+        nickname=path.replace('/@','',1).replace('/inbox','')
+    if not nickname:
+        return None
+    if not validNickname(nickname):
+        return None
+    return createInbox(baseDir,nickname,domain,port,httpPrefix, \
+                       noOfItems,headerOnly,pageNumber)
 
 def setPreferredNickname(baseDir: str,nickname: str, domain: str, \
                          preferredName: str) -> bool:

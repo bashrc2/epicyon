@@ -115,7 +115,8 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     useTor=False
     clientToServer=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
-    deleteAllPosts(path,nickname,domain)
+    deleteAllPosts(path,nickname,domain,'inbox')
+    deleteAllPosts(path,nickname,domain,'outbox')
     followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
@@ -137,7 +138,8 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     useTor=False
     clientToServer=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
-    deleteAllPosts(path,nickname,domain)
+    deleteAllPosts(path,nickname,domain,'inbox')
+    deleteAllPosts(path,nickname,domain,'outbox')
     followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer)
@@ -289,10 +291,12 @@ def testCreatePerson():
     os.chdir(baseDir)
     
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True)
-    deleteAllPosts(baseDir,nickname,domain)
+    deleteAllPosts(baseDir,nickname,domain,'inbox')
+    deleteAllPosts(baseDir,nickname,domain,'outbox')
     setPreferredNickname(baseDir,nickname,domain,'badger')
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
-    archivePosts(nickname,domain,baseDir,4)
+    archivePosts(nickname,domain,baseDir,'inbox',4)
+    archivePosts(nickname,domain,baseDir,'outbox',4)
     createPublicPost(baseDir,nickname, domain, port,httpPrefix, "G'day world!", False, True, clientToServer, None, None, 'Not suitable for Vogons')
 
     os.chdir(currDir)
