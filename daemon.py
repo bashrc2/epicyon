@@ -23,8 +23,10 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToOutbox
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
+from inbox import runInboxQueue
 from follow import getFollowingFeed
 from auth import authorize
+from threads import threadWithTrace
 import os
 import sys
 
@@ -367,6 +369,9 @@ class PubServer(BaseHTTPRequestHandler):
         if not headers.get('keyId'):
             if self.server.debug:
                 print('DEBUG: POST to inbox has no keyId in header')
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy=False
             return
         
         if self.server.debug:
@@ -385,77 +390,25 @@ class PubServer(BaseHTTPRequestHandler):
                                              headers['keyId'], \
                                              self.postToNickname, \
                                              self.server.domain, \
-                                             messageJson)
+                                             messageJson,
+                                             self.headers)
                     if cacheFilename:
                         if cacheFilename not in self.server.inboxQueue:
                             self.server.inboxQueue.append(cacheFilename)
-                return
+                        self.send_response(201)
+                        self.end_headers()
+                        self.server.POSTbusy=False
+                        return
+            self.send_response(403)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
         else:
             print('DEBUG: POST to shared inbox')
-            return
-
-
-
-        
-        currSessionTime=int(time.time())
-        if currSessionTime-self.server.sessionLastUpdate>1200:
-            self.server.sessionLastUpdate=currSessionTime
-            self.server.session = \
-                createSession(self.server.domain,self.server.port, \
-                              self.server.useTor)
-            if self.server.debug:
-                print('DEBUG: POST started new session')
-
-        if self.server.debug:
-            print('DEBUG: POST get actor url from '+self.server.baseDir)
-        personUrl=messageJson['actor']
-
-        if self.server.debug:
-            print('DEBUG: POST get public key of '+personUrl+' from '+self.server.baseDir)
-
-        pubKey=getPersonPubKey(self.server.session,personUrl, \
-                               self.server.personCache)
-        if not pubKey:
-            if self.server.debug:
-                print('DEBUG: POST no sender public key')
-            self.send_response(401)
+            self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
             return
-
-        if self.server.debug:
-            print('DEBUG: POST check signature')
-
-        if not verifyPostHeaders(self.server.httpPrefix, pubKey, self.headers, \
-                                 '/inbox' ,False, json.dumps(messageJson)):
-            print('**************** POST signature verification failed')
-            self.send_response(401)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
-
-        if self.server.debug:
-            print('DEBUG: POST valid')
-
-        if receiveFollowRequest(self.server.baseDir,messageJson, \
-                                self.server.federationList):
-            self.send_response(200)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return            
-
-        pprint(messageJson)
-        # add a property to the object, just to mess with data
-        #message['received'] = 'ok'
-        
-        # send the message back
-        #self._set_headers('application/json')
-        #self.wfile.write(json.dumps(message).encode('utf-8'))
-
-        self.server.receivedMessage=True
-        self.send_response(200)
-        self.end_headers()
-        self.server.POSTbusy=False
 
 def runDaemon(domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,debug=False) -> None:
     if len(domain)==0:
@@ -485,4 +438,6 @@ def runDaemon(domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,deb
     httpd.receivedMessage=False
     httpd.inboxQueue=[]
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
+    httpd.thrInboxQueue=threadWithTrace(target=runInboxQueue,args=(baseDir,httpPrefix,httpd.personCache,httpd.inboxQueue,domain,port,useTor,httpd.federationList,debug),daemon=True)
+    httpd.thrInboxQueue.start()
     httpd.serve_forever()
