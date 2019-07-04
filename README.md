@@ -79,5 +79,5 @@ python3 epicyon.py --domain [name] --port 8000 --https --path [data directory]
 By default the server will federate with any others. You can limit this to a well-defined list with the *--federate* option.
 
 ``` bash
-python3 epicyon.py --domain [name] --port 8000 --https --path [data directory] --federate domain1.net domain2.org domain3.co.uk
+python3 epicyon.py --domain [name] --port 8000 --https --federate domain1.net domain2.org domain3.co.uk
 ```
