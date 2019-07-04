@@ -11,6 +11,7 @@ This project is currently *pre alpha* and not recommended for any real world use
 ## Goals
 
  * A minimal ActivityPub server, comparable to an email MTA.
+ * AGPLv3+
  * Server-to-server and client-to-server protocols supported.
  * Implemented in a common language (Python 3)
  * Opt-in federation. Federate with a well-defined list of instances.
@@ -73,4 +74,10 @@ By default data will be stored in the directory in which you run the server, but
 
 ``` bash
 python3 epicyon.py --domain [name] --port 8000 --https --path [data directory]
+```
+
+By default the server will federate with any others. You can limit this to a well-defined list with the *--federate* option.
+
+``` bash
+python3 epicyon.py --domain [name] --port 8000 --https --path [data directory] --federate domain1.net domain2.org domain3.co.uk
 ```
