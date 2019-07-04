@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import requests
-from requests_toolbelt.adapters.source import SourceAddressAdapter
 from utils import urlPermitted
 import json
 

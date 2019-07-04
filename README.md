@@ -9,6 +9,6 @@ Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tut
 ## Install
 
 ``` bash
-sudo pacman -S tor python-pip python-pysocks python-pycryptodome python-beautifulsoup4 python-requests-toolbelt
+sudo pacman -S tor python-pip python-pysocks python-pycryptodome python-beautifulsoup4
 sudo pip install commentjson
 ```
