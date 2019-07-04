@@ -46,6 +46,20 @@ To run the network tests. These simulate instances exchanging messages.
 python3 epicyon.py --testsnetwork
 ```
 
+## Viewing Public Posts
+
+To view the public posts for a person:
+
+``` bash
+python3 epicyon.py --posts nickname@domain
+```
+
+If you want to view the raw json:
+
+``` bash
+python3 epicyon.py --postsraw nickname@domain
+```
+
 ## Running the Server
 
 To run with defaults:
