@@ -318,16 +318,18 @@ def testAuthentication():
 
     authHeader=createBasicAuthHeader(nickname,password)
     assert nickname==nicknameFromBasicAuth(authHeader)
-    assert authorizeBasic(baseDir,authHeader)
+    assert authorizeBasic(baseDir,'/users/'+nickname+'/inbox',authHeader,False)
+    assert authorizeBasic(baseDir,'/users/'+nickname,authHeader,False)==False
+    assert authorizeBasic(baseDir,'/users/othernick/inbox',authHeader,False)==False
 
     authHeader=createBasicAuthHeader(nickname,password+'1')
-    assert authorizeBasic(baseDir,authHeader)==False
+    assert authorizeBasic(baseDir,'/users/'+nickname+'/inbox',authHeader,False)==False
 
     password='someOtherPassword'
     assert storeBasicCredentials(baseDir,nickname,password)
 
     authHeader=createBasicAuthHeader(nickname,password)
-    assert authorizeBasic(baseDir,authHeader)
+    assert authorizeBasic(baseDir,'/users/'+nickname+'/inbox',authHeader,False)
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)

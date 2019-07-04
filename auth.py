@@ -49,25 +49,50 @@ def nicknameFromBasicAuth(authHeader: str) -> str:
         return None
     return plain.split(':')[0]
 
-def authorizeBasic(baseDir: str,authHeader: str) -> bool:
+def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     """HTTP basic auth
     """
     if ' ' not in authHeader:
+        if debug:
+            print('DEBUG: Authorixation header does not contain a space character')
         return False
+    if '/users/' not in path:
+        if debug:
+            print('DEBUG: Path for Authorization does not contain a user')
+        return False
+    pathUsersSection=path.split('/users/')[1]
+    if '/' not in pathUsersSection:
+        if debug:
+            print('DEBUG: This is not a users endpoint')
+        return False
+    nicknameFromPath=pathUsersSection.split('/')[0]
     base64Str = authHeader.split(' ')[1].replace('\n','')
     plain = base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
+        if debug:
+            print('DEBUG: Basic Auth header does not contain a ":" separator for username:password')
         return False
     nickname = plain.split(':')[0]
+    if nickname!=nicknameFromPath:
+        if debug:
+            print('DEBUG: Nickname given in the path ('+nicknameFromPath+') does not match the one in the Authorization header ('+nickname+')')
+        return False
     passwordFile=baseDir+'/accounts/passwords'
     if not os.path.isfile(passwordFile):
+        if debug:
+            print('DEBUG: passwords file missing')
         return False
     providedPassword = plain.split(':')[1]
     passfile = open(passwordFile, "r")
     for line in passfile:
         if line.startswith(nickname+':'):
             storedPassword=line.split(':')[1].replace('\n','')
-            return verifyPassword(storedPassword,providedPassword)
+            success = verifyPassword(storedPassword,providedPassword)
+            if not success:
+                if debug:
+                    print('DEBUG: Password check failed for '+nickname)
+            return success
+    print('DEBUG: Did not find credentials for '+nickname+' in '+passwordFile)
     return False
 
 def storeBasicCredentials(baseDir: str,nickname: str,password: str) -> bool:
@@ -100,7 +125,7 @@ def storeBasicCredentials(baseDir: str,nickname: str,password: str) -> bool:
             passfile.write(storeStr+'\n')
     return True
 
-def authorize(baseDir: str,authHeader: str) -> bool:
+def authorize(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     if authHeader.lower().startswith('basic '):
-        return authorizeBasic(baseDir,authHeader)
+        return authorizeBasic(baseDir,path,authHeader,debug)
     return False

@@ -52,7 +52,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                                'value': 'schema:value'}],
                  'attachment': [],
                  'endpoints': {
-                     'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints'
+                     'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
                      'uploadMedia': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints/uploadMedia'
                  },

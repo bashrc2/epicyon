@@ -360,7 +360,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         savePostToOutbox(baseDir,httpPrefix,newPostId,nickname,domain,newPost)
     return newPost
 
-def outboxMessageCreateWrap(httpPrefix str,nickname: str,domain: str,messageJson: {}) -> {}:
+def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str,messageJson: {}) -> {}:
     """Wraps a received message in a Create
     https://www.w3.org/TR/activitypub/#object-without-create
     """

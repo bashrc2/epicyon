@@ -172,15 +172,18 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/inbox'):
             if '/users/' in self.path:
                 if self.headers.get('Authorization'):
-                    nickname=self.path.split('/users/')[1].replace('/inbox','')
-                    if nickname==nicknameFromBasicAuth(self.headers['Authorization']):
-                        if authorize(self.server.baseDir,self.headers['Authorization']):
-                            # TODO
-                            print('inbox access not supported yet')
-                            self.send_response(405)
-                            self.end_headers()
-                            self.server.POSTbusy=False
-                            return
+                    if authorize(self.server.baseDir,self.path,self.headers['Authorization'],self.server.debug):
+                        # TODO
+                        print('inbox access not supported yet')
+                        self.send_response(405)
+                        self.end_headers()
+                        self.server.POSTbusy=False
+                        return
+                    else:
+                        if self.server.debug:
+                            print('DEBUG: '+nickname+' was not authorized to access '+self.path)
+            if self.server.debug:
+                print('DEBUG: GET access to inbox is unauthorized')
             self.send_response(405)
             self.end_headers()
             self.server.POSTbusy=False
