@@ -61,6 +61,20 @@ If you want to view the raw json:
 python3 epicyon.py --postsraw nickname@domain
 ```
 
+## Account Management
+
+To add a new account:
+
+``` bash
+python3 epicyon.py --addaccount nickname@domain --password [yourpassword]
+```
+
+To remove an account (be careful!):
+
+``` bash
+python3 epicyon.py --rmaccount nickname@domain
+```
+
 ## Running the Server
 
 To run with defaults:
