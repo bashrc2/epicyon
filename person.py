@@ -26,8 +26,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
-    reservedNames=['inbox','outbox','followers','following','sharedInbox','publicKey']
-    if nickname in reservedNames:
+    if not validNickname(nickname):
        return None,None,None,None
     privateKeyPem,publicKeyPem=generateRSAKey()
     webfingerEndpoint= \
@@ -120,11 +119,16 @@ def validNickname(nickname: str) -> bool:
     for c in forbiddenChars:
         if c in nickname:
             return False
+    reservedNames=['inbox','outbox','following','followers','sharedInbox']
+    if nickname in reservedNames:
+        return False
     return True
     
 def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """Lookup the person for an given nickname
     """
+    if path.endswith('#main-key'):
+        path=path.replace('#main-key','')
     notPersonLookup=['/inbox','/outbox','/outboxarchive', \
                      '/followers','/following','/featured', \
                      '.png','.jpg','.gif','.mpv']
