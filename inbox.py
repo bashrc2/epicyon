@@ -14,11 +14,39 @@ import json
 import commentjson
 from utils import urlPermitted
 from utils import createInboxQueueDir
-from posts import getPersonPubKey
 from httpsig import verifyPostHeaders
 from session import createSession
+from session import getJson
 from follow import receiveFollowRequest
 from pprint import pprint
+from cache import getPersonFromCache
+
+def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    if not personUrl:
+        return None
+    personUrl=personUrl.replace('#main-key','')
+    personJson = getPersonFromCache(personUrl,personCache)
+    if not personJson:
+        if debug:
+            print('DEBUG: Obtaining public key for '+personUrl)
+        personJson = getJson(session,personUrl,asHeader,None)
+        if not personJson:
+            return None
+    pubKey=None
+    if personJson.get('publicKey'):
+        if personJson['publicKey'].get('publicKeyPem'):
+            pubKey=personJson['publicKey']['publicKeyPem']
+    else:
+        if personJson.get('publicKeyPem'):
+            pubKey=personJson['publicKeyPem']
+
+    if not pubKey:
+        if debug:
+            print('DEBUG: Public key not found for '+personUrl)
+
+    storePersonInCache(personUrl,personJson,personCache)
+    return pubKey
 
 def inboxMessageHasParams(messageJson: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
@@ -123,7 +151,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
             with open(queueFilename, 'r') as fp:
                 queueJson=commentjson.load(fp)
 
-            # Try a few times to obtain teh public key
+            # Try a few times to obtain the public key
             pubKey=None
             for tries in range(8):
                 keyId=None

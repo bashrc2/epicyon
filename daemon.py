@@ -17,7 +17,6 @@ from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from person import personLookup
 from person import personBoxJson
-from posts import getPersonPubKey
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from inbox import inboxPermittedMessage

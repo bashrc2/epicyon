@@ -16,7 +16,6 @@ from posts import deleteAllPosts
 from posts import createOutbox
 from posts import archivePosts
 from posts import sendPost
-from posts import getPersonBox
 from posts import getPublicPostsOfPerson
 from session import createSession
 from session import getJson

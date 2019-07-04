@@ -85,6 +85,7 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
+    print('**********personUrl: '+personUrl)
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
@@ -106,33 +107,6 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
     storePersonInCache(personUrl,personJson,personCache)
 
     return personJson[boxName],pubKeyId,pubKey,personId
-
-def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    if not personUrl:
-        return None
-    personUrl=personUrl.replace('#main-key','')
-    personJson = getPersonFromCache(personUrl,personCache)
-    if not personJson:
-        if debug:
-            print('DEBUG: Obtaining public key for '+personUrl)
-        personJson = getJson(session,personUrl,asHeader,None)
-        if not personJson:
-            return None
-    pubKey=None
-    if personJson.get('publicKey'):
-        if personJson['publicKey'].get('publicKeyPem'):
-            pubKey=personJson['publicKey']['publicKeyPem']
-    else:
-        if personJson.get('publicKeyPem'):
-            pubKey=personJson['publicKeyPem']
-
-    if not pubKey:
-        if debug:
-            print('DEBUG: Public key not found for '+personUrl)
-
-    storePersonInCache(personUrl,personJson,personCache)
-    return pubKey
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int,federationList: [], \
