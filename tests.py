@@ -8,7 +8,7 @@ __status__ = "Production"
 
 import base64
 import time
-import os
+import os, os.path
 import shutil
 from person import createPerson
 from Crypto.Hash import SHA256
@@ -208,7 +208,12 @@ def testPostMessageBetweenServers():
     sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
-    for i in range(5):
+    queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
+    inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
+    for i in range(10):
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
+                break
         time.sleep(1)
     
     # stop the servers
@@ -219,6 +224,11 @@ def testPostMessageBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive()==False
+
+    # inbox item created
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
+    # queue item removed
+    assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
 
 def testFollows():
     print('testFollows')
