@@ -54,6 +54,10 @@ parser.add_argument('-p','--port', dest='port', type=int,default=8085,
                     help='Port number to run on')
 parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
                     help='Directory in which to store posts')
+parser.add_argument('-a','--addaccount', dest='addaccount', type=str,default=None,
+                    help='Adds a new account')
+parser.add_argument('--pass','--password', dest='password', type=str,default=None,
+                    help='Set a password for an account')
 parser.add_argument('--posts', dest='posts', type=str,default=None,
                     help='Show posts for the given handle')
 parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
@@ -105,10 +109,10 @@ if args.postsraw:
     getPublicPostsOfPerson(nickname,domain,True,False)
     sys.exit()
 
-if not args.domain:
-    print('Specify a domain with --domain [name]')
+baseDir=args.baseDir
+if baseDir.endswith('/'):
+    print("--path option should not end with '/'")
     sys.exit()
-
 nickname='admin'
 domain=args.domain
 port=args.port
@@ -118,9 +122,29 @@ if args.http:
 if args.dat:
     httpPrefix='dat'
 useTor=args.tor
-baseDir=args.baseDir
-if baseDir.endswith('/'):
-    print("--path option should not end with '/'")
+
+if args.addaccount:
+    if '@' in args.addaccount:
+        nickname=args.postsraw.split('@')[0]
+        domain=args.posts.split('@')[1]
+    else:
+        nickname=args.postsraw
+        if not args.domain:
+            print('Use the --domain option to set the domain name')
+            sys.exit()
+        if not args.password:
+            print('Use the --password option to set the password for '+nickname)
+            sys.exit()
+        if len(args.password.strip())<8:
+            print('Password should be at least 8 characters')
+            sys.exit()            
+    createPerson(baseDir,nickname,domain,port,httpPrefix,False,args.password.strip())
+    if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print('Account created for '+nickname+'@'+domain)
+    sys.exit()
+
+if not args.domain:
+    print('Specify a domain with --domain [name]')
     sys.exit()
 
 federationList=[]
