@@ -26,6 +26,9 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
+    reservedNames=['inbox','outbox','followers','following','sharedInbox','publicKey']
+    if nickname in reservedNames:
+       return None,None,None,None
     privateKeyPem,publicKeyPem=generateRSAKey()
     webfingerEndpoint= \
         createWebfingerEndpoint(nickname,domain,port,httpPrefix,publicKeyPem)

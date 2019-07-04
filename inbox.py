@@ -141,7 +141,6 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
                     continue
 
                 pubKey=getPersonPubKey(session,keyId,personCache,debug)
-                print('********* pubkey7825 '+str(pubKey))
                 if pubKey:
                     print('DEBUG: public key: '+str(pubKey))
                     break

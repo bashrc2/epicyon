@@ -147,7 +147,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.server.debug:
-            print('DEBUG: GET from '+self.server.baseDir+' path: '+self.path)
+            print('DEBUG: GET from '+self.server.baseDir+' path: '+self.path+' busy: '+str(self.server.GETbusy))
         if self.server.GETbusy:
             currTimeGET=int(time.time())
             if currTimeGET-self.server.lastGET<10:
@@ -159,8 +159,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.lastGET=currTimeGET
         self.server.GETbusy=True
 
-        if self.server.debug:
-            print('DEBUG: GET _permittedDir')
         if not self._permittedDir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
@@ -258,6 +256,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json')
 
     def do_POST(self):
+        if self.server.debug:
+            print('DEBUG: POST to from '+self.server.baseDir+' path: '+self.path+' busy: '+str(self.server.POSTbusy))
         if self.server.POSTbusy:
             currTimePOST=int(time.time())
             if currTimePOST-self.server.lastPOST<10:
