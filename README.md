@@ -6,10 +6,13 @@ Based on the specification: https://www.w3.org/TR/activitypub
 
 Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tutorial.txt
 
+This project is currently *pre alpha* and not recommended for any real world uses.
+
 ## Goals
 
  * A minimal ActivityPub server, comparable to an email MTA.
  * Server-to-server and client-to-server protocols supported.
+ * Implemented in a common language (Python 3)
  * Opt-in federation. Federate with a well-defined list of instances.
  * Resistant to flooding, hellthreads, etc.
  * Support content warnings, reporting and blocking.
@@ -40,4 +43,34 @@ To run the network tests. These simulate instances exchanging messages.
 
 ``` bash
 python3 epicyon.py --testsnetwork
+```
+
+## Running the Server
+
+To run with defaults:
+
+``` bash
+python3 epicyon.py
+```
+
+In a browser of choice (but not Tor browser) you can then navigate to:
+
+``` text
+http://localhost:8085/users/admin
+```
+
+If it's working then you should see the json actor for the default admin account.
+
+For a more realistic installation you can run on a defined domain and port:
+
+``` bash
+python3 epicyon.py --domain [name] --port 8000 --https
+```
+
+You will need to proxy port 8000 through your web server and set up CA certificates as needed.
+
+By default data will be stored in the directory in which you run the server, but you can also specify a directory:
+
+``` bash
+python3 epicyon.py --domain [name] --port 8000 --https --path [data directory]
 ```
