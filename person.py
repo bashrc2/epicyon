@@ -71,7 +71,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  'name': nickname,
                  'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
                  'preferredUsername': ''+nickname,
-                 'publicKey': {'id': httpPrefix+'://'+domain+'/users/'+nickname+'/main-key',
+                 'publicKey': {'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
                                'owner': httpPrefix+'://'+domain+'/users/'+nickname,
                                'publicKeyPem': publicKeyPem,
                                'summary': '',
@@ -118,38 +118,13 @@ def validNickname(nickname: str) -> bool:
         if c in nickname:
             return False
     return True
-
-def personKeyLookup(domain: str,path: str,baseDir: str) -> str:
-    """Lookup the public key of the person with a given nickname
-    """
-    if not path.endswith('/main-key'):
-        return None
-    if not path.startswith('/users/'):
-        return None
-    nickname=path.replace('/users/','',1).replace('/main-key','')
-    if not validNickname(nickname):
-        return None
-    if ':' in domain:
-        domain=domain.split(':')[0]
-    handle=nickname.lower()+'@'+domain.lower()
-    filename=baseDir+'/accounts/'+handle.lower()+'.json'
-    if not os.path.isfile(filename):
-        return None
-    personJson={"user": "unknown"}
-    with open(filename, 'r') as fp:
-        personJson=commentjson.load(fp)
-    if personJson.get('publicKey'):
-        if personJson['publicKey'].get('publicKeyPem'):
-            return personJson['publicKey']['publicKeyPem']
-    return None
     
 def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """Lookup the person for an given nickname
     """
     notPersonLookup=['/inbox','/outbox','/outboxarchive', \
                      '/followers','/following','/featured', \
-                     '.png','.jpg','.gif','.mpv', \
-                     '#main-key','/main-key']
+                     '.png','.jpg','.gif','.mpv']
     for ending in notPersonLookup:        
         if path.endswith(ending):
             return None

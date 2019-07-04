@@ -16,7 +16,6 @@ from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from person import personLookup
-from person import personKeyLookup
 from person import personOutboxJson
 from posts import getPersonPubKey
 from posts import outboxMessageCreateWrap
@@ -24,6 +23,7 @@ from posts import savePostToOutbox
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
+from inbox import savePostToInboxQueue
 from follow import getFollowingFeed
 from auth import authorize
 from threads import threadWithTrace
@@ -67,10 +67,10 @@ class PubServer(BaseHTTPRequestHandler):
         self.wfile.write("<html><head></head><body><h1>404 Not Found</h1></body></html>".encode('utf-8'))
 
     def _webfinger(self) -> bool:
-        if self.server.debug:
-            print('DEBUG: WEBFINGER well-known')
         if not self.path.startswith('/.well-known'):
             return False
+        if self.server.debug:
+            print('DEBUG: WEBFINGER well-known')
 
         if self.server.debug:
             print('DEBUG: WEBFINGER host-meta')
@@ -216,20 +216,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
             self.server.GETbusy=False
-            return            
+            return
         # look up a person
         getPerson = personLookup(self.server.domain,self.path, \
                                  self.server.baseDir)
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
-            self.server.GETbusy=False
-            return
-        personKey = personKeyLookup(self.server.domain,self.path, \
-                                    self.server.baseDir)
-        if personKey:
-            self._set_headers('text/html; charset=utf-8')
-            self.wfile.write(personKey.encode('utf-8'))
             self.server.GETbusy=False
             return
         # check that a json file was requested
@@ -366,13 +359,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         pprint(messageJson)
 
-        if not headers.get('keyId'):
-            if self.server.debug:
-                print('DEBUG: POST to inbox has no keyId in header')
-            self.send_response(403)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
+        if not self.headers.get('signature'):
+            if 'keyId=' not in self.headers['signature']:
+                if self.server.debug:
+                    print('DEBUG: POST to inbox has no keyId in header signature parameter')
+                    self.send_response(403)
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return
         
         if self.server.debug:
             print('DEBUG: POST saving to inbox cache')
@@ -387,11 +381,10 @@ class PubServer(BaseHTTPRequestHandler):
                     cacheFilename = \
                         savePostToInboxQueue(self.server.baseDir, \
                                              self.server.httpPrefix, \
-                                             headers['keyId'], \
                                              self.postToNickname, \
                                              self.server.domain, \
                                              messageJson,
-                                             self.headers)
+                                             self.headers['signature'])
                     if cacheFilename:
                         if cacheFilename not in self.server.inboxQueue:
                             self.server.inboxQueue.append(cacheFilename)
@@ -410,7 +403,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-def runDaemon(domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,debug=False) -> None:
+def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:

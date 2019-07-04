@@ -133,4 +133,4 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     print('Creating default admin account '+nickname+'@'+domain)
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True)
 
-runDaemon(domain,port,httpPrefix,federationList,useTor,debug)
+runDaemon(baseDir,domain,port,httpPrefix,federationList,useTor,debug)

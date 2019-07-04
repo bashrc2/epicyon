@@ -18,6 +18,7 @@ from posts import getPersonPubKey
 from httpsig import verifyPostHeaders
 from session import createSession
 from follow import receiveFollowRequest
+from pprint import pprint
 
 def inboxMessageHasParams(messageJson: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
@@ -58,14 +59,12 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,keyId: str,nickname: str, domain: str,postJson: {},headers: {}) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJson: {},headers: str) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
     if ':' in domain:
         domain=domain.split(':')[0]
-    if not keyId:
-        return None
     if not postJson.get('id'):
         return None
     postId=postJson['id'].replace('/activity','')
@@ -82,9 +81,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,keyId: str,nickname: str, 
         return None
     filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
 
-    newBufferItem = {
+    newQueueItem = {
         'published': published,
-        'keyId': keyid,
         'headers': headers,
         'post': postJson,
         'filename': filename,
@@ -128,7 +126,21 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
             # Try a few times to obtain teh public key
             pubKey=None
             for tries in range(5):
-                pubKey=getPersonPubKey(session,queueJson['keyId'],personCache)
+                keyId=None
+                signatureParams=queueJson['headers'].split(',')
+                for signatureItem in signatureParams:
+                    if signatureItem.startswith('keyId='):
+                        if '"' in signatureItem:
+                            keyId=signatureItem.split('"')[1]
+                            break
+                if not keyId:
+                    if debug:
+                        print('DEBUG: No keyId in signature: '+queueJson['headers']['signature'])
+                    os.remove(queueFilename)
+                    queue.pop(0)
+                    continue
+
+                pubKey=getPersonPubKey(session,keyId,personCache,debug)
                 if not pubKey:
                     if debug:
                         print('DEBUG: Retry '+str(tries+1)+' obtaining public key for '+queueJson['keyId'])

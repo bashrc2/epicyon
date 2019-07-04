@@ -111,7 +111,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     os.mkdir(path)
     os.chdir(path)
     nickname='alice'
-    httpPrefix=False
+    httpPrefix='http'
     useTor=False
     clientToServer=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
@@ -124,7 +124,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(domain,port,httpPrefix,federationList,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,useTor,True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: []):
     print('Creating test server: Bob on port '+str(port))
@@ -146,7 +146,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(domain,port,httpPrefix,federationList,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')

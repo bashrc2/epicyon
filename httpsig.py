@@ -24,7 +24,7 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
-    keyID = httpPrefix+'://'+domain+'/users/'+nickname+'/main-key'
+    keyID = httpPrefix+'://'+domain+'/users/'+nickname+'#main-key'
     if not messageBodyJson:
         headers = {'host': domain}
     else:
