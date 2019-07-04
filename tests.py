@@ -46,7 +46,8 @@ def testHttpsigBase(withDigest):
     httpPrefix='https'
     port=5576
     baseDir=os.getcwd()
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,False)
+    password='SuperSecretPassword'
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,False,password)
     messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
 
     headersDomain=domain
@@ -114,7 +115,8 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     httpPrefix='http'
     useTor=False
     clientToServer=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
+    password='alicepass'
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
@@ -137,7 +139,8 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     httpPrefix='http'
     useTor=False
     clientToServer=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True)
+    password='bobpass'
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
@@ -222,6 +225,7 @@ def testFollows():
     currDir=os.getcwd()
     nickname='test529'
     domain='testdomain.com'
+    password='mypass'
     port=80
     httpPrefix='https'
     federationList=['wild.com','mesh.com']
@@ -229,8 +233,8 @@ def testFollows():
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
-    os.chdir(baseDir)
-    createPerson(baseDir,nickname,domain,port,httpPrefix,True)
+    os.chdir(baseDir)    
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
 
     clearFollows(baseDir,nickname,domain)
     followPerson(baseDir,nickname,domain,'badger','wild.com',federationList)
@@ -281,6 +285,7 @@ def testCreatePerson():
     currDir=os.getcwd()
     nickname='test382'
     domain='badgerdomain.com'
+    password='mypass'
     port=80
     httpPrefix='https'
     clientToServer=False
@@ -290,7 +295,8 @@ def testCreatePerson():
     os.mkdir(baseDir)
     os.chdir(baseDir)
     
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
+    assert os.path.isfile(baseDir+'/accounts/passwords')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     setPreferredNickname(baseDir,nickname,domain,'badger')
