@@ -15,6 +15,7 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Server-to-server and client-to-server protocols supported.
  * Implemented in a common language (Python 3)
  * Opt-in federation. Federate with a well-defined list of instances.
+ * Keyword filtering.
  * Resistant to flooding, hellthreads, etc.
  * Support content warnings, reporting and blocking.
  * http signatures and basic auth.
