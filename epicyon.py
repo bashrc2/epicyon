@@ -56,6 +56,8 @@ parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
                     help='Directory in which to store posts')
 parser.add_argument('-a','--addaccount', dest='addaccount', type=str,default=None,
                     help='Adds a new account')
+parser.add_argument('-r','--rmaccount', dest='rmaccount', type=str,default=None,
+                    help='Remove an account')
 parser.add_argument('--pass','--password', dest='password', type=str,default=None,
                     help='Set a password for an account')
 parser.add_argument('--posts', dest='posts', type=str,default=None,
@@ -125,10 +127,10 @@ useTor=args.tor
 
 if args.addaccount:
     if '@' in args.addaccount:
-        nickname=args.postsraw.split('@')[0]
-        domain=args.posts.split('@')[1]
+        nickname=args.addaccount.split('@')[0]
+        domain=args.addaccount.split('@')[1]
     else:
-        nickname=args.postsraw
+        nickname=args.addaccount
         if not args.domain:
             print('Use the --domain option to set the domain name')
             sys.exit()
@@ -138,9 +140,28 @@ if args.addaccount:
         if len(args.password.strip())<8:
             print('Password should be at least 8 characters')
             sys.exit()            
+    if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print('Account already exists')
+        sys.exit()
     createPerson(baseDir,nickname,domain,port,httpPrefix,False,args.password.strip())
     if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print('Account created for '+nickname+'@'+domain)
+    sys.exit()
+
+if args.rmaccount:
+    if '@' in args.rmaccount:
+        nickname=args.rmaccount.split('@')[0]
+        domain=args.rmaccount.split('@')[1]
+    else:
+        nickname=args.rmaccount
+        if not args.domain:
+            print('Use the --domain option to set the domain name')
+            sys.exit()
+    if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        shutil.rmtree(baseDir+'/accounts/'+nickname+'@'+domain)
+        if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'.json'):
+            os.remove(baseDir+'/accounts/'+nickname+'@'+domain+'.json')
+        print('Account for '+nickname+'@'+domain+' was removed')
     sys.exit()
 
 if not args.domain:
