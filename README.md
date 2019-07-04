@@ -12,3 +12,17 @@ Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tut
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome python-beautifulsoup4
 sudo pip install commentjson
 ```
+
+## Running Tests
+
+To run the unit tests:
+
+``` bash
+python3 epicyon.py --tests
+```
+
+To run the network tests. These simulate instances exchanging messages.
+
+``` bash
+python3 epicyon.py --testsnetwork
+```
