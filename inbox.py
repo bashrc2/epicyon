@@ -63,7 +63,10 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,keyId: str,nickname: str, 
         return None
     postId=postJson['id'].replace('/activity','')
 
+    currTime=datetime.datetime.utcnow()
+    published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     newBufferItem = {
+        'published': published,
         'keyId': keyid,
         'post': postJson
     }
