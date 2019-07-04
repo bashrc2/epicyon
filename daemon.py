@@ -107,12 +107,14 @@ class PubServer(BaseHTTPRequestHandler):
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
         if not messageJson.get('type'):
+            if self.server.debug:
+                print('DEBUG: POST to outbox has no "type" parameter')
             return False
         if not messageJson.get('object') and messageJson.get('content'):
             if messageJson['type']!='Create':
                 # https://www.w3.org/TR/activitypub/#object-without-create
                 if self.server.debug:
-                    print('DEBUG POST to outbox: Adding Create wrapper')
+                    print('DEBUG: POST to outbox - adding Create wrapper')
                 messageJson= \
                     outboxMessageCreateWrap(self.server.httpPrefix, \
                                             self.postToNickname, \
@@ -125,14 +127,14 @@ class PubServer(BaseHTTPRequestHandler):
                     messageJson.get('atomUri') and \
                     messageJson.get('to')):
                 if self.server.debug:
-                    print('DEBUG POST to outbox: Create does not have the required parameters')
+                    print('DEBUG: POST to outbox - Create does not have the required parameters')
                 return False
             # https://www.w3.org/TR/activitypub/#create-activity-outbox
             messageJson['object']['attributedTo']=messageJson['actor']
         permittedOutboxTypes=['Create','Announce','Like','Follow','Undo','Update','Add','Remove','Block','Delete']
         if messageJson['type'] not in permittedOutboxTypes:
             if self.server.debug:
-                print('DEBUG POST to outbox: '+messageJson['type']+' is not a permitted activity type')
+                print('DEBUG: POST to outbox - '+messageJson['type']+' is not a permitted activity type')
             return False
         if messageJson.get('id'):
             postId=messageJson['id']
@@ -283,12 +285,14 @@ class PubServer(BaseHTTPRequestHandler):
         # if this is a POST to teh outbox then check authentication
         self.outboxAuthenticated=False
         self.postToNickname=None
+                
         if self.path.endswith('/outbox'):
             if '/users/' in self.path:
                 if self.headers.get('Authorization'):
                     if authorize(self.server.baseDir,self.path,self.headers['Authorization'],self.server.debug):
                         self.outboxAuthenticated=True
-                        self.postToNickname=nickname
+                        pathUsersSection=path.split('/users/')[1]
+                        self.postToNickname=pathUsersSection.split('/')[0]
                         # TODO
                         print('c2s posts not supported yet')
                         self.send_response(405)
@@ -360,9 +364,39 @@ class PubServer(BaseHTTPRequestHandler):
 
         pprint(messageJson)
 
+        if not headers.get('keyId'):
+            if self.server.debug:
+                print('DEBUG: POST to inbox has no keyId in header')
+            return
+        
         if self.server.debug:
-            print('DEBUG: POST create session')
+            print('DEBUG: POST saving to inbox cache')
+        if '/users/' in self.path:
+            pathUsersSection=self.path.split('/users/')[1]
+            if '/' not in pathUsersSection:
+                if self.server.debug:
+                    print('DEBUG: This is not a users endpoint')
+            else:
+                self.postToNickname=pathUsersSection.split('/')[0]
+                if self.postToNickname:
+                    cacheFilename = \
+                        savePostToInboxQueue(self.server.baseDir, \
+                                             self.server.httpPrefix, \
+                                             headers['keyId'], \
+                                             self.postToNickname, \
+                                             self.server.domain, \
+                                             messageJson)
+                    if cacheFilename:
+                        if cacheFilename not in self.server.inboxQueue:
+                            self.server.inboxQueue.append(cacheFilename)
+                return
+        else:
+            print('DEBUG: POST to shared inbox')
+            return
 
+
+
+        
         currSessionTime=int(time.time())
         if currSessionTime-self.server.sessionLastUpdate>1200:
             self.server.sessionLastUpdate=currSessionTime
@@ -449,5 +483,6 @@ def runDaemon(domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,deb
     httpd.GETbusy=False
     httpd.POSTbusy=False
     httpd.receivedMessage=False
+    httpd.inboxQueue=[]
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.serve_forever()

@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 from utils import urlPermitted
+from utils import createInboxQueueDir
 
 def inboxMessageHasParams(messageJson: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
@@ -49,3 +50,26 @@ def validPublishedDate(published) -> bool:
     if daysSincePublished>30:
         return False
     return True
+
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,keyId: str,nickname: str, domain: str,postJson: {}) -> str:
+    """Saves the give json to the inbox queue for the person
+    keyId specifies the actor sending the post
+    """
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    if not keyId:
+        return None
+    if not postJson.get('id'):
+        return None
+    postId=postJson['id'].replace('/activity','')
+
+    newBufferItem = {
+        'keyId': keyid,
+        'post': postJson
+    }
+    
+    inboxQueueDir = createInboxQueueDir(nickname,domain,baseDir)
+    filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
+    with open(filename, 'w') as fp:
+        commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
+    return filename

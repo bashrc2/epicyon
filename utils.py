@@ -20,16 +20,26 @@ def getStatusNumber() -> (str,str):
     conversationDate=currTime.strftime("%Y-%m-%d")
     return statusNumber,published
 
-def createOutboxDir(nickname: str,domain: str,baseDir: str) -> str:
-    """Create an outbox for a person and returns the feed filename and directory
+def createPersonDir(nickname: str,domain: str,baseDir: str,dirname: str) -> str:
+    """Create a directory for a person
     """
     handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
-    outboxDir=baseDir+'/accounts/'+handle+'/outbox'
-    if not os.path.isdir(outboxDir):
-        os.mkdir(outboxDir)
-    return outboxDir
+    boxDir=baseDir+'/accounts/'+handle+'/'+dirname
+    if not os.path.isdir(boxDir):
+        os.mkdir(boxDir)
+    return boxDir
+
+def createOutboxDir(nickname: str,domain: str,baseDir: str) -> str:
+    """Create an outbox for a person
+    """
+    return createPersonDir(nickname,domain,baseDir,'outbox')
+
+def createInboxQueueDir(nickname: str,domain: str,baseDir: str) -> str:
+    """Create an inbox queue and returns the feed filename and directory
+    """
+    return createPersonDir(nickname,domain,baseDir,'queue')
 
 def domainPermitted(domain: str, federationList: []):
     if len(federationList)==0:
