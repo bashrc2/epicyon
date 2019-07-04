@@ -21,6 +21,7 @@ from session import createSession
 from session import getJson
 import json
 import os
+import shutil
 import sys
 import requests
 from pprint import pprint
