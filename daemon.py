@@ -223,8 +223,10 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         # look up a person
+        print('************personLookup start '+self.server.domain+' '+self.path+' '+self.server.baseDir)
         getPerson = personLookup(self.server.domain,self.path, \
                                  self.server.baseDir)
+        print('************personLookup end '+str(getPerson))
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
@@ -391,6 +393,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.postToNickname, \
                                              self.server.domain, \
                                              messageJson,
+                                             self.headers['host'],
                                              self.headers['signature'])
                     if cacheFilename:
                         if cacheFilename not in self.server.inboxQueue:
@@ -425,7 +428,7 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],use
     httpd.httpPrefix=httpPrefix
     httpd.debug=debug
     httpd.federationList=fedList.copy()
-    httpd.baseDir=os.getcwd()
+    httpd.baseDir=baseDir
     httpd.personCache={}
     httpd.cachedWebfingers={}
     httpd.useTor=useTor

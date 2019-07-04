@@ -189,7 +189,7 @@ def testPostMessageBetweenServers():
     while not (testServerAliceRunning and testServerBobRunning):
         time.sleep(1)
         
-    time.sleep(8)
+    time.sleep(1)
 
     print('Alice sends to Bob')
     os.chdir(aliceDir)
@@ -208,7 +208,7 @@ def testPostMessageBetweenServers():
     sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
-    for i in range(60):
+    for i in range(5):
         time.sleep(1)
     
     # stop the servers

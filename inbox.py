@@ -20,9 +20,9 @@ from session import getJson
 from follow import receiveFollowRequest
 from pprint import pprint
 from cache import getPersonFromCache
+from cache import storePersonInCache
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     if not personUrl:
         return None
     personUrl=personUrl.replace('#main-key','')
@@ -30,6 +30,7 @@ def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
+        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,personUrl,asHeader,None)
         if not personJson:
             return None
@@ -87,7 +88,7 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJson: {},headers: str) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJson: {},host: str,headers: str) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -111,6 +112,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
 
     newQueueItem = {
         'published': published,
+        'host': host,
         'headers': headers,
         'post': postJson,
         'filename': filename,
@@ -185,10 +187,14 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
                 continue
 
             # check the signature
+            verifyHeaders={
+                'host': queueJson['host'],
+                'signature': queueJson['headers']
+            }
             if not verifyPostHeaders(httpPrefix, \
-                                     pubKey, queueJson.headers, \
+                                     pubKey, verifyHeaders, \
                                      '/inbox', False, \
-                                     json.dumps(messageJson)):
+                                     json.dumps(queueJson['post'])):
                 if debug:
                     print('DEBUG: Header signature check failed')
                 os.remove(queueFilename)
@@ -199,7 +205,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
                 print('DEBUG: Signature check success')
 
             if receiveFollowRequest(baseDir, \
-                                    queueJson.post, \
+                                    queueJson['post'], \
                                     federationList):
             
                 if debug:
