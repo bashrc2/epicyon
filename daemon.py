@@ -446,7 +446,9 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],use
     httpd.POSTbusy=False
     httpd.receivedMessage=False
     httpd.inboxQueue=[]
+    httpd.sendThreads=[]
+    httpd.postLog=[]
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
-    httpd.thrInboxQueue=threadWithTrace(target=runInboxQueue,args=(baseDir,httpPrefix,httpd.personCache,httpd.inboxQueue,domain,port,useTor,httpd.federationList,debug),daemon=True)
+    httpd.thrInboxQueue=threadWithTrace(target=runInboxQueue,args=(baseDir,httpPrefix,httpd.sendThreads,httpd.postLog,httpd.cachedWebfingers,httpd.personCache,httpd.inboxQueue,domain,port,useTor,httpd.federationList,debug),daemon=True)
     httpd.thrInboxQueue.start()
     httpd.serve_forever()

@@ -129,7 +129,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
 
-def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],debug: bool) -> None:
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
@@ -211,15 +211,18 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
             if debug:
                 print('DEBUG: Signature check success')
 
-            if receiveFollowRequest(baseDir, \
+            if receiveFollowRequest(session, \
+                                    baseDir,httpPrefix,port, \
+                                    sendThreads,postLog, \
+                                    cachedWebfingers,
+                                    personCache,
                                     queueJson['post'], \
                                     federationList):
-            
                 if debug:
                     print('DEBUG: Follow accepted from '+keyId)
-                    os.remove(queueFilename)
-                    queue.pop(0)
-                    continue
+                os.remove(queueFilename)
+                queue.pop(0)
+                continue
                     
             if debug:
                 print('DEBUG: Queue post accepted')

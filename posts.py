@@ -521,6 +521,69 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
+def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain: str, port: int, \
+                   toNickname: str, toDomain: str, toPort: int, cc: str, \
+                   httpPrefix: str, saveToFile: bool, clientToServer: bool, federationList: [], \
+                   sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}) -> int:
+    """Sends a signed json object to an inbox/outbox
+    """
+    withDigest=True
+
+    if toPort!=80 and toPort!=443:
+        toDomain=toDomain+':'+str(toPort)        
+
+    handle=httpPrefix+'://'+toDomain+'/@'+toNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        return 1
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox = \
+        getPersonBox(session,wfRequest,personCache,'inbox')
+
+    # If there are more than one followers on the target domain
+    # then send to teh shared inbox indead of the individual inbox
+    if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
+        inboxUrl=sharedInbox
+                     
+    if not inboxUrl:
+        return 2
+    if not pubKey:
+        return 3
+    if not toPersonId:
+        return 4
+
+    # get the senders private key
+    privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
+    if len(privateKeyPem)==0:
+        return 5
+
+    if not clientToServer:
+        postPath='/inbox'
+    else:
+        postPath='/outbox'
+            
+    # construct the http header
+    signatureHeaderJson = \
+        createSignedHeader(privateKeyPem, nickname, domain, port, \
+                           postPath, httpPrefix, withDigest, postJsonObject)
+
+    # Keep the number of threads being used small
+    while len(sendThreads)>10:
+        sendThreads[0].kill()
+        sendThreads.pop(0)
+    thr = threadWithTrace(target=threadSendPost,args=(session, \
+                                                      postJsonObject.copy(), \
+                                                      federationList, \
+                                                      inboxUrl,baseDir, \
+                                                      signatureHeaderJson.copy(), \
+                                                      postLog),daemon=True)
+    sendThreads.append(thr)
+    thr.start()
+    return 0
+
 def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \

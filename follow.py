@@ -12,6 +12,7 @@ import os
 import sys
 from person import validNickname
 from utils import domainPermitted
+from posts import sendSignedJson
 
 def getFollowersOfPerson(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> []:
     """Returns a list containing the followers of the given person
@@ -228,9 +229,11 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,httpPrefix: st
         following['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
     return following
 
-def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> bool:
+def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},messageJson: {},federationList: []) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
+    if not messageJson.get('actor'):
+        return False
     if not messageJson['type'].startswith('Follow'):
         return False
     if '/users/' not in messageJson['actor']:
@@ -252,7 +255,16 @@ def receiveFollowRequest(baseDir: str,messageJson: {},federationList: []) -> boo
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
             return False
-    return followerOfPerson(baseDir,nickname,domain,nicknameToFollow,domainToFollow,federationList)
+    if not followerOfPerson(baseDir,nickname,domain,nicknameToFollow,domainToFollow,federationList):
+        return False
+    # send accept back
+    personUrl=messageJson['actor']
+    acceptJson=createAccept(baseDir,federationList,nickname,domain,port, \
+                            personUrl,'',httpPrefix,messageJson['object'])
+    sendSignedJson(acceptJson,session,baseDir,nickname,domain,port, \
+                   nicknameToFollow,domainToFollow,toPort, '', \
+                   httpPrefix,saveToFile,clientToServer,federationList, \
+                   sendThreads,postLog,cachedWebfingers,personCache)
 
 def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                       followNickname: str,followDomain: str,followPort: bool,followHttpPrefix: str, \
