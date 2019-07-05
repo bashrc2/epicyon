@@ -298,6 +298,9 @@ def testNoOfFollowersOnDomain():
     followPerson(baseDir,'sausagedog',otherdomain,nickname,domain,federationList)
     followPerson(baseDir,'maxboardroom',otherdomain,nickname,domain,federationList)
     
+    followerOfPerson(baseDir,nickname,domain,'cucumber','sandwiches.party',federationList)
+    followerOfPerson(baseDir,nickname,domain,'captainsensible','damned.zone',federationList)
+    followerOfPerson(baseDir,nickname,domain,'pilchard','zombies.attack',federationList)
     followerOfPerson(baseDir,nickname,domain,'drokk',otherdomain,federationList)
     followerOfPerson(baseDir,nickname,domain,'sausagedog',otherdomain,federationList)
     followerOfPerson(baseDir,nickname,domain,'maxboardroom',otherdomain,federationList)
