@@ -85,6 +85,8 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     return False
 
 def storeBasicCredentials(baseDir: str,nickname: str,password: str) -> bool:
+    """Stores login credentials to a file
+    """
     if ':' in nickname or ':' in password:
         return False
     nickname=nickname.replace('\n','').strip()
@@ -115,6 +117,9 @@ def storeBasicCredentials(baseDir: str,nickname: str,password: str) -> bool:
     return True
 
 def removePassword(baseDir: str,nickname: str) -> None:
+    """Removes the password entry for the given nickname
+    This is called during account removal
+    """
     passwordFile=baseDir+'/accounts/passwords'
     if os.path.isfile(passwordFile):
         with open(passwordFile, "r") as fin:
@@ -125,6 +130,8 @@ def removePassword(baseDir: str,nickname: str) -> None:
         os.rename(passwordFile+'.new', passwordFile)
 
 def authorize(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
+    """Authorize using http header
+    """
     if authHeader.lower().startswith('basic '):
         return authorizeBasic(baseDir,path,authHeader,debug)
     return False
