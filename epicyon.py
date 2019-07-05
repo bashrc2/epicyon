@@ -223,6 +223,9 @@ if args.changepassword:
     if len(newPassword)<8:
         print('Password should be at least 8 characters')
         sys.exit()
+    if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print('Account '+nickname+'@'+domain+' not found')
+        sys.exit()
     passwordFile=baseDir+'/accounts/passwords'
     if os.path.isfile(passwordFile):
         if nickname+':' in open(passwordFile).read():
