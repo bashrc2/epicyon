@@ -154,7 +154,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain, \
                                  messageJson,
                                  self.headers['host'],
-                                 self.headers['signature'])
+                                 self.headers['signature'],
+                                 '/'+self.path.split('/')[-1])
         if cacheFilename:
             if cacheFilename not in self.server.inboxQueue:
                 self.server.inboxQueue.append(cacheFilename)

@@ -488,21 +488,32 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     if not wfRequest:
         return 1
 
+    if not clientToServer:
+        postToBox='inbox'
+    else:
+        postToBox='outbox'
+
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition = \
-        getPersonBox(session,wfRequest,personCache,'inbox')
+        getPersonBox(session,wfRequest,personCache,postToBox)
 
     # If there are more than one followers on the target domain
     # then send to teh shared inbox indead of the individual inbox
-    if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
-        inboxUrl=sharedInbox
+    if nickname=='capabilities':
+        inboxUrl=capabilityAcquisition
+        if not capabilityAcquisition:
+            return 2
+    else:
+        if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
+            inboxUrl=sharedInbox
                      
     if not inboxUrl:
-        return 2
-    if not pubKey:
         return 3
-    if not toPersonId:
+    if not pubKey:
         return 4
+    if not toPersonId:
+        return 5
+    # sharedInbox and capabilities are optional
 
     postJsonObject = \
             createPostBase(baseDir,nickname,domain,port, \
@@ -514,12 +525,11 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     # get the senders private key
     privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
     if len(privateKeyPem)==0:
-        return 5
+        return 6
 
-    if not clientToServer:
-        postPath='/inbox'
-    else:
-        postPath='/outbox'
+    if toDomain not in inboxUrl:
+        return 7
+    postPath='/'+inboxUrl.split('/')[-1]
             
     # construct the http header
     signatureHeaderJson = \
@@ -558,31 +568,41 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
     if not wfRequest:
         return 1
 
-    # get the actor inbox for the To handle
+    if not clientToServer:
+        postToBox='inbox'
+    else:
+        postToBox='outbox'
+    
+    # get the actor inbox/outbox/capabilities for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition = \
-        getPersonBox(session,wfRequest,personCache,'inbox')
+        getPersonBox(session,wfRequest,personCache,postToBox)
 
     # If there are more than one followers on the target domain
     # then send to teh shared inbox indead of the individual inbox
-    if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
-        inboxUrl=sharedInbox
+    if nickname=='capabilities':
+        inboxUrl=capabilityAcquisition
+        if not capabilityAcquisition:
+            return 2
+    else:
+        if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
+            inboxUrl=sharedInbox
                      
     if not inboxUrl:
-        return 2
-    if not pubKey:
         return 3
-    if not toPersonId:
+    if not pubKey:
         return 4
+    if not toPersonId:
+        return 5
+    # sharedInbox and capabilities are optional
 
     # get the senders private key
     privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
     if len(privateKeyPem)==0:
-        return 5
+        return 6
 
-    if not clientToServer:
-        postPath='/inbox'
-    else:
-        postPath='/outbox'
+    if toDomain not in inboxUrl:
+        return 7
+    postPath='/'+inboxUrl.split('/')[-1]
             
     # construct the http header
     signatureHeaderJson = \
