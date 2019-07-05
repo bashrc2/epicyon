@@ -367,7 +367,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Check message has params')
 
-        if self.path.endswith('/inbox') or self.path=='/sharedInbox':
+        if self.path.endswith('/inbox') or \
+           self.path=='/sharedInbox':
             if not inboxMessageHasParams(messageJson):
                 self.send_response(403)
                 self.end_headers()
@@ -412,7 +413,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
         else:
-            if self.path == '/sharedInbox':
+            if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
                 if self._updateInboxQueue('sharedinbox',messageJson):
                     return
