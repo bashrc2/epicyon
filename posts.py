@@ -85,14 +85,22 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None
-    print('**********personUrl: '+personUrl)
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
         if not personJson:
             return None
+    boxJson=None
     if not personJson.get(boxName):
+        if personJson.get('endpoints'):
+            if personJson['endpoints'].get(boxName):
+                boxJson=personJson['endpoints'][boxName]
+    else:
+        boxJson=personJson[boxName]
+
+    if not boxJson:
         return personPosts
+
     personId=None
     if personJson.get('id'):
         personId=personJson['id']
@@ -106,7 +114,7 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
 
     storePersonInCache(personUrl,personJson,personCache)
 
-    return personJson[boxName],pubKeyId,pubKey,personId
+    return boxJson,pubKeyId,pubKey,personId
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int,federationList: [], \
