@@ -35,6 +35,7 @@ from follow import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
+from follow import getFollowersOfPerson
 from tests import testPostMessageBetweenServers
 from tests import runAllTests
 from config import setConfigParam
@@ -273,5 +274,5 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
 if not os.path.isdir(baseDir+'/accounts/sharedinbox@'+domain):
     print('Creating shared inbox')
     createSharedInbox(baseDir,'sharedinbox',domain,port,httpPrefix)
-    
+
 runDaemon(baseDir,domain,port,httpPrefix,federationList,useTor,debug)

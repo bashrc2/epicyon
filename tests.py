@@ -29,6 +29,7 @@ from follow import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
+from follow import getFollowersOfPerson
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
@@ -230,6 +231,47 @@ def testPostMessageBetweenServers():
     # queue item removed
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
 
+    os.chdir(baseDir)
+    shutil.rmtree(aliceDir)
+    shutil.rmtree(bobDir)
+
+def testFollowersOfPerson():
+    print('testFollowersOfPerson')
+    currDir=os.getcwd()
+    nickname='mxpop'
+    domain='diva.domain'
+    password='birb'
+    port=80
+    httpPrefix='https'
+    federationList=[]
+    baseDir=currDir+'/.tests_followersofperson'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)    
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'maxboardroom',domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'ultrapancake',domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'drokk',domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'sausagedog',domain,port,httpPrefix,True,password)
+
+    clearFollows(baseDir,nickname,domain)
+    followPerson(baseDir,nickname,domain,'maxboardroom',domain,federationList)
+    followPerson(baseDir,'drokk',domain,'ultrapancake',domain,federationList)
+    # deliberate duplication
+    followPerson(baseDir,'drokk',domain,'ultrapancake',domain,federationList)
+    followPerson(baseDir,'sausagedog',domain,'ultrapancake',domain,federationList)
+    followPerson(baseDir,nickname,domain,'ultrapancake',domain,federationList)
+    followPerson(baseDir,nickname,domain,'someother','randodomain.net',federationList)
+
+    followList=getFollowersOfPerson(baseDir,'ultrapancake',domain)
+    assert len(followList)==3
+    assert 'mxpop@'+domain in followList
+    assert 'drokk@'+domain in followList
+    assert 'sausagedog@'+domain in followList
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+    
 def testFollows():
     print('testFollows')
     currDir=os.getcwd()
@@ -359,5 +401,6 @@ def runAllTests():
     testThreads()
     testCreatePerson()
     testAuthentication()
-    testFollows()
+    testFollowersOfPerson()
+    testFollows()    
     print('Tests succeeded\n')        

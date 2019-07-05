@@ -13,6 +13,29 @@ import sys
 from person import validNickname
 from utils import domainPermitted
 
+def getFollowersOfPerson(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> []:
+    """Returns a list containing the followers of the given person
+    Used by the shared inbox to know who to send incoming mail to
+    """
+    followers=[]
+    handle=nickname.lower()+'@'+domain.lower()
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        return followers
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            filename = os.path.join(subdir, account)+'/'+followFile
+            if account == handle or account.startswith('sharedinbox@'):
+                continue
+            if not os.path.isfile(filename):
+                continue
+            with open(filename, 'r') as followingfile:
+                for followingHandle in followingfile:
+                    if followingHandle.replace('\n','')==handle:
+                        if account not in followers:
+                            followers.append(account)
+                        break
+    return followers
+
 def followPerson(baseDir: str,nickname: str, domain: str, \
                  followNickname: str, followDomain: str, \
                  federationList: [], followFile='following.txt') -> bool:
