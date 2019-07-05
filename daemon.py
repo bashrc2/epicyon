@@ -243,10 +243,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         # look up a person
-        print('************personLookup start '+self.server.domain+' '+self.path+' '+self.server.baseDir)
         getPerson = personLookup(self.server.domain,self.path, \
                                  self.server.baseDir)
-        print('************personLookup end '+str(getPerson))
         if getPerson:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(getPerson).encode('utf-8'))
