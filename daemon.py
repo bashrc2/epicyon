@@ -102,7 +102,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
-    def _postToOutbox(messageJson: {}) -> bool:
+    def _postToOutbox(self,messageJson: {}) -> bool:
         """post is received by the outbox
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -144,7 +144,7 @@ class PubServer(BaseHTTPRequestHandler):
         savePostToBox(self.server.baseDir,postId,self.postToNickname,self.server.domain,messageJson,'outbox')
         return True
 
-    def _updateInboxQueue(nickname: str,messageJson: {}) -> bool:
+    def _updateInboxQueue(self,nickname: str,messageJson: {}) -> bool:
         """Update the inbox queue
         """
         cacheFilename = \
@@ -404,7 +404,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.postToNickname=pathUsersSection.split('/')[0]
                 if self.postToNickname:
-                    if _updateInboxQueue(self.postToNickname,messageJson):
+                    if self._updateInboxQueue(self.postToNickname,messageJson):
                         return
             self.send_response(403)
             self.end_headers()
@@ -413,7 +413,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox':
                 print('DEBUG: POST to shared inbox')
-                if _updateInboxQueue('sharedinbox',messageJson):
+                if self._updateInboxQueue('sharedinbox',messageJson):
                     return
         self.send_response(200)
         self.end_headers()
