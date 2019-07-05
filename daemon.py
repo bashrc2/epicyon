@@ -324,6 +324,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the post is to an expected path
         if not (self.path.endswith('/outbox') or \
                 self.path.endswith('/inbox') or \
+                self.path.endswith('/caps/new') or \
                 self.path=='/sharedInbox'):
             print('Attempt to POST to invalid path '+self.path)
             self.send_response(400)

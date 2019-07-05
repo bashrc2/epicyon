@@ -128,13 +128,19 @@ def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
     """Generates the shared inbox
     """
     return createPersonBase(baseDir,nickname,domain,port,httpPrefix,True,None)
+
+def createCapabilitiesInbox(baseDir: str,nickname: str,domain: str,port: int, \
+                            httpPrefix: str) -> (str,str,{},{}):
+    """Generates the capabilities inbox to sign requests
+    """
+    return createPersonBase(baseDir,nickname,domain,port,httpPrefix,True,None)
    
 def validNickname(nickname: str) -> bool:
     forbiddenChars=['.',' ','/','?',':',';','@']
     for c in forbiddenChars:
         if c in nickname:
             return False
-    reservedNames=['inbox','outbox','following','followers','sharedinbox']
+    reservedNames=['inbox','outbox','following','followers','sharedinbox','capabilities']
     if nickname in reservedNames:
         return False
     return True

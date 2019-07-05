@@ -8,6 +8,7 @@ __status__ = "Production"
 
 from person import createPerson
 from person import createSharedInbox
+from person import createCapabilitiesInbox
 from person import setPreferredNickname
 from person import setBio
 from webfinger import webfingerHandle
@@ -312,5 +313,9 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
 if not os.path.isdir(baseDir+'/accounts/sharedinbox@'+domain):
     print('Creating shared inbox')
     createSharedInbox(baseDir,'sharedinbox',domain,port,httpPrefix)
+
+if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
+    print('Creating capabilities account which can sign requests')
+    createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
 
 runDaemon(baseDir,domain,port,httpPrefix,federationList,useTor,debug)
