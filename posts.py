@@ -323,6 +323,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         postTo=postCC
         postCC=''
     newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    # TODO
+    capabilityUrl=''
     sensitive=False
     summary=None
     if subject:
@@ -331,6 +333,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     if not clientToServer:
         newPost = {
             'id': newPostId+'/activity',
+            'capability': capabilityUrl,
             'type': 'Create',
             'actor': httpPrefix+'://'+domain+'/users/'+nickname,
             'published': published,
@@ -410,8 +413,11 @@ def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str,messageJso
     cc=[]
     if messageJson.get('cc'):
         cc=messageJson['cc']
+    # TODO
+    capabilityUrl=''
     newPost = {
         'id': newPostId+'/activity',
+        'capability': capabilityUrl,
         'type': 'Create',
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'published': published,
