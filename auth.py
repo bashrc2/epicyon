@@ -114,6 +114,16 @@ def storeBasicCredentials(baseDir: str,nickname: str,password: str) -> bool:
             passfile.write(storeStr+'\n')
     return True
 
+def removePassword(baseDir: str,nickname: str) -> None:
+    passwordFile=baseDir+'/accounts/passwords'
+    if os.path.isfile(passwordFile):
+        with open(passwordFile, "r") as fin:
+            with open(passwordFile+'.new', "w") as fout:
+                for line in fin:
+                    if not line.startswith(nickname+':'):
+                        fout.write(line)
+        os.rename(passwordFile+'.new', passwordFile)
+
 def authorize(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     if authHeader.lower().startswith('basic '):
         return authorizeBasic(baseDir,path,authHeader,debug)

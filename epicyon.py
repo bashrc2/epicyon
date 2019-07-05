@@ -39,6 +39,7 @@ from tests import runAllTests
 from config import setConfigParam
 from config import getConfigParam
 from auth import storeBasicCredentials
+from auth import removePassword
 import argparse
 
 def str2bool(v):
@@ -186,15 +187,7 @@ if args.rmaccount:
             sys.exit()
     handle=nickname+'@'+domain
     accountRemoved=False
-    passwordFile=baseDir+'/accounts/passwords'
-    if os.path.isfile(passwordFile):
-        # remove from passwords file
-        with open(passwordFile, "r") as fin:
-            with open(passwordFile+'.new', "w") as fout:
-                for line in fin:
-                    if not line.startswith(nickname+':'):
-                        fout.write(line)
-        os.rename(passwordFile+'.new', passwordFile)
+    removePassword(baseDir,nickname)
     if os.path.isdir(baseDir+'/accounts/'+handle):
         shutil.rmtree(baseDir+'/accounts/'+handle)
         accountRemoved=True
