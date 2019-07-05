@@ -376,6 +376,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList):
             if self.server.debug:
+                # https://www.youtube.com/watch?v=K3PrSj9XEu4
                 print('DEBUG: Ah Ah Ah')
             self.send_response(403)
             self.end_headers()

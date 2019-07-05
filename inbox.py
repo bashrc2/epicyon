@@ -12,6 +12,7 @@ import datetime
 import time
 import json
 import commentjson
+from shutil import copyfile
 from utils import urlPermitted
 from utils import createInboxQueueDir
 from httpsig import verifyPostHeaders
@@ -160,6 +161,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
 
             # Try a few times to obtain the public key
             pubKey=None
+            keyId=None
             for tries in range(8):
                 keyId=None
                 signatureParams=queueJson['headers'].split(',')
@@ -222,7 +224,34 @@ def runInboxQueue(baseDir: str,httpPrefix: str,personCache: {},queue: [],domain:
             if debug:
                 print('DEBUG: Queue post accepted')
 
-            # move to the destination inbox
-            os.rename(queueFilename,queueJson['destination'])
+            if queueJson['sharedInbox']:
+                if '/users/' in keyId:
+                    # Who is this from? Use the actor from the keyId where we obtained the public key
+                    fromList=keyId.replace('https://','').replace('http://','').replace('dat://','').replace('#main-key','').split('/users/')
+                    fromNickname=fromList[1]
+                    fromDomain=fromList[0]
+                    # get the followers of the sender
+                    followList=getFollowersOfPerson(baseDir,fromNickname,fromDomain)
+                    for followerHandle in followList:
+                        followerDir=baseDir+'/accounts/'+followerHandle
+                        if os.path.isdir(followerDir):                        
+                            if not os.path.isdir(followerDir+'/inbox'):
+                                os.mkdir(followerDir+'/inbox')
+                                postId=queueJson['post']['id'].replace('/activity','')
+                                destination=followerDir+'/inbox/'+postId.replace('/','#')+'.json'
+                                if os.path.isfile(destination):
+                                    # post already exists in this person's inbox
+                                    continue
+                                # We could do this in a more storage space efficient way
+                                # by linking to the inbox of sharedinbox@domain
+                                # However, this allows for easy deletion by individuals
+                                # without affecting any other people
+                                copyfile(queueFilename, destination)
+                # copy to followers
+                # remove item from shared inbox
+                os.remove(queueFilename)
+            else:
+                # move to the destination inbox
+                os.rename(queueFilename,queueJson['destination'])
             queue.pop(0)
         time.sleep(2)
