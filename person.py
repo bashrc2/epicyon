@@ -22,12 +22,10 @@ def generateRSAKey() -> (str,str):
     publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
 
-def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
-                 httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
+def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
+                     httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
-    if not validNickname(nickname):
-       return None,None,None,None
     privateKeyPem,publicKeyPem=generateRSAKey()
     webfingerEndpoint= \
         createWebfingerEndpoint(nickname,domain,port,httpPrefix,publicKeyPem)
@@ -116,12 +114,26 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
+def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
+                 httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
+    """Returns the private key, public key, actor and webfinger endpoint
+    """
+    if not validNickname(nickname):
+       return None,None,None,None
+    return createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
+
+def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
+                      httpPrefix: str) -> (str,str,{},{}):
+    """Generates the shared inbox
+    """
+    return createPersonBase(baseDir,nickname,domain,port,httpPrefix,True,None)
+   
 def validNickname(nickname: str) -> bool:
     forbiddenChars=['.',' ','/','?',':',';','@']
     for c in forbiddenChars:
         if c in nickname:
             return False
-    reservedNames=['inbox','outbox','following','followers','sharedInbox']
+    reservedNames=['inbox','outbox','following','followers','sharedinbox']
     if nickname in reservedNames:
         return False
     return True
@@ -276,4 +288,3 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True
-

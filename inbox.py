@@ -101,7 +101,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     currTime=datetime.datetime.utcnow()
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    inboxQueueDir = createInboxQueueDir(nickname,domain,baseDir)
+    inboxQueueDir=createInboxQueueDir(nickname,domain,baseDir)
 
     handle=nickname+'@'+domain
     destination=baseDir+'/accounts/'+handle+'/inbox/'+postId.replace('/','#')+'.json'

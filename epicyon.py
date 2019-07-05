@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 from person import createPerson
+from person import createSharedInbox
 from person import setPreferredNickname
 from person import setBio
 from webfinger import webfingerHandle
@@ -40,6 +41,7 @@ from config import setConfigParam
 from config import getConfigParam
 from auth import storeBasicCredentials
 from auth import removePassword
+from auth import createPassword
 import argparse
 
 def str2bool(v):
@@ -263,6 +265,13 @@ if federationList:
 
 if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     print('Creating default admin account '+nickname+'@'+domain)
-    createPerson(baseDir,nickname,domain,port,httpPrefix,True)
+    print('See config.json for the password. You can remove the password from config.json after moving it elsewhere.')
+    adminPassword=createPassword(10)
+    setConfigParam(baseDir,'adminPassword',adminPassword)
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
 
+if not os.path.isdir(baseDir+'/accounts/sharedinbox@'+domain):
+    print('Creating shared inbox')
+    createSharedInbox(baseDir,'sharedinbox',domain,port,httpPrefix)
+    
 runDaemon(baseDir,domain,port,httpPrefix,federationList,useTor,debug)

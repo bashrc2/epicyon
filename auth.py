@@ -11,6 +11,7 @@ import hashlib
 import binascii
 import os
 import shutil
+import random
 
 def hashPassword(password: str) -> str:
     """Hash a password for storing
@@ -135,3 +136,7 @@ def authorize(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     if authHeader.lower().startswith('basic '):
         return authorizeBasic(baseDir,path,authHeader,debug)
     return False
+
+def createPassword(length=10):
+    validChars='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    return ''.join((random.choice(validChars) for i in range(length)))

@@ -144,6 +144,26 @@ class PubServer(BaseHTTPRequestHandler):
         savePostToBox(self.server.baseDir,postId,self.postToNickname,self.server.domain,messageJson,'outbox')
         return True
 
+    def _updateInboxQueue(nickname: str,messageJson: {}) -> bool:
+        """Update the inbox queue
+        """
+        cacheFilename = \
+            savePostToInboxQueue(self.server.baseDir, \
+                                 self.server.httpPrefix, \
+                                 nickname, \
+                                 self.server.domain, \
+                                 messageJson,
+                                 self.headers['host'],
+                                 self.headers['signature'])
+        if cacheFilename:
+            if cacheFilename not in self.server.inboxQueue:
+                self.server.inboxQueue.append(cacheFilename)
+            self.send_response(201)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return True
+        return False
+
     def do_GET(self):
         if self.server.debug:
             print('DEBUG: GET from '+self.server.baseDir+' path: '+self.path+' busy: '+str(self.server.GETbusy))
@@ -384,20 +404,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.postToNickname=pathUsersSection.split('/')[0]
                 if self.postToNickname:
-                    cacheFilename = \
-                        savePostToInboxQueue(self.server.baseDir, \
-                                             self.server.httpPrefix, \
-                                             self.postToNickname, \
-                                             self.server.domain, \
-                                             messageJson,
-                                             self.headers['host'],
-                                             self.headers['signature'])
-                    if cacheFilename:
-                        if cacheFilename not in self.server.inboxQueue:
-                            self.server.inboxQueue.append(cacheFilename)
-                        self.send_response(201)
-                        self.end_headers()
-                        self.server.POSTbusy=False
+                    if _updateInboxQueue(self.postToNickname,messageJson):
                         return
             self.send_response(403)
             self.end_headers()
@@ -406,10 +413,8 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox':
                 print('DEBUG: POST to shared inbox')
-                self.send_response(201)
-                self.end_headers()
-                self.server.POSTbusy=False
-                return
+                if _updateInboxQueue('sharedinbox',messageJson):
+                    return
         self.send_response(200)
         self.end_headers()
         self.server.POSTbusy=False
