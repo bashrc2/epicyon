@@ -11,6 +11,7 @@ from person import createSharedInbox
 from person import createCapabilitiesInbox
 from person import setPreferredNickname
 from person import setBio
+from person import validNickname
 from webfinger import webfingerHandle
 from posts import getPosts
 from posts import createPublicPost
@@ -202,6 +203,9 @@ if args.addaccount:
         if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+    if not validNickname(nickname):
+        print(nickname+' is a reserved name. Use something different.')
+        sys.exit()        
     if not args.password:
         print('Use the --password option to set the password for '+nickname)
         sys.exit()
