@@ -134,10 +134,23 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
         if personJson.get('endpoints'):
             if personJson['endpoints'].get('sharedInbox'):
                 sharedInbox=personJson['endpoints']['sharedInbox']
+    capabilityAcquisition=None
+    if personJson.get('capabilityAcquisition'):
+        capabilityAcquisition=personJson['capabilityAcquisition']
+    else:
+        if personJson.get('capabilityAcquisitionEndpoint'):
+            capabilityAcquisition=personJson['capabilityAcquisitionEndpoint']
+        else:
+            if personJson.get('endpoints'):
+                if personJson['endpoints'].get('capabilityAcquisition'):
+                    capabilityAcquisition=personJson['endpoints']['capabilityAcquisition']
+                else:
+                    if personJson['endpoints'].get('capabilityAcquisitionEndpoint'):
+                        capabilityAcquisition=personJson['endpoints']['capabilityAcquisitionEndpoint']
 
     storePersonInCache(personUrl,personJson,personCache)
 
-    return boxJson,pubKeyId,pubKey,personId,sharedInbox
+    return boxJson,pubKeyId,pubKey,personId,sharedInbox,capabilityAcquisition
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int,federationList: [], \
@@ -470,7 +483,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
         return 1
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition = \
         getPersonBox(session,wfRequest,personCache,'inbox')
 
     # If there are more than one followers on the target domain
@@ -540,7 +553,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
         return 1
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition = \
         getPersonBox(session,wfRequest,personCache,'inbox')
 
     # If there are more than one followers on the target domain
@@ -730,7 +743,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str,raw: bool,simple: bool) -> 
     if not wfRequest:
         sys.exit()
 
-    personUrl,pubKeyId,pubKey,personId,shaedInbox= \
+    personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition= \
         getPersonBox(session,wfRequest,personCache,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
 

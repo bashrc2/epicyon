@@ -280,7 +280,7 @@ def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefi
     if followPort!=80 and followPort!=443:
         followDomain=followDomain+':'+str(followPort)
 
-    newFollow = {
+    newFollowJson = {
         'type': 'Follow',
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'object': followHttpPrefix+'://'+followDomain+'/users/'+followNickname,
@@ -290,5 +290,11 @@ def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefi
 
     if ccUrl:
         if len(ccUrl)>0:
-            newFollow['cc']=ccUrl
-    return newFollow
+            newFollowJson['cc']=ccUrl
+
+    sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
+                   nicknameToFollow,domainToFollow,toPort, '', \
+                   httpPrefix,saveToFile,clientToServer,federationList, \
+                   sendThreads,postLog,cachedWebfingers,personCache)
+
+    return newFollowJson

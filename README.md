@@ -6,6 +6,8 @@ Based on the specification: https://www.w3.org/TR/activitypub
 
 Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tutorial.txt
 
+https://blog.dereferenced.org/what-is-ocap-and-why-should-i-care
+
 This project is currently *pre alpha* and not recommended for any real world uses.
 
 ## Goals
@@ -21,6 +23,7 @@ This project is currently *pre alpha* and not recommended for any real world use
  * http signatures and basic auth.
  * Compatible with http (onion addresses), https and dat.
  * Minimal dependencies.
+ * Capabilities based security
  * Data minimization principle. Configurable post expiry time.
  * Commandline interface. If there's a GUI it should be a separate project.
  * Designed for intermittent connectivity. Assume network disruptions.
