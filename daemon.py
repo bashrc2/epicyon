@@ -284,7 +284,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # remove any trailing slashes from the path
-        self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox')
+        self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/sharedInbox/','/sharedInbox')
 
         # if this is a POST to teh outbox then check authentication
         self.outboxAuthenticated=False
@@ -297,12 +297,6 @@ class PubServer(BaseHTTPRequestHandler):
                         self.outboxAuthenticated=True
                         pathUsersSection=path.split('/users/')[1]
                         self.postToNickname=pathUsersSection.split('/')[0]
-                        # TODO
-                        print('c2s posts not supported yet')
-                        self.send_response(405)
-                        self.end_headers()
-                        self.server.POSTbusy=False
-                        return
             if not self.outboxAuthenticated:
                 self.send_response(405)
                 self.end_headers()
@@ -310,7 +304,9 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         # check that the post is to an expected path
-        if not (self.path.endswith('/outbox') or self.path.endswith('/inbox')):
+        if not (self.path.endswith('/outbox') or \
+                self.path.endswith('/inbox') or \
+                self.path=='/sharedInbox'):
             print('Attempt to POST to invalid path '+self.path)
             self.send_response(400)
             self.end_headers()
@@ -351,7 +347,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Check message has params')
 
-        if self.path.endswith('/inbox'):
+        if self.path.endswith('/inbox') or self.path=='/sharedInbox':
             if not inboxMessageHasParams(messageJson):
                 self.send_response(403)
                 self.end_headers()
@@ -366,7 +362,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        pprint(messageJson)
+        if self.server.debug:
+            pprint(messageJson)
 
         if not self.headers.get('signature'):
             if 'keyId=' not in self.headers['signature']:
