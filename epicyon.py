@@ -237,7 +237,7 @@ if args.changepassword:
         print('Passwords file not found')
     sys.exit()
 
-if not args.domain:
+if not args.domain and not domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
 
