@@ -36,22 +36,6 @@ def getFollowersOfPerson(baseDir: str,nickname: str,domain: str,followFile='foll
                         break
     return followers
 
-def noOfFollowersOnDomain(baseDir: str,handle: str, domain: str, followFile='followers.txt') -> int:
-    """Returns the number of followers of the given handle from the given domain
-    """
-    filename=baseDir+'/accounts/'+handle+'/'+followFile
-    if not os.path.isfile(filename):
-        return 0
-
-    ctr=0
-    with open(filename, "r") as followersFilename:
-        for followerHandle in followersFilename:
-            if '@' in followerHandle:
-                followerDomain=followerHandle.split('@')[1].replace('\n','')
-                if domain==followerDomain:
-                    ctr+=1
-    return ctr
-
 def followPerson(baseDir: str,nickname: str, domain: str, \
                  followNickname: str, followDomain: str, \
                  federationList: [], followFile='following.txt') -> bool:

@@ -35,6 +35,22 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
+def noOfFollowersOnDomain(baseDir: str,handle: str, domain: str, followFile='followers.txt') -> int:
+    """Returns the number of followers of the given handle from the given domain
+    """
+    filename=baseDir+'/accounts/'+handle+'/'+followFile
+    if not os.path.isfile(filename):
+        return 0
+
+    ctr=0
+    with open(filename, "r") as followersFilename:
+        for followerHandle in followersFilename:
+            if '@' in followerHandle:
+                followerDomain=followerHandle.split('@')[1].replace('\n','')
+                if domain==followerDomain:
+                    ctr+=1
+    return ctr
+
 def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public'):
     """Returns the public or private key of a person
     """
@@ -456,6 +472,12 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox = \
         getPersonBox(session,wfRequest,personCache,'inbox')
+
+    # If there are more than one followers on the target domain
+    # then send to teh shared inbox indead of the individual inbox
+    if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
+        inboxUrl=sharedInbox
+                     
     if not inboxUrl:
         return 2
     if not pubKey:

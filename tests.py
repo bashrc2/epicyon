@@ -23,6 +23,7 @@ from posts import deleteAllPosts
 from posts import createPublicPost
 from posts import sendPost
 from posts import archivePosts
+from posts import noOfFollowersOnDomain
 from follow import clearFollows
 from follow import clearFollowers
 from follow import followPerson
@@ -30,7 +31,6 @@ from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
-from follow import noOfFollowersOnDomain
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
