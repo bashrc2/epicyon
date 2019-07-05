@@ -162,6 +162,8 @@ if args.http:
 if args.dat:
     httpPrefix='dat'
 useTor=args.tor
+if domain.endswith('.onion'):
+    useTor=True
 
 if args.actor:
     if '@' not in args.actor:
