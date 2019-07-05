@@ -404,11 +404,15 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
         else:
-            print('DEBUG: POST to shared inbox')
-            self.send_response(201)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
+            if self.path == '/sharedInbox':
+                print('DEBUG: POST to shared inbox')
+                self.send_response(201)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
+        self.send_response(200)
+        self.end_headers()
+        self.server.POSTbusy=False
 
 def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,debug=False) -> None:
     if len(domain)==0:
