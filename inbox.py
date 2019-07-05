@@ -110,7 +110,12 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         return None
     filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
 
+    sharedInboxItem=False
+    if nickname=='sharedinbox':
+        sharedInboxItem=True
+        
     newQueueItem = {
+        'sharedInbox': sharedInboxItem,
         'published': published,
         'host': host,
         'headers': headers,
