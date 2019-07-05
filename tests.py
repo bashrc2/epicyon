@@ -30,6 +30,7 @@ from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
+from follow import noOfFollowersOnDomain
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
@@ -271,7 +272,46 @@ def testFollowersOfPerson():
     assert 'sausagedog@'+domain in followList
     os.chdir(currDir)
     shutil.rmtree(baseDir)
+
+def testNoOfFollowersOnDomain():
+    print('testNoOfFollowersOnDomain')
+    currDir=os.getcwd()
+    nickname='mxpop'
+    domain='diva.domain'
+    otherdomain='soup.dragon'
+    password='birb'
+    port=80
+    httpPrefix='https'
+    federationList=[]
+    baseDir=currDir+'/.tests_nooffollowersOndomain'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)    
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'maxboardroom',otherdomain,port,httpPrefix,True,password)
+    createPerson(baseDir,'ultrapancake',otherdomain,port,httpPrefix,True,password)
+    createPerson(baseDir,'drokk',otherdomain,port,httpPrefix,True,password)
+    createPerson(baseDir,'sausagedog',otherdomain,port,httpPrefix,True,password)
+
+    followPerson(baseDir,'drokk',otherdomain,nickname,domain,federationList)
+    followPerson(baseDir,'sausagedog',otherdomain,nickname,domain,federationList)
+    followPerson(baseDir,'maxboardroom',otherdomain,nickname,domain,federationList)
     
+    followerOfPerson(baseDir,nickname,domain,'drokk',otherdomain,federationList)
+    followerOfPerson(baseDir,nickname,domain,'sausagedog',otherdomain,federationList)
+    followerOfPerson(baseDir,nickname,domain,'maxboardroom',otherdomain,federationList)
+
+    followersOnOtherDomain=noOfFollowersOnDomain(baseDir,nickname+'@'+domain, otherdomain)
+    assert followersOnOtherDomain==3
+
+    unfollowerOfPerson(baseDir,nickname,domain,'sausagedog',otherdomain)
+    followersOnOtherDomain=noOfFollowersOnDomain(baseDir,nickname+'@'+domain, otherdomain)
+    assert followersOnOtherDomain==2
+    
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+
 def testFollows():
     print('testFollows')
     currDir=os.getcwd()
@@ -402,5 +442,6 @@ def runAllTests():
     testCreatePerson()
     testAuthentication()
     testFollowersOfPerson()
+    testNoOfFollowersOnDomain()
     testFollows()    
     print('Tests succeeded\n')        
