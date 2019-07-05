@@ -38,6 +38,7 @@ from tests import testPostMessageBetweenServers
 from tests import runAllTests
 from config import setConfigParam
 from config import getConfigParam
+from auth import storeBasicCredentials
 import argparse
 
 def str2bool(v):
@@ -63,6 +64,8 @@ parser.add_argument('-r','--rmaccount', dest='rmaccount', type=str,default=None,
                     help='Remove an account')
 parser.add_argument('--pass','--password', dest='password', type=str,default=None,
                     help='Set a password for an account')
+parser.add_argument('--chpass','--changepassword', nargs='+',dest='changepassword',
+                    help='Change the password for an account')
 parser.add_argument('--posts', dest='posts', type=str,default=None,
                     help='Show posts for the given handle')
 parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
@@ -211,6 +214,33 @@ if args.rmaccount:
         print('Account for '+handle+' was removed')
     sys.exit()
 
+if args.changepassword:
+    if len(args.changepassword)!=2:
+        print('--changepassword [nickname] [new password]')
+        sys.exit()
+    if '@' in args.changepassword[0]:
+        nickname=args.changepassword[0].split('@')[0]
+        domain=args.changepassword[0].split('@')[1]
+    else:
+        nickname=args.changepassword[0]
+        if not args.domain or not getConfigParam(baseDir,'domain'):
+            print('Use the --domain option to set the domain name')
+            sys.exit()
+    newPassword=args.changepassword[1]
+    if len(newPassword)<8:
+        print('Password should be at least 8 characters')
+        sys.exit()
+    passwordFile=baseDir+'/accounts/passwords'
+    if os.path.isfile(passwordFile):
+        if nickname+':' in open(passwordFile).read():
+            storeBasicCredentials(baseDir,nickname,newPassword)
+            print('Password for '+nickname+' was changed')
+        else:
+            print(nickname+' is not in the passwords file')
+    else:
+        print('Passwords file not found')
+    sys.exit()
+
 if not args.domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
@@ -231,7 +261,7 @@ else:
     configFederationList=getConfigParam(baseDir,'federationList')
     if configFederationList:
         federationList=configFederationList
-    
+
 if federationList:
     print('Federating with: '+str(federationList))
 
