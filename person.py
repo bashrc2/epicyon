@@ -54,7 +54,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'endpoints': {
                      'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
-                     'uploadMedia': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints/uploadMedia',
+                     'uploadMedia': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints/uploadMedia'
                  },
                  'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new'
                  'featured': httpPrefix+'://'+domain+'/users/'+nickname+'/collections/featured',
