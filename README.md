@@ -75,6 +75,12 @@ To remove an account (be careful!):
 python3 epicyon.py --rmaccount nickname@domain
 ```
 
+To change the password for an account:
+
+``` bash
+python3 epicyon.py --changepassword nickname@domain newpassword
+```
+
 ## Running the Server
 
 To run with defaults:
