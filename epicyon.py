@@ -18,6 +18,7 @@ from posts import createOutbox
 from posts import archivePosts
 from posts import sendPost
 from posts import getPublicPostsOfPerson
+from posts import getUserUrl
 from session import createSession
 from session import getJson
 import json
@@ -70,6 +71,8 @@ parser.add_argument('--pass','--password', dest='password', type=str,default=Non
                     help='Set a password for an account')
 parser.add_argument('--chpass','--changepassword', nargs='+',dest='changepassword',
                     help='Change the password for an account')
+parser.add_argument('--actor', dest='actor', type=str,default=None,
+                    help='Show the json actor the given handle')
 parser.add_argument('--posts', dest='posts', type=str,default=None,
                     help='Show posts for the given handle')
 parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
@@ -108,14 +111,20 @@ if args.testsnetwork:
     print('Network Tests')
     testPostMessageBetweenServers()
     sys.exit()
-    
+
 if args.posts:
+    if '@' not in args.posts:
+        print('Syntax: --posts nickname@domain')
+        sys.exit()        
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
     getPublicPostsOfPerson(nickname,domain,False,True)
     sys.exit()
 
 if args.postsraw:
+    if '@' not in args.posts:
+        print('Syntax: --postsraw nickname@domain')
+        sys.exit()        
     nickname=args.postsraw.split('@')[0]
     domain=args.postsraw.split('@')[1]
     getPublicPostsOfPerson(nickname,domain,True,False)
@@ -153,6 +162,33 @@ if args.http:
 if args.dat:
     httpPrefix='dat'
 useTor=args.tor
+
+if args.actor:
+    if '@' not in args.actor:
+        print('Syntax: --actor nickname@domain')
+        sys.exit()        
+    nickname=args.actor.split('@')[0]
+    domain=args.actor.split('@')[1].replace('\n','')
+    wfCache={}
+    if domain.endswith('.onion'):
+        httpPrefix='http'
+        port=80
+    else:
+        httpPrefix='https'
+        port=443
+    session = createSession(domain,port,useTor)
+    wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache)
+    if not wfRequest:
+        print('Unable to webfinger '+nickname+'@'+domain)
+        sys.exit()
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    personUrl = getUserUrl(wfRequest)
+    personJson = getJson(session,personUrl,asHeader,None)
+    if personJson:
+        pprint(personJson)
+    else:
+        print('Failed to get '+personUrl)
+    sys.exit()
 
 if args.addaccount:
     if '@' in args.addaccount:
