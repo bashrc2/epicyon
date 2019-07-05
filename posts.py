@@ -80,16 +80,16 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
     
-def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,str,str,str):
+def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
-        return None
+        return None,None,None,None,None
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
         if not personJson:
-            return None
+            return None,None,None,None,None
     boxJson=None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
@@ -99,7 +99,7 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
         boxJson=personJson[boxName]
 
     if not boxJson:
-        return personPosts
+        return None,None,None,None,None
 
     personId=None
     if personJson.get('id'):
@@ -111,10 +111,17 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
             pubKeyId=personJson['publicKey']['id']
         if personJson['publicKey'].get('publicKeyPem'):
             pubKey=personJson['publicKey']['publicKeyPem']
+    sharedInbox=None
+    if personJson.get('sharedInbox'):
+        sharedInbox=personJson['sharedInbox']
+    else:
+        if personJson.get('endpoints'):
+            if personJson['endpoints'].get('sharedInbox'):
+                sharedInbox=personJson['endpoints']['sharedInbox']
 
     storePersonInCache(personUrl,personJson,personCache)
 
-    return boxJson,pubKeyId,pubKey,personId
+    return boxJson,pubKeyId,pubKey,personId,sharedInbox
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int,federationList: [], \
@@ -447,7 +454,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
         return 1
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox = \
         getPersonBox(session,wfRequest,personCache,'inbox')
     if not inboxUrl:
         return 2
@@ -622,7 +629,7 @@ def archivePosts(nickname: str,domain: str,baseDir: str, \
             if noOfPosts <= maxPostsInBox:
                 break
 
-def getPublicPostsOfPerson(nickname,domain,raw,simple):
+def getPublicPostsOfPerson(nickname: str,domain: str,raw: bool,simple: bool) -> None:
     """ This is really just for test purposes
     """
     useTor=True
@@ -638,7 +645,8 @@ def getPublicPostsOfPerson(nickname,domain,raw,simple):
     if not wfRequest:
         sys.exit()
 
-    personUrl,pubKeyId,pubKey,personId=getPersonBox(session,wfRequest,personCache,'outbox')
+    personUrl,pubKeyId,pubKey,personId,shaedInbox= \
+        getPersonBox(session,wfRequest,personCache,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
 
     maxMentions=10
