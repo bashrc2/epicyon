@@ -204,7 +204,7 @@ if args.rmaccount:
     if os.path.isfile(baseDir+'/keys/private/'+handle+'.key'):
         os.remove(baseDir+'/keys/private/'+handle+'.key')
         accountRemoved=True
-    if os.path.isfile(baseDir+'/keys/public/'+handle+'.key'):
+    if os.path.isfile(baseDir+'/keys/public/'+handle+'.pem'):
         os.remove(baseDir+'/keys/public/'+handle+'.pem')
         accountRemoved=True
     if accountRemoved:
