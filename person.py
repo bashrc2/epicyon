@@ -87,6 +87,8 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         peopleSubdir='/accounts'
         if not os.path.isdir(baseDir+peopleSubdir):
             os.mkdir(baseDir+peopleSubdir)
+        if not os.path.isdir(baseDir+peopleSubdir+'/'+handle):
+            os.mkdir(baseDir+peopleSubdir+'/'+handle)
         filename=baseDir+peopleSubdir+'/'+handle+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newPerson, fp, indent=4, sort_keys=False)

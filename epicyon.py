@@ -36,6 +36,8 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from tests import testPostMessageBetweenServers
 from tests import runAllTests
+from config import setConfigParam
+from config import getConfigParam
 import argparse
 
 def str2bool(v):
@@ -47,11 +49,11 @@ def str2bool(v):
         return False
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
-    
+
 parser = argparse.ArgumentParser(description='ActivityPub Server')
-parser.add_argument('-d','--domain', dest='domain', type=str,default='localhost',
+parser.add_argument('-d','--domain', dest='domain', type=str,default=None,
                     help='Domain name of the server')
-parser.add_argument('-p','--port', dest='port', type=int,default=8085,
+parser.add_argument('-p','--port', dest='port', type=int,default=None,
                     help='Port number to run on')
 parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
                     help='Directory in which to store posts')
@@ -99,7 +101,7 @@ if args.testsnetwork:
     print('Network Tests')
     testPostMessageBetweenServers()
     sys.exit()
-
+    
 if args.posts:
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
@@ -116,9 +118,28 @@ baseDir=args.baseDir
 if baseDir.endswith('/'):
     print("--path option should not end with '/'")
     sys.exit()
+
+# get domain name from configuration
+configDomain=getConfigParam(baseDir,'domain')
+if configDomain:
+    domain=configDomain
+else:
+    domain='localhost'
+
+# get port number from configuration
+configPort=getConfigParam(baseDir,'port')
+if configPort:
+    port=configPort
+else:
+    port=8085
+
 nickname='admin'
-domain=args.domain
-port=args.port
+if args.domain:
+    domain=args.domain
+    setConfigParam(baseDir,'domain',domain)
+if args.port:
+    port=args.port
+    setConfigParam(baseDir,'port',port)
 httpPrefix='https'
 if args.http:
     httpPrefix='http'
@@ -132,21 +153,23 @@ if args.addaccount:
         domain=args.addaccount.split('@')[1]
     else:
         nickname=args.addaccount
-        if not args.domain:
+        if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-        if not args.password:
-            print('Use the --password option to set the password for '+nickname)
-            sys.exit()
-        if len(args.password.strip())<8:
-            print('Password should be at least 8 characters')
-            sys.exit()            
+    if not args.password:
+        print('Use the --password option to set the password for '+nickname)
+        sys.exit()
+    if len(args.password.strip())<8:
+        print('Password should be at least 8 characters')
+        sys.exit()            
     if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print('Account already exists')
         sys.exit()
-    createPerson(baseDir,nickname,domain,port,httpPrefix,False,args.password.strip())
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,args.password.strip())
     if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print('Account created for '+nickname+'@'+domain)
+    else:
+        print('Account creation failed')
     sys.exit()
 
 if args.rmaccount:
@@ -155,14 +178,37 @@ if args.rmaccount:
         domain=args.rmaccount.split('@')[1]
     else:
         nickname=args.rmaccount
-        if not args.domain:
+        if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-    if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
-        shutil.rmtree(baseDir+'/accounts/'+nickname+'@'+domain)
-        if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'.json'):
-            os.remove(baseDir+'/accounts/'+nickname+'@'+domain+'.json')
-        print('Account for '+nickname+'@'+domain+' was removed')
+    handle=nickname+'@'+domain
+    accountRemoved=False
+    passwordFile=baseDir+'/accounts/passwords'
+    if os.path.isfile(passwordFile):
+        # remove from passwords file
+        with open(passwordFile, "r") as fin:
+            with open(passwordFile+'.new', "w") as fout:
+                for line in fin:
+                    if not line.startswith(nickname+':'):
+                        fout.write(line)
+        os.rename(passwordFile+'.new', passwordFile)
+    if os.path.isdir(baseDir+'/accounts/'+handle):
+        shutil.rmtree(baseDir+'/accounts/'+handle)
+        accountRemoved=True
+    if os.path.isfile(baseDir+'/accounts/'+handle+'.json'):
+        os.remove(baseDir+'/accounts/'+handle+'.json')
+        accountRemoved=True
+    if os.path.isfile(baseDir+'/wfendpoints/'+handle+'.json'):
+        os.remove(baseDir+'/wfendpoints/'+handle+'.json')
+        accountRemoved=True
+    if os.path.isfile(baseDir+'/keys/private/'+handle+'.key'):
+        os.remove(baseDir+'/keys/private/'+handle+'.key')
+        accountRemoved=True
+    if os.path.isfile(baseDir+'/keys/public/'+handle+'.key'):
+        os.remove(baseDir+'/keys/public/'+handle+'.pem')
+        accountRemoved=True
+    if accountRemoved:
+        print('Account for '+handle+' was removed')
     sys.exit()
 
 if not args.domain:
@@ -171,11 +217,26 @@ if not args.domain:
 
 federationList=[]
 if args.federationList:
-    federationList=args.federationList.copy()
+    if len(args.federationList)==1:
+        if not (args.federationList[0].lower()=='any' or \
+                args.federationList[0].lower()=='all' or \
+                args.federationList[0].lower()=='*'):
+            for federationDomain in args.federationList:
+                if '@' in federationDomain:
+                    print(federationDomain+': Federate with domains, not individual accounts')
+                    sys.exit()
+            federationList=args.federationList.copy()
+        setConfigParam(baseDir,'federationList',federationList)
+else:
+    configFederationList=getConfigParam(baseDir,'federationList')
+    if configFederationList:
+        federationList=configFederationList
+    
+if federationList:
     print('Federating with: '+str(federationList))
 
 if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     print('Creating default admin account '+nickname+'@'+domain)
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True)
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True)
 
 runDaemon(baseDir,domain,port,httpPrefix,federationList,useTor,debug)
