@@ -15,6 +15,7 @@ import commentjson
 from shutil import copyfile
 from utils import urlPermitted
 from utils import createInboxQueueDir
+from utils import getStatusNumber
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -53,9 +54,13 @@ def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
 def inboxMessageHasParams(messageJson: {}) -> bool:
     """Checks whether an incoming message contains expected parameters
     """
-    expectedParams=['type','to','actor','object']
+    expectedParams=['type','actor','object']
     for param in expectedParams:
         if not messageJson.get(param):
+            return False
+    if not messageJson.get('to'):
+        allowedWithoutToParam=['Follow','Request','Capability']
+        if messageJson['type'] not in allowedWithoutToParam:
             return False
     return True
 
@@ -73,11 +78,12 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],capsLis
     if not urlPermitted(actor,federationList,capsList,"inbox:write"):
         return False
 
-    if messageJson.get('object'):
-        if messageJson['object'].get('inReplyTo'):
-            inReplyTo=messageJson['object']['inReplyTo']
-            if not urlPermitted(inReplyTo,federationList,capsList):
-                return False
+    if messageJson['type']!='Follow':
+        if messageJson.get('object'):
+            if messageJson['object'].get('inReplyTo'):
+                inReplyTo=messageJson['object']['inReplyTo']
+                if not urlPermitted(inReplyTo,federationList,capsList):
+                    return False
 
     return True
 
@@ -89,16 +95,18 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJson: {},host: str,headers: str,postPath: str) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJson: {},host: str,headers: str,postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
     if ':' in domain:
         domain=domain.split(':')[0]
-    if not postJson.get('id'):
-        return None
-    postId=postJson['id'].replace('/activity','')
-
+    if postJson.get('id'):
+        postId=postJson['id'].replace('/activity','')
+    else:
+        statusNumber,published = getStatusNumber()
+        postId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    
     currTime=datetime.datetime.utcnow()
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -107,7 +115,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     handle=nickname+'@'+domain
     destination=baseDir+'/accounts/'+handle+'/inbox/'+postId.replace('/','#')+'.json'
     if os.path.isfile(destination):
-        # inbox item already exists
+        if debug:
+            print('DEBUG: inbox item already exists')
         return None
     filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
 
@@ -125,12 +134,16 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         'filename': filename,
         'destination': destination
     }
+
+    if debug:
+        print('Inbox queue item created')
+        pprint(newQueueItem)
     
     with open(filename, 'w') as fp:
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],debug: bool) -> None:
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],capsList: [],debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
@@ -218,7 +231,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                     cachedWebfingers,
                                     personCache,
                                     queueJson['post'], \
-                                    federationList):
+                                    federationList,capsList, \
+                                    debug):
                 if debug:
                     print('DEBUG: Follow accepted from '+keyId)
                 os.remove(queueFilename)

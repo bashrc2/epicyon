@@ -147,7 +147,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _updateInboxQueue(self,nickname: str,messageJson: {}) -> bool:
         """Update the inbox queue
         """
-        cacheFilename = \
+        queueFilename = \
             savePostToInboxQueue(self.server.baseDir, \
                                  self.server.httpPrefix, \
                                  nickname, \
@@ -155,10 +155,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  messageJson,
                                  self.headers['host'],
                                  self.headers['signature'],
-                                 '/'+self.path.split('/')[-1])
-        if cacheFilename:
-            if cacheFilename not in self.server.inboxQueue:
-                self.server.inboxQueue.append(cacheFilename)
+                                 '/'+self.path.split('/')[-1],
+                                 self.server.debug)
+        if queueFilename:
+            print('**************************************')
+            if queueFilename not in self.server.inboxQueue:
+                self.server.inboxQueue.append(queueFilename)
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
@@ -370,6 +372,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/inbox') or \
            self.path=='/sharedInbox':
             if not inboxMessageHasParams(messageJson):
+                if self.server.debug:
+                    print("DEBUG: inbox message doesn't have the required parameters")
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -397,7 +401,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
         
         if self.server.debug:
-            print('DEBUG: POST saving to inbox cache')
+            print('DEBUG: POST saving to inbox queue')
         if '/users/' in self.path:
             pathUsersSection=self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
@@ -452,6 +456,6 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],cap
     httpd.sendThreads=[]
     httpd.postLog=[]
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
-    httpd.thrInboxQueue=threadWithTrace(target=runInboxQueue,args=(baseDir,httpPrefix,httpd.sendThreads,httpd.postLog,httpd.cachedWebfingers,httpd.personCache,httpd.inboxQueue,domain,port,useTor,httpd.federationList,debug),daemon=True)
+    httpd.thrInboxQueue=threadWithTrace(target=runInboxQueue,args=(baseDir,httpPrefix,httpd.sendThreads,httpd.postLog,httpd.cachedWebfingers,httpd.personCache,httpd.inboxQueue,domain,port,useTor,httpd.federationList,httpd.capsList,debug),daemon=True)
     httpd.thrInboxQueue.start()
     httpd.serve_forever()

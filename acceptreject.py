@@ -36,8 +36,8 @@ def createAcceptReject(baseDir: str,federationList: [],capsList: [],nickname: st
             newAccept['cc']=ccUrl
     return newAccept
 
-def createAccept(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
-    return createAcceptReject(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Accept')
+def createAccept(baseDir: str,federationList: [],capsList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
+    return createAcceptReject(baseDir,federationList,capsList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Accept')
 
-def createReject(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
-    return createAcceptReject(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Reject')
+def createReject(baseDir: str,federationList: [],capsList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
+    return createAcceptReject(baseDir,federationList,capsList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Reject')

@@ -40,6 +40,7 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
 from tests import testPostMessageBetweenServers
+from tests import testFollowBetweenServers
 from tests import runAllTests
 from config import setConfigParam
 from config import getConfigParam
@@ -111,7 +112,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    testPostMessageBetweenServers()
+    testFollowBetweenServers()
+    #testPostMessageBetweenServers()
     sys.exit()
 
 if args.posts:

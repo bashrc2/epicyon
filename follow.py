@@ -14,6 +14,7 @@ from person import validNickname
 from utils import domainPermitted
 from posts import sendSignedJson
 from capabilities import isCapable
+from acceptreject import createAccept
 
 def getFollowersOfPerson(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> []:
     """Returns a list containing the followers of the given person
@@ -230,58 +231,82 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,httpPrefix: st
         following['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
     return following
 
-def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},messageJson: {},federationList: []) -> bool:
+def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},messageJson: {},federationList: [],capsList: [],debug : bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
-    if not messageJson.get('actor'):
-        return False
     if not messageJson['type'].startswith('Follow'):
         return False
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: follow request has no actor')
+        return False
     if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor')            
         return False
     domain=messageJson['actor'].split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
+    if ':' in domain:
+        domain=domain.split(':')[0]
     if not domainPermitted(domain,federationList):
+        if debug:
+            print('DEBUG: follower from domain not permitted - '+domain)
         return False
     nickname=messageJson['actor'].split('/users/')[1].replace('@','')
     handle=nickname.lower()+'@'+domain.lower()
-    if not os.path.isdir(baseDir+'/accounts/'+handle):
-        return False
     if '/users/' not in messageJson['object']:
+        if debug:
+            print('DEBUG: "users" not found within object')
         return False
     domainToFollow=messageJson['object'].split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
+    toPort=port
+    if ':' in domainToFollow:
+        toPort=domainToFollow.split(':')[1]
+        domainToFollow=domainToFollow.split(':')[0]
     if not domainPermitted(domainToFollow,federationList):
+        if debug:
+            print('DEBUG: follow domain not permitted '+domainToFollow)
         return False
     nicknameToFollow=messageJson['object'].split('/users/')[1].replace('@','')
     handleToFollow=nicknameToFollow.lower()+'@'+domainToFollow.lower()
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
+            if debug:
+                print('DEBUG: followed account not found - '+baseDir+'/accounts/'+handleToFollow)
             return False
     if not followerOfPerson(baseDir,nickname,domain,nicknameToFollow,domainToFollow,federationList):
+        if debug:
+            print('DEBUG: '+nickname+'@'+domain+' is already a follower of '+nicknameToFollow+'@'+domainToFollow)
         return False
     # send accept back
+    if debug:
+        print('DEBUG: sending Accept from '+nickname+'@'+domain+' for follow request')
     personUrl=messageJson['actor']
-    acceptJson=createAccept(baseDir,federationList,nickname,domain,port, \
+    acceptJson=createAccept(baseDir,federationList,capsList,nickname,domain,port, \
                             personUrl,'',httpPrefix,messageJson['object'])
+    clientToServer=False
     sendSignedJson(acceptJson,session,baseDir,nickname,domain,port, \
                    nicknameToFollow,domainToFollow,toPort, '', \
-                   httpPrefix,saveToFile,clientToServer,federationList, \
-                   sendThreads,postLog,cachedWebfingers,personCache)
+                   httpPrefix,True,clientToServer, \
+                   federationList, capsList, \
+                   sendThreads,postLog,cachedWebfingers,personCache,debug)
 
-def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def sendFollowRequest(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                       followNickname: str,followDomain: str,followPort: bool,followHttpPrefix: str, \
-                      federationList: [],capsList: []) -> {}:
+                      clientToServer: bool,federationList: [],capsList: [], \
+                      sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},
+                      debug : bool) -> {}:
     """Gets the json object for sending a follow request
-    """
+    """    
     if not domainPermitted(followDomain,federationList):
         return None
-
+    
+    followActor=httpPrefix+'://'+domain+'/users/'+nickname    
     if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+        followActor=httpPrefix+'://'+domain+':'+str(port)+'/users/'+nickname
 
+    requestDomain=followDomain
     if followPort!=80 and followPort!=443:
-        followDomain=followDomain+':'+str(followPort)
-
-    followActor=httpPrefix+'://'+domain+'/users/'+nickname
+        requestDomain=followDomain+':'+str(followPort)
 
     # check that we are capable
     if capsList:
@@ -291,12 +316,13 @@ def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefi
     newFollowJson = {
         'type': 'Follow',
         'actor': followActor,
-        'object': followHttpPrefix+'://'+followDomain+'/users/'+followNickname
+        'object': followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
     }
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
-                   nicknameToFollow,domainToFollow,toPort, '', \
-                   httpPrefix,saveToFile,clientToServer,federationList, \
-                   sendThreads,postLog,cachedWebfingers,personCache)
+                   followNickname,followDomain,followPort, '', \
+                   httpPrefix,True,clientToServer, \
+                   federationList, capsList, \
+                   sendThreads,postLog,cachedWebfingers,personCache, debug)
 
     return newFollowJson

@@ -52,17 +52,21 @@ def noOfFollowersOnDomain(baseDir: str,handle: str, domain: str, followFile='fol
                     ctr+=1
     return ctr
 
-def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public'):
+def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public',debug=False):
     """Returns the public or private key of a person
     """
     handle=nickname+'@'+domain
     keyFilename=baseDir+'/keys/'+keyType+'/'+handle.lower()+'.key'
     if not os.path.isfile(keyFilename):
+        if debug:
+            print('DEBUG: private key file not found: '+keyFilename)
         return ''
     keyPem=''
     with open(keyFilename, "r") as pemFile:
         keyPem=pemFile.read()
     if len(keyPem)<20:
+        if debug:
+            print('DEBUG: private key was too short: '+keyPem)
         return ''
     return keyPem
     
@@ -453,7 +457,8 @@ def createPublicPost(baseDir: str,
                           inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
-                   inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: []) -> None:
+                   inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
+                   debug :bool) -> None:
     """Sends a post with exponential backoff
     """
     tries=0
@@ -463,6 +468,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
                               capsList,inboxUrl,signatureHeaderJson, \
                               "inbox:write")
         if postResult:
+            if debug:
+                print('DEBUG: json post to '+inboxUrl+' succeeded')
             postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
             # Don't accumulate massive files on systems with limited resources
@@ -475,6 +482,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
                     print(line, file=logFile)
             # our work here is done
             break
+        if debug:
+            print('DEBUG: json post to '+inboxUrl+' failed. Waiting for '+str(backoffTime)+' seconds.')
         time.sleep(backoffTime)
         backoffTime *= 2
 
@@ -484,13 +493,14 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
              saveToFile: bool, clientToServer: bool, \
              federationList: [], capsList: [],\
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
-             inReplyTo=None, inReplyToAtomUri=None, subject=None) -> int:
+             debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Post to another inbox
     """
     withDigest=True
 
     if toPort!=80 and toPort!=443:
-        toDomain=toDomain+':'+str(toPort)        
+        if ':' not in toDomain:
+            toDomain=toDomain+':'+str(toPort)        
 
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
@@ -557,7 +567,8 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
                                                       capsList, \
                                                       inboxUrl,baseDir, \
                                                       signatureHeaderJson.copy(), \
-                                                      postLog),daemon=True)
+                                                      postLog,
+                                                      debug),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0
@@ -566,19 +577,23 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
                    toNickname: str, toDomain: str, toPort: int, cc: str, \
                    httpPrefix: str, saveToFile: bool, clientToServer: bool, \
                    federationList: [], capsList: [], \
-                   sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}) -> int:
+                   sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
+                   debug: bool) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     withDigest=True
 
     if toPort!=80 and toPort!=443:
-        toDomain=toDomain+':'+str(toPort)        
+        if ':' not in toDomain:
+            toDomain=toDomain+':'+str(toPort)        
 
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
     # lookup the inbox for the To handle
     wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
+        if debug:
+            print('DEBUG: webfinger for '+handle+' failed')
         return 1
 
     if not clientToServer:
@@ -599,6 +614,9 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
     else:
         if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
             inboxUrl=sharedInbox
+
+    if debug:
+        print('DEBUG: Sending to endpoint '+inboxUrl)
                      
     if not inboxUrl:
         return 3
@@ -609,8 +627,10 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
     # sharedInbox and capabilities are optional
 
     # get the senders private key
-    privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
+    privateKeyPem=getPersonKey(nickname,domain,baseDir,'private',debug)
     if len(privateKeyPem)==0:
+        if debug:
+            print('DEBUG: Private key not found for '+nickname+'@'+domain+' in '+baseDir+'/keys/private')
         return 6
 
     if toDomain not in inboxUrl:
@@ -632,7 +652,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
                                                       capsList, \
                                                       inboxUrl,baseDir, \
                                                       signatureHeaderJson.copy(), \
-                                                      postLog),daemon=True)
+                                                      postLog,
+                                                      debug),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0

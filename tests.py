@@ -31,6 +31,7 @@ from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
+from follow import sendFollowRequest
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
@@ -107,7 +108,7 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,domain: str,port: int,federationList: [],capsList: []):
+def createServerAlice(path: str,domain: str,port: int,federationList: [],capsList: [],hasFollows: bool,hasPosts :bool):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -121,17 +122,19 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],capsLis
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
-    followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
-    followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer,capsList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer,capsList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer,capsList)
+    if hasFollows:
+        followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
+        followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
+    if hasPosts:
+        createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer,capsList)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer,capsList)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer,capsList)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
     runDaemon(path,domain,port,httpPrefix,federationList,capsList,useTor,True)
 
-def createServerBob(path: str,domain: str,port: int,federationList: [],capsList: []):
+def createServerBob(path: str,domain: str,port: int,federationList: [],capsList: [],hasFollows: bool,hasPosts :bool):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -145,11 +148,13 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],capsList:
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
-    followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
-    followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer,capsList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer,capsList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer,capsList)
+    if hasFollows:
+        followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
+        followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
+    if hasPosts:
+        createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer,capsList)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer,capsList)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer,capsList)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
@@ -169,19 +174,20 @@ def testPostMessageBetweenServers():
     capsList=[]
 
     baseDir=os.getcwd()
-    if not os.path.isdir(baseDir+'/.tests'):
-        os.mkdir(baseDir+'/.tests')
+    if os.path.isdir(baseDir+'/.tests'):
+        shutil.rmtree(baseDir+'/.tests')
+    os.mkdir(baseDir+'/.tests')
 
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,capsList),daemon=True)
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,capsList,True,True),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.100'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,capsList),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,capsList,True,True),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -236,6 +242,88 @@ def testPostMessageBetweenServers():
     os.chdir(baseDir)
     shutil.rmtree(aliceDir)
     shutil.rmtree(bobDir)
+
+def testFollowBetweenServers():
+    print('Testing sending a follow request from one server to another')
+
+    global testServerAliceRunning
+    global testServerBobRunning
+    testServerAliceRunning = False
+    testServerBobRunning = False
+
+    httpPrefix='http'
+    useTor=False
+    federationList=['127.0.0.42','127.0.0.64']
+    capsList=[]
+
+    baseDir=os.getcwd()
+    if os.path.isdir(baseDir+'/.tests'):
+        shutil.rmtree(baseDir+'/.tests')
+    os.mkdir(baseDir+'/.tests')
+
+    # create the servers
+    aliceDir=baseDir+'/.tests/alice'
+    aliceDomain='127.0.0.42'
+    alicePort=61935
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,capsList,False,False),daemon=True)
+
+    bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.0.64'
+    bobPort=61936
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,capsList,False,False),daemon=True)
+
+    thrAlice.start()
+    thrBob.start()
+    assert thrAlice.isAlive()==True
+    assert thrBob.isAlive()==True
+
+    # wait for both servers to be running
+    while not (testServerAliceRunning and testServerBobRunning):
+        time.sleep(1)
+        
+    time.sleep(1)
+
+    # In the beginning all was calm and there were no follows
+    
+    print('Alice sends a follow request to Bob')
+    os.chdir(aliceDir)
+    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    inReplyTo=None
+    inReplyToAtomUri=None
+    subject=None
+    aliceSendThreads = []
+    alicePostLog = []
+    followersOnly=False
+    saveToFile=True
+    clientToServer=False
+    ccUrl=None
+    alicePersonCache={}
+    aliceCachedWebfingers={}
+    aliceSendThreads=[]
+    alicePostLog=[]
+    sendResult = \
+        sendFollowRequest(sessionAlice,aliceDir, \
+                          'alice',aliceDomain,alicePort,httpPrefix, \
+                          'bob',bobDomain,bobPort,httpPrefix, \
+                          clientToServer,federationList,capsList,
+                          aliceSendThreads,alicePostLog, \
+                          aliceCachedWebfingers,alicePersonCache,True)
+    print('sendResult: '+str(sendResult))
+
+    time.sleep(10)
+    
+    
+    # stop the servers
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.isAlive()==False
+
+    thrBob.kill()
+    thrBob.join()
+    assert thrBob.isAlive()==False
+
+    os.chdir(baseDir)
+    #shutil.rmtree(baseDir+'/.tests')
 
 def testFollowersOfPerson():
     print('testFollowersOfPerson')
