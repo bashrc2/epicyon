@@ -279,13 +279,13 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThre
         return False
     # send accept back
     if debug:
-        print('DEBUG: sending Accept for follow request from '+nickname+'@'+domain+' back to '+nicknameToFollow+'@'+domainToFollow)
+        print('DEBUG: sending Accept for follow request which arrived at '+nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
     personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList,capsList,nickname,domain,port, \
                             personUrl,'',httpPrefix,messageJson['object'])
     clientToServer=False
     sendSignedJson(acceptJson,session,baseDir,nickname,domain,port, \
-                   nicknameToFollow,domainToFollow,toPort, '', \
+                   nicknameToFollow,domainToFollow,port, '', \
                    httpPrefix,True,clientToServer, \
                    federationList, capsList, \
                    sendThreads,postLog,cachedWebfingers,personCache,debug)
