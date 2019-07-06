@@ -60,46 +60,54 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
-parser.add_argument('-d','--domain', dest='domain', type=str,default=None,
+parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
-parser.add_argument('-p','--port', dest='port', type=int,default=None,
+parser.add_argument('-p','--port', dest='port', type=int,default=None, \
                     help='Port number to run on')
-parser.add_argument('--path', dest='baseDir', type=str,default=os.getcwd(),
+parser.add_argument('--path', dest='baseDir', \
+                    type=str,default=os.getcwd(), \
                     help='Directory in which to store posts')
-parser.add_argument('-a','--addaccount', dest='addaccount', type=str,default=None,
+parser.add_argument('-a','--addaccount', dest='addaccount', \
+                    type=str,default=None, \
                     help='Adds a new account')
-parser.add_argument('-r','--rmaccount', dest='rmaccount', type=str,default=None,
+parser.add_argument('-r','--rmaccount', dest='rmaccount', \
+                    type=str,default=None, \
                     help='Remove an account')
-parser.add_argument('--pass','--password', dest='password', type=str,default=None,
+parser.add_argument('--pass','--password', dest='password', \
+                    type=str,default=None, \
                     help='Set a password for an account')
-parser.add_argument('--chpass','--changepassword', nargs='+',dest='changepassword',
+parser.add_argument('--chpass','--changepassword', \
+                    nargs='+',dest='changepassword', \
                     help='Change the password for an account')
-parser.add_argument('--actor', dest='actor', type=str,default=None,
+parser.add_argument('--actor', dest='actor', type=str,default=None, \
                     help='Show the json actor the given handle')
-parser.add_argument('--posts', dest='posts', type=str,default=None,
+parser.add_argument('--posts', dest='posts', type=str,default=None, \
                     help='Show posts for the given handle')
-parser.add_argument('--postsraw', dest='postsraw', type=str,default=None,
+parser.add_argument('--postsraw', dest='postsraw', type=str,default=None, \
                     help='Show raw json of posts for the given handle')
-parser.add_argument('-f','--federate', nargs='+',dest='federationList',
+parser.add_argument('-f','--federate', nargs='+',dest='federationList', \
                     help='Specify federation list separated by spaces')
-parser.add_argument("--debug", type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Show debug messages")
-parser.add_argument("--http", type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Use http only")
-parser.add_argument("--dat", type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Use dat protocol only")
-parser.add_argument("--tor", type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Route via Tor")
-parser.add_argument("--tests", type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Run unit tests")
-parser.add_argument("--testsnetwork", type=str2bool, nargs='?',
-                        const=True, default=False,
-                        help="Run network unit tests")
+parser.add_argument("--debug", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Show debug messages")
+parser.add_argument("--http", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Use http only")
+parser.add_argument("--dat", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Use dat protocol only")
+parser.add_argument("--tor", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Route via Tor")
+parser.add_argument("--tests", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Run unit tests")
+parser.add_argument("--testsnetwork", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Run network unit tests")
+parser.add_argument("--testdata", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Generate some data for testing purposes")
 args = parser.parse_args()
 
 debug=False
@@ -325,5 +333,22 @@ if not os.path.isdir(baseDir+'/accounts/sharedinbox@'+domain):
 if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
     print('Creating capabilities account which can sign requests')
     createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
+
+if args.testdata:
+    nickname='testuser'
+    print('Generating some test data for user: '+nickname)
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,'likewhateveryouwantscoob')
+    deleteAllPosts(baseDir,nickname,domain,'inbox')
+    deleteAllPosts(baseDir,nickname,domain,'outbox')
+    followPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
+    followerOfPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need more milkshakes",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,capsList)
 
 runDaemon(baseDir,domain,port,httpPrefix,federationList,capsList,useTor,debug)
