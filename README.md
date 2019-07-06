@@ -18,6 +18,8 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Implemented in a common language (Python 3)
  * Opt-in federation. Federate with a well-defined list of instances.
  * Keyword filtering.
+ * Being able to define roles and skills, similar to the Pursuance project.
+ * Sharings collection, similar to the gnusocial sharings plugin
  * Resistant to flooding, hellthreads, etc.
  * Support content warnings, reporting and blocking.
  * http signatures and basic auth.
