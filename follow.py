@@ -283,14 +283,8 @@ def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefi
     newFollowJson = {
         'type': 'Follow',
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
-        'object': followHttpPrefix+'://'+followDomain+'/users/'+followNickname,
-        'to': [toUrl],
-        'cc': []
+        'object': followHttpPrefix+'://'+followDomain+'/users/'+followNickname
     }
-
-    if ccUrl:
-        if len(ccUrl)>0:
-            newFollowJson['cc']=ccUrl
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
                    nicknameToFollow,domainToFollow,toPort, '', \
