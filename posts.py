@@ -227,7 +227,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
                     if urlPermitted(item['object']['conversation'], \
-                                    federationList,"objects:read"):  
+                                    federationList,capsList,"objects:read"):  
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -812,6 +812,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     personCache={}
     cachedWebfingers={}
     federationList=[]
+    capsList=[]
 
     httpPrefix='https'
     handle=httpPrefix+"://"+domain+"/@"+nickname
@@ -828,6 +829,6 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxEmoji=10
     maxAttachments=5
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
-                         maxAttachments,federationList,personCache, \
-                         raw,simple)
+                         maxAttachments,federationList,capsList, \
+                         personCache,raw,simple)
     #print(str(userPosts))

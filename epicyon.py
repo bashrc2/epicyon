@@ -134,7 +134,7 @@ if args.posts:
     sys.exit()
 
 if args.postsraw:
-    if '@' not in args.posts:
+    if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
         sys.exit()        
     nickname=args.postsraw.split('@')[0]
@@ -344,7 +344,7 @@ if args.testdata:
     followerOfPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,capsList)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need more milkshakes",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False,capsList)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False,capsList)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False,capsList)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,capsList)
