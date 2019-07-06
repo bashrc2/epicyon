@@ -12,6 +12,8 @@ import os
 import sys
 from person import validNickname
 from utils import domainPermitted
+from utils import getDomainFromActor
+from utils import getNicknameFromActor
 from posts import sendSignedJson
 from capabilities import isCapable
 from acceptreject import createAccept
@@ -244,29 +246,34 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThre
         if debug:
             print('DEBUG: "users" missing from actor')            
         return False
-    domain=messageJson['actor'].split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
-    if ':' in domain:
-        domain=domain.split(':')[0]
+    domain,tempPort=getDomainFromActor(messageJson['actor'])
+    fromPort=port
+    if tempPort:
+        fromPort=tempPort
     if not domainPermitted(domain,federationList):
         if debug:
             print('DEBUG: follower from domain not permitted - '+domain)
         return False
-    nickname=messageJson['actor'].split('/users/')[1].replace('@','')
+    nickname=getNicknameFromActor(messageJson['actor'])
+    if not nickname:
+        if debug:
+            print('DEBUG: follow request does not contain a nickname')
+        return False
     handle=nickname.lower()+'@'+domain.lower()
     if '/users/' not in messageJson['object']:
         if debug:
             print('DEBUG: "users" not found within object')
         return False
-    domainToFollow=messageJson['object'].split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
-    toPort=port
-    if ':' in domainToFollow:
-        toPort=domainToFollow.split(':')[1]
-        domainToFollow=domainToFollow.split(':')[0]
+    domainToFollow,tempPort=getDomainFromActor(messageJson['object'])
     if not domainPermitted(domainToFollow,federationList):
         if debug:
             print('DEBUG: follow domain not permitted '+domainToFollow)
         return False
-    nicknameToFollow=messageJson['object'].split('/users/')[1].replace('@','')
+    nicknameToFollow=getNicknameFromActor(messageJson['object'])
+    if not nicknameToFollow:
+        if debug:
+            print('DEBUG: follow request does not contain a nickname for the account followed')
+        return False
     handleToFollow=nicknameToFollow.lower()+'@'+domainToFollow.lower()
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
@@ -283,12 +290,15 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThre
     personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList,capsList,nickname,domain,port, \
                             personUrl,'',httpPrefix,messageJson['object'])
+    if debug:
+        pprint(acceptJson)
+        print('DEBUG: sending follow Accept from '+nicknameToFollow+'@'+domainToFollow+' port '+str(port)+' to '+nickname+'@'+domain+' port '+ str(fromPort))
     clientToServer=False
-    sendSignedJson(acceptJson,session,baseDir,nickname,domain,port, \
-                   nicknameToFollow,domainToFollow,port, '', \
-                   httpPrefix,True,clientToServer, \
-                   federationList, capsList, \
-                   sendThreads,postLog,cachedWebfingers,personCache,debug)
+    return sendSignedJson(acceptJson,session,baseDir,nicknameToFollow,domainToFollow,port, \
+                          nickname,domain,fromPort, '', \
+                          httpPrefix,True,clientToServer, \
+                          federationList, capsList, \
+                          sendThreads,postLog,cachedWebfingers,personCache,debug)
 
 def sendFollowRequest(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                       followNickname: str,followDomain: str,followPort: bool,followHttpPrefix: str, \

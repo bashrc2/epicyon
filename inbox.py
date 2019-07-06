@@ -23,6 +23,7 @@ from follow import receiveFollowRequest
 from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
+from acceptreject import receiveAcceptReject
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -238,7 +239,21 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 os.remove(queueFilename)
                 queue.pop(0)
                 continue
-                    
+
+            if receiveAcceptReject(session, \
+                                   baseDir,httpPrefix,port, \
+                                   sendThreads,postLog, \
+                                   cachedWebfingers,
+                                   personCache,
+                                   queueJson['post'], \
+                                   federationList,capsList, \
+                                   debug):
+                if debug:
+                    print('DEBUG: Accept/Reject received from '+keyId)
+                os.remove(queueFilename)
+                queue.pop(0)
+                continue
+
             if debug:
                 print('DEBUG: Queue post accepted')
 

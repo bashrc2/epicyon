@@ -59,3 +59,25 @@ def urlPermitted(url: str, federationList: [],capsList: [],capability: str):
         if domain in url:
             return True
     return False
+
+def getNicknameFromActor(actor: str) -> str:
+    """Returns the nickname from an actor url
+    """
+    if '/users/' not in actor:
+        return None
+    return actor.split('/users/')[1].replace('@','')    
+
+def getDomainFromActor(actor: str) -> (str,int):
+    """Returns the domain name from an actor url
+    """
+    port=None
+    if '/users/' not in actor:
+        domain = actor.replace('https://','').replace('http://','').replace('dat://','')
+    else:
+        domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
+    if ':' in domain:
+        port=int(domain.split(':')[1])
+        domain=domain.split(':')[0]
+    return domain,port
+    
+    
