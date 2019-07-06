@@ -9,7 +9,7 @@ __status__ = "Production"
 import os
 from auth import createPassword
 
-def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,requestedDomain: str,nickname=None) -> None:
+def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,domain: str,requestedActor: str) -> None:
     # This is sent to the capabilities endpoint /caps/new
     # which could be instance wide or for a particular person
     capId=createPassword(32)
@@ -20,16 +20,11 @@ def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,requestedDomain: str,ni
             "inbox": "write",
             "objects": "read"
         },
-        "actor": httpPrefix+"://"+requestedDomain
+        "actor": requestedActor
     }
-    # requesting for a particular person
-    if nickname:
-        # does the account exist for this person?
-        if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+requestedDomain):
-            capRequest['scope']=httpPrefix+"://"+requestedDomain+'/users/'+nickname
     #TODO
 
-def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,domain: str,acceptedDomain: str,nickname=None) -> None:
+def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str,acceptedActor: str) -> None:
     # This gets returned to capabilities requester
     capId=createPassword(32)
     capAccept = {
@@ -39,15 +34,11 @@ def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,domain: str,acceptedDoma
             "inbox": "write",
             "objects": "read"
         },
-        "scope": httpPrefix+"://"+acceptedDomain,
+        "scope": acceptedActor,
         "actor": httpPrefix+"://"+domain
     }
-
-    # accepting for a particular person
     if nickname:
-        # does the account exist for this person?
-        if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+acceptedDomain):
-            capAccept['scope']=httpPrefix+"://"+acceptedDomain+'/users/'+nickname
+        capAccept['actor']=httpPrefix+"://"+domain+'/users/'+nickname
     #TODO
 
 def isCapable(actor: str,capsJson: []) -> bool:
