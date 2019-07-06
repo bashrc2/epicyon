@@ -39,11 +39,12 @@ def getJson(session,url: str,headers: {},params: {}) -> {}:
         pass
     return None
 
-def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers: {}) -> str:
+def postJson(session,postJsonObject: {},federationList: [],capsList: [],inboxUrl: str,headers: {}) -> str:
     """Post a json message to the inbox of another person
     """
+    
     # check that we are posting to a permitted domain
-    if not urlPermitted(inboxUrl,federationList):
+    if not urlPermitted(inboxUrl,federationList,capsList,"inbox:write"):
         return None
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)

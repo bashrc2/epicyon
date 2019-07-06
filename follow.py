@@ -13,6 +13,7 @@ import sys
 from person import validNickname
 from utils import domainPermitted
 from posts import sendSignedJson
+from capabilities import isCapable
 
 def getFollowersOfPerson(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> []:
     """Returns a list containing the followers of the given person
@@ -268,7 +269,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThre
 
 def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                       followNickname: str,followDomain: str,followPort: bool,followHttpPrefix: str, \
-                      federationList: []) -> {}:
+                      federationList: [],capsList: []) -> {}:
     """Gets the json object for sending a follow request
     """
     if not domainPermitted(followDomain,federationList):
@@ -280,9 +281,16 @@ def sendFollowRequest(baseDir: str,nickname: str,domain: str,port: int,httpPrefi
     if followPort!=80 and followPort!=443:
         followDomain=followDomain+':'+str(followPort)
 
+    followActor=httpPrefix+'://'+domain+'/users/'+nickname
+
+    # check that we are capable
+    if capsList:
+        if not isCapable(followActor,capsList,'inbox:write'):
+            return None
+        
     newFollowJson = {
         'type': 'Follow',
-        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'actor': followActor,
         'object': followHttpPrefix+'://'+followDomain+'/users/'+followNickname
     }
 

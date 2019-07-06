@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import datetime
+from capabilities import isCapable
 
 def getStatusNumber() -> (str,str):
     """Returns the status number and published date
@@ -48,7 +49,10 @@ def domainPermitted(domain: str, federationList: []):
         return True
     return False
 
-def urlPermitted(url: str, federationList: []):
+def urlPermitted(url: str, federationList: [],capsList: [],capability: str):
+    if capsList:
+        if not isCapable(url,capsList,capability):
+            return False            
     if len(federationList)==0:
         return True
     for domain in federationList:

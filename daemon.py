@@ -375,7 +375,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
 
-        if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList):
+        if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList,self.server.capsList):
             if self.server.debug:
                 # https://www.youtube.com/watch?v=K3PrSj9XEu4
                 print('DEBUG: Ah Ah Ah')
@@ -421,7 +421,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
-def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],useTor=False,debug=False) -> None:
+def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],capsList=[],useTor=False,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -436,6 +436,7 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],use
     httpd.httpPrefix=httpPrefix
     httpd.debug=debug
     httpd.federationList=fedList.copy()
+    httpd.capsList=capsList.copy()
     httpd.baseDir=baseDir
     httpd.personCache={}
     httpd.cachedWebfingers={}

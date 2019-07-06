@@ -286,7 +286,7 @@ if args.changepassword:
 if not args.domain and not domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
-
+    
 federationList=[]
 if args.federationList:
     if len(args.federationList)==1:
@@ -303,6 +303,8 @@ else:
     configFederationList=getConfigParam(baseDir,'federationList')
     if configFederationList:
         federationList=configFederationList
+
+capsList=[]
 
 if federationList:
     print('Federating with: '+str(federationList))
@@ -322,4 +324,4 @@ if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
     print('Creating capabilities account which can sign requests')
     createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
 
-runDaemon(baseDir,domain,port,httpPrefix,federationList,useTor,debug)
+runDaemon(baseDir,domain,port,httpPrefix,federationList,capsList,useTor,debug)

@@ -107,7 +107,7 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,domain: str,port: int,federationList: []):
+def createServerAlice(path: str,domain: str,port: int,federationList: [],capsList: []):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -123,15 +123,15 @@ def createServerAlice(path: str,domain: str,port: int,federationList: []):
     deleteAllPosts(path,nickname,domain,'outbox')
     followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
     followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer,capsList)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer,capsList)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer,capsList)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(path,domain,port,httpPrefix,federationList,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,capsList,useTor,True)
 
-def createServerBob(path: str,domain: str,port: int,federationList: []):
+def createServerBob(path: str,domain: str,port: int,federationList: [],capsList: []):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -147,13 +147,13 @@ def createServerBob(path: str,domain: str,port: int,federationList: []):
     deleteAllPosts(path,nickname,domain,'outbox')
     followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
     followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer)
-    createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer,capsList)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer,capsList)
+    createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer,capsList)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(path,domain,port,httpPrefix,federationList,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,capsList,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
@@ -166,6 +166,7 @@ def testPostMessageBetweenServers():
     httpPrefix='http'
     useTor=False
     federationList=['127.0.0.50','127.0.0.100']
+    capsList=[]
 
     baseDir=os.getcwd()
     if not os.path.isdir(baseDir+'/.tests'):
@@ -175,12 +176,12 @@ def testPostMessageBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList),daemon=True)
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,capsList),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.100'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,capsList),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -207,7 +208,7 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, capsList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'

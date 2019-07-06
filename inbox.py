@@ -59,7 +59,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             return False
     return True
 
-def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
+def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],capsList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
@@ -70,13 +70,13 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
     if domain in actor:
         return True
 
-    if not urlPermitted(actor,federationList):
+    if not urlPermitted(actor,federationList,capsList,"inbox:write"):
         return False
 
     if messageJson.get('object'):
         if messageJson['object'].get('inReplyTo'):
             inReplyTo=messageJson['object']['inReplyTo']
-            if not urlPermitted(inReplyTo, federationList):
+            if not urlPermitted(inReplyTo,federationList,capsList):
                 return False
 
     return True

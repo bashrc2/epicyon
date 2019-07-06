@@ -16,10 +16,7 @@ def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,domain: str,requestedAc
     capRequest = {
         "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+capId,
         "type": "Request",
-        "capability": {
-            "inbox": inbox,
-            "objects": objects
-        },
+        "capability": ["inbox:write","objects:read"],
         "actor": requestedActor
     }
     #TODO
@@ -30,10 +27,7 @@ def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: st
     capAccept = {
         "id": httpPrefix+"://"+domain+"/caps/"+capId,
         "type": "Capability",
-        "capability": {
-            "inbox": inbox,
-            "objects": objects
-        },
+        "capability": ["inbox:write","objects:read"],
         "scope": acceptedActor,
         "actor": httpPrefix+"://"+domain
     }
@@ -41,9 +35,10 @@ def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: st
         capAccept['actor']=httpPrefix+"://"+domain+'/users/'+nickname
     #TODO
 
-def isCapable(actor: str,capsJson: []) -> bool:
+def isCapable(actor: str,capsJson: [],capability: str) -> bool:
     # is the given actor capable of using the current resource?
     for cap in capsJson:
         if cap['scope'] in actor:
-            return True
+            if capability in cap['capability']:
+                return True
     return False

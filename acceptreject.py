@@ -12,13 +12,13 @@ from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
 
-def createAcceptReject(baseDir: str,federationList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str,acceptType: str) -> {}:
+def createAcceptReject(baseDir: str,federationList: [],capsList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str,acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the followers url
     objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl,federationList):
+    if not urlPermitted(objectUrl,federationList,capsList,"inbox:write"):
         return None
 
     if port!=80 and port!=443:
