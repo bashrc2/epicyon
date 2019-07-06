@@ -167,7 +167,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page=1',
             'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile,
-            'totalItems': getNoOfFollows(nickname,domain),
+            'totalItems': getNoOfFollows(baseDir,nickname,domain),
             'type': 'OrderedCollection'}
         return following
 
