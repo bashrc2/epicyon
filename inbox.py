@@ -241,7 +241,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 continue
 
             if receiveAcceptReject(session, \
-                                   baseDir,httpPrefix,port, \
+                                   baseDir,httpPrefix,domain,port, \
                                    sendThreads,postLog, \
                                    cachedWebfingers,
                                    personCache,

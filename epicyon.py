@@ -34,7 +34,7 @@ from daemon import runDaemon
 import socket
 from follow import clearFollows
 from follow import clearFollowers
-from follow import followPerson
+from utils import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson

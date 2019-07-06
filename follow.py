@@ -14,6 +14,8 @@ from person import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
+from utils import getStatusNumber
+from utils import followPerson
 from posts import sendSignedJson
 from capabilities import isCapable
 from acceptreject import createAccept
@@ -43,39 +45,14 @@ def getFollowersOfPerson(baseDir: str, \
                         break
     return followers
 
-def followPerson(baseDir: str,nickname: str, domain: str, \
-                 followNickname: str, followDomain: str, \
-                 federationList: [], followFile='following.txt') -> bool:
-    """Adds a person to the follow list
-    """
-    if not domainPermitted(followDomain.lower().replace('\n',''), \
-                           federationList):
-        return False
-    handle=nickname.lower()+'@'+domain.lower()
-    handleToFollow=followNickname.lower()+'@'+followDomain.lower()
-    if not os.path.isdir(baseDir+'/accounts'):
-        os.mkdir(baseDir+'/accounts')
-    if not os.path.isdir(baseDir+'/accounts/'+handle):
-        os.mkdir(baseDir+'/accounts/'+handle)
-    filename=baseDir+'/accounts/'+handle+'/'+followFile
-    if os.path.isfile(filename):
-        if handleToFollow in open(filename).read():
-            return True
-        with open(filename, "a") as followfile:
-            followfile.write(handleToFollow+'\n')
-            return True
-    with open(filename, "w") as followfile:
-        followfile.write(handleToFollow+'\n')
-    return True
-
 def followerOfPerson(baseDir: str,nickname: str, domain: str, \
                      followerNickname: str, followerDomain: str, \
-                     federationList: []) -> bool:
+                     federationList: [],debug :bool) -> bool:
     """Adds a follower of the given person
     """
-    return followPerson(baseDir,nickname, domain, \
-                        followerNickname, followerDomain, \
-                        federationList, 'followers.txt')
+    return followPerson(baseDir,nickname,domain, \
+                        followerNickname,followerDomain, \
+                        federationList,debug,'followers.txt')
 
 def unfollowPerson(baseDir: str,nickname: str, domain: str, \
                    followNickname: str, followDomain: str, \
@@ -293,7 +270,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                       baseDir+'/accounts/'+handleToFollow)
             return False
     if not followerOfPerson(baseDir,nicknameToFollow,domainToFollow, \
-                            nickname,domain,federationList):
+                            nickname,domain,federationList,debug):
         if debug:
             print('DEBUG: '+nickname+'@'+domain+ \
                   ' is already a follower of '+ \
@@ -306,7 +283,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList,capsList, \
                             nickname,domain,port, \
-                            personUrl,'',httpPrefix,messageJson['object'])
+                            personUrl,'',httpPrefix,messageJson)
     if debug:
         pprint(acceptJson)
         print('DEBUG: sending follow Accept from '+ \
@@ -346,15 +323,24 @@ def sendFollowRequest(session,baseDir: str, \
     if capsList:
         if not isCapable(followActor,capsList,'inbox:write'):
             return None
-        
+
+    statusNumber,published = getStatusNumber()
+    
+    followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
+
     newFollowJson = {
+        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
         'type': 'Follow',
         'actor': followActor,
-        'object': followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
+        'object': followedId,
+        'to': [followedId],
+        'cc': ['https://www.w3.org/ns/activitystreams#Public'],
+        'published': published
     }
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
-                   followNickname,followDomain,followPort, '', \
+                   followNickname,followDomain,followPort, \
+                   'https://www.w3.org/ns/activitystreams#Public', \
                    httpPrefix,True,clientToServer, \
                    federationList, capsList, \
                    sendThreads,postLog,cachedWebfingers,personCache, debug)

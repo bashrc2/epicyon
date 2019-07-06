@@ -80,4 +80,30 @@ def getDomainFromActor(actor: str) -> (str,int):
         domain=domain.split(':')[0]
     return domain,port
     
-    
+def followPerson(baseDir: str,nickname: str, domain: str, \
+                 followNickname: str, followDomain: str, \
+                 federationList: [],debug: bool, \
+                 followFile='following.txt') -> bool:
+    """Adds a person to the follow list
+    """
+    if not domainPermitted(followDomain.lower().replace('\n',''), \
+                           federationList):
+        if debug:
+            print('DEBUG: follow of domain '+followDomain+' not permitted')
+        return False
+    handle=nickname.lower()+'@'+domain.lower()
+    handleToFollow=followNickname.lower()+'@'+followDomain.lower()
+    if not os.path.isdir(baseDir+'/accounts'):
+        os.mkdir(baseDir+'/accounts')
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        os.mkdir(baseDir+'/accounts/'+handle)
+    filename=baseDir+'/accounts/'+handle+'/'+followFile
+    if os.path.isfile(filename):
+        if handleToFollow in open(filename).read():
+            return True
+        with open(filename, "a") as followfile:
+            followfile.write(handleToFollow+'\n')
+            return True
+    with open(filename, "w") as followfile:
+        followfile.write(handleToFollow+'\n')
+    return True

@@ -14,18 +14,22 @@ from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
+from utils import followPerson
 
 def createAcceptReject(baseDir: str,federationList: [],capsList: [], \
                        nickname: str,domain: str,port: int, \
                        toUrl: str,ccUrl: str,httpPrefix: str, \
-                       objectUrl: str,acceptType: str) -> {}:
+                       objectJson: {},acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and
     the followers url objectUrl is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl,federationList,capsList,"inbox:write"):
+    if not objectJson.get('actor'):
+        return None
+
+    if not urlPermitted(objectJson['actor'],federationList,capsList,"inbox:write"):
         return None
 
     if port!=80 and port!=443:
@@ -36,7 +40,7 @@ def createAcceptReject(baseDir: str,federationList: [],capsList: [], \
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'to': [toUrl],
         'cc': [],
-        'object': objectUrl
+        'object': objectJson
     }
     if ccUrl:
         if len(ccUrl)>0:
@@ -46,22 +50,82 @@ def createAcceptReject(baseDir: str,federationList: [],capsList: [], \
 def createAccept(baseDir: str,federationList: [],capsList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
-                 objectUrl: str) -> {}:
+                 objectJson: {}) -> {}:
     return createAcceptReject(baseDir,federationList,capsList, \
                               nickname,domain,port, \
                               toUrl,ccUrl,httpPrefix, \
-                              objectUrl,'Accept')
+                              objectJson,'Accept')
 
 def createReject(baseDir: str,federationList: [],capsList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
-                 objectUrl: str) -> {}:
+                 objectJson: {}) -> {}:
     return createAcceptReject(baseDir,federationList,capsList, \
                               nickname,domain,port, \
                               toUrl,ccUrl, \
-                              httpPrefix,objectUrl,'Reject')
+                              httpPrefix,objectJson,'Reject')
 
-def receiveAcceptReject(session,baseDir: str,httpPrefix: str,port: int, \
+def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
+                 federationList: [],capsList: [],debug : bool) -> None:
+    if not messageJson.get('object'):
+        return
+    if not messageJson['object'].get('type'):
+        return 
+    if not messageJson['object'].get('actor'):
+        return
+    # no, this isn't a mistake
+    if not messageJson['object'].get('object'):
+        return 
+    if not messageJson['object']['type']=='Follow':
+        return
+    if debug:
+        print('DEBUG: follow Accept received')
+    thisActor=messageJson['object']['actor']
+    nickname=getNicknameFromActor(thisActor)
+    acceptedDomain,acceptedPort=getDomainFromActor(thisActor)
+    if not acceptedDomain:
+        if debug:
+            print('DEBUG: domain not found in '+thisActor)
+        return
+    if acceptedDomain != domain:
+        if debug:
+            print('DEBUG: domain mismatch '+acceptedDomain+' != '+domain)
+        return
+    if not nickname:
+        if debug:
+            print('DEBUG: nickname not found in '+thisActor)        
+        return
+    if acceptedPort:
+        if not '/'+domain+':'+str(acceptedPort)+'/users/'+nickname in thisActor:
+            if debug:
+                print('DEBUG: unrecognized actor '+thisActor)
+            return
+    else:
+        if not '/'+domain+'/users/'+nickname in thisActor:
+            if debug:
+                print('DEBUG: unrecognized actor '+thisActor)
+            return    
+    followedActor=messageJson['object']['object']
+    followedDomain,port=getDomainFromActor(followedActor)
+    if not followedDomain:
+        return
+    followedDomainFull=followedDomain
+    if port:
+        followedDomainFull=followedDomain+':'+str(port)
+    followedNickname=getNicknameFromActor(followedActor)
+    if not followedNickname:
+        return
+    if followPerson(baseDir,nickname,domain, \
+                    followedNickname,followedDomain, \
+                    federationList,debug):
+        if debug:
+            print('DEBUG: '+nickname+'@'+domain+' followed '+followedNickname+'@'+followedDomain)
+    else:
+        if debug:
+            print('DEBUG: Unable to create follow - '+nickname+'@'+domain+' -> '+followedNickname+'@'+followedDomain)
+
+def receiveAcceptReject(session,baseDir: str, \
+                        httpPrefix: str,domain :str,port: int, \
                         sendThreads: [],postLog: [],cachedWebfingers: {}, \
                         personCache: {},messageJson: {},federationList: [], \
                         capsList: [],debug : bool) -> bool:
@@ -88,10 +152,7 @@ def receiveAcceptReject(session,baseDir: str,httpPrefix: str,port: int, \
             print('DEBUG: '+messageJson['type']+' does not contain a nickname')
         return False
     handle=nickname.lower()+'@'+domain.lower()
-    if '/users/' not in messageJson['object']:
-        if debug:
-            print('DEBUG: "users" not found within object of '+messageJson['type'])
-        return False
+    acceptFollow(baseDir,domain,messageJson,federationList,capsList,debug)
     if debug:
         print('DEBUG: Uh, '+messageJson['type']+', I guess')
     return True
