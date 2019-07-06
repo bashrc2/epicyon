@@ -460,7 +460,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
     backoffTime=60
     for attempt in range(20):
         postResult = postJson(session,postJsonObject,federationList, \
-                              capsList,inboxUrl,signatureHeaderJson)
+                              capsList,inboxUrl,signatureHeaderJson, \
+                              "inbox:write")
         if postResult:
             postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
