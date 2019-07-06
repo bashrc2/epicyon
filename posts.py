@@ -36,7 +36,8 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
-def noOfFollowersOnDomain(baseDir: str,handle: str, domain: str, followFile='followers.txt') -> int:
+def noOfFollowersOnDomain(baseDir: str,handle: str, \
+                          domain: str, followFile='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
     """
     filename=baseDir+'/accounts/'+handle+'/'+followFile
@@ -47,12 +48,14 @@ def noOfFollowersOnDomain(baseDir: str,handle: str, domain: str, followFile='fol
     with open(filename, "r") as followersFilename:
         for followerHandle in followersFilename:
             if '@' in followerHandle:
-                followerDomain=followerHandle.split('@')[1].replace('\n','')
+                followerDomain= \
+                    followerHandle.split('@')[1].replace('\n','')
                 if domain==followerDomain:
                     ctr+=1
     return ctr
 
-def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public',debug=False):
+def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public', \
+                 debug=False):
     """Returns the public or private key of a person
     """
     handle=nickname+'@'+domain
@@ -101,7 +104,8 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
         for item in parseUserFeed(session,nextUrl,asHeader):
             yield item
     
-def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,str,str,str,str):
+def getPersonBox(session,wfRequest: {},personCache: {}, \
+                 boxName='inbox') -> (str,str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
@@ -140,18 +144,8 @@ def getPersonBox(session,wfRequest: {},personCache: {},boxName='inbox') -> (str,
             if personJson['endpoints'].get('sharedInbox'):
                 sharedInbox=personJson['endpoints']['sharedInbox']
     capabilityAcquisition=None
-    if personJson.get('capabilityAcquisition'):
-        capabilityAcquisition=personJson['capabilityAcquisition']
-    else:
-        if personJson.get('capabilityAcquisitionEndpoint'):
-            capabilityAcquisition=personJson['capabilityAcquisitionEndpoint']
-        else:
-            if personJson.get('endpoints'):
-                if personJson['endpoints'].get('capabilityAcquisition'):
-                    capabilityAcquisition=personJson['endpoints']['capabilityAcquisition']
-                else:
-                    if personJson['endpoints'].get('capabilityAcquisitionEndpoint'):
-                        capabilityAcquisition=personJson['endpoints']['capabilityAcquisitionEndpoint']
+    if personJson.get('capabilityAcquisitionEndpoint'):
+        capabilityAcquisition=personJson['capabilityAcquisitionEndpoint']
 
     storePersonInCache(personUrl,personJson,personCache)
 
@@ -198,7 +192,9 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                         if tagItem.get('name') and tagItem.get('icon'):
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
-                                if urlPermitted(tagItem['icon']['url'],federationList,capsList,"objects:read"):
+                                if urlPermitted(tagItem['icon']['url'], \
+                                                federationList,capsList, \
+                                                "objects:read"):
                                     emojiName=tagItem['name']
                                     emojiIcon=tagItem['icon']['url']
                                     emoji[emojiName]=emojiIcon
@@ -220,7 +216,9 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             if item['object'].get('inReplyTo'):
                 if item['object']['inReplyTo']:
                     # No replies to non-permitted domains
-                    if not urlPermitted(item['object']['inReplyTo'],federationList,capsList,"objects:read"):
+                    if not urlPermitted(item['object']['inReplyTo'], \
+                                        federationList,capsList, \
+                                        "objects:read"):
                         continue
                     inReplyTo = item['object']['inReplyTo']
 
@@ -228,7 +226,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             if item['object'].get('conversation'):
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
-                    if urlPermitted(item['object']['conversation'],federationList,"objects:read"):  
+                    if urlPermitted(item['object']['conversation'], \
+                                    federationList,"objects:read"):  
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -237,7 +236,9 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                     for attach in item['object']['attachment']:
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
-                            if urlPermitted(attach['url'],federationList,capsList,"objects:read"):
+                            if urlPermitted(attach['url'], \
+                                            federationList,capsList, \
+                                            "objects:read"):
                                 attachment.append([attach['name'],attach['url']])
 
             sensitive = False
@@ -264,7 +265,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             break
     return personPosts
 
-def createBoxArchive(nickname: str,domain: str,baseDir: str,boxname: str) -> str:
+def createBoxArchive(nickname: str,domain: str,baseDir: str, \
+                     boxname: str) -> str:
     """Creates an archive directory for inbox/outbox posts
     """
     handle=nickname.lower()+'@'+domain.lower()
@@ -290,7 +292,9 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None
         except Exception as e:
             print(e)
 
-def savePostToBox(baseDir: str,httpPrefix: str,postId: str,nickname: str, domain: str,postJson: {},boxname: str) -> None:
+def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
+                  nickname: str, domain: str,postJson: {}, \
+                  boxname: str) -> None:
     """Saves the give json to the give box
     """
     if boxname!='inbox' and boxname!='outbox':
@@ -300,7 +304,8 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str,nickname: str, domain
 
     if not postId:
         statusNumber,published = getStatusNumber()
-        postId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+        postId=httpPrefix+'://'+domain+'/users/'+nickname+ \
+            '/statuses/'+statusNumber
         postJson['id']=postId+'/activity'
     if postJson.get('object'):
         postJson['object']['id']=postId
@@ -410,10 +415,12 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost['cc']=ccUrl
             newPost['object']['cc']=ccUrl
     if saveToFile:
-        savePostToBox(baseDir,httpPrefix,newPostId,nickname,domain,newPost,'outbox')
+        savePostToBox(baseDir,httpPrefix,newPostId, \
+                      nickname,domain,newPost,'outbox')
     return newPost
 
-def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str,messageJson: {}) -> {}:
+def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str, \
+                            messageJson: {}) -> {}:
     """Wraps a received message in a Create
     https://www.w3.org/TR/activitypub/#object-without-create
     """
@@ -438,8 +445,10 @@ def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str,messageJso
         'object': messageJson
     }
     newPost['object']['id']=newPost['id']
-    newPost['object']['url']=httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber
-    newPost['object']['atomUri']=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    newPost['object']['url']= \
+        httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber
+    newPost['object']['atomUri']= \
+        httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     return newPost
 
 def createPublicPost(baseDir: str,
@@ -452,8 +461,8 @@ def createPublicPost(baseDir: str,
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
-                          httpPrefix, content, followersOnly, saveToFile, clientToServer, \
-                          capsList,
+                          httpPrefix, content, followersOnly, saveToFile, \
+                          clientToServer, capsList, \
                           inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
@@ -483,7 +492,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
             # our work here is done
             break
         if debug:
-            print('DEBUG: json post to '+inboxUrl+' failed. Waiting for '+str(backoffTime)+' seconds.')
+            print('DEBUG: json post to '+inboxUrl+' failed. Waiting for '+ \
+                  str(backoffTime)+' seconds.')
         time.sleep(backoffTime)
         backoffTime *= 2
 
@@ -573,12 +583,13 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
-def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain: str, port: int, \
+def sendSignedJson(postJsonObject: {},session,baseDir: str, \
+                   nickname: str, domain: str, port: int, \
                    toNickname: str, toDomain: str, toPort: int, cc: str, \
                    httpPrefix: str, saveToFile: bool, clientToServer: bool, \
                    federationList: [], capsList: [], \
-                   sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
-                   debug: bool) -> int:
+                   sendThreads: [], postLog: [], cachedWebfingers: {}, \
+                   personCache: {}, debug: bool) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     withDigest=True
@@ -646,14 +657,15 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str,nickname: str, domain
     while len(sendThreads)>10:
         sendThreads[0].kill()
         sendThreads.pop(0)
-    thr = threadWithTrace(target=threadSendPost,args=(session, \
-                                                      postJsonObject.copy(), \
-                                                      federationList, \
-                                                      capsList, \
-                                                      inboxUrl,baseDir, \
-                                                      signatureHeaderJson.copy(), \
-                                                      postLog,
-                                                      debug),daemon=True)
+    thr = threadWithTrace(target=threadSendPost, \
+                          args=(session, \
+                                postJsonObject.copy(), \
+                                federationList, \
+                                capsList, \
+                                inboxUrl,baseDir, \
+                                signatureHeaderJson.copy(), \
+                                postLog,
+                                debug),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0
@@ -667,7 +679,8 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: st
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
                   itemsPerPage,headerOnly,pageNumber)
 
-def createBoxBase(baseDir: str,boxname: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def createBoxBase(baseDir: str,boxname: str, \
+                  nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     """Constructs the box feed
     """
@@ -727,7 +740,8 @@ def createBoxBase(baseDir: str,boxname: str,nickname: str,domain: str,port: int,
             # update the prev entry for the last message id
             postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
             boxHeader['prev']= \
-                httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?min_id='+postId+'&page=true'
+                httpPrefix+'://'+domain+'/users/'+nickname+'/'+ \
+                boxname+'?min_id='+postId+'&page=true'
         # get the full path of the post file
         filePath = os.path.join(boxDir, postFilename)
         try:
@@ -788,7 +802,8 @@ def archivePosts(nickname: str,domain: str,baseDir: str, \
             if noOfPosts <= maxPostsInBox:
                 break
 
-def getPublicPostsOfPerson(nickname: str,domain: str,raw: bool,simple: bool) -> None:
+def getPublicPostsOfPerson(nickname: str,domain: str, \
+                           raw: bool,simple: bool) -> None:
     """ This is really just for test purposes
     """
     useTor=True
@@ -800,7 +815,8 @@ def getPublicPostsOfPerson(nickname: str,domain: str,raw: bool,simple: bool) -> 
 
     httpPrefix='https'
     handle=httpPrefix+"://"+domain+"/@"+nickname
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
         sys.exit()
 
@@ -811,5 +827,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str,raw: bool,simple: bool) -> 
     maxMentions=10
     maxEmoji=10
     maxAttachments=5
-    userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji,maxAttachments,federationList,personCache,raw,simple)
+    userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
+                         maxAttachments,federationList,personCache, \
+                         raw,simple)
     #print(str(userPosts))

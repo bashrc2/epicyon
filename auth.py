@@ -65,7 +65,9 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     nickname = plain.split(':')[0]
     if nickname!=nicknameFromPath:
         if debug:
-            print('DEBUG: Nickname given in the path ('+nicknameFromPath+') does not match the one in the Authorization header ('+nickname+')')
+            print('DEBUG: Nickname given in the path ('+nicknameFromPath+ \
+                  ') does not match the one in the Authorization header ('+ \
+                  nickname+')')
         return False
     passwordFile=baseDir+'/accounts/passwords'
     if not os.path.isfile(passwordFile):

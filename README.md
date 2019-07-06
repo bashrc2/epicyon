@@ -8,6 +8,8 @@ Also: https://raw.githubusercontent.com/w3c/activitypub/gh-pages/activitypub-tut
 
 https://blog.dereferenced.org/what-is-ocap-and-why-should-i-care
 
+https://alexcastano.com/what-is-activity-pub
+
 This project is currently *pre alpha* and not recommended for any real world uses.
 
 ## Goals

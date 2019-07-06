@@ -12,7 +12,10 @@ def storePersonInCache(personUrl: str,personJson: {},personCache: {}) -> None:
     """Store an actor in the cache
     """
     currTime=datetime.datetime.utcnow()
-    personCache[personUrl]={ "actor": personJson, "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ") }
+    personCache[personUrl]={
+        "actor": personJson,
+        "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    }
 
 def storeWebfingerInCache(handle: str,wf,cachedWebfingers: {}) -> None:
     """Store a webfinger endpoint in the cache
@@ -25,7 +28,9 @@ def getPersonFromCache(personUrl: str,personCache: {}) -> {}:
     if personCache.get(personUrl):
         # how old is the cached data?
         currTime=datetime.datetime.utcnow()
-        cacheTime=datetime.datetime.strptime(personCache[personUrl]['timestamp'],"%Y-%m-%dT%H:%M:%SZ")
+        cacheTime= \
+            datetime.datetime.strptime(personCache[personUrl]['timestamp'], \
+                                       "%Y-%m-%dT%H:%M:%SZ")
         daysSinceCached=(currTime - cacheTime).days
         # return cached value if it has not expired
         if daysSinceCached <= 2:

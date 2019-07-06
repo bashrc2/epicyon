@@ -15,11 +15,15 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
 
-def createAcceptReject(baseDir: str,federationList: [],capsList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str,acceptType: str) -> {}:
-    """Accepts or rejects something (eg. a follow request)
+def createAcceptReject(baseDir: str,federationList: [],capsList: [], \
+                       nickname: str,domain: str,port: int, \
+                       toUrl: str,ccUrl: str,httpPrefix: str, \
+                       objectUrl: str,acceptType: str) -> {}:
+    """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
-    and ccUrl might be a specific person favorited or repeated and the followers url
-    objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
+    and ccUrl might be a specific person favorited or repeated and
+    the followers url objectUrl is typically the url of the message,
+    corresponding to url or atomUri in createPostBase
     """
     if not urlPermitted(objectUrl,federationList,capsList,"inbox:write"):
         return None
@@ -39,13 +43,28 @@ def createAcceptReject(baseDir: str,federationList: [],capsList: [],nickname: st
             newAccept['cc']=ccUrl
     return newAccept
 
-def createAccept(baseDir: str,federationList: [],capsList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
-    return createAcceptReject(baseDir,federationList,capsList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Accept')
+def createAccept(baseDir: str,federationList: [],capsList: [], \
+                 nickname: str,domain: str,port: int, \
+                 toUrl: str,ccUrl: str,httpPrefix: str, \
+                 objectUrl: str) -> {}:
+    return createAcceptReject(baseDir,federationList,capsList, \
+                              nickname,domain,port, \
+                              toUrl,ccUrl,httpPrefix, \
+                              objectUrl,'Accept')
 
-def createReject(baseDir: str,federationList: [],capsList: [],nickname: str,domain: str,port: int,toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str) -> {}:
-    return createAcceptReject(baseDir,federationList,capsList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,'Reject')
+def createReject(baseDir: str,federationList: [],capsList: [], \
+                 nickname: str,domain: str,port: int, \
+                 toUrl: str,ccUrl: str,httpPrefix: str, \
+                 objectUrl: str) -> {}:
+    return createAcceptReject(baseDir,federationList,capsList, \
+                              nickname,domain,port, \
+                              toUrl,ccUrl, \
+                              httpPrefix,objectUrl,'Reject')
 
-def receiveAcceptReject(session,baseDir: str,httpPrefix: str,port: int,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},messageJson: {},federationList: [],capsList: [],debug : bool) -> bool:
+def receiveAcceptReject(session,baseDir: str,httpPrefix: str,port: int, \
+                        sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                        personCache: {},messageJson: {},federationList: [], \
+                        capsList: [],debug : bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
     if messageJson['type']!='Accept' and messageJson['type']!='Reject':

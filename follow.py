@@ -18,7 +18,9 @@ from posts import sendSignedJson
 from capabilities import isCapable
 from acceptreject import createAccept
 
-def getFollowersOfPerson(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> []:
+def getFollowersOfPerson(baseDir: str, \
+                         nickname: str,domain: str, \
+                         followFile='following.txt') -> []:
     """Returns a list containing the followers of the given person
     Used by the shared inbox to know who to send incoming mail to
     """
@@ -46,7 +48,8 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
                  federationList: [], followFile='following.txt') -> bool:
     """Adds a person to the follow list
     """
-    if not domainPermitted(followDomain.lower().replace('\n',''), federationList):
+    if not domainPermitted(followDomain.lower().replace('\n',''), \
+                           federationList):
         return False
     handle=nickname.lower()+'@'+domain.lower()
     handleToFollow=followNickname.lower()+'@'+followDomain.lower()
@@ -100,9 +103,11 @@ def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \
                        followerNickname: str,followerDomain: str) -> None:
     """Remove a follower of a person
     """
-    unfollowPerson(baseDir,nickname,domain,followerNickname,followerDomain,'followers.txt')
+    unfollowPerson(baseDir,nickname,domain, \
+                   followerNickname,followerDomain,'followers.txt')
 
-def clearFollows(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> None:
+def clearFollows(baseDir: str,nickname: str,domain: str, \
+                 followFile='following.txt') -> None:
     """Removes all follows
     """
     handle=nickname.lower()+'@'+domain.lower()
@@ -119,7 +124,8 @@ def clearFollowers(baseDir: str,nickname: str,domain: str) -> None:
     """
     clearFollows(baseDir,nickname, domain,'followers.txt')
 
-def getNoOfFollows(baseDir: str,nickname: str,domain: str,followFile='following.txt') -> int:
+def getNoOfFollows(baseDir: str,nickname: str,domain: str, \
+                   followFile='following.txt') -> int:
     """Returns the number of follows or followers
     """
     handle=nickname.lower()+'@'+domain.lower()
@@ -142,8 +148,9 @@ def getNoOfFollowers(baseDir: str,nickname: str,domain: str) -> int:
     """
     return getNoOfFollows(baseDir,nickname,domain,'followers.txt')
 
-def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,httpPrefix: str, \
-                     followsPerPage=12,followFile='following') -> {}:
+def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
+                     httpPrefix: str, followsPerPage=12, \
+                     followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests
     """
     if '/'+followFile not in path:
@@ -233,7 +240,11 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str,httpPrefix: st
         following['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
     return following
 
-def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},messageJson: {},federationList: [],capsList: [],debug : bool) -> bool:
+def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
+                         port: int,sendThreads: [],postLog: [], \
+                         cachedWebfingers: {},personCache: {}, \
+                         messageJson: {},federationList: [], \
+                         capsList: [],debug : bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -278,33 +289,46 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThre
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
             if debug:
-                print('DEBUG: followed account not found - '+baseDir+'/accounts/'+handleToFollow)
+                print('DEBUG: followed account not found - '+ \
+                      baseDir+'/accounts/'+handleToFollow)
             return False
-    if not followerOfPerson(baseDir,nickname,domain,nicknameToFollow,domainToFollow,federationList):
+    if not followerOfPerson(baseDir,nickname,domain, \
+                            nicknameToFollow,domainToFollow,federationList):
         if debug:
-            print('DEBUG: '+nickname+'@'+domain+' is already a follower of '+nicknameToFollow+'@'+domainToFollow)
+            print('DEBUG: '+nickname+'@'+domain+ \
+                  ' is already a follower of '+ \
+                  nicknameToFollow+'@'+domainToFollow)
         return False
     # send accept back
     if debug:
-        print('DEBUG: sending Accept for follow request which arrived at '+nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
+        print('DEBUG: sending Accept for follow request which arrived at '+ \
+              nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
     personUrl=messageJson['actor']
-    acceptJson=createAccept(baseDir,federationList,capsList,nickname,domain,port, \
+    acceptJson=createAccept(baseDir,federationList,capsList, \
+                            nickname,domain,port, \
                             personUrl,'',httpPrefix,messageJson['object'])
     if debug:
         pprint(acceptJson)
-        print('DEBUG: sending follow Accept from '+nicknameToFollow+'@'+domainToFollow+' port '+str(port)+' to '+nickname+'@'+domain+' port '+ str(fromPort))
+        print('DEBUG: sending follow Accept from '+ \
+              nicknameToFollow+'@'+domainToFollow+ \
+              ' port '+str(port)+' to '+ \
+              nickname+'@'+domain+' port '+ str(fromPort))
     clientToServer=False
-    return sendSignedJson(acceptJson,session,baseDir,nicknameToFollow,domainToFollow,port, \
+    return sendSignedJson(acceptJson,session,baseDir, \
+                          nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
                           httpPrefix,True,clientToServer, \
                           federationList, capsList, \
-                          sendThreads,postLog,cachedWebfingers,personCache,debug)
+                          sendThreads,postLog,cachedWebfingers, \
+                          personCache,debug)
 
-def sendFollowRequest(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                      followNickname: str,followDomain: str,followPort: bool,followHttpPrefix: str, \
+def sendFollowRequest(session,baseDir: str, \
+                      nickname: str,domain: str,port: int,httpPrefix: str, \
+                      followNickname: str,followDomain: str, \
+                      followPort: bool,followHttpPrefix: str, \
                       clientToServer: bool,federationList: [],capsList: [], \
-                      sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},
-                      debug : bool) -> {}:
+                      sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                      personCache: {},debug : bool) -> {}:
     """Gets the json object for sending a follow request
     """    
     if not domainPermitted(followDomain,federationList):

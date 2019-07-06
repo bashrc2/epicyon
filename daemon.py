@@ -132,16 +132,22 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
             # https://www.w3.org/TR/activitypub/#create-activity-outbox
             messageJson['object']['attributedTo']=messageJson['actor']
-        permittedOutboxTypes=['Create','Announce','Like','Follow','Undo','Update','Add','Remove','Block','Delete']
+        permittedOutboxTypes=[
+            'Create','Announce','Like','Follow','Undo', \
+            'Update','Add','Remove','Block','Delete'
+        ]
         if messageJson['type'] not in permittedOutboxTypes:
             if self.server.debug:
-                print('DEBUG: POST to outbox - '+messageJson['type']+' is not a permitted activity type')
+                print('DEBUG: POST to outbox - '+messageJson['type']+ \
+                      ' is not a permitted activity type')
             return False
         if messageJson.get('id'):
             postId=messageJson['id']
         else:
             postId=None
-        savePostToBox(self.server.baseDir,postId,self.postToNickname,self.server.domain,messageJson,'outbox')
+        savePostToBox(self.server.baseDir,postId, \
+                      self.postToNickname, \
+                      self.server.domain,messageJson,'outbox')
         return True
 
     def _updateInboxQueue(self,nickname: str,messageJson: {}) -> bool:
@@ -158,7 +164,6 @@ class PubServer(BaseHTTPRequestHandler):
                                  '/'+self.path.split('/')[-1],
                                  self.server.debug)
         if queueFilename:
-            print('**************************************')
             if queueFilename not in self.server.inboxQueue:
                 self.server.inboxQueue.append(queueFilename)
             self.send_response(201)
@@ -169,7 +174,9 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.server.debug:
-            print('DEBUG: GET from '+self.server.baseDir+' path: '+self.path+' busy: '+str(self.server.GETbusy))
+            print('DEBUG: GET from '+self.server.baseDir+ \
+                  ' path: '+self.path+' busy: '+ \
+                  str(self.server.GETbusy))
         if self.server.GETbusy:
             currTimeGET=int(time.time())
             if currTimeGET-self.server.lastGET<10:
@@ -211,7 +218,8 @@ class PubServer(BaseHTTPRequestHandler):
                             return
                     else:
                         if self.server.debug:
-                            print('DEBUG: '+nickname+' was not authorized to access '+self.path)
+                            print('DEBUG: '+nickname+ \
+                                  ' was not authorized to access '+self.path)
             if self.server.debug:
                 print('DEBUG: GET access to inbox is unauthorized')
             self.send_response(405)
@@ -239,7 +247,8 @@ class PubServer(BaseHTTPRequestHandler):
             return            
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
-                                   self.server.httpPrefix,followsPerPage,'followers')
+                                   self.server.httpPrefix, \
+                                   followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
@@ -279,7 +288,9 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.server.debug:
-            print('DEBUG: POST to from '+self.server.baseDir+' path: '+self.path+' busy: '+str(self.server.POSTbusy))
+            print('DEBUG: POST to from '+self.server.baseDir+ \
+                  ' path: '+self.path+' busy: '+ \
+                  str(self.server.POSTbusy))
         if self.server.POSTbusy:
             currTimePOST=int(time.time())
             if currTimePOST-self.server.lastPOST<10:
@@ -314,7 +325,9 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/outbox'):
             if '/users/' in self.path:
                 if self.headers.get('Authorization'):
-                    if authorize(self.server.baseDir,self.path,self.headers['Authorization'],self.server.debug):
+                    if authorize(self.server.baseDir,self.path, \
+                                 self.headers['Authorization'], \
+                                 self.server.debug):
                         self.outboxAuthenticated=True
                         pathUsersSection=path.split('/users/')[1]
                         self.postToNickname=pathUsersSection.split('/')[0]
@@ -354,7 +367,8 @@ class PubServer(BaseHTTPRequestHandler):
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
             if self._postToOutbox(messageJson):
-                self.send_header('Location',messageJson['object']['atomUri'])
+                self.send_header('Location', \
+                                 messageJson['object']['atomUri'])
                 self.send_response(201)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -379,7 +393,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
 
-        if not inboxPermittedMessage(self.server.domain,messageJson,self.server.federationList,self.server.capsList):
+        if not inboxPermittedMessage(self.server.domain, \
+                                     messageJson, \
+                                     self.server.federationList, \
+                                     self.server.capsList):
             if self.server.debug:
                 # https://www.youtube.com/watch?v=K3PrSj9XEu4
                 print('DEBUG: Ah Ah Ah')
@@ -425,7 +442,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
-def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],capsList=[],useTor=False,debug=False) -> None:
+def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
+              fedList=[],capsList=[],useTor=False,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -456,6 +474,12 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https',fedList=[],cap
     httpd.sendThreads=[]
     httpd.postLog=[]
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
-    httpd.thrInboxQueue=threadWithTrace(target=runInboxQueue,args=(baseDir,httpPrefix,httpd.sendThreads,httpd.postLog,httpd.cachedWebfingers,httpd.personCache,httpd.inboxQueue,domain,port,useTor,httpd.federationList,httpd.capsList,debug),daemon=True)
+    httpd.thrInboxQueue= \
+        threadWithTrace(target=runInboxQueue, \
+                        args=(baseDir,httpPrefix,httpd.sendThreads, \
+                              httpd.postLog,httpd.cachedWebfingers, \
+                              httpd.personCache,httpd.inboxQueue, \
+                              domain,port,useTor,httpd.federationList, \
+                              httpd.capsList,debug),daemon=True)
     httpd.thrInboxQueue.start()
     httpd.serve_forever()

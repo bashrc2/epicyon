@@ -18,8 +18,9 @@ def createAnnounce(baseDir: str,federationList: [], capsList: [], \
                    objectUrl: str, saveToFile: bool) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
-    and ccUrl might be a specific person favorited or repeated and the followers url
-    objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
+    and ccUrl might be a specific person favorited or repeated and the
+    followers url objectUrl is typically the url of the message,
+    corresponding to url or atomUri in createPostBase
     """
     if not urlPermitted(objectUrl,federationList,capsList,"inbox:write"):
         return None
@@ -28,7 +29,8 @@ def createAnnounce(baseDir: str,federationList: [], capsList: [], \
         domain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
-    newAnnounceId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    newAnnounceId= \
+        httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     newAnnounce = {
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
@@ -79,5 +81,6 @@ def repeatPost(baseDir: str,federationList: [], \
     objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
 
-    return announcePublic(baseDir,nickname, domain, port, httpPrefix, objectUrl, saveToFile)
+    return announcePublic(baseDir,nickname, domain, port, \
+                          httpPrefix, objectUrl, saveToFile)
 
