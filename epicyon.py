@@ -112,8 +112,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
+    testPostMessageBetweenServers()
     testFollowBetweenServers()
-    #testPostMessageBetweenServers()
     sys.exit()
 
 if args.posts:
