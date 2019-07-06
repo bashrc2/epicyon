@@ -279,7 +279,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str,port: int,sendThre
         return False
     # send accept back
     if debug:
-        print('DEBUG: sending Accept from '+nickname+'@'+domain+' for follow request')
+        print('DEBUG: sending Accept for follow request from '+nickname+'@'+domain+' back to '+nicknameToFollow+'@'+domainToFollow)
     personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList,capsList,nickname,domain,port, \
                             personUrl,'',httpPrefix,messageJson['object'])
