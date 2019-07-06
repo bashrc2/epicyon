@@ -9,7 +9,7 @@ __status__ = "Production"
 import os
 from auth import createPassword
 
-def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,domain: str,requestedActor: str) -> None:
+def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,domain: str,requestedActor: str,inbox="write",objects="read") -> None:
     # This is sent to the capabilities endpoint /caps/new
     # which could be instance wide or for a particular person
     capId=createPassword(32)
@@ -17,22 +17,22 @@ def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,domain: str,requestedAc
         "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+capId,
         "type": "Request",
         "capability": {
-            "inbox": "write",
-            "objects": "read"
+            "inbox": inbox,
+            "objects": objects
         },
         "actor": requestedActor
     }
     #TODO
 
-def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str,acceptedActor: str) -> None:
+def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str,acceptedActor: str,inbox="write",objects="read") -> None:
     # This gets returned to capabilities requester
     capId=createPassword(32)
     capAccept = {
         "id": httpPrefix+"://"+domain+"/caps/"+capId,
         "type": "Capability",
         "capability": {
-            "inbox": "write",
-            "objects": "read"
+            "inbox": inbox,
+            "objects": objects
         },
         "scope": acceptedActor,
         "actor": httpPrefix+"://"+domain
