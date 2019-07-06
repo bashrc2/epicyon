@@ -335,7 +335,7 @@ if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
     createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
 
 if args.testdata:
-    nickname='testuser'
+    nickname='testuser567'
     print('Generating some test data for user: '+nickname)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,'likewhateveryouwantscoob')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
