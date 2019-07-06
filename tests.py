@@ -310,9 +310,11 @@ def testFollowBetweenServers():
                           aliceCachedWebfingers,alicePersonCache,True)
     print('sendResult: '+str(sendResult))
 
-    time.sleep(10)
-    
-    
+    for t in range(10):
+        if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
+            break
+        time.sleep(1)
+     
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
@@ -322,8 +324,11 @@ def testFollowBetweenServers():
     thrBob.join()
     assert thrBob.isAlive()==False
 
+    assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
+    assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+    
     os.chdir(baseDir)
-    #shutil.rmtree(baseDir+'/.tests')
+    shutil.rmtree(baseDir+'/.tests')
 
 def testFollowersOfPerson():
     print('testFollowersOfPerson')

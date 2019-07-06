@@ -292,8 +292,8 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                 print('DEBUG: followed account not found - '+ \
                       baseDir+'/accounts/'+handleToFollow)
             return False
-    if not followerOfPerson(baseDir,nickname,domain, \
-                            nicknameToFollow,domainToFollow,federationList):
+    if not followerOfPerson(baseDir,nicknameToFollow,domainToFollow, \
+                            nickname,domain,federationList):
         if debug:
             print('DEBUG: '+nickname+'@'+domain+ \
                   ' is already a follower of '+ \
