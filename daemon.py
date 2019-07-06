@@ -199,7 +199,34 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
-        # get an individual post
+        # get an individual post from the path /@nickname/statusnumber
+        if '/@' in self.path:
+            namedStatus=self.path.split('/@')[1]
+            if '/' in namedStatus:
+                postSections=namedStatus.split('/')
+                if len(postSections)==2:
+                    nickname=postSections[0]
+                    statusNumber=postSections[1]
+                    if len(statusNumber)>10 and statusNumber.isdigit():
+                        domainFull=self.server.domain
+                        if self.server.port!=80 and self.server.port!=443:
+                            domainFull=self.server.domain+':'+str(self.server.port) 
+                            postFilename= \
+                                self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
+                                self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
+                            if os.path.isfile(postFilename):
+                                postJson={}
+                                with open(postFilename, 'r') as fp:
+                                    postJson=commentjson.load(fp)
+                                self._set_headers('application/json')
+                                self.wfile.write(json.dumps(postJson).encode('utf-8'))
+                                self.server.GETbusy=False
+                                return
+                            else:
+                                self._404()
+                                self.server.GETbusy=False
+                                return                        
+        # get an individual post from the path /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
             namedStatus=self.path.split('/users/')[1]
             if '/' in namedStatus:
@@ -207,7 +234,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if len(postSections)>=2:
                     nickname=postSections[0]
                     statusNumber=postSections[2]
-                    if len(statusNumber)>10:
+                    if len(statusNumber)>10 and statusNumber.isdigit():
                         domainFull=self.server.domain
                         if self.server.port!=80 and self.server.port!=443:
                             domainFull=self.server.domain+':'+str(self.server.port) 
