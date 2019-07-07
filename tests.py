@@ -320,7 +320,7 @@ def testFollowBetweenServers():
     print('Alice online: '+str(testServerAliceRunning))
     print('Bob online: '+str(testServerBobRunning))
     print('Eve online: '+str(testServerEveRunning))
-    assert ctr<=10
+    assert ctr<=30
     time.sleep(1)
 
     # In the beginning all was calm and there were no follows
@@ -373,7 +373,7 @@ def testFollowBetweenServers():
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
     eveMessageArrived=False
-    for i in range(5):
+    for i in range(20):
         time.sleep(1)
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>1:
@@ -398,7 +398,7 @@ def testFollowBetweenServers():
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
     aliceMessageArrived=False
-    for i in range(5):
+    for i in range(20):
         time.sleep(1)
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>1:
