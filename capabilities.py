@@ -40,7 +40,8 @@ def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
     }
     return ocapRequest
 
-def capabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str, \
+def capabilitiesAccept(baseDir: str,httpPrefix: str, \
+                       nickname: str,domain: str, port: int, \
                        acceptedActor: str, saveToFile: bool, \
                        acceptedCaps=["inbox:write","objects:read"]) -> {}:
     # This gets returned to capabilities requester
@@ -50,6 +51,10 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str, \
     if len(acceptedActor)>256:
         return None
 
+    fullDomain=domain
+    if port!=80 and port !=443:
+        fullDomain=domain+':'+str(port)
+    
     # make directories to store capabilities
     capabilitiesMakeDirs(baseDir)
     filename=baseDir+'/ocap/accept/'+acceptedActor.replace('/','#')+'.json'
@@ -63,14 +68,14 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str, \
     if not ocapAccept:
         ocapId=createPassword(32)
         ocapAccept = {
-            "id": httpPrefix+"://"+domain+"/caps/"+ocapId,
+            "id": httpPrefix+"://"+fullDomain+"/caps/"+ocapId,
             "type": "Capability",
             "capability": acceptedCaps,
             "scope": acceptedActor,
-            "actor": httpPrefix+"://"+domain
+            "actor": httpPrefix+"://"+fullDomain
         }
         if nickname:
-            ocapAccept['actor']=httpPrefix+"://"+domain+'/users/'+nickname
+            ocapAccept['actor']=httpPrefix+"://"+fullDomain+'/users/'+nickname
 
     if saveToFile:
         with open(filename, 'w') as fp:

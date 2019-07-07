@@ -40,23 +40,23 @@ This is one proposed way that OCAP could work.
 Default capabilities are initially set up when a follow request is made. The Accept activity sent back from a follow request can be received by any instance. A capabilities accept activity is attached to the follow accept.
 
 ``` text
-                           Actor A
+                            Alice
                               |
                               V
                         Follow Request
                               |
                               V
-                           Actor B
+                             Bob
                               |
                               V
                Create/store default Capabilities
-	                 for Actor A
+                          for Alice
                               |
                               V
               Follow Accept + default Capabilities
                               |
                               V
-                           Actor A
+                            Alice
                               |
                               V
                    Store Granted Capabilities
@@ -64,18 +64,51 @@ Default capabilities are initially set up when a follow request is made. The Acc
 
 The default capabilities could be *any preferred policy* of the instance. They could be no capabilities at all, read only or full access to everything.
 
+Example Follow request from **Alice** to **Bob**:
+
+``` json
+{'actor': 'http://alicedomain.net/users/alice',
+ 'cc': ['https://www.w3.org/ns/activitystreams#Public'],
+ 'id': 'http://alicedomain.net/users/alice/statuses/1562507338839876',
+ 'object': 'http://bobdomain.net/users/bob',
+ 'published': '2019-07-07T13:48:58Z',
+ 'to': ['http://bobdomain.net/users/bob'],
+ 'type': 'Follow'}
+ ```
+
+Follow Accept from **Bob** to **Alice** with attached capabilities.
+
+``` json
+{'actor': 'http://bobdomain.net/users/bob',
+ 'capabilities': {'actor': 'http://bobdomain.net/users/bob',
+                  'capability': ['inbox:write', 'objects:read'],
+                  'id': 'http://bobdomain.net/caps/rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ',
+                  'scope': 'http://alicedomain.net/users/alice',
+                  'type': 'Capability'},
+ 'cc': [],
+ 'object': {'actor': 'http://alicedomain.net/users/alice',
+            'cc': ['https://www.w3.org/ns/activitystreams#Public'],
+            'id': 'http://alicedomain.net/users/alice/statuses/1562507338839876',
+            'object': 'http://bobdomain.net/users/bob',
+            'published': '2019-07-07T13:48:58Z',
+            'to': ['http://bobdomain.net/users/bob'],
+            'type': 'Follow'},
+ 'to': ['http://alicedomain.net/users/alice'],
+ 'type': 'Accept'}
+```
+
 When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper.
 
 ``` text
-                           Actor A
+                            Alice
                               |
                               V
                           Send Post
 	     Attach id from Stored Capabilities
-	              granted by Actor B
+	              granted by Bob
                               |
                               V
-                           Actor B
+                             Bob
                               |
                               V
                  Check Capability id matches
@@ -88,7 +121,7 @@ When posts are subsequently sent from the following instance (server-to-server) 
                Accept or reject incoming post		   
 ```
 
-Subsequently **Actor B** could change the stored capabilities for **Actor A** in its database, giving the new object a different id. This could be sent back to **Actor A**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Actor A** can interact with **Actor B**, for example by adding or removing the ability to like or reply to posts.
+Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Alice** can interact with **Bob**, for example by adding or removing the ability to like or reply to posts.
 
 ## Install
 

@@ -282,7 +282,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
               nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
     personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList,ocapGranted, \
-                            nickname,domain,port, \
+                            nicknameToFollow,domainToFollow,port, \
                             personUrl,'',httpPrefix,messageJson)
     if debug:
         pprint(acceptJson)
@@ -310,9 +310,11 @@ def sendFollowRequest(session,baseDir: str, \
     """    
     if not domainPermitted(followDomain,federationList):
         return None
-    
+
+    fullDomain=domain
     followActor=httpPrefix+'://'+domain+'/users/'+nickname    
     if port!=80 and port!=443:
+        fullDomain=domain+':'+str(port)
         followActor=httpPrefix+'://'+domain+':'+str(port)+'/users/'+nickname
 
     requestDomain=followDomain
@@ -329,7 +331,7 @@ def sendFollowRequest(session,baseDir: str, \
     followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
 
     newFollowJson = {
-        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+        'id': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
         'type': 'Follow',
         'actor': followActor,
         'object': followedId,
