@@ -31,6 +31,7 @@ from utils import getStatusNumber
 from utils import createPersonDir
 from utils import urlPermitted
 from capabilities import isCapable
+from capabilities import getOcapFilename
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -350,8 +351,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         # if capabilities have been granted for this actor
         # then get the corresponding id
         capabilityId=None
-        ocapFilename= \
-            baseDir+'/ocap/granted/'+actorUrl.replace('/','#')+'.json'
+        ocapFilename= getOcapFilename(baseDir,nickname,domain,actorUrl,'granted')
         if os.path.isfile(ocapFilename):
             with open(ocapFilename, 'r') as fp:
                 oc=commentjson.load(fp)
