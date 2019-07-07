@@ -141,6 +141,20 @@ Subsequently **Bob** could change the stored capabilities for **Alice** in their
 
 Object capabilities can be strictly enforced by adding the **--ocap** option when running the server. The only activities which it is not enforced upon are **Follow** and **Accept**. Anyone can create a follow request or accept updated capabilities.
 
+## Some capabilities
+
+*inbox:write* - follower can post anything to your inbox
+
+*inbox:noreply - follower can't reply to your posts
+
+*inbox:nolike* - follower can't like your posts
+
+*inbox:nopics* - follower can't post image links
+
+*inbox:noannounce* - follower can't send repeats (announce activities) to your inbox
+
+*inbox:cw* - follower can't post to your inbox unless they include a content warning
+
 ## Object capabilities adversaries
 
 If **Eve** subsequently learns what the capabilities id is for **Alice** by somehow intercepting the traffic (eg. suppose she works for *Eveflare*) then she can't gain the capabilities of Alice due to the *scope* parameter against which the actors of incoming posts are checked.
