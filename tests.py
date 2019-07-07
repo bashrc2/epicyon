@@ -310,7 +310,7 @@ def testFollowBetweenServers():
     assert thrBob.isAlive()==True
     assert thrEve.isAlive()==True
 
-    # wait for both servers to be running
+    # wait for all servers to be running
     ctr=0
     while not (testServerAliceRunning and testServerBobRunning and testServerEveRunning):
         time.sleep(1)
@@ -417,6 +417,10 @@ def testFollowBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive()==False
+
+    thrEve.kill()
+    thrEve.join()
+    assert thrEve.isAlive()==False
     
     assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
     assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json')
