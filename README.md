@@ -128,7 +128,7 @@ When posts are subsequently sent from the following instance (server-to-server) 
 
 Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Alice** can interact with **Bob**, for example by adding or removing the ability to like or reply to posts.
 
-Object capabilities can be strictly enforced by adding the **--ocap** option when running the daemon. The only activities which it is not enforced upon are **Follow** and **Accept**. Anyone can create a follow request or accept updated capabilities.
+Object capabilities can be strictly enforced by adding the **--ocap** option when running the server. The only activities which it is not enforced upon are **Follow** and **Accept**. Anyone can create a follow request or accept updated capabilities.
 
 ## Object capabilities adversaries
 
