@@ -116,11 +116,18 @@ When posts are subsequently sent from the following instance (server-to-server) 
                              Bob
                               |
                               V
+                    http signature check
+                              |
+                              V
                  Check Capability id matches
                      stored capabilities
                               |
                               V
-               http signature and other checks
+	       Match stored capability scope
+	       against actor on received post
+                              |
+                              V
+                      Any other checks
                               |
                               V
                Accept or reject incoming post		   
