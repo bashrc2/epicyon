@@ -97,7 +97,7 @@ Follow Accept from **Bob** to **Alice** with attached capabilities.
  'type': 'Accept'}
 ```
 
-When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper.
+When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. In the above example that would be **http://bobdomain.net/caps/rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ**
 
 ``` text
                             Alice
@@ -122,6 +122,8 @@ When posts are subsequently sent from the following instance (server-to-server) 
 ```
 
 Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Alice** can interact with **Bob**, for example by adding or removing the ability to like or reply to posts.
+
+If **Eve** subsequently learns what the capabilities id is for **Alice** by somehow intercepting the traffic (eg. suppose she works for *Eveflare*) then she can't gain the capabilities of Alice due to the *scope* parameter against which the actors of incoming posts are checked. **Eve** could create a post pretending to be from Alice's domain, but the http signature check would fail due to her not having Alice's keys.
 
 ## Install
 
