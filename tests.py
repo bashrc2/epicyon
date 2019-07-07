@@ -313,7 +313,8 @@ def testFollowBetweenServers():
     for t in range(10):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
             if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
-                break
+                if os.path.isfile(bobDir+'/ocap/accept/'+bobDomain+':'+str(bobPort)+':bob:'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'):
+                    break
         time.sleep(1)
      
     # stop the servers
@@ -325,11 +326,12 @@ def testFollowBetweenServers():
     thrBob.join()
     assert thrBob.isAlive()==False
 
+    assert os.path.isfile(bobDir+'/ocap/accept/'+bobDomain+':'+str(bobPort)+':bob:'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     
     os.chdir(baseDir)
-    shutil.rmtree(baseDir+'/.tests')
+    #shutil.rmtree(baseDir+'/.tests')
 
 def testFollowersOfPerson():
     print('testFollowersOfPerson')

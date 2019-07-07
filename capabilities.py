@@ -13,6 +13,9 @@ import json
 import commentjson
 from auth import createPassword
 
+def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
+    return baseDir+'/ocap/'+subdir+'/'+domain+':'+nickname+':'+actor.replace('/','#')+'.json'
+
 def capabilitiesMakeDirs(baseDir: str):
     if not os.path.isdir(baseDir+'/ocap'):
         os.mkdir(baseDir+'/ocap')
@@ -39,7 +42,7 @@ def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
         "actor": requestedActor
     }
     return ocapRequest
-
+ 
 def capabilitiesAccept(baseDir: str,httpPrefix: str, \
                        nickname: str,domain: str, port: int, \
                        acceptedActor: str, saveToFile: bool, \
@@ -57,12 +60,12 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
     
     # make directories to store capabilities
     capabilitiesMakeDirs(baseDir)
-    filename=baseDir+'/ocap/accept/'+acceptedActor.replace('/','#')+'.json'
+    ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
     ocapAccept=None
 
     # if the capability already exists then load it from file
-    if os.path.isfile(filename):
-        with open(filename, 'r') as fp:
+    if os.path.isfile(ocapFilename):
+        with open(ocapFilename, 'r') as fp:
             ocapAccept=commentjson.load(fp)
     # otherwise create a new capability    
     if not ocapAccept:
@@ -78,18 +81,18 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             ocapAccept['actor']=httpPrefix+"://"+fullDomain+'/users/'+nickname
 
     if saveToFile:
-        with open(filename, 'w') as fp:
+        with open(ocapFilename, 'w') as fp:
             commentjson.dump(ocapAccept, fp, indent=4, sort_keys=False)
     return ocapAccept
 
-def capabilitiesGrantedSave(baseDir :str,ocap: {}) -> bool:
+def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> bool:
     """A capabilities accept is received, so stor it for
     reference when sending to the actor
     """
     if not ocap.get('actor'):
         return False
-    filename=baseDir+'/ocap/granted/'+ocap['actor'].replace('/','#')+'.json'
-    with open(filename, 'w') as fp:
+    ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,ocap['actor'],'granted')
+    with open(ocapFilename, 'w') as fp:
         commentjson.dump(ocap, fp, indent=4, sort_keys=False)
     return True
 

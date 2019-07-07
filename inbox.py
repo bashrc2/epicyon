@@ -24,6 +24,7 @@ from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
 from acceptreject import receiveAcceptReject
+from capabilities import getOcapFilename
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -126,6 +127,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         sharedInboxItem=True
         
     newQueueItem = {
+        'nickname': nickname,
+        'domain': domain,
         'sharedInbox': sharedInboxItem,
         'published': published,
         'host': host,
@@ -190,10 +193,14 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                         os.remove(queueFilename)
                         queue.pop(0)
                         continue                
-                    ocapFilename=baseDir+'/ocap/accept/'+queueJson['post']['actor'].replace('/','#')+'.json'
+                    ocapFilename= \
+                        getOcapFilename(baseDir, \
+                                        queueJson['nickname'],queueJson['domain'], \
+                                        queueJson['post']['actor'],'accept')
                     if not os.path.isfile(ocapFilename):
                         if debug:
-                            print('DEBUG: capabilities for '+queueJson['post']['actor']+' do not exist')
+                            print('DEBUG: capabilities for '+ \
+                                  queueJson['post']['actor']+' do not exist')
                         os.remove(queueFilename)
                         queue.pop(0)
                         continue                
