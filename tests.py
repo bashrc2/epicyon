@@ -41,6 +41,7 @@ from auth import storeBasicCredentials
 
 testServerAliceRunning = False
 testServerBobRunning = False
+testServerEveRunning = False
 
 def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
@@ -160,6 +161,25 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],ocapGrant
     print('Server running: Bob')
     runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
 
+def createServerEve(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+    print('Creating test server: Eve on port '+str(port))
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+    os.chdir(path)
+    nickname='eve'
+    httpPrefix='http'
+    useTor=False
+    clientToServer=False
+    password='evepass'
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
+    deleteAllPosts(path,nickname,domain,'inbox')
+    deleteAllPosts(path,nickname,domain,'outbox')
+    global testServerEveRunning
+    testServerEveRunning = True
+    print('Server running: Eve')
+    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
+
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
 
@@ -250,12 +270,14 @@ def testFollowBetweenServers():
 
     global testServerAliceRunning
     global testServerBobRunning
+    global testServerEveRunning
     testServerAliceRunning = False
     testServerBobRunning = False
+    testServerEveRunning = False
 
     httpPrefix='http'
     useTor=False
-    federationList=['127.0.0.42','127.0.0.64']
+    federationList=[]
     ocapGranted={}
 
     baseDir=os.getcwd()
@@ -276,20 +298,35 @@ def testFollowBetweenServers():
     bobPort=61936
     thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,False,False,ocapAlways),daemon=True)
 
+    eveDir=baseDir+'/.tests/eve'
+    eveDomain='127.0.0.55'
+    evePort=61937
+    thrEve = threadWithTrace(target=createServerEve,args=(eveDir,eveDomain,evePort,federationList,ocapGranted,False,False,False),daemon=True)
+
     thrAlice.start()
     thrBob.start()
+    thrEve.start()
     assert thrAlice.isAlive()==True
     assert thrBob.isAlive()==True
+    assert thrEve.isAlive()==True
 
     # wait for both servers to be running
-    while not (testServerAliceRunning and testServerBobRunning):
+    ctr=0
+    while not (testServerAliceRunning and testServerBobRunning and testServerEveRunning):
         time.sleep(1)
-        
+        ctr+=1
+        if ctr>10:
+            break
+    print('Alice online: '+str(testServerAliceRunning))
+    print('Bob online: '+str(testServerBobRunning))
+    print('Eve online: '+str(testServerEveRunning))
+    assert ctr<=10
     time.sleep(1)
 
     # In the beginning all was calm and there were no follows
     
     print('Alice sends a follow request to Bob')
+    print('Both are strictly enforcing object capabilities')
     os.chdir(aliceDir)
     sessionAlice = createSession(aliceDomain,alicePort,useTor)
     inReplyTo=None
@@ -317,11 +354,61 @@ def testFollowBetweenServers():
     for t in range(10):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
             if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
-                if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+':'+str(bobPort)+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'):
-                    if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+':'+str(alicePort)+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'):
+                if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'):
+                    if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'):
                         break
         time.sleep(1)
-     
+
+    print('\n\nEve tries to send to Bob')
+    sessionEve = createSession(eveDomain,evePort,useTor)
+    eveSendThreads = []
+    evePostLog = []
+    evePersonCache={}
+    eveCachedWebfingers={}
+    eveSendThreads=[]
+    evePostLog=[]
+    sendResult = sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Eve message', followersOnly, saveToFile, clientToServer, federationList, ocapGranted, eveSendThreads, evePostLog, eveCachedWebfingers,evePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    print('sendResult: '+str(sendResult))
+
+    queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
+    inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
+    eveMessageArrived=False
+    for i in range(5):
+        time.sleep(1)
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>1:
+                eveMessageArrived=True
+                print('Eve message sent to Bob!')
+                break
+
+    # capabilities should have prevented delivery
+    assert eveMessageArrived==False
+    print('Message from Eve to Bob was correctly rejected by object capabilities')
+
+
+    aliceSendThreads = []
+    alicePostLog = []
+    alicePersonCache={}
+    aliceCachedWebfingers={}
+    aliceSendThreads=[]
+    alicePostLog=[]
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Alice message', followersOnly, saveToFile, clientToServer, federationList, ocapGranted, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    print('sendResult: '+str(sendResult))
+
+    queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
+    inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
+    aliceMessageArrived=False
+    for i in range(5):
+        time.sleep(1)
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>1:
+                aliceMessageArrived=True
+                print('Alice message sent to Bob!')
+                break
+
+    assert aliceMessageArrived==True
+    print('Message from Alice to Bob succeeded, since it was granted capabilities')
+
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
@@ -330,9 +417,9 @@ def testFollowBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive()==False
-
-    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+':'+str(bobPort)+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
-    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+':'+str(alicePort)+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json')
+    
+    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
+    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json')
     
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()

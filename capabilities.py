@@ -14,6 +14,9 @@ import commentjson
 from auth import createPassword
 
 def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
+    if ':' in domain:
+        domain=domain.split(':')[0]
+
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
 

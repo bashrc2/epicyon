@@ -351,12 +351,15 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         # if capabilities have been granted for this actor
         # then get the corresponding id
         capabilityId=None
-        ocapFilename= getOcapFilename(baseDir,nickname,domain,actorUrl,'granted')
+        ocapFilename= getOcapFilename(baseDir,nickname,domain,toUrl,'granted')
+        #print('ocapFilename: '+ocapFilename)
         if os.path.isfile(ocapFilename):
             with open(ocapFilename, 'r') as fp:
                 oc=commentjson.load(fp)
                 if oc.get('id'):
                     capabilityId=oc['id']
+        #else:
+        #    print('ocapFilename: '+ocapFilename+' not found')
 
         newPost = {
             'id': newPostId+'/activity',
