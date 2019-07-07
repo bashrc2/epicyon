@@ -313,8 +313,8 @@ def testFollowBetweenServers():
     for t in range(10):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
             if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
-                if os.path.isfile(bobDir+'/ocap/accept/'+bobDomain+':'+str(bobPort)+':bob:'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'):
-                    if os.path.isfile(aliceDir+'/ocap/granted/'+aliceDomain+':'+str(alicePort)+':alice:'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'):
+                if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+':'+str(bobPort)+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'):
+                    if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+':'+str(alicePort)+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'):
                         break
         time.sleep(1)
      
@@ -327,8 +327,9 @@ def testFollowBetweenServers():
     thrBob.join()
     assert thrBob.isAlive()==False
 
-    assert os.path.isfile(bobDir+'/ocap/accept/'+bobDomain+':'+str(bobPort)+':bob:'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
-    assert os.path.isfile(aliceDir+'/ocap/granted/'+aliceDomain+':'+str(alicePort)+':alice:'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json')
+    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+':'+str(bobPort)+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
+    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+':'+str(alicePort)+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json')
+    
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     

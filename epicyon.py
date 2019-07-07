@@ -6,7 +6,6 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-from capabilities import capabilitiesMakeDirs
 from person import createPerson
 from person import createSharedInbox
 from person import createCapabilitiesInbox
@@ -334,8 +333,6 @@ if not os.path.isdir(baseDir+'/accounts/sharedinbox@'+domain):
 if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
     print('Creating capabilities account which can sign requests')
     createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
-
-capabilitiesMakeDirs(baseDir)
 
 if args.testdata:
     nickname='testuser567'

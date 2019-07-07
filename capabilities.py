@@ -14,17 +14,22 @@ import commentjson
 from auth import createPassword
 
 def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
-    return baseDir+'/ocap/'+subdir+'/'+domain+':'+nickname+':'+actor.replace('/','#')+'.json'
+    if not os.path.isdir(baseDir+'/accounts'):
+        os.mkdir(baseDir+'/accounts')
 
-def capabilitiesMakeDirs(baseDir: str):
-    if not os.path.isdir(baseDir+'/ocap'):
-        os.mkdir(baseDir+'/ocap')
-    # for capabilities accepted by this instance
-    if not os.path.isdir(baseDir+'/ocap/accept'):
-        os.mkdir(baseDir+'/ocap/accept')
-    # for capabilities granted to this instance
-    if not os.path.isdir(baseDir+'/ocap/granted'):
-        os.mkdir(baseDir+'/ocap/granted')
+    ocDir=baseDir+'/accounts/'+nickname+'@'+domain
+    if not os.path.isdir(ocDir):
+        os.mkdir(ocDir)
+
+    ocDir=baseDir+'/accounts/'+nickname+'@'+domain+'/ocap'
+    if not os.path.isdir(ocDir):
+        os.mkdir(ocDir)
+
+    ocDir=baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+subdir
+    if not os.path.isdir(ocDir):
+        os.mkdir(ocDir)
+        
+    return baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+subdir+'/'+actor.replace('/','#')+'.json'
 
 def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
                         requestedActor: str, \
@@ -32,8 +37,6 @@ def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
     # This is sent to the capabilities endpoint /caps/new
     # which could be instance wide or for a particular person
     # This could also be added to a follow activity
-    capabilitiesMakeDirs(baseDir)
-
     ocapId=createPassword(32)
     ocapRequest = {
         "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+ocapId,
@@ -59,7 +62,6 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
         fullDomain=domain+':'+str(port)
     
     # make directories to store capabilities
-    capabilitiesMakeDirs(baseDir)
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
     ocapAccept=None
 
@@ -91,7 +93,6 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     """
     if not ocap.get('actor'):
         return False
-    capabilitiesMakeDirs(baseDir)
     ocapFilename=getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
     with open(ocapFilename, 'w') as fp:
         commentjson.dump(ocap, fp, indent=4, sort_keys=False)
