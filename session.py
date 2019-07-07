@@ -39,7 +39,7 @@ def getJson(session,url: str,headers: {},params: {}) -> {}:
         pass
     return None
 
-def postJson(session,postJsonObject: {},federationList: [],capsList: [],inboxUrl: str,headers: {},capability: str) -> str:
+def postJson(session,postJsonObject: {},federationList: [],ocapGranted: {},inboxUrl: str,headers: {},capability: str) -> str:
     """Post a json message to the inbox of another person
     Supplying a capability, such as "inbox:write"
     """
@@ -47,7 +47,7 @@ def postJson(session,postJsonObject: {},federationList: [],capsList: [],inboxUrl
     # always allow capability requests
     if not capability.startswith('cap'):    
         # check that we are posting to a permitted domain
-        if not urlPermitted(inboxUrl,federationList,capsList,capability):
+        if not urlPermitted(inboxUrl,federationList,ocapGranted,capability):
             return None
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)

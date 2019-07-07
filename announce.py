@@ -12,7 +12,7 @@ from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
 
-def createAnnounce(baseDir: str,federationList: [], capsList: [], \
+def createAnnounce(baseDir: str,federationList: [], ocapGranted: {}, \
                    nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, \
                    objectUrl: str, saveToFile: bool) -> {}:
@@ -22,7 +22,7 @@ def createAnnounce(baseDir: str,federationList: [], capsList: [], \
     followers url objectUrl is typically the url of the message,
     corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl,federationList,capsList,"inbox:write"):
+    if not urlPermitted(objectUrl,federationList,ocapGranted,"inbox:write"):
         return None
 
     if port!=80 and port!=443:

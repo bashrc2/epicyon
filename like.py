@@ -17,7 +17,7 @@ def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
     and ccUrl might be a specific person whose post was liked
     objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
     """
-    if not urlPermitted(objectUrl,federationList,capsList,"inbox:write"):
+    if not urlPermitted(objectUrl,federationList,ocapGranted,"inbox:write"):
         return None
 
     if port!=80 and port!=443:

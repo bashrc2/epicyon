@@ -7,42 +7,99 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import datetime
+import time
+import json
+import commentjson
 from auth import createPassword
 
-def sendCapabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
-                            requestedActor: str, \
-                            requestedCaps=["inbox:write","objects:read"]) -> None:
+def capabilitiesMakeDirs(baseDir: str):
+    if not os.path.isdir(baseDir+'/ocap'):
+        os.mkdir(baseDir+'/ocap')
+    # for capabilities accepted by this instance
+    if not os.path.isdir(baseDir+'/ocap/accept'):
+        os.mkdir(baseDir+'/ocap/accept')
+    # for capabilities granted to this instance
+    if not os.path.isdir(baseDir+'/ocap/granted'):
+        os.mkdir(baseDir+'/ocap/granted')
+
+def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
+                        requestedActor: str, \
+                        requestedCaps=["inbox:write","objects:read"]) -> {}:
     # This is sent to the capabilities endpoint /caps/new
     # which could be instance wide or for a particular person
-    capId=createPassword(32)
-    capRequest = {
-        "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+capId,
+    # This could also be added to a follow activity
+    capabilitiesMakeDirs(baseDir)
+
+    ocapId=createPassword(32)
+    ocapRequest = {
+        "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+ocapId,
         "type": "Request",
         "capability": requestedCaps,
         "actor": requestedActor
     }
-    #TODO
+    return ocapRequest
 
-def sendCapabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str, \
-                           acceptedActor: str, \
-                           acceptedCaps=["inbox:write","objects:read"]) -> None:
+def capabilitiesAccept(baseDir: str,httpPrefix: str,nickname: str,domain: str, \
+                       acceptedActor: str, saveToFile: bool, \
+                       acceptedCaps=["inbox:write","objects:read"]) -> {}:
     # This gets returned to capabilities requester
-    capId=createPassword(32)
-    capAccept = {
-        "id": httpPrefix+"://"+domain+"/caps/"+capId,
-        "type": "Capability",
-        "capability": acceptedCaps,
-        "scope": acceptedActor,
-        "actor": httpPrefix+"://"+domain
-    }
-    if nickname:
-        capAccept['actor']=httpPrefix+"://"+domain+'/users/'+nickname
-    #TODO
+    # This could also be added to a follow Accept activity
 
-def isCapable(actor: str,capsJson: [],capability: str) -> bool:
+    # reject excessively long actors
+    if len(acceptedActor)>256:
+        return None
+
+    # make directories to store capabilities
+    capabilitiesMakeDirs(baseDir)
+    filename=baseDir+'/ocap/accept/'+acceptedActor.replace('/','#')+'.json'
+    ocapAccept=None
+
+    # if the capability already exists then load it from file
+    if os.path.isfile(filename):
+        with open(filename, 'r') as fp:
+            ocapAccept=commentjson.load(fp)
+    # otherwise create a new capability    
+    if not ocapAccept:
+        ocapId=createPassword(32)
+        ocapAccept = {
+            "id": httpPrefix+"://"+domain+"/caps/"+ocapId,
+            "type": "Capability",
+            "capability": acceptedCaps,
+            "scope": acceptedActor,
+            "actor": httpPrefix+"://"+domain
+        }
+        if nickname:
+            ocapAccept['actor']=httpPrefix+"://"+domain+'/users/'+nickname
+
+    if saveToFile:
+        with open(filename, 'w') as fp:
+            commentjson.dump(ocapAccept, fp, indent=4, sort_keys=False)
+    return ocapAccept
+
+def capabilitiesGrantedSave(baseDir :str,ocap: {}) -> bool:
+    """A capabilities accept is received, so stor it for
+    reference when sending to the actor
+    """
+    if not ocap.get('actor'):
+        return False
+    filename=baseDir+'/ocap/granted/'+ocap['actor'].replace('/','#')+'.json'
+    with open(filename, 'w') as fp:
+        commentjson.dump(ocap, fp, indent=4, sort_keys=False)
+    return True
+
+def isCapable(actor: str,ocapGranted: {},capability: str) -> bool:
     # is the given actor capable of using the current resource?
-    for cap in capsJson:
-        if cap['scope'] in actor:
-            if capability in cap['capability']:
+    for id,ocap in ocapGranted.items():
+        if ocap['scope'] in actor:
+            if capability in ocap['capability']:
+                return True
+    return False
+
+def isCapableId(id: str,ocapGranted: {},capability: str) -> bool:
+    # is the given id capable of using the current resource?
+    if ocapGranted.get(id):
+        if ocapGranted['id']['scope'] in actor:
+            if capability in ocapGranted['id']['capability']:
                 return True
     return False

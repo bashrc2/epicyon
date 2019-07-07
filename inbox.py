@@ -65,7 +65,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             return False
     return True
 
-def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],capsList: []) -> bool:
+def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],ocapGranted: {}) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
@@ -76,14 +76,14 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],capsLis
     if domain in actor:
         return True
 
-    if not urlPermitted(actor,federationList,capsList,"inbox:write"):
+    if not urlPermitted(actor,federationList,ocapGranted,"inbox:write"):
         return False
 
     if messageJson['type']!='Follow':
         if messageJson.get('object'):
             if messageJson['object'].get('inReplyTo'):
                 inReplyTo=messageJson['object']['inReplyTo']
-                if not urlPermitted(inReplyTo,federationList,capsList):
+                if not urlPermitted(inReplyTo,federationList,ocapGranted):
                     return False
 
     return True
@@ -144,7 +144,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],capsList: [],debug: bool) -> None:
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapGranted: {},debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
@@ -173,6 +173,57 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             # Load the queue json
             with open(queueFilename, 'r') as fp:
                 queueJson=commentjson.load(fp)
+
+            # check that capabilities are accepted
+            if queueJson['post'].get('capabilities'):
+                if queueJson['post']['type']!='Accept':
+                    if isinstance(queueJson['post']['capabilities'], dict):
+                        if debug:
+                            print('DEBUG: received post capabilities should be a string, not a dict')
+                            pprint(queueJson['post'])
+                        os.remove(queueFilename)
+                        queue.pop(0)
+                        continue
+                    if not queueJson['post'].get('actor'):
+                        if debug:
+                            print('DEBUG: post should have an actor')
+                        os.remove(queueFilename)
+                        queue.pop(0)
+                        continue                
+                    ocapFilename=baseDir+'/ocap/accept/'+queueJson['post']['actor'].replace('/','#')+'.json'
+                    if not os.path.isfile(ocapFilename):
+                        if debug:
+                            print('DEBUG: capabilities for '+queueJson['post']['actor']+' do not exist')
+                        os.remove(queueFilename)
+                        queue.pop(0)
+                        continue                
+                    with open(ocapFilename, 'r') as fp:
+                        oc=commentjson.load(fp)
+                        if not oc.get('id'):
+                            if debug:
+                                print('DEBUG: capabilities for '+queueJson['post']['actor']+' do not contain an id')
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
+                        if oc['id']!=queueJson['post']['capabilities']:
+                            if debug:
+                                print('DEBUG: capabilities id mismatch')
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
+                        if not queueJson['post']['capabilities'].get('capability'):
+                            if debug:
+                                print('DEBUG: missing capability list')
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
+                        if 'inbox:write' not in queueJson['post']['capabilities']['capability']:
+                            if debug:
+                                print('DEBUG: insufficient capabilities to write to inbox from '+ \
+                                      queueJson['post']['actor'])
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue                        
 
             # Try a few times to obtain the public key
             pubKey=None
@@ -232,7 +283,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                     cachedWebfingers,
                                     personCache,
                                     queueJson['post'], \
-                                    federationList,capsList, \
+                                    federationList,ocapGranted, \
                                     debug):
                 if debug:
                     print('DEBUG: Follow accepted from '+keyId)
@@ -246,7 +297,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                    cachedWebfingers,
                                    personCache,
                                    queueJson['post'], \
-                                   federationList,capsList, \
+                                   federationList,ocapGranted, \
                                    debug):
                 if debug:
                     print('DEBUG: Accept/Reject received from '+keyId)

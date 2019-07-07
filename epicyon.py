@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+from capabilities import capabilitiesMakeDirs
 from person import createPerson
 from person import createSharedInbox
 from person import createCapabilitiesInbox
@@ -314,7 +315,7 @@ else:
     if configFederationList:
         federationList=configFederationList
 
-capsList=[]
+ocapGranted={}
 
 if federationList:
     print('Federating with: '+str(federationList))
@@ -334,6 +335,8 @@ if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
     print('Creating capabilities account which can sign requests')
     createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
 
+capabilitiesMakeDirs(baseDir)
+
 if args.testdata:
     nickname='testuser567'
     print('Generating some test data for user: '+nickname)
@@ -342,13 +345,13 @@ if args.testdata:
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     followPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
     followerOfPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,capsList)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,capsList)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,ocapGranted)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,ocapGranted)
 
-runDaemon(baseDir,domain,port,httpPrefix,federationList,capsList,useTor,debug)
+runDaemon(baseDir,domain,port,httpPrefix,federationList,ocapGranted,useTor,debug)

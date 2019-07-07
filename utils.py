@@ -49,9 +49,9 @@ def domainPermitted(domain: str, federationList: []):
         return True
     return False
 
-def urlPermitted(url: str, federationList: [],capsList: [],capability: str):
-    if capsList:
-        if not isCapable(url,capsList,capability):
+def urlPermitted(url: str, federationList: [],ocapGranted: {},capability: str):
+    if ocapGranted:
+        if not isCapable(url,ocapGranted,capability):
             return False            
     if len(federationList)==0:
         return True

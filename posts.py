@@ -153,7 +153,7 @@ def getPersonBox(session,wfRequest: {},personCache: {}, \
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int, \
-             federationList: [], capsList: [],\
+             federationList: [], ocapGranted: {},\
              personCache: {},raw: bool,simple: bool) -> {}:
     personPosts={}
     if not outboxUrl:
@@ -193,7 +193,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
                                 if urlPermitted(tagItem['icon']['url'], \
-                                                federationList,capsList, \
+                                                federationList,ocapGranted, \
                                                 "objects:read"):
                                     emojiName=tagItem['name']
                                     emojiIcon=tagItem['icon']['url']
@@ -217,7 +217,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                 if item['object']['inReplyTo']:
                     # No replies to non-permitted domains
                     if not urlPermitted(item['object']['inReplyTo'], \
-                                        federationList,capsList, \
+                                        federationList,ocapGranted, \
                                         "objects:read"):
                         continue
                     inReplyTo = item['object']['inReplyTo']
@@ -227,7 +227,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
                     if urlPermitted(item['object']['conversation'], \
-                                    federationList,capsList,"objects:read"):  
+                                    federationList,ocapGranted,"objects:read"):  
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -237,7 +237,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             if urlPermitted(attach['url'], \
-                                            federationList,capsList, \
+                                            federationList,ocapGranted, \
                                             "objects:read"):
                                 attachment.append([attach['name'],attach['url']])
 
@@ -319,7 +319,7 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
                    followersOnly: bool, saveToFile: bool, clientToServer: bool, \
-                   capsList: [], \
+                   ocapGranted: {}, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
@@ -335,8 +335,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         postTo=postCC
         postCC=''
     newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
-    # TODO
-    capabilityUrl=''
+    
     sensitive=False
     summary=None
     if subject:
@@ -344,13 +343,24 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         sensitive=True
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
-        if capsList:
-            if not isCapable(actorUrl,capsList,'inbox:write'):
+        if ocapGranted:
+            if not isCapable(actorUrl,ocapGranted,'inbox:write'):
                 return None
+
+        # if capabilities have been granted for this actor
+        # then get the corresponding id
+        capabilityId=None
+        ocapFilename= \
+            baseDir+'/ocap/granted/'+actorUrl.replace('/','#')+'.json'
+        if os.path.isfile(ocapFilename):
+            with open(ocapFilename, 'r') as fp:
+                oc=commentjson.load(fp)
+                if oc.get('id'):
+                    capabilityId=oc['id']
 
         newPost = {
             'id': newPostId+'/activity',
-            'capability': capabilityUrl,
+            'capability': capabilityId,
             'type': 'Create',
             'actor': actorUrl,
             'published': published,
@@ -454,7 +464,7 @@ def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str, \
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
-                     clientToServer: bool, capsList: [],\
+                     clientToServer: bool, ocapGranted: {},\
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
@@ -462,10 +472,10 @@ def createPublicPost(baseDir: str,
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
                           httpPrefix, content, followersOnly, saveToFile, \
-                          clientToServer, capsList, \
+                          clientToServer, ocapGranted, \
                           inReplyTo, inReplyToAtomUri, subject)
 
-def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
+def threadSendPost(session,postJsonObject: {},federationList: [],ocapGranted: {},\
                    inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
                    debug :bool) -> None:
     """Sends a post with exponential backoff
@@ -474,7 +484,7 @@ def threadSendPost(session,postJsonObject: {},federationList: [],capsList: [],\
     backoffTime=60
     for attempt in range(20):
         postResult = postJson(session,postJsonObject,federationList, \
-                              capsList,inboxUrl,signatureHeaderJson, \
+                              ocapGranted,inboxUrl,signatureHeaderJson, \
                               "inbox:write")
         if postResult:
             if debug:
@@ -501,7 +511,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
              httpPrefix: str, content: str, followersOnly: bool, \
              saveToFile: bool, clientToServer: bool, \
-             federationList: [], capsList: [],\
+             federationList: [], ocapGranted: {},\
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
              debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Post to another inbox
@@ -550,7 +560,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
             createPostBase(baseDir,nickname,domain,port, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
-                           capsList, \
+                           ocapGranted, \
                            inReplyTo,inReplyToAtomUri,subject)
 
     # get the senders private key
@@ -574,7 +584,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr = threadWithTrace(target=threadSendPost,args=(session, \
                                                       postJsonObject.copy(), \
                                                       federationList, \
-                                                      capsList, \
+                                                      ocapGranted, \
                                                       inboxUrl,baseDir, \
                                                       signatureHeaderJson.copy(), \
                                                       postLog,
@@ -587,7 +597,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    nickname: str, domain: str, port: int, \
                    toNickname: str, toDomain: str, toPort: int, cc: str, \
                    httpPrefix: str, saveToFile: bool, clientToServer: bool, \
-                   federationList: [], capsList: [], \
+                   federationList: [], ocapGranted: {}, \
                    sendThreads: [], postLog: [], cachedWebfingers: {}, \
                    personCache: {}, debug: bool) -> int:
     """Sends a signed json object to an inbox/outbox
@@ -661,7 +671,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                           args=(session, \
                                 postJsonObject.copy(), \
                                 federationList, \
-                                capsList, \
+                                ocapGranted, \
                                 inboxUrl,baseDir, \
                                 signatureHeaderJson.copy(), \
                                 postLog,
@@ -812,7 +822,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     personCache={}
     cachedWebfingers={}
     federationList=[]
-    capsList=[]
+    ocapGranted={}
 
     httpPrefix='https'
     handle=httpPrefix+"://"+domain+"/@"+nickname
@@ -829,6 +839,6 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxEmoji=10
     maxAttachments=5
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
-                         maxAttachments,federationList,capsList, \
+                         maxAttachments,federationList,ocapGranted, \
                          personCache,raw,simple)
     #print(str(userPosts))
