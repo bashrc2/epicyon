@@ -34,6 +34,50 @@ def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: st
         
     return baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+subdir+'/'+actor.replace('/','#')+'.json'
 
+def CapablePost(postJson: {}, capabilityList: [], debug :bool) -> bool:
+    """Determines whether a post arriving in the inbox
+    should be accepted accoring to the list of capabilities
+    """
+    if postJson.get('type'):
+        # No announces/repeats
+        if postJson['type']=='Announce':
+            if 'inbox:noannounce' in capabilityList:
+                if debug:
+                    print('DEBUG: inbox post rejected because inbox:noannounce')
+                return False
+        # No likes
+        if postJson['type']=='Like':
+            if 'inbox:nolike' in capabilityList:
+                if debug:
+                    print('DEBUG: inbox post rejected because inbox:nolike')
+                return False
+        if postJson['type']=='Create':
+            if postJson.get('object'):
+                # Does this have a reply?
+                if postJson['object'].get('inReplyTo'):
+                    if postJson['object']['inReplyTo']:
+                        if 'inbox:noreply' in capabilityList:
+                            if debug:
+                                print('DEBUG: inbox post rejected because inbox:noreply')
+                            return False
+                # are content warnings enforced?
+                if postJson['object'].get('sensitive'):
+                    if not postJson['object']['sensitive']:
+                        if 'inbox:cw' in capabilityList:
+                            if debug:
+                                print('DEBUG: inbox post rejected because inbox:cw')
+                            return False
+                # content warning must have non-zero summary
+                if postJson['object'].get('summary'):
+                    if len(postJson['object']['summary'])<2:
+                        if 'inbox:cw' in capabilityList:
+                            if debug:
+                                print('DEBUG: inbox post rejected because inbox:cw, summary missing')
+                            return False                        
+    if 'inbox:write' in capabilityList:
+        return True
+    return True
+
 def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
                         requestedActor: str, \
                         requestedCaps=["inbox:write","objects:read"]) -> {}:

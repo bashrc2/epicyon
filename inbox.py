@@ -25,6 +25,7 @@ from cache import getPersonFromCache
 from cache import storePersonInCache
 from acceptreject import receiveAcceptReject
 from capabilities import getOcapFilename
+from capabilities import CapablePost
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -217,7 +218,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                         os.remove(queueFilename)
                         queue.pop(0)
                         continue
-                    if 'inbox:write' not in oc['capability']:
+                    if not CapablePost(queueJson['post'],oc['capability'],debug):
                         if debug:
                             print('DEBUG: insufficient capabilities to write to inbox from '+ \
                                   queueJson['post']['actor'])
