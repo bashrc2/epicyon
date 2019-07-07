@@ -127,10 +127,14 @@ When posts are subsequently sent from the following instance (server-to-server) 
 	       against actor on received post
                               |
                               V
+                Check that stored capability
+		 contains inbox:write, etc
+                              |
+                              V
                       Any other checks
                               |
                               V
-               Accept or reject incoming post		   
+                    Accept incoming post		   
 ```
 
 Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Alice** can interact with **Bob**, for example by adding or removing the ability to like or reply to posts.
