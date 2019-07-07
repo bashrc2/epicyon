@@ -241,7 +241,7 @@ def testPostMessageBetweenServers():
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
-    for i in range(10):
+    for i in range(30):
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
                 break
@@ -315,7 +315,7 @@ def testFollowBetweenServers():
     while not (testServerAliceRunning and testServerBobRunning and testServerEveRunning):
         time.sleep(1)
         ctr+=1
-        if ctr>10:
+        if ctr>30:
             break
     print('Alice online: '+str(testServerAliceRunning))
     print('Bob online: '+str(testServerBobRunning))
