@@ -315,12 +315,12 @@ def testFollowBetweenServers():
     while not (testServerAliceRunning and testServerBobRunning and testServerEveRunning):
         time.sleep(1)
         ctr+=1
-        if ctr>30:
+        if ctr>60:
             break
     print('Alice online: '+str(testServerAliceRunning))
     print('Bob online: '+str(testServerBobRunning))
     print('Eve online: '+str(testServerEveRunning))
-    assert ctr<=30
+    assert ctr<=60
     time.sleep(1)
 
     # In the beginning all was calm and there were no follows
