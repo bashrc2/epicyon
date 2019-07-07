@@ -159,6 +159,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
         print('DEBUG: Inbox queue running')
 
     while True:
+        time.sleep(1)
         if len(queue)>0:
             currSessionTime=int(time.time())
             if currSessionTime-sessionLastUpdate>1200:
@@ -357,4 +358,3 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 # move to the destination inbox
                 os.rename(queueFilename,queueJson['destination'])
             queue.pop(0)
-        time.sleep(2)

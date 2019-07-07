@@ -373,7 +373,7 @@ def testFollowBetweenServers():
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
     eveMessageArrived=False
-    for i in range(20):
+    for i in range(10):
         time.sleep(1)
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>1:
