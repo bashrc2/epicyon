@@ -108,6 +108,9 @@ parser.add_argument("--testsnetwork", type=str2bool, nargs='?', \
 parser.add_argument("--testdata", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Generate some data for testing purposes")
+parser.add_argument("--ocap", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Always strictly enforce object capabilities")
 args = parser.parse_args()
 
 debug=False
@@ -168,6 +171,9 @@ if args.domain:
 if args.port:
     port=args.port
     setConfigParam(baseDir,'port',port)
+ocapAlways=False    
+if args.ocap:
+    ocapAlways=args.ocap
 httpPrefix='https'
 if args.http:
     httpPrefix='http'
@@ -351,4 +357,4 @@ if args.testdata:
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,ocapGranted)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,ocapGranted)
 
-runDaemon(baseDir,domain,port,httpPrefix,federationList,ocapGranted,useTor,debug)
+runDaemon(baseDir,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,debug)

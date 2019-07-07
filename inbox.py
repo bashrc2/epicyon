@@ -147,7 +147,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapGranted: {},debug: bool) -> None:
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,ocapGranted: {},debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
@@ -178,6 +178,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 queueJson=commentjson.load(fp)
 
             # check that capabilities are accepted
+            capabilitiesPassed=False
             if queueJson['post'].get('capabilities'):
                 if queueJson['post']['type']!='Accept':
                     if isinstance(queueJson['post']['capabilities'], dict):
@@ -230,7 +231,25 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                       queueJson['post']['actor'])
                             os.remove(queueFilename)
                             queue.pop(0)
-                            continue                        
+                            continue
+                        if debug:
+                            print('DEBUG: object capabilities check success')
+                        capabilitiesPassed=True
+
+            if ocapAlways and not capabilitiesPassed:
+                # Allow follow types through
+                # i.e. anyone can make a follow request
+                if queueJson['post'].get('type'):
+                    if queueJson['post']['type']=='Follow' or \
+                       queueJson['post']['type']=='Accept':
+                        capabilitiesPassed=True
+                if not capabilitiesPassed:
+                    if debug:
+                        print('DEBUG: object capabilities check failed')
+                        pprint(queueJson['post'])
+                    os.remove(queueFilename)
+                    queue.pop(0)
+                    continue
 
             # Try a few times to obtain the public key
             pubKey=None

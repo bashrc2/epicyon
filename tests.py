@@ -108,7 +108,7 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool):
+def createServerAlice(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool,ocapAlways: bool):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -132,9 +132,9 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],ocapGra
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapGranted,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
 
-def createServerBob(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool):
+def createServerBob(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -158,7 +158,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],ocapGrant
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapGranted,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
@@ -178,16 +178,18 @@ def testPostMessageBetweenServers():
         shutil.rmtree(baseDir+'/.tests')
     os.mkdir(baseDir+'/.tests')
 
+    ocapAlways=False
+    
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,ocapGranted,True,True),daemon=True)
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,ocapGranted,True,True,ocapAlways),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.100'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,True,True),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,True,True,ocapAlways),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -261,16 +263,18 @@ def testFollowBetweenServers():
         shutil.rmtree(baseDir+'/.tests')
     os.mkdir(baseDir+'/.tests')
 
+    ocapAlways=True
+
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.42'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,ocapGranted,False,False),daemon=True)
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,ocapGranted,False,False,ocapAlways),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.64'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,False,False),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,False,False,ocapAlways),daemon=True)
 
     thrAlice.start()
     thrBob.start()
