@@ -33,6 +33,63 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Designed for intermittent connectivity. Assume network disruptions.
  * Suitable for single board computers.
 
+## Object capabilities workflow
+
+This is one proposed way that OCAP could work.
+
+Default capabilities are initially set up when a follow request is made. The Accept activity sent back from a follow request can be received by any instance. A capabilities accept activity is attached to the follow accept.
+
+``` text
+                           Actor A
+                              |
+                              V
+                        Follow Request
+                              |
+                              V
+                           Actor B
+                              |
+                              V
+               Create/store default Capabilities
+	                 for Actor A
+                              |
+                              V
+              Follow Accept + default Capabilities
+                              |
+                              V
+                           Actor A
+                              |
+                              V
+                   Store Granted Capabilities
+```
+
+The default capabilities could be *any preferred policy* of the instance. They could be no capabilities at all, read only or full access to everything.
+
+When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper.
+
+``` text
+                           Actor A
+                              |
+                              V
+                          Send Post
+	     Attach id from Stored Capabilities
+	              granted by Actor B
+                              |
+                              V
+                           Actor B
+                              |
+                              V
+                 Check Capability id matches
+                     stored capabilities
+                              |
+                              V
+               http signature and other checks
+                              |
+                              V
+               Accept or reject incoming post		   
+```
+
+Subsequently **Actor B** could change the stored capabilities for **Actor A** in its database, giving the new object a different id. This could be sent back to **Actor A**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Actor A** can interact with **Actor B**, for example by adding or removing the ability to like or reply to posts.
+
 ## Install
 
 ``` bash
