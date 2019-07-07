@@ -138,11 +138,14 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         return
 
     # are capabilities attached? If so then store them
-    if messageJson['object'].get('capabilities'):
-        if isinstance(messageJson['object']['capabilities'], dict):
+    if messageJson.get('capabilities'):
+        if isinstance(messageJson['capabilities'], dict):
+            acceptedDomainFull=acceptedDomain
+            if acceptedPort:
+                acceptedDomainFull=acceptedDomain+':'+str(acceptedPort)
             capabilitiesGrantedSave(baseDir, \
-                                    followedNickname,followedDomain, \
-                                    messageJson['object']['capabilities'])
+                                    nickname,acceptedDomainFull, \
+                                    messageJson['capabilities'])
 
     if followPerson(baseDir, \
                     nickname,acceptedDomain, \

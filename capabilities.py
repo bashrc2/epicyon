@@ -91,7 +91,8 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     """
     if not ocap.get('actor'):
         return False
-    ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,ocap['actor'],'granted')
+    capabilitiesMakeDirs(baseDir)
+    ocapFilename=getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
     with open(ocapFilename, 'w') as fp:
         commentjson.dump(ocap, fp, indent=4, sort_keys=False)
     return True
