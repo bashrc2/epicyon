@@ -362,9 +362,10 @@ def testFollowBetweenServers():
         time.sleep(1)
 
     actorFollows=getFollowersOfActor(aliceDir,httpPrefix+'://'+bobDomain+':'+str(bobPort)+'/users/bob')
+    print(str(actorFollows))
     assert len(actorFollows)==1
-    print("actorFollows: "+actorFollows[0])
-    assert actorFollows[0]=='alice@'+aliceDomain
+    assert actorFollows[0][0]=='alice@'+aliceDomain
+    assert actorFollows[0][1].startswith(httpPrefix+'://'+bobDomain+':'+str(bobPort)+'/caps/')
         
     print('\n\nEve tries to send to Bob')
     sessionEve = createSession(eveDomain,evePort,useTor)

@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+import commentjson
 from pprint import pprint
 import os
 import sys
@@ -351,15 +352,18 @@ def sendFollowRequest(session,baseDir: str, \
 
 def getFollowersOfActor(baseDir :str,actor :str) -> []:
     """In a shared inbox if we receive a post we know who it's from
-    and if it's addressed to followers then we need to get a list of those
+    and if it's addressed to followers then we need to get a list of those.
+    This returns a list of account handles which follow the given actor
+    and also the corresponding capability id if it exists
     """
     result=[]
+    if ':' not in actor:
+        return result
+    httpPrefix=actor.split(':')[0]
     nickname=getNicknameFromActor(actor)
-    print("nickname: "+nickname)
     if not nickname:
         return result
     domain,port=getDomainFromActor(actor)
-    print("domain: "+domain)
     if not domain:
         return result
     actorHandle=nickname+'@'+domain
@@ -367,12 +371,18 @@ def getFollowersOfActor(baseDir :str,actor :str) -> []:
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for account in dirs:
             if '@' in account and not account.startswith('inbox@'):
-                print("account: "+account)
                 followingFilename = os.path.join(subdir, account)+'/following.txt'
                 if os.path.isfile(followingFilename):
-                    print("followingFilename: "+followingFilename)
-                    print("actorHandle: "+actorHandle)
                     # does this account follow the given actor?
-                    if actorHandle in open(followingFilename).read():                
-                        result.append(account)
+                    if actorHandle in open(followingFilename).read():
+                        ocapFilename=baseDir+'/accounts/'+account+'/ocap/granted/'+httpPrefix+':##'+domain+':'+str(port)+'#users#'+nickname+'.json'
+                        if os.path.isfile(ocapFilename):                        
+                            with open(ocapFilename, 'r') as fp:
+                                ocapJson=commentjson.load(fp)
+                            if ocapJson.get('id'):                                
+                                result.append([account,ocapJson['id']])
+                            else:
+                                result.append([account,None])
+                        else:
+                            result.append([account,None])
     return result
