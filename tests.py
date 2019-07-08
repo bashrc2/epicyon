@@ -360,12 +360,6 @@ def testFollowBetweenServers():
                     if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'):
                         break
         time.sleep(1)
-
-    actorFollows=getFollowersOfActor(aliceDir,httpPrefix+'://'+bobDomain+':'+str(bobPort)+'/users/bob')
-    print(str(actorFollows))
-    assert len(actorFollows)==1
-    assert actorFollows[0][0]=='alice@'+aliceDomain
-    assert actorFollows[0][1].startswith(httpPrefix+'://'+bobDomain+':'+str(bobPort)+'/caps/')
         
     print('\n\nEve tries to send to Bob')
     sessionEve = createSession(eveDomain,evePort,useTor)
@@ -437,7 +431,7 @@ def testFollowBetweenServers():
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     
     os.chdir(baseDir)
-    shutil.rmtree(baseDir+'/.tests')
+    #shutil.rmtree(baseDir+'/.tests')
 
 def testFollowersOfPerson():
     print('testFollowersOfPerson')

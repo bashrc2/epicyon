@@ -149,29 +149,6 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
 
-def postedToFollowers(postJsonObject: {}) -> bool:
-    """Is the given post sent to followers
-    """
-    if postJsonObject.get('object'):
-        if postJsonObject['object'].get('to'):
-            for recipient in postJsonObject['object']['to']:
-                if 'followers' in recipient:
-                    return True
-        if postJsonObject['object'].get('cc'):
-            for recipient in postJsonObject['object']['cc']:
-                if 'followers' in recipient:
-                    return True
-            
-    if postJsonObject.get('to'):
-        for recipient in postJsonObject['to']:
-            if 'followers' in recipient:
-                return True
-    if postJsonObject.get('cc'):
-        for recipient in postJsonObject['cc']:
-            if 'followers' in recipient:
-                return True
-    return False
-
 def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
                            actor: str,queue: [],queueJson: {}, \
                            capabilityId: str,debug : bool) -> bool:
@@ -225,6 +202,103 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
         print('DEBUG: object capabilities check success')
     return True
 
+def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
+                           recipientsDict :{}, \
+                           domainMatch: str,domain :str, \
+                           actor :str) -> bool:
+    """Given a list of post recipients (toList) from 'to' or 'cc' parameters
+    populate a recipientsDict with the handle and capabilities id for each
+    """
+    followerRecipients=False
+    for recipient in toList:
+        # is this a to a local account?
+        if domainMatch in recipient:
+            # get the handle for the local account
+            nickname=recipient.split(domainMatch)[1]
+            handle=nickname+'@'+domain
+            if os.path.isdir(baseDir+'/accounts/'+handle):
+                # are capabilities granted for this account to the
+                # sender (actor) of the post?
+                ocapFilename=baseDir+'/accounts/'+handle+'/ocap/accept/'+actor.replace('/','#')+'.json'
+                if os.path.isfile(ocapFilename):
+                    # read the granted capabilities and obtain the id
+                    with open(ocapFilename, 'r') as fp:
+                        ocapJson=commentjson.load(fp)
+                        if ocapJson.get('id'):
+                            # append with the capabilities id
+                            recipientsDict[handle]=ocapJson['id']
+                        else:
+                            recipientsDict[handle]=None
+                else:
+                    recipientsDict[handle]=None
+        if recipient.endswith('followers'):
+            followerRecipients=True
+    return followerRecipients,recipientsDict
+
+def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int) -> []:
+    recipientsDict={}
+
+    if not postJsonObject.get('actor'):
+        return recipientsDict
+
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    domainBase=domain
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+    domainMatch='/'+domain+'/users/'
+
+    actor = postJsonObject['actor']
+    # first get any specific people which the post is addressed to
+    
+    followerRecipients=False
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('to'):
+                includesFollowers,recipientsDict= \
+                    inboxPostRecipientsAdd(baseDir,httpPrefix, \
+                                           postJsonObject['object']['to'], \
+                                           recipientsDict, \
+                                           domainMatch,domainBase,actor)
+                if includesFollowers:
+                    followerRecipients=True
+
+            if postJsonObject['object'].get('cc'):
+                includesFollowers,recipientsDict= \
+                    inboxPostRecipientsAdd(baseDir,httpPrefix, \
+                                           postJsonObject['object']['cc'], \
+                                           recipientsDict, \
+                                           domainMatch,domainBase,actor)
+                if includesFollowers:
+                    followerRecipients=True
+
+    if postJsonObject.get('to'):
+        includesFollowers,recipientsDict= \
+            inboxPostRecipientsAdd(baseDir,httpPrefix, \
+                                   postJsonObject['to'], \
+                                   recipientsDict, \
+                                   domainMatch,domainBase,actor)
+        if includesFollowers:
+            followerRecipients=True
+
+    if postJsonObject.get('cc'):
+        includesFollowers,recipientsDict= \
+            inboxPostRecipientsAdd(baseDir,httpPrefix, \
+                                   postJsonObject['cc'], \
+                                   recipientsDict, \
+                                   domainMatch,domainBase,actor)
+        if includesFollowers:
+            followerRecipients=True
+
+    if not followerRecipients:
+        return recipientsDict
+
+    # now resolve the followers
+    recipientsDict= \
+        getFollowersOfActor(baseDir,actor,recipientsDict)
+
+    return recipientsDict
+
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,ocapGranted: {},debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -256,11 +330,19 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             with open(queueFilename, 'r') as fp:
                 queueJson=commentjson.load(fp)
 
+            # get recipients list
+            recipientsDict=inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port)
+
+            print('*************************************')
+            print('Resolved recipients list:')
+            pprint(recipientsDict)
+            print('*************************************')
+
             sentToSharedInbox=False
             followerOcap=[]
             if queueJson['post'].get('actor'):
                 # get the followers of this actor and their capabilities ids
-                followerOcap=getFollowersOfActor(baseDir,queueJson['post']['actor'])
+                #followerOcap=getFollowersOfActor(baseDir,queueJson['post']['actor'])
 
                 if queueJson['post']['actor'].endswith('/inbox'):
                     sentToSharedInbox=True

@@ -350,22 +350,21 @@ def sendFollowRequest(session,baseDir: str, \
 
     return newFollowJson
 
-def getFollowersOfActor(baseDir :str,actor :str) -> []:
+def getFollowersOfActor(baseDir :str,actor :str,recipientsDict: {}) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
     This returns a list of account handles which follow the given actor
     and also the corresponding capability id if it exists
     """
-    result=[]
     if ':' not in actor:
-        return result
+        return recipientsDict
     httpPrefix=actor.split(':')[0]
     nickname=getNicknameFromActor(actor)
     if not nickname:
-        return result
+        return recipientsDict
     domain,port=getDomainFromActor(actor)
     if not domain:
-        return result
+        return recipientsDict
     actorHandle=nickname+'@'+domain
     # for each of the accounts
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
@@ -375,14 +374,14 @@ def getFollowersOfActor(baseDir :str,actor :str) -> []:
                 if os.path.isfile(followingFilename):
                     # does this account follow the given actor?
                     if actorHandle in open(followingFilename).read():
-                        ocapFilename=baseDir+'/accounts/'+account+'/ocap/granted/'+httpPrefix+':##'+domain+':'+str(port)+'#users#'+nickname+'.json'
+                        ocapFilename=baseDir+'/accounts/'+account+'/ocap/accept/'+httpPrefix+':##'+domain+':'+str(port)+'#users#'+nickname+'.json'
                         if os.path.isfile(ocapFilename):                        
                             with open(ocapFilename, 'r') as fp:
                                 ocapJson=commentjson.load(fp)
                             if ocapJson.get('id'):                                
-                                result.append([account,ocapJson['id']])
+                                recipientsDict[account]=ocapJson['id']
                             else:
-                                result.append([account,None])
+                                recipientsDict[account]=None
                         else:
-                            result.append([account,None])
-    return result
+                            recipientsDict[account]=None
+    return recipientsDict
