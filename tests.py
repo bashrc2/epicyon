@@ -399,11 +399,11 @@ def testFollowBetweenServers():
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
-    aliceMessageArrived=False
+    aliceMessageArrived=False    
     for i in range(20):
         time.sleep(1)
         if os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>1:
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
                 aliceMessageArrived=True
                 print('Alice message sent to Bob!')
                 break
@@ -431,7 +431,7 @@ def testFollowBetweenServers():
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     
     os.chdir(baseDir)
-    #shutil.rmtree(baseDir+'/.tests')
+    shutil.rmtree(baseDir+'/.tests')
 
 def testFollowersOfPerson():
     print('testFollowersOfPerson')

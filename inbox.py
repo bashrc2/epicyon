@@ -306,6 +306,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
     currSessionTime=int(time.time())
     sessionLastUpdate=currSessionTime
     session=createSession(domain,port,useTor)
+    inboxHandle='inbox@'+domain
     if debug:
         print('DEBUG: Inbox queue running')
 
@@ -418,83 +419,40 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             pprint(recipientsDict)
             print('*************************************')
 
-            # is this sent to the shared inbox? (actor is the 'inbox' account)
-            sentToSharedInbox=False
-            if queueJson['post'].get('actor'):
-                if queueJson['post']['actor'].endswith('/inbox'):
-                    sentToSharedInbox=True
-
-            if sentToSharedInbox:
-                # if this is arriving at the shared inbox then
-                # don't do the capabilities checks
-                capabilitiesPassed=True
-                # TODO how to handle capabilities in the shared inbox scenario?
-                # should 'capability' be a list instead of a single value?
-            else:
-                # check that capabilities are accepted            
-                capabilitiesPassed=False
-                if queueJson['post'].get('capability'):
-                    if not isinstance(queueJson['post']['capability'], list):
-                        if debug:
-                            print('DEBUG: capability on post should be a list')
-                        os.remove(queueFilename)
-                        queue.pop(0)
-                        continue
-                    capabilityIdList=queueJson['post']['capability']
-
-                    if capabilityIdList:
-                        capabilitiesPassed= \
-                            inboxCheckCapabilities(baseDir,queueJson['nickname'], \
-                                                   queueJson['domain'], \
-                                                   queueJson['post']['actor'], \
-                                                   queue,queueJson, \
-                                                   capabilityIdList[0],debug)
-
-            if ocapAlways and not capabilitiesPassed:
-                # Allow follow types through
-                # i.e. anyone can make a follow request
-                if queueJson['post'].get('type'):
-                    if queueJson['post']['type']=='Follow' or \
-                       queueJson['post']['type']=='Accept':
-                        capabilitiesPassed=True
-                if not capabilitiesPassed:
+            if queueJson['post'].get('capability'):
+                if not isinstance(queueJson['post']['capability'], list):
                     if debug:
-                        print('DEBUG: object capabilities check failed')
-                        pprint(queueJson['post'])
+                        print('DEBUG: capability on post should be a list')
                     os.remove(queueFilename)
                     queue.pop(0)
                     continue
             
+            for handle,capsId in recipientsDict.items():
+                    
+                # check that capabilities are accepted            
+                if queueJson['post'].get('capability'):
+                    capabilityIdList=queueJson['post']['capability']
+                    # does the capability id list within the post contain the id
+                    # of one of the recipients?
+                    if capsId in capabilityIdList:
+                        if debug:
+                            print('DEBUG: object capabilities passed')
+                            print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
+                        copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                    else:
+                        if debug:
+                            print('DEBUG: object capabilities check failed')
+                            pprint(queueJson['post'])
+                else:
+                    if not ocapAlways:
+                        if debug:
+                            print('DEBUG: not enforcing object capabilities')
+                            print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
+                        copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                        continue
+            
             if debug:
                 print('DEBUG: Queue post accepted')
 
-            if queueJson['sharedInbox']:
-                if '/users/' in keyId:
-                    # Who is this from? Use the actor from the keyId where we obtained the public key
-                    fromList=keyId.replace('https://','').replace('http://','').replace('dat://','').replace('#main-key','').split('/users/')
-                    fromNickname=fromList[1]
-                    fromDomain=fromList[0]
-                    # get the followers of the sender
-                    followList=getFollowersOfPerson(baseDir,fromNickname,fromDomain)
-                    for followerHandle in followList:
-                        followerDir=baseDir+'/accounts/'+followerHandle
-                        if os.path.isdir(followerDir):                        
-                            if not os.path.isdir(followerDir+'/inbox'):
-                                os.mkdir(followerDir+'/inbox')
-                                postId=queueJson['post']['id'].replace('/activity','')
-                                destination=followerDir+'/inbox/'+postId.replace('/','#')+'.json'
-                                if os.path.isfile(destination):
-                                    # post already exists in this person's inbox
-                                    continue
-                                # We could do this in a more storage space efficient way
-                                # by linking to the inbox of inbox@domain
-                                # However, this allows for easy deletion by individuals
-                                # without affecting any other people
-                                copyfile(queueFilename, destination)
-                # copy to followers
-                # remove item from shared inbox
-                os.remove(queueFilename)
-            else:
-                # move to the destination inbox
-                os.rename(queueFilename,queueJson['destination'])
+            os.remove(queueFilename)
             queue.pop(0)
