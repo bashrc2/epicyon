@@ -338,12 +338,9 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             pprint(recipientsDict)
             print('*************************************')
 
+            # is this sent to the shared inbox? (actor is the 'inbox' account)
             sentToSharedInbox=False
-            followerOcap=[]
             if queueJson['post'].get('actor'):
-                # get the followers of this actor and their capabilities ids
-                #followerOcap=getFollowersOfActor(baseDir,queueJson['post']['actor'])
-
                 if queueJson['post']['actor'].endswith('/inbox'):
                     sentToSharedInbox=True
 
