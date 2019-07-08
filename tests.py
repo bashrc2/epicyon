@@ -33,6 +33,7 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
 from follow import sendFollowRequest
+from follow import getFollowersOfActor
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
@@ -360,6 +361,11 @@ def testFollowBetweenServers():
                         break
         time.sleep(1)
 
+    actorFollows=getFollowersOfActor(aliceDir,httpPrefix+'://'+bobDomain+':'+str(bobPort)+'/users/bob')
+    assert len(actorFollows)==1
+    print("actorFollows: "+actorFollows[0])
+    assert actorFollows[0]=='alice@'+aliceDomain
+        
     print('\n\nEve tries to send to Bob')
     sessionEve = createSession(eveDomain,evePort,useTor)
     eveSendThreads = []

@@ -348,3 +348,31 @@ def sendFollowRequest(session,baseDir: str, \
                    sendThreads,postLog,cachedWebfingers,personCache, debug)
 
     return newFollowJson
+
+def getFollowersOfActor(baseDir :str,actor :str) -> []:
+    """In a shared inbox if we receive a post we know who it's from
+    and if it's addressed to followers then we need to get a list of those
+    """
+    result=[]
+    nickname=getNicknameFromActor(actor)
+    print("nickname: "+nickname)
+    if not nickname:
+        return result
+    domain,port=getDomainFromActor(actor)
+    print("domain: "+domain)
+    if not domain:
+        return result
+    actorHandle=nickname+'@'+domain
+    # for each of the accounts
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            if '@' in account and not account.startswith('inbox@'):
+                print("account: "+account)
+                followingFilename = os.path.join(subdir, account)+'/following.txt'
+                if os.path.isfile(followingFilename):
+                    print("followingFilename: "+followingFilename)
+                    print("actorHandle: "+actorHandle)
+                    # does this account follow the given actor?
+                    if actorHandle in open(followingFilename).read():                
+                        result.append(account)
+    return result
