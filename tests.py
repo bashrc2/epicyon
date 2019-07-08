@@ -24,6 +24,7 @@ from posts import createPublicPost
 from posts import sendPost
 from posts import archivePosts
 from posts import noOfFollowersOnDomain
+from posts import groupFollowersByDomain
 from follow import clearFollows
 from follow import clearFollowers
 from utils import followPerson
@@ -510,6 +511,44 @@ def testNoOfFollowersOnDomain():
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
+def testGroupFollowers():
+    print('testGroupFollowers')
+
+    currDir=os.getcwd()
+    nickname='test735'
+    domain='mydomain.com'
+    password='somepass'
+    port=80
+    httpPrefix='https'
+    federationList=[]
+    baseDir=currDir+'/.tests_testgroupfollowers'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)    
+    createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
+
+    clearFollowers(baseDir,nickname,domain)
+    followerOfPerson(baseDir,nickname,domain,'badger','wild.domain',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'squirrel','wild.domain',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'rodent','wild.domain',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'utterly','clutterly.domain',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'zonked','zzz.domain',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'nap','zzz.domain',federationList,False)
+
+    grouped=groupFollowersByDomain(baseDir,nickname,domain)
+    assert len(grouped.items())==3
+    assert grouped.get('zzz.domain')
+    assert grouped.get('clutterly.domain')
+    assert grouped.get('wild.domain')
+    assert len(grouped['zzz.domain'])==2
+    assert len(grouped['wild.domain'])==3
+    assert len(grouped['clutterly.domain'])==1
+    
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+
+    
 def testFollows():
     print('testFollows')
     currDir=os.getcwd()
@@ -641,5 +680,6 @@ def runAllTests():
     testAuthentication()
     testFollowersOfPerson()
     testNoOfFollowersOnDomain()
-    testFollows()    
+    testFollows()
+    testGroupFollowers()
     print('Tests succeeded\n')        

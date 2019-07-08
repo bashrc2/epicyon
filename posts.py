@@ -596,6 +596,25 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
+def groupFollowersByDomain(baseDir :str,nickname :str,domain :str) -> {}:
+    """Returns a dictionary with followers grouped by domain
+    """
+    handle=nickname+'@'+domain
+    followersFilename=baseDir+'/accounts/'+handle+'/followers.txt'
+    if not os.path.isfile(followersFilename):
+        return None
+    grouped={}
+    with open(followersFilename, "r") as f:
+        for followerHandle in f:
+            if '@' in followerHandle:
+                fHandle=followerHandle.strip().replace('\n','')
+                followerDomain=fHandle.split('@')[1]
+                if not grouped.get(followerDomain):
+                    grouped[followerDomain]=[fHandle]
+                else:
+                    grouped[followerDomain].append(fHandle)
+    return grouped
+    
 def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    nickname: str, domain: str, port: int, \
                    toNickname: str, toDomain: str, toPort: int, cc: str, \
