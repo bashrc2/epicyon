@@ -20,6 +20,7 @@ from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
 from follow import receiveFollowRequest
+from follow import getFollowersOfActor
 from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
@@ -148,6 +149,82 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
     return filename
 
+def postedToFollowers(postJsonObject: {}) -> bool:
+    """Is the given post sent to followers
+    """
+    if postJsonObject.get('object'):
+        if postJsonObject['object'].get('to'):
+            for recipient in postJsonObject['object']['to']:
+                if 'followers' in recipient:
+                    return True
+        if postJsonObject['object'].get('cc'):
+            for recipient in postJsonObject['object']['cc']:
+                if 'followers' in recipient:
+                    return True
+            
+    if postJsonObject.get('to'):
+        for recipient in postJsonObject['to']:
+            if 'followers' in recipient:
+                return True
+    if postJsonObject.get('cc'):
+        for recipient in postJsonObject['cc']:
+            if 'followers' in recipient:
+                return True
+    return False
+
+def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
+                           actor: str,queue: [],queueJson: {}, \
+                           capabilityId: str,debug : bool) -> bool:
+    if nickname=='inbox':
+        return True
+
+    ocapFilename= \
+        getOcapFilename(baseDir, \
+                        queueJson['nickname'],queueJson['domain'], \
+                        actor,'accept')
+    if not os.path.isfile(ocapFilename):
+        if debug:
+            print('DEBUG: capabilities for '+ \
+                  actor+' do not exist')
+            os.remove(queueFilename)
+            queue.pop(0)
+            return False
+
+    with open(ocapFilename, 'r') as fp:
+        oc=commentjson.load(fp)
+
+    if not oc.get('id'):
+        if debug:
+            print('DEBUG: capabilities for '+actor+' do not contain an id')
+        os.remove(queueFilename)
+        queue.pop(0)
+        return False
+
+    if oc['id']!=capabilityId:
+        if debug:
+            print('DEBUG: capability id mismatch')
+        os.remove(queueFilename)
+        queue.pop(0)
+        return False
+
+    if not oc.get('capability'):
+        if debug:
+            print('DEBUG: missing capability list')
+        os.remove(queueFilename)
+        queue.pop(0)
+        return False
+
+    if not CapablePost(queueJson['post'],oc['capability'],debug):
+        if debug:
+            print('DEBUG: insufficient capabilities to write to inbox from '+actor)
+        os.remove(queueFilename)
+        queue.pop(0)
+        return False
+
+    if debug:
+        print('DEBUG: object capabilities check success')
+    return True
+
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,ocapGranted: {},debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -180,7 +257,11 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 queueJson=commentjson.load(fp)
 
             sentToSharedInbox=False
+            followerOcap=[]
             if queueJson['post'].get('actor'):
+                # get the followers of this actor and their capabilities ids
+                followerOcap=getFollowersOfActor(baseDir,queueJson['post']['actor'])
+
                 if queueJson['post']['actor'].endswith('/inbox'):
                     sentToSharedInbox=True
 
@@ -201,48 +282,14 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                         queue.pop(0)
                         continue
                     capabilityIdList=queueJson['post']['capability']
-                    
-                    ocapFilename= \
-                        getOcapFilename(baseDir, \
-                                        queueJson['nickname'],queueJson['domain'], \
-                                        queueJson['post']['actor'],'accept')
-                    if not os.path.isfile(ocapFilename):
-                        if debug:
-                            print('DEBUG: capabilities for '+ \
-                                  queueJson['post']['actor']+' do not exist')
-                        os.remove(queueFilename)
-                        queue.pop(0)
-                        continue                
-                    with open(ocapFilename, 'r') as fp:
-                        oc=commentjson.load(fp)
-                        if not oc.get('id'):
-                            if debug:
-                                print('DEBUG: capabilities for '+queueJson['post']['actor']+' do not contain an id')
-                            os.remove(queueFilename)
-                            queue.pop(0)
-                            continue
-                        if oc['id']!=capabilityIdList[0]:
-                            if debug:
-                                print('DEBUG: capability id mismatch')
-                            os.remove(queueFilename)
-                            queue.pop(0)
-                            continue
-                        if not oc.get('capability'):
-                            if debug:
-                                print('DEBUG: missing capability list')
-                            os.remove(queueFilename)
-                            queue.pop(0)
-                            continue
-                        if not CapablePost(queueJson['post'],oc['capability'],debug):
-                            if debug:
-                                print('DEBUG: insufficient capabilities to write to inbox from '+ \
-                                      queueJson['post']['actor'])
-                            os.remove(queueFilename)
-                            queue.pop(0)
-                            continue
-                        if debug:
-                            print('DEBUG: object capabilities check success')
-                        capabilitiesPassed=True
+
+                    if capabilityIdList:
+                        capabilitiesPassed= \
+                            inboxCheckCapabilities(baseDir,queueJson['nickname'], \
+                                                   queueJson['domain'], \
+                                                   queueJson['post']['actor'], \
+                                                   queue,queueJson, \
+                                                   capabilityIdList[0],debug)
 
             if ocapAlways and not capabilitiesPassed:
                 # Allow follow types through
