@@ -491,7 +491,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                if self._updateInboxQueue('sharedinbox',messageJson):
+                if self._updateInboxQueue('inbox',messageJson):
                     return
         self.send_response(200)
         self.end_headers()

@@ -33,7 +33,7 @@ def getFollowersOfPerson(baseDir: str, \
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for account in dirs:
             filename = os.path.join(subdir, account)+'/'+followFile
-            if account == handle or account.startswith('sharedinbox@'):
+            if account == handle or account.startswith('inbox@'):
                 continue
             if not os.path.isfile(filename):
                 continue

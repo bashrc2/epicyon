@@ -124,7 +124,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
 
     sharedInboxItem=False
-    if nickname=='sharedinbox':
+    if nickname=='inbox':
         sharedInboxItem=True
         
     newQueueItem = {
@@ -179,56 +179,70 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             with open(queueFilename, 'r') as fp:
                 queueJson=commentjson.load(fp)
 
-            # check that capabilities are accepted
-            capabilitiesPassed=False
-            if queueJson['post'].get('capability'):
-                if isinstance(queueJson['post']['capability'], dict):
-                    if debug:
-                        print('DEBUG: capability is a dictionary when it should be a string')
-                    os.remove(queueFilename)
-                    queue.pop(0)
-                    continue
-                ocapFilename= \
-                    getOcapFilename(baseDir, \
-                                    queueJson['nickname'],queueJson['domain'], \
-                                    queueJson['post']['actor'],'accept')
-                if not os.path.isfile(ocapFilename):
-                    if debug:
-                        print('DEBUG: capabilities for '+ \
-                              queueJson['post']['actor']+' do not exist')
-                    os.remove(queueFilename)
-                    queue.pop(0)
-                    continue                
-                with open(ocapFilename, 'r') as fp:
-                    oc=commentjson.load(fp)
-                    if not oc.get('id'):
+            sentToSharedInbox=False
+            if queueJson['post'].get('actor'):
+                if queueJson['post']['actor'].endswith('/inbox'):
+                    sentToSharedInbox=True
+
+            if sentToSharedInbox:
+                # if this is arriving at the shared inbox then
+                # don't do the capabilities checks
+                capabilitiesPassed=True
+                # TODO how to handle capabilities in the shared inbox scenario?
+                # should 'capability' be a list instead of a single value?
+            else:
+                # check that capabilities are accepted            
+                capabilitiesPassed=False
+                if queueJson['post'].get('capability'):
+                    if not isinstance(queueJson['post']['capability'], list):
                         if debug:
-                            print('DEBUG: capabilities for '+queueJson['post']['actor']+' do not contain an id')
+                            print('DEBUG: capability on post should be a list')
                         os.remove(queueFilename)
                         queue.pop(0)
                         continue
-                    if oc['id']!=queueJson['post']['capability']:
+                    capabilityIdList=queueJson['post']['capability']
+                    
+                    ocapFilename= \
+                        getOcapFilename(baseDir, \
+                                        queueJson['nickname'],queueJson['domain'], \
+                                        queueJson['post']['actor'],'accept')
+                    if not os.path.isfile(ocapFilename):
                         if debug:
-                            print('DEBUG: capability id mismatch')
+                            print('DEBUG: capabilities for '+ \
+                                  queueJson['post']['actor']+' do not exist')
                         os.remove(queueFilename)
                         queue.pop(0)
-                        continue
-                    if not oc.get('capability'):
+                        continue                
+                    with open(ocapFilename, 'r') as fp:
+                        oc=commentjson.load(fp)
+                        if not oc.get('id'):
+                            if debug:
+                                print('DEBUG: capabilities for '+queueJson['post']['actor']+' do not contain an id')
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
+                        if oc['id']!=capabilityIdList[0]:
+                            if debug:
+                                print('DEBUG: capability id mismatch')
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
+                        if not oc.get('capability'):
+                            if debug:
+                                print('DEBUG: missing capability list')
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
+                        if not CapablePost(queueJson['post'],oc['capability'],debug):
+                            if debug:
+                                print('DEBUG: insufficient capabilities to write to inbox from '+ \
+                                      queueJson['post']['actor'])
+                            os.remove(queueFilename)
+                            queue.pop(0)
+                            continue
                         if debug:
-                            print('DEBUG: missing capability list')
-                        os.remove(queueFilename)
-                        queue.pop(0)
-                        continue
-                    if not CapablePost(queueJson['post'],oc['capability'],debug):
-                        if debug:
-                            print('DEBUG: insufficient capabilities to write to inbox from '+ \
-                                  queueJson['post']['actor'])
-                        os.remove(queueFilename)
-                        queue.pop(0)
-                        continue
-                    if debug:
-                        print('DEBUG: object capabilities check success')
-                    capabilitiesPassed=True
+                            print('DEBUG: object capabilities check success')
+                        capabilitiesPassed=True
 
             if ocapAlways and not capabilitiesPassed:
                 # Allow follow types through
@@ -347,7 +361,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                     # post already exists in this person's inbox
                                     continue
                                 # We could do this in a more storage space efficient way
-                                # by linking to the inbox of sharedinbox@domain
+                                # by linking to the inbox of inbox@domain
                                 # However, this allows for easy deletion by individuals
                                 # without affecting any other people
                                 copyfile(queueFilename, destination)

@@ -351,19 +351,17 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         # if capabilities have been granted for this actor
         # then get the corresponding id
         capabilityId=None
-        ocapFilename= getOcapFilename(baseDir,nickname,domain,toUrl,'granted')
-        #print('ocapFilename: '+ocapFilename)
+        capabilityIdList=[]
+        ocapFilename=getOcapFilename(baseDir,nickname,domain,toUrl,'granted')
         if os.path.isfile(ocapFilename):
             with open(ocapFilename, 'r') as fp:
                 oc=commentjson.load(fp)
                 if oc.get('id'):
-                    capabilityId=oc['id']
-        #else:
-        #    print('ocapFilename: '+ocapFilename+' not found')
+                    capabilityIdList=[oc['id']]
 
         newPost = {
             'id': newPostId+'/activity',
-            'capability': capabilityId,
+            'capability': capabilityIdList,
             'type': 'Create',
             'actor': actorUrl,
             'published': published,
@@ -463,6 +461,32 @@ def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str, \
     newPost['object']['atomUri']= \
         httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     return newPost
+
+def postIsAddressedToFollowers(baseDir: str,
+                               nickname: str, domain: str, port: int,httpPrefix: str,
+                               postJson: {}) -> bool:
+    """Returns true if the given post is addressed to followers of the nickname
+    """
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+
+    if not postJson.get('object'):
+        return False
+    if not postJson['object'].get('to'):
+        return False
+        
+    followersUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
+
+    # does the followers url exist in 'to' or 'cc' lists?
+    addressedToFollowers=False
+    if followersUrl in postJson['object']['to']:
+        addressedToFollowers=True
+    if not addressedToFollowers:
+        if not postJson['object'].get('cc'):
+            return False
+        if followersUrl in postJson['object']['cc']:
+            addressedToFollowers=True
+    return addressedToFollowers
 
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
@@ -626,6 +650,10 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     """
     withDigest=True
 
+    sharedInbox=False
+    if toNickname=='inbox':
+        sharedInbox=True
+    
     if toPort!=80 and toPort!=443:
         if ':' not in toDomain:
             toDomain=toDomain+':'+str(toPort)        
@@ -633,7 +661,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for '+handle+' failed')
@@ -645,18 +673,16 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         postToBox='outbox'
     
     # get the actor inbox/outbox/capabilities for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition = \
         getPersonBox(session,wfRequest,personCache,postToBox)
 
-    # If there are more than one followers on the target domain
-    # then send to teh shared inbox indead of the individual inbox
     if nickname=='capabilities':
         inboxUrl=capabilityAcquisition
         if not capabilityAcquisition:
             return 2
     else:
-        if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
-            inboxUrl=sharedInbox
+        if sharedInbox and sharedInboxUrl:        
+            inboxUrl=sharedInboxUrl
 
     if debug:
         print('DEBUG: Sending to endpoint '+inboxUrl)
@@ -701,6 +727,40 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     sendThreads.append(thr)
     thr.start()
     return 0
+
+def sendToFollowers(session,baseDir: str,
+                    nickname: str, domain: str, port: int,httpPrefix: str,
+                    postJsonObject: {}):
+    """sends a post to the followers of the given nickname
+    """
+    if not postIsAddressedToFollowers(baseDir,nickname,domain, \
+                                      port,httpPrefix,postJsonObject):
+        return
+
+    grouped=groupFollowersByDomain(baseDir,nickname,domain)
+    if not grouped:
+        return
+
+    # for each instance
+    for followerDomain,followerHandles in grouped.items():
+        toPort=port
+        index=0
+        toDomain=followerHandles[index].split('@')[1]
+        if ':' in toDomain:
+            toPort=toDomain.split(':')[1]
+            toDomain=toDomain.split(':')[0]
+        toNickname=followerHandles[index].split('@')[0]
+        cc=''
+        if len(followerHandles)>1:
+            nickname='inbox'
+            toNickname='inbox'
+        sendSignedJson(postJsonObject,session,baseDir, \
+                       nickname,domain,port, \
+                       toNickname,toDomain,toPort, \
+                       cc,httpPrefix,True,clientToServer, \
+                       federationList,ocapGranted, \
+                       sendThreads,postLog,cachedWebfingers, \
+                       personCache,debug)
 
 def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:

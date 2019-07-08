@@ -140,7 +140,7 @@ def validNickname(nickname: str) -> bool:
     for c in forbiddenChars:
         if c in nickname:
             return False
-    reservedNames=['inbox','outbox','following','followers','sharedinbox','capabilities']
+    reservedNames=['inbox','outbox','following','followers','capabilities']
     if nickname in reservedNames:
         return False
     return True

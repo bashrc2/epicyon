@@ -102,7 +102,7 @@ Follow Accept from **Bob** to **Alice** with attached capabilities.
  'type': 'Accept'}
 ```
 
-When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. In the above example that would be **http://bobdomain.net/caps/rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ**. It should contain a random string which is hard to guess by brute force methods.
+When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. To handle the *shared inbox* scenario this should be a list rather than a single string. In the above example that would be *['http://bobdomain.net/caps/rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ']*. It should contain a random string which is hard to guess by brute force methods.
 
 ``` text
                             Alice
@@ -140,6 +140,12 @@ When posts are subsequently sent from the following instance (server-to-server) 
 Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Alice** can interact with **Bob**, for example by adding or removing the ability to like or reply to posts.
 
 Object capabilities can be strictly enforced by adding the **--ocap** option when running the server. The only activities which it is not enforced upon are **Follow** and **Accept**. Anyone can create a follow request or accept updated capabilities.
+
+## Object capabilities in the shared inbox scenario
+
+Shared inboxes are obviously essential for any kind of scalability, otherwise there would be vast amounts of duplicated messages being dumped onto the intertubes like a big truck.
+
+With the shared inbox instead of sending from Alice to 500 of her fans on a different instance - repeatedly sending the same message to individual inboxes - a single message is sent to its shared inbox (which has its own special account called 'inbox') and it then decides how to distribute that. If a list of capability ids is attached to the message which gets sent to the shared inbox then the receiving server can use that.
 
 ## Some capabilities
 
