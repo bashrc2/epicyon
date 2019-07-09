@@ -347,7 +347,7 @@ def receiveUpdate(session,baseDir: str, \
                 return True            
     return False
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool) -> None:
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
@@ -438,7 +438,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                     personCache,
                                     queueJson['post'], \
                                     federationList, \
-                                    debug):
+                                    debug, \
+                                    acceptedCaps=["inbox:write","objects:read"]):
                 if debug:
                     print('DEBUG: Follow accepted from '+keyId)
                 os.remove(queueFilename)

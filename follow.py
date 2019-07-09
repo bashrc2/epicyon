@@ -221,7 +221,8 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                          port: int,sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
                          messageJson: {},federationList: [], \
-                         debug : bool) -> bool:
+                         debug : bool, \
+                         acceptedCaps=["inbox:write","objects:read"]) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -283,7 +284,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList, \
                             nicknameToFollow,domainToFollow,port, \
-                            personUrl,'',httpPrefix,messageJson)
+                            personUrl,'',httpPrefix,messageJson,acceptedCaps)
     if debug:
         pprint(acceptJson)
         print('DEBUG: sending follow Accept from '+ \

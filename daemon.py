@@ -497,7 +497,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy=False
 
 def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
-              fedList=[],ocapAlways=False, \
+              fedList=[],noreply=False,nolike=False,ocapAlways=False, \
               useTor=False,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
@@ -528,6 +528,11 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
     httpd.sendThreads=[]
     httpd.postLog=[]
     httpd.ocapAlways=ocapAlways
+    httpd.acceptedCaps=["inbox:write","objects:read"]
+    if noreply:
+        httpd.acceptedCaps.append('inbox:noreply')
+    if nolike:
+        httpd.acceptedCaps.append('inbox:nolike')
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.thrInboxQueue= \
         threadWithTrace(target=runInboxQueue, \
@@ -536,6 +541,6 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
                               httpd.personCache,httpd.inboxQueue, \
                               domain,port,useTor,httpd.federationList, \
                               httpd.ocapAlways, \
-                              debug),daemon=True)
+                              debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
     httpd.serve_forever()

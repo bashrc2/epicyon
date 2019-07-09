@@ -117,6 +117,12 @@ parser.add_argument("--testdata", type=str2bool, nargs='?', \
 parser.add_argument("--ocap", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Always strictly enforce object capabilities")
+parser.add_argument("--noreply", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Default capabilities don't allow replies on posts")
+parser.add_argument("--nolike", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Default capabilities don't allow likes/favourites on posts")
 args = parser.parse_args()
 
 debug=False
@@ -410,4 +416,4 @@ if args.testdata:
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False)
 
-runDaemon(baseDir,domain,port,httpPrefix,federationList,ocapAlways,useTor,debug)
+runDaemon(baseDir,domain,port,httpPrefix,federationList,args.noreply,args.nolike,ocapAlways,useTor,debug)

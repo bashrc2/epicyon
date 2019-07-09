@@ -55,9 +55,9 @@ def createAcceptReject(baseDir: str,federationList: [], \
 def createAccept(baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
-                 objectJson: {}) -> {}:
+                 objectJson: {},acceptedCaps=["inbox:write","objects:read"]) -> {}:
     # create capabilities accept
-    ocapNew=capabilitiesAccept(baseDir,httpPrefix,nickname,domain,port,toUrl,True)
+    ocapNew=capabilitiesAccept(baseDir,httpPrefix,nickname,domain,port,toUrl,True,acceptedCaps)
     return createAcceptReject(baseDir,federationList, \
                               nickname,domain,port, \
                               toUrl,ccUrl,httpPrefix, \

@@ -125,6 +125,8 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFoll
     useTor=False
     clientToServer=False
     password='alicepass'
+    noreply=False
+    nolike=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
@@ -138,7 +140,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFoll
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,noreply,nolike,ocapAlways,useTor,True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Bob on port '+str(port))
@@ -151,6 +153,8 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollow
     useTor=False
     clientToServer=False
     password='bobpass'
+    noreply=False
+    nolike=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
@@ -164,7 +168,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollow
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,noreply,nolike,ocapAlways,useTor,True)
 
 def createServerEve(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Eve on port '+str(port))
@@ -177,13 +181,15 @@ def createServerEve(path: str,domain: str,port: int,federationList: [],hasFollow
     useTor=False
     clientToServer=False
     password='evepass'
+    noreply=False
+    nolike=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     global testServerEveRunning
     testServerEveRunning = True
     print('Server running: Eve')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,noreply,nolike,ocapAlways,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')

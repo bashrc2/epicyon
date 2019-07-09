@@ -36,7 +36,7 @@ This project is currently *pre alpha* and not recommended for any real world use
 
 This is one proposed way that OCAP could work.
 
- * Works from person to person, not instance to instance.
+ * Works from person to person, not instance to instance. Actor-oriented capabilities.
  * Produces negligible additional network traffic
  * Works in the same way between people on different instances or the same instance
  * People can alter what their followers can do on an individual basis
