@@ -248,7 +248,7 @@ def testPostMessageBetweenServers():
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
                 break
         time.sleep(1)
-    
+
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
@@ -429,6 +429,9 @@ def testFollowBetweenServers():
     
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+
+    # queue item removed
+    assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
     
     os.chdir(baseDir)
     shutil.rmtree(baseDir+'/.tests')
