@@ -102,7 +102,7 @@ Follow Accept from **Bob** to **Alice** with attached capabilities.
  'type': 'Accept'}
 ```
 
-When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. To handle the *shared inbox* scenario this should be a list rather than a single string. In the above example that would be *['http://bobdomain.net/caps/alice@alicedomain.net#rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ']*. It should contain a random string which is hard to guess by brute force methods.
+When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. To handle the *shared inbox* scenario this should be a list rather than a single string. In the above example that would be *['http://bobdomain.net/caps/alice@alicedomain.net#rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ']*. It should contain a random token which is hard to guess by brute force methods.
 
 ``` text
                             Alice
