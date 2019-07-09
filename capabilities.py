@@ -12,6 +12,8 @@ import time
 import json
 import commentjson
 from auth import createPassword
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 
 def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
     if ':' in domain:
@@ -118,7 +120,12 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             ocapAccept=commentjson.load(fp)
     # otherwise create a new capability    
     if not ocapAccept:
-        ocapId=createPassword(32)
+        acceptedActorNickname=getNicknameFromActor(acceptedActor)
+        acceptedActorDomain,acceptedActorPort=getDomainFromActor(acceptedActor)
+        if acceptedActorPort:            
+            ocapId=acceptedActorNickname+'@'+acceptedActorDomain+':'+str(acceptedActorPort)+'#'+createPassword(32)
+        else:
+            ocapId=acceptedActorNickname+'@'+acceptedActorDomain+'#'+createPassword(32)
         ocapAccept = {
             "id": httpPrefix+"://"+fullDomain+"/caps/"+ocapId,
             "type": "Capability",

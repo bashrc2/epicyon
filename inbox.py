@@ -414,10 +414,11 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             # get recipients list
             recipientsDict=inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port)
 
-            print('*************************************')
-            print('Resolved recipients list:')
-            pprint(recipientsDict)
-            print('*************************************')
+            if debug:
+                print('*************************************')
+                print('Resolved recipients list:')
+                pprint(recipientsDict)
+                print('*************************************')
 
             if queueJson['post'].get('capability'):
                 if not isinstance(queueJson['post']['capability'], list):
@@ -433,7 +434,9 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 if queueJson['post'].get('capability'):
                     capabilityIdList=queueJson['post']['capability']
                     # does the capability id list within the post contain the id
-                    # of one of the recipients?
+                    # of the recipient with this handle?
+                    # Here the capability id begins with the handle, so this could also
+                    # be matched separately, but it's probably not necessary
                     if capsId in capabilityIdList:
                         if debug:
                             print('DEBUG: object capabilities passed')
