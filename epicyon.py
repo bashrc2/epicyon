@@ -47,6 +47,8 @@ from config import getConfigParam
 from auth import storeBasicCredentials
 from auth import removePassword
 from auth import createPassword
+from utils import getDomainFromActor
+from utils import getNicknameFromActor
 import argparse
 
 def str2bool(v):
@@ -60,6 +62,10 @@ def str2bool(v):
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
 parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser.add_argument('-n','--nickname', dest='nickname', type=str,default=None, \
+                    help='Nickname of the account to use')
+parser.add_argument('--fol','--follow', dest='follow', type=str,default=None, \
+                    help='Handle of account to follow. eg. nickname@domain')
 parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
 parser.add_argument('-p','--port', dest='port', type=int,default=None, \
@@ -164,6 +170,72 @@ if configPort:
 else:
     port=8085
 
+nickname=None
+if args.nickname:
+    nickname=nickname
+
+httpPrefix='https'
+if args.http:
+    httpPrefix='http'
+
+federationList=[]
+if args.federationList:
+    if len(args.federationList)==1:
+        if not (args.federationList[0].lower()=='any' or \
+                args.federationList[0].lower()=='all' or \
+                args.federationList[0].lower()=='*'):
+            for federationDomain in args.federationList:
+                if '@' in federationDomain:
+                    print(federationDomain+': Federate with domains, not individual accounts')
+                    sys.exit()
+            federationList=args.federationList.copy()
+        setConfigParam(baseDir,'federationList',federationList)
+else:
+    configFederationList=getConfigParam(baseDir,'federationList')
+    if configFederationList:
+        federationList=configFederationList
+
+if args.follow and nickname:
+    if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print(nickname+' is not an account on the system. use --addaccount if necessary.')
+        sys.exit()
+
+    if '.' not in args.follow:
+        print("This doesn't look like a fediverse handle")
+        sys.exit()
+        
+    followNickname=getNicknameFromActor(args.follow)
+    followDomain,followPort=getDomainFromActor(args.follow)
+
+    if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'):
+         if followNickname+'@'+followDomain in open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt').read():
+             print(nickname+'@'+domain+' is already following '+followNickname+'@'+followDomain)
+             sys.exit()
+
+    personCache={}
+    cachedWebfingers={}
+    sendThreads=[]
+    sendThreads=[]
+    postLog=[]
+    followHttpPrefix=httpPrefix
+    if args.follow.startswith('https'):
+        followHttpPrefix='https'
+    sendFollowRequest(session,baseDir, \
+                      nickname,domain,port,httpPrefix, \
+                      followNickname,followDomain,followPort, \
+                      followHttpPrefix, \
+                      False,federationList, \
+                      sendThreads,postLog, \
+                      cachedWebfingers,personCache,debug)
+    for t in range(30):
+        time.sleep(1)
+        if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'):
+            if followNickname+'@'+followDomain in open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt').read():
+                print('Ok')
+                sys.exit()
+    print('Follow attempt failed')
+    sys.exit()
+    
 nickname='admin'
 if args.domain:
     domain=args.domain
@@ -174,9 +246,6 @@ if args.port:
 ocapAlways=False    
 if args.ocap:
     ocapAlways=args.ocap
-httpPrefix='https'
-if args.http:
-    httpPrefix='http'
 if args.dat:
     httpPrefix='dat'
 useTor=args.tor
@@ -303,22 +372,6 @@ if not args.domain and not domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
     
-federationList=[]
-if args.federationList:
-    if len(args.federationList)==1:
-        if not (args.federationList[0].lower()=='any' or \
-                args.federationList[0].lower()=='all' or \
-                args.federationList[0].lower()=='*'):
-            for federationDomain in args.federationList:
-                if '@' in federationDomain:
-                    print(federationDomain+': Federate with domains, not individual accounts')
-                    sys.exit()
-            federationList=args.federationList.copy()
-        setConfigParam(baseDir,'federationList',federationList)
-else:
-    configFederationList=getConfigParam(baseDir,'federationList')
-    if configFederationList:
-        federationList=configFederationList
 
 if federationList:
     print('Federating with: '+str(federationList))

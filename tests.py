@@ -350,7 +350,7 @@ def testFollowBetweenServers():
         sendFollowRequest(sessionAlice,aliceDir, \
                           'alice',aliceDomain,alicePort,httpPrefix, \
                           'bob',bobDomain,bobPort,httpPrefix, \
-                          clientToServer,federationList,
+                          clientToServer,federationList, \
                           aliceSendThreads,alicePostLog, \
                           aliceCachedWebfingers,alicePersonCache,True)
     print('sendResult: '+str(sendResult))
@@ -427,6 +427,8 @@ def testFollowBetweenServers():
 
     print('\n\n*********************************************************')
     print("\nBob changes Alice's capabilities so that she can't reply on his posts")
+    bobCapsFilename=bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'
+    aliceCapsFilename=aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'
     sessionBob = createSession(bobDomain,bobPort,useTor)
     bobSendThreads = []
     bobPostLog = []
