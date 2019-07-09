@@ -18,7 +18,6 @@ from utils import getNicknameFromActor
 from utils import getStatusNumber
 from utils import followPerson
 from posts import sendSignedJson
-from capabilities import isCapable
 from acceptreject import createAccept
 
 def getFollowersOfPerson(baseDir: str, \
@@ -321,11 +320,6 @@ def sendFollowRequest(session,baseDir: str, \
     requestDomain=followDomain
     if followPort!=80 and followPort!=443:
         requestDomain=followDomain+':'+str(followPort)
-
-    # check that we are capable
-    if ocapGranted:
-        if not isCapable(followActor,ocapGranted,'inbox:write'):
-            return None
 
     statusNumber,published = getStatusNumber()
     

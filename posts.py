@@ -30,7 +30,6 @@ from httpsig import createSignedHeader
 from utils import getStatusNumber
 from utils import createPersonDir
 from utils import urlPermitted
-from capabilities import isCapable
 from capabilities import getOcapFilename
 try: 
     from BeautifulSoup import BeautifulSoup
@@ -344,9 +343,6 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         sensitive=True
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
-        if ocapGranted:
-            if not isCapable(actorUrl,ocapGranted,'inbox:write'):
-                return None
 
         # if capabilities have been granted for this actor
         # then get the corresponding id

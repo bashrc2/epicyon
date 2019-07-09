@@ -151,19 +151,3 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     with open(ocapFilename, 'w') as fp:
         commentjson.dump(ocap, fp, indent=4, sort_keys=False)
     return True
-
-def isCapable(actor: str,ocapGranted: {},capability: str) -> bool:
-    # is the given actor capable of using the current resource?
-    for id,ocap in ocapGranted.items():
-        if ocap['scope'] in actor:
-            if capability in ocap['capability']:
-                return True
-    return False
-
-def isCapableId(id: str,ocapGranted: {},capability: str) -> bool:
-    # is the given id capable of using the current resource?
-    if ocapGranted.get(id):
-        if ocapGranted['id']['scope'] in actor:
-            if capability in ocapGranted['id']['capability']:
-                return True
-    return False
