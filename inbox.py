@@ -453,6 +453,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                             print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
                         copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
                         continue
+                    if debug:
+                        print('DEBUG: object capabilities check failed')
             
             if debug:
                 print('DEBUG: Queue post accepted')
