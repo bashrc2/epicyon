@@ -177,7 +177,7 @@ With the shared inbox instead of sending from Alice to 500 of her fans on a diff
 
 *inbox:write* - follower can post anything to your inbox
 
-*inbox:noreply - follower can't reply to your posts
+*inbox:noreply* - follower can't reply to your posts
 
 *inbox:nolike* - follower can't like your posts
 
