@@ -16,6 +16,9 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
 def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
+    """Returns the filename for a particular capability accepted or granted
+    Also creates directories as needed
+    """
     if ':' in domain:
         domain=domain.split(':')[0]
 
@@ -151,3 +154,84 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     with open(ocapFilename, 'w') as fp:
         commentjson.dump(ocap, fp, indent=4, sort_keys=False)
     return True
+
+def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
+                       nickname: str,domain: str, port: int, \
+                       updateActor: str, \
+                       updateCaps: []) -> {}:
+    """Used to sends an update for a change of object capabilities
+    Note that the capability id gets changed with a new random token
+    so that the old capabilities can't continue to be used
+    """
+
+    # reject excessively long actors
+    if len(updateActor)>256:
+        return None
+
+    fullDomain=domain
+    if port!=80 and port !=443:
+        fullDomain=domain+':'+str(port)
+    
+    # Get the filename of the capability
+    ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,updateActor,'accept')
+
+    # The capability should already exist for it to be updated
+    if not os.path.isfile(ocapFilename):
+        return None
+
+    # create an update activity
+    ocapUpdate = {
+        'type': 'Update',
+        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'to': [updateActor],
+        'cc': [],
+        'object': {}
+    }
+
+    # read the existing capability
+    with open(ocapFilename, 'r') as fp:
+        ocapJson=commentjson.load(fp)
+
+    # set the new capabilities list. eg. ["inbox:write","objects:read"]
+    ocapJson['capability']=updateCaps
+
+    # change the id, so that the old capabilities can't continue to be used
+    updateActorNickname=getNicknameFromActor(updateActor)
+    updateActorDomain,updateActorPort=getDomainFromActor(updateActor)
+    if updateActorPort:
+        ocapId=updateActorNickname+'@'+updateActorDomain+':'+str(updateActorPort)+'#'+createPassword(32)
+    else:
+        ocapId=updateActorNickname+'@'+updateActorDomain+'#'+createPassword(32)
+    ocapJson['id']=httpPrefix+"://"+fullDomain+"/caps/"+ocapId
+    ocapUpdate['object']=ocapJson
+
+    # save it again
+    with open(ocapFilename, 'w') as fp:
+        commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
+    
+    return ocapUpdate
+
+def capabilitiesReceiveUpdate(baseDir :str, \
+                              nickname :str,domain :str,port :int, \
+                              actor :str, \
+                              newCapabilitiesId :str, \
+                              capabilityList :[], debug :bool) -> bool:
+    """An update for a capability or the given actor has arrived
+    """
+    ocapFilename= \
+        getOcapFilename(baseDir,nickname,domain,actor,'granted')
+    if not os.path.isfile(ocapFilename):
+        if debug:
+            print('DEBUG: capabilities file not found during update')
+            print(ocapFilename)
+        return False
+
+    with open(ocapFilename, 'r') as fp:
+        ocapJson=commentjson.load(fp)
+        ocapJson['id']=newCapabilitiesId
+        ocapJson['capability']=capabilityList
+    
+        with open(ocapFilename, 'w') as fp:
+            commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
+            return True
+    return False

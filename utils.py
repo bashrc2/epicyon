@@ -48,7 +48,7 @@ def domainPermitted(domain: str, federationList: []):
         return True
     return False
 
-def urlPermitted(url: str, federationList: [],ocapGranted: {},capability: str):
+def urlPermitted(url: str, federationList: [],capability: str):
     if len(federationList)==0:
         return True
     for domain in federationList:

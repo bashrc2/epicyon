@@ -16,6 +16,9 @@ from shutil import copyfile
 from utils import urlPermitted
 from utils import createInboxQueueDir
 from utils import getStatusNumber
+from utils import getDomainFromActor
+from utils import getNicknameFromActor
+from utils import domainPermitted
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -27,6 +30,7 @@ from cache import storePersonInCache
 from acceptreject import receiveAcceptReject
 from capabilities import getOcapFilename
 from capabilities import CapablePost
+from capabilities import capabilitiesReceiveUpdate
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -68,7 +72,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             return False
     return True
 
-def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],ocapGranted: {}) -> bool:
+def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
@@ -79,14 +83,14 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: [],ocapGra
     if domain in actor:
         return True
 
-    if not urlPermitted(actor,federationList,ocapGranted,"inbox:write"):
+    if not urlPermitted(actor,federationList,"inbox:write"):
         return False
 
     if messageJson['type']!='Follow':
         if messageJson.get('object'):
             if messageJson['object'].get('inReplyTo'):
                 inReplyTo=messageJson['object']['inReplyTo']
-                if not urlPermitted(inReplyTo,federationList,ocapGranted):
+                if not urlPermitted(inReplyTo,federationList):
                     return False
 
     return True
@@ -299,7 +303,62 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
 
     return recipientsDict
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,ocapGranted: {},debug: bool) -> None:
+def receiveUpdate(session,baseDir: str, \
+                  httpPrefix: str,domain :str,port: int, \
+                  sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                  personCache: {},messageJson: {},federationList: [], \
+                  debug : bool) -> bool:
+    """Receives an Update activity within the POST section of HTTPServer
+    """
+    if messageJson['type']!='Update':
+        return False
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no actor')
+        return False
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object')
+        return False
+    if not isinstance(messageJson['object'], dict):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object is not a dict')
+        return False
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object has no type')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type'])
+        return False
+    domain,tempPort=getDomainFromActor(messageJson['actor'])
+    if not domainPermitted(domain,federationList):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' from domain not permitted - '+domain)
+        return False
+    nickname=getNicknameFromActor(messageJson['actor'])
+    if not nickname:
+        if debug:
+            print('DEBUG: '+messageJson['type']+' does not contain a nickname')
+        return False
+    handle=nickname.lower()+'@'+domain.lower()
+    if messageJson['object'].get('capability') and messageJson['object'].get('scope'):
+        domain,tempPort=getDomainFromActor(messageJson['object']['scope'])
+        nickname=getNicknameFromActor(messageJson['object']['scope'])
+        
+        if messageJson['object']['type']=='Capability':
+            if capabilitiesReceiveUpdate(baseDir,nickname,domain,port,
+                                         messageJson['actor'], \
+                                         messageJson['object']['id'], \
+                                         messageJson['object']['capability'], \
+                                         debug):
+                if debug:
+                    print('DEBUG: An update was received')
+                return True            
+    return False
+
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
@@ -389,7 +448,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                     cachedWebfingers,
                                     personCache,
                                     queueJson['post'], \
-                                    federationList,ocapGranted, \
+                                    federationList, \
                                     debug):
                 if debug:
                     print('DEBUG: Follow accepted from '+keyId)
@@ -403,10 +462,25 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                    cachedWebfingers,
                                    personCache,
                                    queueJson['post'], \
-                                   federationList,ocapGranted, \
+                                   federationList, \
                                    debug):
                 if debug:
                     print('DEBUG: Accept/Reject received from '+keyId)
+                os.remove(queueFilename)
+                queue.pop(0)
+                continue
+
+            if receiveUpdate(session, \
+                             baseDir,httpPrefix, \
+                             domain,port, \
+                             sendThreads,postLog, \
+                             cachedWebfingers,
+                             personCache,
+                             queueJson['post'], \
+                             federationList, \
+                             debug):
+                if debug:
+                    print('DEBUG: Update accepted from '+keyId)
                 os.remove(queueFilename)
                 queue.pop(0)
                 continue

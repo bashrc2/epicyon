@@ -221,7 +221,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                          port: int,sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
                          messageJson: {},federationList: [], \
-                         ocapGranted: {},debug : bool) -> bool:
+                         debug : bool) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
     if not messageJson['type'].startswith('Follow'):
@@ -281,7 +281,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         print('DEBUG: sending Accept for follow request which arrived at '+ \
               nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
     personUrl=messageJson['actor']
-    acceptJson=createAccept(baseDir,federationList,ocapGranted, \
+    acceptJson=createAccept(baseDir,federationList, \
                             nicknameToFollow,domainToFollow,port, \
                             personUrl,'',httpPrefix,messageJson)
     if debug:
@@ -295,7 +295,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                           nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
                           httpPrefix,True,clientToServer, \
-                          federationList, ocapGranted, \
+                          federationList, \
                           sendThreads,postLog,cachedWebfingers, \
                           personCache,debug)
 
@@ -303,7 +303,7 @@ def sendFollowRequest(session,baseDir: str, \
                       nickname: str,domain: str,port: int,httpPrefix: str, \
                       followNickname: str,followDomain: str, \
                       followPort: bool,followHttpPrefix: str, \
-                      clientToServer: bool,federationList: [],ocapGranted: {}, \
+                      clientToServer: bool,federationList: [], \
                       sendThreads: [],postLog: [],cachedWebfingers: {}, \
                       personCache: {},debug : bool) -> {}:
     """Gets the json object for sending a follow request
@@ -339,7 +339,7 @@ def sendFollowRequest(session,baseDir: str, \
                    followNickname,followDomain,followPort, \
                    'https://www.w3.org/ns/activitystreams#Public', \
                    httpPrefix,True,clientToServer, \
-                   federationList, ocapGranted, \
+                   federationList, \
                    sendThreads,postLog,cachedWebfingers,personCache, debug)
 
     return newFollowJson

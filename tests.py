@@ -10,6 +10,8 @@ import base64
 import time
 import os, os.path
 import shutil
+import commentjson
+from pprint import pprint
 from person import createPerson
 from Crypto.Hash import SHA256
 from httpsig import signPostHeaders
@@ -25,6 +27,7 @@ from posts import sendPost
 from posts import archivePosts
 from posts import noOfFollowersOnDomain
 from posts import groupFollowersByDomain
+from posts import sendCapabilitiesUpdate
 from follow import clearFollows
 from follow import clearFollowers
 from utils import followPerson
@@ -111,7 +114,7 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool,ocapAlways: bool):
+def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways: bool):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -129,15 +132,15 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],ocapGra
         followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList,True)
         followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList,True)
     if hasPosts:
-        createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer,ocapGranted)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer,ocapGranted)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer,ocapGranted)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,useTor,True)
 
-def createServerBob(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -155,15 +158,15 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],ocapGrant
         followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList,True)
         followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList,True)
     if hasPosts:
-        createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer,ocapGranted)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer,ocapGranted)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer,ocapGranted)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,useTor,True)
 
-def createServerEve(path: str,domain: str,port: int,federationList: [],ocapGranted: {},hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+def createServerEve(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Eve on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -180,7 +183,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [],ocapGrant
     global testServerEveRunning
     testServerEveRunning = True
     print('Server running: Eve')
-    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,ocapGranted,useTor,True)
+    runDaemon(path,domain,port,httpPrefix,federationList,ocapAlways,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
@@ -193,7 +196,6 @@ def testPostMessageBetweenServers():
     httpPrefix='http'
     useTor=False
     federationList=['127.0.0.50','127.0.0.100']
-    ocapGranted={}
 
     baseDir=os.getcwd()
     if os.path.isdir(baseDir+'/.tests'):
@@ -206,12 +208,12 @@ def testPostMessageBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,ocapGranted,True,True,ocapAlways),daemon=True)
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,True,True,ocapAlways),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.100'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,True,True,ocapAlways),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,True,True,ocapAlways),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -238,7 +240,7 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, ocapGranted, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -280,7 +282,6 @@ def testFollowBetweenServers():
     httpPrefix='http'
     useTor=False
     federationList=[]
-    ocapGranted={}
 
     baseDir=os.getcwd()
     if os.path.isdir(baseDir+'/.tests'):
@@ -293,17 +294,17 @@ def testFollowBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.42'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,ocapGranted,False,False,ocapAlways),daemon=True)
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,False,False,ocapAlways),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.64'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,ocapGranted,False,False,ocapAlways),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,False,False,ocapAlways),daemon=True)
 
     eveDir=baseDir+'/.tests/eve'
     eveDomain='127.0.0.55'
     evePort=61937
-    thrEve = threadWithTrace(target=createServerEve,args=(eveDir,eveDomain,evePort,federationList,ocapGranted,False,False,False),daemon=True)
+    thrEve = threadWithTrace(target=createServerEve,args=(eveDir,eveDomain,evePort,federationList,False,False,False),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -326,7 +327,8 @@ def testFollowBetweenServers():
     time.sleep(1)
 
     # In the beginning all was calm and there were no follows
-    
+
+    print('*********************************************************')
     print('Alice sends a follow request to Bob')
     print('Both are strictly enforcing object capabilities')
     os.chdir(aliceDir)
@@ -348,20 +350,31 @@ def testFollowBetweenServers():
         sendFollowRequest(sessionAlice,aliceDir, \
                           'alice',aliceDomain,alicePort,httpPrefix, \
                           'bob',bobDomain,bobPort,httpPrefix, \
-                          clientToServer,federationList,ocapGranted,
+                          clientToServer,federationList,
                           aliceSendThreads,alicePostLog, \
                           aliceCachedWebfingers,alicePersonCache,True)
     print('sendResult: '+str(sendResult))
 
+    bobCapsFilename=bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'
+    aliceCapsFilename=aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'
+
     for t in range(10):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
             if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
-                if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'):
-                    if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'):
+                if os.path.isfile(bobCapsFilename):
+                    if os.path.isfile(aliceCapsFilename):
                         break
         time.sleep(1)
+
+    with open(bobCapsFilename, 'r') as fp:
+        bobCapsJson=commentjson.load(fp)
+        if not bobCapsJson.get('capability'):
+            print("Unexpected format for Bob's capabilities")
+            pprint(bobCapsJson)
+            assert False
         
-    print('\n\nEve tries to send to Bob')
+    print('\n\n*********************************************************')
+    print('Eve tries to send to Bob')
     sessionEve = createSession(eveDomain,evePort,useTor)
     eveSendThreads = []
     evePostLog = []
@@ -369,7 +382,7 @@ def testFollowBetweenServers():
     eveCachedWebfingers={}
     eveSendThreads=[]
     evePostLog=[]
-    sendResult = sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Eve message', followersOnly, saveToFile, clientToServer, federationList, ocapGranted, eveSendThreads, evePostLog, eveCachedWebfingers,evePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Eve message', followersOnly, saveToFile, clientToServer, federationList, eveSendThreads, evePostLog, eveCachedWebfingers,evePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -387,14 +400,15 @@ def testFollowBetweenServers():
     assert eveMessageArrived==False
     print('Message from Eve to Bob was correctly rejected by object capabilities')
 
-
+    print('\n\n*********************************************************')
+    print('Alice sends a message to Bob')
     aliceSendThreads = []
     alicePostLog = []
     alicePersonCache={}
     aliceCachedWebfingers={}
     aliceSendThreads=[]
     alicePostLog=[]
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Alice message', followersOnly, saveToFile, clientToServer, federationList, ocapGranted, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Alice message', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -410,6 +424,64 @@ def testFollowBetweenServers():
 
     assert aliceMessageArrived==True
     print('Message from Alice to Bob succeeded, since it was granted capabilities')
+
+    print('\n\n*********************************************************')
+    print("\nBob changes Alice's capabilities so that she can't reply on his posts")
+    sessionBob = createSession(bobDomain,bobPort,useTor)
+    bobSendThreads = []
+    bobPostLog = []
+    bobPersonCache={}
+    bobCachedWebfingers={}
+    print("Bob's capabilities for Alice:")
+    with open(bobCapsFilename, 'r') as fp:
+        bobCapsJson=commentjson.load(fp)
+        pprint(bobCapsJson)
+        assert "inbox:noreply" not in bobCapsJson['capability']
+    print("Alice's capabilities granted by Bob")
+    with open(aliceCapsFilename, 'r') as fp:
+        aliceCapsJson=commentjson.load(fp)
+        pprint(aliceCapsJson)
+        assert "inbox:noreply" not in aliceCapsJson['capability']
+    newCapabilities=["inbox:write","objects:read","inbox:noreply"]
+    sendCapabilitiesUpdate(sessionBob,bobDir,httpPrefix, \
+                           'bob',bobDomain,bobPort, \
+                           httpPrefix+'://'+aliceDomain+':'+str(alicePort)+'/users/alice',
+                           newCapabilities, \
+                           bobSendThreads, bobPostLog, \
+                           bobCachedWebfingers,bobPersonCache, \
+                           federationList,True)
+
+    bobChanged=False
+    bobNewCapsJson=None
+    for i in range(20):
+        time.sleep(1)
+        with open(bobCapsFilename, 'r') as fp:
+            bobNewCapsJson=commentjson.load(fp)
+            if "inbox:noreply" in bobNewCapsJson['capability']:
+                print("Bob's capabilities were changed")
+                pprint(bobNewCapsJson)
+                bobChanged=True
+                break
+
+    assert bobChanged
+
+    aliceChanged=False
+    aliceNewCapsJson=None
+    for i in range(20):
+        time.sleep(1)
+        with open(aliceCapsFilename, 'r') as fp:
+            aliceNewCapsJson=commentjson.load(fp)
+            if "inbox:noreply" in aliceNewCapsJson['capability']:
+                print("Alice's granted capabilities were changed")
+                pprint(aliceNewCapsJson)
+                aliceChanged=True
+                break
+
+    assert aliceChanged
+
+    # check that the capabilities id has changed
+    assert bobNewCapsJson['id']!=bobCapsJson['id']
+    assert aliceNewCapsJson['id']!=aliceCapsJson['id']
 
     # stop the servers
     thrAlice.kill()

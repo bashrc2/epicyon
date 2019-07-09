@@ -30,7 +30,10 @@ from httpsig import createSignedHeader
 from utils import getStatusNumber
 from utils import createPersonDir
 from utils import urlPermitted
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 from capabilities import getOcapFilename
+from capabilities import capabilitiesUpdate
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -153,7 +156,7 @@ def getPersonBox(session,wfRequest: {},personCache: {}, \
 
 def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
              maxEmoji: int,maxAttachments: int, \
-             federationList: [], ocapGranted: {},\
+             federationList: [],\
              personCache: {},raw: bool,simple: bool) -> {}:
     personPosts={}
     if not outboxUrl:
@@ -193,7 +196,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                             if tagItem['icon'].get('url'):
                                 # No emoji from non-permitted domains
                                 if urlPermitted(tagItem['icon']['url'], \
-                                                federationList,ocapGranted, \
+                                                federationList, \
                                                 "objects:read"):
                                     emojiName=tagItem['name']
                                     emojiIcon=tagItem['icon']['url']
@@ -217,7 +220,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                 if item['object']['inReplyTo']:
                     # No replies to non-permitted domains
                     if not urlPermitted(item['object']['inReplyTo'], \
-                                        federationList,ocapGranted, \
+                                        federationList, \
                                         "objects:read"):
                         continue
                     inReplyTo = item['object']['inReplyTo']
@@ -227,7 +230,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
                     if urlPermitted(item['object']['conversation'], \
-                                    federationList,ocapGranted,"objects:read"):  
+                                    federationList,"objects:read"):  
                         conversation = item['object']['conversation']
 
             attachment = []
@@ -237,7 +240,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                         if attach.get('name') and attach.get('url'):
                             # no attachments from non-permitted domains
                             if urlPermitted(attach['url'], \
-                                            federationList,ocapGranted, \
+                                            federationList, \
                                             "objects:read"):
                                 attachment.append([attach['name'],attach['url']])
 
@@ -319,7 +322,6 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
                    followersOnly: bool, saveToFile: bool, clientToServer: bool, \
-                   ocapGranted: {}, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
@@ -487,7 +489,7 @@ def postIsAddressedToFollowers(baseDir: str,
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
-                     clientToServer: bool, ocapGranted: {},\
+                     clientToServer: bool,\
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
@@ -495,10 +497,10 @@ def createPublicPost(baseDir: str,
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
                           httpPrefix, content, followersOnly, saveToFile, \
-                          clientToServer, ocapGranted, \
+                          clientToServer, \
                           inReplyTo, inReplyToAtomUri, subject)
 
-def threadSendPost(session,postJsonObject: {},federationList: [],ocapGranted: {},\
+def threadSendPost(session,postJsonObject: {},federationList: [],\
                    inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
                    debug :bool) -> None:
     """Sends a post with exponential backoff
@@ -507,7 +509,7 @@ def threadSendPost(session,postJsonObject: {},federationList: [],ocapGranted: {}
     backoffTime=60
     for attempt in range(20):
         postResult = postJson(session,postJsonObject,federationList, \
-                              ocapGranted,inboxUrl,signatureHeaderJson, \
+                              inboxUrl,signatureHeaderJson, \
                               "inbox:write")
         if postResult:
             if debug:
@@ -534,7 +536,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
              httpPrefix: str, content: str, followersOnly: bool, \
              saveToFile: bool, clientToServer: bool, \
-             federationList: [], ocapGranted: {},\
+             federationList: [],\
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
              debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Post to another inbox
@@ -583,7 +585,6 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
             createPostBase(baseDir,nickname,domain,port, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
-                           ocapGranted, \
                            inReplyTo,inReplyToAtomUri,subject)
 
     # get the senders private key
@@ -607,7 +608,6 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr = threadWithTrace(target=threadSendPost,args=(session, \
                                                       postJsonObject.copy(), \
                                                       federationList, \
-                                                      ocapGranted, \
                                                       inboxUrl,baseDir, \
                                                       signatureHeaderJson.copy(), \
                                                       postLog,
@@ -639,7 +639,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    nickname: str, domain: str, port: int, \
                    toNickname: str, toDomain: str, toPort: int, cc: str, \
                    httpPrefix: str, saveToFile: bool, clientToServer: bool, \
-                   federationList: [], ocapGranted: {}, \
+                   federationList: [], \
                    sendThreads: [], postLog: [], cachedWebfingers: {}, \
                    personCache: {}, debug: bool) -> int:
     """Sends a signed json object to an inbox/outbox
@@ -715,7 +715,6 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                           args=(session, \
                                 postJsonObject.copy(), \
                                 federationList, \
-                                ocapGranted, \
                                 inboxUrl,baseDir, \
                                 signatureHeaderJson.copy(), \
                                 postLog,
@@ -754,7 +753,7 @@ def sendToFollowers(session,baseDir: str,
                        nickname,domain,port, \
                        toNickname,toDomain,toPort, \
                        cc,httpPrefix,True,clientToServer, \
-                       federationList,ocapGranted, \
+                       federationList, \
                        sendThreads,postLog,cachedWebfingers, \
                        personCache,debug)
 
@@ -900,7 +899,6 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     personCache={}
     cachedWebfingers={}
     federationList=[]
-    ocapGranted={}
 
     httpPrefix='https'
     handle=httpPrefix+"://"+domain+"/@"+nickname
@@ -917,6 +915,40 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxEmoji=10
     maxAttachments=5
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
-                         maxAttachments,federationList,ocapGranted, \
+                         maxAttachments,federationList, \
                          personCache,raw,simple)
     #print(str(userPosts))
+
+def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
+                           nickname: str,domain: str,port: int, \
+                           followerUrl,updateCaps: [], \
+                           sendThreads: [],postLog: [], \
+                           cachedWebfingers: {},personCache: {}, \
+                           federationList :[],debug :bool) -> int:
+    """When the capabilities for a follower are changed this
+    sends out an update. followerUrl is the actor of the follower.
+    """
+    updateJson=capabilitiesUpdate(baseDir,httpPrefix, \
+                                  nickname,domain,port, \
+                                  followerUrl, \
+                                  updateCaps)
+
+    if not updateJson:
+        return 1
+
+    if debug:
+        pprint(updateJson)
+        print('DEBUG: sending capabilities update from '+ \
+              nickname+'@'+domain+' port '+ str(port) + \
+              ' to '+followerUrl)
+
+    clientToServer=False
+    followerNickname=getNicknameFromActor(followerUrl)
+    followerDomain,followerPort=getDomainFromActor(followerUrl)
+    return sendSignedJson(updateJson,session,baseDir, \
+                          nickname,domain,port, \
+                          followerNickname,followerDomain,followerPort, '', \
+                          httpPrefix,True,clientToServer, \
+                          federationList, \
+                          sendThreads,postLog,cachedWebfingers, \
+                          personCache,debug)

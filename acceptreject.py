@@ -18,7 +18,7 @@ from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
 
-def createAcceptReject(baseDir: str,federationList: [],ocapGranted: {}, \
+def createAcceptReject(baseDir: str,federationList: [], \
                        nickname: str,domain: str,port: int, \
                        toUrl: str,ccUrl: str,httpPrefix: str, \
                        objectJson: {},ocapJson,acceptType: str) -> {}:
@@ -31,7 +31,7 @@ def createAcceptReject(baseDir: str,federationList: [],ocapGranted: {}, \
     if not objectJson.get('actor'):
         return None
 
-    if not urlPermitted(objectJson['actor'],federationList,ocapGranted,"inbox:write"):
+    if not urlPermitted(objectJson['actor'],federationList,"inbox:write"):
         return None
 
     if port!=80 and port!=443:
@@ -52,28 +52,28 @@ def createAcceptReject(baseDir: str,federationList: [],ocapGranted: {}, \
         newAccept['capabilities']=ocapJson
     return newAccept
 
-def createAccept(baseDir: str,federationList: [],ocapGranted: {}, \
+def createAccept(baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
                  objectJson: {}) -> {}:
     # create capabilities accept
     ocapNew=capabilitiesAccept(baseDir,httpPrefix,nickname,domain,port,toUrl,True)
-    return createAcceptReject(baseDir,federationList,ocapGranted, \
+    return createAcceptReject(baseDir,federationList, \
                               nickname,domain,port, \
                               toUrl,ccUrl,httpPrefix, \
                               objectJson,ocapNew,'Accept')
 
-def createReject(baseDir: str,federationList: [],ocapGranted: {}, \
+def createReject(baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
                  objectJson: {}) -> {}:
-    return createAcceptReject(baseDir,federationList,ocapGranted, \
+    return createAcceptReject(baseDir,federationList, \
                               nickname,domain,port, \
                               toUrl,ccUrl, \
                               httpPrefix,objectJson,None,'Reject')
 
 def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
-                 federationList: [],ocapGranted: {},debug : bool) -> None:
+                 federationList: [],debug : bool) -> None:
     if not messageJson.get('object'):
         return
     if not messageJson['object'].get('type'):
@@ -161,7 +161,7 @@ def receiveAcceptReject(session,baseDir: str, \
                         httpPrefix: str,domain :str,port: int, \
                         sendThreads: [],postLog: [],cachedWebfingers: {}, \
                         personCache: {},messageJson: {},federationList: [], \
-                        ocapGranted: {},debug : bool) -> bool:
+                        debug : bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
     if messageJson['type']!='Accept' and messageJson['type']!='Reject':
@@ -185,7 +185,7 @@ def receiveAcceptReject(session,baseDir: str, \
             print('DEBUG: '+messageJson['type']+' does not contain a nickname')
         return False
     handle=nickname.lower()+'@'+domain.lower()
-    acceptFollow(baseDir,domain,messageJson,federationList,ocapGranted,debug)
+    acceptFollow(baseDir,domain,messageJson,federationList,debug)
     if debug:
         print('DEBUG: Uh, '+messageJson['type']+', I guess')
     return True
