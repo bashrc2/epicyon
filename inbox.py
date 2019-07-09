@@ -332,17 +332,6 @@ def receiveUpdate(session,baseDir: str, \
         if debug:
             print('DEBUG: "users" missing from actor in '+messageJson['type'])
         return False
-    domain,tempPort=getDomainFromActor(messageJson['actor'])
-    if not domainPermitted(domain,federationList):
-        if debug:
-            print('DEBUG: '+messageJson['type']+' from domain not permitted - '+domain)
-        return False
-    nickname=getNicknameFromActor(messageJson['actor'])
-    if not nickname:
-        if debug:
-            print('DEBUG: '+messageJson['type']+' does not contain a nickname')
-        return False
-    handle=nickname.lower()+'@'+domain.lower()
     if messageJson['object'].get('capability') and messageJson['object'].get('scope'):
         domain,tempPort=getDomainFromActor(messageJson['object']['scope'])
         nickname=getNicknameFromActor(messageJson['object']['scope'])
