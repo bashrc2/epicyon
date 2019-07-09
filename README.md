@@ -290,3 +290,13 @@ By default the server will federate with any others. You can limit this to a wel
 ``` bash
 python3 epicyon.py --domain [name] --port 8000 --https --federate domain1.net domain2.org domain3.co.uk
 ```
+
+## Following other accounts
+
+With your server running you can then follow other accounts with:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain
+```
+
+You may or may not need to use the *--port*, *--https* and *--tor* options, depending upon how your server was set up.

@@ -195,6 +195,10 @@ else:
     if configFederationList:
         federationList=configFederationList
 
+useTor=args.tor
+if domain.endswith('.onion'):
+    useTor=True
+
 if args.follow and nickname:
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print(nickname+' is not an account on the system. use --addaccount if necessary.')
@@ -212,6 +216,7 @@ if args.follow and nickname:
              print(nickname+'@'+domain+' is already following '+followNickname+'@'+followDomain)
              sys.exit()
 
+    session = createSession(domain,port,useTor)
     personCache={}
     cachedWebfingers={}
     sendThreads=[]
@@ -248,9 +253,6 @@ if args.ocap:
     ocapAlways=args.ocap
 if args.dat:
     httpPrefix='dat'
-useTor=args.tor
-if domain.endswith('.onion'):
-    useTor=True
 
 if args.actor:
     if '@' not in args.actor:
