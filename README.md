@@ -87,7 +87,7 @@ Follow Accept from **Bob** to **Alice** with attached capabilities.
 {'actor': 'http://bobdomain.net/users/bob',
  'capabilities': {'actor': 'http://bobdomain.net/users/bob',
                   'capability': ['inbox:write', 'objects:read'],
-                  'id': 'http://bobdomain.net/caps/rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ',
+                  'id': 'http://bobdomain.net/caps/alice@alicedomain.net#rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ',
                   'scope': 'http://alicedomain.net/users/alice',
                   'type': 'Capability'},
  'cc': [],
@@ -102,7 +102,7 @@ Follow Accept from **Bob** to **Alice** with attached capabilities.
  'type': 'Accept'}
 ```
 
-When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. To handle the *shared inbox* scenario this should be a list rather than a single string. In the above example that would be *['http://bobdomain.net/caps/rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ']*. It should contain a random string which is hard to guess by brute force methods.
+When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. To handle the *shared inbox* scenario this should be a list rather than a single string. In the above example that would be *['http://bobdomain.net/caps/alice@alicedomain.net#rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ']*. It should contain a random string which is hard to guess by brute force methods.
 
 ``` text
                             Alice
@@ -137,7 +137,33 @@ When posts are subsequently sent from the following instance (server-to-server) 
                     Accept incoming post		   
 ```
 
-Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice**, perhaps as another **follow Accept** activity with attached capabilities. This could then change the way in which **Alice** can interact with **Bob**, for example by adding or removing the ability to like or reply to posts.
+Subsequently **Bob** could change the stored capabilities for **Alice** in their database, giving the new object a different id. This could be sent back to **Alice** as an **Update** activity with attached capability.
+
+Bob can send this to Alice, altering *capability* to now include *inbox:noreply*. Notice that the random token at the end of the *id* has changed, so that Alice can't continue to use the old capabilities.
+
+``` json
+{'actor': 'http://bobdomain.net/users/bob',
+ 'cc': [],
+ 'object': {'actor': 'http://bobdomain.net/users/bob',
+            'capability': ['inbox:write', 'objects:read', 'inbox:noreply'],
+            'id': 'http://bobdomain.net/caps/alice@alicedomain.net#53nwZhHipNFCNwrJ2sgE8GPx13SnV23X',
+            'scope': 'http://alicedomain.net/users/alice',
+            'type': 'Capability'},
+ 'to': ['http://alicedomain.net/users/alice'],
+ 'type': 'Update'}
+```
+
+Alice then receives this and updates her capabilities granted by Bob to:
+
+``` json
+{'actor': 'http://bobdomain.net/users/bob',
+ 'capability': ['inbox:write', 'objects:read', 'inbox:noreply'],
+ 'id': 'http://bobdomain.net/caps/alice@alicedomain.net#53nwZhHipNFCNwrJ2sgE8GPx13SnV23X',
+ 'scope': 'http://alicedomain.net/users/alice',
+ 'type': 'Capability'}
+```
+
+If she sets her system to somehow ignore the update then if capabilities are strictly enforced she will no longer be able to send messages to Bob's inbox.
 
 Object capabilities can be strictly enforced by adding the **--ocap** option when running the server. The only activities which it is not enforced upon are **Follow** and **Accept**. Anyone can create a follow request or accept updated capabilities.
 
