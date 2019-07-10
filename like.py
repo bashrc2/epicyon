@@ -86,13 +86,23 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str) -> None:
                 'id': objectUrl,
                 'type': 'Collection',
                 "totalItems": 1,
-                'items': [actor]                
+                'items': [{
+                    'type': 'Like',
+                    'actor': actor
+                    
+                }]                
             }
             postJson['likes']=likesJson
         else:
             if postJson['likes'].get('items'):
-                if actor not in postJson['likes']['items']:
-                    postJson['likes']['items'].append(actor)
+                for likeItem in postJson['likes']['items']:
+                    if likeItem['actor']==actor:
+                        return
+                newLike={
+                    'type': 'Like',
+                    'actor': actor
+                }
+                postJson['likes']['items'].append(newLike)
                 postJson['likes']['totalItems']=len(postJson['likes']['items'])
         with open(postFilename, 'w') as fp:
             commentjson.dump(postJson, fp, indent=4, sort_keys=True)

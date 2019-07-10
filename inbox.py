@@ -387,13 +387,19 @@ def receiveLike(session,handle: str,baseDir: str, \
         return False
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of like - '+handle)
+    # if this post in the outbox of the person?
     boxName='outbox'
     postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
     if not os.path.isfile(postFilename):
+        # if this post in the inbox of the person?
         boxName='inbox'
         postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
         if not os.path.isfile(postFilename):
-            postFilename=None
+            # if this post in the shared inbox?
+            handle='inbox@'+domain
+            postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
+            if not os.path.isfile(postFilename):
+                postFilename=None
     if not postFilename:
         if debug:
             print('DEBUG: post not found in inbox or outbox')
