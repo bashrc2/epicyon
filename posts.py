@@ -774,6 +774,9 @@ def createBoxBase(baseDir: str,boxname: str, \
     if boxname!='inbox' and boxname!='outbox':
         return None
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    sharedBoxDir=None
+    if boxname=='inbox':
+        sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
 
     if port!=80 and port!=443:
         domain = domain+':'+str(port)
@@ -801,7 +804,16 @@ def createBoxBase(baseDir: str,boxname: str, \
     postsOnPageCtr=0
 
     # post filenames sorted in descending order
-    postsInBox=sorted(os.listdir(boxDir), reverse=True)
+    postsInBox=[]
+    postsInPersonInbox=sorted(os.listdir(boxDir), reverse=True)
+    for postFilename in postsInPersonInbox:
+        postsInBox.append(os.path.join(boxDir, postFilename))
+
+    # combine the inbox for the account with the shared inbox
+    if sharedBoxDir:
+        postsInSharedInbox=sorted(os.listdir(sharedBoxDir), reverse=True)
+        for postFilename in postsInSharedInbox:
+            postsInBox.append(os.path.join(sharedBoxDir, postFilename))
 
     # number of posts in box
     boxHeader['totalItems']=len(postsInBox)
@@ -830,7 +842,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                 httpPrefix+'://'+domain+'/users/'+nickname+'/'+ \
                 boxname+'?min_id='+postId+'&page=true'
         # get the full path of the post file
-        filePath = os.path.join(boxDir, postFilename)
+        filePath = postFilename
         try:
             if os.path.isfile(filePath):
                 if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
