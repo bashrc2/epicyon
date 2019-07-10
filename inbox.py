@@ -405,9 +405,9 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
                            queue: [],domain: str,port: int,useTor: bool, \
                            federationList: [],ocapAlways: bool,debug: bool, \
-                           acceptedCaps: []) -> bool:
+                           acceptedCaps: [],
+                           queueFilename :str,destinationFilename :str) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
-    Returns True if the incoming item should be moved to the inbox
     """
     if receiveLike(session,handle, \
                    baseDir,httpPrefix, \
@@ -422,6 +422,10 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Like accepted from '+keyId)
         return False
 
+    if debug:
+        print('DEBUG: object capabilities passed')
+        print('copy from '+queueFilename+' to '+destinationFilename)
+    copyfile(queueFilename,destinationFilename)
     return True
 
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps=["inbox:write","objects:read"]) -> None:
@@ -579,16 +583,13 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                     # Here the capability id begins with the handle, so this could also
                     # be matched separately, but it's probably not necessary
                     if capsId in capabilityIdList:
-                        if inboxAfterCapabilities(session,keyId,handle,queueJson['post'], \
+                        inboxAfterCapabilities(session,keyId,handle,queueJson['post'], \
                                                   baseDir,httpPrefix, \
                                                   sendThreads,postLog,cachedWebfingers, \
                                                   personCache,queue,domain,port,useTor, \
                                                   federationList,ocapAlways,debug, \
-                                                  acceptedCaps):
-                            if debug:
-                                print('DEBUG: object capabilities passed')
-                                print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
-                            copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                                                  acceptedCaps,
+                                                  queueFilename,queueJson['destination'].replace(inboxHandle,handle))
                     else:
                         if debug:
                             print('DEBUG: object capabilities check failed')
@@ -600,11 +601,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                                                   sendThreads,postLog,cachedWebfingers, \
                                                   personCache,queue,domain,port,useTor, \
                                                   federationList,ocapAlways,debug, \
-                                                  acceptedCaps):
-                            if debug:
-                                print('DEBUG: not enforcing object capabilities')
-                                print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
-                            copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                                                  acceptedCaps, \
+                                                  queueFilename,queueJson['destination'].replace(inboxHandle,handle)):
                             continue
                     if debug:
                         print('DEBUG: object capabilities check failed')
