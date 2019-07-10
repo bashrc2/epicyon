@@ -73,3 +73,26 @@ def likePost(session,baseDir: str,federationList: [], \
     return like(session,baseDir,federationList,nickname,domain,port, \
                 ccUrl,httpPrefix,objectUrl,clientToServer, \
                 sendThreads,postLog,personCache,cachedWebfingers)
+
+def updateLikesCollection(postFilename: str,objectUrl: str, actor: str) -> None:
+    """Updates the likes collection within a post
+    """
+    with open(postFilename, 'r') as fp:
+        postJson=commentjson.load(fp)
+        if not objectUrl.endswith('/likes'):
+            objectUrl=objectUrl+'/likes'
+        if not postJson.get('likes'):
+            likesJson = {
+                'id': objectUrl,
+                'type': 'Collection',
+                "totalItems": 1,
+                'items': [actor]                
+            }
+            postJson['likes']=likesJson
+        else:
+            if postJson['likes'].get('items'):
+                if actor not in postJson['likes']['items']:
+                    postJson['likes']['items'].append(actor)
+                postJson['likes']['totalItems']=len(postJson['likes']['items'])
+        with open(postFilename, 'w') as fp:
+            commentjson.dump(postJson, fp, indent=4, sort_keys=True)

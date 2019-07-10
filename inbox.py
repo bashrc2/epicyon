@@ -31,6 +31,7 @@ from acceptreject import receiveAcceptReject
 from capabilities import getOcapFilename
 from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
+from like import updateLikesCollection
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -347,9 +348,80 @@ def receiveUpdate(session,baseDir: str, \
                 return True            
     return False
 
-def inboxAfterCapabilities(session,baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps: []) -> bool:
-    """ Anything which needs to be done after capabilities checks have passed
+def receiveLike(session,handle: str,baseDir: str, \
+                httpPrefix: str,domain :str,port: int, \
+                sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                personCache: {},messageJson: {},federationList: [], \
+                debug : bool) -> bool:
+    """Receives a Like activity within the POST section of HTTPServer
     """
+    if messageJson['type']!='Like':
+        return False
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no actor')
+        return False
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object')
+        return False
+    if not isinstance(messageJson['object'], str):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object is not a string')
+        return False
+    if not messageJson.get('to'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no "to" list')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type'])
+        return False
+    if '/statuses/' not in messageJson['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from object in '+messageJson['type'])
+        return False
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('DEBUG: unknown recipient of like - '+handle)
+    boxName='outbox'
+    postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
+    if not os.path.isfile(postFilename):
+        boxName='inbox'
+        postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
+        if not os.path.isfile(postFilename):
+            postFilename=None
+    if not postFilename:
+        if debug:
+            print('DEBUG: post not found in inbox or outbox')
+            print(messageJson['object'])
+        return True
+    if debug:
+        print('DEBUG: liked post found in '+boxName)
+    updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'])
+    return True
+
+def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
+                           baseDir: str,httpPrefix: str,sendThreads: [], \
+                           postLog: [],cachedWebfingers: {},personCache: {}, \
+                           queue: [],domain: str,port: int,useTor: bool, \
+                           federationList: [],ocapAlways: bool,debug: bool, \
+                           acceptedCaps: []) -> bool:
+    """ Anything which needs to be done after capabilities checks have passed
+    Returns True if the incoming item should be moved to the inbox
+    """
+    if receiveLike(session,handle, \
+                   baseDir,httpPrefix, \
+                   domain,port, \
+                   sendThreads,postLog, \
+                   cachedWebfingers, \
+                   personCache, \
+                   messageJson, \
+                   federationList, \
+                   debug):
+        if debug:
+            print('DEBUG: Like accepted from '+keyId)
+        return False
+
     return True
 
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps=["inbox:write","objects:read"]) -> None:
@@ -507,7 +579,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                     # Here the capability id begins with the handle, so this could also
                     # be matched separately, but it's probably not necessary
                     if capsId in capabilityIdList:
-                        if inboxAfterCapabilities(session,baseDir,httpPrefix, \
+                        if inboxAfterCapabilities(session,keyId,handle,queueJson['post'], \
+                                                  baseDir,httpPrefix, \
                                                   sendThreads,postLog,cachedWebfingers, \
                                                   personCache,queue,domain,port,useTor, \
                                                   federationList,ocapAlways,debug, \
@@ -522,7 +595,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                             pprint(queueJson['post'])
                 else:
                     if not ocapAlways:
-                        if inboxAfterCapabilities(session,baseDir,httpPrefix, \
+                        if inboxAfterCapabilities(session,keyId,handle,queueJson['post'], \
+                                                  baseDir,httpPrefix, \
                                                   sendThreads,postLog,cachedWebfingers, \
                                                   personCache,queue,domain,port,useTor, \
                                                   federationList,ocapAlways,debug, \
