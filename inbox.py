@@ -564,7 +564,18 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
             # get recipients list
             recipientsDict,recipientsDictFollowers= \
                 inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port)
-            recipientsList=[recipientsDict,recipientsDictFollowers]
+
+            # if there are only a small number of followers then process them as if they
+            # were specifically addresses to particular accounts
+            noOfFollowItems=len(recipientsDictFollowers.items())
+            if noOfFollowItems>0:
+                if noOfFollowItems<5:
+                    if debug:
+                        print('DEBUG: moving '+str(noOfFollowItems)+' inbox posts addressed to followers')
+                    for handle,postItem in recipientsDictFollowers.items():
+                        recipientsDict['handle']=postItem
+                    recipientsDictFollowers={}
+                recipientsList=[recipientsDict,recipientsDictFollowers]
 
             if debug:
                 print('*************************************')
