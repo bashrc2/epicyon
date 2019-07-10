@@ -347,6 +347,11 @@ def receiveUpdate(session,baseDir: str, \
                 return True            
     return False
 
+def inboxAfterCapabilities(session,baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps: []) -> bool:
+    """ Anything which needs to be done after capabilities checks have passed
+    """
+    return True
+
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -502,21 +507,31 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                     # Here the capability id begins with the handle, so this could also
                     # be matched separately, but it's probably not necessary
                     if capsId in capabilityIdList:
-                        if debug:
-                            print('DEBUG: object capabilities passed')
-                            print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
-                        copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                        if inboxAfterCapabilities(session,baseDir,httpPrefix, \
+                                                  sendThreads,postLog,cachedWebfingers, \
+                                                  personCache,queue,domain,port,useTor, \
+                                                  federationList,ocapAlways,debug, \
+                                                  acceptedCaps):
+                            if debug:
+                                print('DEBUG: object capabilities passed')
+                                print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
+                            copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
                     else:
                         if debug:
                             print('DEBUG: object capabilities check failed')
                             pprint(queueJson['post'])
                 else:
                     if not ocapAlways:
-                        if debug:
-                            print('DEBUG: not enforcing object capabilities')
-                            print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
-                        copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
-                        continue
+                        if inboxAfterCapabilities(session,baseDir,httpPrefix, \
+                                                  sendThreads,postLog,cachedWebfingers, \
+                                                  personCache,queue,domain,port,useTor, \
+                                                  federationList,ocapAlways,debug, \
+                                                  acceptedCaps):
+                            if debug:
+                                print('DEBUG: not enforcing object capabilities')
+                                print('copy from '+queueFilename+' to '+queueJson['destination'].replace(inboxHandle,handle))
+                            copyfile(queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                            continue
                     if debug:
                         print('DEBUG: object capabilities check failed')
             
