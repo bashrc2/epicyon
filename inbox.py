@@ -240,11 +240,15 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
             followerRecipients=True
     return followerRecipients,recipientsDict
 
-def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int) -> []:
+def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int) -> ([],[]):
+    """Returns dictionaries containing the recipients of the given post
+    The shared dictionary contains followers
+    """
     recipientsDict={}
+    recipientsDictFollowers={}
 
     if not postJsonObject.get('actor'):
-        return recipientsDict
+        return recipientsDict,recipientsDictFollowers
 
     if ':' in domain:
         domain=domain.split(':')[0]
@@ -296,13 +300,13 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
             followerRecipients=True
 
     if not followerRecipients:
-        return recipientsDict
+        return recipientsDict,recipientsDictFollowers
 
     # now resolve the followers
-    recipientsDict= \
+    recipientsDictFollowers= \
         getFollowersOfActor(baseDir,actor,recipientsDict)
 
-    return recipientsDict
+    return recipientsDict,recipientsDictFollowers
 
 def receiveUpdate(session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
@@ -425,6 +429,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)
+
     copyfile(queueFilename,destinationFilename)
     return True
 
@@ -557,12 +562,16 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 continue
 
             # get recipients list
-            recipientsDict=inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port)
+            recipientsDict,recipientsDictFollowers= \
+                inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port)
+            recipientsList=[recipientsDict,recipientsDictFollowers]
 
             if debug:
                 print('*************************************')
                 print('Resolved recipients list:')
                 pprint(recipientsDict)
+                print('Resolved sollowers list:')
+                pprint(recipientsDictFollowers)
                 print('*************************************')
 
             if queueJson['post'].get('capability'):
@@ -572,9 +581,17 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                     os.remove(queueFilename)
                     queue.pop(0)
                     continue
-            
-            for handle,capsId in recipientsDict.items():
-                    
+
+            # copy any posts addressed to followers into the shared inbox
+            # this avoid copying file multiple times to potentially many
+            # individual inboxes            
+            if len(recipientsDictFollowers)>0:
+                copyfile(queueFilename, \
+                         queueJson['destination'].replace(inboxHandle,inboxHandle))
+
+            # for posts addressed to specific accounts
+            for handle,capsId in recipientsDict.items():                    
+                destination=queueJson['destination'].replace(inboxHandle,handle)
                 # check that capabilities are accepted            
                 if queueJson['post'].get('capability'):
                     capabilityIdList=queueJson['post']['capability']
@@ -583,32 +600,36 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                     # Here the capability id begins with the handle, so this could also
                     # be matched separately, but it's probably not necessary
                     if capsId in capabilityIdList:
-                        inboxAfterCapabilities(session,keyId,handle,queueJson['post'], \
-                                                  baseDir,httpPrefix, \
-                                                  sendThreads,postLog,cachedWebfingers, \
-                                                  personCache,queue,domain,port,useTor, \
-                                                  federationList,ocapAlways,debug, \
-                                                  acceptedCaps,
-                                                  queueFilename,queueJson['destination'].replace(inboxHandle,handle))
+                        inboxAfterCapabilities(session,keyId,handle, \
+                                               queueJson['post'], \
+                                               baseDir,httpPrefix, \
+                                               sendThreads,postLog, \
+                                               cachedWebfingers, \
+                                               personCache,queue,domain, \
+                                               port,useTor, \
+                                               federationList,ocapAlways, \
+                                               debug,acceptedCaps, \
+                                               queueFilename,destination)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check failed')
                             pprint(queueJson['post'])
                 else:
                     if not ocapAlways:
-                        if inboxAfterCapabilities(session,keyId,handle,queueJson['post'], \
-                                                  baseDir,httpPrefix, \
-                                                  sendThreads,postLog,cachedWebfingers, \
-                                                  personCache,queue,domain,port,useTor, \
-                                                  federationList,ocapAlways,debug, \
-                                                  acceptedCaps, \
-                                                  queueFilename,queueJson['destination'].replace(inboxHandle,handle)):
-                            continue
+                        inboxAfterCapabilities(session,keyId,handle, \
+                                               queueJson['post'], \
+                                               baseDir,httpPrefix, \
+                                               sendThreads,postLog, \
+                                               cachedWebfingers, \
+                                               personCache,queue,domain, \
+                                               port,useTor, \
+                                               federationList,ocapAlways, \
+                                               debug,acceptedCaps, \
+                                               queueFilename,destination)
                     if debug:
                         print('DEBUG: object capabilities check failed')
             
-            if debug:
-                print('DEBUG: Queue post accepted')
-
+                if debug:
+                    print('DEBUG: Queue post accepted')
             os.remove(queueFilename)
             queue.pop(0)
