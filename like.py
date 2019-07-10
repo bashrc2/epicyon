@@ -9,12 +9,14 @@ __status__ = "Production"
 import json
 import commentjson
 from utils import urlPermitted
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 
-def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
-         toUrl: str,ccUrl: str,httpPrefix: str,objectUrl: str,saveToFile: bool) -> {}:
+def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
+         ccUrl: str,httpPrefix: str,objectUrl: str,clientToServer: bool, \
+         sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}) -> {}:
     """Creates a like
-    Typically toUrl will be a followers collection
-    and ccUrl might be a specific person whose post was liked
+    ccUrl might be a specific person whose post was liked
     objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
     """
     if not urlPermitted(objectUrl,federationList,"inbox:write"):
@@ -23,32 +25,51 @@ def like(baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
-    newLike = {
+    newLikeJson = {
         'type': 'Like',
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'object': objectUrl,
-        'to': [toUrl],
+        'to': [httpPrefix+'://'+domain+'/users/'+nickname+'/followers'],
         'cc': []
     }
     if ccUrl:
         if len(ccUrl)>0:
-            newLike['cc']=ccUrl
-    if saveToFile:
-        if ':' in domain:
-            domain=domain.split(':')[0]
-        # TODO update likes collection
-    return newLike
+            newLikeJson['cc']=ccUrl
 
-def likePost(baseDir: str,federationList: [], \
-             nickname: str, domain: str, port: int, httpPrefix: str, \n
-             likeNickname: str, likeDomain: str, likePort: int, likeHttps: bool, \n
-             likeStatusNumber: int,saveToFile: bool) -> {}:
+    # Extract the domain and nickname from a statuses link
+    likedPostNickname=None
+    likedPostDomain=None
+    likedPostPort=None
+    if '/users/' in objectUrl:
+        likedPostNickname=getNicknameFromActor(objectUrl)
+        likedPostDomain,likedPostPort=getDomainFromActor(objectUrl)
+
+    if likedPostNickname:
+        sendSignedJson(newlikeJson,session,baseDir, \
+                       nickname,domain,port, \
+                       likedPostNickname,likedPostDomain,likedPostPort, \
+                       'https://www.w3.org/ns/activitystreams#Public', \
+                       httpPrefix,True,clientToServer,federationList, \
+                       sendThreads,postLog,cachedWebfingers,personCache,debug)
+
+    return newLikeJson
+
+def likePost(session,baseDir: str,federationList: [], \
+             nickname: str, domain: str, port: int, httpPrefix: str, \
+             likeNickname: str, likeDomain: str, likePort: int, \
+             likeHttps: bool, likeStatusNumber: int, \
+             clientToServer: bool,sendThreads: [],postLog: [], \
+             personCache: {},cachedWebfingers: {}) -> {}:
     """Likes a given status post
     """
     likeDomain=likeDomain
     if likePort!=80 and likePort!=443:
         likeDomain=likeDomain+':'+str(likePort)
 
-    objectUrl = httpPrefix + '://'+likeDomain+'/users/'+likeNickname+'/statuses/'+str(likeStatusNumber)
+    objectUrl = \
+        httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \
+        '/statuses/'+str(likeStatusNumber)
 
-    return like(baseDir,federationList,nickname,domain,port,toUrl,ccUrl,httpPrefix,objectUrl,saveToFile)
+    return like(session,baseDir,federationList,nickname,domain,port, \
+                ccUrl,httpPrefix,objectUrl,clientToServer, \
+                sendThreads,postLog,personCache,cachedWebfingers)

@@ -61,7 +61,11 @@ def getNicknameFromActor(actor: str) -> str:
     """
     if '/users/' not in actor:
         return None
-    return actor.split('/users/')[1].replace('@','')    
+    nickStr=actor.split('/users/')[1].replace('@','')
+    if '/' not in nickStr:
+        return nickStr
+    else:
+        return nickStr.split('/')[0]
 
 def getDomainFromActor(actor: str) -> (str,int):
     """Returns the domain name from an actor url
