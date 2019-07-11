@@ -318,13 +318,27 @@ def testPostMessageBetweenServers():
     print('\n\n*******************************************************')
     print("Bob repeats Alice's post")
     objectUrl=httpPrefix+'://'+aliceDomain+':'+str(alicePort)+'/users/alice/statuses/'+str(statusNumber)
+    inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
+    beforeAnnounceCount=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
+    assert beforeAnnounceCount==0
+    print('inbox items before announce: '+str(beforeAnnounceCount))
     announcePublic(sessionBob,bobDir,federationList, \
                    'bob',bobDomain,bobPort,httpPrefix, \
                    objectUrl, \
                    False,bobSendThreads,bobPostLog, \
                    bobPersonCache,bobCachedWebfingers, \
                    True)
-
+    announceMessageArrived=False
+    for i in range(10):
+        time.sleep(1)
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
+                announceMessageArrived=True
+                print('Announce message sent to Alice!')
+                break
+    afterAnnounceCount=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
+    print('inbox items after announce: '+str(afterAnnounceCount))
+    assert afterAnnounceCount==beforeAnnounceCount+1
     # stop the servers
     thrAlice.kill()
     thrAlice.join()

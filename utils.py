@@ -121,15 +121,16 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
 def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str):
     """Returns the filename for the given status post url
     """
-    boxName='outbox'
+    # if this post in the shared inbox?
+    handle='inbox@'+domain
+    boxName='inbox'
     postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
     if not os.path.isfile(postFilename):
-        # if this post in the inbox of the person?
-        boxName='inbox'
+        boxName='outbox'
         postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
         if not os.path.isfile(postFilename):
-            # if this post in the shared inbox?
-            handle='inbox@'+domain
+            # if this post in the inbox of the person?
+            boxName='inbox'
             postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
             if not os.path.isfile(postFilename):
                 postFilename=None
