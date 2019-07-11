@@ -432,8 +432,8 @@ def receiveLike(session,handle: str,baseDir: str, \
             print(messageJson['object'])
         return True
     if debug:
-        print('DEBUG: liked post found in '+boxName)
-    updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'])
+        print('DEBUG: liked post found in inbox')
+    updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'],debug)
     return True
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \

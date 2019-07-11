@@ -278,43 +278,41 @@ def testPostMessageBetweenServers():
     # queue item removed
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
 
-    #print('\n\n*******************************************************')
-    #print("Bob likes Alice's post")
+    print('\n\n*******************************************************')
+    print("Bob likes Alice's post")
 
-    #followerOfPerson(bobDir,'bob',bobDomain,'alice',aliceDomain+':'+str(alicePort),federationList,True)
-    #followPerson(aliceDir,'alice',aliceDomain,'bob',bobDomain+':'+str(bobPort),federationList,True)
-    #followList=getFollowersOfPerson(bobDir,'bob',bobDomain,'followers.txt')
-    #assert len(followList)==1
+    followerOfPerson(bobDir,'bob',bobDomain,'alice',aliceDomain+':'+str(alicePort),federationList,True)
+    followPerson(aliceDir,'alice',aliceDomain,'bob',bobDomain+':'+str(bobPort),federationList,True)
 
-    #sessionBob = createSession(bobDomain,bobPort,useTor)
-    #bobSendThreads = []
-    #bobPostLog = []
-    #bobPersonCache={}
-    #bobCachedWebfingers={}
-    #statusNumber=None
-    #outboxPostFilename=None
-    #outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
-    #for name in os.listdir(outboxPath):
-    #    if '#statuses#' in name:
-    #        statusNumber=int(name.split('#statuses#')[1].replace('.json',''))
-    #        outboxPostFilename=outboxPath+'/'+name
-    #assert statusNumber
-    #assert outboxPostFilename
-    #assert likePost(sessionBob,bobDir,federationList, \
-    #                'bob',bobDomain,bobPort,httpPrefix, \
-    #                'alice',aliceDomain,alicePort,[], \
-    #                statusNumber,False,bobSendThreads,bobPostLog, \
-    #                bobPersonCache,bobCachedWebfingers,True)
+    sessionBob = createSession(bobDomain,bobPort,useTor)
+    bobSendThreads = []
+    bobPostLog = []
+    bobPersonCache={}
+    bobCachedWebfingers={}
+    statusNumber=None
+    outboxPostFilename=None
+    outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
+    for name in os.listdir(outboxPath):
+        if '#statuses#' in name:
+            statusNumber=int(name.split('#statuses#')[1].replace('.json',''))
+            outboxPostFilename=outboxPath+'/'+name
+    assert statusNumber
+    assert outboxPostFilename
+    assert likePost(sessionBob,bobDir,federationList, \
+                    'bob',bobDomain,bobPort,httpPrefix, \
+                    'alice',aliceDomain,alicePort,[], \
+                    statusNumber,False,bobSendThreads,bobPostLog, \
+                    bobPersonCache,bobCachedWebfingers,True)
 
-    #for i in range(20):
-    #    if 'likes' in open(outboxPostFilename).read():
-    #        break
-    #    time.sleep(1)
+    for i in range(20):
+        if 'likes' in open(outboxPostFilename).read():
+            break
+        time.sleep(1)
 
-    #with open(outboxPostFilename, 'r') as fp:
-    #    alicePostJson=commentjson.load(fp)
-    #    pprint(alicePostJson)
-    #assert 'likes' in open(outboxPostFilename).read()
+    with open(outboxPostFilename, 'r') as fp:
+        alicePostJson=commentjson.load(fp)
+        pprint(alicePostJson)
+    assert 'likes' in open(outboxPostFilename).read()
     
     # stop the servers
     thrAlice.kill()

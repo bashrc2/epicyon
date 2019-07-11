@@ -388,7 +388,6 @@ if args.changepassword:
 if not args.domain and not domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
-    
 
 if federationList:
     print('Federating with: '+str(federationList))
@@ -399,10 +398,6 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     adminPassword=createPassword(10)
     setConfigParam(baseDir,'adminPassword',adminPassword)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
-
-#if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
-#    print('Creating capabilities account which can sign requests')
-#    createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
 
 if args.testdata:
     nickname='testuser567'
