@@ -472,6 +472,9 @@ def receiveDelete(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: "statuses" missing from object in '+messageJson['type'])
         return False
+    if messageJson['actor'] not in messageJson['object']:
+        if debug:
+            print('DEBUG: actor is not the owner of the post to be deleted')    
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of like - '+handle)
     # if this post in the outbox of the person?
@@ -480,7 +483,7 @@ def receiveDelete(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageJson['object'])
-        return True
+        return True    
     os.remove(postFilename)
     if debug:
         print('DEBUG: post deleted - '+postFilename)
