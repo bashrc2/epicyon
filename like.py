@@ -15,6 +15,42 @@ from utils import getDomainFromActor
 from utils import locatePost
 from posts import sendSignedJson
 
+def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+    """Undoes a like for a particular actor
+    """
+    with open(postFilename, 'r') as fp:
+        postJson=commentjson.load(fp)
+        if not postJson.get('object'):
+            if debug:
+                pprint(postJson)
+                print('DEBUG: post '+objectUrl+' has no object')
+            return
+        if not postJson['object'].get('likes'):
+            return
+        if not postJson['object']['likes'].get('items'):
+            return
+        totalItems=0
+        if postJson['object']['likes'].get('totalItems'):
+            totalItems=postJson['object']['likes']['totalItems']
+        itemFound=False
+        for likeItem in postJson['object']['likes']['items']:
+            if likeItem.get('actor'):
+                if likeItem['actor']==actor:
+                    if debug:
+                        print('DEBUG: like was removed for '+actor)
+                    postJson['object']['likes']['items'].remove(likeItem)
+                    itemFound=True
+                    break
+        if itemFound:
+            if totalItems==1:
+                if debug:
+                    print('DEBUG: likes was removed from post')
+                postJson['object'].remove(postJson['object']['likes'])
+            else:
+                postJson['object']['likes']['totalItems']=len(postJson['likes']['items'])
+            with open(postFilename, 'w') as fp:
+                commentjson.dump(postJson, fp, indent=4, sort_keys=True)            
+
 def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """
