@@ -385,15 +385,15 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 },
                 'attachment': [],
                 'tag': [],
-                'replies': {}
-                #    'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
-                #    'type': 'Collection',
-                #    'first': {
-                #        'type': 'CollectionPage',
-                #        'partOf': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
-                #        'items': []
-                #    }
-                #}
+                'replies': {
+                    'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                    'type': 'Collection',
+                    'first': {
+                        'type': 'CollectionPage',
+                        'partOf': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                        'items': []
+                    }
+                }
             }
         }
     else:
