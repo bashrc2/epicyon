@@ -319,6 +319,8 @@ def testPostMessageBetweenServers():
     print("Bob repeats Alice's post")
     objectUrl=httpPrefix+'://'+aliceDomain+':'+str(alicePort)+'/users/alice/statuses/'+str(statusNumber)
     inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
+    outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
+    outboxBeforeAnnounceCount=len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])
     beforeAnnounceCount=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
     assert beforeAnnounceCount==0
     print('inbox items before announce: '+str(beforeAnnounceCount))
@@ -337,8 +339,10 @@ def testPostMessageBetweenServers():
                 print('Announce message sent to Alice!')
                 break
     afterAnnounceCount=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
+    outboxAfterAnnounceCount=len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])
     print('inbox items after announce: '+str(afterAnnounceCount))
     assert afterAnnounceCount==beforeAnnounceCount+1
+    assert outboxAfterAnnounceCount==outboxBeforeAnnounceCount+1
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
