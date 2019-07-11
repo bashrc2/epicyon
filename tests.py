@@ -36,13 +36,13 @@ from follow import unfollowPerson
 from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
 from follow import sendFollowRequest
-from follow import getFollowersOfActor
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
+from like import likePost
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -210,7 +210,6 @@ def testPostMessageBetweenServers():
 
     httpPrefix='http'
     useTor=False
-    federationList=['127.0.0.50','127.0.0.100']
 
     baseDir=os.getcwd()
     if os.path.isdir(baseDir+'/.tests'):
@@ -223,12 +222,13 @@ def testPostMessageBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,True,True,ocapAlways),daemon=True)
-
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.100'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,True,True,ocapAlways),daemon=True)
+    federationList=[bobDomain,aliceDomain]
+
+    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,False,False,ocapAlways),daemon=True)
+    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,False,False,ocapAlways),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -241,6 +241,7 @@ def testPostMessageBetweenServers():
         
     time.sleep(1)
 
+    print('\n\n*******************************************************')
     print('Alice sends to Bob')
     os.chdir(aliceDir)
     sessionAlice = createSession(aliceDomain,alicePort,useTor)
@@ -255,6 +256,11 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
+
+    # nothing in Alice's outbox
+    outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
+
     sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
@@ -263,9 +269,53 @@ def testPostMessageBetweenServers():
     for i in range(30):
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
-                break
+                if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
+                    break
         time.sleep(1)
 
+    # inbox item created
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
+    # queue item removed
+    assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
+
+    #print('\n\n*******************************************************')
+    #print("Bob likes Alice's post")
+
+    #followerOfPerson(bobDir,'bob',bobDomain,'alice',aliceDomain+':'+str(alicePort),federationList,True)
+    #followPerson(aliceDir,'alice',aliceDomain,'bob',bobDomain+':'+str(bobPort),federationList,True)
+    #followList=getFollowersOfPerson(bobDir,'bob',bobDomain,'followers.txt')
+    #assert len(followList)==1
+
+    #sessionBob = createSession(bobDomain,bobPort,useTor)
+    #bobSendThreads = []
+    #bobPostLog = []
+    #bobPersonCache={}
+    #bobCachedWebfingers={}
+    #statusNumber=None
+    #outboxPostFilename=None
+    #outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
+    #for name in os.listdir(outboxPath):
+    #    if '#statuses#' in name:
+    #        statusNumber=int(name.split('#statuses#')[1].replace('.json',''))
+    #        outboxPostFilename=outboxPath+'/'+name
+    #assert statusNumber
+    #assert outboxPostFilename
+    #assert likePost(sessionBob,bobDir,federationList, \
+    #                'bob',bobDomain,bobPort,httpPrefix, \
+    #                'alice',aliceDomain,alicePort,[], \
+    #                statusNumber,False,bobSendThreads,bobPostLog, \
+    #                bobPersonCache,bobCachedWebfingers,True)
+
+    #for i in range(20):
+    #    if 'likes' in open(outboxPostFilename).read():
+    #        break
+    #    time.sleep(1)
+
+    #with open(outboxPostFilename, 'r') as fp:
+    #    alicePostJson=commentjson.load(fp)
+    #    pprint(alicePostJson)
+    #assert 'likes' in open(outboxPostFilename).read()
+    
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
@@ -274,11 +324,6 @@ def testPostMessageBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive()==False
-
-    # inbox item created
-    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
-    # queue item removed
-    assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
 
     os.chdir(baseDir)
     shutil.rmtree(aliceDir)
@@ -439,7 +484,7 @@ def testFollowBetweenServers():
 
     assert aliceMessageArrived==True
     print('Message from Alice to Bob succeeded, since it was granted capabilities')
-
+    
     print('\n\n*********************************************************')
     print("\nBob changes Alice's capabilities so that she can't reply on his posts")
     bobCapsFilename=bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'

@@ -18,6 +18,7 @@ from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from person import personLookup
 from person import personBoxJson
+from person import createSharedInbox
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from inbox import inboxPermittedMessage
@@ -540,6 +541,10 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
         httpd.acceptedCaps.append('inbox:noannounce')
     if cw:
         httpd.acceptedCaps.append('inbox:cw')
+
+    print('Creating shared inbox: inbox@'+domain)
+    createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
+        
     print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.thrInboxQueue= \
         threadWithTrace(target=runInboxQueue, \

@@ -19,6 +19,7 @@ from utils import getStatusNumber
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
+from utils import locatePost
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -87,7 +88,7 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
     if not urlPermitted(actor,federationList,"inbox:write"):
         return False
 
-    if messageJson['type']!='Follow':
+    if messageJson['type']!='Follow' and messageJson['type']!='Like':
         if messageJson.get('object'):
             if messageJson['object'].get('inReplyTo'):
                 inReplyTo=messageJson['object']['inReplyTo']
@@ -210,7 +211,7 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
 def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
                            recipientsDict :{}, \
                            domainMatch: str,domain :str, \
-                           actor :str) -> bool:
+                           actor :str,debug: bool) -> bool:
     """Given a list of post recipients (toList) from 'to' or 'cc' parameters
     populate a recipientsDict with the handle and capabilities id for each
     """
@@ -235,12 +236,23 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
                         else:
                             recipientsDict[handle]=None
                 else:
+                    if debug:
+                        print('DEBUG: '+ocapFilename+' not found')
                     recipientsDict[handle]=None
+            else:
+                if debug:
+                    print('DEBUG: '+baseDir+'/accounts/'+handle+' does not exist')
+        else:
+            if debug:
+                print('DEBUG: '+recipient+' is not local to '+domainMatch)
+                print(str(toList))
         if recipient.endswith('followers'):
+            if debug:
+                print('DEBUG: followers detected as post recipients')
             followerRecipients=True
     return followerRecipients,recipientsDict
 
-def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int) -> ([],[]):
+def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int, debug :bool) -> ([],[]):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -248,6 +260,9 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
     recipientsDictFollowers={}
 
     if not postJsonObject.get('actor'):
+        if debug:
+            pprint(postJsonObject)
+            print('WARNING: inbox post has no actor')
         return recipientsDict,recipientsDictFollowers
 
     if ':' in domain:
@@ -264,29 +279,48 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
             if postJsonObject['object'].get('to'):
+                if debug:
+                    print('DEBUG: resolving "to"')
                 includesFollowers,recipientsDict= \
                     inboxPostRecipientsAdd(baseDir,httpPrefix, \
                                            postJsonObject['object']['to'], \
                                            recipientsDict, \
-                                           domainMatch,domainBase,actor)
+                                           domainMatch,domainBase, \
+                                           actor,debug)
                 if includesFollowers:
                     followerRecipients=True
+            else:
+                if debug:
+                    print('DEBUG: inbox post has no "to"')
 
             if postJsonObject['object'].get('cc'):
                 includesFollowers,recipientsDict= \
                     inboxPostRecipientsAdd(baseDir,httpPrefix, \
                                            postJsonObject['object']['cc'], \
                                            recipientsDict, \
-                                           domainMatch,domainBase,actor)
+                                           domainMatch,domainBase, \
+                                           actor,debug)
                 if includesFollowers:
                     followerRecipients=True
+            else:
+                if debug:
+                    print('DEBUG: inbox post has no cc')
+        else:
+            if debug:
+                if isinstance(postJsonObject['object'], str):
+                    if '/statuses/' in postJsonObject['object']:
+                        print('DEBUG: inbox item is a link to a post')
+                    else:
+                        if '/users/' in postJsonObject['object']:
+                            print('DEBUG: inbox item is a link to an actor')
 
     if postJsonObject.get('to'):
         includesFollowers,recipientsDict= \
             inboxPostRecipientsAdd(baseDir,httpPrefix, \
                                    postJsonObject['to'], \
                                    recipientsDict, \
-                                   domainMatch,domainBase,actor)
+                                   domainMatch,domainBase, \
+                                   actor,debug)
         if includesFollowers:
             followerRecipients=True
 
@@ -295,16 +329,19 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
             inboxPostRecipientsAdd(baseDir,httpPrefix, \
                                    postJsonObject['cc'], \
                                    recipientsDict, \
-                                   domainMatch,domainBase,actor)
+                                   domainMatch,domainBase, \
+                                   actor,debug)
         if includesFollowers:
             followerRecipients=True
 
     if not followerRecipients:
+        if debug:
+            print('DEBUG: no followers were resolved')
         return recipientsDict,recipientsDictFollowers
 
     # now resolve the followers
     recipientsDictFollowers= \
-        getFollowersOfActor(baseDir,actor,recipientsDict)
+        getFollowersOfActor(baseDir,actor,debug)
 
     return recipientsDict,recipientsDictFollowers
 
@@ -388,18 +425,7 @@ def receiveLike(session,handle: str,baseDir: str, \
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of like - '+handle)
     # if this post in the outbox of the person?
-    boxName='outbox'
-    postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
-    if not os.path.isfile(postFilename):
-        # if this post in the inbox of the person?
-        boxName='inbox'
-        postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
-        if not os.path.isfile(postFilename):
-            # if this post in the shared inbox?
-            handle='inbox@'+domain
-            postFilename=baseDir+'/accounts/'+handle+'/'+boxName+'/'+messageJson['object'].replace('/','#')+'.json'
-            if not os.path.isfile(postFilename):
-                postFilename=None
+    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
     if not postFilename:
         if debug:
             print('DEBUG: post not found in inbox or outbox')
@@ -569,7 +595,15 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
 
             # get recipients list
             recipientsDict,recipientsDictFollowers= \
-                inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port)
+                inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port,debug)
+            if len(recipientsDict.items())==0 and \
+               len(recipientsDictFollowers.items())==0:
+                if debug:
+                    pprint(queueJson['post'])
+                    print('DEBUG: no recipients were resolved for post arriving in inbox')
+                os.remove(queueFilename)
+                queue.pop(0)
+                continue
 
             # if there are only a small number of followers then process them as if they
             # were specifically addresses to particular accounts
@@ -579,7 +613,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                     if debug:
                         print('DEBUG: moving '+str(noOfFollowItems)+' inbox posts addressed to followers')
                     for handle,postItem in recipientsDictFollowers.items():
-                        recipientsDict['handle']=postItem
+                        recipientsDict[handle]=postItem
                     recipientsDictFollowers={}
                 recipientsList=[recipientsDict,recipientsDictFollowers]
 
@@ -587,7 +621,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cache
                 print('*************************************')
                 print('Resolved recipients list:')
                 pprint(recipientsDict)
-                print('Resolved sollowers list:')
+                print('Resolved followers list:')
                 pprint(recipientsDictFollowers)
                 print('*************************************')
 

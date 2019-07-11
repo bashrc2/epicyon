@@ -44,6 +44,8 @@ def createInboxQueueDir(nickname: str,domain: str,baseDir: str) -> str:
 def domainPermitted(domain: str, federationList: []):
     if len(federationList)==0:
         return True
+    if ':' in domain:
+        domain=domain.split(':')[0]
     if domain in federationList:
         return True
     return False
@@ -91,6 +93,8 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         if debug:
             print('DEBUG: follow of domain '+followDomain+' not permitted')
         return False
+    if debug:
+        print('DEBUG: follow of domain '+followDomain)
     handle=nickname.lower()+'@'+domain.lower()
     handleToFollow=followNickname.lower()+'@'+followDomain.lower()
     if not os.path.isdir(baseDir+'/accounts'):
@@ -100,10 +104,33 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
+            if debug:
+                print('DEBUG: follow already exists')
             return True
         with open(filename, "a") as followfile:
             followfile.write(handleToFollow+'\n')
+            if debug:
+                print('DEBUG: follow added')
             return True
+    if debug:
+        print('DEBUG: creating new following file')
     with open(filename, "w") as followfile:
         followfile.write(handleToFollow+'\n')
     return True
+
+def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str):
+    """Returns the filename for the given status post url
+    """
+    boxName='outbox'
+    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
+    if not os.path.isfile(postFilename):
+        # if this post in the inbox of the person?
+        boxName='inbox'
+        postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
+        if not os.path.isfile(postFilename):
+            # if this post in the shared inbox?
+            handle='inbox@'+domain
+            postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
+            if not os.path.isfile(postFilename):
+                postFilename=None
+    return postFilename

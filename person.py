@@ -88,6 +88,14 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
             os.mkdir(baseDir+peopleSubdir)
         if not os.path.isdir(baseDir+peopleSubdir+'/'+handle):
             os.mkdir(baseDir+peopleSubdir+'/'+handle)
+        if not os.path.isdir(baseDir+peopleSubdir+'/'+handle+'/inbox'):
+            os.mkdir(baseDir+peopleSubdir+'/'+handle+'/inbox')
+        if not os.path.isdir(baseDir+peopleSubdir+'/'+handle+'/outbox'):
+            os.mkdir(baseDir+peopleSubdir+'/'+handle+'/outbox')
+        if not os.path.isdir(baseDir+peopleSubdir+'/'+handle+'/ocap'):
+            os.mkdir(baseDir+peopleSubdir+'/'+handle+'/ocap')
+        if not os.path.isdir(baseDir+peopleSubdir+'/'+handle+'/queue'):
+            os.mkdir(baseDir+peopleSubdir+'/'+handle+'/queue')
         filename=baseDir+peopleSubdir+'/'+handle+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newPerson, fp, indent=4, sort_keys=False)

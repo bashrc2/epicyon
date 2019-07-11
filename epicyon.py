@@ -400,13 +400,9 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     setConfigParam(baseDir,'adminPassword',adminPassword)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
 
-if not os.path.isdir(baseDir+'/accounts/inbox@'+domain):
-    print('Creating shared inbox: inbox@'+domain)
-    createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
-
-if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
-    print('Creating capabilities account which can sign requests')
-    createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
+#if not os.path.isdir(baseDir+'/accounts/capabilities@'+domain):
+#    print('Creating capabilities account which can sign requests')
+#    createCapabilitiesInbox(baseDir,'capabilities',domain,port,httpPrefix)
 
 if args.testdata:
     nickname='testuser567'

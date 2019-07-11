@@ -27,6 +27,8 @@ def getFollowersOfPerson(baseDir: str, \
     Used by the shared inbox to know who to send incoming mail to
     """
     followers=[]
+    if ':' in domain:
+        domain=domain.split(':')[0]
     handle=nickname.lower()+'@'+domain.lower()
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         return followers
@@ -345,38 +347,64 @@ def sendFollowRequest(session,baseDir: str, \
 
     return newFollowJson
 
-def getFollowersOfActor(baseDir :str,actor :str,recipientsDict: {}) -> {}:
+def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
     This returns a list of account handles which follow the given actor
     and also the corresponding capability id if it exists
     """
+    if debug:
+        print('DEBUG: getting followers of '+actor)
+    recipientsDict={}
     if ':' not in actor:
         return recipientsDict
     httpPrefix=actor.split(':')[0]
     nickname=getNicknameFromActor(actor)
     if not nickname:
+        if debug:
+            print('DEBUG: no nickname found in '+actor)
         return recipientsDict
     domain,port=getDomainFromActor(actor)
     if not domain:
+        if debug:
+            print('DEBUG: no domain found in '+actor)
         return recipientsDict
     actorHandle=nickname+'@'+domain
+    if debug:
+        print('DEBUG: searching for handle '+actorHandle)
     # for each of the accounts
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for account in dirs:
             if '@' in account and not account.startswith('inbox@'):
                 followingFilename = os.path.join(subdir, account)+'/following.txt'
+                if debug:
+                    print('DEBUG: examining follows of '+account)
+                    print(followingFilename)
                 if os.path.isfile(followingFilename):
                     # does this account follow the given actor?
+                    if debug:
+                        print('DEBUG: checking if '+actorHandle+' in '+followingFilename)
                     if actorHandle in open(followingFilename).read():
+                        if debug:
+                            print('DEBUG: '+account+' follows '+actorHandle)
                         ocapFilename=baseDir+'/accounts/'+account+'/ocap/accept/'+httpPrefix+':##'+domain+':'+str(port)+'#users#'+nickname+'.json'
+                        if debug:
+                            print('DEBUG: checking capabilities of'+account)
                         if os.path.isfile(ocapFilename):                        
                             with open(ocapFilename, 'r') as fp:
                                 ocapJson=commentjson.load(fp)
-                            if ocapJson.get('id'):                                
-                                recipientsDict[account]=ocapJson['id']
-                            else:
-                                recipientsDict[account]=None
+                                if ocapJson.get('id'):
+                                    if debug:
+                                        print('DEBUG: capabilities id found for '+account)
+                
+                                    recipientsDict[account]=ocapJson['id']
+                                else:
+                                    if debug:
+                                        print('DEBUG: capabilities has no id attribute')
+                                    recipientsDict[account]=None
                         else:
+                            if debug:
+                                print('DEBUG: No capabilities file found for '+account+' granted by '+actorHandle)
+                                print(ocapFilename)
                             recipientsDict[account]=None
     return recipientsDict
