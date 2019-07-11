@@ -11,11 +11,18 @@ import commentjson
 from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
+from posts import sendSignedJson
 
-def createAnnounce(baseDir: str,federationList: [], \
+def createAnnounce(session,baseDir: str,federationList: [], \
                    nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, \
-                   objectUrl: str, saveToFile: bool) -> {}:
+                   objectUrl: str, saveToFile: bool, \
+                   clientToServer: bool, \
+                   sendThreads: [],postLog: [], \
+                   personCache: {},cachedWebfingers: {}, \
+                   debug: bool) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the
@@ -25,15 +32,18 @@ def createAnnounce(baseDir: str,federationList: [], \
     if not urlPermitted(objectUrl,federationList,"inbox:write"):
         return None
 
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    fullDomain=domain
     if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+        fullDomain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
     newAnnounceId= \
-        httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+        httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber
     newAnnounce = {
-        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
-        'atomUri': httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber,
+        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'atomUri': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
         'cc': [],
         'id': newAnnounceId+'/activity',
         'object': objectUrl,
@@ -43,44 +53,75 @@ def createAnnounce(baseDir: str,federationList: [], \
     }
     if ccUrl:
         if len(ccUrl)>0:
-            newAnnounce['cc']=ccUrl
+            newAnnounce['cc']=[ccUrl]
     if saveToFile:
-        if ':' in domain:
-            domain=domain.split(':')[0]
         outboxDir = createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newAnnounceId.replace('/','#')+'.json'
         with open(filename, 'w') as fp:
             commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
+
+    announceNickname=None
+    announceDomain=None
+    announcePort=None
+    if '/users/' in objectUrl:
+        announceNickname=getNicknameFromActor(objectUrl)
+        announceDomain,announcePort=getDomainFromActor(objectUrl)
+
+    if announceNickname and announceDomain:
+        sendSignedJson(newAnnounce,session,baseDir, \
+                       nickname,domain,port, \
+                       announceNickname,announceDomain,announcePort, \
+                       'https://www.w3.org/ns/activitystreams#Public', \
+                       httpPrefix,True,clientToServer,federationList, \
+                       sendThreads,postLog,cachedWebfingers,personCache,debug)
+            
     return newAnnounce
 
-def announcePublic(baseDir: str,federationList: [], \
+def announcePublic(session,baseDir: str,federationList: [], \
                    nickname: str, domain: str, port: int, httpPrefix: str, \
-                   objectUrl: str, saveToFile: bool) -> {}:
+                   objectUrl: str,clientToServer: bool, \
+                   sendThreads: [],postLog: [], \
+                   personCache: {},cachedWebfingers: {}, \
+                   debug: bool) -> {}:
     """Makes a public announcement
     """
     fromDomain=domain
     if port!=80 and port!=443:
-        fromDomain=fromDomain+':'+str(port)
+        if ':' not in domain:
+            fromDomain=domain+':'+str(port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
-    return createAnnounce(baseDir,nickname, domain, port, \
-                          toUrl, ccUrl, httpPrefix, objectUrl, saveToFile)
+    return createAnnounce(session,baseDir,federationList, \
+                          nickname,domain,port, \
+                          toUrl,ccUrl,httpPrefix, \
+                          objectUrl,True,clientToServer, \
+                          sendThreads,postLog, \
+                          personCache,cachedWebfingers, \
+                          debug)
 
-def repeatPost(baseDir: str,federationList: [], \
+def repeatPost(session,baseDir: str,federationList: [], \
                nickname: str, domain: str, port: int, httpPrefix: str, \
                announceNickname: str, announceDomain: str, \
                announcePort: int, announceHttpsPrefix: str, \
-               announceStatusNumber: int, saveToFile: bool) -> {}:
+               announceStatusNumber: int,clientToServer: bool, \
+               sendThreads: [],postLog: [], \
+               personCache: {},cachedWebfingers: {}, \
+               debug: bool) -> {}:
     """Repeats a given status post
     """
     announcedDomain=announceDomain
     if announcePort!=80 and announcePort!=443:
-        announcedDomain=announcedDomain+':'+str(announcePort)
+        if ':' not in announcedDomain:
+            announcedDomain=announcedDomain+':'+str(announcePort)
 
     objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
 
-    return announcePublic(baseDir,nickname, domain, port, \
-                          httpPrefix, objectUrl, saveToFile)
+    return announcePublic(session,baseDir,federationList, \
+                          nickname,domain,port,httpPrefix, \
+                          objectUrl,clientToServer, \
+                          sendThreads,postLog, \
+                          personCache,cachedWebfingers, \
+                          debug)
 

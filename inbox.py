@@ -88,7 +88,9 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
     if not urlPermitted(actor,federationList,"inbox:write"):
         return False
 
-    if messageJson['type']!='Follow' and messageJson['type']!='Like':
+    if messageJson['type']!='Follow' and \
+       messageJson['type']!='Like' and \
+       messageJson['type']!='Announce':
         if messageJson.get('object'):
             if messageJson['object'].get('inReplyTo'):
                 inReplyTo=messageJson['object']['inReplyTo']

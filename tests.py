@@ -43,6 +43,7 @@ from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
 from like import likePost
+from announce import announcePublic
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -296,7 +297,7 @@ def testPostMessageBetweenServers():
         if '#statuses#' in name:
             statusNumber=int(name.split('#statuses#')[1].replace('.json',''))
             outboxPostFilename=outboxPath+'/'+name
-    assert statusNumber
+    assert statusNumber>0
     assert outboxPostFilename
     assert likePost(sessionBob,bobDir,federationList, \
                     'bob',bobDomain,bobPort,httpPrefix, \
@@ -313,7 +314,17 @@ def testPostMessageBetweenServers():
         alicePostJson=commentjson.load(fp)
         pprint(alicePostJson)
     assert 'likes' in open(outboxPostFilename).read()
-    
+
+    print('\n\n*******************************************************')
+    print("Bob repeats Alice's post")
+    objectUrl=httpPrefix+'://'+aliceDomain+':'+str(alicePort)+'/users/alice/statuses/'+str(statusNumber)
+    announcePublic(sessionBob,bobDir,federationList, \
+                   'bob',bobDomain,bobPort,httpPrefix, \
+                   objectUrl, \
+                   False,bobSendThreads,bobPostLog, \
+                   bobPersonCache,bobCachedWebfingers, \
+                   True)
+
     # stop the servers
     thrAlice.kill()
     thrAlice.join()
