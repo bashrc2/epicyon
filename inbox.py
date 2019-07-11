@@ -90,6 +90,7 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
 
     if messageJson['type']!='Follow' and \
        messageJson['type']!='Like' and \
+       messageJson['type']!='Delete' and \
        messageJson['type']!='Announce':
         if messageJson.get('object'):
             if messageJson['object'].get('inReplyTo'):
@@ -438,6 +439,53 @@ def receiveLike(session,handle: str,baseDir: str, \
     updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'],debug)
     return True
 
+def receiveDelete(session,handle: str,baseDir: str, \
+                  httpPrefix: str,domain :str,port: int, \
+                  sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                  personCache: {},messageJson: {},federationList: [], \
+                  debug : bool) -> bool:
+    """Receives a Delete activity within the POST section of HTTPServer
+    """
+    if messageJson['type']!='Delete':
+        return False
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no actor')
+        return False
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object')
+        return False
+    if not isinstance(messageJson['object'], str):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object is not a string')
+        return False
+    if not messageJson.get('to'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no "to" list')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type'])
+        return False
+    if '/statuses/' not in messageJson['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from object in '+messageJson['type'])
+        return False
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('DEBUG: unknown recipient of like - '+handle)
+    # if this post in the outbox of the person?
+    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
+    if not postFilename:
+        if debug:
+            print('DEBUG: delete post not found in inbox or outbox')
+            print(messageJson['object'])
+        return True
+    os.remove(postFilename)
+    if debug:
+        print('DEBUG: post deleted - '+postFilename)
+    return True
+
 def receiveAnnounce(session,handle: str,baseDir: str, \
                     httpPrefix: str,domain :str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -518,6 +566,18 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         if debug:
             print('DEBUG: Announce accepted from '+keyId)
 
+    if receiveDelete(session,handle, \
+                     baseDir,httpPrefix, \
+                     domain,port, \
+                     sendThreads,postLog, \
+                     cachedWebfingers, \
+                     personCache, \
+                     messageJson, \
+                     federationList, \
+                     debug):
+        if debug:
+            print('DEBUG: Announce accepted from '+keyId)
+
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)
@@ -525,7 +585,11 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     copyfile(queueFilename,destinationFilename)
     return True
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {},queue: [],domain: str,port: int,useTor: bool,federationList: [],ocapAlways: bool,debug: bool,acceptedCaps=["inbox:write","objects:read"]) -> None:
+def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
+                  cachedWebfingers: {},personCache: {},queue: [], \
+                  domain: str,port: int,useTor: bool,federationList: [], \
+                  ocapAlways: bool,debug: bool, \
+                  acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
     """
