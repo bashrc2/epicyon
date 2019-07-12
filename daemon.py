@@ -208,6 +208,31 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
+        # show avatar
+        if '/users/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif'):
+                avatarStr=self.path.split('/users/')[1]
+                if '/' in avatarStr:
+                    avatarNickname=avatarStr.split('/')[0]
+                    avatarFile=avatarStr.split('/')[1]
+                    avatarFilename= \
+                        self.server.baseDir+'/accounts/'+ \
+                        avatarNickname+'@'+ \
+                        self.server.domain+'/'+avatarFile
+                    if os.path.isfile(avatarFilename):
+                        if avatarFile.endswith('.png'):
+                            self._set_headers('image/png')
+                        elif avatarFile.endswith('.jpg'):
+                            self._set_headers('image/jpeg')
+                        else:
+                            self._set_headers('image/gif')
+                        with open(avatarFilename, 'rb') as avFile:
+                            av = avFile.read()
+                            self.wfile.write(av)
+                        self.server.GETbusy=False
+                        return                    
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
             namedStatus=self.path.split('/@')[1]
