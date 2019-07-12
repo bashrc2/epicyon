@@ -10,6 +10,8 @@ import json
 import commentjson
 import os
 import fileinput
+import subprocess
+from pathlib import Path
 from Crypto.PublicKey import RSA
 from shutil import copyfile
 from webfinger import createWebfingerEndpoint
@@ -24,26 +26,35 @@ def generateRSAKey() -> (str,str):
     return privateKeyPem,publicKeyPem
 
 def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
-                    imageFilename: str,imageType :str):
+                    port :int,imageFilename: str,imageType :str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
+    imageFilename=imageFilename.replace('\n','')
     if not (imageFilename.endswith('.png') or \
             imageFilename.endswith('.jpg') or \
             imageFilename.endswith('.jpeg') or \
             imageFilename.endswith('.gif')):
-        return
+        print('Profile image must be png, jpg or gif format')
+        return False
 
+    if imageFilename.startswith('~/'):
+        imageFilename=imageFilename.replace('~/',str(Path.home())+'/')
+
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    fullDomain=domain
     if port!=80 and port!=443:
-        if ':' not in domain:
-            domain=domain+':'+str(port)
+        fullDomain=domain+':'+str(port)
 
     handle=nickname.lower()+'@'+domain.lower()
     personFilename=baseDir+'/accounts/'+handle+'.json'
     if not os.path.isfile(personFilename):
-        return
+        print('person definition not found: '+personFilename)
+        return False
     if not os.path.isdir(baseDir+'/accounts/'+handle):
-        return
+        print('Account not found: '+baseDir+'/accounts/'+handle)
+        return False
 
     iconFilenameBase='icon'
     if imageType=='avatar' or imageType=='icon':
@@ -65,10 +76,14 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
     with open(personFilename, 'r') as fp:
         personJson=commentjson.load(fp)
         personJson[iconFilenameBase]['mediaType']=mediaType
-        personJson[iconFilenameBase]['url']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+iconFilename
+        personJson[iconFilenameBase]['url']=httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
         with open(personFilename, 'w') as fp:
             commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-        copyfile(imageFilename,profileFilename)    
+
+        cmd = '/usr/bin/convert '+imageFilename+' -size 128x128 -quality 50 '+profileFilename
+        subprocess.call(cmd, shell=True)
+        return True
+    return False
 
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):

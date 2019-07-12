@@ -12,6 +12,7 @@ from person import createCapabilitiesInbox
 from person import setPreferredNickname
 from person import setBio
 from person import validNickname
+from person import setProfileImage
 from webfinger import webfingerHandle
 from posts import getPosts
 from posts import createPublicPost
@@ -134,6 +135,8 @@ parser.add_argument("--noannounce","--norepeat", type=str2bool, nargs='?', \
 parser.add_argument("--cw", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Default capabilities don't allow posts without content warnings")
+parser.add_argument('--icon','--avatar', dest='avatar', type=str,default=None, \
+                    help='Set the avatar filename for an account')
 args = parser.parse_args()
 
 debug=False
@@ -398,6 +401,20 @@ if not args.domain and not domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
 
+if args.avatar:
+    if not os.path.isfile(args.avatar):
+        print(args.avatar+' is not an image filename')
+        sys.exit()
+    if not args.nickname:
+        print('Specify a nickname with --nickname [name]')
+        sys.exit()
+    if setProfileImage(baseDir,httpPrefix,args.nickname,domain, \
+                       port,args.avatar,'avatar'):
+        print('Avatar added for '+args.nickname)
+    else:
+        print('Avatar was not added for '+args.nickname)
+    sys.exit()    
+    
 if federationList:
     print('Federating with: '+str(federationList))
 
