@@ -10,13 +10,15 @@ from blurhash import blurhash_encode as blurencode
 from PIL import Image
 import numpy
 import os
+import sys
 import json
 import commentjson
 import datetime
 from auth import createPassword
 from shutil import copyfile
+from shutil import rmtree
 
-def getImageHash(imageFilename: str):
+def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
 
 def isImage(imageFilename: str) -> bool:
@@ -34,7 +36,7 @@ def createMediaDirs(baseDir: str,mediaPath: str) -> None:
 
 def getMediaPath() -> str:
     currTime=datetime.datetime.utcnow()
-    weeksSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days/7
+    weeksSinceEpoch=int((currTime - datetime.datetime(1970,1,1)).days/7)
     return 'media/'+str(weeksSinceEpoch)
         
 def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
@@ -94,3 +96,16 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
     if os.path.isfile(mediaFilename):
         os.remove(mediaFilename)
     postJson['attachment']=[]
+
+def archiveMedia(baseDir: str,maxWeeks=4) -> None:
+    """Any media older than the given number of weeks gets archived
+    """
+    currTime=datetime.datetime.utcnow()
+    weeksSinceEpoch=int((currTime - datetime.datetime(1970,1,1)).days/7)
+    minWeek=weeksSinceEpoch-maxWeeks
+
+    for subdir, dirs, files in os.walk(baseDir+'/media'):
+        for weekDir in dirs:
+            if int(weekDir)<minWeek:
+                # in this case archived to /dev/null
+                rmtree(os.path.join(baseDir+'/media', weekDir))
