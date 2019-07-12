@@ -137,6 +137,8 @@ parser.add_argument("--cw", type=str2bool, nargs='?', \
                     help="Default capabilities don't allow posts without content warnings")
 parser.add_argument('--icon','--avatar', dest='avatar', type=str,default=None, \
                     help='Set the avatar filename for an account')
+parser.add_argument('--image','--background', dest='backgroundImage', type=str,default=None, \
+                    help='Set the profile background image for an account')
 args = parser.parse_args()
 
 debug=False
@@ -409,12 +411,26 @@ if args.avatar:
         print('Specify a nickname with --nickname [name]')
         sys.exit()
     if setProfileImage(baseDir,httpPrefix,args.nickname,domain, \
-                       port,args.avatar,'avatar'):
+                       port,args.avatar,'avatar','128x128'):
         print('Avatar added for '+args.nickname)
     else:
         print('Avatar was not added for '+args.nickname)
     sys.exit()    
-    
+
+if args.backgroundImage:
+    if not os.path.isfile(args.backgroundImage):
+        print(args.backgroundImage+' is not an image filename')
+        sys.exit()
+    if not args.nickname:
+        print('Specify a nickname with --nickname [name]')
+        sys.exit()
+    if setProfileImage(baseDir,httpPrefix,args.nickname,domain, \
+                       port,args.backgroundImage,'background','256x256'):
+        print('Background image added for '+args.nickname)
+    else:
+        print('Background image was not added for '+args.nickname)
+    sys.exit()    
+
 if federationList:
     print('Federating with: '+str(federationList))
 

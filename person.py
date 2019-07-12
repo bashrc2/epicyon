@@ -26,7 +26,7 @@ def generateRSAKey() -> (str,str):
     return privateKeyPem,publicKeyPem
 
 def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
-                    port :int,imageFilename: str,imageType :str) -> bool:
+                    port :int,imageFilename: str,imageType :str,resolution :str) -> bool:
     """Saves the given image file as an avatar or background
     image for the given person
     """
@@ -80,7 +80,7 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         with open(personFilename, 'w') as fp:
             commentjson.dump(personJson, fp, indent=4, sort_keys=False)
 
-        cmd = '/usr/bin/convert '+imageFilename+' -size 128x128 -quality 50 '+profileFilename
+        cmd = '/usr/bin/convert '+imageFilename+' -size '+resolution+' -quality 50 '+profileFilename
         subprocess.call(cmd, shell=True)
         return True
     return False
