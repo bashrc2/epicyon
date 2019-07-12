@@ -808,8 +808,8 @@ def testCreatePerson():
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     setPreferredNickname(baseDir,nickname,domain,'badger')
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
-    archivePosts(nickname,domain,baseDir,'inbox',4)
-    archivePosts(nickname,domain,baseDir,'outbox',4)
+    archivePostsForPerson(nickname,domain,baseDir,'inbox',None,4)
+    archivePostsForPerson(nickname,domain,baseDir,'outbox',None,4)
     createPublicPost(baseDir,nickname, domain, port,httpPrefix, "G'day world!", False, True, clientToServer,None,None,useBlurhash, None, None, 'Not suitable for Vogons')
 
     os.chdir(currDir)

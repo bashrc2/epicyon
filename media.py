@@ -105,11 +105,17 @@ def archiveMedia(baseDir: str,archiveDirectory: str,maxWeeks=4) -> None:
     weeksSinceEpoch=int((currTime - datetime.datetime(1970,1,1)).days/7)
     minWeek=weeksSinceEpoch-maxWeeks
 
+    if archiveDirectory:
+        if not os.path.isdir(archiveDirectory):
+            os.mkdir(archiveDirectory)
+        if not os.path.isdir(archiveDirectory+'/media'):
+            os.mkdir(archiveDirectory+'/media')
+    
     for subdir, dirs, files in os.walk(baseDir+'/media'):
         for weekDir in dirs:
             if int(weekDir)<minWeek:
                 if archiveDirectory:
-                    move(os.path.join(baseDir+'/media', weekDir),archiveDirectory)
+                    move(os.path.join(baseDir+'/media', weekDir),archiveDirectory+'/media')
                 else:
                     # archive to /dev/null
                     rmtree(os.path.join(baseDir+'/media', weekDir))

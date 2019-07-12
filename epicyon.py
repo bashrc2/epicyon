@@ -23,6 +23,7 @@ from posts import archivePosts
 from posts import sendPost
 from posts import getPublicPostsOfPerson
 from posts import getUserUrl
+from posts import archivePosts
 from session import createSession
 from session import getJson
 import json
@@ -51,6 +52,7 @@ from auth import removePassword
 from auth import createPassword
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
+from media import archiveMedia
 import argparse
 
 def str2bool(v):
@@ -140,6 +142,12 @@ parser.add_argument('--icon','--avatar', dest='avatar', type=str,default=None, \
                     help='Set the avatar filename for an account')
 parser.add_argument('--image','--background', dest='backgroundImage', type=str,default=None, \
                     help='Set the profile background image for an account')
+parser.add_argument('--archive', dest='archive', type=str,default=None, \
+                    help='Archive old files to the given directory')
+parser.add_argument('--archiveweeks', dest='archiveWeeks', type=str,default=None, \
+                    help='Specify the number of weeks after which data will be archived')
+parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,default=None, \
+                    help='Maximum number of posts in in/outbox')
 args = parser.parse_args()
 
 debug=False
@@ -432,6 +440,26 @@ if args.backgroundImage:
         print('Background image was not added for '+args.nickname)
     sys.exit()    
 
+archiveWeeks=4
+if args.archiveWeeks:
+    archiveWeeks=args.archiveWeeks
+archiveMaxPosts=256
+if args.archiveMaxPosts:
+    archiveMaxPosts=args.archiveMaxPosts
+
+if args.archive:
+    if args.archive.lower().endswith('null') or \
+       args.archive.lower().endswith('delete') or \
+       args.archive.lower().endswith('none'):
+        args.archive=None
+        print('Archiving with deletion of old posts...')
+    else:
+        print('Archiving to '+args.archive+'...')
+    archiveMedia(baseDir,args.archive,archiveWeeks)
+    archivePosts(baseDir,args.archive,archiveMaxPosts)
+    print('Archiving complete')
+    sys.exit()    
+    
 if federationList:
     print('Federating with: '+str(federationList))
 

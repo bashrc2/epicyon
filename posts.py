@@ -269,18 +269,6 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             break
     return personPosts
 
-def createBoxArchive(nickname: str,domain: str,baseDir: str, \
-                     boxname: str) -> str:
-    """Creates an archive directory for inbox/outbox posts
-    """
-    handle=nickname.lower()+'@'+domain.lower()
-    if not os.path.isdir(baseDir+'/accounts/'+handle):
-        os.mkdir(baseDir+'/accounts/'+handle)
-    boxArchiveDir=baseDir+'/accounts/'+handle+'/'+boxname+'archive'
-    if not os.path.isdir(boxArchiveDir):
-        os.mkdir(boxArchiveDir)
-    return boxArchiveDir
-
 def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
@@ -909,15 +897,50 @@ def createBoxBase(baseDir: str,boxname: str, \
         return boxHeader
     return boxItems
 
-def archivePosts(nickname: str,domain: str,baseDir: str, \
-                 boxname: str,maxPostsInBox=256) -> None:
+def archivePosts(baseDir: str,archiveDir: str,maxPostsInBox=256) -> None:
+    """Archives posts for all accounts
+    """
+    if archiveDir:
+        if not os.path.isdir(archiveDir):
+            os.mkdir(archiveDir)
+    if archiveDir:
+        if not os.path.isdir(archiveDir+'/accounts'):
+            os.mkdir(archiveDir+'/accounts')
+
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for handle in dirs:
+            if '@' in handle:
+                nickname=handle.split('@')[0]
+                domain=handle.split('@')[1]
+                archiveSubdir=None
+                if archiveDir:
+                    if not os.path.isdir(archiveDir+'/accounts/'+handle):
+                        os.mkdir(archiveDir+'/accounts/'+handle)    
+                    if not os.path.isdir(archiveDir+'/accounts/'+handle+'/inbox'):
+                        os.mkdir(archiveDir+'/accounts/'+handle+'/inbox')    
+                    if not os.path.isdir(archiveDir+'/accounts/'+handle+'/outbox'):
+                        os.mkdir(archiveDir+'/accounts/'+handle+'/outbox')
+                    archiveSubdir=archiveDir+'/accounts/'+handle+'/inbox'
+                archivePostsForPerson(nickname,domain,baseDir, \
+                                      'inbox',archiveSubdir, \
+                                      maxPostsInBox)
+                if archiveDir:
+                    archiveSubdir=archiveDir+'/accounts/'+handle+'/outbox'
+                archivePostsForPerson(nickname,domain,baseDir, \
+                                      'outbox',archiveSubdir, \
+                                      maxPostsInBox)
+
+def archivePostsForPerson(nickname: str,domain: str,baseDir: str, \
+                          boxname: str,archiveDir: str,maxPostsInBox=256) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
     """
     if boxname!='inbox' and boxname!='outbox':
         return
+    if archiveDir:
+        if not os.path.isdir(archiveDir):
+            os.mkdir(archiveDir)    
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
-    archiveDir = createBoxArchive(nickname,domain,baseDir,boxname)
     postsInBox=sorted(os.listdir(boxDir), reverse=False)
     noOfPosts=len(postsInBox)
     if noOfPosts<=maxPostsInBox:
@@ -926,9 +949,11 @@ def archivePosts(nickname: str,domain: str,baseDir: str, \
     for postFilename in postsInBox:
         filePath = os.path.join(boxDir, postFilename)
         if os.path.isfile(filePath):
-            archivePath = os.path.join(archiveDir, postFilename)
-            os.rename(filePath,archivePath)
-            # TODO: possibly archive any associated media files
+            if archiveDir:
+                archivePath = os.path.join(archiveDir, postFilename)
+                os.rename(filePath,archivePath)
+            else:
+                os.remove(filePath)
             noOfPosts -= 1
             if noOfPosts <= maxPostsInBox:
                 break
