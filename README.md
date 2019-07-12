@@ -105,6 +105,8 @@ Follow Accept from **Bob** to **Alice** with attached capabilities.
 
 When posts are subsequently sent from the following instance (server-to-server) they should have the corresponding capability id string attached within the Create wrapper. To handle the *shared inbox* scenario this should be a list rather than a single string. In the above example that would be *['http://bobdomain.net/caps/alice@alicedomain.net#rOYtHApyr4ZWDUgEE1KqjhTe0kI3T2wJ']*. It should contain a random token which is hard to guess by brute force methods.
 
+NOTE: the token should be random and not a hash of anything. Making it a hash would give an adversary a much better chance of calculating it.
+
 ``` text
                             Alice
                               |

@@ -208,7 +208,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
-        # show avatar
+        # show avatar or background image
         if '/users/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
