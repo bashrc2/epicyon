@@ -91,6 +91,8 @@ parser.add_argument('--posts', dest='posts', type=str,default=None, \
                     help='Show posts for the given handle')
 parser.add_argument('--postsraw', dest='postsraw', type=str,default=None, \
                     help='Show raw json of posts for the given handle')
+parser.add_argument('--json', dest='json', type=str,default=None, \
+                    help='Show the json for a given activitypub url')
 parser.add_argument('-f','--federate', nargs='+',dest='federationList', \
                     help='Specify federation list separated by spaces')
 parser.add_argument("--debug", type=str2bool, nargs='?', \
@@ -296,6 +298,13 @@ if args.actor:
         print('Failed to get '+personUrl)
     sys.exit()
 
+if args.json:
+    session = createSession(domain,port,useTor)
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    testJson = getJson(session,args.json,asHeader,None)
+    pprint(testJson)
+    sys.exit()
+
 if args.addaccount:
     if '@' in args.addaccount:
         nickname=args.addaccount.split('@')[0]
@@ -415,7 +424,7 @@ if args.testdata:
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False)
-
+    
 runDaemon(baseDir,domain,port,httpPrefix,federationList, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways,useTor,debug)
