@@ -544,8 +544,8 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
 
     print('Creating shared inbox: inbox@'+domain)
     createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
-        
-    print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
+
+    print('Creating inbox queue')
     httpd.thrInboxQueue= \
         threadWithTrace(target=runInboxQueue, \
                         args=(baseDir,httpPrefix,httpd.sendThreads, \
@@ -555,4 +555,5 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
                               httpd.ocapAlways, \
                               debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
+    print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
     httpd.serve_forever()
