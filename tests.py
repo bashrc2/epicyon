@@ -44,6 +44,7 @@ from auth import authorizeBasic
 from auth import storeBasicCredentials
 from like import likePost
 from announce import announcePublic
+from media import getMediaPath
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -259,23 +260,30 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    useBlurhash=False
+    attachedImageFilename=baseDir+'/img/logo.png'
+    attachedImageDescription='Logo'
+    useBlurhash=True
     # nothing in Alice's outbox
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
 
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer,None,None,useBlurhash, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer,attachedImageFilename,attachedImageDescription,useBlurhash, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
+    mPath=getMediaPath()
+    mediaPath=aliceDir+'/'+mPath
     for i in range(30):
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
                 if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
-                    break
+                    if len([name for name in os.listdir(mediaPath) if os.path.isfile(os.path.join(mediaPath, name))])>0:
+                        break
         time.sleep(1)
 
+    # Image attachment created
+    assert len([name for name in os.listdir(mediaPath) if os.path.isfile(os.path.join(mediaPath, name))])>0        
     # inbox item created
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     # queue item removed

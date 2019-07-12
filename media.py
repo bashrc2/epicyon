@@ -17,7 +17,7 @@ from auth import createPassword
 from shutil import copyfile
 
 def getImageHash(imageFilename: str):
-    return blurencode(numpy.array(Image.open("img/logo.png").convert("RGB")))
+    return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
 
 def isImage(imageFilename: str) -> bool:
     if imageFilename.endswith('.png') or \
@@ -26,12 +26,17 @@ def isImage(imageFilename: str) -> bool:
         return True
     return False
 
-def createMediaPath(baseDir: str,weeksSinceEpoch: int) -> None:    
+def createMediaDirs(baseDir: str,mediaPath: str) -> None:    
     if not os.path.isdir(baseDir+'/media'):
         os.mkdir(baseDir+'/media')
-    if not os.path.isdir(baseDir+'/media/'+str(weeksSinceEpoch)):
-        os.mkdir(baseDir+'/media/'+str(weeksSinceEpoch))
+    if not os.path.isdir(baseDir+'/'+mediaPath):
+        os.mkdir(baseDir+'/'+mediaPath)
 
+def getMediaPath() -> str:
+    currTime=datetime.datetime.utcnow()
+    weeksSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days/7
+    return 'media/'+str(weeksSinceEpoch)
+        
 def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
                 postJson: {},imageFilename: str,description: str, \
                 useBlurhash: bool) -> {}:
@@ -55,10 +60,9 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
         if ':' not in domain:
             domain=domain+':'+str(port)
 
-    currTime=datetime.datetime.utcnow()
-    weeksSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days/7
-    createMediaPath(baseDir,weeksSinceEpoch)
-    mediaPath='media/'+str(weeksSinceEpoch)+'/'+createPassword(32)+'.'+fileExtension
+    mPath=getMediaPath()
+    createMediaDirs(baseDir,mPath)
+    mediaPath=mPath+'/'+createPassword(32)+'.'+fileExtension
     mediaFilename=baseDir+'/'+mediaPath
 
     attachmentJson={
