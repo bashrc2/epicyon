@@ -131,6 +131,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFoll
     nopics=False
     noannounce=False
     cw=False
+    useBlurhash=True
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
@@ -138,9 +139,9 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFoll
         followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList,True)
         followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList,True)
     if hasPosts:
-        createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer,None,None,useBlurhash)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
@@ -162,6 +163,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollow
     nopics=False
     noannounce=False
     cw=False
+    useBlurhash=False
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
@@ -169,9 +171,9 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollow
         followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList,True)
         followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList,True)
     if hasPosts:
-        createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer,None,None,useBlurhash)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
@@ -257,12 +259,12 @@ def testPostMessageBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-
+    useBlurhash=False
     # nothing in Alice's outbox
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
 
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer,None,None,useBlurhash, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -469,7 +471,8 @@ def testFollowBetweenServers():
     eveCachedWebfingers={}
     eveSendThreads=[]
     evePostLog=[]
-    sendResult = sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Eve message', followersOnly, saveToFile, clientToServer, federationList, eveSendThreads, evePostLog, eveCachedWebfingers,evePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    useBlurhash=False
+    sendResult = sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Eve message', followersOnly, saveToFile, clientToServer,None,None,useBlurhash, federationList, eveSendThreads, evePostLog, eveCachedWebfingers,evePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -495,7 +498,8 @@ def testFollowBetweenServers():
     aliceCachedWebfingers={}
     aliceSendThreads=[]
     alicePostLog=[]
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Alice message', followersOnly, saveToFile, clientToServer, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    useBlurhash=False
+    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Alice message', followersOnly, saveToFile, clientToServer,None,None,useBlurhash, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -783,6 +787,7 @@ def testCreatePerson():
     port=80
     httpPrefix='https'
     clientToServer=False
+    useBlurhash=False
     baseDir=currDir+'/.tests_createperson'
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
@@ -797,7 +802,7 @@ def testCreatePerson():
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
     archivePosts(nickname,domain,baseDir,'inbox',4)
     archivePosts(nickname,domain,baseDir,'outbox',4)
-    createPublicPost(baseDir,nickname, domain, port,httpPrefix, "G'day world!", False, True, clientToServer, None, None, 'Not suitable for Vogons')
+    createPublicPost(baseDir,nickname, domain, port,httpPrefix, "G'day world!", False, True, clientToServer,None,None,useBlurhash, None, None, 'Not suitable for Vogons')
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)

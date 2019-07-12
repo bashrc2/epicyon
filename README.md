@@ -206,7 +206,7 @@ Even if Eve has an account on Alice's instance this won't help her very much unl
 ## Install
 
 ``` bash
-sudo pacman -S tor python-pip python-pysocks python-pycryptodome python-beautifulsoup4 imagemagick
+sudo pacman -S tor python-pip python-pysocks python-pycryptodome python-beautifulsoup4 imagemagick python-pillow python-numpy
 sudo pip install commentjson
 ```
 

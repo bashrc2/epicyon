@@ -34,6 +34,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
+from media import attachImage
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -321,7 +322,8 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
 
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
-                   followersOnly: bool, saveToFile: bool, clientToServer: bool, \
+                   followersOnly: bool, saveToFile: bool, clientToServer: bool,
+                   attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
@@ -396,6 +398,11 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 }
             }
         }
+        if attachImageFilename:
+            newPost['object']= \
+                attachImage(baseDir,httpPrefix,domain,port, \
+                            postJson['object'],attachImageFilename, \
+                            imageDescription,useBlurhash)            
     else:
         newPost = {
             'id': newPostId,
@@ -417,8 +424,21 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             },
             'attachment': [],
             'tag': [],
-            'replies': {}
+            'replies': {
+                'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                'type': 'Collection',
+                'first': {
+                    'type': 'CollectionPage',
+                    'partOf': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                    'items': []
+                }
+            }
         }
+        if attachImageFilename:
+            newPost= \
+                attachImage(baseDir,httpPrefix,domain,port, \
+                            postJson,attachImageFilename, \
+                            imageDescription,useBlurhash)            
     if ccUrl:
         if len(ccUrl)>0:
             newPost['cc']=ccUrl
@@ -490,6 +510,7 @@ def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
                      clientToServer: bool,\
+                     attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post to the outbox
     """
@@ -498,6 +519,7 @@ def createPublicPost(baseDir: str,
                           httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
+                          attachImageFilename,imageDescription,useBlurhash, \
                           inReplyTo, inReplyToAtomUri, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],\
@@ -536,6 +558,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
              httpPrefix: str, content: str, followersOnly: bool, \
              saveToFile: bool, clientToServer: bool, \
+             attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
              federationList: [],\
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
              debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
@@ -585,6 +608,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
             createPostBase(baseDir,nickname,domain,port, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
+                           attachImageFilename,imageDescription,useBlurhash, \
                            inReplyTo,inReplyToAtomUri,subject)
 
     # get the senders private key

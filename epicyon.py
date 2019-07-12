@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+
 from person import createPerson
 from person import createSharedInbox
 from person import createCapabilitiesInbox
@@ -442,6 +443,7 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
 
 if args.testdata:
+    useBlurhash=False    
     nickname='testuser567'
     print('Generating some test data for user: '+nickname)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,'likewhateveryouwantscoob')
@@ -449,15 +451,15 @@ if args.testdata:
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     followPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
     followerOfPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False)
-    
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,None,None,useBlurhash)
+
 runDaemon(baseDir,domain,port,httpPrefix,federationList, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways,useTor,debug)
