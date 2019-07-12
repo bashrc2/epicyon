@@ -208,6 +208,26 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
+        # show media
+        if '/media/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif'):
+                mediaStr=self.path.split('/media/')[1]
+                mediaFilename= \
+                    self.server.baseDir+'/media/'+mediaStr
+                if os.path.isfile(mediaFilename):
+                    if mediaFilename.endswith('.png'):
+                        self._set_headers('image/png')
+                    elif mediaFilename.endswith('.jpg'):
+                        self._set_headers('image/jpeg')
+                    else:
+                        self._set_headers('image/gif')
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self.wfile.write(mediaBinary)
+                    self.server.GETbusy=False
+                    return        
         # show avatar or background image
         if '/users/' in self.path:
             if self.path.endswith('.png') or \
@@ -229,8 +249,8 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             self._set_headers('image/gif')
                         with open(avatarFilename, 'rb') as avFile:
-                            av = avFile.read()
-                            self.wfile.write(av)
+                            avBinary = avFile.read()
+                            self.wfile.write(avBinary)
                         self.server.GETbusy=False
                         return                    
         # get an individual post from the path /@nickname/statusnumber
