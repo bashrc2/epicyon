@@ -148,6 +148,21 @@ parser.add_argument('--archiveweeks', dest='archiveWeeks', type=str,default=None
                     help='Specify the number of weeks after which data will be archived')
 parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,default=None, \
                     help='Maximum number of posts in in/outbox')
+parser.add_argument('--message', dest='message', type=str,default=None, \
+                    help='Message content')
+parser.add_argument('--sendto', nargs='+',dest='sendto', \
+                    help='List of post recipients')
+parser.add_argument('--attach', dest='attach', type=str,default=None, \
+                    help='File to attach to a post')
+parser.add_argument('--imagedescription', dest='imageDescription', type=str,default=None, \
+                    help='Description of an attached image')
+parser.add_argument("--blurhash", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Create blurhash for an image")
+parser.add_argument('--cwsubject','--subject', dest='subject', type=str,default=None, \
+                    help='Subject of content warning')
+parser.add_argument('--reply','--replyto', dest='replyto', type=str,default=None, \
+                    help='Url of post to reply to')
 args = parser.parse_args()
 
 debug=False
@@ -230,6 +245,49 @@ useTor=args.tor
 if domain.endswith('.onion'):
     useTor=True
 
+if args.message and nickname:
+    if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print(nickname+' is not an account on the system. use --addaccount if necessary.')
+        sys.exit()
+    session = createSession(domain,port,useTor)        
+    if args.sendto:
+        if '@' not in args.sendto:
+            print('syntax: --sendto [nickname@domain]')
+            sys.exit()
+        toNickname=args.sendto.split('@')[0]
+        toDomain=args.sendto.split('@')[1].replace('\n','')
+        toPort=443
+        if ':' in toDomain:
+            toPort=toDomain.split(':')[1]
+            toDomain=toDomain.split(':')[0]
+        #ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
+        ccUrl=None
+        sendMessage=args.message
+        followersOnly=True
+        clientToServer=False
+        attachedImageDescription=args.imageDescription
+        useBlurhash=args.blurhash
+        sendThreads = []
+        postLog = []
+        personCache={}
+        cachedWebfingers={}
+        subject=args.subject
+        attach=args.attach
+        replyTo=args.replyTo
+        print('Sending post to '+args.sendto)
+        sendResult = \
+            sendPost(session,baseDir,nickname,domain,port, \
+                     toNickname,toDomain,toPort,ccUrl,httpPrefix, \
+                     sendMessage,followersOnly,True,clientToServer, \
+                     attach,attachedImageDescription, \
+                     useBlurhash,federationList,sendThreads, \
+                     postLog,cachedWebfingers,personCache, \
+                     replyTo,replyTo,subject)
+        for i in range(10):
+            # TODO detect send success/fail
+            time.sleep(1)
+        sys.exit()
+    
 if args.follow and nickname:
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print(nickname+' is not an account on the system. use --addaccount if necessary.')

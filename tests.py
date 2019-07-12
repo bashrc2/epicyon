@@ -28,6 +28,7 @@ from posts import archivePosts
 from posts import noOfFollowersOnDomain
 from posts import groupFollowersByDomain
 from posts import sendCapabilitiesUpdate
+from posts import archivePostsForPerson
 from follow import clearFollows
 from follow import clearFollowers
 from utils import followPerson
