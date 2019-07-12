@@ -693,6 +693,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            debug):
         if debug:
             print('DEBUG: Undo announce accepted from '+keyId)
+        return False
 
     if receiveDelete(session,handle, \
                      baseDir,httpPrefix, \
@@ -705,11 +706,12 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                      debug):
         if debug:
             print('DEBUG: Delete accepted from '+keyId)
+        return False
 
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)
-
+    
     copyfile(queueFilename,destinationFilename)
     return True
 
