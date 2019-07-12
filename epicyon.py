@@ -408,6 +408,26 @@ if args.changepassword:
         print('Passwords file not found')
     sys.exit()
 
+archiveWeeks=4
+if args.archiveWeeks:
+    archiveWeeks=args.archiveWeeks
+archiveMaxPosts=256
+if args.archiveMaxPosts:
+    archiveMaxPosts=args.archiveMaxPosts
+
+if args.archive:
+    if args.archive.lower().endswith('null') or \
+       args.archive.lower().endswith('delete') or \
+       args.archive.lower().endswith('none'):
+        args.archive=None
+        print('Archiving with deletion of old posts...')
+    else:
+        print('Archiving to '+args.archive+'...')
+    archiveMedia(baseDir,args.archive,archiveWeeks)
+    archivePosts(baseDir,args.archive,archiveMaxPosts)
+    print('Archiving complete')
+    sys.exit()    
+
 if not args.domain and not domain:
     print('Specify a domain with --domain [name]')
     sys.exit()
@@ -438,26 +458,6 @@ if args.backgroundImage:
         print('Background image added for '+args.nickname)
     else:
         print('Background image was not added for '+args.nickname)
-    sys.exit()    
-
-archiveWeeks=4
-if args.archiveWeeks:
-    archiveWeeks=args.archiveWeeks
-archiveMaxPosts=256
-if args.archiveMaxPosts:
-    archiveMaxPosts=args.archiveMaxPosts
-
-if args.archive:
-    if args.archive.lower().endswith('null') or \
-       args.archive.lower().endswith('delete') or \
-       args.archive.lower().endswith('none'):
-        args.archive=None
-        print('Archiving with deletion of old posts...')
-    else:
-        print('Archiving to '+args.archive+'...')
-    archiveMedia(baseDir,args.archive,archiveWeeks)
-    archivePosts(baseDir,args.archive,archiveMaxPosts)
-    print('Archiving complete')
     sys.exit()    
     
 if federationList:
