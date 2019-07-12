@@ -259,13 +259,13 @@ python3 epicyon.py --changepassword nickname@domain newpassword
 To set an avatar for an account:
 
 ``` bash
-python3 epicyon.py --nickname [nick] --domain [name] --avatar [filename]
+python3 epicyon.py --nickname [nick] --domain [name] --avatar [image filename]
 ```
 
 To set the background image for an account:
 
 ``` bash
-python3 epicyon.py --nickname [nick] --domain [name] --background [filename]
+python3 epicyon.py --nickname [nick] --domain [name] --background [image filename]
 ```
 
 ## Running the Server
