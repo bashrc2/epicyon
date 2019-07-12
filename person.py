@@ -185,7 +185,8 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     return personJson
 
 def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
-                  httpPrefix: str,noOfItems: int,boxname: str) -> []:
+                  httpPrefix: str,noOfItems: int,boxname: str, \
+                  authorized: bool) -> []:
     """Obtain the inbox/outbox feed for the given person
     """
     if boxname!='inbox' and boxname!='outbox':
@@ -226,7 +227,7 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
         return createInbox(baseDir,nickname,domain,port,httpPrefix, \
                            noOfItems,headerOnly,pageNumber)
     return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
-                        noOfItems,headerOnly,pageNumber)
+                        noOfItems,headerOnly,authorized,pageNumber)
 
 def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
                     httpPrefix: str,noOfItems: int) -> []:

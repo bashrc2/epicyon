@@ -760,15 +760,15 @@ def sendToFollowers(session,baseDir: str,
 def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
-                  itemsPerPage,headerOnly,pageNumber)
+                         itemsPerPage,headerOnly,True,pageNumber)
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                 itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+                 itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
-                  itemsPerPage,headerOnly,pageNumber)
+                         itemsPerPage,headerOnly,authorized,pageNumber)
 
 def createBoxBase(baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
-                  itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+                  itemsPerPage: int,headerOnly: bool,authorized :bool,pageNumber=None) -> {}:
     """Constructs the box feed
     """
     if boxname!='inbox' and boxname!='outbox':
@@ -849,6 +849,10 @@ def createBoxBase(baseDir: str,boxname: str, \
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
+                        # Don't show likes to unauthorized viewers
+                        if not authorized:
+                            if p.get('likes'):
+                                p['likes']={}
                         # insert it into the box feed
                         if postsOnPageCtr < itemsPerPage:
                             if not headerOnly:

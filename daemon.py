@@ -227,8 +227,13 @@ class PubServer(BaseHTTPRequestHandler):
                                 postJson={}
                                 with open(postFilename, 'r') as fp:
                                     postJson=commentjson.load(fp)
-                                self._set_headers('application/json')
-                                self.wfile.write(json.dumps(postJson).encode('utf-8'))
+                                    # Only authorized viewers get to see likes on posts
+                                    # Otherwize marketers could gain more social graph info
+                                    if not self._isAuthorized():
+                                        if postJson.get('likes'):
+                                            postJson['likes']={}
+                                    self._set_headers('application/json')
+                                    self.wfile.write(json.dumps(postJson).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
                             else:
@@ -254,8 +259,13 @@ class PubServer(BaseHTTPRequestHandler):
                                 postJson={}
                                 with open(postFilename, 'r') as fp:
                                     postJson=commentjson.load(fp)
-                                self._set_headers('application/json')
-                                self.wfile.write(json.dumps(postJson).encode('utf-8'))
+                                    # Only authorized viewers get to see likes on posts
+                                    # Otherwize marketers could gain more social graph info
+                                    if not self._isAuthorized():
+                                        if postJson.get('likes'):
+                                            postJson['likes']={}                                    
+                                    self._set_headers('application/json')
+                                    self.wfile.write(json.dumps(postJson).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
                             else:
@@ -292,7 +302,8 @@ class PubServer(BaseHTTPRequestHandler):
         outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
                                  self.server.port,self.path, \
                                  self.server.httpPrefix, \
-                                 maxPostsInFeed, 'outbox')
+                                 maxPostsInFeed, 'outbox', \
+                                 self._isAuthorized())
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
