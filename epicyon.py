@@ -299,7 +299,7 @@ if args.actor:
     sys.exit()
 
 if args.json:
-    session = createSession(domain,port,useTor)
+    session = createSession(domain,port,True)
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     testJson = getJson(session,args.json,asHeader,None)
     pprint(testJson)
