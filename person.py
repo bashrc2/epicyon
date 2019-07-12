@@ -11,6 +11,7 @@ import commentjson
 import os
 import fileinput
 from Crypto.PublicKey import RSA
+from shutil import copyfile
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createOutbox
@@ -21,6 +22,53 @@ def generateRSAKey() -> (str,str):
     privateKeyPem = key.exportKey("PEM").decode("utf-8")
     publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
+
+def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
+                    imageFilename: str,imageType :str):
+    """Saves the given image file as an avatar or background
+    image for the given person
+    """
+    if not (imageFilename.endswith('.png') or \
+            imageFilename.endswith('.jpg') or \
+            imageFilename.endswith('.jpeg') or \
+            imageFilename.endswith('.gif')):
+        return
+
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            domain=domain+':'+str(port)
+
+    handle=nickname.lower()+'@'+domain.lower()
+    personFilename=baseDir+'/accounts/'+handle+'.json'
+    if not os.path.isfile(personFilename):
+        return
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        return
+
+    iconFilenameBase='icon'
+    if imageType=='avatar' or imageType=='icon':
+        iconFilenameBase='icon'
+    else:
+        iconFilenameBase='image'
+        
+    mediaType='image/png'
+    iconFilename=iconFilenameBase+'.png'
+    if imageFilename.endswith('.jpg') or \
+       imageFilename.endswith('.jpeg'):
+        mediaType='image/jpeg'
+        iconFilename=iconFilenameBase+'.jpg'
+    if imageFilename.endswith('.gif'):
+        mediaType='image/gif'
+        iconFilename=iconFilenameBase+'.gif'
+    profileFilename=baseDir+'/accounts/'+handle+'/'+iconFilename
+
+    with open(personFilename, 'r') as fp:
+        personJson=commentjson.load(fp)
+        personJson[iconFilenameBase]['mediaType']=mediaType
+        personJson[iconFilenameBase]['url']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+iconFilename
+        with open(personFilename, 'w') as fp:
+            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+        copyfile(imageFilename,profileFilename)    
 
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
@@ -62,11 +110,11 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
-                          'url': httpPrefix+'://'+domain+'/users/'+nickname+'_icon.png'},
+                          'url': httpPrefix+'://'+domain+'/users/'+nickname+'/icon.png'},
                  'id': httpPrefix+'://'+domain+'/users/'+nickname,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
-                           'url': httpPrefix+'://'+domain+'/users/'+nickname+'.png'},
+                           'url': httpPrefix+'://'+domain+'/users/'+nickname+'/image.png'},
                  'inbox': httpPrefix+'://'+domain+'/users/'+nickname+'/inbox',
                  'manuallyApprovesFollowers': False,
                  'name': nickname,
