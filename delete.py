@@ -23,7 +23,7 @@ def createDelete(session,baseDir: str,federationList: [], \
                  sendThreads: [],postLog: [], \
                  personCache: {},cachedWebfingers: {}, \
                  debug: bool) -> {}:
-    """Creates an delete message
+    """Creates a delete message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person whose post is to be deleted
     objectUrl is typically the url of the message, corresponding to url

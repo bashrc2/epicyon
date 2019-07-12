@@ -697,7 +697,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                      federationList, \
                      debug):
         if debug:
-            print('DEBUG: Announce accepted from '+keyId)
+            print('DEBUG: Delete accepted from '+keyId)
 
     if debug:
         print('DEBUG: object capabilities passed')
