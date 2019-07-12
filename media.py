@@ -17,6 +17,7 @@ import datetime
 from auth import createPassword
 from shutil import copyfile
 from shutil import rmtree
+from shutil import move
 
 def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
@@ -97,7 +98,7 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
         os.remove(mediaFilename)
     postJson['attachment']=[]
 
-def archiveMedia(baseDir: str,maxWeeks=4) -> None:
+def archiveMedia(baseDir: str,archiveDirectory: str,maxWeeks=4) -> None:
     """Any media older than the given number of weeks gets archived
     """
     currTime=datetime.datetime.utcnow()
@@ -107,5 +108,8 @@ def archiveMedia(baseDir: str,maxWeeks=4) -> None:
     for subdir, dirs, files in os.walk(baseDir+'/media'):
         for weekDir in dirs:
             if int(weekDir)<minWeek:
-                # in this case archived to /dev/null
-                rmtree(os.path.join(baseDir+'/media', weekDir))
+                if archiveDirectory:
+                    move(os.path.join(baseDir+'/media', weekDir),archiveDirectory)
+                else:
+                    # archive to /dev/null
+                    rmtree(os.path.join(baseDir+'/media', weekDir))
