@@ -28,6 +28,7 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Minimal dependencies.
  * Capabilities based security
  * Data minimization principle. Configurable post expiry time.
+ * Likes and repeats only visible to authorized viewers
  * Commandline interface. If there's a GUI it should be a separate project.
  * Designed for intermittent connectivity. Assume network disruptions.
  * Suitable for single board computers.
