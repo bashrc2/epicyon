@@ -481,7 +481,7 @@ def receiveUndoLike(session,handle: str,baseDir: str, \
     postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object']['object'])
     if not postFilename:
         if debug:
-            print('DEBUG: post not found in inbox or outbox')
+            print('DEBUG: unliked post not found in inbox or outbox')
             print(messageJson['object']['object'])
         return True
     if debug:
@@ -544,7 +544,7 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
                     debug : bool) -> bool:
-    """Receives a Like activity within the POST section of HTTPServer
+    """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type']!='Announce':
         return False
@@ -583,6 +583,49 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
         return True
     if debug:
         print('DEBUG: announced/repeated post found in inbox')
+    return True
+
+def receiveUndoAnnounce(session,handle: str,baseDir: str, \
+                        httpPrefix: str,domain :str,port: int, \
+                        sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                        personCache: {},messageJson: {},federationList: [], \
+                        debug : bool) -> bool:
+    """Receives an undo announce activity within the POST section of HTTPServer
+    """
+    if messageJson['type']!='Undo':
+        return False
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('object'):
+        return False
+    if not isinstance(messageJson['object']['object'], str):
+        return False
+    if messageJson['object']['type']!='Announce':
+        return False    
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type']+' announce')
+        return False
+    if '/statuses/' not in messageJson['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from object in '+messageJson['type']+' announce')
+        return False
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('DEBUG: unknown recipient of undo announce - '+handle)
+    # if this post in the outbox of the person?
+    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
+    if not postFilename:
+        if debug:
+            print('DEBUG: undo announce post not found in inbox or outbox')
+            print(messageJson['object']['object'])
+        return True
+    if debug:
+        print('DEBUG: announced/repeated post to be undone found in inbox')
+    os.remove(postFilename)
     return True
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
@@ -631,6 +674,18 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                        debug):
         if debug:
             print('DEBUG: Announce accepted from '+keyId)
+
+    if receiveUndoAnnounce(session,handle, \
+                           baseDir,httpPrefix, \
+                           domain,port, \
+                           sendThreads,postLog, \
+                           cachedWebfingers, \
+                           personCache, \
+                           messageJson, \
+                           federationList, \
+                           debug):
+        if debug:
+            print('DEBUG: Undo announce accepted from '+keyId)
 
     if receiveDelete(session,handle, \
                      baseDir,httpPrefix, \

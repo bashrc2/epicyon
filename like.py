@@ -227,7 +227,7 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
 
         undoLikesCollectionEntry(postFilename,objectUrl,newLikeJson['actor'],debug)
         
-        sendSignedJson(newLikeJson,session,baseDir, \
+        sendSignedJson(newUndoLikeJson,session,baseDir, \
                        nickname,domain,port, \
                        likedPostNickname,likedPostDomain,likedPostPort, \
                        'https://www.w3.org/ns/activitystreams#Public', \
@@ -236,7 +236,7 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
     else:
         return None
 
-    return newLikeJson
+    return newUndoLikeJson
 
 def undoLikePost(session,baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int,httpPrefix: str, \
