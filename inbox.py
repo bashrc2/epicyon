@@ -635,6 +635,77 @@ def receiveUndoAnnounce(session,handle: str,baseDir: str, \
     os.remove(postFilename)
     return True
 
+def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
+                    messageJson :{},debug :bool) -> bool:
+    """Updates the list of replies for a post on this domain if 
+    a reply to it arrives
+    """
+    replyTo=None
+    if not messageJson.get('id'):
+        return False
+    if messageJson.get('inReplyTo'):
+        replyTo=messageJson['inReplyTo']
+    else:
+        if messageJson.get('object'):
+            if isinstance(messageJson['object'], dict):
+                if messageJson['object'].get('inReplyTo'):
+                    replyTo=messageJson['object']['inReplyTo']
+    if not replyTo:
+        return False
+    if debug:
+        print('DEBUG: post contains a reply')
+    # is this a reply to a post on this domain?
+    if not replyTo.startswith(httpPrefix+'://'+domain+'/'):
+        if debug:
+            print('DEBUG: post is a reply to another not on this domain')
+        return False
+    replyToNickname=getNicknameFromActor(replyTo)
+    if not replyToNickname:
+        if debug:
+            print('DEBUG: no nickname found for '+replyTo)
+        return False
+    replyToDomain,replyToPort=getDomainFromActor(replyTo)
+    if not replyToDomain:
+        if debug:
+            print('DEBUG: no domain found for '+replyTo)
+        return False
+    postFilename=locatePost(baseDir,replyToNickname,replyToDomain,replyTo)
+    if not postFilename:
+        if debug:
+            print('DEBUG: post may have expired - '+replyTo)
+        return False
+    with open(postFilename, 'r') as fp:
+        repliedToJson=commentjson.load(fp)
+        if not repliedToJson.get('object'):
+            if debug:
+                print('DEBUG: replied to post has no object - '+postFilename)
+            return False
+        if not repliedToJson['object'].get('replies'):
+            if debug:
+                print('DEBUG: replied to post has no replies attribute - '+postFilename)
+            return False
+        if not repliedToJson['object']['replies'].get('first'):
+            if debug:
+                print('DEBUG: replied to post has no first attribute - '+postFilename)
+            return False
+        if not repliedToJson['object']['replies']['first'].get('items'):
+            if debug:
+                print('DEBUG: replied to post has no items attribute - '+postFilename)
+            return False
+        messageId=messageJson['id']
+        repliesList=repliedToJson['object']['replies']['first']['items']
+        if messageId not in repliesList:
+            repliesList.append(messageId)
+            with open(postFilename, 'w') as fp:
+                commentjson.dump(repliedToJson, fp, indent=4, sort_keys=False)
+                if debug:
+                    print('DEBUG: updated replies for '+postFilename)
+                return True
+        else:
+            if debug:
+                print('DEBUG: reply was already added to list')            
+    return False
+                
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -707,11 +778,12 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         if debug:
             print('DEBUG: Delete accepted from '+keyId)
         return False
-
+            
+    populateReplies(baseDir,httpPrefix,domain,messageJson,debug)
+    
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)
-    
     copyfile(queueFilename,destinationFilename)
     return True
 
