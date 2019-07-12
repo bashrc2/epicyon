@@ -787,6 +787,18 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     copyfile(queueFilename,destinationFilename)
     return True
 
+def restoreQueueItems(baseDir: str,queue: []) -> None:
+    """Checks the queue for each account and appends filenames
+    """
+    queue=[]
+    for subdir,dirs,files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            queueDir=baseDir+'/accounts/'+account+'/queue'
+            if os.path.isdir(queueDir):
+                for queuesubdir,queuedirs,queuefiles in os.walk(queueDir):
+                    for qfile in queuefiles:
+                        queue.append(os.path.join(queueDir, qfile))
+
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \
                   domain: str,port: int,useTor: bool,federationList: [], \
@@ -802,6 +814,10 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
     if debug:
         print('DEBUG: Inbox queue running')
 
+    # if queue processing was interrupted (eg server crash)
+    # then this loads any outstanding items back into the queue
+    restoreQueueItems(baseDir,queue)
+        
     while True:
         time.sleep(1)
         if len(queue)>0:
