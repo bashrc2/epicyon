@@ -33,6 +33,7 @@ from capabilities import getOcapFilename
 from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
 from like import updateLikesCollection
+from like import undoLikesCollectionEntry
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -439,6 +440,55 @@ def receiveLike(session,handle: str,baseDir: str, \
     updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'],debug)
     return True
 
+def receiveUndoLike(session,handle: str,baseDir: str, \
+                    httpPrefix: str,domain :str,port: int, \
+                    sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                    personCache: {},messageJson: {},federationList: [], \
+                    debug : bool) -> bool:
+    """Receives an undo like activity within the POST section of HTTPServer
+    """
+    if messageJson['type']!='Undo':
+        return False
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('type'):
+        return False
+    if messageJson['object']['type']!='Like':
+        return False
+    if not messageJson['object'].get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' like has no object')
+        return False
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' like object is not a string')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type']+' like')
+        return False
+    if '/statuses/' not in messageJson['object']['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from like object in '+messageJson['type'])
+        return False
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('DEBUG: unknown recipient of undo like - '+handle)
+    # if this post in the outbox of the person?
+    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object']['object'])
+    if not postFilename:
+        if debug:
+            print('DEBUG: post not found in inbox or outbox')
+            print(messageJson['object']['object'])
+        return True
+    if debug:
+        print('DEBUG: liked post found in inbox. Now undoing.')
+    undoLikesCollectionEntry(postFilename,messageJson['object'],messageJson['actor'],debug)
+    return True
+
 def receiveDelete(session,handle: str,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -555,6 +605,19 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                    debug):
         if debug:
             print('DEBUG: Like accepted from '+keyId)
+        return False
+
+    if receiveUndoLike(session,handle, \
+                       baseDir,httpPrefix, \
+                       domain,port, \
+                       sendThreads,postLog, \
+                       cachedWebfingers, \
+                       personCache, \
+                       messageJson, \
+                       federationList, \
+                       debug):
+        if debug:
+            print('DEBUG: Undo like accepted from '+keyId)
         return False
 
     if receiveAnnounce(session,handle, \

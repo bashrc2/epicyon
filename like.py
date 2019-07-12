@@ -103,8 +103,9 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
          sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
          debug: bool) -> {}:
     """Creates a like
-    ccUrl might be a specific person whose post was liked
-    objectUrl is typically the url of the message, corresponding to url or atomUri in createPostBase
+    actor is the person doing the liking
+    'to' might be a specific person (actor) whose post was liked
+    object is typically the url of the message which was liked
     """
     if not urlPermitted(objectUrl,federationList,"inbox:write"):
         return None
@@ -176,3 +177,90 @@ def likePost(session,baseDir: str,federationList: [], \
                 ccList,httpPrefix,objectUrl,clientToServer, \
                 sendThreads,postLog,personCache,cachedWebfingers,debug)
 
+def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
+             ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
+             sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
+             debug: bool) -> {}:
+    """Removes a like
+    actor is the person doing the liking
+    'to' might be a specific person (actor) whose post was liked
+    object is typically the url of the message which was liked
+    """
+    if not urlPermitted(objectUrl,federationList,"inbox:write"):
+        return None
+
+    fullDomain=domain
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            fullDomain=domain+':'+str(port)
+
+    newUndoLikeJson = {
+        'type': 'Undo',
+        'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+        'object': {
+            'type': 'Like',
+            'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
+            'object': objectUrl,
+            'to': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
+            'cc': []
+        },
+        'to': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
+        'cc': []
+    }
+    if ccList:
+        if len(ccList)>0:
+            newUndoLikeJson['cc']=ccList
+            newUndoLikeJson['object']['cc']=ccList
+
+    # Extract the domain and nickname from a statuses link
+    likedPostNickname=None
+    likedPostDomain=None
+    likedPostPort=None
+    if '/users/' in objectUrl:
+        likedPostNickname=getNicknameFromActor(objectUrl)
+        likedPostDomain,likedPostPort=getDomainFromActor(objectUrl)
+
+    if likedPostNickname:
+        postFilename=locatePost(baseDir,nickname,domain,objectUrl)
+        if not postFilename:
+            return None
+
+        undoLikesCollectionEntry(postFilename,objectUrl,newLikeJson['actor'],debug)
+        
+        sendSignedJson(newLikeJson,session,baseDir, \
+                       nickname,domain,port, \
+                       likedPostNickname,likedPostDomain,likedPostPort, \
+                       'https://www.w3.org/ns/activitystreams#Public', \
+                       httpPrefix,True,clientToServer,federationList, \
+                       sendThreads,postLog,cachedWebfingers,personCache,debug)
+    else:
+        return None
+
+    return newLikeJson
+
+def undoLikePost(session,baseDir: str,federationList: [], \
+                 nickname: str,domain: str,port: int,httpPrefix: str, \
+                 likeNickname: str,likeDomain: str,likePort: int, \
+                 ccList: [], \
+                 likeStatusNumber: int,clientToServer: bool, \
+                 sendThreads: [],postLog: [], \
+                 personCache: {},cachedWebfingers: {}, \
+                 debug: bool) -> {}:
+    """Removes a liked post
+    """
+    likeDomain=likeDomain
+    if likePort!=80 and likePort!=443:
+        likeDomain=likeDomain+':'+str(likePort)
+
+    objectUrl = \
+        httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \
+        '/statuses/'+str(likeStatusNumber)
+
+    if likePort!=80 and likePort!=443:
+        ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
+    else:
+        ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
+        
+    return undoLike(session,baseDir,federationList,nickname,domain,port, \
+                    ccList,httpPrefix,objectUrl,clientToServer, \
+                    sendThreads,postLog,personCache,cachedWebfingers,debug)
