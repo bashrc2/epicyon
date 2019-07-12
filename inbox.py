@@ -625,6 +625,13 @@ def receiveUndoAnnounce(session,handle: str,baseDir: str, \
         return True
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
+    with open(postFilename, 'r') as fp:
+        postJson=commentjson.load(fp)
+        if not postJson.get('type'):
+            if postJson['type']!='Announce':
+                if debug:
+                    print("DEBUG: Attenpt to undo something which isn't an announcement")
+                return False        
     os.remove(postFilename)
     return True
 
