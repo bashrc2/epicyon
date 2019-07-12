@@ -174,6 +174,14 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _isAuthorized(self) -> bool:
+        if self.headers.get('Authorization'):
+            if authorize(self.server.baseDir,self.path, \
+                         self.headers['Authorization'], \
+                         self.server.debug):
+                return True
+        return False
+    
     def do_GET(self):
         if self.server.debug:
             print('DEBUG: GET from '+self.server.baseDir+ \
@@ -257,25 +265,22 @@ class PubServer(BaseHTTPRequestHandler):
         # get the inbox for a given person
         if self.path.endswith('/inbox'):
             if '/users/' in self.path:
-                if self.headers.get('Authorization'):
-                    if authorize(self.server.baseDir,self.path, \
-                                 self.headers['Authorization'], \
-                                 self.server.debug):
-                        inboxFeed=personBoxJson(self.server.baseDir, \
-                                                self.server.domain, \
-                                                self.server.port, \
-                                                self.path, \
-                                                self.server.httpPrefix, \
-                                                maxPostsInFeed, 'inbox')
-                        if inboxFeed:
-                            self._set_headers('application/json')
-                            self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
-                            self.server.GETbusy=False
-                            return
-                    else:
-                        if self.server.debug:
-                            print('DEBUG: '+nickname+ \
-                                  ' was not authorized to access '+self.path)
+                if self._isAuthorized():
+                    inboxFeed=personBoxJson(self.server.baseDir, \
+                                            self.server.domain, \
+                                            self.server.port, \
+                                            self.path, \
+                                            self.server.httpPrefix, \
+                                            maxPostsInFeed, 'inbox')
+                    if inboxFeed:
+                        self._set_headers('application/json')
+                        self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
+                        self.server.GETbusy=False
+                        return
+                else:
+                    if self.server.debug:
+                        print('DEBUG: '+nickname+ \
+                              ' was not authorized to access '+self.path)
             if self.server.debug:
                 print('DEBUG: GET access to inbox is unauthorized')
             self.send_response(405)
@@ -380,13 +385,10 @@ class PubServer(BaseHTTPRequestHandler):
                 
         if self.path.endswith('/outbox'):
             if '/users/' in self.path:
-                if self.headers.get('Authorization'):
-                    if authorize(self.server.baseDir,self.path, \
-                                 self.headers['Authorization'], \
-                                 self.server.debug):
-                        self.outboxAuthenticated=True
-                        pathUsersSection=path.split('/users/')[1]
-                        self.postToNickname=pathUsersSection.split('/')[0]
+                if self._isAuthorized():
+                    self.outboxAuthenticated=True
+                    pathUsersSection=path.split('/users/')[1]
+                    self.postToNickname=pathUsersSection.split('/')[0]
             if not self.outboxAuthenticated:
                 self.send_response(405)
                 self.end_headers()
