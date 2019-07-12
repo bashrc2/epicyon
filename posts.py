@@ -849,10 +849,14 @@ def createBoxBase(baseDir: str,boxname: str, \
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
-                        # Don't show likes to unauthorized viewers
+                        # Don't show likes or replies to unauthorized viewers
                         if not authorized:
-                            if p.get('likes'):
-                                p['likes']={}
+                            if p.get('object'):
+                                if isinstance(p['object'], dict):                                
+                                    if p['object'].get('likes'):
+                                        p['likes']={}
+                                    if p['object'].get('replies'):
+                                        p['replies']={}
                         # insert it into the box feed
                         if postsOnPageCtr < itemsPerPage:
                             if not headerOnly:
