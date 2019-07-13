@@ -347,8 +347,17 @@ class PubServer(BaseHTTPRequestHandler):
                                                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
                                                         with open(searchFilename, 'r') as fp:
                                                             postJson=commentjson.load(fp)
-                                                            repliesJson['orderedItems'].append(postJson)
-                                                        replyFound=True
+                                                            if postJson['object'].get('cc'):                                                            
+                                                                if authorized or \
+                                                                   ('https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to'] or \
+                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['cc']):
+                                                                    repliesJson['orderedItems'].append(postJson)
+                                                                    replyFound=True
+                                                            else:
+                                                                if authorized or \
+                                                                   'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to']:
+                                                                    repliesJson['orderedItems'].append(postJson)
+                                                                    replyFound=True
                                                     break
                                             # if not in either inbox or outbox then examine the shared inbox
                                             if not replyFound:
@@ -363,7 +372,15 @@ class PubServer(BaseHTTPRequestHandler):
                                                         # get the json of the reply and append it to the collection
                                                         with open(searchFilename, 'r') as fp:
                                                             postJson=commentjson.load(fp)
-                                                            repliesJson['orderedItems'].append(postJson)
+                                                            if postJson['object'].get('cc'):                                                            
+                                                                if authorized or \
+                                                                   ('https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to'] or \
+                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['cc']):
+                                                                    repliesJson['orderedItems'].append(postJson)
+                                                            else:
+                                                                if authorized or \
+                                                                   'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to']:
+                                                                    repliesJson['orderedItems'].append(postJson)
                                     # send the replies json
                                     self._set_headers('application/json')
                                     self.wfile.write(json.dumps(repliesJson).encode('utf-8'))

@@ -640,18 +640,17 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
     """Updates the list of replies for a post on this domain if 
     a reply to it arrives
     """
-    replyTo=None
     if not messageJson.get('id'):
         return False
-    if messageJson.get('inReplyTo'):
-        replyTo=messageJson['inReplyTo']
-    else:
-        if messageJson.get('object'):
-            if isinstance(messageJson['object'], dict):
-                if messageJson['object'].get('inReplyTo'):
-                    replyTo=messageJson['object']['inReplyTo']
-    if not replyTo:
+    if not messageJson.get('object'):
         return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('inReplyTo'):
+        return False
+    if not messageJson['object'].get('to'):
+        return False
+    replyTo=messageJson['object']['inReplyTo']
     if debug:
         print('DEBUG: post contains a reply')
     # is this a reply to a post on this domain?
