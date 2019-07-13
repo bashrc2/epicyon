@@ -300,75 +300,75 @@ class PubServer(BaseHTTPRequestHandler):
                                 domainFull=self.server.domain
                                 if self.server.port!=80 and self.server.port!=443:
                                     domainFull=self.server.domain+':'+str(self.server.port)
-                                    boxname='outbox'
-                                    postDir=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/'+boxname
-                                    postRepliesFilename= \
-                                        postDir+'/'+ \
-                                        self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.replies'
-                                    if not os.path.isfile(postRepliesFilename):
-                                        # There are no replies, so show empty collection
-                                        repliesJson = {
-                                            '@context': 'https://www.w3.org/ns/activitystreams',
-                                            'first': self.server.httpPrefix+'://'+self.server.domain+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
-                                            'id': self.server.httpPrefix+'://'+self.server.domain+'/users/'+nickname+'/statuses/'+statusNumber,
-                                            'last': self.server.httpPrefix+'://'+self.server.domain+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
-                                            'totalItems': 0,
-                                            'type': 'OrderedCollection'}
-                                        self._set_headers('application/json')
-                                        self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
-                                        self.server.GETbusy=False
-                                        return
-                                    else:
-                                        # replies exist. Itterate through the text file containing message ids
-                                        repliesJson = {
-                                            '@context': 'https://www.w3.org/ns/activitystreams',
-                                            'id': self.server.httpPrefix+'://'+self.server.domain+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
-                                            'orderedItems': [
-                                            ],
-                                            'partOf': self.server.httpPrefix+'://'+self.server.domain+'/users/'+nickname+'/statuses/'+statusNumber,
-                                            'type': 'OrderedCollectionPage'}
-                                        # some messages could be private, so check authorization state
-                                        authorized=self._isAuthorized()
-                                        # populate the items list with replies
-                                        repliesBoxes=['outbox','inbox']
-                                        with open(postRepliesFilename,'r') as repliesFile: 
-                                            for messageId in repliesFile:
-                                                replyFound=False
-                                                # examine inbox and outbox
-                                                for boxname in repliesBoxes:
-                                                    searchFilename= \
-                                                        self.server.baseDir+ \
-                                                        '/accounts/'+nickname+'@'+ \
-                                                        self.server.domain+'/'+ \
-                                                        boxname+'/'+ \
-                                                        messageId.replace('\n','').replace('/','#')+'.json'
-                                                    if os.path.isfile(searchFilename):
-                                                        if authorized or \
-                                                           'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
-                                                            with open(searchFilename, 'r') as fp:
-                                                                postJson=commentjson.load(fp)
-                                                                repliesJson['orderedItems'].append(postJson)
-                                                            replyFound=True
-                                                        break
-                                                # if not in either inbox or outbox then examine the shared inbox
-                                                if not replyFound:
-                                                    searchFilename= \
-                                                        self.server.baseDir+ \
-                                                        '/accounts/inbox@'+ \
-                                                        self.server.domain+'/inbox/'+ \
-                                                        messageId.replace('\n','').replace('/','#')+'.json'
-                                                    if os.path.isfile(searchFilename):
-                                                        if authorized or \
-                                                           'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
-                                                            # get the json of the reply and append it to the collection
-                                                            with open(searchFilename, 'r') as fp:
-                                                                postJson=commentjson.load(fp)
-                                                                repliesJson['orderedItems'].append(postJson)
-                                        # send the replies json
-                                        self._set_headers('application/json')
-                                        self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
-                                        self.server.GETbusy=False
-                                        return
+                                boxname='outbox'
+                                postDir=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/'+boxname
+                                postRepliesFilename= \
+                                    postDir+'/'+ \
+                                    self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.replies'
+                                if not os.path.isfile(postRepliesFilename):
+                                    # There are no replies, so show empty collection
+                                    repliesJson = {
+                                        '@context': 'https://www.w3.org/ns/activitystreams',
+                                        'first': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
+                                        'id': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber,
+                                        'last': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
+                                        'totalItems': 0,
+                                        'type': 'OrderedCollection'}
+                                    self._set_headers('application/json')
+                                    self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
+                                    self.server.GETbusy=False
+                                    return
+                                else:
+                                    # replies exist. Itterate through the text file containing message ids
+                                    repliesJson = {
+                                        '@context': 'https://www.w3.org/ns/activitystreams',
+                                        'id': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
+                                        'orderedItems': [
+                                        ],
+                                        'partOf': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber,
+                                        'type': 'OrderedCollectionPage'}
+                                    # some messages could be private, so check authorization state
+                                    authorized=self._isAuthorized()
+                                    # populate the items list with replies
+                                    repliesBoxes=['outbox','inbox']
+                                    with open(postRepliesFilename,'r') as repliesFile: 
+                                        for messageId in repliesFile:
+                                            replyFound=False
+                                            # examine inbox and outbox
+                                            for boxname in repliesBoxes:
+                                                searchFilename= \
+                                                    self.server.baseDir+ \
+                                                    '/accounts/'+nickname+'@'+ \
+                                                    self.server.domain+'/'+ \
+                                                    boxname+'/'+ \
+                                                    messageId.replace('\n','').replace('/','#')+'.json'
+                                                if os.path.isfile(searchFilename):
+                                                    if authorized or \
+                                                       'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
+                                                        with open(searchFilename, 'r') as fp:
+                                                            postJson=commentjson.load(fp)
+                                                            repliesJson['orderedItems'].append(postJson)
+                                                        replyFound=True
+                                                    break
+                                            # if not in either inbox or outbox then examine the shared inbox
+                                            if not replyFound:
+                                                searchFilename= \
+                                                    self.server.baseDir+ \
+                                                    '/accounts/inbox@'+ \
+                                                    self.server.domain+'/inbox/'+ \
+                                                    messageId.replace('\n','').replace('/','#')+'.json'
+                                                if os.path.isfile(searchFilename):
+                                                    if authorized or \
+                                                       'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
+                                                        # get the json of the reply and append it to the collection
+                                                        with open(searchFilename, 'r') as fp:
+                                                            postJson=commentjson.load(fp)
+                                                            repliesJson['orderedItems'].append(postJson)
+                                    # send the replies json
+                                    self._set_headers('application/json')
+                                    self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
+                                    self.server.GETbusy=False
+                                    return
 
         # get an individual post from the path /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
