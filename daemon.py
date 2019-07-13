@@ -286,7 +286,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.GETbusy=False
                                 return
         # get replies to a post /users/nickname/statuses/number/replies
-        if self.path.endswith('/replies'):
+        if self.path.endswith('/replies') or '/replies?page=' in self.path:
             if '/statuses/' in self.path and '/users/' in self.path:
                 namedStatus=self.path.split('/users/')[1]
                 if '/' in namedStatus:
@@ -309,9 +309,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     # There are no replies, so show empty collection
                                     repliesJson = {
                                         '@context': 'https://www.w3.org/ns/activitystreams',
-                                        'first': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
-                                        'id': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber,
-                                        'last': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
+                                        'first': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
+                                        'id': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                                        'last': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
                                     self._set_headers('application/json')
