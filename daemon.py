@@ -613,5 +613,5 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
                               httpd.ocapAlways, \
                               debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
-    print('Running ActivityPub daemon on ' + domain + ' port ' + str(port))
+    print('Running ActivityPub server on ' + domain + ' port ' + str(port))
     httpd.serve_forever()

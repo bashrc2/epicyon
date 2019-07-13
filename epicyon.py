@@ -163,6 +163,12 @@ parser.add_argument('--cwsubject','--subject', dest='subject', type=str,default=
                     help='Subject of content warning')
 parser.add_argument('--reply','--replyto', dest='replyto', type=str,default=None, \
                     help='Url of post to reply to')
+parser.add_argument("--followersonly", type=str2bool, nargs='?', \
+                    const=True, default=True, \
+                    help="Send to followers only")
+parser.add_argument("-c","--client", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Use as an ActivityPub client")
 args = parser.parse_args()
 
 debug=False
@@ -263,8 +269,8 @@ if args.message and nickname:
         #ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
         ccUrl=None
         sendMessage=args.message
-        followersOnly=True
-        clientToServer=False
+        followersOnly=args.followersonly
+        clientToServer=args.client
         attachedImageDescription=args.imageDescription
         useBlurhash=args.blurhash
         sendThreads = []
