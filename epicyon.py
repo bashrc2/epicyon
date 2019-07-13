@@ -552,6 +552,7 @@ if args.testdata:
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,None,None,useBlurhash)
 
-runDaemon(baseDir,domain,port,httpPrefix,federationList, \
+runDaemon(args.client,baseDir,domain,port,httpPrefix, \
+          federationList, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways,useTor,debug)

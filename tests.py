@@ -59,7 +59,8 @@ def testHttpsigBase(withDigest):
     port=5576
     baseDir=os.getcwd()
     password='SuperSecretPassword'
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,False,password)
+    privateKeyPem,publicKeyPem,person,wfEndpoint= \
+        createPerson(baseDir,nickname,domain,port,httpPrefix,False,password)
     messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
 
     headersDomain=domain
@@ -69,15 +70,20 @@ def testHttpsigBase(withDigest):
     if not withDigest:
         headers = {'host': headersDomain}
     else:
-        bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
+        bodyDigest = \
+            base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
         headers = {'host': headersDomain, 'digest': f'SHA-256={bodyDigest}'}
 
     path='/inbox'
-    signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, path, httpPrefix, None)
+    signatureHeader = \
+        signPostHeaders(privateKeyPem, nickname, domain, port, path, httpPrefix, None)
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/inbox' ,False, messageBodyJsonStr)
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/parambulator/inbox', False , messageBodyJsonStr) == False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
+                             '/inbox' ,False, messageBodyJsonStr)
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
+                             '/parambulator/inbox', False , messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
+                             '/inbox', True, messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
         headers = {'host': 'bogon.domain'}
@@ -87,7 +93,8 @@ def testHttpsigBase(withDigest):
         bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
         headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, '/inbox', True, messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
+                             '/inbox', True, messageBodyJsonStr) == False
 
 def testHttpsig():
     testHttpsigBase(False)
@@ -117,7 +124,8 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways: bool):
+def createServerAlice(path: str,domain: str,port: int,federationList: [], \
+                      hasFollows: bool,hasPosts :bool,ocapAlways: bool):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -134,22 +142,33 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [],hasFoll
     noannounce=False
     cw=False
     useBlurhash=True
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
+    privateKeyPem,publicKeyPem,person,wfEndpoint= \
+        createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     if hasFollows:
-        followPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList,True)
-        followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936',federationList,True)
+        followPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
+                     federationList,True)
+        followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
+                         federationList,True)
     if hasPosts:
-        createPublicPost(path,nickname, domain, port,httpPrefix, "No wise fish would go anywhere without a porpoise", False, True, clientToServer,None,None,useBlurhash)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "Curiouser and curiouser!", False, True, clientToServer,None,None,useBlurhash)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, \
+                         "No wise fish would go anywhere without a porpoise", \
+                         False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, \
+                         "Curiouser and curiouser!", False, True, \
+                         clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, \
+                         "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", \
+                         False, True, clientToServer,None,None,useBlurhash)
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(path,domain,port,httpPrefix,federationList,noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
+    runDaemon(False,path,domain,port,httpPrefix,federationList, \
+              noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
 
-def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+def createServerBob(path: str,domain: str,port: int,federationList: [], \
+                    hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -166,22 +185,33 @@ def createServerBob(path: str,domain: str,port: int,federationList: [],hasFollow
     noannounce=False
     cw=False
     useBlurhash=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
+    privateKeyPem,publicKeyPem,person,wfEndpoint= \
+        createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     if hasFollows:
-        followPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList,True)
-        followerOfPerson(path,nickname,domain,'alice','127.0.0.50:61935',federationList,True)
+        followPerson(path,nickname,domain, \
+                     'alice','127.0.0.50:61935',federationList,True)
+        followerOfPerson(path,nickname,domain, \
+                         'alice','127.0.0.50:61935',federationList,True)
     if hasPosts:
-        createPublicPost(path,nickname, domain, port,httpPrefix, "It's your life, live it your way.", False, True, clientToServer,None,None,useBlurhash)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "One of the things I've realised is that I am very simple", False, True, clientToServer,None,None,useBlurhash)
-        createPublicPost(path,nickname, domain, port,httpPrefix, "Quantum physics is a bit of a passion of mine", False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, \
+                         "It's your life, live it your way.", \
+                         False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, \
+                         "One of the things I've realised is that I am very simple", \
+                         False, True, clientToServer,None,None,useBlurhash)
+        createPublicPost(path,nickname, domain, port,httpPrefix, \
+                         "Quantum physics is a bit of a passion of mine", \
+                         False, True, clientToServer,None,None,useBlurhash)
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(path,domain,port,httpPrefix,federationList,noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
+    runDaemon(False,path,domain,port,httpPrefix,federationList, \
+              noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
 
-def createServerEve(path: str,domain: str,port: int,federationList: [],hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+def createServerEve(path: str,domain: str,port: int,federationList: [], \
+                    hasFollows: bool,hasPosts :bool,ocapAlways :bool):
     print('Creating test server: Eve on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -197,13 +227,15 @@ def createServerEve(path: str,domain: str,port: int,federationList: [],hasFollow
     nopics=False
     noannounce=False
     cw=False
-    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(path,nickname,domain,port,httpPrefix,True,password)
+    privateKeyPem,publicKeyPem,person,wfEndpoint= \
+        createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     global testServerEveRunning
     testServerEveRunning = True
     print('Server running: Eve')
-    runDaemon(path,domain,port,httpPrefix,federationList,noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
+    runDaemon(False,path,domain,port,httpPrefix,federationList, \
+              noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
@@ -232,8 +264,16 @@ def testPostMessageBetweenServers():
     bobPort=61936
     federationList=[bobDomain,aliceDomain]
 
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,False,False,ocapAlways),daemon=True)
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,False,False,ocapAlways),daemon=True)
+    thrAlice = \
+        threadWithTrace(target=createServerAlice, \
+                        args=(aliceDir,aliceDomain,alicePort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
+    thrBob = \
+        threadWithTrace(target=createServerBob, \
+                        args=(bobDir,bobDomain,bobPort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -268,7 +308,14 @@ def testPostMessageBetweenServers():
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
 
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Why is a mouse when it spins?', followersOnly, saveToFile, clientToServer,attachedImageFilename,attachedImageDescription,useBlurhash, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = \
+        sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
+                 'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
+                 'Why is a mouse when it spins?', followersOnly, \
+                 saveToFile, clientToServer,attachedImageFilename, \
+                 attachedImageDescription,useBlurhash, federationList, \
+                 aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
+                 alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -293,8 +340,10 @@ def testPostMessageBetweenServers():
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
 
-    followerOfPerson(bobDir,'bob',bobDomain,'alice',aliceDomain+':'+str(alicePort),federationList,True)
-    followPerson(aliceDir,'alice',aliceDomain,'bob',bobDomain+':'+str(bobPort),federationList,True)
+    followerOfPerson(bobDir,'bob',bobDomain,'alice', \
+                     aliceDomain+':'+str(alicePort),federationList,True)
+    followPerson(aliceDir,'alice',aliceDomain,'bob', \
+                 bobDomain+':'+str(bobPort),federationList,True)
 
     sessionBob = createSession(bobDomain,bobPort,useTor)
     bobSendThreads = []
@@ -392,17 +441,29 @@ def testFollowBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.42'
     alicePort=61935
-    thrAlice = threadWithTrace(target=createServerAlice,args=(aliceDir,aliceDomain,alicePort,federationList,False,False,ocapAlways),daemon=True)
+    thrAlice = \
+        threadWithTrace(target=createServerAlice, \
+                        args=(aliceDir,aliceDomain,alicePort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.64'
     bobPort=61936
-    thrBob = threadWithTrace(target=createServerBob,args=(bobDir,bobDomain,bobPort,federationList,False,False,ocapAlways),daemon=True)
+    thrBob = \
+        threadWithTrace(target=createServerBob, \
+                        args=(bobDir,bobDomain,bobPort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
 
     eveDir=baseDir+'/.tests/eve'
     eveDomain='127.0.0.55'
     evePort=61937
-    thrEve = threadWithTrace(target=createServerEve,args=(eveDir,eveDomain,evePort,federationList,False,False,False),daemon=True)
+    thrEve = \
+        threadWithTrace(target=createServerEve, \
+                        args=(eveDir,eveDomain,evePort, \
+                              federationList,False,False, \
+                              False),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -481,7 +542,14 @@ def testFollowBetweenServers():
     eveSendThreads=[]
     evePostLog=[]
     useBlurhash=False
-    sendResult = sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Eve message', followersOnly, saveToFile, clientToServer,None,None,useBlurhash, federationList, eveSendThreads, evePostLog, eveCachedWebfingers,evePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = \
+        sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, \
+                 'bob', bobDomain, bobPort, ccUrl, \
+                 httpPrefix, 'Eve message', followersOnly, \
+                 saveToFile, clientToServer,None,None, \
+                 useBlurhash, federationList, eveSendThreads, \
+                 evePostLog, eveCachedWebfingers, \
+                 evePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -508,7 +576,13 @@ def testFollowBetweenServers():
     aliceSendThreads=[]
     alicePostLog=[]
     useBlurhash=False
-    sendResult = sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, 'bob', bobDomain, bobPort, ccUrl, httpPrefix, 'Alice message', followersOnly, saveToFile, clientToServer,None,None,useBlurhash, federationList, aliceSendThreads, alicePostLog, aliceCachedWebfingers,alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    sendResult = \
+        sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
+                 'bob', bobDomain, bobPort, ccUrl, \
+                 httpPrefix, 'Alice message', followersOnly, saveToFile, \
+                 clientToServer,None,None,useBlurhash, federationList, \
+                 aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
+                 alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -524,11 +598,15 @@ def testFollowBetweenServers():
 
     assert aliceMessageArrived==True
     print('Message from Alice to Bob succeeded, since it was granted capabilities')
-    
+
     print('\n\n*********************************************************')
     print("\nBob changes Alice's capabilities so that she can't reply on his posts")
-    bobCapsFilename=bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'
-    aliceCapsFilename=aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'
+    bobCapsFilename= \
+        bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+ \
+        httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'
+    aliceCapsFilename= \
+        aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+ \
+        httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'
     sessionBob = createSession(bobDomain,bobPort,useTor)
     bobSendThreads = []
     bobPostLog = []
@@ -547,7 +625,8 @@ def testFollowBetweenServers():
     newCapabilities=["inbox:write","objects:read","inbox:noreply"]
     sendCapabilitiesUpdate(sessionBob,bobDir,httpPrefix, \
                            'bob',bobDomain,bobPort, \
-                           httpPrefix+'://'+aliceDomain+':'+str(alicePort)+'/users/alice',
+                           httpPrefix+'://'+aliceDomain+':'+\
+                           str(alicePort)+'/users/alice',
                            newCapabilities, \
                            bobSendThreads, bobPostLog, \
                            bobCachedWebfingers,bobPersonCache, \
@@ -598,8 +677,14 @@ def testFollowBetweenServers():
     thrEve.join()
     assert thrEve.isAlive()==False
     
-    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json')
-    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json')
+    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+ \
+                          '/ocap/accept/'+httpPrefix+':##'+ \
+                          aliceDomain+':'+str(alicePort)+ \
+                          '#users#alice.json')
+    assert os.path.isfile(aliceDir+'/accounts/alice@'+ \
+                          aliceDomain+'/ocap/granted/'+ \
+                          httpPrefix+':##'+bobDomain+':'+ \
+                          str(bobPort)+'#users#bob.json')
     
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()

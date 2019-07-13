@@ -555,7 +555,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
-def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
+def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
+              port=80,httpPrefix='https', \
               fedList=[],noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,debug=False) -> None:
@@ -613,5 +614,8 @@ def runDaemon(baseDir: str,domain: str,port=80,httpPrefix='https', \
                               httpd.ocapAlways, \
                               debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
-    print('Running ActivityPub server on ' + domain + ' port ' + str(port))
+    if clientToServer:
+        print('Running ActivityPub client on ' + domain + ' port ' + str(port))
+    else:
+        print('Running ActivityPub server on ' + domain + ' port ' + str(port))
     httpd.serve_forever()
