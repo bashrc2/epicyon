@@ -120,20 +120,24 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         followfile.write(handleToFollow+'\n')
     return True
 
-def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str):
+def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False) -> str:
     """Returns the filename for the given status post url
     """
+    if not replies:
+        extension='json'
+    else:
+        extension='replies'
     # if this post in the shared inbox?
     handle='inbox@'+domain
     boxName='inbox'
-    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
+    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.'+extension
     if not os.path.isfile(postFilename):
         boxName='outbox'
-        postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
+        postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.'+extension
         if not os.path.isfile(postFilename):
             # if this post in the inbox of the person?
             boxName='inbox'
-            postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.json'
+            postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.'+extension
             if not os.path.isfile(postFilename):
                 postFilename=None
     return postFilename

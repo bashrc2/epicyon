@@ -673,42 +673,20 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
     if not postFilename:
         if debug:
             print('DEBUG: post may have expired - '+replyTo)
-        return False
-    with open(postFilename, 'r') as fp:
-        repliedToJson=commentjson.load(fp)
-        if not repliedToJson.get('object'):
-            if debug:
-                print('DEBUG: replied to post has no object - '+postFilename)
-            return False
-        if not isinstance(repliedToJson['object'], dict):
-            if debug:
-                print('DEBUG: replied to post object is not dict - '+postFilename)
-            return False
-        if not repliedToJson['object'].get('replies'):
-            if debug:
-                print('DEBUG: replied to post has no replies attribute - '+postFilename)
-            return False
-        if not repliedToJson['object']['replies'].get('first'):
-            if debug:
-                print('DEBUG: replied to post has no first attribute - '+postFilename)
-            return False
-        if not repliedToJson['object']['replies']['first'].get('items'):
-            if debug:
-                print('DEBUG: replied to post has no items attribute - '+postFilename)
-            return False
-        messageId=messageJson['id']
-        repliesList=repliedToJson['object']['replies']['first']['items']
-        if messageId not in repliesList:
-            repliesList.append(messageId)
-            with open(postFilename, 'w') as fp:
-                commentjson.dump(repliedToJson, fp, indent=4, sort_keys=False)
-                if debug:
-                    print('DEBUG: updated replies for '+postFilename)
-                return True
-        else:
-            if debug:
-                print('DEBUG: reply was already added to list')            
-    return False
+        return False    
+    # populate a text file containing the ids of replies
+    postRepliesFilename=postFilename.replace('.json','.replies')
+    messageId=messageJson['id'].replace('/activity','')
+    if os.path.isfile(postRepliesFilename):
+        if messageId not in open(postRepliesFilename).read():
+            repliesFile=open(postRepliesFilename, "a")
+            repliesFile.write(messageId+'\n')
+            repliesFile.close()
+    else:
+        repliesFile=open(postRepliesFilename, "w")
+        repliesFile.write(messageId+'\n')
+        repliesFile.close()
+    return True
                 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
