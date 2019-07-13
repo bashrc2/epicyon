@@ -142,6 +142,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     noannounce=False
     cw=False
     useBlurhash=True
+    maxReplies=64
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
@@ -165,7 +166,8 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     testServerAliceRunning = True
     print('Server running: Alice')
     runDaemon(False,path,domain,port,httpPrefix,federationList, \
-              noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
+              noreply,nolike,nopics,noannounce,cw,ocapAlways, \
+              useTor,maxReplies,True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool):
@@ -185,6 +187,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     noannounce=False
     cw=False
     useBlurhash=False
+    maxReplies=64
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
@@ -208,7 +211,8 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     testServerBobRunning = True
     print('Server running: Bob')
     runDaemon(False,path,domain,port,httpPrefix,federationList, \
-              noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
+              noreply,nolike,nopics,noannounce,cw,ocapAlways, \
+              useTor,maxReplies,True)
 
 def createServerEve(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool):
@@ -227,6 +231,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     nopics=False
     noannounce=False
     cw=False
+    maxReplies=64
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
@@ -235,7 +240,8 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     testServerEveRunning = True
     print('Server running: Eve')
     runDaemon(False,path,domain,port,httpPrefix,federationList, \
-              noreply,nolike,nopics,noannounce,cw,ocapAlways,useTor,True)
+              noreply,nolike,nopics,noannounce,cw,ocapAlways, \
+              useTor,maxReplies,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')

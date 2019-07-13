@@ -169,6 +169,8 @@ parser.add_argument("--followersonly", type=str2bool, nargs='?', \
 parser.add_argument("-c","--client", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Use as an ActivityPub client")
+parser.add_argument('--maxreplies', dest='maxReplies', type=int,default=64, \
+                    help='Maximum number of replies to a post')
 args = parser.parse_args()
 
 debug=False
@@ -555,4 +557,5 @@ if args.testdata:
 runDaemon(args.client,baseDir,domain,port,httpPrefix, \
           federationList, \
           args.noreply,args.nolike,args.nopics, \
-          args.noannounce,args.cw,ocapAlways,useTor,debug)
+          args.noannounce,args.cw,ocapAlways, \
+          useTor,args.maxReplies,debug)

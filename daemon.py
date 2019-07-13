@@ -661,7 +661,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
               port=80,httpPrefix='https', \
               fedList=[],noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
-              useTor=False,debug=False) -> None:
+              useTor=False,maxReplies=64,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -713,7 +713,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
                               httpd.postLog,httpd.cachedWebfingers, \
                               httpd.personCache,httpd.inboxQueue, \
                               domain,port,useTor,httpd.federationList, \
-                              httpd.ocapAlways, \
+                              httpd.ocapAlways,maxReplies, \
                               debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
     if clientToServer:

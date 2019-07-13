@@ -636,7 +636,7 @@ def receiveUndoAnnounce(session,handle: str,baseDir: str, \
     return True
 
 def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
-                    messageJson :{},debug :bool) -> bool:
+                    messageJson :{},maxReplies: int,debug :bool) -> bool:
     """Updates the list of replies for a post on this domain if 
     a reply to it arrives
     """
@@ -677,6 +677,9 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
     postRepliesFilename=postFilename.replace('.json','.replies')
     messageId=messageJson['id'].replace('/activity','')
     if os.path.isfile(postRepliesFilename):
+        numLines = sum(1 for line in open(postRepliesFilename))
+        if numlines>maxReplies:
+            return False
         if messageId not in open(postRepliesFilename).read():
             repliesFile=open(postRepliesFilename, "a")
             repliesFile.write(messageId+'\n')
@@ -693,7 +696,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            queue: [],domain: str,port: int,useTor: bool, \
                            federationList: [],ocapAlways: bool,debug: bool, \
                            acceptedCaps: [],
-                           queueFilename :str,destinationFilename :str) -> bool:
+                           queueFilename :str,destinationFilename :str,
+                           maxReplies: int) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
     if receiveLike(session,handle, \
@@ -760,7 +764,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Delete accepted from '+keyId)
         return False
             
-    populateReplies(baseDir,httpPrefix,domain,messageJson,debug)
+    populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
     
     if debug:
         print('DEBUG: object capabilities passed')
@@ -783,7 +787,7 @@ def restoreQueueItems(baseDir: str,queue: []) -> None:
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \
                   domain: str,port: int,useTor: bool,federationList: [], \
-                  ocapAlways: bool,debug: bool, \
+                  ocapAlways: bool,maxReplies: int,debug: bool, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -983,7 +987,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                                                port,useTor, \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
-                                               queueFilename,destination)
+                                               queueFilename,destination, \
+                                               maxReplies)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check failed')
@@ -999,7 +1004,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                                                port,useTor, \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
-                                               queueFilename,destination)
+                                               queueFilename,destination, \
+                                               maxReplies)
                     if debug:
                         print('DEBUG: object capabilities check failed')
             
