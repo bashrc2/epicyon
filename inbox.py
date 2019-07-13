@@ -680,6 +680,10 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
             if debug:
                 print('DEBUG: replied to post has no object - '+postFilename)
             return False
+        if not isinstance(repliedToJson['object'], dict):
+            if debug:
+                print('DEBUG: replied to post object is not dict - '+postFilename)
+            return False
         if not repliedToJson['object'].get('replies'):
             if debug:
                 print('DEBUG: replied to post has no replies attribute - '+postFilename)
