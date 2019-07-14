@@ -173,6 +173,14 @@ parser.add_argument("-c","--client", type=str2bool, nargs='?', \
                     help="Use as an ActivityPub client")
 parser.add_argument('--maxreplies', dest='maxReplies', type=int,default=64, \
                     help='Maximum number of replies to a post')
+parser.add_argument('--role', dest='role', type=str,default=None, \
+                    help='Set a role for a person')
+parser.add_argument('--organization','--project', dest='project', type=str,default=None, \
+                    help='Set a project for a person')
+parser.add_argument('--skill', dest='skill', type=str,default=None, \
+                    help='Set a skill for a person')
+parser.add_argument('--level', dest='skillLevelPercent', type=int,default=None, \
+                    help='Set a skill level for a person as a percentage, or zero to remove')
 args = parser.parse_args()
 
 debug=False
@@ -527,7 +535,35 @@ if args.backgroundImage:
     else:
         print('Background image was not added for '+args.nickname)
     sys.exit()    
-    
+
+if args.project:
+    if not nickname:
+        print('No nickname given')
+        sys.exit()
+        
+    if args.role.lower()=='none' or \
+       args.role.lower()=='remove' or \
+       args.role.lower()=='delete':
+        args.role=None
+    if args.role:
+        if setRole(baseDir,nickname,domain,args.project,args.role):
+            print('Role within '+args.project+' set to '+args.role)
+    else:
+        if setRole(baseDir,nickname,domain,args.project,None):
+            print('Left '+args.project)
+    sys.exit()
+
+if args.skill:
+    if args.skillLevelPercent==0:
+        args.skillLevelPercent=None
+    if args.skillLevelPercent:
+        if setSkillLevel(baseDir,nickname,domain,args.skill,args.skillLevelPercent):
+            print('Skill level for '+args.skill+' set to '+str(args.skillLevelPercent)+'%')
+    else:
+        if setSkillLevel(baseDir,nickname,domain,args.skill,args.skillLevelPercent):
+            print('Skill '+args.skill+' removed')
+    sys.exit()
+
 if federationList:
     print('Federating with: '+str(federationList))
 

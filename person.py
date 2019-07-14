@@ -11,6 +11,7 @@ import commentjson
 import os
 import fileinput
 import subprocess
+from pprint import pprint
 from pathlib import Path
 from Crypto.PublicKey import RSA
 from shutil import copyfile
@@ -97,6 +98,8 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
         return False
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
+        if not actorJson.get('skills'):
+            actorJson['skills']={}
         if skillLevelPercent>0:
             actorJson['skills'][skill]=skillLevelPercent
         else:
