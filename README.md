@@ -364,7 +364,7 @@ python3 epicyon.py --nickname jon --domain somedomain.net --project "darts team"
 
 Individuals can be assigned to multiple roles within multiple projects if needed.
 
-You might also want to advertize that you have various skills, so that orgbots can collect that information and rapidly assemble a viable organization of willing participants with a particular goal. Skill levels are a percentage value.
+You might also want to advertize that you have various skills. Skill levels are a percentage value.
 
 ``` bash
 python3 epicyon.py --nickname jon --domain somedomain.net --skill "Dressmaking" --level 60
@@ -376,4 +376,4 @@ You can also set a busy status to define whether people are available for new ta
 python3 epicyon.py --nickname jon --domain somedomain.net --availability ready
 ```
 
-With roles, skills and availability defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go and complete pieces of work.
+With roles, skills and availability defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go and complete pieces of work. Orgbots may collect that information and rapidly assemble a viable organization from predefined schemas. This is the way to produce effective non-hierarchical organizations which are also transient with no fixed bureaucracy.
