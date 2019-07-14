@@ -359,7 +359,7 @@ To build crowdsourced organizations you might want to assign roles and skills to
 To assign a role to someone:
 
 ``` bash
-python3 epicyon.py --nickname jon --domain somedomain.net --project "instance" --role "moderator"
+python3 epicyon.py --nickname susan --domain somedomain.net --project "instance" --role "moderator"
 ```
 
 Individuals can be assigned to multiple roles within multiple projects if needed.
@@ -373,7 +373,7 @@ python3 epicyon.py --nickname jon --domain somedomain.net --skill "Dressmaking" 
 You can also set a busy status to define whether people are available for new tasks.
 
 ``` bash
-python3 epicyon.py --nickname jon --domain somedomain.net --availability ready
+python3 epicyon.py --nickname eva --domain somedomain.net --availability ready
 ```
 
 With roles, skills and availability defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go and complete pieces of work. Orgbots may collect that information and rapidly assemble a viable organization from predefined schemas. This is the way to produce effective non-hierarchical organizations which are also transient with no fixed bureaucracy.
