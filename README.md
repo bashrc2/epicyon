@@ -351,3 +351,23 @@ If you want old posts to be deleted for data minimization purposes then the arch
 ``` bash
 python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 256
 ```
+
+## Roles and skills
+
+To build crowdsourced organizations you might want to assign roles and skills to individuals. This can be done with some command options:
+
+To assign a role to someone:
+
+``` bash
+python3 epicyon.py --nickname jon --domain somedomain.net --project "darts team" --role "driver"
+```
+
+Individuals can be assigned to multiple roles within multiple projects if needed.
+
+You might also want to advertize that you have various skills, so that orgbots can collect that information and rapidly assemble a viable organization of willing participants with a particular goal. Skill levels are a percentage value.
+
+``` bash
+python3 epicyon.py --nickname jon --domain somedomain.net --skill "Dressmaking" --level 60
+```
+
+With roles and skills defined tasks may then be automatically assigned to the relevant people.
