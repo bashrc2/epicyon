@@ -36,6 +36,7 @@ from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
 from like import updateLikesCollection
 from like import undoLikesCollectionEntry
+from blocking import isBlocked
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -117,6 +118,15 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     """
     if ':' in domain:
         domain=domain.split(':')[0]
+
+    # block at the ealiest stage possible, which means the data
+    # isn't written to file
+    if postJsonObject.get('actor'):
+        postNickname=getNicknameFromActor(postJsonObject['actor'])
+        postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
+        if isBlocked(baseDir,nickname,domain,postNickname,postDomain):            
+            return None
+        
     if postJsonObject.get('id'):
         postId=postJsonObject['id'].replace('/activity','')
     else:

@@ -46,7 +46,7 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
     """Is the given nickname blocked?
     """
     blockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
-    blockHandle=blockNickName+'@'+blockDomain
+    blockHandle=blockNickname+'@'+blockDomain
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
             return True
