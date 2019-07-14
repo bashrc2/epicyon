@@ -178,6 +178,10 @@ Shared inboxes are obviously essential for any kind of scalability, otherwise th
 
 With the shared inbox instead of sending from Alice to 500 of her fans on a different instance - repeatedly sending the same message to individual inboxes - a single message is sent to its shared inbox (which has its own special account called 'inbox') and it then decides how to distribute that. If a list of capability ids is attached to the message which gets sent to the shared inbox then the receiving server can use that.
 
+When a post arrives in the shared inbox it is checked to see that at least one follower exists for it. If there are only a small number of followers then it is treated like a direct message and copied separately to individual account inboxes after capabilities checks. For larger numbers of followers the capabilities checks are done at the time when the inbox is fetched. This avoids a lot of duplicated storage of posts.
+
+A potential down side is that for popular accounts with many followers the number of capabilities ids (one for each follower on the receiving server) on a post sent to the shared inbox could be large. However, in terms of bandwidth it may still not be very significant compared to heavyweight websites containing a lot of javascript.
+
 ## Some capabilities
 
 *inbox:write* - follower can post anything to your inbox
