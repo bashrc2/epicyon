@@ -359,7 +359,7 @@ To build crowdsourced organizations you might want to assign roles and skills to
 To assign a role to someone:
 
 ``` bash
-python3 epicyon.py --nickname jon --domain somedomain.net --project "darts team" --role "driver"
+python3 epicyon.py --nickname jon --domain somedomain.net --project "instance" --role "moderator"
 ```
 
 Individuals can be assigned to multiple roles within multiple projects if needed.
