@@ -31,7 +31,7 @@ def removeFilter(baseDir: str,nickname: str,domain: str, \
                 with open(filtersFilename+'.new', 'w') as fpnew:
                     for line in fp:
                         line=line.replace('\n','')
-                        if words not in line:
+                        if line!=words:
                             fpnew.write(line+'\n')
             if os.path.isfile(filtersFilename+'.new'):
                 os.rename(filtersFilename+'.new',filtersFilename)
