@@ -17,6 +17,7 @@ import threading
 import sys
 import trace
 import time
+from collections import OrderedDict
 from threads import threadWithTrace
 from cache import storePersonInCache
 from cache import getPersonFromCache
@@ -778,10 +779,19 @@ def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: st
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,authorized,pageNumber)
 
+def getStatusNumberFromPostFilename(filename) -> int:
+    """Gets the status number from a post filename
+    eg. https:##testdomain.com:8085#users#testuser567#statuses#1562958506952068.json
+    returns 156295850695206
+    """
+    if '#statuses#' not in filename:
+        return None
+    return int(filename.split('#')[-1].replace('.json',''))
+
 def createBoxBase(baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,authorized :bool,pageNumber=None) -> {}:
-    """Constructs the box feed
+    """Constructs the box feed for a person with the given nickname
     """
     if boxname!='inbox' and boxname!='outbox':
         return None
@@ -816,27 +826,38 @@ def createBoxBase(baseDir: str,boxname: str, \
     postsOnPageCtr=0
 
     # post filenames sorted in descending order
-    postsInBox=[]
-    postsInPersonInbox=sorted(os.listdir(boxDir), reverse=True)
+    postsInBoxDict={}
+    postsCtr=0
+    postsInPersonInbox=os.listdir(boxDir)
     for postFilename in postsInPersonInbox:
-        postsInBox.append(os.path.join(boxDir, postFilename))
+        # extract the status number
+        statusNumber=getStatusNumberFromPostFilename(postFilename)
+        if statusNumber:
+            postsInBoxDict[statusNumber]=os.path.join(boxDir, postFilename)
+            postsCtr+=1
 
     # combine the inbox for the account with the shared inbox
     if sharedBoxDir:
-        postsInSharedInbox=sorted(os.listdir(sharedBoxDir), reverse=True)
+        postsInSharedInbox=os.listdir(sharedBoxDir)
         for postFilename in postsInSharedInbox:
-            postsInBox.append(os.path.join(sharedBoxDir, postFilename))
+            statusNumber=getStatusNumberFromPostFilename(postFilename)
+            if statusNumber:
+                postsInBoxDict[statusNumber]=os.path.join(sharedBoxDir, postFilename)
+                postsCtr+=1
+
+    # sort the list in descending order of date
+    postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
 
     # number of posts in box
-    boxHeader['totalItems']=len(postsInBox)
+    boxHeader['totalItems']=postsCtr
     prevPostFilename=None
 
     if not pageNumber:
         pageNumber=1
 
     # Generate first and last entries within header
-    if len(postsInBox)>0:
-        lastPage=int(len(postsInBox)/itemsPerPage)
+    if postsCtr>0:
+        lastPage=int(postsCtr/itemsPerPage)
         if lastPage<1:
             lastPage=1
         boxHeader['last']= \
@@ -845,7 +866,7 @@ def createBoxBase(baseDir: str,boxname: str, \
     # Insert posts
     currPage=1
     postsCtr=0
-    for postFilename in postsInBox:
+    for statusNumber,postFilename in postsInBox.items():
         # Are we at the starting page yet?
         if prevPostFilename and currPage==pageNumber and postsCtr==0:
             # update the prev entry for the last message id

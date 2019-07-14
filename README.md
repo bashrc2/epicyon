@@ -30,6 +30,7 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Data minimization principle. Configurable post expiry time.
  * Likes and repeats only visible to authorized viewers
  * ReplyGuy mitigation: maxmimum replies per post or posts per day
+ * Ability to delete or hide specific conversation threads
  * Commandline interface. If there's a GUI it should be a separate project.
  * Designed for intermittent connectivity. Assume network disruptions.
  * Suitable for single board computers.

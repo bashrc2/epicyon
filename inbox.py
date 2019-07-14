@@ -962,15 +962,18 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
 
             # copy any posts addressed to followers into the shared inbox
             # this avoid copying file multiple times to potentially many
-            # individual inboxes            
+            # individual inboxes
+            # TODO This obviously bypasses object capabilities and so
+            # any checking will need to be handled at the time when inbox
+            # GET happens on individual accounts
             if len(recipientsDictFollowers)>0:
                 copyfile(queueFilename, \
                          queueJson['destination'].replace(inboxHandle,inboxHandle))
 
             # for posts addressed to specific accounts
-            for handle,capsId in recipientsDict.items():                    
+            for handle,capsId in recipientsDict.items():              
                 destination=queueJson['destination'].replace(inboxHandle,handle)
-                # check that capabilities are accepted            
+                # check that capabilities are accepted
                 if queueJson['post'].get('capability'):
                     capabilityIdList=queueJson['post']['capability']
                     # does the capability id list within the post contain the id
