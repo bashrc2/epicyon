@@ -370,4 +370,10 @@ You might also want to advertize that you have various skills, so that orgbots c
 python3 epicyon.py --nickname jon --domain somedomain.net --skill "Dressmaking" --level 60
 ```
 
-With roles and skills defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go.
+You can also set a busy status to define whether people are available for new tasks.
+
+``` bash
+python3 epicyon.py --nickname jon --domain somedomain.net --availability ready
+```
+
+With roles, skills and availability defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go and complete pieces of work.
