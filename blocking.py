@@ -9,20 +9,21 @@ __status__ = "Production"
 import os
 
 def addBlock(baseDir: str,nickname: str,domain: str, \
-             blockNickname: str,blockDomain: str) -> None:
+             blockNickname: str,blockDomain: str) -> bool:
     """Block the given account
     """
     blockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
     blockHandle=blockNickName+'@'+blockDomain
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
-            return
+            return False
     blockFile=open(blockingFilename, "a+")
     blockFile.write(blockHandle+'\n')
     blockFile.close()
+    return True
 
 def removeBlock(baseDir: str,nickname: str,domain: str, \
-                unblockNickname: str,unblockDomain: str) -> None:
+                unblockNickname: str,unblockDomain: str) -> bool:
     """Unblock the given account
     """
     unblockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
@@ -37,6 +38,8 @@ def removeBlock(baseDir: str,nickname: str,domain: str, \
                             fpnew.write(handle+'\n')
             if os.path.isfile(unblockingFilename+'.new'):
                 os.rename(unblockingFilename+'.new',unblockingFilename)
+                return True
+    return False
                     
 def isBlocked(baseDir: str,nickname: str,domain: str, \
               blockNickname: str,blockDomain: str) -> bool:

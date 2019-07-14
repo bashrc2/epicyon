@@ -30,6 +30,8 @@ from posts import getUserUrl
 from posts import archivePosts
 from session import createSession
 from session import getJson
+from blocking import addBlock
+from blocking import removeBlock
 import json
 import os
 import shutil
@@ -185,6 +187,10 @@ parser.add_argument('--level', dest='skillLevelPercent', type=int,default=None, 
                     help='Set a skill level for a person as a percentage, or zero to remove')
 parser.add_argument('--status','--availability', dest='availability', type=str,default=None, \
                     help='Set an availability status')
+parser.add_argument('--block', dest='block', type=str,default=None, \
+                    help='Block a particular address')
+parser.add_argument('--unblock', dest='unblock', type=str,default=None, \
+                    help='Remove a block on a particular address')
 args = parser.parse_args()
 
 debug=False
@@ -585,6 +591,28 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     adminPassword=createPassword(10)
     setConfigParam(baseDir,'adminPassword',adminPassword)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
+
+if args.block:
+    if not args.nickname:
+        print('Please specify a nickname')
+        sys.exit()
+    if '@' not in args.block:
+        print('syntax: --block nickname@domain')
+        sys.exit()
+    if addBlock(baseDir,args.nickname,domain,args.block.split('@')[0],args.block.split('@')[1].replace('\n','')):
+        print(args.block+' is blocked by '+args.nickname)
+    sys.exit()
+
+if args.unblock:
+    if not args.nickname:
+        print('Please specify a nickname')
+        sys.exit()
+    if '@' not in args.block:
+        print('syntax: --unblock nickname@domain')
+        sys.exit()
+    if removeBlock(baseDir,args.nickname,domain,args.block.split('@')[0],args.block.split('@')[1].replace('\n','')):
+        print('The block on '+args.block+' was removed by '+args.nickname)
+    sys.exit()
 
 if args.testdata:
     useBlurhash=False    
