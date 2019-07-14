@@ -40,6 +40,7 @@ from follow import sendFollowRequest
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
+from person import setSkillLevel
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
@@ -147,6 +148,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
+    assert setSkillLevel(path,nickname,domain,'hacking',90)
     if hasFollows:
         followPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
                      federationList,True)

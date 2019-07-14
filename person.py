@@ -85,6 +85,22 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         return True
     return False
 
+def setSkillLevel(baseDir: str,nickname: str,domain: str, \
+                  skill: str,skillLevelPercent: int) -> bool:
+    """Set a skill level for a person
+    """
+    if skillLevelPercent<0 or skillLevelPercent>100:
+        return False
+    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    if not os.path.isfile(actorFilename):
+        return False
+    with open(actorFilename, 'r') as fp:
+        actorJson=commentjson.load(fp)        
+        actorJson['skills'][skill]=skillLevelPercent
+        with open(actorFilename, 'w') as fp:
+            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+    return True
+    
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
@@ -123,6 +139,8 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'featured': httpPrefix+'://'+domain+'/users/'+nickname+'/collections/featured',
                  'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
                  'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
+                 'skills': {},
+                 'roles': {},
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
                           'url': httpPrefix+'://'+domain+'/users/'+nickname+'/icon.png'},
