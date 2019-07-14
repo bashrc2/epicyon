@@ -536,7 +536,7 @@ def receiveDelete(session,handle: str,baseDir: str, \
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageJson['object'])
         return True
-    deletePost(baseDir,handle.split('@')[0],handle.split('@')[1],postFilename,debug)
+    deletePost(baseDir,httpPrefix,handle.split('@')[0],handle.split('@')[1],postFilename,debug)
     if debug:
         print('DEBUG: post deleted - '+postFilename)
     return True

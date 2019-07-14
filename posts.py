@@ -948,7 +948,7 @@ def createBoxBase(baseDir: str,boxname: str, \
         return boxHeader
     return boxItems
 
-def archivePosts(baseDir: str,archiveDir: str,maxPostsInBox=256) -> None:
+def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=256) -> None:
     """Archives posts for all accounts
     """
     if archiveDir:
@@ -972,16 +972,16 @@ def archivePosts(baseDir: str,archiveDir: str,maxPostsInBox=256) -> None:
                     if not os.path.isdir(archiveDir+'/accounts/'+handle+'/outbox'):
                         os.mkdir(archiveDir+'/accounts/'+handle+'/outbox')
                     archiveSubdir=archiveDir+'/accounts/'+handle+'/inbox'
-                archivePostsForPerson(nickname,domain,baseDir, \
+                archivePostsForPerson(httpPrefix,nickname,domain,baseDir, \
                                       'inbox',archiveSubdir, \
                                       maxPostsInBox)
                 if archiveDir:
                     archiveSubdir=archiveDir+'/accounts/'+handle+'/outbox'
-                archivePostsForPerson(nickname,domain,baseDir, \
+                archivePostsForPerson(httpPrefix,nickname,domain,baseDir, \
                                       'outbox',archiveSubdir, \
                                       maxPostsInBox)
 
-def archivePostsForPerson(nickname: str,domain: str,baseDir: str, \
+def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str, \
                           boxname: str,archiveDir: str,maxPostsInBox=256) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
@@ -1007,7 +1007,7 @@ def archivePostsForPerson(nickname: str,domain: str,baseDir: str, \
                 if os.path.isfile(repliesPath):
                     os.rename(repliesPath,archivePath)
             else:
-                deletePost(baseDir,nickname,domain,filePath,False)
+                deletePost(baseDir,httpPrefix,nickname,domain,filePath,False)
             noOfPosts -= 1
             if noOfPosts <= maxPostsInBox:
                 break

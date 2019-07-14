@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import datetime
+import commentjson
 
 def getStatusNumber() -> (str,str):
     """Returns the status number and published date
@@ -158,11 +159,15 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
         os.remove(mediaFilename)
     postJson['attachment']=[]
 
-def deletePost(baseDir: str,nickname: str,domain: str,postFilename: str,debug: bool):
+def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool):
     """Recursively deletes a post and its replies and attachments
     """
+    # remove any attachment
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
+        removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
+
+    # remove any replies
     repliesFilename=postFilename.replace('.json','.replies')
     if os.path.isfile(repliesFilename):
         if debug:
@@ -173,6 +178,7 @@ def deletePost(baseDir: str,nickname: str,domain: str,postFilename: str,debug: b
                 if replyFile:
                     if os.path.isfile(replyFile):
                         deletePost(baseDir,nickname,domain,replyFile,debug)
-        # remove the replies file itself
+        # remove the replies file
         os.remove(repliesFilename)
+    # finally, remove the post itself
     os.remove(postFilename)    
