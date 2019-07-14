@@ -141,3 +141,20 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
             if not os.path.isfile(postFilename):
                 postFilename=None
     return postFilename
+
+def deletePost(baseDir: str,nickname: str,domain: str,postFilename: str,debug: bool):
+    """Recursively deletes a post and its replies and attachments
+    """
+    repliesFilename=postFilename.replace('.json','.replies')
+    if os.path.isfile(repliesFilename):
+        if debug:
+            print('DEBUG: removing replies to '+postFilename)
+        with open(repliesFilename,'r') as f:
+            for replyId in f:
+                replyFile=locatePost(baseDir,nickname,domain,replyId)
+                if replyFile:
+                    if os.path.isfile(replyFile):
+                        deletePost(baseDir,nickname,domain,replyFile,debug)
+        # remove the replies file itself
+        os.remove(repliesFilename)
+    os.remove(postFilename)    

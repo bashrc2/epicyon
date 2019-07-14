@@ -33,6 +33,7 @@ from utils import createPersonDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import deletePost
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachImage
@@ -999,16 +1000,14 @@ def archivePostsForPerson(nickname: str,domain: str,baseDir: str, \
     for postFilename in postsInBox:
         filePath = os.path.join(boxDir, postFilename)        
         if os.path.isfile(filePath):
-            repliesPath=filePath.replace('.json','.replies')
             if archiveDir:
+                repliesPath=filePath.replace('.json','.replies')
                 archivePath = os.path.join(archiveDir, postFilename)
                 os.rename(filePath,archivePath)
                 if os.path.isfile(repliesPath):
                     os.rename(repliesPath,archivePath)
             else:
-                os.remove(filePath)
-                if os.path.isfile(repliesPath):
-                    os.remove(repliesPath)
+                deletePost(baseDir,nickname,domain,filePath,False)
             noOfPosts -= 1
             if noOfPosts <= maxPostsInBox:
                 break

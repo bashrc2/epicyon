@@ -20,6 +20,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import locatePost
+from utils import deletePost
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -488,23 +489,6 @@ def receiveUndoLike(session,handle: str,baseDir: str, \
         print('DEBUG: liked post found in inbox. Now undoing.')
     undoLikesCollectionEntry(postFilename,messageJson['object'],messageJson['actor'],debug)
     return True
-
-def deletePost(baseDir: str,nickname: str,domain: str,postFilename: str,debug: bool):
-    """
-    """
-    repliesFilename=postFilename.replace('.json','.replies')
-    if os.path.isfile(repliesFilename):
-        if debug:
-            print('DEBUG: removing replies to '+postFilename)
-        with open(repliesFilename,'r') as f:
-            for replyId in f:
-                replyFile=locatePost(baseDir,nickname,domain,replyId)
-                if replyFile:
-                    if os.path.isfile(replyFile):
-                        os.remove(replyFile)
-        # remove the replies file itself
-        os.remove(repliesFilename)
-    os.remove(postFilename)    
 
 def receiveDelete(session,handle: str,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
