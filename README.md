@@ -370,4 +370,4 @@ You might also want to advertize that you have various skills, so that orgbots c
 python3 epicyon.py --nickname jon --domain somedomain.net --skill "Dressmaking" --level 60
 ```
 
-With roles and skills defined tasks may then be automatically assigned to the relevant people.
+With roles and skills defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go.
