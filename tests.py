@@ -153,9 +153,9 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     assert setRole(path,nickname,domain,'someproject','guru')
     if hasFollows:
         followPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
-                     federationList,True)
+                     federationList,False)
         followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
-                         federationList,True)
+                         federationList,False)
     if hasPosts:
         createPublicPost(path,nickname, domain, port,httpPrefix, \
                          "No wise fish would go anywhere without a porpoise", \
@@ -200,9 +200,9 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     assert setRole(path,nickname,domain,'bandname','publicist')
     if hasFollows:
         followPerson(path,nickname,domain, \
-                     'alice','127.0.0.50:61935',federationList,True)
+                     'alice','127.0.0.50:61935',federationList,False)
         followerOfPerson(path,nickname,domain, \
-                         'alice','127.0.0.50:61935',federationList,True)
+                         'alice','127.0.0.50:61935',federationList,False)
     if hasPosts:
         createPublicPost(path,nickname, domain, port,httpPrefix, \
                          "It's your life, live it your way.", \
@@ -353,9 +353,9 @@ def testPostMessageBetweenServers():
     print("Bob likes Alice's post")
 
     followerOfPerson(bobDir,'bob',bobDomain,'alice', \
-                     aliceDomain+':'+str(alicePort),federationList,True)
+                     aliceDomain+':'+str(alicePort),federationList,False)
     followPerson(aliceDir,'alice',aliceDomain,'bob', \
-                 bobDomain+':'+str(bobPort),federationList,True)
+                 bobDomain+':'+str(bobPort),federationList,False)
 
     sessionBob = createSession(bobDomain,bobPort,useTor)
     bobSendThreads = []
@@ -728,13 +728,13 @@ def testFollowersOfPerson():
     createPerson(baseDir,'sausagedog',domain,port,httpPrefix,True,password)
 
     clearFollows(baseDir,nickname,domain)
-    followPerson(baseDir,nickname,domain,'maxboardroom',domain,federationList,True)
-    followPerson(baseDir,'drokk',domain,'ultrapancake',domain,federationList,True)
+    followPerson(baseDir,nickname,domain,'maxboardroom',domain,federationList,False)
+    followPerson(baseDir,'drokk',domain,'ultrapancake',domain,federationList,False)
     # deliberate duplication
-    followPerson(baseDir,'drokk',domain,'ultrapancake',domain,federationList,True)
-    followPerson(baseDir,'sausagedog',domain,'ultrapancake',domain,federationList,True)
-    followPerson(baseDir,nickname,domain,'ultrapancake',domain,federationList,True)
-    followPerson(baseDir,nickname,domain,'someother','randodomain.net',federationList,True)
+    followPerson(baseDir,'drokk',domain,'ultrapancake',domain,federationList,False)
+    followPerson(baseDir,'sausagedog',domain,'ultrapancake',domain,federationList,False)
+    followPerson(baseDir,nickname,domain,'ultrapancake',domain,federationList,False)
+    followPerson(baseDir,nickname,domain,'someother','randodomain.net',federationList,False)
 
     followList=getFollowersOfPerson(baseDir,'ultrapancake',domain)
     assert len(followList)==3
@@ -765,16 +765,16 @@ def testNoOfFollowersOnDomain():
     createPerson(baseDir,'drokk',otherdomain,port,httpPrefix,True,password)
     createPerson(baseDir,'sausagedog',otherdomain,port,httpPrefix,True,password)
 
-    followPerson(baseDir,'drokk',otherdomain,nickname,domain,federationList,True)
-    followPerson(baseDir,'sausagedog',otherdomain,nickname,domain,federationList,True)
-    followPerson(baseDir,'maxboardroom',otherdomain,nickname,domain,federationList,True)
+    followPerson(baseDir,'drokk',otherdomain,nickname,domain,federationList,False)
+    followPerson(baseDir,'sausagedog',otherdomain,nickname,domain,federationList,False)
+    followPerson(baseDir,'maxboardroom',otherdomain,nickname,domain,federationList,False)
     
-    followerOfPerson(baseDir,nickname,domain,'cucumber','sandwiches.party',federationList,True)
-    followerOfPerson(baseDir,nickname,domain,'captainsensible','damned.zone',federationList,True)
-    followerOfPerson(baseDir,nickname,domain,'pilchard','zombies.attack',federationList,True)
-    followerOfPerson(baseDir,nickname,domain,'drokk',otherdomain,federationList,True)
-    followerOfPerson(baseDir,nickname,domain,'sausagedog',otherdomain,federationList,True)
-    followerOfPerson(baseDir,nickname,domain,'maxboardroom',otherdomain,federationList,True)
+    followerOfPerson(baseDir,nickname,domain,'cucumber','sandwiches.party',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'captainsensible','damned.zone',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'pilchard','zombies.attack',federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'drokk',otherdomain,federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'sausagedog',otherdomain,federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'maxboardroom',otherdomain,federationList,False)
 
     followersOnOtherDomain=noOfFollowersOnDomain(baseDir,nickname+'@'+domain, otherdomain)
     assert followersOnOtherDomain==3
