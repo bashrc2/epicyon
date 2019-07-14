@@ -14,6 +14,8 @@ from person import setPreferredNickname
 from person import setBio
 from person import validNickname
 from person import setProfileImage
+from person import setSkillLevel
+from person import setRole
 from webfinger import webfingerHandle
 from posts import getPosts
 from posts import createPublicPost
@@ -541,6 +543,11 @@ if args.testdata:
     nickname='testuser567'
     print('Generating some test data for user: '+nickname)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,'likewhateveryouwantscoob')
+    setSkillLevel(baseDir,nickname,domain,'testing',60)
+    setSkillLevel(baseDir,nickname,domain,'typing',50)
+    setRole(baseDir,nickname,domain,'epicyon','tester')
+    setRole(baseDir,nickname,domain,'epicyon','hacker')
+    setRole(baseDir,nickname,domain,'someproject','assistant')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     followPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
