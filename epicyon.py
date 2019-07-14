@@ -32,6 +32,8 @@ from session import createSession
 from session import getJson
 from blocking import addBlock
 from blocking import removeBlock
+from filters import addFilter
+from filters import removeFilter
 import json
 import os
 import shutil
@@ -191,6 +193,10 @@ parser.add_argument('--block', dest='block', type=str,default=None, \
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str,default=None, \
                     help='Remove a block on a particular address')
+parser.add_argument('--filter', dest='filterStr', type=str,default=None, \
+                    help='Adds a word or phrase which if present will cause a message to be ignored')
+parser.add_argument('--unfilter', dest='unfilterStr', type=str,default=None, \
+                    help='Remove a filter on a particular word or phrase')
 args = parser.parse_args()
 
 debug=False
@@ -612,6 +618,22 @@ if args.unblock:
         sys.exit()
     if removeBlock(baseDir,args.nickname,domain,args.block.split('@')[0],args.block.split('@')[1].replace('\n','')):
         print('The block on '+args.block+' was removed by '+args.nickname)
+    sys.exit()
+
+if args.filterStr:
+    if not args.nickname:
+        print('Please specify a nickname')
+        sys.exit()
+    if addFilter(baseDir,args.nickname,domain,args.filterStr):
+        print('Filter added: '+args.filterStr)
+    sys.exit()
+
+if args.unfilterStr:
+    if not args.nickname:
+        print('Please specify a nickname')
+        sys.exit()
+    if removeFilter(baseDir,args.nickname,domain,args.unfilterStr):
+        print('Filter removed: '+args.unfilterStr)
     sys.exit()
 
 if args.testdata:

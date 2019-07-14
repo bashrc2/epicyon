@@ -37,6 +37,7 @@ from capabilities import capabilitiesReceiveUpdate
 from like import updateLikesCollection
 from like import undoLikesCollectionEntry
 from blocking import isBlocked
+from filters import isFiltered
 
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
@@ -126,7 +127,14 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
         if isBlocked(baseDir,nickname,domain,postNickname,postDomain):            
             return None
-        
+
+        if postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], dict):
+                if postJsonObject['object'].get('content'):
+                    if isinstance(postJsonObject['object']['content'], str):
+                        if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
+                            return None
+
     if postJsonObject.get('id'):
         postId=postJsonObject['id'].replace('/activity','')
     else:
