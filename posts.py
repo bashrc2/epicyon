@@ -771,13 +771,13 @@ def sendToFollowers(session,baseDir: str,
                        personCache,debug)
 
 def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                 itemsPerPage: int,headerOnly: bool,pageNumber=None) -> {}:
+                 itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,True,pageNumber)
+                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,authorized,pageNumber)
+                         itemsPerPage,headerOnly,authorized,False,pageNumber)
 
 def getStatusNumberFromPostFilename(filename) -> int:
     """Gets the status number from a post filename
@@ -790,7 +790,8 @@ def getStatusNumberFromPostFilename(filename) -> int:
 
 def createBoxBase(baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
-                  itemsPerPage: int,headerOnly: bool,authorized :bool,pageNumber=None) -> {}:
+                  itemsPerPage: int,headerOnly: bool,authorized :bool, \
+                  ocapAlways: bool,pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
     if boxname!='inbox' and boxname!='outbox':
@@ -853,8 +854,25 @@ def createBoxBase(baseDir: str,boxname: str, \
                     if actorNickname and actorDomain:
                         # is the actor followed by this account?
                         if actorNickname+'@'+actorDomain in open(followingFilename).read():
-                            postsInBoxDict[statusNumber]=sharedInboxFilename
-                            postsCtr+=1
+                            if ocapAlways:
+                                capsList=None
+                                # Note: should this be in the Create or the object of a post?
+                                if postJson.get('capability'):
+                                    if isinstance(postJson['capability'], list):                                
+                                        capsList=postJson['capability']
+                                # Have capabilities been granted for the sender?
+                                ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJson['actor'].replace('/','#')+'.json'
+                                if os.path.isfile(ocapFilename):
+                                    # read the capabilities id
+                                    with open(ocapFilename, 'r') as fp:
+                                        ocapJson=commentjson.load(fp)
+                                        if ocapJson.get('id'):
+                                            if ocapJson['id'] in capsList:                                    
+                                                postsInBoxDict[statusNumber]=sharedInboxFilename
+                                                postsCtr+=1
+                            else:
+                                postsInBoxDict[statusNumber]=sharedInboxFilename
+                                postsCtr+=1
 
     # sort the list in descending order of date
     postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))

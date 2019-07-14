@@ -960,12 +960,13 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                     queue.pop(0)
                     continue
 
-            # copy any posts addressed to followers into the shared inbox
+            # Copy any posts addressed to followers into the shared inbox
             # this avoid copying file multiple times to potentially many
             # individual inboxes
-            # TODO This obviously bypasses object capabilities and so
-            # any checking will need to be handled at the time when inbox
-            # GET happens on individual accounts
+            # This obviously bypasses object capabilities and so
+            # any checking will needs to be handled at the time when inbox
+            # GET happens on individual accounts.
+            # See posts.py/createBoxBase
             if len(recipientsDictFollowers)>0:
                 copyfile(queueFilename, \
                          queueJson['destination'].replace(inboxHandle,inboxHandle))

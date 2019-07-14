@@ -428,7 +428,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port, \
                                             self.path, \
                                             self.server.httpPrefix, \
-                                            maxPostsInFeed, 'inbox')
+                                            maxPostsInFeed, 'inbox', \
+                                            True,self.server.ocapAlways)
                     if inboxFeed:
                         self._set_headers('application/json')
                         self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
@@ -450,7 +451,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.port,self.path, \
                                  self.server.httpPrefix, \
                                  maxPostsInFeed, 'outbox', \
-                                 self._isAuthorized())
+                                 self._isAuthorized(), \
+                                 self.server.ocapAlways)
         if outboxFeed:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))

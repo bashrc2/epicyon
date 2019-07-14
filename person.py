@@ -249,7 +249,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
 
 def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
                   httpPrefix: str,noOfItems: int,boxname: str, \
-                  authorized: bool) -> []:
+                  authorized: bool,ocapAlways: bool) -> []:
     """Obtain the inbox/outbox feed for the given person
     """
     if boxname!='inbox' and boxname!='outbox':
@@ -288,12 +288,12 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
         return None
     if boxname=='inbox':
         return createInbox(baseDir,nickname,domain,port,httpPrefix, \
-                           noOfItems,headerOnly,pageNumber)
+                           noOfItems,headerOnly,ocapAlways,pageNumber)
     return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
                         noOfItems,headerOnly,authorized,pageNumber)
 
 def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
-                    httpPrefix: str,noOfItems: int) -> []:
+                    httpPrefix: str,noOfItems: int,ocapAlways: bool) -> []:
     """Obtain the inbox feed for the given person
     Authentication is expected to have already happened
     """
@@ -329,7 +329,7 @@ def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
     if not validNickname(nickname):
         return None
     return createInbox(baseDir,nickname,domain,port,httpPrefix, \
-                       noOfItems,headerOnly,pageNumber)
+                       noOfItems,headerOnly,ocapAlways,pageNumber)
 
 def setPreferredNickname(baseDir: str,nickname: str, domain: str, \
                          preferredName: str) -> bool:
