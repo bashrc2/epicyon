@@ -19,7 +19,7 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Server-to-server and client-to-server protocols supported.
  * Implemented in a common language (Python 3)
  * Keyword filtering.
- * Being able to define roles and skills, similar to the Pursuance project.
+ * Being able to build crowdsouced organizations with roles and skills
  * Sharings collection, similar to the gnusocial sharings plugin
  * Resistant to flooding, hellthreads, etc.
  * Support content warnings, reporting and blocking.
