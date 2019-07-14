@@ -838,12 +838,23 @@ def createBoxBase(baseDir: str,boxname: str, \
 
     # combine the inbox for the account with the shared inbox
     if sharedBoxDir:
+        handle=nickname+'@'+domain
+        followingFilename=baseDir+'/accounts/'+handle+'/following.txt'
         postsInSharedInbox=os.listdir(sharedBoxDir)
         for postFilename in postsInSharedInbox:
             statusNumber=getStatusNumberFromPostFilename(postFilename)
-            if statusNumber:
-                postsInBoxDict[statusNumber]=os.path.join(sharedBoxDir, postFilename)
-                postsCtr+=1
+            if statusNumber:                
+                sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
+                # get the actor from the shared post
+                with open(sharedInboxFilename, 'r') as fp:
+                    postJson=commentjson.load(fp)
+                    actorNickname=getNicknameFromActor(postJson['actor'])
+                    actorDomain,actorPort=getDomainFromActor(postJson['actor'])
+                    if actorNickname and actorDomain:
+                        # is the actor followed by this account?
+                        if actorNickname+'@'+actorDomain in open(followingFilename).read():
+                            postsInBoxDict[statusNumber]=sharedInboxFilename
+                            postsCtr+=1
 
     # sort the list in descending order of date
     postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
