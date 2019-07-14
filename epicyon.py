@@ -16,6 +16,7 @@ from person import validNickname
 from person import setProfileImage
 from person import setSkillLevel
 from person import setRole
+from person import setAvailability
 from webfinger import webfingerHandle
 from posts import getPosts
 from posts import createPublicPost
@@ -181,6 +182,8 @@ parser.add_argument('--skill', dest='skill', type=str,default=None, \
                     help='Set a skill for a person')
 parser.add_argument('--level', dest='skillLevelPercent', type=int,default=None, \
                     help='Set a skill level for a person as a percentage, or zero to remove')
+parser.add_argument('--status','--availability', dest='availability', type=str,default=None, \
+                    help='Set an availability status')
 args = parser.parse_args()
 
 debug=False
@@ -536,6 +539,14 @@ if args.backgroundImage:
         print('Background image was not added for '+args.nickname)
     sys.exit()    
 
+if args.availability:
+    if not nickname:
+        print('No nickname given')
+        sys.exit()
+    if setAvailability(baseDir,nickname,domain,args.availability):
+        print('Availablity set to '+args.availability)
+    sys.exit()
+    
 if args.project:
     if not nickname:
         print('No nickname given')
@@ -584,6 +595,7 @@ if args.testdata:
     setRole(baseDir,nickname,domain,'epicyon','tester')
     setRole(baseDir,nickname,domain,'epicyon','hacker')
     setRole(baseDir,nickname,domain,'someproject','assistant')
+    setAvailability(baseDir,nickname,domain,'busy')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     followPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
