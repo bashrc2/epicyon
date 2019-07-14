@@ -142,9 +142,27 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
                 postFilename=None
     return postFilename
 
+def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
+    if not postJson.get('attachment'):
+        return
+    if not postJson['attachment'][0].get('url'):
+        return
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            domain=domain+':'+str(port)
+    attachmentUrl=postJson['attachment'][0]['url']
+    if not attachmentUrl:
+        return
+    mediaFilename=baseDir+'/'+attachmentUrl.replace(httpPrefix+'://'+domain+'/','')
+    if os.path.isfile(mediaFilename):
+        os.remove(mediaFilename)
+    postJson['attachment']=[]
+
 def deletePost(baseDir: str,nickname: str,domain: str,postFilename: str,debug: bool):
     """Recursively deletes a post and its replies and attachments
     """
+    with open(postFilename, 'r') as fp:
+        postJsonObject=commentjson.load(fp)
     repliesFilename=postFilename.replace('.json','.replies')
     if os.path.isfile(repliesFilename):
         if debug:

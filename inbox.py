@@ -21,6 +21,7 @@ from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import locatePost
 from utils import deletePost
+from utils import removeAttachment
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -110,14 +111,14 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJson: {},host: str,headers: str,postPath: str,debug: bool) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},host: str,headers: str,postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
     if ':' in domain:
         domain=domain.split(':')[0]
-    if postJson.get('id'):
-        postId=postJson['id'].replace('/activity','')
+    if postJsonObject.get('id'):
+        postId=postJsonObject['id'].replace('/activity','')
     else:
         statusNumber,published = getStatusNumber()
         postId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
@@ -147,7 +148,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         'host': host,
         'headers': headers,
         'path': postPath,
-        'post': postJson,
+        'post': postJsonObject,
         'filename': filename,
         'destination': destination
     }
@@ -627,9 +628,9 @@ def receiveUndoAnnounce(session,handle: str,baseDir: str, \
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
     with open(postFilename, 'r') as fp:
-        postJson=commentjson.load(fp)
-        if not postJson.get('type'):
-            if postJson['type']!='Announce':
+        postJsonObject=commentjson.load(fp)
+        if not postJsonObject.get('type'):
+            if postJsonObject['type']!='Announce':
                 if debug:
                     print("DEBUG: Attenpt to undo something which isn't an announcement")
                 return False        

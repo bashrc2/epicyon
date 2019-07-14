@@ -19,55 +19,55 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug:
     """Undoes a like for a particular actor
     """
     with open(postFilename, 'r') as fp:
-        postJson=commentjson.load(fp)
-        if not postJson.get('type'):
-            if postJson['type']!='Create':
+        postJsonObject=commentjson.load(fp)
+        if not postJsonObject.get('type'):
+            if postJsonObject['type']!='Create':
                 return
             return
-        if not postJson.get('object'):
+        if not postJsonObject.get('object'):
             if debug:
-                pprint(postJson)
+                pprint(postJsonObject)
                 print('DEBUG: post '+objectUrl+' has no object')
             return
-        if not postJson['object'].get('likes'):
+        if not postJsonObject['object'].get('likes'):
             return
-        if not postJson['object']['likes'].get('items'):
+        if not postJsonObject['object']['likes'].get('items'):
             return
         totalItems=0
-        if postJson['object']['likes'].get('totalItems'):
-            totalItems=postJson['object']['likes']['totalItems']
+        if postJsonObject['object']['likes'].get('totalItems'):
+            totalItems=postJsonObject['object']['likes']['totalItems']
         itemFound=False
-        for likeItem in postJson['object']['likes']['items']:
+        for likeItem in postJsonObject['object']['likes']['items']:
             if likeItem.get('actor'):
                 if likeItem['actor']==actor:
                     if debug:
                         print('DEBUG: like was removed for '+actor)
-                    postJson['object']['likes']['items'].remove(likeItem)
+                    postJsonObject['object']['likes']['items'].remove(likeItem)
                     itemFound=True
                     break
         if itemFound:
             if totalItems==1:
                 if debug:
                     print('DEBUG: likes was removed from post')
-                postJson['object'].remove(postJson['object']['likes'])
+                postJsonObject['object'].remove(postJsonObject['object']['likes'])
             else:
-                postJson['object']['likes']['totalItems']=len(postJson['likes']['items'])
+                postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
             with open(postFilename, 'w') as fp:
-                commentjson.dump(postJson, fp, indent=4, sort_keys=True)            
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
 
 def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """
     with open(postFilename, 'r') as fp:
-        postJson=commentjson.load(fp)
-        if not postJson.get('object'):
+        postJsonObject=commentjson.load(fp)
+        if not postJsonObject.get('object'):
             if debug:
-                pprint(postJson)
+                pprint(postJsonObject)
                 print('DEBUG: post '+objectUrl+' has no object')
             return
         if not objectUrl.endswith('/likes'):
             objectUrl=objectUrl+'/likes'
-        if not postJson['object'].get('likes'):
+        if not postJsonObject['object'].get('likes'):
             if debug:
                 print('DEBUG: Adding initial likes to '+objectUrl)
             likesJson = {
@@ -80,10 +80,10 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
                     
                 }]                
             }
-            postJson['object']['likes']=likesJson
+            postJsonObject['object']['likes']=likesJson
         else:
-            if postJson['object']['likes'].get('items'):
-                for likeItem in postJson['likes']['items']:
+            if postJsonObject['object']['likes'].get('items'):
+                for likeItem in postJsonObject['likes']['items']:
                     if likeItem.get('actor'):
                         if likeItem['actor']==actor:
                             return
@@ -91,8 +91,8 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
                     'type': 'Like',
                     'actor': actor
                 }
-                postJson['object']['likes']['items'].append(newLike)
-                postJson['object']['likes']['totalItems']=len(postJson['likes']['items'])
+                postJsonObject['object']['likes']['items'].append(newLike)
+                postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
             else:
                 if debug:
                     print('DEBUG: likes section of post has no items list')
@@ -100,7 +100,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
         if debug:
             print('DEBUG: saving post with likes added')
         with open(postFilename, 'w') as fp:
-            commentjson.dump(postJson, fp, indent=4, sort_keys=True)
+            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)
 
 def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \

@@ -287,7 +287,7 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None
             print(e)
 
 def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
-                  nickname: str, domain: str,postJson: {}, \
+                  nickname: str, domain: str,postJsonObject: {}, \
                   boxname: str) -> None:
     """Saves the give json to the give box
     """
@@ -300,15 +300,15 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
         statusNumber,published = getStatusNumber()
         postId=httpPrefix+'://'+domain+'/users/'+nickname+ \
             '/statuses/'+statusNumber
-        postJson['id']=postId+'/activity'
-    if postJson.get('object'):
-        postJson['object']['id']=postId
-        postJson['object']['atomUri']=postId
+        postJsonObject['id']=postId+'/activity'
+    if postJsonObject.get('object'):
+        postJsonObject['object']['id']=postId
+        postJsonObject['object']['atomUri']=postId
          
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     filename=boxDir+'/'+postId.replace('/','#')+'.json'
     with open(filename, 'w') as fp:
-        commentjson.dump(postJson, fp, indent=4, sort_keys=False)
+        commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
 
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
@@ -472,27 +472,27 @@ def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str, \
 
 def postIsAddressedToFollowers(baseDir: str,
                                nickname: str, domain: str, port: int,httpPrefix: str,
-                               postJson: {}) -> bool:
+                               postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
-    if not postJson.get('object'):
+    if not postJsonObject.get('object'):
         return False
-    if not postJson['object'].get('to'):
+    if not postJsonObject['object'].get('to'):
         return False
         
     followersUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
     addressedToFollowers=False
-    if followersUrl in postJson['object']['to']:
+    if followersUrl in postJsonObject['object']['to']:
         addressedToFollowers=True
     if not addressedToFollowers:
-        if not postJson['object'].get('cc'):
+        if not postJsonObject['object'].get('cc'):
             return False
-        if followersUrl in postJson['object']['cc']:
+        if followersUrl in postJsonObject['object']['cc']:
             addressedToFollowers=True
     return addressedToFollowers
 
@@ -849,20 +849,20 @@ def createBoxBase(baseDir: str,boxname: str, \
                 sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
                 # get the actor from the shared post
                 with open(sharedInboxFilename, 'r') as fp:
-                    postJson=commentjson.load(fp)
-                    actorNickname=getNicknameFromActor(postJson['actor'])
-                    actorDomain,actorPort=getDomainFromActor(postJson['actor'])
+                    postJsonObject=commentjson.load(fp)
+                    actorNickname=getNicknameFromActor(postJsonObject['actor'])
+                    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
                     if actorNickname and actorDomain:
                         # is the actor followed by this account?
                         if actorNickname+'@'+actorDomain in open(followingFilename).read():
                             if ocapAlways:
                                 capsList=None
                                 # Note: should this be in the Create or the object of a post?
-                                if postJson.get('capability'):
-                                    if isinstance(postJson['capability'], list):                                
-                                        capsList=postJson['capability']
+                                if postJsonObject.get('capability'):
+                                    if isinstance(postJsonObject['capability'], list):                                
+                                        capsList=postJsonObject['capability']
                                 # Have capabilities been granted for the sender?
-                                ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJson['actor'].replace('/','#')+'.json'
+                                ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJsonObject['actor'].replace('/','#')+'.json'
                                 if os.path.isfile(ocapFilename):
                                     # read the capabilities id
                                     with open(ocapFilename, 'r') as fp:

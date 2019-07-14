@@ -269,16 +269,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
                                 self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
                             if os.path.isfile(postFilename):
-                                postJson={}
+                                postJsonObject={}
                                 with open(postFilename, 'r') as fp:
-                                    postJson=commentjson.load(fp)
+                                    postJsonObject=commentjson.load(fp)
                                     # Only authorized viewers get to see likes on posts
                                     # Otherwize marketers could gain more social graph info
                                     if not self._isAuthorized():
-                                        if postJson.get('likes'):
-                                            postJson['likes']={}
+                                        if postJsonObject.get('likes'):
+                                            postJsonObject['likes']={}
                                     self._set_headers('application/json')
-                                    self.wfile.write(json.dumps(postJson).encode('utf-8'))
+                                    self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
                             else:
@@ -346,17 +346,17 @@ class PubServer(BaseHTTPRequestHandler):
                                                     if authorized or \
                                                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
                                                         with open(searchFilename, 'r') as fp:
-                                                            postJson=commentjson.load(fp)
-                                                            if postJson['object'].get('cc'):                                                            
+                                                            postJsonObject=commentjson.load(fp)
+                                                            if postJsonObject['object'].get('cc'):                                                            
                                                                 if authorized or \
-                                                                   ('https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to'] or \
-                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['cc']):
-                                                                    repliesJson['orderedItems'].append(postJson)
+                                                                   ('https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to'] or \
+                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['cc']):
+                                                                    repliesJson['orderedItems'].append(postJsonObject)
                                                                     replyFound=True
                                                             else:
                                                                 if authorized or \
-                                                                   'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to']:
-                                                                    repliesJson['orderedItems'].append(postJson)
+                                                                   'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
+                                                                    repliesJson['orderedItems'].append(postJsonObject)
                                                                     replyFound=True
                                                     break
                                             # if not in either inbox or outbox then examine the shared inbox
@@ -371,16 +371,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
                                                         # get the json of the reply and append it to the collection
                                                         with open(searchFilename, 'r') as fp:
-                                                            postJson=commentjson.load(fp)
-                                                            if postJson['object'].get('cc'):                                                            
+                                                            postJsonObject=commentjson.load(fp)
+                                                            if postJsonObject['object'].get('cc'):                                                            
                                                                 if authorized or \
-                                                                   ('https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to'] or \
-                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['cc']):
-                                                                    repliesJson['orderedItems'].append(postJson)
+                                                                   ('https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to'] or \
+                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['cc']):
+                                                                    repliesJson['orderedItems'].append(postJsonObject)
                                                             else:
                                                                 if authorized or \
-                                                                   'https://www.w3.org/ns/activitystreams#Public' in postJson['object']['to']:
-                                                                    repliesJson['orderedItems'].append(postJson)
+                                                                   'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
+                                                                    repliesJson['orderedItems'].append(postJsonObject)
                                     # send the replies json
                                     self._set_headers('application/json')
                                     self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
@@ -403,16 +403,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
                                 self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
                             if os.path.isfile(postFilename):
-                                postJson={}
+                                postJsonObject={}
                                 with open(postFilename, 'r') as fp:
-                                    postJson=commentjson.load(fp)
+                                    postJsonObject=commentjson.load(fp)
                                     # Only authorized viewers get to see likes on posts
                                     # Otherwize marketers could gain more social graph info
                                     if not self._isAuthorized():
-                                        if postJson.get('likes'):
-                                            postJson['likes']={}                                    
+                                        if postJsonObject.get('likes'):
+                                            postJsonObject['likes']={}                                    
                                     self._set_headers('application/json')
-                                    self.wfile.write(json.dumps(postJson).encode('utf-8'))
+                                    self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
                             else:

@@ -82,22 +82,6 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
              
     return postJson
 
-def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
-    if not postJson.get('attachment'):
-        return
-    if not postJson['attachment'][0].get('url'):
-        return
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domain=domain+':'+str(port)
-    attachmentUrl=postJson['attachment'][0]['url']
-    if not attachmentUrl:
-        return
-    mediaFilename=baseDir+'/'+attachmentUrl.replace(httpPrefix+'://'+domain+'/','')
-    if os.path.isfile(mediaFilename):
-        os.remove(mediaFilename)
-    postJson['attachment']=[]
-
 def archiveMedia(baseDir: str,archiveDirectory: str,maxWeeks=4) -> None:
     """Any media older than the given number of weeks gets archived
     """
