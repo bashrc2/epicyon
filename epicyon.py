@@ -17,6 +17,7 @@ from person import setProfileImage
 from person import setSkillLevel
 from person import setRole
 from person import setAvailability
+from person import setOrganizationScheme
 from webfinger import webfingerHandle
 from posts import getPosts
 from posts import createPublicPost

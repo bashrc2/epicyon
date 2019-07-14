@@ -533,7 +533,19 @@ def receiveDelete(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
             print(messageJson['object'])
-        return True    
+        return True
+    repliesFilename=postFilename.replace('.json','.replies')
+    if os.path.isfile(repliesFilename):
+        if debug:
+            print('DEBUG: removing replies to '+postFilename)
+        with open(repliesFilename,'r') as f:
+            for replyId in f:
+                replyFile=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],replyId)
+                if replyFile:
+                    if os.path.isfile(replyFile):
+                        os.remove(replyFile)
+        # remove the replies file itself
+        os.remove(repliesFilename)
     os.remove(postFilename)
     if debug:
         print('DEBUG: post deleted - '+postFilename)

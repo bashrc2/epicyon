@@ -137,6 +137,25 @@ def setRole(baseDir: str,nickname: str,domain: str, \
             commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True
 
+def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
+                          schema: str) -> bool:
+    """Set the organization schema within which a person exists
+    This will define how roles, skills and availability are assembled
+    into organizations
+    """
+    # avoid giant strings
+    if len(schema)>256:
+        return False
+    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    if not os.path.isfile(actorFilename):
+        return False
+    with open(actorFilename, 'r') as fp:
+        actorJson=commentjson.load(fp)
+        actorJson['orgSchema']=schema
+        with open(actorFilename, 'w') as fp:
+            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+    return True
+
 def setAvailability(baseDir: str,nickname: str,domain: str, \
                     status: str) -> bool:
     """Set an availability status
@@ -150,6 +169,8 @@ def setAvailability(baseDir: str,nickname: str,domain: str, \
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
         actorJson['availability']=status
+        with open(actorFilename, 'w') as fp:
+            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True
 
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
@@ -190,6 +211,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'featured': httpPrefix+'://'+domain+'/users/'+nickname+'/collections/featured',
                  'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
                  'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
+                 'orgSchema': None,
                  'skills': {},
                  'roles': {},
                  'availability': None,
