@@ -506,7 +506,7 @@ if args.archive:
     archiveMedia(baseDir,args.archive,archiveWeeks)
     archivePosts(baseDir,args.archive,archiveMaxPosts)
     print('Archiving complete')
-    sys.exit()    
+    sys.exit()
 
 if not args.domain and not domain:
     print('Specify a domain with --domain [name]')

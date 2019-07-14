@@ -997,13 +997,18 @@ def archivePostsForPerson(nickname: str,domain: str,baseDir: str, \
         return
     
     for postFilename in postsInBox:
-        filePath = os.path.join(boxDir, postFilename)
+        filePath = os.path.join(boxDir, postFilename)        
         if os.path.isfile(filePath):
+            repliesPath=filePath.replace('.json','.replies')
             if archiveDir:
                 archivePath = os.path.join(archiveDir, postFilename)
                 os.rename(filePath,archivePath)
+                if os.path.isfile(repliesPath):
+                    os.rename(repliesPath,archivePath)
             else:
                 os.remove(filePath)
+                if os.path.isfile(repliesPath):
+                    os.remove(repliesPath)
             noOfPosts -= 1
             if noOfPosts <= maxPostsInBox:
                 break
