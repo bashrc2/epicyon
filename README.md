@@ -393,3 +393,21 @@ Or to unblock:
 ``` bash
 python3 epicyon.py --nickname yournick --domain yourdomain --unblock somenick@somedomain
 ```
+
+## Filtering on words or phrases
+
+Blocking based upon the content of a message containing certain words or phrases is relatively crude and not always effective, but can help to reduce unwanted communications.
+
+To add a word or phrase to be filtered out:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --filter "this is a filtered phrase"
+```
+
+It can also be removed with:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --unfilter "this is a filtered phrase"
+```
+
+Like blocking, filters are per account and so different accounts on a server can have differing filter policies.

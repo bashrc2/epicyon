@@ -625,7 +625,7 @@ if args.filterStr:
         print('Please specify a nickname')
         sys.exit()
     if addFilter(baseDir,args.nickname,domain,args.filterStr):
-        print('Filter added: '+args.filterStr)
+        print('Filter added to '+args.nickname+': '+args.filterStr)
     sys.exit()
 
 if args.unfilterStr:
@@ -633,7 +633,7 @@ if args.unfilterStr:
         print('Please specify a nickname')
         sys.exit()
     if removeFilter(baseDir,args.nickname,domain,args.unfilterStr):
-        print('Filter removed: '+args.unfilterStr)
+        print('Filter removed from '+args.nickname+': '+args.unfilterStr)
     sys.exit()
 
 if args.testdata:
