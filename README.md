@@ -21,7 +21,8 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Keyword filtering.
  * Being able to build crowdsouced organizations with roles and skills
  * Sharings collection, similar to the gnusocial sharings plugin
- * Resistant to flooding, hellthreads, etc.
+ * Quotas for received posts per day, per domain and per account
+ * Hellthread detection and removal
  * Support content warnings, reporting and blocking.
  * http signatures and basic auth.
  * Compatible with http (onion addresses), https and dat.
