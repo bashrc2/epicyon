@@ -657,7 +657,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         return
                     if queueStatus==1:
-                        self.send_response(403)
+                        self.send_response(503)
                         self.end_headers()
                         self.server.POSTbusy=False
                         return                    
@@ -675,7 +675,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy=False
                     return
                 if queueStatus==1:
-                    self.send_response(403)
+                    self.send_response(503)
                     self.end_headers()
                     self.server.POSTbusy=False
                     return                    
