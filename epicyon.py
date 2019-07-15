@@ -167,7 +167,7 @@ parser.add_argument('--imagedescription', dest='imageDescription', type=str,defa
 parser.add_argument("--blurhash", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Create blurhash for an image")
-parser.add_argument('--cwsubject','--subject', dest='subject', type=str,default=None, \
+parser.add_argument('--warning','--warn','--cwsubject','--subject', dest='subject', type=str,default=None, \
                     help='Subject of content warning')
 parser.add_argument('--reply','--replyto', dest='replyto', type=str,default=None, \
                     help='Url of post to reply to')
