@@ -37,6 +37,7 @@ from utils import deletePost
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachImage
+from content import addMentions
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -317,6 +318,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
+    # convert content to html
+    content=addMentions(baseDir,httpPrefix, \
+                        nickname,domain,content)
+
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -335,6 +340,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     if subject:
         summary=subject
         sensitive=True
+
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
 
