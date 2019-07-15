@@ -19,6 +19,8 @@ def addMentions(baseDir: str,httpPrefix: str, \
     wordsOnly=content.replace(',',' ').replace(';',' ').replace('.',' ').replace(':',' ')
     words=wordsOnly.split(' ')
     replaceMentions={}
+    if ':' in domain:
+        domain=domain.split(':')[0]
     followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
     if not os.path.isfile(followingFilename):
         return content
