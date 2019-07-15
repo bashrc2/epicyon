@@ -145,6 +145,8 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     cw=False
     useBlurhash=True
     maxReplies=64
+    domainMaxPostsPerDay=1000
+    accountMaxPostsPerDay=1000
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
@@ -171,7 +173,9 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     print('Server running: Alice')
     runDaemon(False,path,domain,port,httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
-              useTor,maxReplies,True)
+              useTor,maxReplies, \
+              domainMaxPostsPerDay,accountMaxPostsPerDay, \
+              True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool):
@@ -192,6 +196,8 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     cw=False
     useBlurhash=False
     maxReplies=64
+    domainMaxPostsPerDay=1000
+    accountMaxPostsPerDay=1000
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')
@@ -218,7 +224,9 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     print('Server running: Bob')
     runDaemon(False,path,domain,port,httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
-              useTor,maxReplies,True)
+              useTor,maxReplies, \
+              domainMaxPostsPerDay,accountMaxPostsPerDay, \
+              True)
 
 def createServerEve(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool):

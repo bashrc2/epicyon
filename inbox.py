@@ -124,11 +124,16 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
 
     # block at the ealiest stage possible, which means the data
     # isn't written to file
+    postNickname=None
+    postDomain=None
     if postJsonObject.get('actor'):
         postNickname=getNicknameFromActor(postJsonObject['actor'])
         postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
         if isBlocked(baseDir,nickname,domain,postNickname,postDomain):            
             return None
+        if postPort:
+            if postPort!=80 and postPort!=443:
+                postDomain=postDomain+':'+str(postPort)
 
         if postJsonObject.get('object'):
             if isinstance(postJsonObject['object'], dict):
@@ -164,6 +169,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         'id': postId,
         'nickname': nickname,
         'domain': domain,
+        'postNickname': postNickname,
+        'postDomain': postDomain,
         'sharedInbox': sharedInboxItem,
         'published': published,
         'host': host,
@@ -810,7 +817,9 @@ def restoreQueueItems(baseDir: str,queue: []) -> None:
 def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \
                   domain: str,port: int,useTor: bool,federationList: [], \
-                  ocapAlways: bool,maxReplies: int,debug: bool, \
+                  ocapAlways: bool,maxReplies: int, \
+                  domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
+                  debug: bool, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -825,14 +834,23 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
     # if queue processing was interrupted (eg server crash)
     # then this loads any outstanding items back into the queue
     restoreQueueItems(baseDir,queue)
-        
+
+    # keep track of numbers of incoming posts per unit of time
+    quotasLastUpdate=int(time.time())
+    quotas={
+        'domains': {},
+        'accounts': {}
+    }
+    
     while True:
         time.sleep(1)
         if len(queue)>0:
-            currSessionTime=int(time.time())
-            if currSessionTime-sessionLastUpdate>1200:
+            currTime=int(time.time())
+
+            # recreate the session periodically
+            if currTime-sessionLastUpdate>1200:
                 session=createSession(domain,port,useTor)
-                sessionLastUpdate=currSessionTime
+                sessionLastUpdate=currTime            
 
             # oldest item first
             queue.sort()
@@ -846,6 +864,37 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             # Load the queue json
             with open(queueFilename, 'r') as fp:
                 queueJson=commentjson.load(fp)
+
+            # clear the daily quotas for maximum numbers of received posts
+            if currTime-quotasLastUpdate>60*60*24:
+                quotas={
+                    'domains': {},
+                    'accounts': {}
+                }
+                quotasLastUpdate=currTime            
+
+            # limit the number of posts which can arrive per domain per day
+            postDomain=queueJson['postDomain']
+            if postDomain:
+                if quotas['domains'].get(postDomain):
+                    if quotas['domains'][postDomain]>domainMaxPostsPerDay:
+                        queue.pop(0)
+                        continue
+                    quotas['domains'][postDomain]+=1
+                else:
+                    quotas['domains'][postDomain]=1
+
+                postHandle=queueJson['postNickname']+'@'+postDomain
+                if quotas['accounts'].get(postHandle):
+                    if quotas['accounts'][postHandle]>accountMaxPostsPerDay:
+                        queue.pop(0)
+                        continue
+                    quotas['accounts'][postHandle]+=1
+                else:
+                    quotas['accounts'][postHandle]=1
+
+                if debug:
+                    pprint(quotas)
 
             # Try a few times to obtain the public key
             pubKey=None

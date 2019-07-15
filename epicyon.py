@@ -197,6 +197,10 @@ parser.add_argument('--filter', dest='filterStr', type=str,default=None, \
                     help='Adds a word or phrase which if present will cause a message to be ignored')
 parser.add_argument('--unfilter', dest='unfilterStr', type=str,default=None, \
                     help='Remove a filter on a particular word or phrase')
+parser.add_argument('--domainmax', dest='domainMaxPostsPerDay', type=int,default=1000, \
+                    help='Maximum number of received posts from a domain per day')
+parser.add_argument('--accountmax', dest='accountMaxPostsPerDay', type=int,default=1000, \
+                    help='Maximum number of received posts from an account per day')
 args = parser.parse_args()
 
 debug=False
@@ -664,4 +668,6 @@ runDaemon(args.client,baseDir,domain,port,httpPrefix, \
           federationList, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways, \
-          useTor,args.maxReplies,debug)
+          useTor,args.maxReplies, \
+          args.domainMaxPostsPerDay,args.accountMaxPostsPerDay, \
+          debug)
