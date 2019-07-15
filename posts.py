@@ -502,6 +502,27 @@ def postIsAddressedToFollowers(baseDir: str,
             addressedToFollowers=True
     return addressedToFollowers
 
+def postIsAddressedToPublic(baseDir: str,postJsonObject: {}) -> bool:
+    """Returns true if the given post is addressed to public
+    """
+    if not postJsonObject.get('object'):
+        return False
+    if not postJsonObject['object'].get('to'):
+        return False
+        
+    publicUrl='https://www.w3.org/ns/activitystreams#Public'
+
+    # does the public url exist in 'to' or 'cc' lists?
+    addressedToPublic=False
+    if publicUrl in postJsonObject['object']['to']:
+        addressedToPublic=True
+    if not addressedToPublic:
+        if not postJsonObject['object'].get('cc'):
+            return False
+        if publicUrl in postJsonObject['object']['cc']:
+            addressedToPublic=True
+    return addressedToPublic
+
 def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,

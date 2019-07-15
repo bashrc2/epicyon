@@ -21,6 +21,8 @@ from person import personBoxJson
 from person import createSharedInbox
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
+from posts import sendToFollowers
+from posts import postIsAddressedToPublic
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -147,9 +149,20 @@ class PubServer(BaseHTTPRequestHandler):
             postId=messageJson['id']
         else:
             postId=None
-        savePostToBox(self.server.baseDir,postId, \
-                      self.postToNickname, \
-                      self.server.domain,messageJson,'outbox')
+        if postIsAddressedToPublic(self.server.baseDir, \
+                                       messageJson):            
+            if self.server.debug:
+                print('DEBUG: saving c2s post to outbox')
+            savePostToBox(self.server.baseDir,postId, \
+                          self.postToNickname, \
+                          self.server.domain,messageJson,'outbox')
+        if self.server.debug:
+            print('DEBUG: sending c2s post to followers')
+        sendToFollowers(self.server.session,self.server.baseDir, \
+                        self.postToNickname,self.server.domain, \
+                        self.server.port,self.server.httpPrefix,
+                        messageJson)
+        # TODO send to individual named addresses
         return True
 
     def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
