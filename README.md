@@ -413,6 +413,12 @@ python3 epicyon.py --nickname yournick --domain yourdomain --unfilter "this is a
 
 Like blocking, filters are per account and so different accounts on a server can have differing filter policies.
 
+You can also combine words or phrases with "+", such that they can be present in different parts of the message:
+
+``` bash
+python3 epicyon.py --nickname yournick --domain yourdomain --filter "blockedword+some other phrase"
+```
+
 ## Applying quotas
 
 A common adversarial situation is that a hostile server tries to flood your shared inbox with posts in order to try to overload your system. To mitigate this it's possible to add quotas for the maximum number of received messages per domain per day and per account per day.
