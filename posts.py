@@ -792,6 +792,9 @@ def sendToNamedAddresses(session,baseDir: str, \
             recipients.append(address)
     if not recipients:
         return
+    if debug:
+        print('c2s sending to addresses: '+str(recipients))
+    # this is after the message has arrived at the server
     clientToServer=False
     for address in recipients:
         toNickname=getNicknameFromActor(address)
@@ -800,6 +803,8 @@ def sendToNamedAddresses(session,baseDir: str, \
         toDomain,toPort=getDomainFromActor(address)
         if not toDomain:
             continue
+        if debug:
+            print('c2s sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
         sendSignedJson(postJsonObject,session,baseDir, \
                        nickname,domain,port, \
                        toNickname,toDomain,toPort, \
@@ -818,12 +823,17 @@ def sendToFollowers(session,baseDir: str, \
     """
     if not postIsAddressedToFollowers(baseDir,nickname,domain, \
                                       port,httpPrefix,postJsonObject):
+        if debug:
+            print('Post is not addressed to followers')
         return
 
     grouped=groupFollowersByDomain(baseDir,nickname,domain)
     if not grouped:
+        if debug:
+            print('Post to followers did not resolve any domains')
         return
 
+    # this is after the message has arrived at the server
     clientToServer=False
 
     # for each instance
@@ -839,6 +849,8 @@ def sendToFollowers(session,baseDir: str, \
         if len(followerHandles)>1:
             nickname='inbox'
             toNickname='inbox'
+        if debug:
+            print('Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
         sendSignedJson(postJsonObject,session,baseDir, \
                        nickname,domain,port, \
                        toNickname,toDomain,toPort, \
