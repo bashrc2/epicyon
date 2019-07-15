@@ -23,7 +23,9 @@ def addMentions(baseDir: str,httpPrefix: str, \
         domain=domain.split(':')[0]
     followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
     if not os.path.isfile(followingFilename):
-        return content
+        content=content.replace('\n','</p><p>')
+        content='<p>'+content+'</p>'
+        return content.replace('<p></p>','')
     with open(followingFilename, "r") as f:
         following = f.readlines()
     for wordStr in words:
