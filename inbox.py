@@ -98,6 +98,8 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
        messageJson['type']!='Delete' and \
        messageJson['type']!='Announce':
         if messageJson.get('object'):
+            if not isinstance(messageJson['object'], dict):
+                return False
             if messageJson['object'].get('inReplyTo'):
                 inReplyTo=messageJson['object']['inReplyTo']
                 if not urlPermitted(inReplyTo,federationList):
@@ -159,6 +161,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         sharedInboxItem=True
         
     newQueueItem = {
+        'id': postId,
         'nickname': nickname,
         'domain': domain,
         'sharedInbox': sharedInboxItem,
