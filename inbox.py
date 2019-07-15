@@ -876,25 +876,28 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             # limit the number of posts which can arrive per domain per day
             postDomain=queueJson['postDomain']
             if postDomain:
-                if quotas['domains'].get(postDomain):
-                    if quotas['domains'][postDomain]>domainMaxPostsPerDay:
-                        queue.pop(0)
-                        continue
-                    quotas['domains'][postDomain]+=1
-                else:
-                    quotas['domains'][postDomain]=1
+                if domainMaxPostsPerDay>0:
+                    if quotas['domains'].get(postDomain):
+                        if quotas['domains'][postDomain]>domainMaxPostsPerDay:
+                            queue.pop(0)
+                            continue
+                        quotas['domains'][postDomain]+=1
+                    else:
+                        quotas['domains'][postDomain]=1
 
-                postHandle=queueJson['postNickname']+'@'+postDomain
-                if quotas['accounts'].get(postHandle):
-                    if quotas['accounts'][postHandle]>accountMaxPostsPerDay:
-                        queue.pop(0)
-                        continue
-                    quotas['accounts'][postHandle]+=1
-                else:
-                    quotas['accounts'][postHandle]=1
+                if accountMaxPostsPerDay>0:
+                    postHandle=queueJson['postNickname']+'@'+postDomain
+                    if quotas['accounts'].get(postHandle):
+                        if quotas['accounts'][postHandle]>accountMaxPostsPerDay:
+                            queue.pop(0)
+                            continue
+                        quotas['accounts'][postHandle]+=1
+                    else:
+                        quotas['accounts'][postHandle]=1
 
                 if debug:
-                    pprint(quotas)
+                    if accountMaxPostsPerDay>0 or domainMaxPostsPerDay>0:
+                        pprint(quotas)
 
             # Try a few times to obtain the public key
             pubKey=None
