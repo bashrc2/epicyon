@@ -765,9 +765,55 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     thr.start()
     return 0
 
-def sendToFollowers(session,baseDir: str,
-                    nickname: str, domain: str, port: int,httpPrefix: str,
-                    postJsonObject: {}):
+def sendToNamedAddresses(session,baseDir: str, \
+                         nickname: str, domain: str, port: int, \
+                         httpPrefix: str,federationList: [], \
+                         sendThreads: [],postLog: [], \
+                         cachedWebfingers: {},personCache: {}, \
+                         postJsonObject: {},debug: bool) -> None:
+    """sends a post to the specific named addresses in to/cc
+    """
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
+
+    if not postJsonObject.get('object'):
+        return False
+    if not postJsonObject['object'].get('to'):
+        return False
+
+    recipients=[]
+    recipientType=['to','cc']
+    for rType in recipientType:
+        for address in postJsonObject['object'][rType]:
+            if address.endswith('#Public'):
+                continue
+            if address.endswith('/followers'):
+                continue
+            recipients.append(address)
+    if not recipients:
+        return
+    clientToServer=False
+    for address in recipients:
+        toNickname=getNicknameFromActor(address)
+        if not toNickname:
+            continue
+        toDomain,toPort=getDomainFromActor(address)
+        if not toDomain:
+            continue
+        sendSignedJson(postJsonObject,session,baseDir, \
+                       nickname,domain,port, \
+                       toNickname,toDomain,toPort, \
+                       cc,httpPrefix,True,clientToServer, \
+                       federationList, \
+                       sendThreads,postLog,cachedWebfingers, \
+                       personCache,debug)
+
+def sendToFollowers(session,baseDir: str, \
+                    nickname: str, domain: str, port: int, \
+                    httpPrefix: str,federationList: [], \
+                    sendThreads: [],postLog: [], \
+                    cachedWebfingers: {},personCache: {}, \
+                    postJsonObject: {},debug: bool) -> None:
     """sends a post to the followers of the given nickname
     """
     if not postIsAddressedToFollowers(baseDir,nickname,domain, \
@@ -777,6 +823,8 @@ def sendToFollowers(session,baseDir: str,
     grouped=groupFollowersByDomain(baseDir,nickname,domain)
     if not grouped:
         return
+
+    clientToServer=False
 
     # for each instance
     for followerDomain,followerHandles in grouped.items():

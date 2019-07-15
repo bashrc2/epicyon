@@ -23,6 +23,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowers
 from posts import postIsAddressedToPublic
+from posts import sendToNamedAddresses
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -149,20 +150,33 @@ class PubServer(BaseHTTPRequestHandler):
             postId=messageJson['id']
         else:
             postId=None
-        if postIsAddressedToPublic(self.server.baseDir, \
-                                       messageJson):            
-            if self.server.debug:
-                print('DEBUG: saving c2s post to outbox')
-            savePostToBox(self.server.baseDir,postId, \
-                          self.postToNickname, \
-                          self.server.domain,messageJson,'outbox')
+        savePostToBox(self.server.baseDir,postId, \
+                      self.postToNickname, \
+                      self.server.domain,messageJson,'outbox')
         if self.server.debug:
             print('DEBUG: sending c2s post to followers')
         sendToFollowers(self.server.session,self.server.baseDir, \
-                        self.postToNickname,self.server.domain, \
-                        self.server.port,self.server.httpPrefix,
-                        messageJson)
-        # TODO send to individual named addresses
+                             self.postToNickname,self.server.domain, \
+                             self.server.port, \
+                             self.server.httpPrefix, \
+                             self.server.federationList, \
+                             self.server.sendThreads, \
+                             self.server.postLog, \
+                             self.server.cachedWebfingers, \
+                             self.server.personCache, \
+                             messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: sending c2s post to named addresses')
+        sendToNamedAddresses(self.server.session,self.server.baseDir, \
+                             self.postToNickname,self.server.domain, \
+                             self.server.port, \
+                             self.server.httpPrefix, \
+                             self.server.federationList, \
+                             self.server.sendThreads, \
+                             self.server.postLog, \
+                             self.server.cachedWebfingers, \
+                             self.server.personCache, \
+                             messageJson,self.server.debug)
         return True
 
     def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
