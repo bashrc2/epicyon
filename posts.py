@@ -526,7 +526,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],\
         if postResult:
             if debug:
                 print('DEBUG: json post to '+inboxUrl+' succeeded')
-            postLog.append(postJsonObject['published']+' '+postResult+'\n')
+            if postJsonObject.get('published'):
+                postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
             # Don't accumulate massive files on systems with limited resources
             while len(postLog)>64:

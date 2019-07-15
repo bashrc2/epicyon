@@ -152,9 +152,14 @@ class PubServer(BaseHTTPRequestHandler):
                       self.server.domain,messageJson,'outbox')
         return True
 
-    def _updateInboxQueue(self,nickname: str,messageJson: {}) -> bool:
+    def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
         """Update the inbox queue
         """
+        # Check if the queue is full
+        if len(self.server.inboxQueue)>=self.server.maxQueueLength:
+            return 1
+
+        # save the json for later queue processing
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir, \
                                  self.server.httpPrefix, \
@@ -166,13 +171,14 @@ class PubServer(BaseHTTPRequestHandler):
                                  '/'+self.path.split('/')[-1],
                                  self.server.debug)
         if queueFilename:
+            # add json to the queue
             if queueFilename not in self.server.inboxQueue:
                 self.server.inboxQueue.append(queueFilename)
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
-            return True
-        return False
+            return 0
+        return 2
 
     def _isAuthorized(self) -> bool:
         if self.headers.get('Authorization'):
@@ -644,8 +650,17 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.postToNickname=pathUsersSection.split('/')[0]
                 if self.postToNickname:
-                    if self._updateInboxQueue(self.postToNickname,messageJson):
+                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson)
+                    if queueStatus==0:
+                        self.send_response(200)
+                        self.end_headers()
+                        self.server.POSTbusy=False
                         return
+                    if queueStatus==1:
+                        self.send_response(403)
+                        self.end_headers()
+                        self.server.POSTbusy=False
+                        return                    
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
@@ -653,8 +668,17 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                if self._updateInboxQueue('inbox',messageJson):
+                queueStatus-_updateInboxQueue('inbox',messageJson)
+                if queueStatus==0:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.server.POSTbusy=False
                     return
+                if queueStatus==1:
+                    self.send_response(403)
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return                    
         self.send_response(200)
         self.end_headers()
         self.server.POSTbusy=False
@@ -694,6 +718,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd.inboxQueue=[]
     httpd.sendThreads=[]
     httpd.postLog=[]
+    httpd.maxQueueLength=16
     httpd.ocapAlways=ocapAlways
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
