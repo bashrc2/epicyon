@@ -664,7 +664,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
               fedList=[],noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
-              domainMaxPostsPerDay=1000,accountMaxPostsPerDay=1000, \
+              domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
               debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
