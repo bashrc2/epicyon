@@ -412,3 +412,15 @@ python3 epicyon.py --nickname yournick --domain yourdomain --unfilter "this is a
 ```
 
 Like blocking, filters are per account and so different accounts on a server can have differing filter policies.
+
+## Applying quotas
+
+A common adversarial situation is that a hostile server tries to flood your shared inbox with posts in order to try to overload your system. To mitigate this it's possible to add quotas for the maximum number of received messages per domain per day and per account per day.
+
+If you're running the server it would look like this:
+
+``` bash
+python3 epicyon.py --domainmax 1000 --accountmax 200
+```
+
+With these settings you're going to be receiving no more than 200 messages for any given account within a day.
