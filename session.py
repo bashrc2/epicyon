@@ -50,6 +50,7 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
     if not capability.startswith('cap'):    
         # check that we are posting to a permitted domain
         if not urlPermitted(inboxUrl,federationList,capability):
+            print('postJson: '+inboxUrl+' not permitted')
             return None
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)

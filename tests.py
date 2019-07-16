@@ -1022,7 +1022,9 @@ def testClientToServer():
     personCache={}
     password='alicepass'
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
+    inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==0
     sendResult= \
         sendPostViaServer(sessionAlice,'alice',password, \
                           aliceDomain,alicePort, \
@@ -1032,15 +1034,38 @@ def testClientToServer():
                           cachedWebfingers,personCache, \
                           True,None,None,None)
     print('sendResult: '+str(sendResult))
-    assert sendResult==0
 
     for i in range(30):
         if os.path.isdir(outboxPath):
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
                 break
         time.sleep(1)
-    
+
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
+    print(">>> c2s post arrived in Alice's outbox")
+
+    for i in range(30):
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
+                break
+        time.sleep(1)
+
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
+    print(">>> s2s post arrived in Bob's inbox")
+    print("c2s send success")
+
+    # stop the servers
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.isAlive()==False
+
+    thrBob.kill()
+    thrBob.join()
+    assert thrBob.isAlive()==False
+
+    os.chdir(baseDir)
+    shutil.rmtree(aliceDir)
+    shutil.rmtree(bobDir)
 
 def runAllTests():
     print('Running tests...')

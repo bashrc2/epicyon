@@ -673,6 +673,9 @@ def sendPostViaServer(session,fromNickname: str,password: str, \
                       debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Send a post via a proxy (c2s)
     """
+    if not session:
+        print('WARN: No session for sendPostViaServer')
+        return 6
     withDigest=True
 
     if toPort!=80 and toPort!=443:
