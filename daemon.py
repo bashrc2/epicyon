@@ -297,6 +297,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.wfile.write(mediaBinary)
                     self.server.GETbusy=False
                     return        
+            self._404()
+            self.server.GETbusy=False
+            return
         # show avatar or background image
         if '/users/' in self.path:
             if self.path.endswith('.png') or \
