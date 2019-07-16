@@ -160,6 +160,8 @@ class PubServer(BaseHTTPRequestHandler):
                       self.postToNickname, \
                       self.server.domain,messageJson,'outbox')
         if not self.server.session:
+            if self.server.debug:
+                print('DEBUG: creating new session for c2s')
             self.server.session= \
                 createSession(self.server.domain,self.server.port,self.server.useTor)
         if self.server.debug:
