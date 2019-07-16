@@ -34,9 +34,6 @@ from threads import threadWithTrace
 import os
 import sys
 
-# Avoid giant messages
-maxMessageLength=5000
-
 # maximum number of posts to list in outbox feed
 maxPostsInFeed=20
 
@@ -572,14 +569,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy=False
             return
-        
-        # refuse to receive non-json content
-        if self.headers['Content-type'] != 'application/json':
-            print("POST is not json: "+self.headers['Content-type'])
-            self.send_response(400)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
 
         # remove any trailing slashes from the path
         self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/sharedInbox/','/sharedInbox')
@@ -615,7 +604,61 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(self.headers['Content-length'])
         if self.server.debug:
             print('DEBUG: content-length: '+str(length))
-        if length>maxMessageLength:
+        if not self.headers['Content-type'].startswith('image/'):
+            if length>self.server.maxMessageLength:
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
+        else:
+            if length>self.server.maxImageSize:
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
+
+        # receive images to the outbox
+        if self.headers['Content-type'].startswith('image/') and \
+           '/users/' in self.path:
+            if not self.outboxAuthenticated:
+                if self.server.debug:
+                    print('DEBUG: unathenticated attempt to post image to outbox')
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return            
+            pathUsersSection=self.path.split('/users/')[1]
+            if '/' not in pathUsersSection:
+                self.send_response(404)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return                
+            self.postFromNickname=pathUsersSection.split('/')[0]
+            accountsDir=self.server.baseDir+'/accounts/'+self.postFromNickname+'@'+self.server.domain
+            if not os.path.isdir(accountsDir):
+                self.send_response(404)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return                
+            mediaBytes=self.rfile.read(length)
+            mediaFilenameBase=accountsDir+'/upload'
+            mediaFilename=mediaFilenameBase+'.png'
+            if self.headers['Content-type'].endswith('jpeg'):
+                mediaFilename=mediaFilenameBase+'.jpg'
+            if self.headers['Content-type'].endswith('gif'):
+                mediaFilename=mediaFilenameBase+'.gif'
+            with open(mediaFilename, 'wb') as avFile:
+                avFile.write(mediaBytes)
+            if self.server.debug:
+                print('DEBUG: image saved to '+mediaFilename)
+            self.send_response(201)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return            
+
+        # refuse to receive non-json content
+        if self.headers['Content-type'] != 'application/json':
+            print("POST is not json: "+self.headers['Content-type'])
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
@@ -625,7 +668,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: Reading message')
 
         messageBytes=self.rfile.read(length)
-        messageJson = json.loads(messageBytes)
+        messageJson=json.loads(messageBytes)
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
@@ -767,6 +810,8 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd.postLog=[]
     httpd.maxQueueLength=16
     httpd.ocapAlways=ocapAlways
+    httpd.maxMessageLength=5000
+    httpd.maxImageSize=10*1024*1024
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
         httpd.acceptedCaps.append('inbox:noreply')

@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import requests
 from utils import urlPermitted
 import json
@@ -55,3 +56,36 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
     return postResult.text
+
+def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
+    """Post an image to the inbox of another person or outbox via c2s
+    Supplying a capability, such as "inbox:write"
+    """
+    # always allow capability requests
+    if not capability.startswith('cap'):    
+        # check that we are posting to a permitted domain
+        if not urlPermitted(inboxUrl,federationList,capability):
+            print('postJson: '+inboxUrl+' not permitted')
+            return None
+
+    if not (attachImageFilename.endswith('.jpg') or \
+            attachImageFilename.endswith('.jpeg') or \
+            attachImageFilename.endswith('.png') or \
+            attachImageFilename.endswith('.gif')):
+        print('Image must be png, jpg, or gif')
+        return None
+    if not os.path.isfile(attachImageFilename):
+        print('Image not found: '+attachImageFilename)
+        return None
+    contentType='image/jpeg'
+    if attachImageFilename.endswith('.png'):
+        contentType='image/png'
+    if attachImageFilename.endswith('.gif'):
+        contentType='image/gif'
+    headers['Content-type']=contentType
+
+    with open(attachImageFilename, 'rb') as avFile:
+        mediaBinary = avFile.read()
+        postResult = session.post(url=inboxUrl, data=mediaBinary, headers=headers)
+        return postResult.text
+    return None

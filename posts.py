@@ -26,6 +26,7 @@ from random import randint
 from session import createSession
 from session import getJson
 from session import postJson
+from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
 from utils import getStatusNumber
@@ -721,17 +722,28 @@ def sendPostViaServer(session,fromNickname: str,password: str, \
                            followersOnly,saveToFile,clientToServer, \
                            attachImageFilename,imageDescription,useBlurhash, \
                            inReplyTo,inReplyToAtomUri,subject)
-
+    
     authHeader=createBasicAuthHeader(fromNickname,password)
+
+    if attachImageFilename:
+        headers = {'host': fromDomain, \
+                   'Authorization': authHeader}
+        postResult = \
+            postImage(session,attachImageFilename,[],inboxUrl,headers,"inbox:write")
+        #if not postResult:
+        #    if debug:
+        #        print('DEBUG: Failed to upload image')
+        #    return 9
+     
     headers = {'host': fromDomain, \
                'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,postJsonObject,[],inboxUrl,headers,"inbox:write")
-    if not postResult:
-        if debug:
-            print('DEBUG: POST failed for c2s to '+inboxUrl)
-        return 5
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST failed for c2s to '+inboxUrl)
+    #    return 5
 
     if debug:
         print('DEBUG: c2s POST success')

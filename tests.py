@@ -1015,8 +1015,8 @@ def testClientToServer():
 
     sessionAlice = createSession(aliceDomain,alicePort,useTor)
     followersOnly=False
-    attachImageFilename=None
-    imageDescription=None
+    attachedImageFilename=baseDir+'/img/logo.png'
+    attachedImageDescription='Logo'
     useBlurhash=False
     cachedWebfingers={}
     personCache={}
@@ -1030,7 +1030,7 @@ def testClientToServer():
                           aliceDomain,alicePort, \
                           'bob',bobDomain,bobPort,None, \
                           httpPrefix,'Sent from my ActivityPub client',followersOnly, \
-                          attachImageFilename,imageDescription,useBlurhash, \
+                          attachedImageFilename,attachedImageDescription,useBlurhash, \
                           cachedWebfingers,personCache, \
                           True,None,None,None)
     print('sendResult: '+str(sendResult))
@@ -1064,7 +1064,7 @@ def testClientToServer():
     assert thrBob.isAlive()==False
 
     os.chdir(baseDir)
-    shutil.rmtree(aliceDir)
+    #shutil.rmtree(aliceDir)
     shutil.rmtree(bobDir)
 
 def runAllTests():
