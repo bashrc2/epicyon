@@ -305,8 +305,9 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
             '/statuses/'+statusNumber
         postJsonObject['id']=postId+'/activity'
     if postJsonObject.get('object'):
-        postJsonObject['object']['id']=postId
-        postJsonObject['object']['atomUri']=postId
+        if isinstance(postJsonObject['object'], dict):
+            postJsonObject['object']['id']=postId
+            postJsonObject['object']['atomUri']=postId
          
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     filename=boxDir+'/'+postId.replace('/','#')+'.json'
@@ -493,19 +494,29 @@ def postIsAddressedToFollowers(baseDir: str,
 
     if not postJsonObject.get('object'):
         return False
-    if not postJsonObject['object'].get('to'):
-        return False
+    toList=[]
+    ccList=[]
+    if isinstance(postJsonObject['object'], dict):
+        if not postJsonObject['object'].get('to'):
+            return False
+        toList=postJsonObject['object']['to']
+        if postJsonObject['object'].get('cc'):
+            ccList=postJsonObject['object']['cc']
+    else:
+        if not postJsonObject.get('to'):
+            return False
+        toList=postJsonObject['to']
+        if postJsonObject.get('cc'):
+            ccList=postJsonObject['cc']
         
     followersUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
 
     # does the followers url exist in 'to' or 'cc' lists?
     addressedToFollowers=False
-    if followersUrl in postJsonObject['object']['to']:
+    if followersUrl in toList:
         addressedToFollowers=True
     if not addressedToFollowers:
-        if not postJsonObject['object'].get('cc'):
-            return False
-        if followersUrl in postJsonObject['object']['cc']:
+        if followersUrl in ccList:
             addressedToFollowers=True
     return addressedToFollowers
 
@@ -872,13 +883,22 @@ def sendToNamedAddresses(session,baseDir: str, \
         return
     if not postJsonObject.get('object'):
         return
-    if not postJsonObject['object'].get('to'):
-        return
+    toList=[]
+    if isinstance(postJsonObject['object'], dict): 
+        if not postJsonObject['object'].get('to'):
+            return
+        toList=postJsonObject['object']['to']
+        recipientsObject=postJsonObject['object']
+    else: 
+        if not postJsonObject.get('to'):
+            return
+        toList=postJsonObject['to']
+        recipientsObject=postJsonObject
 
     recipients=[]
     recipientType=['to','cc']
     for rType in recipientType:
-        for address in postJsonObject['object'][rType]:
+        for address in recipientsObject[rType]:
             if address.endswith('#Public'):
                 continue
             if address.endswith('/followers'):

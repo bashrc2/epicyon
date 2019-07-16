@@ -14,6 +14,10 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from posts import sendSignedJson
+from posts import getPersonBox
+from session import postJson
+from webfinger import webfingerHandle
+from auth import createBasicAuthHeader
 
 def createAnnounce(session,baseDir: str,federationList: [], \
                    nickname: str, domain: str, port: int, \
@@ -229,3 +233,78 @@ def undoRepeatPost(session,baseDir: str,federationList: [], \
                               sendThreads,postLog, \
                               personCache,cachedWebfingers, \
                               debug)
+
+def sendAnnounceViaServer(session,fromNickname: str,password: str,
+                          fromDomain: str,fromPort: int, \
+                          httpPrefix: str,repeatObjectUrl: str, \
+                          cachedWebfingers: {},personCache: {}, \
+                          debug: bool) -> {}:
+    """Creates an announce message via c2s
+    """
+    if not session:
+        print('WARN: No session for sendAnnounceViaServer')
+        return 6
+
+    withDigest=True
+
+    fromDomainFull=fromDomain
+    if fromPort!=80 and fromPort!=443:
+        fromDomainFull=fromDomain+':'+str(fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+
+    statusNumber,published = getStatusNumber()
+    newAnnounceId= \
+        httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/statuses/'+statusNumber
+    newAnnounceJson = {
+        'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
+        'atomUri': newAnnounceId,
+        'cc': [ccUrl],
+        'id': newAnnounceId+'/activity',
+        'object': repeatObjectUrl,
+        'published': published,
+        'to': [toUrl],
+        'type': 'Announce'
+    }
+
+    handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+    
+    authHeader=createBasicAuthHeader(fromNickname,password)
+     
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,newAnnounceJson,[],inboxUrl,headers,"inbox:write")
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+    #    return 5
+
+    if debug:
+        print('DEBUG: c2s POST announce success')
+
+    return newAnnounceJson

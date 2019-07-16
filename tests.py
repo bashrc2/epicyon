@@ -48,6 +48,7 @@ from auth import authorizeBasic
 from auth import storeBasicCredentials
 from like import likePost
 from announce import announcePublic
+from announce import sendAnnounceViaServer
 from media import getMediaPath
 
 testServerAliceRunning = False
@@ -1043,7 +1044,7 @@ def testClientToServer():
 
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
     print(">>> c2s post arrived in Alice's outbox")
-
+    
     for i in range(30):
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
@@ -1054,6 +1055,39 @@ def testClientToServer():
     print(">>> s2s post arrived in Bob's inbox")
     print("c2s send success")
 
+    print('\n\nGetting message id for the post')
+    statusNumber=0
+    outboxPostFilename=None
+    outboxPostId=None
+    for name in os.listdir(outboxPath):
+        if '#statuses#' in name:
+            statusNumber=int(name.split('#statuses#')[1].replace('.json','').replace('#activity',''))
+            outboxPostFilename=outboxPath+'/'+name
+            with open(outboxPostFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                outboxPostId=postJsonObject['id'].replace('/activity','')
+    assert outboxPostId
+    print('message id obtained: '+outboxPostId)
+    
+    print('\n\nBob repeats the post')
+    sessionBob = createSession(bobDomain,bobPort,useTor)
+    password='bobpass'
+    outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
+    sendAnnounceViaServer(sessionBob,'bob',password,
+                          bobDomain,bobPort, \
+                          httpPrefix,outboxPostId, \
+                          cachedWebfingers,personCache, \
+                          True)
+    for i in range(10):
+        if os.path.isdir(outboxPath):
+            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
+                break
+        time.sleep(1)
+
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
+    print('Post repeated')
+    
     # stop the servers
     thrAlice.kill()
     thrAlice.join()

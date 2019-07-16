@@ -703,15 +703,9 @@ class PubServer(BaseHTTPRequestHandler):
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
             if self._postToOutbox(messageJson):                
-                if messageJson.get('object'):
-                    #self.send_header('Location', \
+                if messageJson.get('id'):
                     self.headers['Location']= \
-                                     messageJson['object']['id'].replace('/activity','')
-                else:
-                    if messageJson.get('id'):
-                        #self.send_header('Location', \
-                        self.headers['Location']= \
-                                         messageJson['id'].replace('/activity','')
+                        messageJson['id'].replace('/activity','')
                 self.send_response(201)
                 self.end_headers()
                 self.server.POSTbusy=False
