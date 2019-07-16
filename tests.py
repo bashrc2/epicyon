@@ -1091,19 +1091,23 @@ def testClientToServer():
     sessionBob = createSession(bobDomain,bobPort,useTor)
     password='bobpass'
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
+    inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==0
     sendAnnounceViaServer(sessionBob,'bob',password, \
                           bobDomain,bobPort, \
                           httpPrefix,outboxPostId, \
                           cachedWebfingers, \
                           personCache,True)
-    for i in range(10):
-        if os.path.isdir(outboxPath):
+    for i in range(20):
+        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
-                break
+                if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
+                    break
         time.sleep(1)
 
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     print('Post repeated')
     
     # stop the servers

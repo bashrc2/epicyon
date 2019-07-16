@@ -582,6 +582,8 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' has no actor')
         return False
+    if debug:
+        print('DEBUG: receiving announce on '+handle)
     if not messageJson.get('object'):
         if debug:
             print('DEBUG: '+messageJson['type']+' has no object')

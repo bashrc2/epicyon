@@ -243,8 +243,11 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         return False
     domain,tempPort=getDomainFromActor(messageJson['actor'])
     fromPort=port
+    domainFull=domain
     if tempPort:
         fromPort=tempPort
+        if tempPort!=80 and tempPort!=443:
+            domainFull=domain+':'+str(tempPort)            
     if not domainPermitted(domain,federationList):
         if debug:
             print('DEBUG: follower from domain not permitted - '+domain)
@@ -264,6 +267,10 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: follow domain not permitted '+domainToFollow)
         return False
+    domainToFollowFull=domainToFollow
+    if tempPort:
+        if tempPort!=80 and tempPort!=443:
+            domainToFollowFull=domainToFollow+':'+str(tempPort)            
     nicknameToFollow=getNicknameFromActor(messageJson['object'])
     if not nicknameToFollow:
         if debug:
@@ -276,8 +283,10 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                 print('DEBUG: followed account not found - '+ \
                       baseDir+'/accounts/'+handleToFollow)
             return False
-    if not followerOfPerson(baseDir,nicknameToFollow,domainToFollow, \
-                            nickname,domain,federationList,debug):
+
+        
+    if not followerOfPerson(baseDir,nicknameToFollow,domainToFollowFull, \
+                            nickname,domainFull,federationList,debug):
         if debug:
             print('DEBUG: '+nickname+'@'+domain+ \
                   ' is already a follower of '+ \

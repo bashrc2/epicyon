@@ -98,8 +98,16 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         return False
     if debug:
         print('DEBUG: follow of domain '+followDomain)
-    handle=nickname.lower()+'@'+domain.lower()
-    handleToFollow=followNickname.lower()+'@'+followDomain.lower()
+
+    if ':' in domain:
+        handle=nickname+'@'+domain.split(':')[0].lower()
+    else:
+        handle=nickname+'@'+domain.lower()
+        
+    if ':' in followDomain:
+        handleToFollow=followNickname+'@'+followDomain.split(':')[0].lower()
+    else:
+        handleToFollow=followNickname+'@'+followDomain.lower()
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
@@ -111,14 +119,14 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
                 print('DEBUG: follow already exists')
             return True
         with open(filename, "a") as followfile:
-            followfile.write(handleToFollow+'\n')
+            followfile.write(followNickname+'@'+followDomain+'\n')
             if debug:
                 print('DEBUG: follow added')
             return True
     if debug:
         print('DEBUG: creating new following file')
     with open(filename, "w") as followfile:
-        followfile.write(handleToFollow+'\n')
+        followfile.write(followNickname+'@'+followDomain+'\n')
     return True
 
 def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False) -> str:

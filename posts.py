@@ -788,6 +788,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    personCache: {}, debug: bool) -> int:
     """Sends a signed json object to an inbox/outbox
     """
+    if debug:
+        print('DEBUG: sendSignedJson start')
     if not session:
         print('WARN: No session specified for sendSignedJson')
         return 8
@@ -802,6 +804,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             toDomain=toDomain+':'+str(toPort)        
 
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
+    if debug:
+        print('DEBUG: handle - '+handle+' toPort '+str(toPort))
 
     # lookup the inbox for the To handle
     wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
@@ -831,10 +835,16 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         print('DEBUG: Sending to endpoint '+inboxUrl)
                      
     if not inboxUrl:
+        if debug:
+            print('DEBUG: missing inboxUrl')
         return 3
     if not pubKey:
+        if debug:
+            print('DEBUG: missing pubkey')
         return 4
     if not toPersonId:
+        if debug:
+            print('DEBUG: missing personId')
         return 5
     # sharedInbox and capabilities are optional
 
@@ -846,6 +856,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         return 6
 
     if toDomain not in inboxUrl:
+        if debug:
+            print('DEBUG: '+toDomain+' not in '+inboxUrl)
         return 7
     postPath='/'+inboxUrl.split('/')[-1]
             
@@ -858,6 +870,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     while len(sendThreads)>10:
         sendThreads[0].kill()
         sendThreads.pop(0)
+    if debug:
+        print('DEBUG: starting thread to send post')
     thr = threadWithTrace(target=threadSendPost, \
                           args=(session, \
                                 postJsonObject.copy(), \
@@ -964,6 +978,9 @@ def sendToFollowers(session,baseDir: str, \
 
     # for each instance
     for followerDomain,followerHandles in grouped.items():
+        if debug:
+            print('DEBUG: follower handles for '+followerDomain)
+            pprint(followerHandles)
         toPort=port
         index=0
         toDomain=followerHandles[index].split('@')[1]
@@ -976,7 +993,7 @@ def sendToFollowers(session,baseDir: str, \
             nickname='inbox'
             toNickname='inbox'
         if debug:
-            print('Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+            print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
         sendSignedJson(postJsonObject,session,baseDir, \
                        nickname,domain,port, \
                        toNickname,toDomain,toPort, \
@@ -984,6 +1001,9 @@ def sendToFollowers(session,baseDir: str, \
                        federationList, \
                        sendThreads,postLog,cachedWebfingers, \
                        personCache,debug)
+        if debug:
+            print('DEBUG: End of sendToFollowers')
+        
 
 def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:

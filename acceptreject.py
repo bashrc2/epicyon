@@ -137,22 +137,23 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
     if not followedNickname:
         return
 
+    acceptedDomainFull=acceptedDomain
+    if acceptedPort:
+        acceptedDomainFull=acceptedDomain+':'+str(acceptedPort)
+
     # are capabilities attached? If so then store them
     if messageJson.get('capabilities'):
         if isinstance(messageJson['capabilities'], dict):
-            acceptedDomainFull=acceptedDomain
-            if acceptedPort:
-                acceptedDomainFull=acceptedDomain+':'+str(acceptedPort)
             capabilitiesGrantedSave(baseDir, \
                                     nickname,acceptedDomainFull, \
                                     messageJson['capabilities'])
 
     if followPerson(baseDir, \
-                    nickname,acceptedDomain, \
-                    followedNickname,followedDomain, \
+                    nickname,acceptedDomainFull, \
+                    followedNickname,followedDomainFull, \
                     federationList,debug):
         if debug:
-            print('DEBUG: '+nickname+'@'+acceptedDomain+' followed '+followedNickname+'@'+followedDomain)
+            print('DEBUG: '+nickname+'@'+acceptedDomainFull+' followed '+followedNickname+'@'+followedDomainFull)
     else:
         if debug:
             print('DEBUG: Unable to create follow - '+nickname+'@'+acceptedDomain+' -> '+followedNickname+'@'+followedDomain)
