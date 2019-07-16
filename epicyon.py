@@ -24,7 +24,7 @@ from posts import createPublicPost
 from posts import deleteAllPosts
 from posts import createOutbox
 from posts import archivePosts
-from posts import sendPost
+from posts import sendPostViaServer
 from posts import getPublicPostsOfPerson
 from posts import getUserUrl
 from posts import archivePosts
@@ -214,8 +214,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    #testPostMessageBetweenServers()
-    #testFollowBetweenServers()
+    testPostMessageBetweenServers()
+    testFollowBetweenServers()
     testClientToServer()
     sys.exit()
 
@@ -285,48 +285,59 @@ useTor=args.tor
 if domain.endswith('.onion'):
     useTor=True
 
-if args.message and nickname:
+if args.message:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+        
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print(nickname+' is not an account on the system. use --addaccount if necessary.')
         sys.exit()
     session = createSession(domain,port,useTor)        
-    if args.sendto:
-        if '@' not in args.sendto:
-            print('syntax: --sendto [nickname@domain]')
-            sys.exit()
-        toNickname=args.sendto.split('@')[0]
-        toDomain=args.sendto.split('@')[1].replace('\n','')
-        toPort=443
-        if ':' in toDomain:
-            toPort=toDomain.split(':')[1]
-            toDomain=toDomain.split(':')[0]
-        #ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
-        ccUrl=None
-        sendMessage=args.message
-        followersOnly=args.followersonly
-        clientToServer=args.client
-        attachedImageDescription=args.imageDescription
-        useBlurhash=args.blurhash
-        sendThreads = []
-        postLog = []
-        personCache={}
-        cachedWebfingers={}
-        subject=args.subject
-        attach=args.attach
-        replyTo=args.replyTo
-        print('Sending post to '+args.sendto)
-        sendResult = \
-            sendPost(session,baseDir,nickname,domain,port, \
-                     toNickname,toDomain,toPort,ccUrl,httpPrefix, \
-                     sendMessage,followersOnly,True,clientToServer, \
-                     attach,attachedImageDescription, \
-                     useBlurhash,federationList,sendThreads, \
-                     postLog,cachedWebfingers,personCache, \
-                     replyTo,replyTo,subject)
-        for i in range(10):
-            # TODO detect send success/fail
-            time.sleep(1)
+    if not args.sendto:
+        print('Specify an account to sent to: --sendto [nickname@domain]')
+        sys.exit()        
+    if '@' not in args.sendto:
+        print('syntax: --sendto [nickname@domain]')
         sys.exit()
+    toNickname=args.sendto.split('@')[0]
+    toDomain=args.sendto.split('@')[1].replace('\n','')
+    toPort=443
+    if ':' in toDomain:
+        toPort=toDomain.split(':')[1]
+        toDomain=toDomain.split(':')[0]
+    #ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
+    ccUrl=None
+    sendMessage=args.message
+    followersOnly=args.followersonly
+    clientToServer=args.client
+    attachedImageDescription=args.imageDescription
+    useBlurhash=args.blurhash
+    sendThreads = []
+    postLog = []
+    personCache={}
+    cachedWebfingers={}
+    subject=args.subject
+    attach=args.attach
+    replyTo=args.replyTo
+    followersOnly=False
+    print('Sending post to '+args.sendto)
+
+    sendPostViaServer(session,nickname,args.password, \
+                      domain,port, \
+                      toNickname,toDomain,toPort,ccUrl, \
+                      httpPrefix,sendMessage,followersOnly, \
+                      attach,attachedImageDescription,useBlurhash, \
+                      cachedWebfingers,personCache, \
+                      args.debug,replyTo,replyTo,subject)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
     
 if args.follow and nickname:
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
