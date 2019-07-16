@@ -173,7 +173,7 @@ class PubServer(BaseHTTPRequestHandler):
                       ' is not a permitted activity type')
             return False
         if messageJson.get('id'):
-            postId=messageJson['id']
+            postId=messageJson['id'].replace('/activity','')
         else:
             postId=None
         if self.server.debug:

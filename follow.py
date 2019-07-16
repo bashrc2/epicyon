@@ -18,7 +18,11 @@ from utils import getNicknameFromActor
 from utils import getStatusNumber
 from utils import followPerson
 from posts import sendSignedJson
+from posts import getPersonBox
 from acceptreject import createAccept
+from webfinger import webfingerHandle
+from auth import createBasicAuthHeader
+from session import postJson
 
 def getFollowersOfPerson(baseDir: str, \
                          nickname: str,domain: str, \
@@ -329,7 +333,6 @@ def sendFollowRequest(session,baseDir: str, \
     followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
 
     newFollowJson = {
-        'id': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
         'type': 'Follow',
         'actor': followActor,
         'object': followedId,
@@ -344,6 +347,79 @@ def sendFollowRequest(session,baseDir: str, \
                    httpPrefix,True,clientToServer, \
                    federationList, \
                    sendThreads,postLog,cachedWebfingers,personCache, debug)
+
+    return newFollowJson
+
+def sendFollowRequestViaServer(session,fromNickname: str,password: str,
+                               fromDomain: str,fromPort: int, \
+                               followNickname: str,followDomain: str,followPort: int, \
+                               httpPrefix: str, \
+                               cachedWebfingers: {},personCache: {}, \
+                               debug: bool) -> {}:
+    """Creates a follow request via c2s
+    """
+    if not session:
+        print('WARN: No session for sendFollowRequestViaServer')
+        return 6
+
+    fromDomainFull=fromDomain
+    if fromPort!=80 and fromPort!=443:
+        fromDomainFull=fromDomain+':'+str(fromPort)
+    followDomainFull=followDomain
+    if followPort!=80 and followPort!=443:
+        followDomainFull=followDomain+':'+str(followPort)
+
+    followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
+    followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
+
+    statusNumber,published = getStatusNumber()
+    newFollowJson = {
+        'type': 'Follow',
+        'actor': followActor,
+        'object': followedId,
+        'to': [followedId],
+        'cc': ['https://www.w3.org/ns/activitystreams#Public'],
+        'published': published
+    }
+
+    handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+    
+    authHeader=createBasicAuthHeader(fromNickname,password)
+     
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,newFollowJson,[],inboxUrl,headers,"inbox:write")
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+    #    return 5
+
+    if debug:
+        print('DEBUG: c2s POST follow success')
 
     return newFollowJson
 

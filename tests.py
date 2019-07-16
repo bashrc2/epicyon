@@ -32,6 +32,7 @@ from posts import archivePostsForPerson
 from posts import sendPostViaServer
 from follow import clearFollows
 from follow import clearFollowers
+from follow import sendFollowRequestViaServer
 from utils import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
@@ -1068,17 +1069,34 @@ def testClientToServer():
                 outboxPostId=postJsonObject['id'].replace('/activity','')
     assert outboxPostId
     print('message id obtained: '+outboxPostId)
+
+
+    print('\n\nAlice follows Bob')
+    sendFollowRequestViaServer(sessionAlice,'alice',password, \
+                               aliceDomain,alicePort, \
+                               'bob',bobDomain,bobPort, \
+                               httpPrefix, \
+                               cachedWebfingers,personCache, \
+                               True)
+    for t in range(10):
+        if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
+            if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
+                break
+        time.sleep(1)
+
+    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt')
+    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
     
     print('\n\nBob repeats the post')
     sessionBob = createSession(bobDomain,bobPort,useTor)
     password='bobpass'
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
-    sendAnnounceViaServer(sessionBob,'bob',password,
+    sendAnnounceViaServer(sessionBob,'bob',password, \
                           bobDomain,bobPort, \
                           httpPrefix,outboxPostId, \
-                          cachedWebfingers,personCache, \
-                          True)
+                          cachedWebfingers, \
+                          personCache,True)
     for i in range(10):
         if os.path.isdir(outboxPath):
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
@@ -1098,8 +1116,8 @@ def testClientToServer():
     assert thrBob.isAlive()==False
 
     os.chdir(baseDir)
-    shutil.rmtree(aliceDir)
-    shutil.rmtree(bobDir)
+    #shutil.rmtree(aliceDir)
+    #shutil.rmtree(bobDir)
 
 def runAllTests():
     print('Running tests...')
