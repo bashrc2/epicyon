@@ -211,7 +211,7 @@ The only scenarios in which Eve might triumph would be if she could also do DNS 
 
 Even if Eve has an account on Alice's instance this won't help her very much unless she can get write access to the database.
 
-Another scenario is that you grant capabilities to an account on a hostile instance. The hostile instance then shares the resulting token with all other accounts on it. Potentially those other accounts might be able to gain capabilities which they havn't been granted *but only if they also have identical signing keys*. Checking for public key duplication on the instance granting capabilities could mitigate this. At the point at which a capabilities request is made are there any other known accounts with the same public key?
+Another scenario is that you grant capabilities to an account on a hostile instance. The hostile instance then shares the resulting token with all other accounts on it. Potentially those other accounts might be able to gain capabilities which they havn't been granted *but only if they also have identical signing keys*. Checking for public key duplication on the instance granting capabilities could mitigate this. At the point at which a capabilities request is made are there any other known accounts with the same public key? Since actors are public it would also be possible to automatically scan for the existence of instances with duplicated signing keys.
 
 ## Install
 
