@@ -159,6 +159,8 @@ parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,default=None,
                     help='Maximum number of posts in in/outbox')
 parser.add_argument('--message', dest='message', type=str,default=None, \
                     help='Message content')
+parser.add_argument('--repeat','--announce', dest='announce', type=str,default=None, \
+                    help='Announce/repeat a url')
 parser.add_argument('--sendto', nargs='+',dest='sendto', \
                     help='List of post recipients')
 parser.add_argument('--attach', dest='attach', type=str,default=None, \
@@ -214,8 +216,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    #testPostMessageBetweenServers()
-    #testFollowBetweenServers()
+    testPostMessageBetweenServers()
+    testFollowBetweenServers()
     testClientToServer()
     sys.exit()
 
@@ -294,9 +296,6 @@ if args.message:
         print('Specify a password with the --password option')
         sys.exit()
         
-    if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
-        print(nickname+' is not an account on the system. use --addaccount if necessary.')
-        sys.exit()
     session = createSession(domain,port,useTor)        
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
@@ -338,7 +337,31 @@ if args.message:
         # TODO detect send success/fail
         time.sleep(1)
     sys.exit()
-    
+
+if args.announce:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+        
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending announce/repeat of '+args.announce)
+
+    sendAnnounceViaServer(session,nickname,args.password,
+                          domain,port, \
+                          httpPrefix,args.announce, \
+                          cachedWebfingers,personCache, \
+                          True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
 if args.follow and nickname:
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print(nickname+' is not an account on the system. use --addaccount if necessary.')
