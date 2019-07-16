@@ -30,7 +30,10 @@ from inbox import runInboxQueue
 from inbox import savePostToInboxQueue
 from follow import getFollowingFeed
 from auth import authorize
+from auth import createPassword
 from threads import threadWithTrace
+from media import getMediaPath
+from media import createMediaDirs
 import os
 import sys
 
@@ -136,6 +139,30 @@ class PubServer(BaseHTTPRequestHandler):
                 return False
             # https://www.w3.org/TR/activitypub/#create-activity-outbox
             messageJson['object']['attributedTo']=messageJson['actor']
+            if messageJson['object'].get('attachment'):
+                attachmentIndex=0
+                if messageJson['object']['attachment'][attachmentIndex].get('mediaType'):
+                    fileExtension='png'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('jpeg'):
+                        fileExtension='jpg'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('gif'):
+                        fileExtension='gif'
+                    mediaDir=self.server.baseDir+'/accounts/'+self.postToNickname+'@'+self.server.domain
+                    uploadMediaFilename=mediaDir+'/upload.'+fileExtension
+                    if not os.path.isfile(uploadMediaFilename):
+                        del messageJson['object']['attachment']
+                    else:
+                        # generate a path for the uploaded image
+                        mPath=getMediaPath()
+                        mediaPath=mPath+'/'+createPassword(32)+'.'+fileExtension
+                        createMediaDirs(self.server.baseDir,mPath)
+                        mediaFilename=self.server.baseDir+'/'+mediaPath
+                        # move the uploaded image to its new path
+                        os.rename(uploadMediaFilename,mediaFilename)
+                        # change the url of the attachment
+                        messageJson['object']['attachment'][attachmentIndex]['url']= \
+                            self.server.httpPrefix+'://'+self.server.domain+'/'+mediaPath
+                
         permittedOutboxTypes=[
             'Create','Announce','Like','Follow','Undo', \
             'Update','Add','Remove','Block','Delete'

@@ -1064,7 +1064,7 @@ def testClientToServer():
     assert thrBob.isAlive()==False
 
     os.chdir(baseDir)
-    #shutil.rmtree(aliceDir)
+    shutil.rmtree(aliceDir)
     shutil.rmtree(bobDir)
 
 def runAllTests():
