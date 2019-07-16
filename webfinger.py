@@ -37,6 +37,10 @@ def parseHandle(handle: str) -> (str,str):
 
 
 def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) -> {}:
+    if not session:
+        print('WARN: No session specified for webfingerHandle')
+        return None
+        
     nickname, domain = parseHandle(handle)
     if not nickname:
         return None
@@ -49,6 +53,9 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
     par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}
+    #print('webfinger url: '+url)
+    #print('webfinger par: '+str(par))
+    #print('webfinger hdr: '+str(hdr))
     try:
         result = getJson(session, url, hdr, par)
     except:

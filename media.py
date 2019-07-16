@@ -64,9 +64,10 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
             domain=domain+':'+str(port)
 
     mPath=getMediaPath()
-    createMediaDirs(baseDir,mPath)
     mediaPath=mPath+'/'+createPassword(32)+'.'+fileExtension
-    mediaFilename=baseDir+'/'+mediaPath
+    if baseDir:
+        createMediaDirs(baseDir,mPath)
+        mediaFilename=baseDir+'/'+mediaPath
 
     attachmentJson={
         'mediaType': mediaType,
@@ -78,7 +79,8 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
         attachmentJson['blurhash']=getImageHash(imageFilename)
     postJson['attachment']=[attachmentJson]
 
-    copyfile(imageFilename,mediaFilename)
+    if baseDir:
+        copyfile(imageFilename,mediaFilename)
              
     return postJson
 

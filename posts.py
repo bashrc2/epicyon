@@ -38,6 +38,7 @@ from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachImage
 from content import addMentions
+from auth import createBasicAuthHeader
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -318,9 +319,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
-    # convert content to html
-    content=addMentions(baseDir,httpPrefix, \
-                        nickname,domain,content)
+    if not clientToServer:
+        # convert content to html
+        content=addMentions(baseDir,httpPrefix, \
+                            nickname,domain,content)
 
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
@@ -444,12 +446,16 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                       nickname,domain,newPost,'outbox')
     return newPost
 
-def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str, \
+def outboxMessageCreateWrap(httpPrefix: str, \
+                            nickname: str,domain: str,port: int, \
                             messageJson: {}) -> {}:
     """Wraps a received message in a Create
     https://www.w3.org/TR/activitypub/#object-without-create
     """
 
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            domain=domain+':'+str(port)
     statusNumber,published = getStatusNumber()
     if messageJson.get('published'):
         published = messageJson['published']
@@ -458,7 +464,7 @@ def outboxMessageCreateWrap(httpPrefix: str,nickname: str,domain: str, \
     if messageJson.get('cc'):
         cc=messageJson['cc']
     # TODO
-    capabilityUrl=''
+    capabilityUrl=[]
     newPost = {
         'id': newPostId+'/activity',
         'capability': capabilityUrl,
@@ -605,7 +611,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
         getPersonBox(session,wfRequest,personCache,postToBox)
 
     # If there are more than one followers on the target domain
-    # then send to teh shared inbox indead of the individual inbox
+    # then send to the shared inbox indead of the individual inbox
     if nickname=='capabilities':
         inboxUrl=capabilityAcquisition
         if not capabilityAcquisition:
@@ -658,6 +664,76 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
+def sendPostViaServer(session,fromNickname: str,password: str, \
+                      fromDomain: str, fromPort: int, \
+                      toNickname: str, toDomain: str, toPort: int, cc: str, \
+                      httpPrefix: str, content: str, followersOnly: bool, \
+                      attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                      cachedWebfingers: {},personCache: {}, \
+                      debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
+    """Send a post via a proxy (c2s)
+    """
+    withDigest=True
+
+    if toPort!=80 and toPort!=443:
+        if ':' not in fromDomain:
+            fromDomain=fromDomain+':'+str(fromPort)
+
+    handle=httpPrefix+'://'+fromDomain+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+
+    # Get the json for the c2s post, not saving anything to file
+    # Note that baseDir is set to None
+    saveToFile=False
+    clientToServer=True
+    toDomainFull=toDomain
+    if toPort!=80 and toDomain!=443:
+        toDomainFull=toDomain+':'+str(toPort)        
+    toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
+    postJsonObject = \
+            createPostBase(None, \
+                           fromNickname,fromDomain,fromPort, \
+                           toPersonId,cc,httpPrefix,content, \
+                           followersOnly,saveToFile,clientToServer, \
+                           attachImageFilename,imageDescription,useBlurhash, \
+                           inReplyTo,inReplyToAtomUri,subject)
+
+    authHeader=createBasicAuthHeader(fromNickname,password)
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,postJsonObject,[],inboxUrl,headers,"inbox:write")
+    if not postResult:
+        if debug:
+            print('DEBUG: POST failed for c2s to '+inboxUrl)
+        return 5
+
+    if debug:
+        print('DEBUG: c2s POST success')
+    return 0
+
 def groupFollowersByDomain(baseDir :str,nickname :str,domain :str) -> {}:
     """Returns a dictionary with followers grouped by domain
     """
@@ -686,6 +762,9 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    personCache: {}, debug: bool) -> int:
     """Sends a signed json object to an inbox/outbox
     """
+    if not session:
+        print('WARN: No session specified for sendSignedJson')
+        return 8
     withDigest=True
 
     sharedInbox=False
@@ -773,13 +852,13 @@ def sendToNamedAddresses(session,baseDir: str, \
                          postJsonObject: {},debug: bool) -> None:
     """sends a post to the specific named addresses in to/cc
     """
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
-
+    if not session:
+        print('WARN: No session for sendToNamedAddresses')
+        return
     if not postJsonObject.get('object'):
-        return False
+        return
     if not postJsonObject['object'].get('to'):
-        return False
+        return
 
     recipients=[]
     recipientType=['to','cc']
@@ -793,7 +872,7 @@ def sendToNamedAddresses(session,baseDir: str, \
     if not recipients:
         return
     if debug:
-        print('c2s sending to addresses: '+str(recipients))
+        print('Sending individually addressed posts: '+str(recipients))
     # this is after the message has arrived at the server
     clientToServer=False
     for address in recipients:
@@ -804,7 +883,16 @@ def sendToNamedAddresses(session,baseDir: str, \
         if not toDomain:
             continue
         if debug:
-            print('c2s sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+            domainFull=domain
+            if port:
+                if port!=80 and port!=443:
+                    domainFull=domain+':'+str(port)
+            toDomainFull=toDomain
+            if toPort:
+                if toPort!=80 and toPort!=443:
+                    toDomainFull=toDomain+':'+str(toPort)
+            print('Post sending s2s: '+nickname+'@'+domainFull+' to '+toNickname+'@'+toDomainFull)
+        cc=[]
         sendSignedJson(postJsonObject,session,baseDir, \
                        nickname,domain,port, \
                        toNickname,toDomain,toPort, \
@@ -821,6 +909,9 @@ def sendToFollowers(session,baseDir: str, \
                     postJsonObject: {},debug: bool) -> None:
     """sends a post to the followers of the given nickname
     """
+    if not session:
+        print('WARN: No session for sendToFollowers')
+        return
     if not postIsAddressedToFollowers(baseDir,nickname,domain, \
                                       port,httpPrefix,postJsonObject):
         if debug:

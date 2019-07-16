@@ -29,6 +29,7 @@ from posts import noOfFollowersOnDomain
 from posts import groupFollowersByDomain
 from posts import sendCapabilitiesUpdate
 from posts import archivePostsForPerson
+from posts import sendPostViaServer
 from follow import clearFollows
 from follow import clearFollowers
 from utils import followPerson
@@ -136,7 +137,6 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     nickname='alice'
     httpPrefix='http'
     useTor=False
-    clientToServer=False
     password='alicepass'
     noreply=False
     nolike=False
@@ -954,7 +954,94 @@ def testAuthentication():
 
     os.chdir(currDir)
     shutil.rmtree(baseDir)
+
+def testClientToServer():
+    print('Testing sending a post via c2s')
+
+    global testServerAliceRunning
+    global testServerBobRunning
+    testServerAliceRunning = False
+    testServerBobRunning = False
+
+    httpPrefix='http'
+    useTor=False
+    federationList=[]
+
+    baseDir=os.getcwd()
+    if os.path.isdir(baseDir+'/.tests'):
+        shutil.rmtree(baseDir+'/.tests')
+    os.mkdir(baseDir+'/.tests')
+
+    ocapAlways=False
+
+    # create the servers
+    aliceDir=baseDir+'/.tests/alice'
+    aliceDomain='127.0.0.42'
+    alicePort=61935
+    thrAlice = \
+        threadWithTrace(target=createServerAlice, \
+                        args=(aliceDir,aliceDomain,alicePort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
     
+    bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.0.64'
+    bobPort=61936
+    thrBob = \
+        threadWithTrace(target=createServerBob, \
+                        args=(bobDir,bobDomain,bobPort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
+
+    thrAlice.start()
+    thrBob.start()
+    assert thrAlice.isAlive()==True
+    assert thrBob.isAlive()==True
+
+    # wait for both servers to be running
+    ctr=0
+    while not (testServerAliceRunning and testServerBobRunning):
+        time.sleep(1)
+        ctr+=1
+        if ctr>60:
+            break
+    print('Alice online: '+str(testServerAliceRunning))
+    print('Bob online: '+str(testServerBobRunning))
+
+    time.sleep(1)
+        
+    print('\n\n*******************************************************')
+    print('Alice sends to Bob via c2s')
+
+    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    followersOnly=False
+    attachImageFilename=None
+    imageDescription=None
+    useBlurhash=False
+    cachedWebfingers={}
+    personCache={}
+    password='alicepass'
+    outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
+    sendResult= \
+        sendPostViaServer(sessionAlice,'alice',password, \
+                          aliceDomain,alicePort, \
+                          'bob',bobDomain,bobPort,None, \
+                          httpPrefix,'Sent from my ActivityPub client',followersOnly, \
+                          attachImageFilename,imageDescription,useBlurhash, \
+                          cachedWebfingers,personCache, \
+                          True,None,None,None)
+    print('sendResult: '+str(sendResult))
+    assert sendResult==0
+
+    for i in range(30):
+        if os.path.isdir(outboxPath):
+            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
+                break
+        time.sleep(1)
+    
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
+
 def runAllTests():
     print('Running tests...')
     testHttpsig()

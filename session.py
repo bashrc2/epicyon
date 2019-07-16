@@ -31,6 +31,8 @@ def getJson(session,url: str,headers: {},params: {}) -> {}:
     if params:
         sessionParams=params
     sessionHeaders['User-agent'] = "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5 Build/LMY48B; wv)"
+    if not session:
+        print('WARN: no session specified for getJson')
     session.cookies.clear()
     try:
         result=session.get(url, headers=sessionHeaders, params=sessionParams)

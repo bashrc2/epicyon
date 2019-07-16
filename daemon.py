@@ -124,15 +124,17 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson= \
                     outboxMessageCreateWrap(self.server.httpPrefix, \
                                             self.postToNickname, \
-                                            self.server.domain,messageJson)
+                                            self.server.domain, \
+                                            self.server.port, \
+                                            messageJson)
         if messageJson['type']=='Create':
             if not (messageJson.get('id') and \
                     messageJson.get('type') and \
                     messageJson.get('actor') and \
                     messageJson.get('object') and \
-                    messageJson.get('atomUri') and \
                     messageJson.get('to')):
                 if self.server.debug:
+                    pprint(messageJson)
                     print('DEBUG: POST to outbox - Create does not have the required parameters')
                 return False
             # https://www.w3.org/TR/activitypub/#create-activity-outbox
@@ -150,23 +152,31 @@ class PubServer(BaseHTTPRequestHandler):
             postId=messageJson['id']
         else:
             postId=None
-        savePostToBox(self.server.baseDir,postId, \
+        if self.server.debug:
+            pprint(messageJson)
+        savePostToBox(self.server.baseDir, \
+                      self.server.httpPrefix, \
+                      postId, \
                       self.postToNickname, \
                       self.server.domain,messageJson,'outbox')
+        if not self.server.session:
+            self.server.session= \
+                createSession(self.server.domain,self.server.port,self.server.useTor)
         if self.server.debug:
             print('DEBUG: sending c2s post to followers')
         sendToFollowers(self.server.session,self.server.baseDir, \
-                             self.postToNickname,self.server.domain, \
-                             self.server.port, \
-                             self.server.httpPrefix, \
-                             self.server.federationList, \
-                             self.server.sendThreads, \
-                             self.server.postLog, \
-                             self.server.cachedWebfingers, \
-                             self.server.personCache, \
-                             messageJson,self.server.debug)
+                        self.postToNickname,self.server.domain, \
+                        self.server.port, \
+                        self.server.httpPrefix, \
+                        self.server.federationList, \
+                        self.server.sendThreads, \
+                        self.server.postLog, \
+                        self.server.cachedWebfingers, \
+                        self.server.personCache, \
+                        messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: sending c2s post to named addresses')
+            print('c2s sender: '+self.postToNickname+'@'+self.server.domain+':'+str(self.server.port))
         sendToNamedAddresses(self.server.session,self.server.baseDir, \
                              self.postToNickname,self.server.domain, \
                              self.server.port, \
@@ -580,7 +590,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/users/' in self.path:
                 if self._isAuthorized():
                     self.outboxAuthenticated=True
-                    pathUsersSection=path.split('/users/')[1]
+                    pathUsersSection=self.path.split('/users/')[1]
                     self.postToNickname=pathUsersSection.split('/')[0]
             if not self.outboxAuthenticated:
                 self.send_response(405)
@@ -617,9 +627,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson):
-                self.send_header('Location', \
-                                 messageJson['object']['atomUri'])
+            if self._postToOutbox(messageJson):                
+                if messageJson.get('object'):
+                    #self.send_header('Location', \
+                    self.headers['Location']= \
+                                     messageJson['object']['id'].replace('/activity','')
+                else:
+                    if messageJson.get('id'):
+                        #self.send_header('Location', \
+                        self.headers['Location']= \
+                                         messageJson['id'].replace('/activity','')
                 self.send_response(201)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -638,6 +655,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path=='/sharedInbox':
             if not inboxMessageHasParams(messageJson):
                 if self.server.debug:
+                    pprint(messageJson)
                     print("DEBUG: inbox message doesn't have the required parameters")
                 self.send_response(403)
                 self.end_headers()
