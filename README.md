@@ -343,6 +343,30 @@ Unfollowing is silimar:
 python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password mypass
 ```
 
+## Sending posts
+
+To send a post:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --sendto othernick@domain --message "hello" \
+		   --warning "This is a content warning" \
+		   --password mypass
+```
+
+The password is the c2s password for your account.
+
+You can also attach an image. It must be in png, jpg or gif format.
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --sendto othernick@domain --message "bees!" \
+		   --warning "bee-related content" --attach bees.png \
+		   --imagedescription "bees on flowers" \
+		   --blurhash \
+		   --password mypass
+```
+
 ## Archiving posts
 
 You can archive old posts with:
