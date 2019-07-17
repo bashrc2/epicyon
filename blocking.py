@@ -259,7 +259,7 @@ def outboxUndoBlock(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: undo block - no type')
         return
-    if not messageJson['type']=='undo':
+    if not messageJson['type']=='Undo':
         if debug:
             print('DEBUG: not an undo block')
         return
