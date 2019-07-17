@@ -162,6 +162,8 @@ parser.add_argument('--maxposts', dest='archiveMaxPosts', type=str,default=None,
                     help='Maximum number of posts in in/outbox')
 parser.add_argument('--message', dest='message', type=str,default=None, \
                     help='Message content')
+parser.add_argument('--delete', dest='delete', type=str,default=None, \
+                    help='Delete a specified post')
 parser.add_argument('--repeat','--announce', dest='announce', type=str,default=None, \
                     help='Announce/repeat a url')
 parser.add_argument('--sendto', nargs='+',dest='sendto', \
@@ -219,8 +221,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    #testPostMessageBetweenServers()
-    #testFollowBetweenServers()
+    testPostMessageBetweenServers()
+    testFollowBetweenServers()
     testClientToServer()
     sys.exit()
 
@@ -375,6 +377,30 @@ if args.announce:
                           httpPrefix,args.announce, \
                           cachedWebfingers,personCache, \
                           True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.delete:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+        
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending delete request of '+args.delete)
+
+    sendDeleteViaServer(session,nickname,args.password,
+                        domain,port, \
+                        httpPrefix,args.delete, \
+                        cachedWebfingers,personCache, \
+                        True)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
