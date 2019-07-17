@@ -208,7 +208,9 @@ class PubServer(BaseHTTPRequestHandler):
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle delete requests')
-        outboxDelete(self.server.baseDir,self.server.httpPrefix,messageJson,self.server.debug)
+        outboxDelete(self.server.baseDir,self.server.httpPrefix, \
+                     self.postToNickname,self.server.domain, \
+                     messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: sending c2s post to named addresses')
             print('c2s sender: '+self.postToNickname+'@'+self.server.domain+':'+str(self.server.port))

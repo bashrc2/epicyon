@@ -193,8 +193,10 @@ def deletePostPub(session,baseDir: str,federationList: [], \
                         personCache,cachedWebfingers, \
                         debug)
 
-def outboxDelete(baseDir: str,httpPrefix: str,messageJson: {},debug: bool) -> None:
-    """When a delete request is received by the outbox from c2s
+def outboxDelete(baseDir: str,httpPrefix: str, \
+                 nickname: str,domain: str, \
+                 messageJson: {},debug: bool) -> None:
+    """ When a delete request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
         if debug:
@@ -225,7 +227,17 @@ def outboxDelete(baseDir: str,httpPrefix: str,messageJson: {},debug: bool) -> No
             print('DEBUG: c2s delete object has no nickname')
         return
     deleteNickname=getNicknameFromActor(messageId)
+    if deleteNickname!=nickname:
+        if debug:
+            print("DEBUG: you can't delete a post which wasn't created by you (nickname does not match)")
+        return        
     deleteDomain,deletePort=getDomainFromActor(messageId)
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    if deleteDomain!=domain:
+        if debug:
+            print("DEBUG: you can't delete a post which wasn't created by you (domain does not match)")
+        return        
     postFilename=locatePost(baseDir,deleteNickname,deleteDomain,messageId)
     if not postFilename:
         if debug:
