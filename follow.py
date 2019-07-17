@@ -84,11 +84,11 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
                 f.write(line)
 
 def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \
-                       followerNickname: str,followerDomain: str) -> None:
+                       followerNickname: str,followerDomain: str) -> bool:
     """Remove a follower of a person
     """
-    unfollowPerson(baseDir,nickname,domain, \
-                   followerNickname,followerDomain,'followers.txt')
+    return unfollowPerson(baseDir,nickname,domain, \
+                          followerNickname,followerDomain,'followers.txt')
 
 def clearFollows(baseDir: str,nickname: str,domain: str, \
                  followFile='following.txt') -> None:

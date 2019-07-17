@@ -380,7 +380,9 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
     return recipientsDict,recipientsDictFollowers
 
 def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
-                      port: int,messageJson: {},debug : bool) -> bool:
+                      port: int,messageJson: {}, \
+                      federationList: [], \
+                      debug : bool) -> bool:
     if not messageJson['object'].get('actor'):
         if debug:
             print('DEBUG: follow request has no actor within object')
@@ -408,8 +410,9 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if portFollowing!=80 and portFollowing!=443:
             domainFollowingFull=domainFollowing+':'+str(portFollowing)
 
-    unfollowerOfPerson(baseDir,nicknameFollower,domainFollowerFull, \
-                       nicknameFollowing,domainFollowingFull,federationList,debug)
+    if not unfollowerOfPerson(baseDir,nicknameFollower,domainFollowerFull, \
+                              nicknameFollowing,domainFollowingFull, \
+                              federationList,debug)
     return True
 
 def receiveUndo(session,baseDir: str,httpPrefix: str, \
@@ -452,7 +455,9 @@ def receiveUndo(session,baseDir: str,httpPrefix: str, \
         return False
     if messageJson['object']['type']=='Follow':
         return receiveUndoFollow(session,baseDir,httpPrefix, \
-                                 port,messageJson,debug)
+                                 port,messageJson, \
+                                 federationList, \
+                                 debug)
     return False
 
 def receiveUpdate(session,baseDir: str, \
