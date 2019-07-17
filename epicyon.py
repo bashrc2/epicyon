@@ -216,8 +216,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    #testPostMessageBetweenServers()
-    #testFollowBetweenServers()
+    testPostMessageBetweenServers()
+    testFollowBetweenServers()
     testClientToServer()
     sys.exit()
 
@@ -362,7 +362,15 @@ if args.announce:
         time.sleep(1)
     sys.exit()
 
-if args.follow and nickname:
+if args.follow:
+    # follow via c2s protocol
+    if not nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        print('Please specify the password for '+nickname+' on '+domain)
+        sys.exit()
+        
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print(nickname+' is not an account on the system. use --addaccount if necessary.')
         sys.exit()
@@ -374,34 +382,22 @@ if args.follow and nickname:
     followNickname=getNicknameFromActor(args.follow)
     followDomain,followPort=getDomainFromActor(args.follow)
 
-    if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'):
-         if followNickname+'@'+followDomain in open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt').read():
-             print(nickname+'@'+domain+' is already following '+followNickname+'@'+followDomain)
-             sys.exit()
-
     session = createSession(domain,port,useTor)
     personCache={}
     cachedWebfingers={}
-    sendThreads=[]
-    sendThreads=[]
-    postLog=[]
     followHttpPrefix=httpPrefix
     if args.follow.startswith('https'):
         followHttpPrefix='https'
-    sendFollowRequest(session,baseDir, \
-                      nickname,domain,port,httpPrefix, \
-                      followNickname,followDomain,followPort, \
-                      followHttpPrefix, \
-                      False,federationList, \
-                      sendThreads,postLog, \
-                      cachedWebfingers,personCache,debug)
-    for t in range(30):
+
+    sendFollowRequestViaServer(session,nickname,args.password, \
+                               domain,port, \
+                               followNickname,followDomain,followPort, \
+                               httpPrefix, \
+                               cachedWebfingers,personCache, \
+                               debug)
+    for t in range(20):
         time.sleep(1)
-        if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'):
-            if followNickname+'@'+followDomain in open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt').read():
-                print('Ok')
-                sys.exit()
-    print('Follow attempt failed')
+        # TODO some method to know if it worked
     sys.exit()
     
 nickname='admin'
