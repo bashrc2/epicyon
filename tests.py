@@ -203,7 +203,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     maxReplies=64
     domainMaxPostsPerDay=1000
     accountMaxPostsPerDay=1000
-    allowDeletion=False
+    allowDeletion=True
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,True,password)
     deleteAllPosts(path,nickname,domain,'inbox')

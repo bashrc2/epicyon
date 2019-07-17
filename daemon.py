@@ -36,6 +36,7 @@ from threads import threadWithTrace
 from media import getMediaPath
 from media import createMediaDirs
 from delete import outboxDelete
+from like import outboxLike
 import os
 import sys
 
@@ -206,6 +207,11 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle any like requests')
+        outboxLike(self.server.baseDir,self.server.httpPrefix, \
+                   self.postToNickname,self.server.domain,self.server.port, \
+                   messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle delete requests')
         outboxDelete(self.server.baseDir,self.server.httpPrefix, \
@@ -847,7 +853,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd.ocapAlways=ocapAlways
     httpd.maxMessageLength=5000
     httpd.maxImageSize=10*1024*1024
-    httpd.allowDeletion=nodeletion
+    httpd.allowDeletion=allowDeletion
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
         httpd.acceptedCaps.append('inbox:noreply')

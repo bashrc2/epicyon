@@ -14,6 +14,10 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from posts import sendSignedJson
+from session import postJson
+from webfinger import webfingerHandle
+from auth import createBasicAuthHeader
+from posts import getPersonBox
 
 def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
     """Undoes a like for a particular actor
@@ -406,3 +410,50 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
         print('DEBUG: c2s POST undo like success')
 
     return newUndoLikeJson
+
+def outboxLike(baseDir: str,httpPrefix: str, \
+               nickname: str,domain: str,port: int, \
+               messageJson: {},debug: bool) -> None:
+    """ When a like request is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        if debug:
+            print('DEBUG: like - no type')
+        return
+    if not messageJson['type']=='Like':
+        if debug:
+            print('DEBUG: not a like')
+        return
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: no object in like')
+        return
+    if not isinstance(messageJson['object'], str):
+        if debug:
+            print('DEBUG: like object is not string')
+        return
+    if debug:
+        print('DEBUG: c2s like request arrived in outbox')
+
+    messageId=messageJson['object'].replace('/activity','')
+    if '/statuses/' not in messageId:
+        if debug:
+            print('DEBUG: c2s like object is not a status')
+        return
+    if '/users/' not in messageId:
+        if debug:
+            print('DEBUG: c2s like object has no nickname')
+        return
+    likeNickname=getNicknameFromActor(messageId)
+    likeDomain,likePort=getDomainFromActor(messageId)
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    postFilename=locatePost(baseDir,likeNickname,likeDomain,messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s like post not found in inbox or outbox')
+            print(messageId)
+        return True
+    updateLikesCollection(postFilename,messageId,messageJson['actor'],debug)
+    if debug:
+        print('DEBUG: post liked via c2s - '+postFilename)
