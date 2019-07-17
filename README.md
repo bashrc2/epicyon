@@ -385,6 +385,25 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 		   --password [mypass]
 ```
 
+## Delete posts
+
+To delete a post you must first know its url. It is usually something like:
+
+``` text
+https://domain/users/name/statuses/number
+```
+
+Once you know that they you can use the command:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --delete [url] --password [mypass]
+```
+
+Deletion of posts in a federated system is not always reliable. Some instances may not implement deletion, and this may be because of the possibility of spurious deletes being sent by an adversary to cause trouble.
+
+Another complication is that the followers collection may change between the time when a post was created and the time it was deleted, leaving some stranded copies.
+
 ## Announcements/repeats/boosts
 
 To announce or repeat a post you will first need to know it's url. It is usually something like:
