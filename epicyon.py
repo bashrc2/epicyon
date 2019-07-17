@@ -302,15 +302,30 @@ if args.message:
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()        
-    if '@' not in args.sendto:
+    if '@' not in args.sendto and \
+       not args.sendto.lower().endswith('public') and \
+       not args.sendto.lower().endswith('followers'):
         print('syntax: --sendto [nickname@domain]')
+        print('        --sendto public')
+        print('        --sendto followers')
         sys.exit()
-    toNickname=args.sendto.split('@')[0]
-    toDomain=args.sendto.split('@')[1].replace('\n','')
-    toPort=443
-    if ':' in toDomain:
-        toPort=toDomain.split(':')[1]
-        toDomain=toDomain.split(':')[0]
+    if '@' in args.sendto:
+        toNickname=args.sendto.split('@')[0]
+        toDomain=args.sendto.split('@')[1].replace('\n','')
+        toPort=443
+        if ':' in toDomain:
+            toPort=toDomain.split(':')[1]
+            toDomain=toDomain.split(':')[0]
+    else:
+        if args.sendto.endswith('followers'):
+            toNickname=None
+            toDomain='followers'
+            toPort=port
+        else:
+            toNickname=None
+            toDomain='public'
+            toPort=port
+        
     #ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
     ccUrl=None
     sendMessage=args.message

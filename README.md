@@ -345,7 +345,25 @@ python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@do
 
 ## Sending posts
 
-To send a post:
+To make a public post:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --sendto public --message "hello" \
+		   --warning "This is a content warning" \
+		   --password [mypass]
+```
+
+To post to followers only:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --sendto followers --message "hello" \
+		   --warning "This is a content warning" \
+		   --password [mypass]
+```
+
+To send a post to a particular address:
 
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \

@@ -722,10 +722,22 @@ def sendPostViaServer(session,fromNickname: str,password: str, \
     # Note that baseDir is set to None
     saveToFile=False
     clientToServer=True
-    toDomainFull=toDomain
-    if toPort!=80 and toDomain!=443:
-        toDomainFull=toDomain+':'+str(toPort)        
-    toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
+    if toDomain.lower().endswith('public'):
+        toPersonId='https://www.w3.org/ns/activitystreams#Public'
+        fromDomainFull=fromDomain
+        if fromPort:
+            if fromPort!=80 and fromPort!=443:
+                fromDomainFull=fromDomain+':'+str(fromPort)                
+        cc=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    else:
+        if toDomain.lower().endswith('followers') or \
+           toDomain.lower().endswith('followersonly'):
+            toPersonId=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+        else:
+            toDomainFull=toDomain
+            if toPort!=80 and toDomain!=443:
+                toDomainFull=toDomain+':'+str(toPort)        
+            toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
     postJsonObject = \
             createPostBase(None, \
                            fromNickname,fromDomain,fromPort, \
