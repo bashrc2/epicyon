@@ -410,10 +410,8 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if portFollowing!=80 and portFollowing!=443:
             domainFollowingFull=domainFollowing+':'+str(portFollowing)
 
-    if not unfollowerOfPerson(baseDir,nicknameFollower,domainFollowerFull, \
-                              nicknameFollowing,domainFollowingFull, \
-                              federationList,debug)
-    return True
+    return unfollowerOfPerson(baseDir,nicknameFollower,domainFollowerFull, \
+                              nicknameFollowing,domainFollowingFull)
 
 def receiveUndo(session,baseDir: str,httpPrefix: str, \
                 port: int,sendThreads: [],postLog: [], \
