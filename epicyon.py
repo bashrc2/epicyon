@@ -63,6 +63,8 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from media import archiveMedia
 from delete import sendDeleteViaServer
+from like import sendLikeViaServer
+from like import sendUndoLikeViaServer
 import argparse
 
 def str2bool(v):
@@ -171,6 +173,8 @@ parser.add_argument('--repeat','--announce', dest='announce', type=str,default=N
                     help='Announce/repeat a url')
 parser.add_argument('--favorite','--like', dest='like', type=str,default=None, \
                     help='Like a url')
+parser.add_argument('--undolike','--unlike', dest='undolike', type=str,default=None, \
+                    help='Undo a like of a url')
 parser.add_argument('--sendto', nargs='+',dest='sendto', \
                     help='List of post recipients')
 parser.add_argument('--attach', dest='attach', type=str,default=None, \
@@ -406,6 +410,30 @@ if args.like:
                       httpPrefix,args.like, \
                       cachedWebfingers,personCache, \
                       True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.undolike:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+        
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending undo like of '+args.undolike)
+
+    sendUndoLikeViaServer(session,nickname,args.password,
+                          domain,port, \
+                          httpPrefix,args.undolike, \
+                          cachedWebfingers,personCache, \
+                          True)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
