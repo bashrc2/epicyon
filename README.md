@@ -363,7 +363,7 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 		   --password [mypass]
 ```
 
-To send a post to a particular address:
+To send a post to a particular address (direct message):
 
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
