@@ -402,7 +402,7 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 
 Deletion of posts in a federated system is not always reliable. Some instances may not implement deletion, and this may be because of the possibility of spurious deletes being sent by an adversary to cause trouble.
 
-To disallow deletion requests on your server set the **--nodeletion** option.
+To disallow deletion requests by unauthenticated people on your server set the **--nodeletion** option.
 
 Another complication is that the followers collection may change between the time when a post was created and the time it was deleted, leaving some stranded copies.
 
