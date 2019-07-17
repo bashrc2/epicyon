@@ -330,7 +330,7 @@ python3 epicyon.py --domain [name] --port 8000 --https --federate domain1.net do
 With your server running you can then follow other accounts with:
 
 ``` bash
-python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain --password mypass
+python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain --password [mypass]
 ```
 
 The password is for the client to obtain access to the server.
@@ -340,7 +340,7 @@ You may or may not need to use the *--port*, *--https* and *--tor* options, depe
 Unfollowing is silimar:
 
 ``` bash
-python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password mypass
+python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password [mypass]
 ```
 
 ## Sending posts
@@ -351,7 +351,7 @@ To send a post:
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto othernick@domain --message "hello" \
 		   --warning "This is a content warning" \
-		   --password mypass
+		   --password [mypass]
 ```
 
 The password is the c2s password for your account.
@@ -364,7 +364,22 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 		   --warning "bee-related content" --attach bees.png \
 		   --imagedescription "bees on flowers" \
 		   --blurhash \
-		   --password mypass
+		   --password [mypass]
+```
+
+## Announcements/repeats/boosts
+
+To announce or repeat a post you will first need to know it's url. It is usually something like:
+
+``` text
+https://domain/users/name/statuses/number
+```
+
+Once you know that they you can use the command:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --repeat [url] --password [mypass]
 ```
 
 ## Archiving posts
