@@ -444,11 +444,9 @@ def outboxLike(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s like object has no nickname')
         return
-    likeNickname=getNicknameFromActor(messageId)
-    likeDomain,likePort=getDomainFromActor(messageId)
     if ':' in domain:
         domain=domain.split(':')[0]
-    postFilename=locatePost(baseDir,likeNickname,likeDomain,messageId)
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s like post not found in inbox or outbox')
