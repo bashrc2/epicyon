@@ -330,10 +330,18 @@ python3 epicyon.py --domain [name] --port 8000 --https --federate domain1.net do
 With your server running you can then follow other accounts with:
 
 ``` bash
-python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain
+python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain --password mypass
 ```
 
+The password is for the client to obtain access to the server.
+
 You may or may not need to use the *--port*, *--https* and *--tor* options, depending upon how your server was set up.
+
+Unfollowing is silimar:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password mypass
+```
 
 ## Archiving posts
 
