@@ -421,6 +421,28 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
                    --repeat [url] --password [c2s password]
 ```
 
+## Like posts
+
+To like a post you will first need to know it's url. It is usually something like:
+
+``` text
+https://domain/users/name/statuses/number
+```
+
+Once you know that they you can use the command:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --like [url] --password [c2s password]
+```
+
+To subsequently undo the like:
+
+``` bash
+python3 epicyon.py --nickname [yournick] --domain [name] \
+                   --undolike [url] --password [c2s password]
+```
+
 ## Archiving posts
 
 You can archive old posts with:
