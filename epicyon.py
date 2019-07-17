@@ -169,6 +169,8 @@ parser.add_argument("--allowdeletion", type=str2bool, nargs='?', \
                     help="Do not allow deletions")
 parser.add_argument('--repeat','--announce', dest='announce', type=str,default=None, \
                     help='Announce/repeat a url')
+parser.add_argument('--favorite','--like', dest='like', type=str,default=None, \
+                    help='Like a url')
 parser.add_argument('--sendto', nargs='+',dest='sendto', \
                     help='List of post recipients')
 parser.add_argument('--attach', dest='attach', type=str,default=None, \
@@ -380,6 +382,30 @@ if args.announce:
                           httpPrefix,args.announce, \
                           cachedWebfingers,personCache, \
                           True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.like:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+        
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending like of '+args.like)
+
+    sendLikeViaServer(session,nickname,args.password,
+                      domain,port, \
+                      httpPrefix,args.like, \
+                      cachedWebfingers,personCache, \
+                      True)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
