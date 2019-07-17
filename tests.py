@@ -1088,6 +1088,8 @@ def testClientToServer():
 
     assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt')
     assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
+    assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
+    assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     
     print('\n\nBob repeats the post')
     sessionBob = createSession(bobDomain,bobPort,useTor)
