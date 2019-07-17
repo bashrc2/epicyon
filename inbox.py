@@ -623,6 +623,8 @@ def receiveDelete(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' has no actor')
         return False
+    if debug:
+        print('DEBUG: Delete activity arrived')
     if not messageJson.get('object'):
         if debug:
             print('DEBUG: '+messageJson['type']+' has no object')
@@ -649,11 +651,12 @@ def receiveDelete(session,handle: str,baseDir: str, \
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of like - '+handle)
     # if this post in the outbox of the person?
-    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
+    messageId=messageJson['object'].replace('/activity','')
+    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageId)
     if not postFilename:
         if debug:
             print('DEBUG: delete post not found in inbox or outbox')
-            print(messageJson['object'])
+            print(messageId)
         return True
     deletePost(baseDir,httpPrefix,handle.split('@')[0],handle.split('@')[1],postFilename,debug)
     if debug:

@@ -62,6 +62,7 @@ from auth import createPassword
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from media import archiveMedia
+from delete import sendDeleteViaServer
 import argparse
 
 def str2bool(v):
@@ -218,8 +219,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    testPostMessageBetweenServers()
-    testFollowBetweenServers()
+    #testPostMessageBetweenServers()
+    #testFollowBetweenServers()
     testClientToServer()
     sys.exit()
 

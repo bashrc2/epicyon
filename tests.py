@@ -52,6 +52,7 @@ from like import likePost
 from announce import announcePublic
 from announce import sendAnnounceViaServer
 from media import getMediaPath
+from delete import sendDeleteViaServer
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1091,14 +1092,37 @@ def testClientToServer():
     assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
     assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+
+    print('\n\nBob follows Alice')
+    sendFollowRequestViaServer(sessionAlice,'bob','bobpass', \
+                               bobDomain,bobPort, \
+                               'alice',aliceDomain,alicePort, \
+                               httpPrefix, \
+                               cachedWebfingers,personCache, \
+                               True)
+    for t in range(10):
+        if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt'):
+            if 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt').read():
+                if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/following.txt'):
+                    if 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/following.txt').read():
+                        break
+        time.sleep(1)
+
+    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt')
+    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/following.txt')
+    assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt').read()
+    assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/following.txt').read()
+
     
     print('\n\nBob repeats the post')
     sessionBob = createSession(bobDomain,bobPort,useTor)
     password='bobpass'
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
     inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
-    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
-    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==0
+    print(str(len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])))
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
+    print(str(len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])))
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     sendAnnounceViaServer(sessionBob,'bob',password, \
                           bobDomain,bobPort, \
                           httpPrefix,outboxPostId, \
@@ -1106,16 +1130,36 @@ def testClientToServer():
                           personCache,True)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
-            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
-                if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
+            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2:
+                if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==2:
                     break
         time.sleep(1)
 
-    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
-    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==2
     print('Post repeated')
 
 
+    inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
+    outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
+    postsBefore = len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
+    print('\n\nAlice deletes her post: '+outboxPostId+' '+str(postsBefore))
+    password='alicepass'
+    sendDeleteViaServer(sessionAlice,'alice',password,
+                        aliceDomain,alicePort, \
+                        httpPrefix,outboxPostId, \
+                        cachedWebfingers,personCache, \
+                        True)
+    for i in range(30):
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==postsBefore-1:
+                break
+        time.sleep(1)
+
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==postsBefore-1
+    print(">>> post deleted from Alice's outbox and Bob's inbox")
+
+    
     print('\n\nAlice unfollows Bob')
     password='alicepass'
     sendUnfollowRequestViaServer(sessionAlice,'alice',password, \

@@ -14,7 +14,13 @@ from utils import createOutboxDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import locatePost
+from utils import deletePost
 from posts import sendSignedJson
+from session import postJson
+from webfinger import webfingerHandle
+from auth import createBasicAuthHeader
+from posts import getPersonBox
 
 def createDelete(session,baseDir: str,federationList: [], \
                  nickname: str, domain: str, port: int, \
@@ -72,6 +78,73 @@ def createDelete(session,baseDir: str,federationList: [], \
         
     return newDelete
 
+def sendDeleteViaServer(session,fromNickname: str,password: str,
+                        fromDomain: str,fromPort: int, \
+                        httpPrefix: str,deleteObjectUrl: str, \
+                        cachedWebfingers: {},personCache: {}, \
+                        debug: bool) -> {}:
+    """Creates a delete request message via c2s
+    """
+    if not session:
+        print('WARN: No session for sendDeleteViaServer')
+        return 6
+
+    fromDomainFull=fromDomain
+    if fromPort!=80 and fromPort!=443:
+        fromDomainFull=fromDomain+':'+str(fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+
+    newDeleteJson = {
+        'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
+        'cc': [ccUrl],
+        'object': deleteObjectUrl,
+        'to': [toUrl],
+        'type': 'Delete'
+    }
+
+    handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+    
+    authHeader=createBasicAuthHeader(fromNickname,password)
+     
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,newDeleteJson,[],inboxUrl,headers,"inbox:write")
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+    #    return 5
+
+    if debug:
+        print('DEBUG: c2s POST delete request success')
+
+    return newDeleteJson
+
 def deletePublic(session,baseDir: str,federationList: [], \
                  nickname: str, domain: str, port: int, httpPrefix: str, \
                  objectUrl: str,clientToServer: bool, \
@@ -95,14 +168,14 @@ def deletePublic(session,baseDir: str,federationList: [], \
                         personCache,cachedWebfingers, \
                         debug)
 
-def deletePost(session,baseDir: str,federationList: [], \
-               nickname: str, domain: str, port: int, httpPrefix: str, \
-               deleteNickname: str, deleteDomain: str, \
-               deletePort: int, deleteHttpsPrefix: str, \
-               deleteStatusNumber: int,clientToServer: bool, \
-               sendThreads: [],postLog: [], \
-               personCache: {},cachedWebfingers: {}, \
-               debug: bool) -> {}:
+def deletePostPub(session,baseDir: str,federationList: [], \
+                  nickname: str, domain: str, port: int, httpPrefix: str, \
+                  deleteNickname: str, deleteDomain: str, \
+                  deletePort: int, deleteHttpsPrefix: str, \
+                  deleteStatusNumber: int,clientToServer: bool, \
+                  sendThreads: [],postLog: [], \
+                  personCache: {},cachedWebfingers: {}, \
+                  debug: bool) -> {}:
     """Deletes a given status post
     """
     deletedDomain=deleteDomain
@@ -120,3 +193,45 @@ def deletePost(session,baseDir: str,federationList: [], \
                         personCache,cachedWebfingers, \
                         debug)
 
+def outboxDelete(baseDir: str,httpPrefix: str,messageJson: {},debug: bool) -> None:
+    """When a delete request is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        if debug:
+            print('DEBUG: delete - no type')
+        return
+    if not messageJson['type']=='Delete':
+        if debug:
+            print('DEBUG: not a delete')
+        return
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: no object in delete')
+        return
+    if not isinstance(messageJson['object'], str):
+        if debug:
+            print('DEBUG: delete object is not string')
+        return
+    if debug:
+        print('DEBUG: c2s delete request arrived in outbox')
+
+    messageId=messageJson['object'].replace('/activity','')
+    if '/statuses/' not in messageId:
+        if debug:
+            print('DEBUG: c2s delete object is not a status')
+        return
+    if '/users/' not in messageId:
+        if debug:
+            print('DEBUG: c2s delete object has no nickname')
+        return
+    deleteNickname=getNicknameFromActor(messageId)
+    deleteDomain,deletePort=getDomainFromActor(messageId)
+    postFilename=locatePost(baseDir,deleteNickname,deleteDomain,messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s delete post not found in inbox or outbox')
+            print(messageId)
+        return True
+    deletePost(baseDir,httpPrefix,deleteNickname,deleteDomain,postFilename,debug)
+    if debug:
+        print('DEBUG: post deleted via c2s - '+postFilename)
