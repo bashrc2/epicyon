@@ -494,7 +494,7 @@ With roles, skills and availability defined tasks may then be automatically assi
 Whether you are using the **--federate** option to define a set of allowed instances or not, you may want to block particular accounts even inside of the perimeter. To block an account:
 
 ``` bash
-python3 epicyon.py --nickname yournick --domain yourdomain --block somenick@somedomain
+python3 epicyon.py --nickname yournick --domain yourdomain --block somenick@somedomain --password [c2s password]
 ```
 
 This blocks at the earliest possble stage of receiving messages, such that nothing from the specified account will be written to your inbox.
@@ -502,7 +502,7 @@ This blocks at the earliest possble stage of receiving messages, such that nothi
 Or to unblock:
 
 ``` bash
-python3 epicyon.py --nickname yournick --domain yourdomain --unblock somenick@somedomain
+python3 epicyon.py --nickname yournick --domain yourdomain --unblock somenick@somedomain --password [c2s password]
 ```
 
 ## Filtering on words or phrases
