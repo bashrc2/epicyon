@@ -1080,8 +1080,10 @@ def testClientToServer():
                                True)
     for t in range(10):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
-            if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
-                break
+            if 'alice@'+aliceDomain+':'+alicePort in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
+                if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
+                    if 'bob@'+bobDomain+':'+bobPort in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read():
+                        break
         time.sleep(1)
 
     assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt')

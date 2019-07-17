@@ -425,6 +425,8 @@ def receiveUndo(session,baseDir: str,httpPrefix: str, \
     """
     if not messageJson['type'].startswith('Undo'):
         return False
+    if debug:
+        print('DEBUG: Undo activity received')
     if not messageJson.get('actor'):
         if debug:
             print('DEBUG: follow request has no actor')
