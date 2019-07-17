@@ -330,7 +330,7 @@ python3 epicyon.py --domain [name] --port 8000 --https --federate domain1.net do
 With your server running you can then follow other accounts with:
 
 ``` bash
-python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain --password [mypass]
+python3 epicyon.py --nickname [yournick] --domain [name] --follow othernick@domain --password [c2s password]
 ```
 
 The password is for the client to obtain access to the server.
@@ -340,7 +340,7 @@ You may or may not need to use the *--port*, *--https* and *--tor* options, depe
 Unfollowing is silimar:
 
 ``` bash
-python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password [mypass]
+python3 epicyon.py --nickname [yournick] --domain [name] --unfollow othernick@domain --password [c2s password]
 ```
 
 ## Sending posts
@@ -351,7 +351,7 @@ To make a public post:
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto public --message "hello" \
 		   --warning "This is a content warning" \
-		   --password [mypass]
+		   --password [c2s password]
 ```
 
 To post to followers only:
@@ -360,7 +360,7 @@ To post to followers only:
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto followers --message "hello" \
 		   --warning "This is a content warning" \
-		   --password [mypass]
+		   --password [c2s password]
 ```
 
 To send a post to a particular address (direct message):
@@ -369,7 +369,7 @@ To send a post to a particular address (direct message):
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto othernick@domain --message "hello" \
 		   --warning "This is a content warning" \
-		   --password [mypass]
+		   --password [c2s password]
 ```
 
 The password is the c2s password for your account.
@@ -382,7 +382,7 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 		   --warning "bee-related content" --attach bees.png \
 		   --imagedescription "bees on flowers" \
 		   --blurhash \
-		   --password [mypass]
+		   --password [c2s password]
 ```
 
 ## Delete posts
@@ -397,7 +397,7 @@ Once you know that they you can use the command:
 
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
-                   --delete [url] --password [mypass]
+                   --delete [url] --password [c2s password]
 ```
 
 Deletion of posts in a federated system is not always reliable. Some instances may not implement deletion, and this may be because of the possibility of spurious deletes being sent by an adversary to cause trouble.
@@ -418,7 +418,7 @@ Once you know that they you can use the command:
 
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
-                   --repeat [url] --password [mypass]
+                   --repeat [url] --password [c2s password]
 ```
 
 ## Archiving posts
