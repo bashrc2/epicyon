@@ -455,3 +455,65 @@ def outboxLike(baseDir: str,httpPrefix: str, \
     updateLikesCollection(postFilename,messageId,messageJson['actor'],debug)
     if debug:
         print('DEBUG: post liked via c2s - '+postFilename)
+
+def outboxUndoLike(baseDir: str,httpPrefix: str, \
+                   nickname: str,domain: str,port: int, \
+                   messageJson: {},debug: bool) -> None:
+    """ When an undo like request is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        if debug:
+            print('DEBUG: undo like - no type')
+        return
+    if not messageJson['type']=='Undo':
+        if debug:
+            print('DEBUG: not an undo of Like')
+        return
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: no object in undo like')
+        return
+    if not isinstance(messageJson['object']['object'], dict):
+        if debug:
+            print('DEBUG: undo like object is not dict')
+        return
+    
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: undo like - no type')
+        return
+    if not messageJson['object']['type']=='Like':
+        if debug:
+            print('DEBUG: not a undo like')
+        return
+    if not messageJson['object'].get('object'):
+        if debug:
+            print('DEBUG: no object in undo like')
+        return
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: undo like object is not string')
+        return
+    if debug:
+        print('DEBUG: c2s undo like request arrived in outbox')
+
+    messageId=messageJson['object']['object'].replace('/activity','')
+    if '/statuses/' not in messageId:
+        if debug:
+            print('DEBUG: c2s undo like object is not a status')
+        return
+    if '/users/' not in messageId:
+        if debug:
+            print('DEBUG: c2s undo like object has no nickname')
+        return
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
+    if not postFilename:
+        if debug:
+            print('DEBUG: c2s undo like post not found in inbox or outbox')
+            print(messageId)
+        return True
+    undoLikesCollectionEntry(postFilename,messageId,messageJson['actor'],debug)
+    if debug:
+        print('DEBUG: post undo liked via c2s - '+postFilename)

@@ -37,6 +37,7 @@ from media import getMediaPath
 from media import createMediaDirs
 from delete import outboxDelete
 from like import outboxLike
+from like import outboxUndoLike
 import os
 import sys
 
@@ -212,6 +213,11 @@ class PubServer(BaseHTTPRequestHandler):
         outboxLike(self.server.baseDir,self.server.httpPrefix, \
                    self.postToNickname,self.server.domain,self.server.port, \
                    messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle any undo like requests')
+        outboxUndoLike(self.server.baseDir,self.server.httpPrefix, \
+                       self.postToNickname,self.server.domain,self.server.port, \
+                       messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle delete requests')
         outboxDelete(self.server.baseDir,self.server.httpPrefix, \
