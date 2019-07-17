@@ -823,7 +823,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            federationList: [],ocapAlways: bool,debug: bool, \
                            acceptedCaps: [],
                            queueFilename :str,destinationFilename :str,
-                           maxReplies: int) -> bool:
+                           maxReplies: int,nodeletion: bool) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
     if receiveLike(session,handle, \
@@ -877,18 +877,19 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Undo announce accepted from '+keyId)
         return False
 
-    if receiveDelete(session,handle, \
-                     baseDir,httpPrefix, \
-                     domain,port, \
-                     sendThreads,postLog, \
-                     cachedWebfingers, \
-                     personCache, \
-                     messageJson, \
-                     federationList, \
-                     debug):
-        if debug:
-            print('DEBUG: Delete accepted from '+keyId)
-        return False
+    if not nodeletion:
+        if receiveDelete(session,handle, \
+                         baseDir,httpPrefix, \
+                         domain,port, \
+                         sendThreads,postLog, \
+                         cachedWebfingers, \
+                         personCache, \
+                         messageJson, \
+                         federationList, \
+                         debug):
+            if debug:
+                print('DEBUG: Delete accepted from '+keyId)
+            return False
             
     populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
     
@@ -915,7 +916,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   domain: str,port: int,useTor: bool,federationList: [], \
                   ocapAlways: bool,maxReplies: int, \
                   domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
-                  debug: bool, \
+                  nodeletion: bool,debug: bool, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -1178,7 +1179,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
-                                               maxReplies)
+                                               maxReplies,nodeletion)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check failed')
@@ -1195,7 +1196,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
-                                               maxReplies)
+                                               maxReplies,nodeletion)
                     if debug:
                         print('DEBUG: object capabilities check failed')
             

@@ -206,9 +206,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle delete requests')
-        outboxDelete(self.server.baseDir,self.server.httpPrefix,messageJson,self.server.debug)
+        if not self.server.nodeletion:
+            if self.server.debug:
+                print('DEBUG: handle delete requests')
+            outboxDelete(self.server.baseDir,self.server.httpPrefix,messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: sending c2s post to named addresses')
             print('c2s sender: '+self.postToNickname+'@'+self.server.domain+':'+str(self.server.port))
@@ -812,7 +813,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
               domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
-              debug=False) -> None:
+              nodeletion=False,debug=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -845,6 +846,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd.ocapAlways=ocapAlways
     httpd.maxMessageLength=5000
     httpd.maxImageSize=10*1024*1024
+    httpd.nodeletion=nodeletion
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
         httpd.acceptedCaps.append('inbox:noreply')
@@ -869,7 +871,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
                               domain,port,useTor,httpd.federationList, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-                              debug,httpd.acceptedCaps),daemon=True)
+                              nodeletion,debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
     if clientToServer:
         print('Running ActivityPub client on ' + domain + ' port ' + str(port))

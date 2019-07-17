@@ -164,6 +164,9 @@ parser.add_argument('--message', dest='message', type=str,default=None, \
                     help='Message content')
 parser.add_argument('--delete', dest='delete', type=str,default=None, \
                     help='Delete a specified post')
+parser.add_argument("--nodeletion", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Do not allow deletions")
 parser.add_argument('--repeat','--announce', dest='announce', type=str,default=None, \
                     help='Announce/repeat a url')
 parser.add_argument('--sendto', nargs='+',dest='sendto', \
@@ -776,4 +779,4 @@ runDaemon(args.client,baseDir,domain,port,httpPrefix, \
           args.noannounce,args.cw,ocapAlways, \
           useTor,args.maxReplies, \
           args.domainMaxPostsPerDay,args.accountMaxPostsPerDay, \
-          debug)
+          args.nodeletion,debug)
