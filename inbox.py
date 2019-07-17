@@ -27,6 +27,7 @@ from session import createSession
 from session import getJson
 from follow import receiveFollowRequest
 from follow import getFollowersOfActor
+from follow import unfollowerOfPerson
 from pprint import pprint
 from cache import getPersonFromCache
 from cache import storePersonInCache
@@ -74,7 +75,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
         if not messageJson.get(param):
             return False
     if not messageJson.get('to'):
-        allowedWithoutToParam=['Follow','Request','Capability']
+        allowedWithoutToParam=['Follow','Request','Capability','Undo']
         if messageJson['type'] not in allowedWithoutToParam:
             return False
     return True
@@ -410,8 +411,17 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if portFollowing!=80 and portFollowing!=443:
             domainFollowingFull=domainFollowing+':'+str(portFollowing)
 
-    return unfollowerOfPerson(baseDir,nicknameFollower,domainFollowerFull, \
-                              nicknameFollowing,domainFollowingFull)
+    if unfollowerOfPerson(baseDir, \
+                          nicknameFollowing,domainFollowingFull, \
+                          nicknameFollower,domainFollowerFull, \
+                          debug):
+        if debug:
+            print('DEBUG: Follower '+nicknameFollower+'@'+domainFollowerFull+' was removed')
+        return True
+    
+    if debug:
+        print('DEBUG: Follower '+nicknameFollower+'@'+domainFollowerFull+' was not removed')
+    return False
 
 def receiveUndo(session,baseDir: str,httpPrefix: str, \
                 port: int,sendThreads: [],postLog: [], \

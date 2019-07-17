@@ -33,6 +33,7 @@ from posts import sendPostViaServer
 from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
+from follow import sendUnfollowRequestViaServer
 from utils import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
@@ -1113,7 +1114,27 @@ def testClientToServer():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     print('Post repeated')
-    
+
+
+    print('\n\nAlice unfollows Bob')
+    password='alicepass'
+    sendUnfollowRequestViaServer(sessionAlice,'alice',password, \
+                                 aliceDomain,alicePort, \
+                                 'bob',bobDomain,bobPort, \
+                                 httpPrefix, \
+                                 cachedWebfingers,personCache, \
+                                 True)
+    for t in range(10):
+        if 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
+            if 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read():
+                break
+        time.sleep(1)
+
+    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt')
+    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
+    assert 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
+    assert 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+
     # stop the servers
     thrAlice.kill()
     thrAlice.join()

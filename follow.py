@@ -62,9 +62,12 @@ def followerOfPerson(baseDir: str,nickname: str, domain: str, \
 
 def unfollowPerson(baseDir: str,nickname: str, domain: str, \
                    followNickname: str, followDomain: str, \
-                   followFile='following.txt') -> bool:
+                   followFile='following.txt', \
+                   debug=False) -> bool:
     """Removes a person to the follow list
     """
+    if ':' in domain:
+        domain=domain.split(':')[0]
     handle=nickname.lower()+'@'+domain.lower()
     handleToUnfollow=followNickname.lower()+'@'+followDomain.lower()
     if not os.path.isdir(baseDir+'/accounts'):
@@ -73,8 +76,12 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
+        if debug:
+            print('DEBUG: follow file '+filename+' was not found')
         return False
     if handleToUnfollow not in open(filename).read():
+        if debug:
+            print('DEBUG: handle to unfollow '+handleToUnfollow+' is not in '+filename)
         return
     with open(filename, "r") as f:
         lines = f.readlines()
@@ -84,11 +91,13 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
                 f.write(line)
 
 def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \
-                       followerNickname: str,followerDomain: str) -> bool:
+                       followerNickname: str,followerDomain: str, \
+                       debug=False) -> bool:
     """Remove a follower of a person
     """
     return unfollowPerson(baseDir,nickname,domain, \
-                          followerNickname,followerDomain,'followers.txt')
+                          followerNickname,followerDomain, \
+                          'followers.txt',debug)
 
 def clearFollows(baseDir: str,nickname: str,domain: str, \
                  followFile='following.txt') -> None:
