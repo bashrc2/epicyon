@@ -387,10 +387,10 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 
 ## Delete posts
 
-To delete a post you must first know its url. It is usually something like:
+To delete a post which you wrote you must first know its url. It is usually something like:
 
 ``` text
-https://domain/users/name/statuses/number
+https://yourDomain/users/yourNickname/statuses/number
 ```
 
 Once you know that they you can use the command:
@@ -402,9 +402,9 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 
 Deletion of posts in a federated system is not always reliable. Some instances may not implement deletion, and this may be because of the possibility of spurious deletes being sent by an adversary to cause trouble.
 
-To disallow deletion requests by unauthenticated people on your server set the **--nodeletion** option.
+By default federated deletions are not permitted because of the potential for misuse. If you wish to enable it then set the option **--allowdeletion**.
 
-Another complication is that the followers collection may change between the time when a post was created and the time it was deleted, leaving some stranded copies.
+Another complication of federated deletion is that the followers collection may change between the time when a post was created and the time it was deleted, leaving some stranded copies.
 
 ## Announcements/repeats/boosts
 
