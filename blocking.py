@@ -124,11 +124,11 @@ def sendBlockViaServer(session,fromNickname: str,password: str,
 
     return newBlockJson
 
-def sendUnblockViaServer(session,fromNickname: str,password: str,
-                         fromDomain: str,fromPort: int, \
-                         httpPrefix: str,blockedUrl: str, \
-                         cachedWebfingers: {},personCache: {}, \
-                         debug: bool) -> {}:
+def sendUndoBlockViaServer(session,fromNickname: str,password: str,
+                           fromDomain: str,fromPort: int, \
+                           httpPrefix: str,blockedUrl: str, \
+                           cachedWebfingers: {},personCache: {}, \
+                           debug: bool) -> {}:
     """Creates a block via c2s
     """
     if not session:

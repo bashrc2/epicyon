@@ -65,6 +65,8 @@ from media import archiveMedia
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
+from blocking import sendBlockViaServer
+from blocking import sendUndoBlockViaServer
 import argparse
 
 def str2bool(v):
@@ -766,25 +768,71 @@ if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
 
 if args.block:
-    if not args.nickname:
-        print('Please specify a nickname')
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
         sys.exit()
-    if '@' not in args.block:
-        print('syntax: --block nickname@domain')
+        
+    if not args.password:
+        print('Specify a password with the --password option')
         sys.exit()
-    if addBlock(baseDir,args.nickname,domain,args.block.split('@')[0],args.block.split('@')[1].replace('\n','')):
-        print(args.block+' is blocked by '+args.nickname)
+
+    if '@' in args.block:
+        blockedDomain=args.block.split('@')[1].replace('\n','')
+        blockedNickname=args.block.split('@')[0]
+        blockedActor=httpPrefix+'://'+blockedDomain+'/users/'+blockedNickname
+        args.block=blockedActor
+    else:
+        if '/users/' not in args.block:
+            print(args.block+' does not look like an actor url')
+            sys.exit()
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending block of '+args.block)
+
+    sendBlockViaServer(session,nickname,args.password,
+                       domain,port, \
+                       httpPrefix,args.block, \
+                       cachedWebfingers,personCache, \
+                       True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
     sys.exit()
 
 if args.unblock:
-    if not args.nickname:
-        print('Please specify a nickname')
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
         sys.exit()
-    if '@' not in args.block:
-        print('syntax: --unblock nickname@domain')
+        
+    if not args.password:
+        print('Specify a password with the --password option')
         sys.exit()
-    if removeBlock(baseDir,args.nickname,domain,args.block.split('@')[0],args.block.split('@')[1].replace('\n','')):
-        print('The block on '+args.block+' was removed by '+args.nickname)
+
+    if '@' in args.unblock:
+        blockedDomain=args.unblock.split('@')[1].replace('\n','')
+        blockedNickname=args.unblock.split('@')[0]
+        blockedActor=httpPrefix+'://'+blockedDomain+'/users/'+blockedNickname
+        args.unblock=blockedActor
+    else:
+        if '/users/' not in args.unblock:
+            print(args.unblock+' does not look like an actor url')
+            sys.exit()
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending undo block of '+args.unblock)
+
+    sendUndoBlockViaServer(session,nickname,args.password,
+                           domain,port, \
+                           httpPrefix,args.unblock, \
+                           cachedWebfingers,personCache, \
+                           True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
     sys.exit()
 
 if args.filterStr:
