@@ -79,6 +79,8 @@ parser.add_argument('-n','--nickname', dest='nickname', type=str,default=None, \
                     help='Nickname of the account to use')
 parser.add_argument('--fol','--follow', dest='follow', type=str,default=None, \
                     help='Handle of account to follow. eg. nickname@domain')
+parser.add_argument('--unfol','--unfollow', dest='unfollow', type=str,default=None, \
+                    help='Handle of account stop following. eg. nickname@domain')
 parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
 parser.add_argument('-p','--port', dest='port', type=int,default=None, \
@@ -364,19 +366,14 @@ if args.announce:
 
 if args.follow:
     # follow via c2s protocol
+    if '.' not in args.follow:
+        print("This doesn't look like a fediverse handle")
+        sys.exit()
     if not nickname:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
         print('Please specify the password for '+nickname+' on '+domain)
-        sys.exit()
-        
-    if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
-        print(nickname+' is not an account on the system. use --addaccount if necessary.')
-        sys.exit()
-
-    if '.' not in args.follow:
-        print("This doesn't look like a fediverse handle")
         sys.exit()
         
     followNickname=getNicknameFromActor(args.follow)
@@ -398,8 +395,43 @@ if args.follow:
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
+    print('Ok')
     sys.exit()
-    
+
+if args.unfollow:
+    # unfollow via c2s protocol
+    if '.' not in args.follow:
+        print("This doesn't look like a fediverse handle")
+        sys.exit()
+    if not nickname:
+        print('Please specify the nickname for the account with --nickname')
+        sys.exit()
+    if not args.password:
+        print('Please specify the password for '+nickname+' on '+domain)
+        sys.exit()
+        
+    followNickname=getNicknameFromActor(args.unfollow)
+    followDomain,followPort=getDomainFromActor(args.unfollow)
+
+    session = createSession(domain,port,useTor)
+    personCache={}
+    cachedWebfingers={}
+    followHttpPrefix=httpPrefix
+    if args.follow.startswith('https'):
+        followHttpPrefix='https'
+
+    sendUnfollowRequestViaServer(session,nickname,args.password, \
+                                 domain,port, \
+                                 followNickname,followDomain,followPort, \
+                                 httpPrefix, \
+                                 cachedWebfingers,personCache, \
+                                 debug)
+    for t in range(20):
+        time.sleep(1)
+        # TODO some method to know if it worked
+    print('Ok')
+    sys.exit()
+
 nickname='admin'
 if args.domain:
     domain=args.domain
