@@ -379,6 +379,82 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
 
     return recipientsDict,recipientsDictFollowers
 
+def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
+                      port: int,messageJson: {},debug : bool) -> bool:
+    if not messageJson['object'].get('actor'):
+        if debug:
+            print('DEBUG: follow request has no actor within object')
+        return False
+    if '/users/' not in messageJson['object']['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor within object')
+        return False
+    if messageJson['object']['actor'] != messageJson['actor']:
+        if debug:
+            print('DEBUG: actors do not match')
+        return False
+        
+    nicknameFollower=getNicknameFromActor(messageJson['object']['actor'])
+    domainFollower,portFollower=getDomainFromActor(messageJson['object']['actor'])
+    domainFollowerFull=domainFollower
+    if portFollower:
+        if portFollower!=80 and portFollower!=443:
+            domainFollowerFull=domainFollower+':'+str(portFollower)
+    
+    nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
+    domainFollowing,portFollowing=getDomainFromActor(messageJson['object']['object'])
+    domainFollowingFull=domainFollowing
+    if portFollowing:
+        if portFollowing!=80 and portFollowing!=443:
+            domainFollowingFull=domainFollowing+':'+str(portFollowing)
+
+    unfollowerOfPerson(baseDir,nicknameFollower,domainFollowerFull, \
+                       nicknameFollowing,domainFollowingFull,federationList,debug)
+    return True
+
+def receiveUndo(session,baseDir: str,httpPrefix: str, \
+                port: int,sendThreads: [],postLog: [], \
+                cachedWebfingers: {},personCache: {}, \
+                messageJson: {},federationList: [], \
+                debug : bool, \
+                acceptedCaps=["inbox:write","objects:read"]) -> bool:
+    """Receives an undo request within the POST section of HTTPServer
+    """
+    if not messageJson['type'].startswith('Undo'):
+        return False
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: follow request has no actor')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor')            
+        return False
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object')
+        return False
+    if not isinstance(messageJson['object'], dict):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object is not a dict')
+        return False
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object type')
+        return False
+    if not messageJson['object'].get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object within object')
+        return False
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object within object is not a string')
+        return False
+    if messageJson['object']['type']=='Follow':
+        return receiveUndoFollow(session,baseDir,httpPrefix, \
+                                 port,messageJson,debug)
+    return False
+
 def receiveUpdate(session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -952,6 +1028,21 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
 
             if debug:
                 print('DEBUG: Signature check success')
+
+            if receiveUndo(session, \
+                           baseDir,httpPrefix,port, \
+                           sendThreads,postLog, \
+                           cachedWebfingers,
+                           personCache,
+                           queueJson['post'], \
+                           federationList, \
+                           debug, \
+                           acceptedCaps=["inbox:write","objects:read"]):
+                if debug:
+                    print('DEBUG: Undo accepted from '+keyId)
+                os.remove(queueFilename)
+                queue.pop(0)
+                continue
 
             if receiveFollowRequest(session, \
                                     baseDir,httpPrefix,port, \

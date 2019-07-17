@@ -29,6 +29,7 @@ from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
 from inbox import savePostToInboxQueue
 from follow import getFollowingFeed
+from follow import outboxUndoFollow
 from auth import authorize
 from auth import createPassword
 from threads import threadWithTrace
@@ -200,6 +201,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.cachedWebfingers, \
                         self.server.personCache, \
                         messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle any unfollow requests')
+        outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: sending c2s post to named addresses')
             print('c2s sender: '+self.postToNickname+'@'+self.server.domain+':'+str(self.server.port))

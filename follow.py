@@ -62,7 +62,7 @@ def followerOfPerson(baseDir: str,nickname: str, domain: str, \
 
 def unfollowPerson(baseDir: str,nickname: str, domain: str, \
                    followNickname: str, followDomain: str, \
-                   followFile='following.txt') -> None:
+                   followFile='following.txt') -> bool:
     """Removes a person to the follow list
     """
     handle=nickname.lower()+'@'+domain.lower()
@@ -72,15 +72,16 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     filename=baseDir+'/accounts/'+handle+'/'+followFile
-    if os.path.isfile(filename):
-        if handleToUnfollow not in open(filename).read():
-            return
-        with open(filename, "r") as f:
-            lines = f.readlines()
-        with open(filename, "w") as f:
-            for line in lines:
-                if line.strip("\n") != handleToUnfollow:
-                    f.write(line)
+    if not os.path.isfile(filename):
+        return False
+    if handleToUnfollow not in open(filename).read():
+        return
+    with open(filename, "r") as f:
+        lines = f.readlines()
+    with open(filename, "w") as f:
+        for line in lines:
+            if line.strip("\n") != handleToUnfollow:
+                f.write(line)
 
 def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \
                        followerNickname: str,followerDomain: str) -> None:
@@ -432,6 +433,81 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
 
     return newFollowJson
 
+def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
+                                 fromDomain: str,fromPort: int, \
+                                 followNickname: str,followDomain: str,followPort: int, \
+                                 httpPrefix: str, \
+                                 cachedWebfingers: {},personCache: {}, \
+                                 debug: bool) -> {}:
+    """Creates a unfollow request via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUnfollowRequestViaServer')
+        return 6
+
+    fromDomainFull=fromDomain
+    if fromPort!=80 and fromPort!=443:
+        fromDomainFull=fromDomain+':'+str(fromPort)
+    followDomainFull=followDomain
+    if followPort!=80 and followPort!=443:
+        followDomainFull=followDomain+':'+str(followPort)
+
+    followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
+    followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
+
+    unfollowJson = {
+        'type': 'Undo',
+        'actor': followActor,
+        'object': {
+            'type': 'Follow',
+            'actor': followActor,
+            'object': followedId,
+            'to': [followedId],
+            'cc': ['https://www.w3.org/ns/activitystreams#Public']
+        }
+    }
+
+    handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+    
+    authHeader=createBasicAuthHeader(fromNickname,password)
+     
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,unfollowJson,[],inboxUrl,headers,"inbox:write")
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+    #    return 5
+
+    if debug:
+        print('DEBUG: c2s POST unfollow success')
+
+    return unfollowJson
+
 def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
     """In a shared inbox if we receive a post we know who it's from
     and if it's addressed to followers then we need to get a list of those.
@@ -493,3 +569,51 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
                                 print(ocapFilename)
                             recipientsDict[account]=None
     return recipientsDict
+
+def outboxUndoFollow(baseDir: str,messageJson: {},debug: bool) -> None:
+    """When an unfollow request is received by the outbox from c2s
+    This removes the followed handle from the following.txt file
+    of the relevant account
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson['type']=='Undo':
+        return
+    if not messageJson.get('object'):
+        return
+    if not isinstance(messageJson['object'], dict):
+        return
+    if not messageJson['object'].get('type'):
+        return
+    if not messageJson['object']['type']=='Follow':
+        return
+    if not messageJson['object'].get('object'):
+        return
+    if not messageJson['object'].get('actor'):
+        return
+    if not isinstance(messageJson['object']['object'], str):
+        return
+    if debug:
+        print('DEBUG: undo follow arrived in outbox')
+
+    nicknameFollower=getNicknameFromActor(messageJson['object']['actor'])
+    domainFollower,portFollower=getDomainFromActor(messageJson['object']['actor'])
+    domainFollowerFull=domainFollower
+    if portFollower:
+        if portFollower!=80 and portFollower!=443:
+            domainFollowerFull=domainFollower+':'+str(portFollower)
+    
+    nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
+    domainFollowing,portFollowing=getDomainFromActor(messageJson['object']['object'])
+    domainFollowingFull=domainFollowing
+    if portFollowing:
+        if portFollowing!=80 and portFollowing!=443:
+            domainFollowingFull=domainFollowing+':'+str(portFollowing)
+
+    if unfollowPerson(baseDir,nicknameFollower,domainFollowerFull, \
+                      nicknameFollowing,domainFollowingFull):
+        if debug:
+            print('DEBUG: '+nicknameFollower+' unfollowed '+nicknameFollowing+'@'+domainFollowingFull)
+    else:
+        if debug:
+            print('WARN: '+nicknameFollower+' could not unfollow '+nicknameFollowing+'@'+domainFollowingFull)
