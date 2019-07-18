@@ -1177,7 +1177,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             # any checking will needs to be handled at the time when inbox
             # GET happens on individual accounts.
             # See posts.py/createBoxBase
-            if len(recipientsDictFollowers)>0:
+            if len(recipientsDictFollowers)>0:                
                 with open(queueJson['destination'].replace(inboxHandle,inboxHandle), 'w') as fp:
                     commentjson.dump(queueJson['post'], fp, indent=4, sort_keys=False)
 

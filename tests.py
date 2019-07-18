@@ -365,6 +365,7 @@ def testPostMessageBetweenServers():
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     # queue item removed
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
+    assert validInbox(bobDir,'bob',bobDomain)
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
@@ -560,6 +561,7 @@ def testFollowBetweenServers():
             print("Unexpected format for Bob's capabilities")
             pprint(bobCapsJson)
             assert False
+    assert validInbox(bobDir,'bob',bobDomain)
         
     print('\n\n*********************************************************')
     print('Eve tries to send to Bob')
