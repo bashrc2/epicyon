@@ -760,12 +760,12 @@ if args.skill:
 if federationList:
     print('Federating with: '+str(federationList))
 
-if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
-    print('Creating default admin account '+nickname+'@'+domain)
-    print('See config.json for the password. You can remove the password from config.json after moving it elsewhere.')
-    adminPassword=createPassword(10)
-    setConfigParam(baseDir,'adminPassword',adminPassword)
-    createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
+#if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+#    print('Creating default admin account '+nickname+'@'+domain)
+#    print('See config.json for the password. You can remove the password from config.json after moving it elsewhere.')
+#    adminPassword=createPassword(10)
+#    setConfigParam(baseDir,'adminPassword',adminPassword)
+#    createPerson(baseDir,nickname,domain,port,httpPrefix,True,adminPassword)
 
 if args.block:
     if not nickname:
@@ -881,4 +881,4 @@ runDaemon(args.client,baseDir,domain,port,httpPrefix, \
           args.noannounce,args.cw,ocapAlways, \
           useTor,args.maxReplies, \
           args.domainMaxPostsPerDay,args.accountMaxPostsPerDay, \
-          args.allowDeletion,debug)
+          args.allowdeletion,debug)

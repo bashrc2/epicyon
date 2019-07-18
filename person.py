@@ -278,13 +278,29 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
+def noOfAccounts(baseDir: str) -> bool:
+    """Returns the number of accounts on the system
+    """
+    accountCtr=0
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            if '@' in account:
+                if not account.startswith('inbox'):
+                    accountCtr+=1
+    return accountCtr
+
 def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
     if not validNickname(nickname):
        return None,None,None,None
-    return createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
+    privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint = \
+        createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
+    if noOfAccounts(baseDir)==1:
+        print(nickname+' becomes the instance admin')
+        setRole(baseDir,nickname,domain,'instance','admin')        
+    return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
                       httpPrefix: str) -> (str,str,{},{}):

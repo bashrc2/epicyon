@@ -40,6 +40,7 @@ from like import outboxLike
 from like import outboxUndoLike
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
+from config import setConfigParam
 import os
 import sys
 
@@ -897,8 +898,12 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     if cw:
         httpd.acceptedCaps.append('inbox:cw')
 
-    print('Creating shared inbox: inbox@'+domain)
-    createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
+    if not os.path.isdir(baseDir+'/accounts/inbox@'+domain):
+        print('Creating shared inbox: inbox@'+domain)
+        createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
+        print('See config.json for the password. You can remove the password from config.json after moving it elsewhere.')
+        adminPassword=createPassword(10)
+        setConfigParam(baseDir,'adminPassword',adminPassword)
 
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
