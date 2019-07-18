@@ -61,49 +61,57 @@ def getRoles(baseDir: str,nickname: str,domain: str, \
         return actorJson['roles'][project]
     return None
 
-def outboxDelegate(baseDir: str,messageJson: {},debug: bool) -> None:
+def outboxDelegate(baseDir: str,messageJson: {},debug: bool) -> bool:
     """Handles receiving a delegation request
     """
     if not messageJson.get('type'):
-        return
+        return False
     if not messageJson['type']=='Delegate':
-        return
+        return False
     if not messageJson.get('object'):
-        return
+        return False
     if not isinstance(messageJson['object'], dict):
-        return
+        return False
     if not messageJson['object'].get('type'):
-        return
+        return False
     if not messageJson['object']['type']=='Role':
-        return
+        return False
     if not messageJson['object'].get('object'):
-        return
+        return False
     if not messageJson['object'].get('actor'):
-        return
+        return False
     if not isinstance(messageJson['object']['object'], str):
-        return
+        return False
     if ';' not in messageJson['object']['object']:
         print('WARN: No ; separator between project and role')
-        return
-    if debug:
-        print('DEBUG: delegate activity arrived in outbox')
+        return False
 
     delegatorNickname=getNicknameFromActor(messageJson['actor'])
     domain,port=getDomainFromActor(messageJson['actor'])
     project=messageJson['object']['object'].split(';')[0].strip()
 
-    # does the delegator have capability to delegate in this project?
+    # instance delegators can delagate to other projects
+    # than their own
+    canDelegate=False
     delegatorRoles=getRoles(baseDir,delegatorNickname, \
-                            domain,project)
+                            domain,'instance')
     if delegatorRoles:
-        if 'delegator' not in delegatorRoles:
-            # instance delegators can delagate to other projects
-            # than their own
-            delegatorRoles=getRoles(baseDir,delegatorNickname, \
-                                    domain,'instance')
+        if 'delegator' in delegatorRoles:
+            canDelegate=True
+
+    if canDelegate==False:
+        canDelegate=True
+        # non-instance delegators can only delegate within their project
+        delegatorRoles=getRoles(baseDir,delegatorNickname, \
+                                domain,project)
+        if delegatorRoles:
             if 'delegator' not in delegatorRoles:
-                return
-    
+                return False
+        else:
+            return False
+
+    if canDelegate==False:
+        return False
     nickname=getNicknameFromActor(messageJson['object']['actor'])
     domainFull=domain
     if port:
@@ -115,10 +123,13 @@ def outboxDelegate(baseDir: str,messageJson: {},debug: bool) -> None:
     existingRoles=getRoles(baseDir,nickname,domain,project)
     if existingRoles:
         if role in existingRoles:
-            print(nickname+'@'+domain+' is already assigned to the role '+role+' within the project '+project)            
-            return
+            if debug:
+                print(nickname+'@'+domain+' is already assigned to the role '+role+' within the project '+project)            
+            return False
     setRole(baseDir,nickname,domain,project,role)
-    print(nickname+'@'+domain+' assigned to the role '+role+' within the project '+project)            
+    if debug:
+        print(nickname+'@'+domain+' assigned to the role '+role+' within the project '+project)
+    return True
 
 def sendRoleViaServer(session,delegatorNickname: str,password: str,
                       delegatorDomain: str,delegatorPort: int, \

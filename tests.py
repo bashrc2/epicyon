@@ -45,6 +45,8 @@ from person import setPreferredNickname
 from person import setBio
 from person import setSkillLevel
 from roles import setRole
+from roles import getRoles
+from roles import outboxDelegate
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
@@ -935,6 +937,72 @@ def testCreatePerson():
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
+def testDelegateRoles():
+    print('testDelegateRoles')
+    currDir=os.getcwd()
+    nickname='test382'
+    nicknameDelegated='test383'
+    domain='badgerdomain.com'
+    password='mypass'
+    port=80
+    httpPrefix='https'
+    clientToServer=False
+    useBlurhash=False
+    baseDir=currDir+'/.tests_delegaterole'
+    if os.path.isdir(baseDir):
+        shutil.rmtree(baseDir)
+    os.mkdir(baseDir)
+    os.chdir(baseDir)
+    
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
+    privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nicknameDelegated,domain,port,httpPrefix,True,'insecure')
+
+    httpPrefix='http'
+    project='artechoke'
+    role='delegator'
+    newRoleJson = {
+        'type': 'Delegate',
+        'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+        'object': {
+            'type': 'Role',
+            'actor': httpPrefix+'://'+domain+'/users/'+nicknameDelegated,
+            'object': project+';'+role,
+            'to': [],
+            'cc': []            
+        },
+        'to': [],
+        'cc': []
+    }
+
+    assert outboxDelegate(baseDir,newRoleJson,False)
+    # second time delegation has already happened so should return false
+    assert outboxDelegate(baseDir,newRoleJson,False)==False
+
+    assert '"delegator"' in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
+    assert '"delegator"' in open(baseDir+'/accounts/'+nicknameDelegated+'@'+domain+'.json').read()
+    
+    newRoleJson = {
+        'type': 'Delegate',
+        'actor': httpPrefix+'://'+domain+'/users/'+nicknameDelegated,
+        'object': {
+            'type': 'Role',
+            'actor': httpPrefix+'://'+domain+'/users/'+nickname,
+            'object': 'otherproject;otherrole',
+            'to': [],
+            'cc': []            
+        },
+        'to': [],
+        'cc': []
+    }
+
+    # non-delegators cannot assign roles
+    assert outboxDelegate(baseDir,newRoleJson,False)==False
+    assert '"otherrole"' not in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
+
+    assert False
+    os.chdir(currDir)
+    shutil.rmtree(baseDir)
+
 def testAuthentication():
     print('testAuthentication')
     currDir=os.getcwd()
@@ -1242,4 +1310,5 @@ def runAllTests():
     testNoOfFollowersOnDomain()
     testFollows()
     testGroupFollowers()
+    testDelegateRoles()
     print('Tests succeeded\n')        
