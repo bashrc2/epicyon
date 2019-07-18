@@ -298,8 +298,9 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint = \
         createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
     if noOfAccounts(baseDir)==1:
-        print(nickname+' becomes the instance admin')
-        setRole(baseDir,nickname,domain,'instance','admin')        
+        print(nickname+' becomes the instance admin and a moderator')
+        setRole(baseDir,nickname,domain,'instance','admin')
+        setRole(baseDir,nickname,domain,'instance','moderator')
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
