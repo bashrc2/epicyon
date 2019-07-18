@@ -215,6 +215,8 @@ parser.add_argument('--unblock', dest='unblock', type=str,default=None, \
                     help='Remove a block on a particular address')
 parser.add_argument('--delegate', dest='delegate', type=str,default=None, \
                     help='Address of an account to delegate a role to')
+parser.add_argument('--undodelegate','--undelegate', dest='undelegate', type=str,default=None, \
+                    help='Removes a delegated role for the given address')
 parser.add_argument('--filter', dest='filterStr', type=str,default=None, \
                     help='Adds a word or phrase which if present will cause a message to be ignored')
 parser.add_argument('--unfilter', dest='unfilterStr', type=str,default=None, \
@@ -235,8 +237,8 @@ if args.tests:
 
 if args.testsnetwork:
     print('Network Tests')
-    #testPostMessageBetweenServers()
-    #testFollowBetweenServers()
+    testPostMessageBetweenServers()
+    testFollowBetweenServers()
     testClientToServer()
     sys.exit()
 
@@ -733,7 +735,7 @@ if args.availability:
     sys.exit()
 
 if args.project:
-    if not args.delegate:        
+    if not args.delegate and not args.undelegate:        
         if not nickname:
             print('No nickname given')
             sys.exit()
@@ -835,6 +837,39 @@ if args.delegate:
                       domain,port, \
                       httpPrefix,args.delegate, \
                       args.project,args.role, \
+                      cachedWebfingers,personCache, \
+                      True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.undelegate:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    if not args.project:
+        print('Specify a project with the --project option')
+        sys.exit()
+
+    if '@' in args.undelegate:
+        delegatedNickname=args.undelegate.split('@')[0]
+        args.undelegate=blockedActor
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending delegation removal for '+args.undelegate+' from role '+args.role+' in project '+args.project)
+
+    sendRoleViaServer(session,nickname,args.password,
+                      domain,port, \
+                      httpPrefix,args.delegate, \
+                      args.project,None, \
                       cachedWebfingers,personCache, \
                       True)
     for i in range(10):
