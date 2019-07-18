@@ -1215,6 +1215,8 @@ def testClientToServer():
     assert 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     assert validInbox(bobDir,'bob',bobDomain)
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
+    assert validInbox(aliceDir,'alice',aliceDomain)
+    assert validInboxFilenames(aliceDir,'alice',aliceDomain,bobDomain,bobPort)
 
     # stop the servers
     thrAlice.kill()
