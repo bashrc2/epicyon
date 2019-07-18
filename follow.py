@@ -257,7 +257,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     if tempPort:
         fromPort=tempPort
         if tempPort!=80 and tempPort!=443:
-            domainFull=domain+':'+str(tempPort)            
+            domainFull=domain+':'+str(tempPort)
     if not domainPermitted(domain,federationList):
         if debug:
             print('DEBUG: follower from domain not permitted - '+domain)
@@ -293,7 +293,6 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                 print('DEBUG: followed account not found - '+ \
                       baseDir+'/accounts/'+handleToFollow)
             return False
-
         
     if not followerOfPerson(baseDir,nicknameToFollow,domainToFollowFull, \
                             nickname,domainFull,federationList,debug):
@@ -384,6 +383,7 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
     fromDomainFull=fromDomain
     if fromPort!=80 and fromPort!=443:
         fromDomainFull=fromDomain+':'+str(fromPort)
+
     followDomainFull=followDomain
     if followPort!=80 and followPort!=443:
         followDomainFull=followDomain+':'+str(followPort)

@@ -296,12 +296,13 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
     """
     if boxname!='inbox' and boxname!='outbox':
         return
+    originalDomain=domain    
     if ':' in domain:
         domain=domain.split(':')[0]
 
     if not postId:
         statusNumber,published = getStatusNumber()
-        postId=httpPrefix+'://'+domain+'/users/'+nickname+ \
+        postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+ \
             '/statuses/'+statusNumber
         postJsonObject['id']=postId+'/activity'
     if postJsonObject.get('object'):
@@ -327,7 +328,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                             nickname,domain,content)
 
     if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+        if ':' not in domain:
+            domain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
     conversationDate=published.split('T')[0]
@@ -884,6 +886,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         sendThreads.pop(0)
     if debug:
         print('DEBUG: starting thread to send post')
+        pprint(postJsonObject)
     thr = threadWithTrace(target=threadSendPost, \
                           args=(session, \
                                 postJsonObject.copy(), \

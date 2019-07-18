@@ -55,6 +55,7 @@ from announce import sendAnnounceViaServer
 from media import getMediaPath
 from delete import sendDeleteViaServer
 from inbox import validInbox
+from inbox import validInboxFilenames
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -366,6 +367,7 @@ def testPostMessageBetweenServers():
     # queue item removed
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
     assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
@@ -562,6 +564,7 @@ def testFollowBetweenServers():
             pprint(bobCapsJson)
             assert False
     assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
         
     print('\n\n*********************************************************')
     print('Eve tries to send to Bob')
@@ -1079,6 +1082,7 @@ def testClientToServer():
     assert outboxPostId
     print('message id obtained: '+outboxPostId)
     assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     print('\n\nAlice follows Bob')
     sendFollowRequestViaServer(sessionAlice,'alice',password, \
@@ -1100,6 +1104,7 @@ def testClientToServer():
     assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     print('\n\nBob follows Alice')
     sendFollowRequestViaServer(sessionAlice,'bob','bobpass', \
@@ -1187,6 +1192,7 @@ def testClientToServer():
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==postsBefore-1
     print(">>> post deleted from Alice's outbox and Bob's inbox")
     assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     
     print('\n\nAlice unfollows Bob')
@@ -1208,6 +1214,7 @@ def testClientToServer():
     assert 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
     assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     # stop the servers
     thrAlice.kill()

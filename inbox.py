@@ -41,6 +41,8 @@ from blocking import isBlocked
 from filters import isFiltered
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
+    """Checks whether files were correctly saved to the inbox
+    """
     if ':' in domain:
         domain=domain.split(':')[0]
     inboxDir=baseDir+'/accounts/'+nickname+'@'+domain+'/inbox'
@@ -53,7 +55,29 @@ def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
                 print('filename: '+filename)
                 return False
             if 'postNickname' in open(filename).read():
-                print(filename)
+                print('queue file incorrectly saved to '+filename)
+                return False
+    return True    
+
+def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
+                        expectedDomain: str,expectedPort: int) -> bool:
+    """Used by unit tests to check that the port number gets appended to
+    domain names within saved post filenames
+    """
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    inboxDir=baseDir+'/accounts/'+nickname+'@'+domain+'/inbox'
+    if not os.path.isdir(inboxDir):
+        return True
+    expectedStr=expectedDomain+':'+str(expectedPort)
+    for subdir, dirs, files in os.walk(inboxDir):
+        for f in files:
+            filename = os.path.join(subdir, f)
+            if not os.path.isfile(filename):
+                print('filename: '+filename)
+                return False
+            if not expectedStr in filename:
+                print('Invalid filename: '+filename)
                 return False
     return True    
 
@@ -137,6 +161,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
+    originalDomain=domain
     if ':' in domain:
         domain=domain.split(':')[0]
 
@@ -164,7 +189,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         postId=postJsonObject['id'].replace('/activity','')
     else:
         statusNumber,published = getStatusNumber()
-        postId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+        postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
     
     currTime=datetime.datetime.utcnow()
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
