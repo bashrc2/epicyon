@@ -166,7 +166,6 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                                'IdentityProof': 'toot:IdentityProof',
                                'PropertyValue': 'schema:PropertyValue',
                                'alsoKnownAs': {'@id': 'as:alsoKnownAs', '@type': '@id'},
-                               'featured': {'@id': 'toot:featured', '@type': '@id'},
                                'focalPoint': {'@container': '@list', '@id': 'toot:focalPoint'},
                                'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
                                'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
@@ -177,10 +176,8 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'endpoints': {
                      'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
-                     'uploadMedia': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints/uploadMedia'
                  },
                  'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
-                 'featured': httpPrefix+'://'+domain+'/users/'+nickname+'/collections/featured',
                  'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
                  'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
                  'orgSchema': None,
