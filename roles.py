@@ -119,6 +119,10 @@ def outboxDelegate(baseDir: str,messageJson: {},debug: bool) -> bool:
             domainFull=domain+':'+str(port)
     role=messageJson['object']['object'].split(';')[1].strip().lower()
 
+    if not role:
+        setRole(baseDir,nickname,domain,project,None)
+        return True
+        
     # what roles is this person already assigned to?
     existingRoles=getRoles(baseDir,nickname,domain,project)
     if existingRoles:
@@ -138,6 +142,7 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
                       cachedWebfingers: {},personCache: {}, \
                       debug: bool) -> {}:
     """A delegator creates a role for a person via c2s
+    Setting role to an empty string or None removes the role
     """
     if not session:
         print('WARN: No session for sendRoleViaServer')
@@ -150,13 +155,17 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
     toUrl = httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname
     ccUrl = httpPrefix+'://'+delegatorDomainFull+'/users/'+delegatorNickname+'/followers'
 
+    if role:
+        roleStr=project.lower()+';'+role.lower()
+    else:
+        roleStr=project.lower()+';'
     newRoleJson = {
         'type': 'Delegate',
         'actor': httpPrefix+'://'+delegatorDomainFull+'/users/'+delegatorNickname,
         'object': {
             'type': 'Role',
             'actor': httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname,
-            'object': project.lower()+';'+role.lower(),
+            'object': roleStr,
             'to': [toUrl],
             'cc': [ccUrl]            
         },
