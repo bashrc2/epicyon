@@ -108,6 +108,22 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
             commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True
 
+def getRoles(baseDir: str,nickname: str,domain: str, \
+             project: str) -> []:
+    """Returns the roles for a given person on a given project
+    """
+    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    if not os.path.isfile(actorFilename):
+        return False
+    with open(actorFilename, 'r') as fp:
+        actorJson=commentjson.load(fp)
+        if not actorJson.get('roles'):
+            return None
+        if not actorJson['roles'].get(project):
+            return None
+        return actorJson['roles'][project]
+    return None
+
 def setRole(baseDir: str,nickname: str,domain: str, \
             project: str,role: str) -> bool:
     """Set a person's role within a project
@@ -298,7 +314,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint = \
         createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
     if noOfAccounts(baseDir)==1:
-        print(nickname+' becomes the instance admin and a moderator')
+        #print(nickname+' becomes the instance admin and a moderator')
         setRole(baseDir,nickname,domain,'instance','admin')
         setRole(baseDir,nickname,domain,'instance','moderator')
         setRole(baseDir,nickname,domain,'instance','delegator')
