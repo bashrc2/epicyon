@@ -44,7 +44,7 @@ from person import createPerson
 from person import setPreferredNickname
 from person import setBio
 from person import setSkillLevel
-from person import setRole
+from roles import setRole
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials

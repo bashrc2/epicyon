@@ -15,7 +15,7 @@ from person import setBio
 from person import validNickname
 from person import setProfileImage
 from person import setSkillLevel
-from person import setRole
+from roles import setRole
 from person import setAvailability
 from person import setOrganizationScheme
 from webfinger import webfingerHandle
@@ -67,6 +67,7 @@ from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
 from blocking import sendBlockViaServer
 from blocking import sendUndoBlockViaServer
+from roles import sendRoleViaServer
 import argparse
 
 def str2bool(v):

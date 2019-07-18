@@ -19,6 +19,7 @@ from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createOutbox
 from auth import storeBasicCredentials
+from roles import setRole
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -104,51 +105,6 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
             actorJson['skills'][skill]=skillLevelPercent
         else:
             del actorJson['skills'][skill]
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
-    return True
-
-def getRoles(baseDir: str,nickname: str,domain: str, \
-             project: str) -> []:
-    """Returns the roles for a given person on a given project
-    """
-    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
-    if not os.path.isfile(actorFilename):
-        return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
-        if not actorJson.get('roles'):
-            return None
-        if not actorJson['roles'].get(project):
-            return None
-        return actorJson['roles'][project]
-    return None
-
-def setRole(baseDir: str,nickname: str,domain: str, \
-            project: str,role: str) -> bool:
-    """Set a person's role within a project
-    Setting the role to an empty string or None will remove it
-    """
-    # avoid giant strings
-    if len(role)>128 or len(project)>128:
-        return False
-    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
-    if not os.path.isfile(actorFilename):
-        return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
-        if role:
-            if actorJson['roles'].get(project):
-                if role not in actorJson['roles'][project]:
-                    actorJson['roles'][project].append(role)
-            else:
-                actorJson['roles'][project]=[role]
-        else:
-            if actorJson['roles'].get(project):
-                actorJson['roles'][project].remove(role)
-                # if the project contains no roles then remove it
-                if len(actorJson['roles'][project])==0:
-                    del actorJson['roles'][project]
         with open(actorFilename, 'w') as fp:
             commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True

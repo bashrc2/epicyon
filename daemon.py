@@ -41,6 +41,7 @@ from like import outboxUndoLike
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
 from config import setConfigParam
+from roles import outboxDelegate
 import os
 import sys
 
@@ -172,7 +173,8 @@ class PubServer(BaseHTTPRequestHandler):
                 
         permittedOutboxTypes=[
             'Create','Announce','Like','Follow','Undo', \
-            'Update','Add','Remove','Block','Delete'
+            'Update','Add','Remove','Block','Delete', \
+            'Delegate'
         ]
         if messageJson['type'] not in permittedOutboxTypes:
             if self.server.debug:
@@ -218,6 +220,9 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle delegation requests')
+        outboxDelegate(self.server.baseDir,messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle any like requests')
         outboxLike(self.server.baseDir,self.server.httpPrefix, \
