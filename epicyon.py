@@ -213,6 +213,8 @@ parser.add_argument('--block', dest='block', type=str,default=None, \
                     help='Block a particular address')
 parser.add_argument('--unblock', dest='unblock', type=str,default=None, \
                     help='Remove a block on a particular address')
+parser.add_argument('--delegate', dest='delegate', type=str,default=None, \
+                    help='Address of an account to delegate a role to')
 parser.add_argument('--filter', dest='filterStr', type=str,default=None, \
                     help='Adds a word or phrase which if present will cause a message to be ignored')
 parser.add_argument('--unfilter', dest='unfilterStr', type=str,default=None, \
@@ -729,23 +731,24 @@ if args.availability:
     if setAvailability(baseDir,nickname,domain,args.availability):
         print('Availablity set to '+args.availability)
     sys.exit()
-    
+
 if args.project:
-    if not nickname:
-        print('No nickname given')
-        sys.exit()
+    if not args.delegate:        
+        if not nickname:
+            print('No nickname given')
+            sys.exit()
         
-    if args.role.lower()=='none' or \
-       args.role.lower()=='remove' or \
-       args.role.lower()=='delete':
-        args.role=None
-    if args.role:
-        if setRole(baseDir,nickname,domain,args.project,args.role):
-            print('Role within '+args.project+' set to '+args.role)
-    else:
-        if setRole(baseDir,nickname,domain,args.project,None):
-            print('Left '+args.project)
-    sys.exit()
+        if args.role.lower()=='none' or \
+           args.role.lower()=='remove' or \
+           args.role.lower()=='delete':
+            args.role=None
+        if args.role:
+            if setRole(baseDir,nickname,domain,args.project,args.role):
+                print('Role within '+args.project+' set to '+args.role)
+        else:
+            if setRole(baseDir,nickname,domain,args.project,None):
+                print('Left '+args.project)
+        sys.exit()
 
 if args.skill:
     if args.skillLevelPercent==0:
@@ -797,6 +800,43 @@ if args.block:
                        httpPrefix,args.block, \
                        cachedWebfingers,personCache, \
                        True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.delegate:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    if not args.project:
+        print('Specify a project with the --project option')
+        sys.exit()
+
+    if not args.role:
+        print('Specify a role with the --role option')
+        sys.exit()
+
+    if '@' in args.delegate:
+        delegatedNickname=args.delegate.split('@')[0]
+        args.delegate=blockedActor
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending delegation for '+args.delegate+' with role '+args.role+' in project '+args.project)
+
+    sendRoleViaServer(session,nickname,args.password,
+                      domain,port, \
+                      httpPrefix,args.delegate, \
+                      args.project,args.role, \
+                      cachedWebfingers,personCache, \
+                      True)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)

@@ -999,7 +999,6 @@ def testDelegateRoles():
     assert outboxDelegate(baseDir,newRoleJson,False)==False
     assert '"otherrole"' not in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
 
-    assert False
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
