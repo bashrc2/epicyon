@@ -569,3 +569,21 @@ python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
 		   --project [project name] \
 		   --password [c2s password]
 ```
+
+This extends the ActivityPub client-to-server protocol to include an activities called *Delegate* and *Role*. The json looks like:
+
+``` json
+{ 'type': 'Delegate',
+  'actor': https://'+somedomain/users/admin,
+  'object': {
+      'type': 'Role',
+      'actor': https://'+somedomain+'/users/'+other,
+      'object': 'otherproject;otherrole',
+      'to': [],
+      'cc': []            
+  },
+  'to': [],
+  'cc': []}
+```
+
+Projects and roles are only scoped within a single instance. There presently are not enough security mechanisms to support multi-instance distributed organizations.
