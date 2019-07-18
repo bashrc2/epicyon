@@ -540,3 +540,32 @@ python3 epicyon.py --domainmax 1000 --accountmax 200
 ```
 
 With these settings you're going to be receiving no more than 200 messages for any given account within a day.
+
+## Delegated roles
+
+Within an organization you may want to define different roles and for some projects to be delegated. By default the first account added to the system will be the admin, and be assigned *moderator* and *delegator* roles under a project called *instance*. The admin can then delegate a person to other projects with:
+
+``` bash
+python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
+                   --delegate [person nickname] \
+		   --project [project name] --role [title] \
+		   --password [c2s password]
+```
+
+The other person could also be made a delegator, but they will only be able to delegate further within projects which they're assigned to. By design, this creates a restricted organizational hierarchy. For example:
+
+``` bash
+python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
+                   --delegate [person nickname] \
+		   --project [project name] --role delegator \
+		   --password [c2s password]
+```
+
+A delegated role can also be removed.
+
+``` bash
+python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
+                   --undelegate [person nickname] \
+		   --project [project name] \
+		   --password [c2s password]
+```
