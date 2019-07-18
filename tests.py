@@ -49,10 +49,12 @@ from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from auth import storeBasicCredentials
 from like import likePost
+from like import sendLikeViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
 from media import getMediaPath
 from delete import sendDeleteViaServer
+from inbox import validInbox
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1074,7 +1076,7 @@ def testClientToServer():
                 outboxPostId=postJsonObject['id'].replace('/activity','')
     assert outboxPostId
     print('message id obtained: '+outboxPostId)
-
+    assert validInbox(bobDir,'bob',bobDomain)
 
     print('\n\nAlice follows Bob')
     sendFollowRequestViaServer(sessionAlice,'alice',password, \
@@ -1095,6 +1097,7 @@ def testClientToServer():
     assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
     assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+    assert validInbox(bobDir,'bob',bobDomain)
 
     print('\n\nBob follows Alice')
     sendFollowRequestViaServer(sessionAlice,'bob','bobpass', \
@@ -1116,14 +1119,34 @@ def testClientToServer():
     assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt').read()
     assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/following.txt').read()
 
-    
-    print('\n\nBob repeats the post')
+
+    print('\n\nBob likes the post')
     sessionBob = createSession(bobDomain,bobPort,useTor)
     password='bobpass'
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
     inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
     print(str(len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])))
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
+    print(str(len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])))
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
+    sendLikeViaServer(sessionBob,'bob','bobpass', \
+                      bobDomain,bobPort, \
+                      httpPrefix,outboxPostId, \
+                      cachedWebfingers,personCache, \
+                      True)
+    for i in range(20):
+        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
+            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2:
+                if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
+                    break
+        time.sleep(1)
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
+    assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
+    print('Post liked')
+    
+    print('\n\nBob repeats the post')
+    print(str(len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])))
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
     print(str(len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])))
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     sendAnnounceViaServer(sessionBob,'bob',password, \
@@ -1133,12 +1156,12 @@ def testClientToServer():
                           personCache,True)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
-            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2:
+            if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==3:
                 if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==2:
                     break
         time.sleep(1)
 
-    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
+    assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==3
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==2
     print('Post repeated')
 
@@ -1161,6 +1184,7 @@ def testClientToServer():
 
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==postsBefore-1
     print(">>> post deleted from Alice's outbox and Bob's inbox")
+    assert validInbox(bobDir,'bob',bobDomain)
 
     
     print('\n\nAlice unfollows Bob')
@@ -1181,6 +1205,7 @@ def testClientToServer():
     assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
     assert 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+    assert validInbox(bobDir,'bob',bobDomain)
 
     # stop the servers
     thrAlice.kill()

@@ -40,6 +40,23 @@ from like import undoLikesCollectionEntry
 from blocking import isBlocked
 from filters import isFiltered
 
+def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    inboxDir=baseDir+'/accounts/'+nickname+'@'+domain+'/inbox'
+    if not os.path.isdir(inboxDir):
+        return True
+    for subdir, dirs, files in os.walk(inboxDir):
+        for f in files:
+            filename = os.path.join(subdir, f)
+            if not os.path.isfile(filename):
+                print('filename: '+filename)
+                return False
+            if 'postNickname' in open(filename).read():
+                print(filename)
+                return False
+    return True    
+
 def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
         return None
@@ -896,7 +913,13 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)
-    copyfile(queueFilename,destinationFilename)
+
+    if messageJson.get('postNickname'):
+        with open(destinationFilename, 'w') as fp:
+            commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
+    else:
+        with open(destinationFilename, 'w') as fp:
+            commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
     return True
 
 def restoreQueueItems(baseDir: str,queue: []) -> None:
@@ -1155,8 +1178,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             # GET happens on individual accounts.
             # See posts.py/createBoxBase
             if len(recipientsDictFollowers)>0:
-                copyfile(queueFilename, \
-                         queueJson['destination'].replace(inboxHandle,inboxHandle))
+                with open(queueJson['destination'].replace(inboxHandle,inboxHandle), 'w') as fp:
+                    commentjson.dump(queueJson['post'], fp, indent=4, sort_keys=False)
 
             # for posts addressed to specific accounts
             for handle,capsId in recipientsDict.items():              
