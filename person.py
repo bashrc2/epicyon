@@ -301,6 +301,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         print(nickname+' becomes the instance admin and a moderator')
         setRole(baseDir,nickname,domain,'instance','admin')
         setRole(baseDir,nickname,domain,'instance','moderator')
+        setRole(baseDir,nickname,domain,'instance','delegator')
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
