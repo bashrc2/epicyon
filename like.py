@@ -103,6 +103,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
 
         if debug:
             print('DEBUG: saving post with likes added')
+            pprint(postJsonObject)
         with open(postFilename, 'w') as fp:
             commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)
 
