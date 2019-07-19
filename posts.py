@@ -160,10 +160,12 @@ def getPersonBox(session,wfRequest: {},personCache: {}, \
 
     return boxJson,pubKeyId,pubKey,personId,sharedInbox,capabilityAcquisition
 
-def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
+def getPosts(session,outboxUrl: str,maxPosts: int, \
+             maxMentions: int, \
              maxEmoji: int,maxAttachments: int, \
-             federationList: [],\
-             personCache: {},raw: bool,simple: bool) -> {}:
+             federationList: [], \
+             personCache: {},raw: bool, \
+             simple: bool,debug: bool) -> {}:
     personPosts={}
     if not outboxUrl:
         return personPosts
@@ -182,14 +184,33 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
 
     i = 0
     for item in parseUserFeed(session,outboxUrl,asHeader):
+        if not item.get('id'):
+            if debug:
+                print('No id')
+            continue
         if not item.get('type'):
+            if debug:
+                print('No type')
             continue
         if item['type'] != 'Create':
+            if debug:
+                print('Not Create type')
             continue
         if not item.get('object'):
+            if debug:
+                print('No object')
             continue
+        if not isinstance(item['object'], dict):
+            if debug:
+                print('item object is not a dict')
+            continue
+        if not item['object'].get('published'):
+            if debug:
+                print('No published attribute')
+            continue
+        #pprint(item)
         published = item['object']['published']
-        if not personPosts.get(published):
+        if not personPosts.get(item['id']):
             content = item['object']['content']
 
             mentions=[]
@@ -207,13 +228,20 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                                     emojiName=tagItem['name']
                                     emojiIcon=tagItem['icon']['url']
                                     emoji[emojiName]=emojiIcon
+                                else:
+                                    if debug:
+                                        print('url not permitted '+tagItem['icon']['url'])
                     if tagType=='mention':
                         if tagItem.get('name'):
                             if tagItem['name'] not in mentions:
                                 mentions.append(tagItem['name'])
             if len(mentions)>maxMentions:
+                if debug:
+                    print('max mentions reached')
                 continue
             if len(emoji)>maxEmoji:
+                if debug:
+                    print('max emojis reached')
                 continue
 
             summary = ''
@@ -228,6 +256,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                     if not urlPermitted(item['object']['inReplyTo'], \
                                         federationList, \
                                         "objects:read"):
+                        if debug:
+                            print('url not permitted '+item['object']['inReplyTo'])
                         continue
                     inReplyTo = item['object']['inReplyTo']
 
@@ -249,6 +279,9 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
                                             federationList, \
                                             "objects:read"):
                                 attachment.append([attach['name'],attach['url']])
+                            else:
+                                if debug:
+                                    print('url not permitted '+attach['url'])
 
             sensitive = False
             if item['object'].get('sensitive'):
@@ -257,7 +290,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int,maxMentions: int, \
             if simple:
                 print(cleanHtml(content)+'\n')
             else:
-                personPosts[published] = {
+                pprint(item)
+                personPosts[item['id']] = {
                     "sensitive": sensitive,
                     "inreplyto": inReplyTo,
                     "summary": summary,
@@ -1263,7 +1297,8 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
 
 def getPublicPostsOfPerson(nickname: str,domain: str, \
                            raw: bool,simple: bool,useTor: bool, \
-                           port: int,httpPrefix: str) -> None:
+                           port: int,httpPrefix: str, \
+                           debug: bool) -> None:
     """ This is really just for test purposes
     """
     session = createSession(domain,port,useTor)
@@ -1289,7 +1324,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxAttachments=5
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
                          maxAttachments,federationList, \
-                         personCache,raw,simple)
+                         personCache,raw,simple,debug)
     #print(str(userPosts))
 
 def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \

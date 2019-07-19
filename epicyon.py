@@ -253,7 +253,8 @@ if args.posts:
         sys.exit()        
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain,False,True,args.tor,args.port,httpPrefix)
+    getPublicPostsOfPerson(nickname,domain,False,True, \
+                           args.tor,args.port,httpPrefix,debug)
     sys.exit()
 
 if args.postsraw:
@@ -262,7 +263,8 @@ if args.postsraw:
         sys.exit()        
     nickname=args.postsraw.split('@')[0]
     domain=args.postsraw.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain,False,False,args.tor,args.port,httpPrefix)
+    getPublicPostsOfPerson(nickname,domain,False,False, \
+                           args.tor,args.port,httpPrefix,debug)
     sys.exit()
 
 baseDir=args.baseDir
