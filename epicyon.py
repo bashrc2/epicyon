@@ -199,6 +199,10 @@ parser.add_argument("--followersonly", type=str2bool, nargs='?', \
 parser.add_argument("--followerspending", type=str2bool, nargs='?', \
                     const=True, default=True, \
                     help="Show a list of followers pending")
+parser.add_argument('--approve', dest='approve', type=str,default=None, \
+                    help='Approve a follow request')
+parser.add_argument('--deny', dest='deny', type=str,default=None, \
+                    help='Deny a follow request')
 parser.add_argument("-c","--client", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Use as an ActivityPub client")
@@ -322,6 +326,43 @@ else:
 useTor=args.tor
 if domain.endswith('.onion'):
     useTor=True
+
+if args.approve:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+    handle=args.nickname+'@'+domain
+    accountsDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountDir+'/followrequests.txt'
+    if handle in open(approveFollowsFilename).read():
+        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
+            with open(approveFollowsFilename, 'r') as approvefile:
+                for approveHandle in approvefile:
+                    if approveHandle.startswith(handle):
+                        if ':' in approveHandle:
+                            port=int(approveHandle.split(':')[1].replace('\n',''))
+                        # TODO approve follow for handle/port
+                    else:
+                        approvefilenew.write(approveHandle)
+        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    sys.exit()
+
+if args.deny:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+    handle=args.nickname+'@'+domain
+    accountsDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountDir+'/followrequests.txt'
+    if handle in open(approveFollowsFilename).read():
+        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
+            with open(approveFollowsFilename, 'r') as approvefile:
+                for approveHandle in approvefile:
+                    if not approveHandle.startswith(handle):
+                        approvefilenew.write(approveHandle)
+        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+        print('Follow request from '+handle+' was denied.')
+    sys.exit()
 
 if args.followerspending:
     if not args.nickname:
