@@ -1266,7 +1266,6 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
                            port: int,httpPrefix: str) -> None:
     """ This is really just for test purposes
     """
-    print("Test1")
     session = createSession(domain,port,useTor)
     personCache={}
     cachedWebfingers={}
@@ -1276,13 +1275,11 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     if port!=80 and port!=443:
         domainFull=domain+':'+str(port)
     handle=httpPrefix+"://"+domainFull+"/@"+nickname
-    print("Test2 "+handle)
     wfRequest = \
         webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
         sys.exit()
 
-    print('Test3')
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition= \
         getPersonBox(session,wfRequest,personCache,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
@@ -1290,7 +1287,6 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxMentions=10
     maxEmoji=10
     maxAttachments=5
-    print('personUrl: '+personUrl)
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
                          maxAttachments,federationList, \
                          personCache,raw,simple)

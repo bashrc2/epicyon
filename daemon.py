@@ -703,12 +703,14 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: content-length: '+str(length))
         if not self.headers['Content-type'].startswith('image/'):
             if length>self.server.maxMessageLength:
+                print('Maximum message length exceeded '+str(length))
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
                 return
         else:
             if length>self.server.maxImageSize:
+                print('Maximum image size exceeded '+str(length))
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
