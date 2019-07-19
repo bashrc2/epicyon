@@ -114,7 +114,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
     webfingerEndpoint= \
         createWebfingerEndpoint(nickname,domain,port,httpPrefix,publicKeyPem)
     if saveToFile:
-        storeWebfingerEndpoint(nickname,domain,baseDir,webfingerEndpoint)
+        storeWebfingerEndpoint(nickname,domain,port,baseDir,webfingerEndpoint)
 
     handle=nickname.lower()+'@'+domain.lower()
     if port!=80 and port!=443:

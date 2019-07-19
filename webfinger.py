@@ -46,9 +46,9 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
         return None
     wfDomain=domain
     if ':' in wfDomain:
-        #wfPort=int(wfDomain.split(':')[1])
-        #if wfPort==80 or wfPort==443:
-        wfDomain=wfDomain.split(':')[0]
+        wfPort=int(wfDomain.split(':')[1])
+        if wfPort==80 or wfPort==443:
+            wfDomain=wfDomain.split(':')[0]
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf
@@ -74,10 +74,12 @@ def generateMagicKey(publicKeyPem) -> str:
     pubexp = base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
 
-def storeWebfingerEndpoint(nickname: str,domain: str,baseDir: str, \
+def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
                            wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
+    if port!=80 and port!=443:
+        domain=domain+':'+str(port)
     handle=nickname+'@'+domain
     wfSubdir='/wfendpoints'
     if not os.path.isdir(baseDir+wfSubdir):
@@ -91,7 +93,6 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                             httpPrefix: str,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
-    originalDomain=domain
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -129,7 +130,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                 "template": httpPrefix+"://"+domain+"/authorize_interaction?uri={uri}"
             }
         ],
-        "subject": "acct:"+nickname+"@"+originalDomain
+        "subject": "acct:"+nickname+"@"+domain
     }
     return account
 
@@ -158,7 +159,9 @@ def webfingerLookup(path: str,baseDir: str) -> {}:
         handle=path.split('resource=acct:')[1].strip()        
     else:
         if 'resource=acct%3A' in path:
-            handle=path.split('resource=acct%3A')[1].replace('%40','@').strip()            
+            handle=path.split('resource=acct%3A')[1].replace('%40','@').replace('%3A',':').strip()
+            print("======== "+path)
+            print("======== "+handle)
     if not handle:
         return None
     if '&' in handle:
