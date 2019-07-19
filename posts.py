@@ -477,9 +477,9 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                             imageDescription,useBlurhash)            
     if ccUrl:
         if len(ccUrl)>0:
-            newPost['cc']=ccUrl
+            newPost['cc']=[ccUrl]
             if newPost.get('object'):
-                newPost['object']['cc']=ccUrl
+                newPost['object']['cc']=[ccUrl]
     if saveToFile:
         savePostToBox(baseDir,httpPrefix,newPostId, \
                       nickname,domain,newPost,'outbox')
@@ -962,15 +962,12 @@ def sendToNamedAddresses(session,baseDir: str, \
     recipients=[]
     recipientType=['to','cc']
     for rType in recipientType:
-        print('==== rType: '+rType)
         for address in recipientsObject[rType]:
-            print('==== address: '+address)
             if address.endswith('#Public'):
                 continue
             if address.endswith('/followers'):
                 continue
             recipients.append(address)
-            print('==== recipients: '+str(recipients))            
     if not recipients:
         return
     if debug:

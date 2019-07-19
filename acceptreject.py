@@ -46,7 +46,7 @@ def createAcceptReject(baseDir: str,federationList: [], \
     }
     if ccUrl:
         if len(ccUrl)>0:
-            newAccept['cc']=ccUrl
+            newAccept['cc']=[ccUrl]
     # attach capabilities for follow accept
     if ocapJson:
         newAccept['capabilities']=ocapJson
