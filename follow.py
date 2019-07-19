@@ -118,9 +118,14 @@ def clearFollowers(baseDir: str,nickname: str,domain: str) -> None:
     clearFollows(baseDir,nickname, domain,'followers.txt')
 
 def getNoOfFollows(baseDir: str,nickname: str,domain: str, \
+                   authenticated: bool, \
                    followFile='following.txt') -> int:
     """Returns the number of follows or followers
     """
+    # only show number of followers to authenticated
+    # account holders
+    if not authenticated:
+        return 9999
     handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
@@ -136,16 +141,21 @@ def getNoOfFollows(baseDir: str,nickname: str,domain: str, \
                     ctr += 1
     return ctr
 
-def getNoOfFollowers(baseDir: str,nickname: str,domain: str) -> int:
+def getNoOfFollowers(baseDir: str,nickname: str,domain: str,authenticated: bool) -> int:
     """Returns the number of followers of the given person
     """
-    return getNoOfFollows(baseDir,nickname,domain,'followers.txt')
+    return getNoOfFollows(baseDir,nickname,domain,authenticated,'followers.txt')
 
 def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
-                     httpPrefix: str, followsPerPage=12, \
+                     httpPrefix: str, authenticated: bool,
+                     followsPerPage=12, \
                      followFile='following') -> {}:
     """Returns the following and followers feeds from GET requests
     """
+    # Show a small number of follows to non-authenticated viewers
+    if not authenticated:
+        followsPerPage=6
+
     if '/'+followFile not in path:
         return None
     # handle page numbers
@@ -153,7 +163,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
     pageNumber=None    
     if '?page=' in path:
         pageNumber=path.split('?page=')[1]
-        if pageNumber=='true':
+        if pageNumber=='true' or not authenticated:
             pageNumber=1
         else:
             try:
@@ -183,7 +193,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page=1',
             'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile,
-            'totalItems': getNoOfFollows(baseDir,nickname,domain),
+            'totalItems': getNoOfFollows(baseDir,nickname,domain,authenticated),
             'type': 'OrderedCollection'}
         return following
 

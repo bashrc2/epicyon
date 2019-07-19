@@ -584,9 +584,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.server.GETbusy=False
             return
+        authorized=self._isAuthorized()
         following=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
-                                   self.server.httpPrefix,followsPerPage)
+                                   self.server.httpPrefix,
+                                   authorized,followsPerPage)
         if following:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(following).encode('utf-8'))
@@ -595,7 +597,7 @@ class PubServer(BaseHTTPRequestHandler):
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
                                    self.server.httpPrefix, \
-                                   followsPerPage,'followers')
+                                   authorized,followsPerPage,'followers')
         if followers:
             self._set_headers('application/json')
             self.wfile.write(json.dumps(followers).encode('utf-8'))
