@@ -243,6 +243,25 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
         following['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(lastPage)
     return following
 
+def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
+                           domainToFollow: str,debug: bool) -> bool:
+    """ Returns the policy for follower approvals
+    """
+    manuallyApproveFollows=False
+    actorFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'.json'
+    if os.path.isfile(actorFilename):
+        with open(actorFilename, 'r') as fp:
+            actor=commentjson.load(fp)
+            if actor.get('manuallyApprovesFollowers'):
+                manuallyApproveFollows=actor['manuallyApprovesFollowers']
+            else:
+                if debug:
+                    print('manuallyApprovesFollowers is missing from '+actorFilename)
+    else:
+        if debug:
+            print('DEBUG: Actor file not found: '+actorFilename)
+    return manuallyApproveFollows
+    
 def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                          port: int,sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
@@ -311,6 +330,27 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                   ' is already a follower of '+ \
                   nicknameToFollow+'@'+domainToFollow)
         return False
+    
+    # what is the followers policy?
+    if followApprovalRequired(baseDir,nicknameToFollow, \
+                              domainToFollow,debug):
+        approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
+        accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
+        if os.path.isdir(accountDir):
+            approveFollowsFilename=accountDir+'/followrequests.txt'
+            if os.path.isfile(approveFollowsFilename):
+                if approveHandle not in open(approveFollowsFilename).read():
+                    with open(approveFollowsFilename, "a") as fp:
+                        fp.write(approveHandle+'\n')
+                else:
+                    if debug:
+                        print('DEBUG: '+approveHandle+' is already awaiting approval')
+            else:
+                with open(approveFollowsFilename, "w") as fp:
+                    fp.write(approveHandle+'\n')
+            return True
+        return False
+
     # send accept back
     if debug:
         print('DEBUG: sending Accept for follow request which arrived at '+ \
