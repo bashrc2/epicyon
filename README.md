@@ -35,7 +35,16 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Ability to delete or hide specific conversation threads
  * Commandline interface. If there's a GUI it should be a separate project.
  * Designed for intermittent connectivity. Assume network disruptions.
+ * Limited visibility of follows/followers
  * Suitable for single board computers.
+
+## Culling follower numbers
+
+In this system the number of followers which an account has will only be visible to the account holder. Other viewers will see a made up number. Which accounts are followed or followed by a person will also only have limited visibility.
+
+The intention is to prevent the construction of detailed social graphs by adversaries, and to frustrate attempts to build celebrity status based on number of followers, which on sites like Twitter creates a dubious economy of fake accounts and the trading thereof.
+
+If you are the account holder though you will be able to see exactly who you're following or being followed by.
 
 ## Object capabilities workflow
 
