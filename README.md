@@ -405,6 +405,8 @@ python3 epicyon.py --nickname [nick] --domain [mydomain] \
 		   --password [c2s password]
 ```
 
+The level value is a percentage which indicates how proficient you are with that skill.
+
 This extends the ActivityPub client-to-server protocol to include an activity called *Skill*. The json looks like:
 
 ``` json
