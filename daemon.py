@@ -390,7 +390,10 @@ class PubServer(BaseHTTPRequestHandler):
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
             namedStatus=self.path.split('/@')[1]
-            if '/' in namedStatus:
+            if '/' not in namedStatus:
+                # show actor
+                nickname=namedStatus
+            else:
                 postSections=namedStatus.split('/')
                 if len(postSections)==2:
                     nickname=postSections[0]

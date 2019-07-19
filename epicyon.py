@@ -243,13 +243,17 @@ if args.testsnetwork:
     testClientToServer()
     sys.exit()
 
+httpPrefix='https'
+if args.http:
+    httpPrefix='http'
+
 if args.posts:
     if '@' not in args.posts:
         print('Syntax: --posts nickname@domain')
         sys.exit()        
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain,False,True)
+    getPublicPostsOfPerson(nickname,domain,False,True,args.tor,args.port,httpPrefix)
     sys.exit()
 
 if args.postsraw:
@@ -258,7 +262,7 @@ if args.postsraw:
         sys.exit()        
     nickname=args.postsraw.split('@')[0]
     domain=args.postsraw.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain,True,False)
+    getPublicPostsOfPerson(nickname,domain,False,False,args.tor,args.port,httpPrefix)
     sys.exit()
 
 baseDir=args.baseDir
@@ -283,10 +287,6 @@ else:
 nickname=None
 if args.nickname:
     nickname=nickname
-
-httpPrefix='https'
-if args.http:
-    httpPrefix='http'
 
 federationList=[]
 if args.federationList:

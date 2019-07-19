@@ -1262,23 +1262,27 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
                 break
 
 def getPublicPostsOfPerson(nickname: str,domain: str, \
-                           raw: bool,simple: bool) -> None:
+                           raw: bool,simple: bool,useTor: bool, \
+                           port: int,httpPrefix: str) -> None:
     """ This is really just for test purposes
     """
-    useTor=True
-    port=443
+    print("Test1")
     session = createSession(domain,port,useTor)
     personCache={}
     cachedWebfingers={}
     federationList=[]
 
-    httpPrefix='https'
-    handle=httpPrefix+"://"+domain+"/@"+nickname
+    domainFull=domain
+    if port!=80 and port!=443:
+        domainFull=domain+':'+str(port)
+    handle=httpPrefix+"://"+domainFull+"/@"+nickname
+    print("Test2 "+handle)
     wfRequest = \
         webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
     if not wfRequest:
         sys.exit()
 
+    print('Test3')
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition= \
         getPersonBox(session,wfRequest,personCache,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
@@ -1286,6 +1290,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxMentions=10
     maxEmoji=10
     maxAttachments=5
+    print('personUrl: '+personUrl)
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
                          maxAttachments,federationList, \
                          personCache,raw,simple)
