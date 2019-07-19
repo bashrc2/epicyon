@@ -46,6 +46,8 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
         return None
     wfDomain=domain
     if ':' in wfDomain:
+        #wfPort=int(wfDomain.split(':')[1])
+        #if wfPort==80 or wfPort==443:
         wfDomain=wfDomain.split(':')[0]
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
@@ -89,6 +91,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                             httpPrefix: str,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
+    originalDomain=domain
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -126,7 +129,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                 "template": httpPrefix+"://"+domain+"/authorize_interaction?uri={uri}"
             }
         ],
-        "subject": "acct:"+nickname+"@"+domain
+        "subject": "acct:"+nickname+"@"+originalDomain
     }
     return account
 
