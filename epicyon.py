@@ -37,6 +37,7 @@ import os
 import shutil
 import sys
 import requests
+import time
 from pprint import pprint
 from tests import testHttpsig
 from daemon import runDaemon
@@ -179,8 +180,8 @@ parser.add_argument('--favorite','--like', dest='like', type=str,default=None, \
                     help='Like a url')
 parser.add_argument('--undolike','--unlike', dest='undolike', type=str,default=None, \
                     help='Undo a like of a url')
-parser.add_argument('--sendto', nargs='+',dest='sendto', \
-                    help='List of post recipients')
+parser.add_argument('--sendto', dest='sendto', type=str,default=None, \
+                    help='Address to send a post to')
 parser.add_argument('--attach', dest='attach', type=str,default=None, \
                     help='File to attach to a post')
 parser.add_argument('--imagedescription', dest='imageDescription', type=str,default=None, \
@@ -276,6 +277,10 @@ if baseDir.endswith('/'):
     print("--path option should not end with '/'")
     sys.exit()
 
+if args.domain:
+    domain=args.domain
+    setConfigParam(baseDir,'domain',domain)
+
 # get domain name from configuration
 configDomain=getConfigParam(baseDir,'domain')
 if configDomain:
@@ -316,7 +321,7 @@ if domain.endswith('.onion'):
     useTor=True
 
 if args.message:
-    if not nickname:
+    if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
         
@@ -365,11 +370,11 @@ if args.message:
     cachedWebfingers={}
     subject=args.subject
     attach=args.attach
-    replyTo=args.replyTo
+    replyTo=args.replyto
     followersOnly=False
     print('Sending post to '+args.sendto)
 
-    sendPostViaServer(session,nickname,args.password, \
+    sendPostViaServer(session,args.nickname,args.password, \
                       domain,port, \
                       toNickname,toDomain,toPort,ccUrl, \
                       httpPrefix,sendMessage,followersOnly, \
@@ -382,7 +387,7 @@ if args.message:
     sys.exit()
 
 if args.announce:
-    if not nickname:
+    if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
         
@@ -395,7 +400,7 @@ if args.announce:
     cachedWebfingers={}
     print('Sending announce/repeat of '+args.announce)
 
-    sendAnnounceViaServer(session,nickname,args.password,
+    sendAnnounceViaServer(session,args.nickname,args.password,
                           domain,port, \
                           httpPrefix,args.announce, \
                           cachedWebfingers,personCache, \
@@ -406,7 +411,7 @@ if args.announce:
     sys.exit()
 
 if args.like:
-    if not nickname:
+    if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
         
@@ -419,7 +424,7 @@ if args.like:
     cachedWebfingers={}
     print('Sending like of '+args.like)
 
-    sendLikeViaServer(session,nickname,args.password,
+    sendLikeViaServer(session,args.nickname,args.password,
                       domain,port, \
                       httpPrefix,args.like, \
                       cachedWebfingers,personCache, \
@@ -430,7 +435,7 @@ if args.like:
     sys.exit()
 
 if args.undolike:
-    if not nickname:
+    if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
         
@@ -443,7 +448,7 @@ if args.undolike:
     cachedWebfingers={}
     print('Sending undo like of '+args.undolike)
 
-    sendUndoLikeViaServer(session,nickname,args.password,
+    sendUndoLikeViaServer(session,args.nickname,args.password,
                           domain,port, \
                           httpPrefix,args.undolike, \
                           cachedWebfingers,personCache, \
@@ -454,7 +459,7 @@ if args.undolike:
     sys.exit()
 
 if args.delete:
-    if not nickname:
+    if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
         
@@ -467,7 +472,7 @@ if args.delete:
     cachedWebfingers={}
     print('Sending delete request of '+args.delete)
 
-    sendDeleteViaServer(session,nickname,args.password,
+    sendDeleteViaServer(session,args.nickname,args.password,
                         domain,port, \
                         httpPrefix,args.delete, \
                         cachedWebfingers,personCache, \
@@ -482,11 +487,11 @@ if args.follow:
     if '.' not in args.follow:
         print("This doesn't look like a fediverse handle")
         sys.exit()
-    if not nickname:
+    if not args.nickname:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
-        print('Please specify the password for '+nickname+' on '+domain)
+        print('Please specify the password for '+args.nickname+' on '+domain)
         sys.exit()
         
     followNickname=getNicknameFromActor(args.follow)
@@ -499,7 +504,7 @@ if args.follow:
     if args.follow.startswith('https'):
         followHttpPrefix='https'
 
-    sendFollowRequestViaServer(session,nickname,args.password, \
+    sendFollowRequestViaServer(session,args.nickname,args.password, \
                                domain,port, \
                                followNickname,followDomain,followPort, \
                                httpPrefix, \
@@ -516,11 +521,11 @@ if args.unfollow:
     if '.' not in args.follow:
         print("This doesn't look like a fediverse handle")
         sys.exit()
-    if not nickname:
+    if not args.nickname:
         print('Please specify the nickname for the account with --nickname')
         sys.exit()
     if not args.password:
-        print('Please specify the password for '+nickname+' on '+domain)
+        print('Please specify the password for '+args.nickname+' on '+domain)
         sys.exit()
         
     followNickname=getNicknameFromActor(args.unfollow)
@@ -533,7 +538,7 @@ if args.unfollow:
     if args.follow.startswith('https'):
         followHttpPrefix='https'
 
-    sendUnfollowRequestViaServer(session,nickname,args.password, \
+    sendUnfollowRequestViaServer(session,args.nickname,args.password, \
                                  domain,port, \
                                  followNickname,followDomain,followPort, \
                                  httpPrefix, \
