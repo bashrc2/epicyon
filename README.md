@@ -385,7 +385,7 @@ This extends the ActivityPub client-to-server protocol to include activities cal
 
 ``` json
 { 'type': 'Delegate',
-  'actor': https://'+somedomain/users/admin,
+  'actor': https://somedomain/users/admin,
   'object': {
       'type': 'Role',
       'actor': https://'+somedomain+'/users/'+other,
@@ -415,7 +415,7 @@ This extends the ActivityPub client-to-server protocol to include an activity ca
 
 ``` json
 { 'type': 'Skill',
-  'actor': https://'+somedomain/users/somenickname,
+  'actor': https://somedomain/users/somenickname,
   'object': gardening;80,
   'to': [],
   'cc': []}
@@ -437,7 +437,7 @@ This extends the ActivityPub client-to-server protocol to include an activity ca
 
 ``` json
 { 'type': 'Availability',
-  'actor': https://'+somedomain/users/somenickname,
+  'actor': https://somedomain/users/somenickname,
   'object': ready,
   'to': [],
   'cc': []}
