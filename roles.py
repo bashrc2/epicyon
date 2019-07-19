@@ -61,7 +61,7 @@ def getRoles(baseDir: str,nickname: str,domain: str, \
         return actorJson['roles'][project]
     return None
 
-def outboxDelegate(baseDir: str,messageJson: {},debug: bool) -> bool:
+def outboxDelegate(baseDir: str,authenticatedNickname: str,messageJson: {},debug: bool) -> bool:
     """Handles receiving a delegation request
     """
     if not messageJson.get('type'):
@@ -87,6 +87,8 @@ def outboxDelegate(baseDir: str,messageJson: {},debug: bool) -> bool:
         return False
 
     delegatorNickname=getNicknameFromActor(messageJson['actor'])
+    if delegatorNickname!=authenticatedNickname:
+        return
     domain,port=getDomainFromActor(messageJson['actor'])
     project=messageJson['object']['object'].split(';')[0].strip()
 

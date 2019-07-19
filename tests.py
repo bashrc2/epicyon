@@ -43,7 +43,7 @@ from follow import sendFollowRequest
 from person import createPerson
 from person import setPreferredNickname
 from person import setBio
-from person import setSkillLevel
+from skills import setSkillLevel
 from roles import setRole
 from roles import getRoles
 from roles import outboxDelegate
@@ -974,9 +974,9 @@ def testDelegateRoles():
         'cc': []
     }
 
-    assert outboxDelegate(baseDir,newRoleJson,False)
+    assert outboxDelegate(baseDir,nickname,newRoleJson,False)
     # second time delegation has already happened so should return false
-    assert outboxDelegate(baseDir,newRoleJson,False)==False
+    assert outboxDelegate(baseDir,nickname,newRoleJson,False)==False
 
     assert '"delegator"' in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
     assert '"delegator"' in open(baseDir+'/accounts/'+nicknameDelegated+'@'+domain+'.json').read()
@@ -996,7 +996,7 @@ def testDelegateRoles():
     }
 
     # non-delegators cannot assign roles
-    assert outboxDelegate(baseDir,newRoleJson,False)==False
+    assert outboxDelegate(baseDir,nicknameDelegated,newRoleJson,False)==False
     assert '"otherrole"' not in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
 
     os.chdir(currDir)

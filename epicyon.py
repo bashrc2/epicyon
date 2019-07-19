@@ -14,7 +14,7 @@ from person import setPreferredNickname
 from person import setBio
 from person import validNickname
 from person import setProfileImage
-from person import setSkillLevel
+from skills import setSkillLevel
 from roles import setRole
 from person import setAvailability
 from person import setOrganizationScheme
@@ -68,6 +68,7 @@ from like import sendUndoLikeViaServer
 from blocking import sendBlockViaServer
 from blocking import sendUndoBlockViaServer
 from roles import sendRoleViaServer
+from skills import sendSkillViaServer
 import argparse
 
 def str2bool(v):
@@ -753,14 +754,36 @@ if args.project:
         sys.exit()
 
 if args.skill:
-    if args.skillLevelPercent==0:
-        args.skillLevelPercent=None
-    if args.skillLevelPercent:
-        if setSkillLevel(baseDir,nickname,domain,args.skill,args.skillLevelPercent):
-            print('Skill level for '+args.skill+' set to '+str(args.skillLevelPercent)+'%')
-    else:
-        if setSkillLevel(baseDir,nickname,domain,args.skill,args.skillLevelPercent):
-            print('Skill '+args.skill+' removed')
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    if not args.skillLevelPercent:
+        print('Specify a skill level in the range 0-100')
+        sys.exit()
+
+    if int(args.skillLevelPercent)<0 or int(args.skillLevelPercent)>100:
+        print('Skill level should be a percentage in the range 0-100')
+        sys.exit()
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending '+args.skill+' skill level '+str(args.skillLevelPercent)+' for '+nickname)
+
+    sendSkillViaServer(session,nickname,args.password,
+                       domain,port, \
+                       httpPrefix, \
+                       args.skill,args.skillLevelPercent, \
+                       cachedWebfingers,personCache, \
+                       True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
     sys.exit()
 
 if federationList:

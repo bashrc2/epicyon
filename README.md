@@ -296,32 +296,6 @@ If you want old posts to be deleted for data minimization purposes then the arch
 python3 epicyon.py --archive /dev/null --archiveweeks 4 --maxposts 256
 ```
 
-## Roles and skills
-
-To build crowdsourced organizations you might want to assign roles and skills to individuals. This can be done with some command options:
-
-To assign a role to someone:
-
-``` bash
-python3 epicyon.py --nickname susan --domain somedomain.net --project "instance" --role "moderator"
-```
-
-Individuals can be assigned to multiple roles within multiple projects if needed.
-
-You might also want to advertize that you have various skills. Skill levels are a percentage value.
-
-``` bash
-python3 epicyon.py --nickname jon --domain somedomain.net --skill "Dressmaking" --level 60
-```
-
-You can also set a busy status to define whether people are available for new tasks.
-
-``` bash
-python3 epicyon.py --nickname eva --domain somedomain.net --availability ready
-```
-
-With roles, skills and availability defined tasks may then be automatically assigned to the relevant people, or load balanced as volunteers come and go and complete pieces of work. Orgbots may collect that information and rapidly assemble a viable organization from predefined schemas. This is the way to produce effective non-hierarchical organizations which are also transient with no fixed bureaucracy.
-
 ## Blocking and unblocking
 
 Whether you are using the **--federate** option to define a set of allowed instances or not, you may want to block particular accounts even inside of the perimeter. To block an account:
@@ -403,7 +377,7 @@ python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
 		   --password [c2s password]
 ```
 
-This extends the ActivityPub client-to-server protocol to include an activities called *Delegate* and *Role*. The json looks like:
+This extends the ActivityPub client-to-server protocol to include activities called *Delegate* and *Role*. The json looks like:
 
 ``` json
 { 'type': 'Delegate',
@@ -420,6 +394,26 @@ This extends the ActivityPub client-to-server protocol to include an activities 
 ```
 
 Projects and roles are only scoped within a single instance. There presently are not enough security mechanisms to support multi-instance distributed organizations.
+
+## Assigning skills
+
+To help create organizations you can assign some skills to your account. Note that you can only assign skills to yourself and not to other people. The command is:
+
+``` bash
+python3 epicyon.py --nickname [nick] --domain [mydomain] \
+                   --skill [tag] --level [0-100] \
+		   --password [c2s password]
+```
+
+This extends the ActivityPub client-to-server protocol to include an activity called *Skill*. The json looks like:
+
+``` json
+{ 'type': 'Skill',
+  'actor': https://'+somedomain/users/somenickname,
+  'object': gardening;80,
+  'to': [],
+  'cc': []}
+```
 
 ## Object Capabilities Security
 

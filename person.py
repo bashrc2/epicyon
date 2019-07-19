@@ -87,28 +87,6 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         return True
     return False
 
-def setSkillLevel(baseDir: str,nickname: str,domain: str, \
-                  skill: str,skillLevelPercent: int) -> bool:
-    """Set a skill level for a person
-    Setting skill level to zero removes it
-    """
-    if skillLevelPercent<0 or skillLevelPercent>100:
-        return False
-    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
-    if not os.path.isfile(actorFilename):
-        return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
-        if not actorJson.get('skills'):
-            actorJson['skills']={}
-        if skillLevelPercent>0:
-            actorJson['skills'][skill]=skillLevelPercent
-        else:
-            del actorJson['skills'][skill]
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
-    return True
-
 def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
                           schema: str) -> bool:
     """Set the organization schema within which a person exists
