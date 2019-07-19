@@ -97,7 +97,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print('DEBUG: WEBFINGER lookup '+self.path+' '+str(self.server.baseDir))
-        wfResult=webfingerLookup(self.path,self.server.baseDir)
+        wfResult=webfingerLookup(self.path,self.server.baseDir,self.server.debug)
         if wfResult:
             self._set_headers('application/jrd+json')
             self.wfile.write(json.dumps(wfResult).encode('utf-8'))

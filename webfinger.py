@@ -149,27 +149,39 @@ def webfingerMeta() -> str:
         " </Link>" \
         "</XRD>"
 
-def webfingerLookup(path: str,baseDir: str) -> {}:
+def webfingerLookup(path: str,baseDir: str,debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
-    if not path.startswith('/.well-known/webfinger?'):
+    if not path.startswith('/.well-known/webfinger?'):        
         return None
     handle=None
     if 'resource=acct:' in path:
-        handle=path.split('resource=acct:')[1].strip()        
+        handle=path.split('resource=acct:')[1].strip()
+        if debug:
+            print('DEBUG: WEBFINGER handle '+handle)
     else:
         if 'resource=acct%3A' in path:
             handle=path.split('resource=acct%3A')[1].replace('%40','@').replace('%3A',':').strip()
-            print("======== "+path)
-            print("======== "+handle)
+            if debug:
+                print('DEBUG: WEBFINGER handle '+handle)
     if not handle:
+        if debug:
+            print('DEBUG: WEBFINGER handle missing')
         return None
     if '&' in handle:
         handle=handle.split('&')[0].strip()
+        if debug:
+            print('DEBUG: WEBFINGER handle with & removed '+handle)
     if '@' not in handle:
+        if debug:
+            print('DEBUG: WEBFINGER no @ in handle '+handle)
         return None
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
+    if debug:
+        print('DEBUG: WEBFINGER filename'+filename)
     if not os.path.isfile(filename):
+        if debug:
+            print('DEBUG: WEBFINGER filename not found '+filename)
         return None
     wfJson={"nickname": "unknown"}
     with open(filename, 'r') as fp:
