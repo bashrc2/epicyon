@@ -53,7 +53,7 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
         return wf
     url = '{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
     par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
-    hdr = {'Accept': 'application/jrd+json'}
+    hdr = {'Accept': 'application/ld+json'}
     try:
         result = getJson(session, url, hdr, par)
     except:
