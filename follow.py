@@ -334,9 +334,9 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     # what is the followers policy?
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug):
-        approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
         accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
         if os.path.isdir(accountDir):
+            approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
             approveFollowsFilename=accountDir+'/followrequests.txt'
             if os.path.isfile(approveFollowsFilename):
                 if approveHandle not in open(approveFollowsFilename).read():
