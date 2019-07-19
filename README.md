@@ -421,6 +421,28 @@ This extends the ActivityPub client-to-server protocol to include an activity ca
   'cc': []}
 ```
 
+## Setting availability status
+
+For the purpose of things like knowing current task status or task completion a status value can be set.
+
+``` bash
+python3 epicyon.py --nickname [nick] --domain [mydomain] \
+                   --availability [status] \
+		   --password [c2s password]
+```
+
+The status value can be any string, and can become part of organization building by combining it with roles and skills.
+
+This extends the ActivityPub client-to-server protocol to include an activity called *Availability*. "Status" was avoided because of te possibility of confusion with other things. The json looks like:
+
+``` json
+{ 'type': 'Availability',
+  'actor': https://'+somedomain/users/somenickname,
+  'object': ready,
+  'to': [],
+  'cc': []}
+```
+
 ## Object Capabilities Security
 
 A description of the proposed object capabilities model [is here](ocaps.md).
