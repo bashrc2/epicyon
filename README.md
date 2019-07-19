@@ -130,7 +130,11 @@ By default data will be stored in the directory in which you run the server, but
 python3 epicyon.py --domain [name] --port 8000 --https --path [data directory]
 ```
 
-By default the server will federate with any others. You can limit this to a well-defined list with the *--federate* option.
+## Defining a perimeter
+
+By default the server will federate with any others, but there may be cases where you want to limit this down to a defined set of servers within an organization.
+
+You can specify the domains which can federate with your server with the *--federate* option.
 
 ``` bash
 python3 epicyon.py --domain [name] --port 8000 --https --federate domain1.net domain2.org domain3.co.uk
