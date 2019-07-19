@@ -41,14 +41,13 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
         return None
 
     nickname, domain = parseHandle(handle)
-    print('wfTest2 '+nickname+' '+domain)
     if not nickname:
         return None
     wfDomain=domain
     if ':' in wfDomain:
-        wfPort=int(wfDomain.split(':')[1])
-        if wfPort==80 or wfPort==443:
-            wfDomain=wfDomain.split(':')[0]
+        #wfPort=int(wfDomain.split(':')[1])
+        #if wfPort==80 or wfPort==443:
+        wfDomain=wfDomain.split(':')[0]
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf
@@ -93,6 +92,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                             httpPrefix: str,publicKeyPem) -> {}:
     """Creates a webfinger endpoint for a user
     """
+    originalDomain=domain
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -130,7 +130,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                 "template": httpPrefix+"://"+domain+"/authorize_interaction?uri={uri}"
             }
         ],
-        "subject": "acct:"+nickname+"@"+domain
+        "subject": "acct:"+nickname+"@"+originalDomain
     }
     return account
 
@@ -149,7 +149,7 @@ def webfingerMeta() -> str:
         " </Link>" \
         "</XRD>"
 
-def webfingerLookup(path: str,baseDir: str,debug: bool) -> {}:
+def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
     if not path.startswith('/.well-known/webfinger?'):        
@@ -161,7 +161,7 @@ def webfingerLookup(path: str,baseDir: str,debug: bool) -> {}:
             print('DEBUG: WEBFINGER handle '+handle)
     else:
         if 'resource=acct%3A' in path:
-            handle=path.split('resource=acct%3A')[1].replace('%40','@').replace('%3A',':').strip()
+            handle=path.split('resource=acct%3A')[1].replace('%40','@',1).replace('%3A',':',1).strip()
             if debug:
                 print('DEBUG: WEBFINGER handle '+handle)
     if not handle:
@@ -176,9 +176,12 @@ def webfingerLookup(path: str,baseDir: str,debug: bool) -> {}:
         if debug:
             print('DEBUG: WEBFINGER no @ in handle '+handle)
         return None
+    if port!=80 and port !=443:
+        if ':' not in handle:
+            handle=handle+':'+str(port)
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
     if debug:
-        print('DEBUG: WEBFINGER filename'+filename)
+        print('DEBUG: WEBFINGER filename '+filename)
     if not os.path.isfile(filename):
         if debug:
             print('DEBUG: WEBFINGER filename not found '+filename)
