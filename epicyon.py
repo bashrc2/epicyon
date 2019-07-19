@@ -250,7 +250,9 @@ if args.http:
 if args.posts:
     if '@' not in args.posts:
         print('Syntax: --posts nickname@domain')
-        sys.exit()        
+        sys.exit()
+    if not args.http:
+        args.port=443
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
     getPublicPostsOfPerson(nickname,domain,False,True, \
@@ -261,6 +263,8 @@ if args.postsraw:
     if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
         sys.exit()        
+    if not args.http:
+        args.port=443
     nickname=args.postsraw.split('@')[0]
     domain=args.postsraw.split('@')[1]
     getPublicPostsOfPerson(nickname,domain,False,False, \
