@@ -1,4 +1,4 @@
-__filename__ = "skills.py"
+__filename__ = "availability.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
 __version__ = "0.0.1"
@@ -16,47 +16,42 @@ from session import postJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
-def setSkillLevel(baseDir: str,nickname: str,domain: str, \
-                  skill: str,skillLevelPercent: int) -> bool:
-    """Set a skill level for a person
-    Setting skill level to zero removes it
+def setAvailability(baseDir: str,nickname: str,domain: str, \
+                    status: str) -> bool:
+    """Set an availability status
     """
-    if skillLevelPercent<0 or skillLevelPercent>100:
+    # avoid giant strings
+    if len(status)>128:
         return False
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
-        if not actorJson.get('skills'):
-            actorJson['skills']={}
-        if skillLevelPercent>0:
-            actorJson['skills'][skill]=skillLevelPercent
-        else:
-            del actorJson['skills'][skill]
+        actorJson['availability']=status
         with open(actorFilename, 'w') as fp:
             commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True
 
-def getSkills(baseDir: str,nickname: str,domain: str) -> []:
-    """Returns the skills for a given person
+def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
+    """Returns the availability for a given person
     """
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
-        if not actorJson.get('skills'):
+        if not actorJson.get('availability'):
             return None
-        return actorJson['skills']
+        return actorJson['availability']
     return None
 
-def outboxSkills(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool:
-    """Handles receiving a skills update
+def outboxAvailability(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool:
+    """Handles receiving an availability update
     """
     if not messageJson.get('type'):
         return False
-    if not messageJson['type']=='Skill':
+    if not messageJson['type']=='Availability':
         return False
     if not messageJson.get('actor'):
         return False
@@ -69,22 +64,20 @@ def outboxSkills(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool
     if actorNickname!=nickname:
         return False
     domain,port=getDomainFromActor(messageJson['actor'])
-    skill=messageJson['object'].replace('"','').split(';')[0].strip()
-    skillLevelPercent=int(messageJson['object'].replace('"','').split(';')[1].strip())
+    status=messageJson['object'].replace('"','')
 
-    return setSkillLevel(baseDir,nickname,domain, \
-                         skill,skillLevelPercent)
+    return setAvailability(baseDir,nickname,domain,status)
 
-def sendSkillViaServer(session,nickname: str,password: str,
-                       domain: str,port: int, \
-                       httpPrefix: str, \
-                       skill: str,skillLevelPercent: int, \
-                       cachedWebfingers: {},personCache: {}, \
-                       debug: bool) -> {}:
-    """Sets a skill for a person via c2s
+def sendAvailabilityViaServer(session,nickname: str,password: str,
+                              domain: str,port: int, \
+                              httpPrefix: str, \
+                              status: str, \
+                              cachedWebfingers: {},personCache: {}, \
+                              debug: bool) -> {}:
+    """Sets the availability for a person via c2s
     """
     if not session:
-        print('WARN: No session for sendSkillViaServer')
+        print('WARN: No session for sendAvailabilityViaServer')
         return 6
 
     domainFull=domain
@@ -94,14 +87,10 @@ def sendSkillViaServer(session,nickname: str,password: str,
     toUrl = httpPrefix+'://'+domainFull+'/users/'+nickname
     ccUrl = httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
 
-    if skillLevelPercent:
-        skillStr=skill+';'+str(skillLevelPercent)
-    else:
-        skillStr=skill+';0'
-    newSkillJson = {
-        'type': 'Skill',
+    newAvailabilityJson = {
+        'type': 'Availability',
         'actor': httpPrefix+'://'+domainFull+'/users/'+nickname,
-        'object': '"'+skillStr+'"',
+        'object': '"'+status+'"',
         'to': [toUrl],
         'cc': [ccUrl]
     }
@@ -136,13 +125,13 @@ def sendSkillViaServer(session,nickname: str,password: str,
                'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
-        postJson(session,newSkillJson,[],inboxUrl,headers,"inbox:write")
+        postJson(session,newAvailabilityJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
     #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
     #    return 5
 
     if debug:
-        print('DEBUG: c2s POST skill success')
+        print('DEBUG: c2s POST availability success')
 
-    return newSkillJson
+    return newAvailabilityJson

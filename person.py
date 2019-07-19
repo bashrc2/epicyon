@@ -106,23 +106,6 @@ def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
             commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True
 
-def setAvailability(baseDir: str,nickname: str,domain: str, \
-                    status: str) -> bool:
-    """Set an availability status
-    """
-    # avoid giant strings
-    if len(status)>128:
-        return False
-    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
-    if not os.path.isfile(actorFilename):
-        return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
-        actorJson['availability']=status
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
-    return True
-
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint

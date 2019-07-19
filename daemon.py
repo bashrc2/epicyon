@@ -43,6 +43,7 @@ from blocking import outboxUndoBlock
 from config import setConfigParam
 from roles import outboxDelegate
 from skills import outboxSkills
+from availability import outboxAvailability
 import os
 import sys
 
@@ -225,8 +226,11 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: handle delegation requests')
         outboxDelegate(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
         if self.server.debug:
-            print('DEBUG: handle skills changes requestsw')
+            print('DEBUG: handle skills changes requests')
         outboxSkills(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle availability changes requests')
+        outboxAvailability(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle any like requests')
         outboxLike(self.server.baseDir,self.server.httpPrefix, \

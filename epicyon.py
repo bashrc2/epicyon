@@ -6,7 +6,6 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-
 from person import createPerson
 from person import createSharedInbox
 from person import createCapabilitiesInbox
@@ -16,7 +15,6 @@ from person import validNickname
 from person import setProfileImage
 from skills import setSkillLevel
 from roles import setRole
-from person import setAvailability
 from person import setOrganizationScheme
 from webfinger import webfingerHandle
 from posts import getPosts
@@ -69,6 +67,8 @@ from blocking import sendBlockViaServer
 from blocking import sendUndoBlockViaServer
 from roles import sendRoleViaServer
 from skills import sendSkillViaServer
+from availability import setAvailability
+from availability import sendAvailabilityViaServer
 import argparse
 
 def str2bool(v):
@@ -727,14 +727,6 @@ if args.backgroundImage:
         print('Background image was not added for '+args.nickname)
     sys.exit()    
 
-if args.availability:
-    if not nickname:
-        print('No nickname given')
-        sys.exit()
-    if setAvailability(baseDir,nickname,domain,args.availability):
-        print('Availablity set to '+args.availability)
-    sys.exit()
-
 if args.project:
     if not args.delegate and not args.undelegate:        
         if not nickname:
@@ -781,6 +773,31 @@ if args.skill:
                        args.skill,args.skillLevelPercent, \
                        cachedWebfingers,personCache, \
                        True)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
+if args.availability:
+    if not nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+        
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending availability status of '+nickname+' as '+args.availability)
+
+    sendAvailabilityViaServer(session,nickname,args.password,
+                              domain,port, \
+                              httpPrefix, \
+                              args.availability, \
+                              cachedWebfingers,personCache, \
+                              True)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
