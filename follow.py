@@ -336,7 +336,10 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                               domainToFollow,debug):
         accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
         if os.path.isdir(accountDir):
-            approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
+            if port!=80 and port!=443:
+                approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
+            else:
+                approveHandle=nicknameToFollow+'@'+domainToFollow
             approveFollowsFilename=accountDir+'/followrequests.txt'
             if os.path.isfile(approveFollowsFilename):
                 if approveHandle not in open(approveFollowsFilename).read():

@@ -196,6 +196,9 @@ parser.add_argument('--reply','--replyto', dest='replyto', type=str,default=None
 parser.add_argument("--followersonly", type=str2bool, nargs='?', \
                     const=True, default=True, \
                     help="Send to followers only")
+parser.add_argument("--followerspending", type=str2bool, nargs='?', \
+                    const=True, default=True, \
+                    help="Show a list of followers pending")
 parser.add_argument("-c","--client", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Use as an ActivityPub client")
@@ -320,6 +323,24 @@ useTor=args.tor
 if domain.endswith('.onion'):
     useTor=True
 
+if args.followerspending:
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    accountsDir=baseDir+'/accounts/'+args.nickname+'@'+domain
+    approveFollowsFilename=accountDir+'/followrequests.txt'
+    approveCtr=0
+    if os.path.isfile(approveFollowsFilename):
+        with open(approveFollowsFilename, 'r') as approvefile:
+            for approve in approvefile:
+                print(approve.replace('\n',''))
+                approveCtr+=1
+    if approveCtr==0:
+        print('There are no follow requests pending approval.')
+    sys.exit()
+        
+    
 if args.message:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
