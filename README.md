@@ -252,23 +252,9 @@ To run the network tests. These simulate instances exchanging messages.
 python3 epicyon.py --testsnetwork
 ```
 
-## Viewing Public Posts
-
-To view the public posts for a person:
-
-``` bash
-python3 epicyon.py --posts nickname@domain
-```
-
-If you want to view the raw json:
-
-``` bash
-python3 epicyon.py --postsraw nickname@domain
-```
-
 ## Account Management
 
-To add a new account:
+The first thing you will need to do is to create an account. You can do this with the command:
 
 ``` bash
 python3 epicyon.py --addaccount nickname@domain --password [yourpassword]
@@ -392,6 +378,20 @@ python3 epicyon.py --nickname [yournick] --domain [name] \
 		   --imagedescription "bees on flowers" \
 		   --blurhash \
 		   --password [c2s password]
+```
+
+## Viewing Public Posts
+
+To view the public posts for a person:
+
+``` bash
+python3 epicyon.py --posts nickname@domain
+```
+
+If you want to view the raw json:
+
+``` bash
+python3 epicyon.py --postsraw nickname@domain
 ```
 
 ## Delete posts
