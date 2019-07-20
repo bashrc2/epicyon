@@ -70,8 +70,8 @@ from roles import sendRoleViaServer
 from skills import sendSkillViaServer
 from availability import setAvailability
 from availability import sendAvailabilityViaServer
-from acceptreject import manualDenyFollowRequest
-from acceptreject import manualApproveFollowRequest
+from manualapprove import manualDenyFollowRequest
+from manualapprove import manualApproveFollowRequest
 import argparse
 
 def str2bool(v):
@@ -336,7 +336,20 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    manualApproveFollowRequest(baseDir,args.nickname,domain,args.approve)
+    sendThreads=[]
+    postLog=[]
+    cachedWebfingers={}
+    personCache={}
+    acceptedCaps=[]
+    manualApproveFollowRequest(session,baseDir, \
+                               httpPrefix,
+                               args.nickname,domain,port, \
+                               args.approve, \
+                               federationList, \
+                               sendThreads,postLog, \
+                               cachedWebfingers,personCache, \
+                               acceptedCaps, \
+                               debug)
     sys.exit()
 
 if args.deny:
