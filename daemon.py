@@ -44,6 +44,13 @@ from config import setConfigParam
 from roles import outboxDelegate
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlIndividualPost
+from webinterface import htmlProfile
+from webinterface import htmlFollowing
+from webinterface import htmlFollowers
+from webinterface import htmlInbox
+from webinterface import htmlOutbox
+from webinterface import htmlPostReplies
 import os
 import sys
 
@@ -329,7 +336,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.lastGET=currTimeGET
         self.server.GETbusy=True
 
-        #print('Content-type: '+self.headers['Accept'])
+        #print('Accept: '+self.headers['Accept'])
         
         if not self._permittedDir(self.path):
             if self.server.debug:
@@ -416,8 +423,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     if not self._isAuthorized():
                                         if postJsonObject.get('likes'):
                                             postJsonObject['likes']={}
-                                    self._set_headers('application/json')
-                                    self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
+                                    if 'text/html' in self.headers['Accept']:
+                                        self._set_headers('text/html')
+                                        self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
+                                    else:
+                                        self._set_headers('application/json')
+                                        self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
                             else:
@@ -453,8 +464,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         'last': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
-                                    self._set_headers('application/json')
-                                    self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
+                                    if 'text/html' in self.headers['Accept']:
+                                        self._set_headers('text/html')
+                                        self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
+                                    else:
+                                        self._set_headers('application/json')
+                                        self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
                                     self.server.GETbusy=False
                                     return
                                 else:
@@ -521,8 +536,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
                                                                     repliesJson['orderedItems'].append(postJsonObject)
                                     # send the replies json
-                                    self._set_headers('application/json')
-                                    self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
+                                    if 'text/html' in self.headers['Accept']:
+                                        self._set_headers('text/html')
+                                        self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
+                                    else:
+                                        self._set_headers('application/json')
+                                        self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
                                     self.server.GETbusy=False
                                     return
 
@@ -550,8 +569,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     if not self._isAuthorized():
                                         if postJsonObject.get('likes'):
                                             postJsonObject['likes']={}                                    
-                                    self._set_headers('application/json')
-                                    self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
+                                    if 'text/html' in self.headers['Accept']:
+                                        self._set_headers('text/html')
+                                        self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
+                                    else:
+                                        self._set_headers('application/json')
+                                        self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
                             else:
@@ -570,8 +593,12 @@ class PubServer(BaseHTTPRequestHandler):
                                             maxPostsInFeed, 'inbox', \
                                             True,self.server.ocapAlways)
                     if inboxFeed:
-                        self._set_headers('application/json')
-                        self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
+                        if 'text/html' in self.headers['Accept']:
+                            self._set_headers('text/html')
+                            self.wfile.write(htmlInbox(inboxFeed).encode('utf-8'))
+                        else:
+                            self._set_headers('application/json')
+                            self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
                         self.server.GETbusy=False
                         return
                 else:
@@ -593,8 +620,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  self._isAuthorized(), \
                                  self.server.ocapAlways)
         if outboxFeed:
-            self._set_headers('application/json')
-            self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
+            if 'text/html' in self.headers['Accept']:
+                self._set_headers('text/html')
+                self.wfile.write(htmlOutbox(outboxFeed).encode('utf-8'))
+            else:
+                self._set_headers('application/json')
+                self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.server.GETbusy=False
             return
         authorized=self._isAuthorized()
@@ -603,8 +634,12 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.httpPrefix,
                                    authorized,followsPerPage)
         if following:
-            self._set_headers('application/json')
-            self.wfile.write(json.dumps(following).encode('utf-8'))
+            if 'text/html' in self.headers['Accept']:
+                self._set_headers('text/html')
+                self.wfile.write(htmlFollowing(following).encode('utf-8'))
+            else:
+                self._set_headers('application/json')
+                self.wfile.write(json.dumps(following).encode('utf-8'))
             self.server.GETbusy=False
             return            
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
@@ -612,16 +647,24 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.httpPrefix, \
                                    authorized,followsPerPage,'followers')
         if followers:
-            self._set_headers('application/json')
-            self.wfile.write(json.dumps(followers).encode('utf-8'))
+            if 'text/html' in self.headers['Accept']:
+                self._set_headers('text/html')
+                self.wfile.write(htmlFollowers(followers).encode('utf-8'))
+            else:
+                self._set_headers('application/json')
+                self.wfile.write(json.dumps(followers).encode('utf-8'))
             self.server.GETbusy=False
             return
         # look up a person
         getPerson = personLookup(self.server.domain,self.path, \
                                  self.server.baseDir)
         if getPerson:
-            self._set_headers('application/json')
-            self.wfile.write(json.dumps(getPerson).encode('utf-8'))
+            if 'text/html' in self.headers['Accept']:
+                self._set_headers('text/html')
+                self.wfile.write(htmlProfile(getPerson).encode('utf-8'))
+            else:
+                self._set_headers('application/json')
+                self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.server.GETbusy=False
             return
         # check that a json file was requested

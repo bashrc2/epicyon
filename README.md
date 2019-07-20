@@ -14,29 +14,30 @@ This project is currently *pre alpha* and not recommended for any real world use
 
 ## Goals
 
- * A minimal ActivityPub server, comparable to an email MTA.
+ * A minimal ActivityPub server, comparable to an email MTA
  * AGPLv3+
- * Server-to-server and client-to-server protocols supported.
+ * Server-to-server and client-to-server protocols supported
  * Implemented in a common language (Python 3)
  * Keyword filtering.
  * Being able to build crowdsouced organizations with roles and skills
  * Sharings collection, similar to the gnusocial sharings plugin
  * Quotas for received posts per day, per domain and per account
  * Hellthread detection and removal
- * Support content warnings, reporting and blocking.
- * http signatures and basic auth.
- * Compatible with http (onion addresses), https and dat.
+ * Support content warnings, reporting and blocking
+ * http signatures and basic auth
+ * Compatible with http (onion addresses), https and dat
  * Minimal dependencies.
  * Capabilities based security
  * Support image blurhashes
- * Data minimization principle. Configurable post expiry time.
+ * Data minimization principle. Configurable post expiry time
  * Likes and repeats only visible to authorized viewers
  * ReplyGuy mitigation - maxmimum replies per post or posts per day
  * Ability to delete or hide specific conversation threads
- * Commandline interface. If there's a GUI it should be a separate project.
- * Designed for intermittent connectivity. Assume network disruptions.
+ * Commandline interface
+ * Simple web interface
+ * Designed for intermittent connectivity. Assume network disruptions
  * Limited visibility of follows/followers
- * Suitable for single board computers.
+ * Suitable for single board computers
 
 ## Install
 
