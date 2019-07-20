@@ -353,15 +353,33 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                     fp.write(approveHandle+'\n')
             return True
         return False
+    followedAccountAccepts(session,baseDir,httpPrefix, \
+                           nicknameToFollow,domainToFollow,port, \
+                           nickname,domain,fromPort, \
+                           messageJson['actor'],federationList,
+                           messageJson,acceptedCaps, \
+                           sendThreads,postLog, \
+                           cachedWebfingers,personCache, \
+                           debug)
 
+def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
+                           nicknameToFollow: str,domainToFollow: str,port: int, \
+                           nickname: str,domain: str,fromPort: int, \
+                           personUrl: str,federationList: [], \
+                           followJson: {},acceptedCaps: [], \
+                           sendThreads: [],postLog: [], \
+                           cachedWebfingers: {},personCache: {}, \
+                           debug: bool):
+    """The person receiving a follow request accepts the new follower
+    and sends back an Accept activity
+    """
     # send accept back
     if debug:
-        print('DEBUG: sending Accept for follow request which arrived at '+ \
+        print('DEBUG: sending Accept activity for follow request which arrived at '+ \
               nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
-    personUrl=messageJson['actor']
     acceptJson=createAccept(baseDir,federationList, \
                             nicknameToFollow,domainToFollow,port, \
-                            personUrl,'',httpPrefix,messageJson,acceptedCaps)
+                            personUrl,'',httpPrefix,followJson,acceptedCaps)
     if debug:
         pprint(acceptJson)
         print('DEBUG: sending follow Accept from '+ \

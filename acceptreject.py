@@ -74,6 +74,8 @@ def createReject(baseDir: str,federationList: [], \
 
 def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                  federationList: [],debug : bool) -> None:
+    """Receiving a follow Accept activity
+    """
     if not messageJson.get('object'):
         return
     if not messageJson['object'].get('type'):
@@ -186,6 +188,7 @@ def receiveAcceptReject(session,baseDir: str, \
             print('DEBUG: '+messageJson['type']+' does not contain a nickname')
         return False
     handle=nickname.lower()+'@'+domain.lower()
+    # receive follow accept
     acceptFollow(baseDir,domain,messageJson,federationList,debug)
     if debug:
         print('DEBUG: Uh, '+messageJson['type']+', I guess')
