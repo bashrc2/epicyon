@@ -329,6 +329,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.lastGET=currTimeGET
         self.server.GETbusy=True
 
+        #print('Content-type: '+self.headers['Accept'])
+        
         if not self._permittedDir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
@@ -921,9 +923,6 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     if not os.path.isdir(baseDir+'/accounts/inbox@'+domain):
         print('Creating shared inbox: inbox@'+domain)
         createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
-        print('See config.json for the password. You can remove the password from config.json after moving it elsewhere.')
-        adminPassword=createPassword(10)
-        setConfigParam(baseDir,'adminPassword',adminPassword)
 
     print('Creating inbox queue')
     httpd.thrInboxQueue= \

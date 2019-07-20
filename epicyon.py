@@ -199,7 +199,7 @@ parser.add_argument("--followersonly", type=str2bool, nargs='?', \
                     const=True, default=True, \
                     help="Send to followers only")
 parser.add_argument("--followerspending", type=str2bool, nargs='?', \
-                    const=True, default=True, \
+                    const=True, default=False, \
                     help="Show a list of followers pending")
 parser.add_argument('--approve', dest='approve', type=str,default=None, \
                     help='Approve a follow request')
