@@ -331,6 +331,9 @@ if args.approve:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
+    if '@' not in args.approve:
+        print('syntax: --approve nick@domain')
+        sys.exit()
     handle=args.nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountDir+'/followrequests.txt'
@@ -338,7 +341,7 @@ if args.approve:
         with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
             with open(approveFollowsFilename, 'r') as approvefile:
                 for approveHandle in approvefile:
-                    if approveHandle.startswith(handle):
+                    if approveHandle.startswith(args.approve):
                         if ':' in approveHandle:
                             port=int(approveHandle.split(':')[1].replace('\n',''))
                         # TODO approve follow for handle/port
@@ -351,6 +354,9 @@ if args.deny:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
+    if '@' not in args.deny:
+        print('syntax: --deny nick@domain')
+        sys.exit()
     handle=args.nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountDir+'/followrequests.txt'
@@ -358,10 +364,10 @@ if args.deny:
         with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
             with open(approveFollowsFilename, 'r') as approvefile:
                 for approveHandle in approvefile:
-                    if not approveHandle.startswith(handle):
+                    if not approveHandle.startswith(args.deny):
                         approvefilenew.write(approveHandle)
         os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
-        print('Follow request from '+handle+' was denied.')
+        print('Follow request from '+args.deny+' was denied.')
     sys.exit()
 
 if args.followerspending:
