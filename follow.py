@@ -261,7 +261,46 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
         if debug:
             print('DEBUG: Actor file not found: '+actorFilename)
     return manuallyApproveFollows
+
+def storeFollowRequest(baseDir: str, \
+                       nicknameToFollow: str,domainToFollow: str,port: int, \
+                       followJson: {}, \
+                       debug: bool) -> bool:
+    """Stores the follow request for later use
+    """
+    accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
+    if not os.path.isdir(accountDir):
+        return False
     
+    if port!=80 and port!=443:
+        approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
+    else:
+        approveHandle=nicknameToFollow+'@'+domainToFollow
+
+    # add to a file which contains a list of requests
+    approveFollowsFilename=accountDir+'/followrequests.txt'
+    if os.path.isfile(approveFollowsFilename):
+        if approveHandle not in open(approveFollowsFilename).read():
+            with open(approveFollowsFilename, "a") as fp:
+                fp.write(approveHandle+'\n')
+        else:
+            if debug:
+                print('DEBUG: '+approveHandle+' is already awaiting approval')
+    else:
+        with open(approveFollowsFilename, "w") as fp:
+            fp.write(approveHandle+'\n')
+
+    # store the follow request in its own directory
+    # We don't rely upon the inbox because items in there could expire
+    requestsDir=accountsDir+'/requests'
+    if not os.path.isdir(requestsDir):
+        os.mkdir(requestsDir)
+    followActivityfilename=requestsDir+'/'+approveHandle+'.follow'
+    with open(followActivityfilename, 'w') as fp:
+        commentjson.dump(followJson, fp, indent=4, sort_keys=False)
+        return True
+    return False
+
 def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                          port: int,sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
@@ -334,33 +373,18 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     # what is the followers policy?
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug):
-        accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
-        if os.path.isdir(accountDir):
-            if port!=80 and port!=443:
-                approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
-            else:
-                approveHandle=nicknameToFollow+'@'+domainToFollow
-            approveFollowsFilename=accountDir+'/followrequests.txt'
-            if os.path.isfile(approveFollowsFilename):
-                if approveHandle not in open(approveFollowsFilename).read():
-                    with open(approveFollowsFilename, "a") as fp:
-                        fp.write(approveHandle+'\n')
-                else:
-                    if debug:
-                        print('DEBUG: '+approveHandle+' is already awaiting approval')
-            else:
-                with open(approveFollowsFilename, "w") as fp:
-                    fp.write(approveHandle+'\n')
-            return True
-        return False
-    followedAccountAccepts(session,baseDir,httpPrefix, \
-                           nicknameToFollow,domainToFollow,port, \
-                           nickname,domain,fromPort, \
-                           messageJson['actor'],federationList,
-                           messageJson,acceptedCaps, \
-                           sendThreads,postLog, \
-                           cachedWebfingers,personCache, \
-                           debug)
+        return storeFollowRequest(baseDir, \
+                                  nicknameToFollow,domainToFollow,port, \
+                                  messageJson,debug)
+        
+    return followedAccountAccepts(session,baseDir,httpPrefix, \
+                                  nicknameToFollow,domainToFollow,port, \
+                                  nickname,domain,fromPort, \
+                                  messageJson['actor'],federationList,
+                                  messageJson,acceptedCaps, \
+                                  sendThreads,postLog, \
+                                  cachedWebfingers,personCache, \
+                                  debug)
 
 def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
                            nicknameToFollow: str,domainToFollow: str,port: int, \
