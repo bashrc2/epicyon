@@ -264,6 +264,7 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
 
 def storeFollowRequest(baseDir: str, \
                        nicknameToFollow: str,domainToFollow: str,port: int, \
+                       nickname: str,domain: str,fromPort: int, \
                        followJson: {}, \
                        debug: bool) -> bool:
     """Stores the follow request for later use
@@ -273,9 +274,9 @@ def storeFollowRequest(baseDir: str, \
         return False
     
     if port!=80 and port!=443:
-        approveHandle=nicknameToFollow+'@'+domainToFollow+':'+str(port)
+        approveHandle=nickname+'@'+domain+':'+str(fromPort)
     else:
-        approveHandle=nicknameToFollow+'@'+domainToFollow
+        approveHandle=nickname+'@'+domain
 
     # add to a file which contains a list of requests
     approveFollowsFilename=accountDir+'/followrequests.txt'
@@ -375,6 +376,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                               domainToFollow,debug):
         return storeFollowRequest(baseDir, \
                                   nicknameToFollow,domainToFollow,port, \
+                                  nickname,domain,fromPort,
                                   messageJson,debug)
         
     return followedAccountAccepts(session,baseDir,httpPrefix, \
