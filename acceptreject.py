@@ -193,3 +193,36 @@ def receiveAcceptReject(session,baseDir: str, \
     if debug:
         print('DEBUG: Uh, '+messageJson['type']+', I guess')
     return True
+
+def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: str) -> None:
+    """Manually deny a follow request
+    """
+    handle=args.nickname+'@'+domain
+    accountsDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountDir+'/followrequests.txt'
+    if handle in open(approveFollowsFilename).read():
+        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
+            with open(approveFollowsFilename, 'r') as approvefile:
+                for approveHandle in approvefile:
+                    if not approveHandle.startswith(denyHandle):
+                        approvefilenew.write(approveHandle)
+        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+        print('Follow request from '+denyHandle+' was denied.')
+    
+def manualApproveFollowRequest(baseDir: str,nickname: str,domain: str,approveHandle: str):
+    """Manually approve a follow request
+    """
+    handle=nickname+'@'+domain
+    accountsDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountDir+'/followrequests.txt'
+    if handle in open(approveFollowsFilename).read():
+        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
+            with open(approveFollowsFilename, 'r') as approvefile:
+                for handle in approvefile:
+                    if handle.startswith(approveHandle):
+                        if ':' in handle:
+                            port=int(handle.split(':')[1].replace('\n',''))
+                        # TODO approve follow for handle/port
+                    else:
+                        approvefilenew.write(handle)
+        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)

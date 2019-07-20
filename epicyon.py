@@ -70,6 +70,8 @@ from roles import sendRoleViaServer
 from skills import sendSkillViaServer
 from availability import setAvailability
 from availability import sendAvailabilityViaServer
+from acceptreject import manualDenyFollowRequest
+from acceptreject import manualApproveFollowRequest
 import argparse
 
 def str2bool(v):
@@ -334,20 +336,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    handle=args.nickname+'@'+domain
-    accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountDir+'/followrequests.txt'
-    if handle in open(approveFollowsFilename).read():
-        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
-            with open(approveFollowsFilename, 'r') as approvefile:
-                for approveHandle in approvefile:
-                    if approveHandle.startswith(args.approve):
-                        if ':' in approveHandle:
-                            port=int(approveHandle.split(':')[1].replace('\n',''))
-                        # TODO approve follow for handle/port
-                    else:
-                        approvefilenew.write(approveHandle)
-        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    manualApproveFollowRequest(baseDir,args.nickname,domain,args.approve)
     sys.exit()
 
 if args.deny:
@@ -357,17 +346,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    handle=args.nickname+'@'+domain
-    accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountDir+'/followrequests.txt'
-    if handle in open(approveFollowsFilename).read():
-        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
-            with open(approveFollowsFilename, 'r') as approvefile:
-                for approveHandle in approvefile:
-                    if not approveHandle.startswith(args.deny):
-                        approvefilenew.write(approveHandle)
-        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
-        print('Follow request from '+args.deny+' was denied.')
+    manualDenyFollowRequest(baseDir,args.nickname,domain,args.deny)
     sys.exit()
 
 if args.followerspending:
