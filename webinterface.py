@@ -56,6 +56,13 @@ def htmlProfile(profileJson: {}) -> str:
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileJson['publicKey']['summary']+'</p>' \
         '  </div>' \
+        '</div>' \
+        '<div class="container">\n' \
+        '  <center>' \
+        '    <a href="'+profileJson['id']+'/outbox?page=true"><button class="button"><span>Posts </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/following?page=true"><button class="button"><span>Following </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/followers?page=true"><button class="button"><span>Followers </span></button></a>' \
+        '  </center>' \
         '</div>'
 
     profileStyle= \
@@ -97,7 +104,53 @@ def htmlProfile(profileJson: {}) -> str:
         '.hero-text button:hover {' \
         '  background-color: #555;' \
         '  color: white;' \
-        '}' 
+        '}' \
+        '' \
+        '.button {' \
+        '  border-radius: 4px;' \
+        '  background-color: #999;' \
+        '  border: none;' \
+        '  color: #FFFFFF;' \
+        '  text-align: center;' \
+        '  font-size: 18px;' \
+        '  padding: 10px;' \
+        '  width: 200px;' \
+        '  transition: all 0.5s;' \
+        '  cursor: pointer;' \
+        '  margin: 5px;' \
+        '}' \
+        '' \
+        '.button span {' \
+        '  cursor: pointer;' \
+        '  display: inline-block;' \
+        '  position: relative;' \
+        '  transition: 0.5s;' \
+        '}' \
+        '' \
+        '.button span:after {' \
+        "  content: '\\00bb';" \
+        '  position: absolute;' \
+        '  opacity: 0;' \
+        '  top: 0;' \
+        '  right: -20px;' \
+        '  transition: 0.5s;' \
+        '}' \
+        '' \
+        '.button:hover span {' \
+        '  padding-right: 25px;' \
+        '}' \
+        '' \
+        '.button:hover span:after {' \
+        '  opacity: 1;' \
+        '  right: 0;' \
+        '}' \
+        '.container {' \
+        '    border: 2px solid #dedede;' \
+        '    background-color: #f1f1f1;' \
+        '    border-radius: 5px;' \
+        '    padding: 10px;' \
+        '    margin: 10px 0;' \
+        '}'
     profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 
