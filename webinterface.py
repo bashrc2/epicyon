@@ -90,6 +90,10 @@ def htmlProfile(profileJson: {}) -> str:
         '  color: white;' \
         '}' \
         '' \
+        '.hero-text img {' \
+        '  border-radius: 10%;' \
+        '}' \
+        '' \
         '.hero-text button {' \
         '  border: none;' \
         '  outline: 0;' \

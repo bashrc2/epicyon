@@ -30,14 +30,14 @@ body {
     max-width: 60px;
     width: 100%;
     margin-right: 20px;
-    border-radius: 50%;
+    border-radius: 10%;
 }
 
 .container img.attachment {
     max-width: 100%;
     margin-left: 25%;
     width: 50%;
-    border-radius: 0%;
+    border-radius: 10%;
 }
 .container img.right {
     float: right;
