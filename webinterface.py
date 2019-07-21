@@ -41,11 +41,42 @@ def htmlFollowers(followersJson: {}) -> str:
     return htmlHeader()+"<h1>Followers collection</h1>"+htmlFooter()
 
 def individualPostAsHtml(postJsonObject: {}) -> str:
+    avatarPosition=''
+    containerClass='container'
+    timeClass='time-right'
+    if postJsonObject['object']['inReplyTo']:
+        containerClass='container darker'
+        avatarPosition=' class="right"'
+        timeClass='time-left'
+    attachmentStr=''
+    if postJsonObject['object']['attachment']:
+        if isinstance(postJsonObject['object']['attachment'], list):
+            attachmentCtr=0
+            for attach in postJsonObject['object']['attachment']:
+                if attach.get('mediaType') and attach.get('url'):
+                    mediaType=attach['mediaType']
+                    imageDescription=''
+                    if attach.get('name'):
+                        imageDescription=attach['name']
+                    if mediaType=='image/png' or \
+                       mediaType=='image/jpeg' or \
+                       mediaType=='image/gif':
+                        if attach['url'].endswith('.png') or \
+                           attach['url'].endswith('.jpg') or \
+                           attach['url'].endswith('.jpeg') or \
+                           attach['url'].endswith('.gif'):
+                            if attachmentCtr>0:
+                                attachmentStr+='<br>'
+                            attachmentStr+= \
+                                '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment">\n'
+                            attachmentCtr+=1
+
     return \
-        '<div class="container">\n' \
-        '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar">\n'+ \
+        '<div class="'+containerClass+'">\n' \
+        '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar"'+avatarPosition+'>\n'+ \
         postJsonObject['object']['content']+'\n'+ \
-        '<span class="time-right">'+postJsonObject['object']['published']+'</span>\n' \
+        attachmentStr+ \
+        '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
         '</div>\n'    
 
 def htmlTimeline(timelineJson: {}) -> str:

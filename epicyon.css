@@ -1,3 +1,5 @@
+@charset "UTF-8";
+
 body {
   margin: 0 auto;
   max-width: 800px;
@@ -31,6 +33,12 @@ body {
   border-radius: 50%;
 }
 
+.container img.attachment {
+  max-width: 100%;
+  margin-left: 25%;
+  width: 50%;
+  border-radius: 0%;
+}
 .container img.right {
   float: right;
   margin-left: 20px;
