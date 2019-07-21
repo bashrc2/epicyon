@@ -7,6 +7,8 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 
 def htmlHeader(lang='en') -> str:
     htmlStr= \
@@ -72,10 +74,13 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
 
+    nickname=getNicknameFromActor(postJsonObject['actor'])
+    domain,port=getDomainFromActor(postJsonObject['actor'])
     return \
         '<div class="'+containerClass+'">\n' \
         '<a href="'+postJsonObject['actor']+'">' \
         '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar"'+avatarPosition+'></a>\n'+ \
+        '<p class="post-title">@'+nickname+'@'+domain+'</p>'+ \
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
         '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
