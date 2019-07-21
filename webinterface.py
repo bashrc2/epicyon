@@ -73,7 +73,8 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
 
     return \
         '<div class="'+containerClass+'">\n' \
-        '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar"'+avatarPosition+'>\n'+ \
+        '<a href="'+postJsonObject['actor']+'">' \
+        '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar"'+avatarPosition+'></a>\n'+ \
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
         '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
