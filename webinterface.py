@@ -56,7 +56,8 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
         if '/statuses/' in postJsonObject['object']['inReplyTo']:
             replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
             replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
-            titleStr+=' <i>replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+            if replyNickname and replyDomain:
+                titleStr+=' <i>replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
         else:
             titleStr+=' <i>replying to</i> '+postJsonObject['object']['inReplyTo']
     attachmentStr=''
