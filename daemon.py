@@ -325,6 +325,15 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: GET from '+self.server.baseDir+ \
                   ' path: '+self.path+' busy: '+ \
                   str(self.server.GETbusy))
+        # get css
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.endswith('.css'):
+            if os.path.isfile('epicyon.css'):
+                with open('epicyon.css', 'r') as cssfile:
+                    css = cssfile.read()
+                self._set_headers('text/css')
+                self.wfile.write(css.encode('utf-8'))
+                return
         if self.server.GETbusy:
             currTimeGET=int(time.time())
             if currTimeGET-self.server.lastGET<10:

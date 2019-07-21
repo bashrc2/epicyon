@@ -1196,6 +1196,9 @@ def createBoxBase(baseDir: str,boxname: str, \
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
+                        # remove any capability so that it's not displayed
+                        if p.get('capability'):
+                            del p['capability']
                         # Don't show likes or replies to unauthorized viewers
                         if not authorized:
                             if p.get('object'):

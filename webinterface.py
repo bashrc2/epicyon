@@ -40,20 +40,42 @@ def htmlFollowers(followersJson: {}) -> str:
     """
     return htmlHeader()+"<h1>Followers collection</h1>"+htmlFooter()
 
+def individualPostAsHtml(postJsonObject: {}) -> str:
+    return \
+        '<div class="container">\n' \
+        '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar">\n'+ \
+        postJsonObject['object']['content']+'\n'+ \
+        '<span class="time-right">'+postJsonObject['object']['published']+'</span>\n' \
+        '</div>\n'    
+
+def htmlTimeline(timelineJson: {}) -> str:
+    """Show the timeline as html
+    """
+    if not timelineJson.get('orderedItems'):
+        return ""
+    tlStr=htmlHeader()
+    for item in timelineJson['orderedItems']:
+        if item['type']=='Create':
+            tlStr+=individualPostAsHtml(item)
+    tlStr+=htmlFooter()
+    return tlStr
+
 def htmlInbox(inboxJson: {}) -> str:
     """Show the inbox as html
     """
-    return htmlHeader()+"<h1>Inbox</h1>"+htmlFooter()
+    return htmlTimeline(inboxJson)
 
 def htmlOutbox(outboxJson: {}) -> str:
     """Show the Outbox as html
     """
-    return htmlHeader()+"<h1>Outbox</h1>"+htmlFooter()
+    return htmlTimeline(outboxJson)
 
 def htmlIndividualPost(postJsonObject: {}) -> str:
     """Show an individual post as html
     """
-    return htmlHeader()+"<h1>Post</h1>"+htmlFooter()
+    return htmlHeader()+ \
+        individualPostAsHtml(postJsonObject)+ \
+        htmlFooter()
 
 def htmlPostReplies(postJsonObject: {}) -> str:
     """Show the replies to an individual post as html
