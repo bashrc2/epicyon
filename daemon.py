@@ -670,7 +670,11 @@ class PubServer(BaseHTTPRequestHandler):
         if getPerson:
             if 'text/html' in self.headers['Accept']:
                 self._set_headers('text/html')
-                self.wfile.write(htmlProfile(getPerson).encode('utf-8'))
+                self.wfile.write(htmlProfile(self.server.baseDir, \
+                                             self.server.httpPrefix, \
+                                             authorized, \
+                                             self.server.ocapAlways, \
+                                             getPerson).encode('utf-8'))
             else:
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(getPerson).encode('utf-8'))

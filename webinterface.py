@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
@@ -35,7 +36,7 @@ def htmlFooter() -> str:
         '</html>\n'
     return htmlStr
 
-def htmlProfile(profileJson: {}) -> str:
+def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,profileJson: {}) -> str:
     """Show the profile page as html
     """
     nickname=profileJson['name']
@@ -64,6 +65,9 @@ def htmlProfile(profileJson: {}) -> str:
         '    <a href="'+profileJson['id']+'/outbox?page=true"><button class="button"><span>Posts </span></button></a>' \
         '    <a href="'+profileJson['id']+'/following?page=true"><button class="button"><span>Following </span></button></a>' \
         '    <a href="'+profileJson['id']+'/followers?page=true"><button class="button"><span>Followers </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/roles?page=true"><button class="button"><span>Roles </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/skills?page=true"><button class="button"><span>Skills </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/shares?page=true"><button class="button"><span>Shares </span></button></a>' \
         '  </center>' \
         '</div>'
 
@@ -159,7 +163,73 @@ def htmlProfile(profileJson: {}) -> str:
         '    border-radius: 5px;' \
         '    padding: 10px;' \
         '    margin: 10px 0;' \
+        '}' \
+        '' \
+        '.container {' \
+        '    border: 2px solid #dedede;' \
+        '    background-color: #f1f1f1;' \
+        '    border-radius: 5px;' \
+        '    padding: 10px;' \
+        '    margin: 10px 0;' \
+        '}' \
+        '' \
+        '.darker {' \
+        '    border-color: #ccc;' \
+        '    background-color: #ddd;' \
+        '}' \
+        '' \
+        '.container::after {' \
+        '    content: "";' \
+        '    clear: both;' \
+        '    display: table;' \
+        '}' \
+        '' \
+        '.container img {' \
+        '    float: left;' \
+        '    max-width: 60px;' \
+        '    width: 100%;' \
+        '    margin-right: 20px;' \
+        '    border-radius: 10%;' \
+        '}' \
+        '' \
+        '.container img.attachment {' \
+        '    max-width: 100%;' \
+        '    margin-left: 25%;' \
+        '    width: 50%;' \
+        '    border-radius: 10%;' \
+        '}' \
+        '.container img.right {' \
+        '    float: right;' \
+        '    margin-left: 20px;' \
+        '    margin-right:0;' \
+        '}' \
+        '' \
+        '.time-right {' \
+        '    float: right;' \
+        '    color: #aaa;' \
+        '}' \
+        '' \
+        '.time-left {' \
+        '    float: left;' \
+        '    color: #999;' \
+        '}' \
+        '' \
+        '.post-title {' \
+        '    margin-top: 0px;' \
+        '    color: #999;' \
         '}'
+
+    # show some posts
+    outboxFeed=personBoxJson(baseDir,domain, \
+                             port,'/users/'+nickname+'/outbox?page=1', \
+                             httpPrefix, \
+                             4, 'outbox', \
+                             authorized, \
+                             ocapAlways)
+    for item in outboxFeed['orderedItems']:
+        if item['type']=='Create':
+            profileStr+=individualPostAsHtml(item)
+
     profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 
