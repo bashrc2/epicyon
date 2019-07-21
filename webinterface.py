@@ -77,7 +77,7 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
         '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
-        '</div>\n'    
+        '</div>\n'
 
 def htmlTimeline(timelineJson: {}) -> str:
     """Show the timeline as html
