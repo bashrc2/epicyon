@@ -68,7 +68,8 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             attachmentStr+= \
-                                '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment">\n'
+                                '<a href="'+attach['url']+'">' \
+                                '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
 
     return \
