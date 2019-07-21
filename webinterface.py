@@ -121,7 +121,9 @@ def htmlProfile(profileJson: {}) -> str:
         '  text-align: center;' \
         '  font-size: 18px;' \
         '  padding: 10px;' \
-        '  width: 200px;' \
+        '  width: 20%;' \
+        '  max-width: 200px;' \
+        '  min-width: 100px;' \
         '  transition: all 0.5s;' \
         '  cursor: pointer;' \
         '  margin: 5px;' \
