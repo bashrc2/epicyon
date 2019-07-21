@@ -10,15 +10,23 @@ import json
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
-def htmlHeader(lang='en') -> str:
-    htmlStr= \
-        '<!DOCTYPE html>\n' \
-        '<html lang="'+lang+'">\n' \
-        '  <meta charset="utf-8">\n' \
-        '  <style>\n' \
-        '    @import url("epicyon.css");\n' \
-        '  </style>\n' \
-        '  <body>\n'
+def htmlHeader(css=None,lang='en') -> str:
+    if not css:        
+        htmlStr= \
+            '<!DOCTYPE html>\n' \
+            '<html lang="'+lang+'">\n' \
+            '  <meta charset="utf-8">\n' \
+            '  <style>\n' \
+            '    @import url("epicyon.css");\n'+ \
+            '  </style>\n' \
+            '  <body>\n'
+    else:
+        htmlStr= \
+            '<!DOCTYPE html>\n' \
+            '<html lang="'+lang+'">\n' \
+            '  <meta charset="utf-8">\n' \
+            '  <style>\n'+css+'</style>\n' \
+            '  <body>\n'        
     return htmlStr
 
 def htmlFooter() -> str:
@@ -30,7 +38,76 @@ def htmlFooter() -> str:
 def htmlProfile(profileJson: {}) -> str:
     """Show the profile page as html
     """
-    return htmlHeader()+"<h1>Profile page</h1>"+htmlFooter()
+    nickname=profileJson['name']
+    if not nickname:
+        return ""
+    preferredName=profileJson['preferredUsername']
+    domain,port=getDomainFromActor(profileJson['id'])
+    if not domain:
+        return ""
+    domainFull=domain
+    if port:
+        domainFull=domain+':'+str(port)
+    profileStr= \
+        '<div class="card">' \
+        '<img src="'+profileJson['icon']['url']+'" alt="John" style="width:100%">' \
+        '<h1>'+preferredName+'</h1>' \
+        '<p>@'+nickname+'@'+domainFull+'</p>' \
+        '<p class="title"><i>'+profileJson['publicKey']['summary']+'</i></p>' \
+        '<p><button>Contact</button></p>' \
+        '</div>'
+    profileStr= \
+        ' <div class="hero-image">' \
+        '  <div class="hero-text">' \
+        '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" style="width:100%">' \
+        '    <h1>'+preferredName+'</h1>' \
+        '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
+        '    <p>'+profileJson['publicKey']['summary']+'</p>' \
+        '  </div>' \
+        '</div>'
+
+    profileStyle= \
+        'body, html {' \
+        '  height: 100%;' \
+        '  margin: 0;' \
+        '  font-family: Arial, Helvetica, sans-serif;' \
+        '}' \
+        '' \
+        '.hero-image {' \
+        '  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("'+profileJson['id']+'/image.png");' \
+        '  height: 50%;' \
+        '  background-position: center;' \
+        '  background-repeat: no-repeat;' \
+        '  background-size: cover;' \
+        '  position: relative;' \
+        '}' \
+        '' \
+        '.hero-text {' \
+        '  text-align: center;' \
+        '  position: absolute;' \
+        '  top: 50%;' \
+        '  left: 50%;' \
+        '  transform: translate(-50%, -50%);' \
+        '  color: white;' \
+        '}' \
+        '' \
+        '.hero-text button {' \
+        '  border: none;' \
+        '  outline: 0;' \
+        '  display: inline-block;' \
+        '  padding: 10px 25px;' \
+        '  color: black;' \
+        '  background-color: #ddd;' \
+        '  text-align: center;' \
+        '  cursor: pointer;' \
+        '}' \
+        '' \
+        '.hero-text button:hover {' \
+        '  background-color: #555;' \
+        '  color: white;' \
+        '}' 
+    profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
+    return profileStr
 
 def htmlFollowing(followingJson: {}) -> str:
     """Show the following collection as html

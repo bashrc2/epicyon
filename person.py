@@ -147,7 +147,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'availability': None,
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
-                          'url': httpPrefix+'://'+domain+'/users/'+nickname+'/icon.png'},
+                          'url': httpPrefix+'://'+domain+'/users/'+nickname+'/avatar.png'},
                  'id': httpPrefix+'://'+domain+'/users/'+nickname,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
@@ -234,6 +234,8 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         setRole(baseDir,nickname,domain,'instance','delegator')
     if os.path.isfile(baseDir+'/img/default-avatar.png'):
         copyfile(baseDir+'/img/default-avatar.png',baseDir+'/accounts/'+nickname+'@'+domain+'/avatar.png')
+    if os.path.isfile(baseDir+'/img/image.png'):
+        copyfile(baseDir+'/img/image.png',baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
