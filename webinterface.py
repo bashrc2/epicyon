@@ -49,14 +49,6 @@ def htmlProfile(profileJson: {}) -> str:
     if port:
         domainFull=domain+':'+str(port)
     profileStr= \
-        '<div class="card">' \
-        '<img src="'+profileJson['icon']['url']+'" alt="John" style="width:100%">' \
-        '<h1>'+preferredName+'</h1>' \
-        '<p>@'+nickname+'@'+domainFull+'</p>' \
-        '<p class="title"><i>'+profileJson['publicKey']['summary']+'</i></p>' \
-        '<p><button>Contact</button></p>' \
-        '</div>'
-    profileStr= \
         ' <div class="hero-image">' \
         '  <div class="hero-text">' \
         '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" style="width:100%">' \
