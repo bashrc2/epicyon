@@ -46,10 +46,19 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
     avatarPosition=''
     containerClass='container'
     timeClass='time-right'
+    nickname=getNicknameFromActor(postJsonObject['actor'])
+    domain,port=getDomainFromActor(postJsonObject['actor'])
+    titleStr='@'+nickname+'@'+domain
     if postJsonObject['object']['inReplyTo']:
         containerClass='container darker'
         avatarPosition=' class="right"'
         timeClass='time-left'
+        if '/statuses/' in postJsonObject['object']['inReplyTo']:
+            replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+            replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+            titleStr+=' <i>replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+        else:
+            titleStr+=' <i>replying to</i> '+postJsonObject['object']['inReplyTo']
     attachmentStr=''
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):
@@ -73,14 +82,12 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
-
-    nickname=getNicknameFromActor(postJsonObject['actor'])
-    domain,port=getDomainFromActor(postJsonObject['actor'])
+    
     return \
         '<div class="'+containerClass+'">\n' \
         '<a href="'+postJsonObject['actor']+'">' \
         '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar"'+avatarPosition+'></a>\n'+ \
-        '<p class="post-title">@'+nickname+'@'+domain+'</p>'+ \
+        '<p class="post-title">'+titleStr+'</p>'+ \
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
         '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
