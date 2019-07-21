@@ -48,13 +48,15 @@ def htmlProfile(profileJson: {}) -> str:
     domainFull=domain
     if port:
         domainFull=domain+':'+str(port)
+    profileDescription=profileJson['publicKey']['summary']
+    profileDescription='A test description'
     profileStr= \
         ' <div class="hero-image">' \
         '  <div class="hero-text">' \
-        '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" style="width:100%">' \
+        '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'">' \
         '    <h1>'+preferredName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
-        '    <p>'+profileJson['publicKey']['summary']+'</p>' \
+        '    <p>'+profileDescription+'</p>' \
         '  </div>' \
         '</div>' \
         '<div class="container">\n' \
@@ -92,6 +94,7 @@ def htmlProfile(profileJson: {}) -> str:
         '' \
         '.hero-text img {' \
         '  border-radius: 10%;' \
+        '  width: 50%;' \
         '}' \
         '' \
         '.hero-text button {' \
