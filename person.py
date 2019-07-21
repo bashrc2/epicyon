@@ -232,7 +232,8 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         setRole(baseDir,nickname,domain,'instance','admin')
         setRole(baseDir,nickname,domain,'instance','moderator')
         setRole(baseDir,nickname,domain,'instance','delegator')
-    copyfile(baseDir+'/img/default-avatar.png',baseDir+'/accounts/'+nickname+'@'+domain+'/avatar.png')
+    if os.path.isfile(baseDir+'/img/default-avatar.png'):
+        copyfile(baseDir+'/img/default-avatar.png',baseDir+'/accounts/'+nickname+'@'+domain+'/avatar.png')
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
