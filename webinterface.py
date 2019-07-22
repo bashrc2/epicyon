@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+from pprint import pprint
 from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -49,6 +50,14 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: b
     for item in outboxFeed['orderedItems']:
         if item['type']=='Create':
             profileStr+=individualPostAsHtml(item)
+    return profileStr
+
+def htmlProfileFollowing(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,nickname: str,domain: str,port: int,followingJson: {}) -> str:
+    """Shows following on the profile screen
+    """
+    profileStr=''
+    for item in followingJson['orderedItems']:
+        profileStr+=individualFollowAsHtml(item)
     return profileStr
 
 def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,profileJson: {},selected: str,extraJson=None) -> str:
@@ -295,8 +304,21 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
 
     if selected=='posts':
         profileStr+=htmlProfilePosts(baseDir,httpPrefix,authorized,ocapAlways,nickname,domain,port)
+    if selected=='following' or selected=='followers':
+        profileStr+=htmlProfileFollowing(baseDir,httpPrefix,authorized,ocapAlways,nickname,domain,port,extraJson)
     profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
+
+def individualFollowAsHtml(followUrl: str) -> str:
+    nickname=getNicknameFromActor(followUrl)
+    domain,port=getDomainFromActor(followUrl)
+    titleStr='@'+nickname+'@'+domain
+    return \
+        '<div class="container">\n' \
+        '<a href="'+followUrl+'">' \
+        '<img src="'+followUrl+'/avatar.png" alt="Avatar">\n'+ \
+        '<p>'+titleStr+'</p></a>'+ \
+        '</div>\n'
 
 def individualPostAsHtml(postJsonObject: {}) -> str:
     avatarPosition=''

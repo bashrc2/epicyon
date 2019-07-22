@@ -645,7 +645,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if 'page=' not in self.path:
                     # get a page of following, not the summary
                     following=getFollowingFeed(self.server.baseDir,self.server.domain, \
-                                               self.server.port,self.path+'?page=1', \
+                                               self.server.port,self.path+'?page=true', \
                                                self.server.httpPrefix, \
                                                authorized,followsPerPage)
                 getPerson = personLookup(self.server.domain,self.path.replace('/following',''), \
@@ -664,7 +664,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(following).encode('utf-8'))
                 self.server.GETbusy=False
-                return      
+                return
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
                                    self.server.httpPrefix, \

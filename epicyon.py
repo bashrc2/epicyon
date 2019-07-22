@@ -1041,7 +1041,14 @@ if args.unfilterStr:
 if args.testdata:
     useBlurhash=False    
     nickname='testuser567'
+    password='boringpassword'
     print('Generating some test data for user: '+nickname)
+
+    createPerson(baseDir,'maxboardroom',domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'ultrapancake',domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'drokk',domain,port,httpPrefix,True,password)
+    createPerson(baseDir,'sausagedog',domain,port,httpPrefix,True,password)
+
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,'likewhateveryouwantscoob')
     setSkillLevel(baseDir,nickname,domain,'testing',60)
     setSkillLevel(baseDir,nickname,domain,'typing',50)
@@ -1051,8 +1058,6 @@ if args.testdata:
     setAvailability(baseDir,nickname,domain,'busy')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
-    followPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
-    followerOfPerson(baseDir,nickname,domain,'admin',domain,federationList,True)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False,None,None,useBlurhash)
@@ -1061,6 +1066,15 @@ if args.testdata:
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,None,None,useBlurhash)
+
+    domainFull=domain+':'+str(port)
+    clearFollows(baseDir,nickname,domain)
+    followPerson(baseDir,nickname,domain,'maxboardroom',domainFull,federationList,False)
+    followPerson(baseDir,nickname,domain,'ultrapancake',domainFull,federationList,False)
+    followPerson(baseDir,nickname,domain,'sausagedog',domainFull,federationList,False)
+    followPerson(baseDir,nickname,domain,'drokk',domainFull,federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'drokk',domainFull,federationList,False)
+    followerOfPerson(baseDir,nickname,domain,'maxboardroom',domainFull,federationList,False)
 
 runDaemon(args.client,baseDir,domain,port,httpPrefix, \
           federationList, \

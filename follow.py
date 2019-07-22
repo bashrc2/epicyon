@@ -209,7 +209,10 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
         'totalItems': 0,
         'type': 'OrderedCollectionPage'}        
 
-    handle=nickname.lower()+'@'+domain.lower()
+    handleDomain=domain
+    if ':' in handleDomain:
+        handleDomain=domain.split(':')[0]
+    handle=nickname.lower()+'@'+handleDomain.lower()
     filename=baseDir+'/accounts/'+handle+'/'+followFile+'.txt'
     if not os.path.isfile(filename):
         return following
@@ -220,7 +223,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
         lines = f.readlines()
         for line in lines:
             if '#' not in line:
-                if '@' in line and '.' in line and not line.startswith('http'):
+                if '@' in line and not line.startswith('http'):
                     pageCtr += 1
                     totalCtr += 1
                     if currPage==pageNumber:
