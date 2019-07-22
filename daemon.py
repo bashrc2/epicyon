@@ -46,8 +46,6 @@ from skills import outboxSkills
 from availability import outboxAvailability
 from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
-from webinterface import htmlFollowing
-from webinterface import htmlFollowers
 from webinterface import htmlInbox
 from webinterface import htmlOutbox
 from webinterface import htmlPostReplies
@@ -638,27 +636,60 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         authorized=self._isAuthorized()
+        
         following=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
-                                   self.server.httpPrefix,
+                                   self.server.httpPrefix, \
                                    authorized,followsPerPage)
         if following:
             if 'text/html' in self.headers['Accept']:
-                self._set_headers('text/html')
-                self.wfile.write(htmlFollowing(following).encode('utf-8'))
+                if 'page=' not in self.path:
+                    # get a page of following, not the summary
+                    following=getFollowingFeed(self.server.baseDir,self.server.domain, \
+                                               self.server.port,self.path+'?page=1', \
+                                               self.server.httpPrefix, \
+                                               authorized,followsPerPage)
+                getPerson = personLookup(self.server.domain,self.path.replace('/following',''), \
+                                         self.server.baseDir)
+                if getPerson:
+                    self._set_headers('text/html')
+                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                                 self.server.httpPrefix, \
+                                                 authorized, \
+                                                 self.server.ocapAlways, \
+                                                 getPerson,'following', \
+                                                 following).encode('utf-8'))                
+                    self.server.GETbusy=False
+                    return
             else:
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(following).encode('utf-8'))
-            self.server.GETbusy=False
-            return            
+                self.server.GETbusy=False
+                return      
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
                                    self.server.httpPrefix, \
                                    authorized,followsPerPage,'followers')
         if followers:
             if 'text/html' in self.headers['Accept']:
-                self._set_headers('text/html')
-                self.wfile.write(htmlFollowers(followers).encode('utf-8'))
+                if 'page=' not in self.path:
+                    # get a page of followers, not the summary
+                    followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
+                                               self.server.port,self.path+'?page=1', \
+                                               self.server.httpPrefix, \
+                                               authorized,followsPerPage,'followers')
+                getPerson = personLookup(self.server.domain,self.path.replace('/followers',''), \
+                                         self.server.baseDir)
+                if getPerson:
+                    self._set_headers('text/html')
+                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                                 self.server.httpPrefix, \
+                                                 authorized, \
+                                                 self.server.ocapAlways, \
+                                                 getPerson,'followers', \
+                                                 followers).encode('utf-8'))                
+                    self.server.GETbusy=False
+                    return
             else:
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(followers).encode('utf-8'))
@@ -674,7 +705,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.httpPrefix, \
                                              authorized, \
                                              self.server.ocapAlways, \
-                                             getPerson).encode('utf-8'))
+                                             getPerson,'posts').encode('utf-8'))
             else:
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(getPerson).encode('utf-8'))

@@ -36,7 +36,22 @@ def htmlFooter() -> str:
         '</html>\n'
     return htmlStr
 
-def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,profileJson: {}) -> str:
+def htmlProfilePosts(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,nickname: str,domain: str,port: int) -> str:
+    """Shows posts on the profile screen
+    """
+    profileStr=''
+    outboxFeed=personBoxJson(baseDir,domain, \
+                             port,'/users/'+nickname+'/outbox?page=1', \
+                             httpPrefix, \
+                             4, 'outbox', \
+                             authorized, \
+                             ocapAlways)
+    for item in outboxFeed['orderedItems']:
+        if item['type']=='Create':
+            profileStr+=individualPostAsHtml(item)
+    return profileStr
+
+def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,profileJson: {},selected: str,extraJson=None) -> str:
     """Show the profile page as html
     """
     nickname=profileJson['name']
@@ -51,6 +66,24 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         domainFull=domain+':'+str(port)
     profileDescription=profileJson['publicKey']['summary']
     profileDescription='A test description'
+    postsButton='button'
+    followingButton='button'
+    followersButton='button'
+    rolesButton='button'
+    skillsButton='button'
+    sharesButton='button'
+    if selected=='posts':
+        postsButton='buttonselected'
+    elif selected=='following':
+        followingButton='buttonselected'
+    elif selected=='followers':
+        followersButton='buttonselected'
+    elif selected=='roles':
+        rolesButton='buttonselected'
+    elif selected=='skills':
+        skillsButton='buttonselected'
+    elif selected=='shares':
+        sharesButton='buttonselected'
     profileStr= \
         ' <div class="hero-image">' \
         '  <div class="hero-text">' \
@@ -62,12 +95,12 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '</div>' \
         '<div class="container">\n' \
         '  <center>' \
-        '    <a href="'+profileJson['id']+'/outbox?page=true"><button class="button"><span>Posts </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/following?page=true"><button class="button"><span>Following </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/followers?page=true"><button class="button"><span>Followers </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/roles?page=true"><button class="button"><span>Roles </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/skills?page=true"><button class="button"><span>Skills </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/shares?page=true"><button class="button"><span>Shares </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/outbox?page=true"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/following?page=true"><button class="'+followingButton+'"><span>Following </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/followers?page=true"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/roles?page=true"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/skills?page=true"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/shares?page=true"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
         '  </center>' \
         '</div>'
 
@@ -157,6 +190,46 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '  opacity: 1;' \
         '  right: 0;' \
         '}' \
+        '.buttonselected {' \
+        '  border-radius: 4px;' \
+        '  background-color: #666;' \
+        '  border: none;' \
+        '  color: #FFFFFF;' \
+        '  text-align: center;' \
+        '  font-size: 18px;' \
+        '  padding: 10px;' \
+        '  width: 20%;' \
+        '  max-width: 200px;' \
+        '  min-width: 100px;' \
+        '  transition: all 0.5s;' \
+        '  cursor: pointer;' \
+        '  margin: 5px;' \
+        '}' \
+        '' \
+        '.buttonselected span {' \
+        '  cursor: pointer;' \
+        '  display: inline-block;' \
+        '  position: relative;' \
+        '  transition: 0.5s;' \
+        '}' \
+        '' \
+        '.buttonselected span:after {' \
+        "  content: '\\00bb';" \
+        '  position: absolute;' \
+        '  opacity: 0;' \
+        '  top: 0;' \
+        '  right: -20px;' \
+        '  transition: 0.5s;' \
+        '}' \
+        '' \
+        '.buttonselected:hover span {' \
+        '  padding-right: 25px;' \
+        '}' \
+        '' \
+        '.buttonselected:hover span:after {' \
+        '  opacity: 1;' \
+        '  right: 0;' \
+        '}' \
         '.container {' \
         '    border: 2px solid #dedede;' \
         '    background-color: #f1f1f1;' \
@@ -219,29 +292,10 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '    color: #999;' \
         '}'
 
-    # show some posts
-    outboxFeed=personBoxJson(baseDir,domain, \
-                             port,'/users/'+nickname+'/outbox?page=1', \
-                             httpPrefix, \
-                             4, 'outbox', \
-                             authorized, \
-                             ocapAlways)
-    for item in outboxFeed['orderedItems']:
-        if item['type']=='Create':
-            profileStr+=individualPostAsHtml(item)
-
+    if selected=='posts':
+        profileStr+=htmlProfilePosts(baseDir,httpPrefix,authorized,ocapAlways,nickname,domain,port)
     profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
-
-def htmlFollowing(followingJson: {}) -> str:
-    """Show the following collection as html
-    """
-    return htmlHeader()+"<h1>Following collection</h1>"+htmlFooter()
-
-def htmlFollowers(followersJson: {}) -> str:
-    """Show the followers collection as html
-    """
-    return htmlHeader()+"<h1>Followers collection</h1>"+htmlFooter()
 
 def individualPostAsHtml(postJsonObject: {}) -> str:
     avatarPosition=''
