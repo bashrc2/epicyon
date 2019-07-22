@@ -378,7 +378,11 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(avatarFilename, 'rb') as avFile:
                             avBinary = avFile.read()
                             self.wfile.write(avBinary)
-                        return                    
+                        return
+
+        # This busy state helps to avoid flooding
+        # Resources which are expected to be called from a web page
+        # should be above this
         if self.server.GETbusy:
             currTimeGET=int(time.time())
             if currTimeGET-self.server.lastGET<10:
@@ -390,8 +394,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.lastGET=currTimeGET
         self.server.GETbusy=True
 
-        #print('Accept: '+self.headers['Accept'])
-        
         if not self._permittedDir(self.path):
             if self.server.debug:
                 print('DEBUG: GET Not permitted')
