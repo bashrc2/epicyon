@@ -84,6 +84,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         skillsButton='buttonselected'
     elif selected=='shares':
         sharesButton='buttonselected'
+    actor=profileJson['id']
     profileStr= \
         ' <div class="hero-image">' \
         '  <div class="hero-text">' \
@@ -95,12 +96,12 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '</div>' \
         '<div class="container">\n' \
         '  <center>' \
-        '    <a href="'+profileJson['id']+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/following"><button class="'+followingButton+'"><span>Following </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/followers"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
+        '    <a href="'+actor+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
+        '    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>Following </span></button></a>' \
+        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
+        '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
+        '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
+        '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
         '  </center>' \
         '</div>'
 
@@ -112,7 +113,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '}' \
         '' \
         '.hero-image {' \
-        '  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("'+profileJson['id']+'/image.png");' \
+        '  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("'+actor+'/image.png");' \
         '  height: 50%;' \
         '  background-position: center;' \
         '  background-repeat: no-repeat;' \
