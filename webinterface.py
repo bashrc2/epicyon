@@ -95,12 +95,12 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '</div>' \
         '<div class="container">\n' \
         '  <center>' \
-        '    <a href="'+profileJson['id']+'/outbox?page=true"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/following?page=true"><button class="'+followingButton+'"><span>Following </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/followers?page=true"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/roles?page=true"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/skills?page=true"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
-        '    <a href="'+profileJson['id']+'/shares?page=true"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
+        '    <a href="'+profileJson['id']+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/following"><button class="'+followingButton+'"><span>Following </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/followers"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
+        '    <a href="'+profileJson['id']+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
         '  </center>' \
         '</div>'
 
