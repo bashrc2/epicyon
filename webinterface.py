@@ -11,6 +11,7 @@ from pprint import pprint
 from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from posts import getPersonBox
 
 def htmlHeader(css=None,lang='en') -> str:
     if not css:        
@@ -37,30 +38,43 @@ def htmlFooter() -> str:
         '</html>\n'
     return htmlStr
 
-def htmlProfilePosts(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,nickname: str,domain: str,port: int) -> str:
+def htmlProfilePosts(baseDir: str,httpPrefix: str, \
+                     authorized: bool,ocapAlways: bool, \
+                     nickname: str,domain: str,port: int, \
+                     session,wfRequest: {},personCache: {}) -> str:
     """Shows posts on the profile screen
     """
     profileStr=''
-    outboxFeed=personBoxJson(baseDir,domain, \
-                             port,'/users/'+nickname+'/outbox?page=1', \
-                             httpPrefix, \
-                             4, 'outbox', \
-                             authorized, \
-                             ocapAlways)
+    outboxFeed= \
+        personBoxJson(baseDir,domain, \
+                      port,'/users/'+nickname+'/outbox?page=1', \
+                      httpPrefix, \
+                      4, 'outbox', \
+                      authorized, \
+                      ocapAlways)
     for item in outboxFeed['orderedItems']:
         if item['type']=='Create':
-            profileStr+=individualPostAsHtml(item)
+            profileStr+= \
+                individualPostAsHtml(session,wfRequest,personCache, \
+                                     domain,item)
     return profileStr
 
-def htmlProfileFollowing(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,nickname: str,domain: str,port: int,followingJson: {}) -> str:
+def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
+                         authorized: bool,ocapAlways: bool, \
+                         nickname: str,domain: str,port: int, \
+                         session,wfRequest: {},personCache: {}, \
+                         followingJson: {}) -> str:
     """Shows following on the profile screen
     """
     profileStr=''
     for item in followingJson['orderedItems']:
-        profileStr+=individualFollowAsHtml(item)
+        profileStr+=individualFollowAsHtml(session,wfRequest,personCache,domain,item)
     return profileStr
 
-def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,profileJson: {},selected: str,extraJson=None) -> str:
+def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
+                ocapAlways: bool,profileJson: {},selected: str, \
+                session,wfRequest: {},personCache: {}, \
+                extraJson=None) -> str:
     """Show the profile page as html
     """
     nickname=profileJson['name']
@@ -303,24 +317,40 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool,ocapAlways: bool,p
         '}'
 
     if selected=='posts':
-        profileStr+=htmlProfilePosts(baseDir,httpPrefix,authorized,ocapAlways,nickname,domain,port)
+        profileStr+= \
+            htmlProfilePosts(baseDir,httpPrefix,authorized, \
+                             ocapAlways,nickname,domain,port, \
+                             session,wfRequest,personCache)
     if selected=='following' or selected=='followers':
-        profileStr+=htmlProfileFollowing(baseDir,httpPrefix,authorized,ocapAlways,nickname,domain,port,extraJson)
+        profileStr+= \
+            htmlProfileFollowing(baseDir,httpPrefix, \
+                                 authorized,ocapAlways,nickname, \
+                                 domain,port,session, \
+                                 wfRequest,personCache,extraJson)
     profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 
-def individualFollowAsHtml(followUrl: str) -> str:
+def individualFollowAsHtml(session,wfRequest: {}, \
+                           personCache: {},domain: str, \
+                           followUrl: str) -> str:
     nickname=getNicknameFromActor(followUrl)
     domain,port=getDomainFromActor(followUrl)
     titleStr='@'+nickname+'@'+domain
+    avatarUrl=followUrl+'/avatar.png'
+    if domain not in followUrl:
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2 = \
+            getPersonBox(session,wfRequest,personCache,'outbox')
+        if avatarUrl2:
+            avatarUrl=avatarUrl2
     return \
         '<div class="container">\n' \
         '<a href="'+followUrl+'">' \
-        '<img src="'+followUrl+'/avatar.png" alt="Avatar">\n'+ \
+        '<img src="'+avatarUrl+'" alt="Avatar">\n'+ \
         '<p>'+titleStr+'</p></a>'+ \
         '</div>\n'
 
-def individualPostAsHtml(postJsonObject: {}) -> str:
+def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
+                         domain: str,postJsonObject: {}) -> str:
     avatarPosition=''
     containerClass='container'
     timeClass='time-right'
@@ -361,18 +391,26 @@ def individualPostAsHtml(postJsonObject: {}) -> str:
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
-    
+
+    avatarUrl=postJsonObject['actor']+'/avatar.png'
+    if domain not in postJsonObject['actor']:
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2 = \
+            getPersonBox(session,wfRequest,personCache,'outbox')
+        if avatarUrl2:
+            avatarUrl=avatarUrl2
+
     return \
         '<div class="'+containerClass+'">\n' \
         '<a href="'+postJsonObject['actor']+'">' \
-        '<img src="'+postJsonObject['actor']+'/avatar.png" alt="Avatar"'+avatarPosition+'></a>\n'+ \
+        '<img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'></a>\n'+ \
         '<p class="post-title">'+titleStr+'</p>'+ \
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
         '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
         '</div>\n'
 
-def htmlTimeline(timelineJson: {}) -> str:
+def htmlTimeline(session,wfRequest: {},personCache: {}, \
+                 domain: str,timelineJson: {}) -> str:
     """Show the timeline as html
     """
     if not timelineJson.get('orderedItems'):
@@ -380,7 +418,8 @@ def htmlTimeline(timelineJson: {}) -> str:
     tlStr=htmlHeader()
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
-            tlStr+=individualPostAsHtml(item)
+            tlStr+=individualPostAsHtml(session,wfRequest,personCache, \
+                                        domain,item)
     tlStr+=htmlFooter()
     return tlStr
 
@@ -394,11 +433,13 @@ def htmlOutbox(outboxJson: {}) -> str:
     """
     return htmlTimeline(outboxJson)
 
-def htmlIndividualPost(postJsonObject: {}) -> str:
+def htmlIndividualPost(session,wfRequest: {},personCache: {}, \
+                       domain: str,postJsonObject: {}) -> str:
     """Show an individual post as html
     """
     return htmlHeader()+ \
-        individualPostAsHtml(postJsonObject)+ \
+        individualPostAsHtml(session,wfRequest,personCache, \
+                             domain,postJsonObject)+ \
         htmlFooter()
 
 def htmlPostReplies(postJsonObject: {}) -> str:

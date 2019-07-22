@@ -651,12 +651,26 @@ class PubServer(BaseHTTPRequestHandler):
                 getPerson = personLookup(self.server.domain,self.path.replace('/following',''), \
                                          self.server.baseDir)
                 if getPerson:
+                    if not self.server.session:
+                        if self.server.debug:
+                            print('DEBUG: creating new session for c2s')
+                        self.server.session= \
+                            createSession(self.server.domain,self.server.port,self.server.useTor)
+                    
+                    if not self.server.session:
+                        if self.server.debug:
+                            print('DEBUG: creating new session')
+                        self.server.session= \
+                            createSession(self.server.domain,self.server.port,self.server.useTor)
                     self._set_headers('text/html')
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
                                                  self.server.ocapAlways, \
                                                  getPerson,'following', \
+                                                 self.server.session, \
+                                                 self.server.cachedWebfingers, \
+                                                 self.server.personCache, \
                                                  following).encode('utf-8'))                
                     self.server.GETbusy=False
                     return
@@ -680,12 +694,20 @@ class PubServer(BaseHTTPRequestHandler):
                 getPerson = personLookup(self.server.domain,self.path.replace('/followers',''), \
                                          self.server.baseDir)
                 if getPerson:
+                    if not self.server.session:
+                        if self.server.debug:
+                            print('DEBUG: creating new session')
+                        self.server.session= \
+                            createSession(self.server.domain,self.server.port,self.server.useTor)
                     self._set_headers('text/html')
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
                                                  self.server.ocapAlways, \
                                                  getPerson,'followers', \
+                                                 self.server.session, \
+                                                 self.server.cachedWebfingers, \
+                                                 self.server.personCache, \
                                                  followers).encode('utf-8'))                
                     self.server.GETbusy=False
                     return
@@ -699,12 +721,20 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir)
         if getPerson:
             if 'text/html' in self.headers['Accept']:
+                if not self.server.session:
+                    if self.server.debug:
+                        print('DEBUG: creating new session')
+                    self.server.session= \
+                        createSession(self.server.domain,self.server.port,self.server.useTor)
                 self._set_headers('text/html')
                 self.wfile.write(htmlProfile(self.server.baseDir, \
                                              self.server.httpPrefix, \
                                              authorized, \
                                              self.server.ocapAlways, \
-                                             getPerson,'posts').encode('utf-8'))
+                                             getPerson,'posts',
+                                             self.server.session, \
+                                             self.server.cachedWebfingers, \
+                                             self.server.personCache).encode('utf-8'))
             else:
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(getPerson).encode('utf-8'))
