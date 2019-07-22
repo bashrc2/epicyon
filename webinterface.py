@@ -86,6 +86,18 @@ def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
         profileStr='<div>'+profileStr+'</div>'
     return profileStr
 
+def htmlProfileSkills(nickname: str,domain: str,skillsJson: {}) -> str:
+    """Shows skills on the profile screen
+    """
+    profileStr=''
+    for skill,level in skillsJson.items():
+        profileStr+='<div>'+skill+'<br><div id="myProgress"><div id="myBar" style="width:'+str(level)+'%"></div></div></div><br>'
+    if len(profileStr)==0:
+        profileStr+='<p>@'+nickname+'@'+domain+' has no skills assigned</p>'
+    else:
+        profileStr='<center><div class="skill-title">'+profileStr+'</div></center>'
+    return profileStr
+
 def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
@@ -160,6 +172,9 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         if selected=='roles':
             profileStr+= \
                 htmlProfileRoles(nickname,domainFull,extraJson)
+        if selected=='skills':
+            profileStr+= \
+                htmlProfileSkills(nickname,domainFull,extraJson)
         profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 

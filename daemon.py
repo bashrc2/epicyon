@@ -567,7 +567,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 getPerson = \
                                     personLookup(self.server.domain,self.path.replace('/roles',''), \
                                                  self.server.baseDir)
-                                if getPerson:                                
+                                if getPerson:
                                     self._set_headers('text/html')
                                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                                  self.server.httpPrefix, \
@@ -581,9 +581,40 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 self._set_headers('application/json')
                                 self.wfile.write(json.dumps(actorJson['roles']).encode('utf-8'))
-                                self.server.GETbusy=False
+                            self.server.GETbusy=False
                             return
-                
+
+        if self.path.endswith('/skills') and '/users/' in self.path:
+            namedStatus=self.path.split('/users/')[1]
+            if '/' in namedStatus:
+                postSections=namedStatus.split('/')
+                nickname=postSections[0]
+                actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
+                if os.path.isfile(actorFilename):
+                    with open(actorFilename, 'r') as fp:
+                        actorJson=commentjson.load(fp)
+                        if actorJson.get('skills'):
+                            if 'text/html' in self.headers['Accept']:
+                                getPerson = \
+                                    personLookup(self.server.domain,self.path.replace('/skills',''), \
+                                                 self.server.baseDir)
+                                if getPerson:
+                                    self._set_headers('text/html')
+                                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                                                 self.server.httpPrefix, \
+                                                                 True, \
+                                                                 self.server.ocapAlways, \
+                                                                 getPerson,'skills', \
+                                                                 self.server.session, \
+                                                                 self.server.cachedWebfingers, \
+                                                                 self.server.personCache, \
+                                                                 actorJson['skills']).encode('utf-8'))     
+                            else:
+                                self._set_headers('application/json')
+                                self.wfile.write(json.dumps(actorJson['skills']).encode('utf-8'))
+                            self.server.GETbusy=False
+                            return
+
         # get an individual post from the path /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
             namedStatus=self.path.split('/users/')[1]
