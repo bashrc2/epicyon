@@ -144,6 +144,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'orgSchema': None,
                  'skills': {},
                  'roles': {},
+                 'shares': {},
                  'availability': None,
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
