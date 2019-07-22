@@ -116,7 +116,7 @@ def sendDeleteViaServer(session,fromNickname: str,password: str,
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
         getPersonBox(session,wfRequest,personCache,postToBox)
                      
     if not inboxUrl:

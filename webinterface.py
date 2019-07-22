@@ -338,10 +338,12 @@ def individualFollowAsHtml(session,wfRequest: {}, \
     titleStr='@'+nickname+'@'+domain
     avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2 = \
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
             getPersonBox(session,wfRequest,personCache,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
+        if preferredName:
+            titleStr=preferredName+' '+titleStr
     return \
         '<div class="container">\n' \
         '<a href="'+followUrl+'">' \
@@ -394,10 +396,12 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
 
     avatarUrl=postJsonObject['actor']+'/avatar.png'
     if domain not in postJsonObject['actor']:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2 = \
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
             getPersonBox(session,wfRequest,personCache,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
+        if preferredName:
+            titleStr=preferredName+' '+titleStr
 
     return \
         '<div class="'+containerClass+'">\n' \
