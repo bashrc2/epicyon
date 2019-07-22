@@ -71,6 +71,21 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
         profileStr+=individualFollowAsHtml(session,wfRequest,personCache,domain,item)
     return profileStr
 
+def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
+    """Shows roles on the profile screen
+    """
+    profileStr=''
+    for project,rolesList in rolesJson.items():
+        profileStr+='<div class="roles"><h2>'+project+'</h2><div class="roles-inner">'
+        for role in rolesList:
+            profileStr+='<h3>'+role+'</h3>'
+        profileStr+='</div></div>'
+    if len(profileStr)==0:
+        profileStr+='<p>@'+nickname+'@'+domain+' has no roles assigned</p>'
+    else:
+        profileStr='<div>'+profileStr+'</div>'
+    return profileStr
+
 def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
@@ -151,6 +166,16 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         '  left: 50%;' \
         '  transform: translate(-50%, -50%);' \
         '  color: white;' \
+        '}' \
+        '' \
+        '.roles {' \
+        '  text-align: center;' \
+        '  left: 35%;' \
+        '  background-color: #f1f1f1;' \
+        '}' \
+        '.roles-inner {' \
+        '  padding: 10px 25px;' \
+        '  background-color: #ffffff;' \
         '}' \
         '' \
         '.hero-text img {' \
@@ -327,6 +352,9 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                                  authorized,ocapAlways,nickname, \
                                  domain,port,session, \
                                  wfRequest,personCache,extraJson)
+    if selected=='roles':
+        profileStr+= \
+            htmlProfileRoles(nickname,domainFull,extraJson)
     profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 

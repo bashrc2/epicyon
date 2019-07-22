@@ -553,6 +553,37 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.GETbusy=False
                                     return
 
+        if self.path.endswith('/roles') and '/users/' in self.path:
+            namedStatus=self.path.split('/users/')[1]
+            if '/' in namedStatus:
+                postSections=namedStatus.split('/')
+                nickname=postSections[0]
+                actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
+                if os.path.isfile(actorFilename):
+                    with open(actorFilename, 'r') as fp:
+                        actorJson=commentjson.load(fp)
+                        if actorJson.get('roles'):
+                            if 'text/html' in self.headers['Accept']:
+                                getPerson = \
+                                    personLookup(self.server.domain,self.path.replace('/roles',''), \
+                                                 self.server.baseDir)
+                                if getPerson:                                
+                                    self._set_headers('text/html')
+                                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                                                 self.server.httpPrefix, \
+                                                                 True, \
+                                                                 self.server.ocapAlways, \
+                                                                 getPerson,'roles', \
+                                                                 self.server.session, \
+                                                                 self.server.cachedWebfingers, \
+                                                                 self.server.personCache, \
+                                                                 actorJson['roles']).encode('utf-8'))     
+                            else:
+                                self._set_headers('application/json')
+                                self.wfile.write(json.dumps(actorJson['roles']).encode('utf-8'))
+                                self.server.GETbusy=False
+                            return
+                
         # get an individual post from the path /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
             namedStatus=self.path.split('/users/')[1]
@@ -565,30 +596,30 @@ class PubServer(BaseHTTPRequestHandler):
                         domainFull=self.server.domain
                         if self.server.port!=80 and self.server.port!=443:
                             domainFull=self.server.domain+':'+str(self.server.port) 
-                            postFilename= \
-                                self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
-                                self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
-                            if os.path.isfile(postFilename):
-                                postJsonObject={}
-                                with open(postFilename, 'r') as fp:
-                                    postJsonObject=commentjson.load(fp)
-                                    # Only authorized viewers get to see likes on posts
-                                    # Otherwize marketers could gain more social graph info
-                                    if not self._isAuthorized():
-                                        if postJsonObject.get('likes'):
-                                            postJsonObject['likes']={}                                    
-                                    if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
-                                        self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
-                                    else:
-                                        self._set_headers('application/json')
-                                        self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
-                                self.server.GETbusy=False
-                                return
-                            else:
-                                self._404()
-                                self.server.GETbusy=False
-                                return
+                        postFilename= \
+                            self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
+                            self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
+                        if os.path.isfile(postFilename):
+                            postJsonObject={}
+                            with open(postFilename, 'r') as fp:
+                                postJsonObject=commentjson.load(fp)
+                                # Only authorized viewers get to see likes on posts
+                                # Otherwize marketers could gain more social graph info
+                                if not self._isAuthorized():
+                                    if postJsonObject.get('likes'):
+                                        postJsonObject['likes']={}                                    
+                                if 'text/html' in self.headers['Accept']:
+                                    self._set_headers('text/html')
+                                    self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
+                                else:
+                                    self._set_headers('application/json')
+                                    self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
+                            self.server.GETbusy=False
+                            return
+                        else:
+                            self._404()
+                            self.server.GETbusy=False
+                            return
         # get the inbox for a given person
         if self.path.endswith('/inbox'):
             if '/users/' in self.path:
