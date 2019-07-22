@@ -332,6 +332,53 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/css')
                 self.wfile.write(css.encode('utf-8'))
                 return
+        # show media
+        # Note that this comes before the busy flag to avoid conflicts
+        if '/media/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif'):
+                mediaStr=self.path.split('/media/')[1]
+                mediaFilename= \
+                    self.server.baseDir+'/media/'+mediaStr
+                if os.path.isfile(mediaFilename):
+                    if mediaFilename.endswith('.png'):
+                        self._set_headers('image/png')
+                    elif mediaFilename.endswith('.jpg'):
+                        self._set_headers('image/jpeg')
+                    else:
+                        self._set_headers('image/gif')
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self.wfile.write(mediaBinary)
+                    return        
+            self._404()
+            return
+        # show avatar or background image
+        # Note that this comes before the busy flag to avoid conflicts
+        if '/users/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif'):
+                avatarStr=self.path.split('/users/')[1]
+                if '/' in avatarStr:
+                    avatarNickname=avatarStr.split('/')[0]
+                    avatarFile=avatarStr.split('/')[1]
+                    avatarFilename= \
+                        self.server.baseDir+'/accounts/'+ \
+                        avatarNickname+'@'+ \
+                        self.server.domain+'/'+avatarFile
+                    if os.path.isfile(avatarFilename):
+                        if avatarFile.endswith('.png'):
+                            self._set_headers('image/png')
+                        elif avatarFile.endswith('.jpg'):
+                            self._set_headers('image/jpeg')
+                        else:
+                            self._set_headers('image/gif')
+                        with open(avatarFilename, 'rb') as avFile:
+                            avBinary = avFile.read()
+                            self.wfile.write(avBinary)
+                        return                    
         if self.server.GETbusy:
             currTimeGET=int(time.time())
             if currTimeGET-self.server.lastGET<10:
@@ -355,54 +402,6 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
-        # show media
-        if '/media/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.gif'):
-                mediaStr=self.path.split('/media/')[1]
-                mediaFilename= \
-                    self.server.baseDir+'/media/'+mediaStr
-                if os.path.isfile(mediaFilename):
-                    if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png')
-                    elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg')
-                    else:
-                        self._set_headers('image/gif')
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self.wfile.write(mediaBinary)
-                    self.server.GETbusy=False
-                    return        
-            self._404()
-            self.server.GETbusy=False
-            return
-        # show avatar or background image
-        if '/users/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.gif'):
-                avatarStr=self.path.split('/users/')[1]
-                if '/' in avatarStr:
-                    avatarNickname=avatarStr.split('/')[0]
-                    avatarFile=avatarStr.split('/')[1]
-                    avatarFilename= \
-                        self.server.baseDir+'/accounts/'+ \
-                        avatarNickname+'@'+ \
-                        self.server.domain+'/'+avatarFile
-                    if os.path.isfile(avatarFilename):
-                        if avatarFile.endswith('.png'):
-                            self._set_headers('image/png')
-                        elif avatarFile.endswith('.jpg'):
-                            self._set_headers('image/jpeg')
-                        else:
-                            self._set_headers('image/gif')
-                        with open(avatarFilename, 'rb') as avFile:
-                            avBinary = avFile.read()
-                            self.wfile.write(avBinary)
-                        self.server.GETbusy=False
-                        return                    
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
             namedStatus=self.path.split('/@')[1]
