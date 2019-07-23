@@ -236,6 +236,20 @@ parser.add_argument('--domainmax', dest='domainMaxPostsPerDay', type=int,default
                     help='Maximum number of received posts from a domain per day')
 parser.add_argument('--accountmax', dest='accountMaxPostsPerDay', type=int,default=8640, \
                     help='Maximum number of received posts from an account per day')
+parser.add_argument('--name', dest='name', type=str,default=None, \
+                    help='Name of an item being shared')
+parser.add_argument('--summary', dest='summary', type=str,default=None, \
+                    help='Description of an item being shared')
+parser.add_argument('--itemImage', dest='itemImage', type=str,default=None, \
+                    help='Filename of an image for an item being shared')
+parser.add_argument('--itemType', dest='itemType', type=str,default=None, \
+                    help='Type of item being shared')
+parser.add_argument('--itemCategory', dest='itemCategory', type=str,default=None, \
+                    help='Category of item being shared')
+parser.add_argument('--location', dest='location', type=str,default=None, \
+                    help='Location/City of item being shared')
+parser.add_argument('--duration', dest='duration', type=str,default=None, \
+                    help='Duration for which to share an item')
 args = parser.parse_args()
 
 debug=False
@@ -470,6 +484,57 @@ if args.announce:
         time.sleep(1)
     sys.exit()
 
+if args.name:
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    if not args.summary:
+        print('Specify a description for your shared item with the --summary option')
+        sys.exit()
+
+    if not args.itemType:
+        print('Specify a type of shared item with the --itemType option')
+        sys.exit()
+
+    if not args.itemCategory:
+        print('Specify a category of shared item with the --itemCategory option')
+        sys.exit()
+
+    if not args.location:
+        print('Specify a location or city where theshared item resides with the --location option')
+        sys.exit()
+
+    if not args.duration:
+        print('Specify a duration to share the object with the --duration option')
+        sys.exit()
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending shared item: '+args.name)
+
+    sendShareViaServer(session,args.nickname,args.password,
+                       domain,port, \
+                       httpPrefix, \
+                       args.name, \
+                       args.summary, \
+                       args.itemImage, \
+                       args.itemType, \
+                       args.itemCategory, \
+                       args.location, \
+                       args.duration, \
+                       cachedWebfingers,personCache, \
+                       debug)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+    
 if args.like:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
