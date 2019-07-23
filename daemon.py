@@ -910,13 +910,13 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # remove any trailing slashes from the path
-        self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/sharedInbox/','/sharedInbox')
+        self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
 
         # if this is a POST to teh outbox then check authentication
         self.outboxAuthenticated=False
         self.postToNickname=None
                 
-        if self.path.endswith('/outbox'):
+        if self.path.endswith('/outbox') or self.path.endswith('/shares'):
             if '/users/' in self.path:
                 if self._isAuthorized():
                     self.outboxAuthenticated=True
@@ -931,6 +931,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the post is to an expected path
         if not (self.path.endswith('/outbox') or \
                 self.path.endswith('/inbox') or \
+                self.path.endswith('/shares') or \
                 self.path.endswith('/caps/new') or \
                 self.path=='/sharedInbox'):
             print('Attempt to POST to invalid path '+self.path)

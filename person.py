@@ -137,11 +137,11 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'endpoints': {
                      'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
-                     'shares': httpPrefix+'://'+domain+'/shares'
                  },
                  'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
                  'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
                  'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
+                 'shares': httpPrefix+'://'+domain+'/users/'+nickname+'/shares',
                  'orgSchema': None,
                  'skills': {},
                  'roles': {},

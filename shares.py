@@ -81,27 +81,51 @@ def addShare(baseDir: str,nickname: str,domain: str, \
 
     itemID=displayName.replace(' ','')
 
+    # has an image for this share been uploaded?
     imageUrl=None
+    moveImage=False
+    if not imageFilename:
+        sharesImageFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/upload'
+        if os.path.isfile(sharesImageFilename+'.png'):
+            imageFilename=sharesImageFilename+'.png'
+            moveImage=True
+        elif os.path.isfile(sharesImageFilename+'.jpg'):
+            imageFilename=sharesImageFilename+'.jpg'
+            moveImage=True
+        elif os.path.isfile(sharesImageFilename+'.gif'):
+            imageFilename=sharesImageFilename+'.gif'
+            moveImage=True
+
+    # copy or move the image for the shared item to its destination
     if imageFilename:
         if os.path.isfile(imageFilename):
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
             itemIDfile=baseDir+'/sharefiles/'+str(published)+itemID
             if imageFilename.endswidth('.png'):
-                copyfile(imageFilename,itemIDfile+'.png')
+                if moveImage:
+                    os.rename(imageFilename,itemIDfile+'.png')
+                else:
+                    copyfile(imageFilename,itemIDfile+'.png')
                 imageUrl='/sharefiles/'+str(published)+itemID+'.png'
             if imageFilename.endswidth('.jpg'):
-                copyfile(imageFilename,itemIDfile+'.jpg')
+                if moveImage:
+                    os.rename(imageFilename,itemIDfile+'.jpg')
+                else:
+                    copyfile(imageFilename,itemIDfile+'.jpg')
                 imageUrl='/sharefiles/'+str(published)+itemID+'.jpg'
             if imageFilename.endswidth('.gif'):
-                copyfile(imageFilename,itemIDfile+'.gif')           
+                if moveImage:
+                    os.rename(imageFilename,itemIDfile+'.gif')
+                else:
+                    copyfile(imageFilename,itemIDfile+'.gif')           
                 imageUrl='/sharefiles/'+str(published)+itemID+'.gif'
 
     sharesJson[itemID] = {
         "displayName": displayName,
         "summary": summary,
         "imageUrl": imageUrl,
-        "type": itemType,
+        "itemType": itemType,
         "category": category,
         "location": location,
         "published": published,
@@ -226,3 +250,94 @@ def getSharesFeedForPerson(baseDir: str, \
     if nextPageNumber>lastPage:
         shares['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/shares?page='+str(lastPage)
     return shares
+
+def sendShareViaServer(session,fromNickname: str,password: str,
+                       fromDomain: str,fromPort: int, \
+                       httpPrefix: str, \
+                       displayName: str, \
+                       summary: str, \
+                       imageFilename: str, \
+                       itemType: str, \
+                       itemCategory: str, \
+                       location: str, \
+                       duration: str, \
+                       cachedWebfingers: {},personCache: {}, \
+                       debug: bool) -> {}:
+    """Creates an item share via c2s
+    """
+    if not session:
+        print('WARN: No session for sendShareViaServer')
+        return 6
+
+    fromDomainFull=fromDomain
+    if fromPort!=80 and fromPort!=443:
+        fromDomainFull=fromDomain+':'+str(fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+
+    newShareJson = {
+        'type': 'Add',
+        'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
+        'target': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/shares',
+        'object': {
+            "type": "Offer",
+            "displayName": displayName,
+            "summary": summary,
+            "itemType": itemType,
+            "category": category,
+            "location": location,
+            "duration": duration,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        },
+        'to': [toUrl],
+        'cc': [ccUrl]
+    }
+
+    handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+    
+    authHeader=createBasicAuthHeader(fromNickname,password)
+
+    if imageFilename:
+        headers = {'host': fromDomain, \
+                   'Authorization': authHeader}
+        postResult = \
+            postImage(session,imageFilename,[],inboxUrl.replace('/'+postToBox,'/shares'),headers,"inbox:write")
+    
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,newShareJson,[],inboxUrl,headers,"inbox:write")
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+    #    return 5
+
+    if debug:
+        print('DEBUG: c2s POST like success')
+
+    return newShareJson
