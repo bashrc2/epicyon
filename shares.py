@@ -338,9 +338,83 @@ def sendShareViaServer(session,fromNickname: str,password: str,
     #    return 5
 
     if debug:
-        print('DEBUG: c2s POST like success')
+        print('DEBUG: c2s POST share item success')
 
     return newShareJson
+
+def sendUndoShareViaServer(session,fromNickname: str,password: str,
+                           fromDomain: str,fromPort: int, \
+                           httpPrefix: str, \
+                           displayName: str, \
+                           cachedWebfingers: {},personCache: {}, \
+                           debug: bool) -> {}:
+    """Undoes a share via c2s
+    """
+    if not session:
+        print('WARN: No session for sendUndoShareViaServer')
+        return 6
+
+    fromDomainFull=fromDomain
+    if fromPort!=80 and fromPort!=443:
+        fromDomainFull=fromDomain+':'+str(fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+
+    undoShareJson = {
+        'type': 'Remove',
+        'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
+        'target': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/shares',
+        'object': {
+            "type": "Offer",
+            "displayName": displayName,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        },
+        'to': [toUrl],
+        'cc': [ccUrl]
+    }
+
+    handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for '+handle)
+        return 1
+
+    postToBox='outbox'
+
+    # get the actor inbox for the To handle
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
+        getPersonBox(session,wfRequest,personCache,postToBox)
+                     
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No '+postToBox+' was found for '+handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for '+handle)
+        return 4
+    
+    authHeader=createBasicAuthHeader(fromNickname,password)
+    
+    headers = {'host': fromDomain, \
+               'Content-type': 'application/json', \
+               'Authorization': authHeader}
+    postResult = \
+        postJson(session,undoShareJson,[],inboxUrl,headers,"inbox:write")
+    #if not postResult:
+    #    if debug:
+    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
+    #    return 5
+
+    if debug:
+        print('DEBUG: c2s POST undo share success')
+
+    return undoShareJson
 
 def outboxShareUpload(baseDir: str,httpPrefix: str, \
                       nickname: str,domain: str,port: int, \
@@ -398,3 +472,33 @@ def outboxShareUpload(baseDir: str,httpPrefix: str, \
              debug)
     if debug:
         print('DEBUG: shared item received via c2s')
+
+def outboxUndoShareUpload(baseDir: str,httpPrefix: str, \
+                          nickname: str,domain: str,port: int, \
+                          messageJson: {},debug: bool) -> None:
+    """ When a shared item is removed via c2s
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson['type']=='Remove':
+        return
+    if not messageJson.get('object'):
+        return
+    if not isinstance(messageJson['object'], dict):
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: undo block - no type')
+        return
+    if not messageJson['object']['type']=='Offer':
+        if debug:
+            print('DEBUG: not an Offer activity')
+        return
+    if not messageJson['object'].get('displayName'):
+        if debug:
+            print('DEBUG: displayName missing from Offer')
+        return
+    removeShare(baseDir,nickname,domain, \
+                messageJson['object']['displayName'])
+    if debug:
+        print('DEBUG: shared item removed via c2s')

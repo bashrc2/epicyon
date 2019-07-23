@@ -51,6 +51,7 @@ from webinterface import htmlOutbox
 from webinterface import htmlPostReplies
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
+from shares import outboxUndoShareUpload
 import os
 import sys
 
@@ -274,6 +275,12 @@ class PubServer(BaseHTTPRequestHandler):
                           self.postToNickname,self.server.domain, \
                           self.server.port,
                           messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle undo share uploads')
+        outboxUndoShareUpload(self.server.baseDir,self.server.httpPrefix, \
+                              self.postToNickname,self.server.domain, \
+                              self.server.port,
+                              messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: sending c2s post to named addresses')
             print('c2s sender: '+self.postToNickname+'@'+self.server.domain+':'+str(self.server.port))
