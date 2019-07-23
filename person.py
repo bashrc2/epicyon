@@ -137,6 +137,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'endpoints': {
                      'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
+                     'shares': httpPrefix+'://'+domain+'/shares'
                  },
                  'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
                  'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
@@ -144,7 +145,6 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'orgSchema': None,
                  'skills': {},
                  'roles': {},
-                 'shares': {},
                  'availability': None,
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
@@ -233,6 +233,10 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         setRole(baseDir,nickname,domain,'instance','admin')
         setRole(baseDir,nickname,domain,'instance','moderator')
         setRole(baseDir,nickname,domain,'instance','delegator')
+
+    if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        os.mkdir(baseDir+'/accounts/'+nickname+'@'+domain)
+    
     if os.path.isfile(baseDir+'/img/default-avatar.png'):
         copyfile(baseDir+'/img/default-avatar.png',baseDir+'/accounts/'+nickname+'@'+domain+'/avatar.png')
     if os.path.isfile(baseDir+'/img/image.png'):

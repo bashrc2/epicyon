@@ -98,6 +98,18 @@ def htmlProfileSkills(nickname: str,domain: str,skillsJson: {}) -> str:
         profileStr='<center><div class="skill-title">'+profileStr+'</div></center>'
     return profileStr
 
+def htmlProfileShares(nickname: str,domain: str,sharesJson: {}) -> str:
+    """Shows shares on the profile screen
+    """
+    profileStr=''
+    for item in sharesJson['orderedItems']:
+        profileStr+='<div>TODO</div><br>'
+    if len(profileStr)==0:
+        profileStr+='<p>@'+nickname+'@'+domain+' is not sharing any items</p>'
+    else:
+        profileStr='<center><div class="share-title">'+profileStr+'</div></center>'
+    return profileStr
+
 def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
@@ -175,6 +187,9 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         if selected=='skills':
             profileStr+= \
                 htmlProfileSkills(nickname,domainFull,extraJson)
+        if selected=='shares':
+            profileStr+= \
+                htmlProfileShares(nickname,domainFull,extraJson)
         profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 

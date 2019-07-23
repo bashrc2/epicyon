@@ -49,6 +49,7 @@ from webinterface import htmlProfile
 from webinterface import htmlInbox
 from webinterface import htmlOutbox
 from webinterface import htmlPostReplies
+from shares import getSharesFeedForPerson
 import os
 import sys
 
@@ -57,6 +58,9 @@ maxPostsInFeed=20
 
 # number of follows/followers per page
 followsPerPage=12
+
+# number of item shares per page
+sharesPerPage=12
 
 def readFollowList(filename: str):
     """Returns a list of ActivityPub addresses to follow
@@ -341,6 +345,28 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaStr=self.path.split('/media/')[1]
                 mediaFilename= \
                     self.server.baseDir+'/media/'+mediaStr
+                if os.path.isfile(mediaFilename):
+                    if mediaFilename.endswith('.png'):
+                        self._set_headers('image/png')
+                    elif mediaFilename.endswith('.jpg'):
+                        self._set_headers('image/jpeg')
+                    else:
+                        self._set_headers('image/gif')
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self.wfile.write(mediaBinary)
+                    return        
+            self._404()
+            return
+        # show shared item images
+        # Note that this comes before the busy flag to avoid conflicts
+        if '/sharefiles/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif'):
+                mediaStr=self.path.split('/sharefiles/')[1]
+                mediaFilename= \
+                    self.server.baseDir+'/sharefiles/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
                         self._set_headers('image/png')
@@ -699,7 +725,46 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         authorized=self._isAuthorized()
-        
+
+        shares=getSharesFeedForPerson(self.server.baseDir,self.server.domain, \
+                                      self.server.port,self.path, \
+                                      self.server.httpPrefix, \
+                                      sharesPerPage)
+        if shares:
+            if 'text/html' in self.headers['Accept']:
+                if 'page=' not in self.path:
+                    # get a page of shares, not the summary
+                    shares=getSharesFeedForPerson(self.server.baseDir,self.server.domain, \
+                                                  self.server.port,self.path+'?page=true', \
+                                                  self.server.httpPrefix, \
+                                                  sharesPerPage)
+                getPerson = personLookup(self.server.domain,self.path.replace('/shares',''), \
+                                         self.server.baseDir)
+                if getPerson:
+                    if not self.server.session:
+                        if self.server.debug:
+                            print('DEBUG: creating new session')
+                        self.server.session= \
+                            createSession(self.server.domain,self.server.port,self.server.useTor)
+                    
+                    self._set_headers('text/html')
+                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                                 self.server.httpPrefix, \
+                                                 authorized, \
+                                                 self.server.ocapAlways, \
+                                                 getPerson,'shares', \
+                                                 self.server.session, \
+                                                 self.server.cachedWebfingers, \
+                                                 self.server.personCache, \
+                                                 shares).encode('utf-8'))                
+                    self.server.GETbusy=False
+                    return
+            else:
+                self._set_headers('application/json')
+                self.wfile.write(json.dumps(shares).encode('utf-8'))
+                self.server.GETbusy=False
+                return
+
         following=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
                                    self.server.httpPrefix, \
@@ -717,15 +782,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if getPerson:
                     if not self.server.session:
                         if self.server.debug:
-                            print('DEBUG: creating new session for c2s')
-                        self.server.session= \
-                            createSession(self.server.domain,self.server.port,self.server.useTor)
-                    
-                    if not self.server.session:
-                        if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
+                    
                     self._set_headers('text/html')
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \

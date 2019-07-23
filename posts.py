@@ -114,16 +114,16 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
             yield item
     
 def getPersonBox(session,wfRequest: {},personCache: {}, \
-                 boxName='inbox') -> (str,str,str,str,str,str):
+                 boxName='inbox') -> (str,str,str,str,str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
-        return None,None,None,None,None,None,None
+        return None,None,None,None,None,None,None,None
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None)
         if not personJson:
-            return None,None,None,None,None,None,None
+            return None,None,None,None,None,None,None,None
     boxJson=None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
@@ -133,7 +133,7 @@ def getPersonBox(session,wfRequest: {},personCache: {}, \
         boxJson=personJson[boxName]
 
     if not boxJson:
-        return None,None,None,None,None,None,None
+        return None,None,None,None,None,None,None,None
 
     personId=None
     if personJson.get('id'):
