@@ -72,6 +72,8 @@ from availability import setAvailability
 from availability import sendAvailabilityViaServer
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
+from shares import sendShareViaServer
+from shares import sendUndoShareViaServer
 import argparse
 
 def str2bool(v):
