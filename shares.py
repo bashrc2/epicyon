@@ -102,19 +102,19 @@ def addShare(baseDir: str,nickname: str,domain: str, \
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
             itemIDfile=baseDir+'/sharefiles/'+str(published)+itemID
-            if imageFilename.endswidth('.png'):
+            if imageFilename.endswith('.png'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.png')
                 else:
                     copyfile(imageFilename,itemIDfile+'.png')
                 imageUrl='/sharefiles/'+str(published)+itemID+'.png'
-            if imageFilename.endswidth('.jpg'):
+            if imageFilename.endswith('.jpg'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.jpg')
                 else:
                     copyfile(imageFilename,itemIDfile+'.jpg')
                 imageUrl='/sharefiles/'+str(published)+itemID+'.jpg'
-            if imageFilename.endswidth('.gif'):
+            if imageFilename.endswith('.gif'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.gif')
                 else:
@@ -126,7 +126,7 @@ def addShare(baseDir: str,nickname: str,domain: str, \
         "summary": summary,
         "imageUrl": imageUrl,
         "itemType": itemType,
-        "category": category,
+        "category": itemCategory,
         "location": location,
         "published": published,
         "expire": durationSec

@@ -74,6 +74,7 @@ from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from shares import sendShareViaServer
 from shares import sendUndoShareViaServer
+from shares import addShare
 import argparse
 
 def str2bool(v):
@@ -1152,6 +1153,26 @@ if args.testdata:
     setRole(baseDir,nickname,domain,'epicyon','hacker')
     setRole(baseDir,nickname,domain,'someproject','assistant')
     setAvailability(baseDir,nickname,domain,'busy')
+
+    addShare(baseDir,nickname,domain, \
+             "spanner", \
+             "It's a spanner", \
+             "img/shares1.png", \
+             "tool", \
+             "mechanical", \
+             "City", \
+             "2 months",
+             debug)
+    addShare(baseDir,nickname,domain, \
+             "witch hat", \
+             "Spooky", \
+             "img/shares2.png", \
+             "hat", \
+             "clothing", \
+             "City", \
+             "3 months",
+             debug)
+    
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,None,None,useBlurhash)
