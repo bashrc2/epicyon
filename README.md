@@ -444,6 +444,24 @@ This extends the ActivityPub client-to-server protocol to include an activity ca
   'cc': []}
 ```
 
+## Shares
+
+This system includes a feature for bartering or gifting (i.e. common resource pooling or exchange without money), based upon the earlier Sharings plugin made by the Las Indias group which existed within GNU Social. It's intended to operate at the municipal level, sharing physical objects with people in your local vicinity. For example, sharing gardening tools on a street or a 3D printer between makerspaces.
+
+To share an item.
+
+``` bash
+python3 epicyon.py --itemName "spanner" --nickname [yournick] --domain [yourdomain] --summary "It's a spanner" --itemType "tool" --itemCategory "mechanical" --location [yourCity] --duration "2 months" --itemImage spanner.png --password [c2s password]
+```
+
+For the duration of the share you can use hours,days,weeks,months or years.
+
+To remove a shared item:
+
+``` bash
+python3 epicyon.py --undoItemName "spanner" --nickname [yournick] --domain [yourdomain] --password [c2s password]
+```
+
 ## Object Capabilities Security
 
 A description of the proposed object capabilities model [is here](ocaps.md).
