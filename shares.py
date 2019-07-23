@@ -341,3 +341,60 @@ def sendShareViaServer(session,fromNickname: str,password: str,
         print('DEBUG: c2s POST like success')
 
     return newShareJson
+
+def outboxShareUpload(baseDir: str,httpPrefix: str, \
+                      nickname: str,domain: str,port: int, \
+                      messageJson: {},debug: bool) -> None:
+    """ When a shared item is received by the outbox from c2s
+    """
+    if not messageJson.get('type'):
+        return
+    if not messageJson['type']=='Add':
+        return
+    if not messageJson.get('object'):
+        return
+    if not isinstance(messageJson['object'], dict):
+        return
+    if not messageJson['object'].get('type'):
+        if debug:
+            print('DEBUG: undo block - no type')
+        return
+    if not messageJson['object']['type']=='Offer':
+        if debug:
+            print('DEBUG: not an Offer activity')
+        return
+    if not messageJson['object'].get('displayName'):
+        if debug:
+            print('DEBUG: displayName missing from Offer')
+        return
+    if not messageJson['object'].get('summary'):
+        if debug:
+            print('DEBUG: summary missing from Offer')
+        return
+    if not messageJson['object'].get('itemType'):
+        if debug:
+            print('DEBUG: itemType missing from Offer')
+        return
+    if not messageJson['object'].get('category'):
+        if debug:
+            print('DEBUG: category missing from Offer')
+        return
+    if not messageJson['object'].get('location'):
+        if debug:
+            print('DEBUG: location missing from Offer')
+        return
+    if not messageJson['object'].get('duration'):
+        if debug:
+            print('DEBUG: duration missing from Offer')
+        return
+    addShare(baseDir,nickname,domain, \
+             messageJson['object']['displayName'], \
+             messageJson['object']['summary'], \
+             messageJson['object']['imageFilename'], \
+             messageJson['object']['itemType'], \
+             messageJson['object']['itemCategory'], \
+             messageJson['object']['location'], \
+             messageJson['object']['duration'], \
+             debug)
+    if debug:
+        print('DEBUG: shared item received via c2s')
