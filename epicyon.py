@@ -236,8 +236,10 @@ parser.add_argument('--domainmax', dest='domainMaxPostsPerDay', type=int,default
                     help='Maximum number of received posts from a domain per day')
 parser.add_argument('--accountmax', dest='accountMaxPostsPerDay', type=int,default=8640, \
                     help='Maximum number of received posts from an account per day')
-parser.add_argument('--name', dest='name', type=str,default=None, \
+parser.add_argument('--itemName', dest='itemName', type=str,default=None, \
                     help='Name of an item being shared')
+parser.add_argument('--undoItemName', dest='undoItemName', type=str,default=None, \
+                    help='Name of an shared item to remove')
 parser.add_argument('--summary', dest='summary', type=str,default=None, \
                     help='Description of an item being shared')
 parser.add_argument('--itemImage', dest='itemImage', type=str,default=None, \
@@ -484,7 +486,7 @@ if args.announce:
         time.sleep(1)
     sys.exit()
 
-if args.name:
+if args.itemName:
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
@@ -516,13 +518,13 @@ if args.name:
     session = createSession(domain,port,useTor)        
     personCache={}
     cachedWebfingers={}
-    print('Sending shared item: '+args.name)
+    print('Sending shared item: '+args.itemName)
 
     sendShareViaServer(session, \
                        args.nickname,args.password, \
                        domain,port, \
                        httpPrefix, \
-                       args.name, \
+                       args.itemName, \
                        args.summary, \
                        args.itemImage, \
                        args.itemType, \
@@ -535,7 +537,33 @@ if args.name:
         # TODO detect send success/fail
         time.sleep(1)
     sys.exit()
-    
+
+if args.undoItemName:
+    if not args.password:
+        print('Specify a password with the --password option')
+        sys.exit()
+
+    if not args.nickname:
+        print('Specify a nickname with the --nickname option')
+        sys.exit()
+
+    session = createSession(domain,port,useTor)        
+    personCache={}
+    cachedWebfingers={}
+    print('Sending undo of shared item: '+args.undoItemName)
+
+    sendUndoShareViaServer(session, \
+                           args.nickname,args.password, \
+                           domain,port, \
+                           httpPrefix, \
+                           args.undoItemName, \
+                           cachedWebfingers,personCache, \
+                           debug)
+    for i in range(10):
+        # TODO detect send success/fail
+        time.sleep(1)
+    sys.exit()
+
 if args.like:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
