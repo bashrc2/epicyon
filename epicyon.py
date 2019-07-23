@@ -518,7 +518,8 @@ if args.name:
     cachedWebfingers={}
     print('Sending shared item: '+args.name)
 
-    sendShareViaServer(session,args.nickname,args.password,
+    sendShareViaServer(session, \
+                       args.nickname,args.password, \
                        domain,port, \
                        httpPrefix, \
                        args.name, \
