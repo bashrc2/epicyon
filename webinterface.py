@@ -7,11 +7,127 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+import time
+import os
+from shutil import copyfile
 from pprint import pprint
 from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from posts import getPersonBox
+
+def htmlGetLoginCredentials(path: str,lastLoginTime: int) -> (str,str):
+    """Receives login credentials via HTTPServer GET
+    """
+    if not path.startswith('/login?'):
+        return None,None
+    # minimum time between login attempts
+    currTime=int(time.time())
+    if currTime<lastLoginTime+5:
+        return None,None
+    loginParams=path.split('?',1)[1]
+    if '&' not in loginParams:
+        return None,None
+    loginArgs=loginParams.split('&')
+    nickname=None
+    password=None
+    for arg in loginArgs:
+        if '=' in arg:
+            if arg.split('=',1)[0]=='nickname':
+                nickname=arg.split('=',1)[1]
+            elif arg.split('=',1)[0]=='password':
+                password=arg.split('=',1)[1]
+    return nickname,password
+
+def htmlLogin(baseDir: str) -> str:
+    if not os.path.isfile(baseDir+'/accounts/login.png'):
+        copyfile(baseDir+'/img/login.png',baseDir+'/accounts/login.png')
+    # /login?nickname=[username]&password=[password]&remember=on
+    loginCSS= \
+        'body, html {' \
+        '    height: 100%;' \
+        '    font-family: Arial, Helvetica, sans-serif;' \
+        '    max-width: 60%;' \
+        '    min-width: 600px;' \
+        '    margin: 0 auto;' \
+        '}' \
+        '' \
+        'form {' \
+        '  border: 3px solid #f1f1f1;' \
+        '}' \
+        '' \
+        'input[type=text], input[type=password] {' \
+        '  width: 100%;' \
+        '  padding: 12px 20px;' \
+        '  margin: 8px 0;' \
+        '  display: inline-block;' \
+        '  border: 1px solid #ccc;' \
+        '  box-sizing: border-box;' \
+        '}' \
+        '' \
+        'button {' \
+        '  background-color: #999;' \
+        '  color: white;' \
+        '  padding: 14px 20px;' \
+        '  margin: 8px 0;' \
+        '  border: none;' \
+        '  cursor: pointer;' \
+        '  width: 100%;' \
+        '  font-size: 24px;' \
+        '}' \
+        '' \
+        'button:hover {' \
+        '  opacity: 0.8;' \
+        '}' \
+        '' \
+        '.imgcontainer {' \
+        '  text-align: center;' \
+        '  margin: 24px 0 12px 0;' \
+        '}' \
+        '' \
+        'img.avatar {' \
+        '  width: 40%;' \
+        '  border-radius: 50%;' \
+        '}' \
+        '' \
+        '.container {' \
+        '  padding: 16px;' \
+        '}' \
+        '' \
+        'span.psw {' \
+        '  float: right;' \
+        '  padding-top: 16px;' \
+        '}' \
+        '' \
+        '@media screen and (max-width: 300px) {' \
+        '  span.psw {' \
+        '    display: block;' \
+        '    float: none;' \
+        '  }' \
+        '  .cancelbtn {' \
+        '    width: 100%;' \
+        '  }' \
+        '}'
+    
+    loginForm=htmlHeader(loginCSS)
+    loginForm+= \
+        ' <form method="POST" action="/login">' \
+        '  <div class="imgcontainer">' \
+        '    <img src="login.png" alt="login image" class="loginimage">' \
+        '  </div>' \
+        '' \
+        '  <div class="container">' \
+        '    <label for="nickname"><b>Nickname</b></label>' \
+        '    <input type="text" placeholder="Enter Nickname" name="nickname" required>' \
+        '' \
+        '    <label for="password"><b>Password</b></label>' \
+        '    <input type="password" placeholder="Enter Password" name="password" required>' \
+        '' \
+        '    <button type="submit">Login</button>' \
+        '  </div>' \
+        '</form>'
+    loginForm+=htmlFooter()
+    return loginForm
 
 def htmlHeader(css=None,lang='en') -> str:
     if not css:        

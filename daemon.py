@@ -32,6 +32,8 @@ from follow import getFollowingFeed
 from follow import outboxUndoFollow
 from auth import authorize
 from auth import createPassword
+from auth import createBasicAuthHeader
+from auth import authorizeBasic
 from threads import threadWithTrace
 from media import getMediaPath
 from media import createMediaDirs
@@ -49,6 +51,8 @@ from webinterface import htmlProfile
 from webinterface import htmlInbox
 from webinterface import htmlOutbox
 from webinterface import htmlPostReplies
+from webinterface import htmlLogin
+from webinterface import htmlGetLoginCredentials
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -83,6 +87,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _set_headers(self,fileFormat: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
+        self.send_header('WWW-Authenticate', 'Basic realm="simple", charset="UTF-8"')
         self.end_headers()
 
     def _404(self) -> None:
@@ -350,6 +355,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/css')
                 self.wfile.write(css.encode('utf-8'))
                 return
+        # image on login screen
+        if self.path=='/login.png':
+            mediaFilename= \
+                self.server.baseDir+'/accounts/login.png'
+            if os.path.isfile(mediaFilename):
+                self._set_headers('image/png')
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self.wfile.write(mediaBinary)
+            return        
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
@@ -444,6 +459,14 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
+
+        if self.path.startswith('/login'):
+            # request basic auth
+            self._set_headers('text/html')
+            self.wfile.write(htmlLogin(self.server.baseDir).encode('utf-8'))
+            self.server.GETbusy=False
+            return        
+
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
             namedStatus=self.path.split('/@')[1]
@@ -966,7 +989,27 @@ class PubServer(BaseHTTPRequestHandler):
         # if this is a POST to teh outbox then check authentication
         self.outboxAuthenticated=False
         self.postToNickname=None
-                
+
+        if self.path.startswith('/login'):
+            print("headers: "+str(self.headers))
+            print("path: "+self.path)
+            loginNickname,loginPassword=htmlGetLoginCredentials(self.path,self.server.lastLoginTime)
+            if loginNickname:
+                self.server.lastLoginTime=int(time.time())
+                print('Nickname: '+loginNickname)
+                print('Password: '+loginPassword)
+                authHeader=createBasicAuthHeader(loginNickname,loginPassword)
+                if not authorizeBasic(self.server.baseDir,'/users/'+loginNickname+'/outbox',authHeader,False):
+                    self.send_response(401)
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+            #self.path='/users/'+loginNickname+'/outbox'
+
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
             if '/users/' in self.path:
                 if self._isAuthorized():
@@ -1200,6 +1243,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd.maxMessageLength=5000
     httpd.maxImageSize=10*1024*1024
     httpd.allowDeletion=allowDeletion
+    httpd.lastLoginTime=0
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
         httpd.acceptedCaps.append('inbox:noreply')
