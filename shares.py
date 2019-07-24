@@ -100,25 +100,27 @@ def addShare(baseDir: str,nickname: str,domain: str, \
         if os.path.isfile(imageFilename):
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
-            itemIDfile=baseDir+'/sharefiles/'+itemID
+            if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
+                os.mkdir(baseDir+'/sharefiles/'+nickname)
+            itemIDfile=baseDir+'/sharefiles/'+nickname+'/'+itemID
             if imageFilename.endswith('.png'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.png')
                 else:
                     copyfile(imageFilename,itemIDfile+'.png')
-                imageUrl='/sharefiles/'+itemID+'.png'
+                imageUrl='/sharefiles/'+nickname+'/'+itemID+'.png'
             if imageFilename.endswith('.jpg'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.jpg')
                 else:
                     copyfile(imageFilename,itemIDfile+'.jpg')
-                imageUrl='/sharefiles/'+itemID+'.jpg'
+                imageUrl='/sharefiles/'+nickname+'/'+itemID+'.jpg'
             if imageFilename.endswith('.gif'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.gif')
                 else:
                     copyfile(imageFilename,itemIDfile+'.gif')           
-                imageUrl='/sharefiles/'+itemID+'.gif'
+                imageUrl='/sharefiles/'+nickname+'/'+itemID+'.gif'
 
     sharesJson[itemID] = {
         "displayName": displayName,
@@ -153,6 +155,14 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
             if deleteItemID:
                 for itemID in deleteItemID:
                     del sharesJson[itemID]
+                    # remove any associated images
+                    itemIDfile=baseDir+'/sharefiles/'+nickname+'/'+itemID
+                    if os.path.isfile(itemIDfile+'.png'):
+                        os.remove(itemIDfile+'.png')
+                    if os.path.isfile(itemIDfile+'.jpg'):
+                        os.remove(itemIDfile+'.jpg')
+                    if os.path.isfile(itemIDfile+'.gif'):
+                        os.remove(itemIDfile+'.gif')
                 with open(sharesFilename, 'w') as fp:
                     commentjson.dump(sharesJson, fp, indent=4, sort_keys=True)
         
