@@ -31,8 +31,7 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
     itemID=displayName.replace(' ','')
     if sharesJson.get(itemID):
         # remove any image for the item
-        published=sharesJson[itemID]['published']
-        itemIDfile=baseDir+'/sharefiles/'+str(published)+itemID
+        itemIDfile=baseDir+'/sharefiles/'+itemID
         if sharesJson[itemID]['imageUrl']:
             if sharesJson[itemID]['imageUrl'].endswith('.png'):
                 os.remove(itemIDfile+'.png')
@@ -101,25 +100,25 @@ def addShare(baseDir: str,nickname: str,domain: str, \
         if os.path.isfile(imageFilename):
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
-            itemIDfile=baseDir+'/sharefiles/'+str(published)+itemID
+            itemIDfile=baseDir+'/sharefiles/'+itemID
             if imageFilename.endswith('.png'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.png')
                 else:
                     copyfile(imageFilename,itemIDfile+'.png')
-                imageUrl='/sharefiles/'+str(published)+itemID+'.png'
+                imageUrl='/sharefiles/'+itemID+'.png'
             if imageFilename.endswith('.jpg'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.jpg')
                 else:
                     copyfile(imageFilename,itemIDfile+'.jpg')
-                imageUrl='/sharefiles/'+str(published)+itemID+'.jpg'
+                imageUrl='/sharefiles/'+itemID+'.jpg'
             if imageFilename.endswith('.gif'):
                 if moveImage:
                     os.rename(imageFilename,itemIDfile+'.gif')
                 else:
                     copyfile(imageFilename,itemIDfile+'.gif')           
-                imageUrl='/sharefiles/'+str(published)+itemID+'.gif'
+                imageUrl='/sharefiles/'+itemID+'.gif'
 
     sharesJson[itemID] = {
         "displayName": displayName,
