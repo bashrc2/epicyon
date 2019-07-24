@@ -704,6 +704,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             True,self.server.ocapAlways)
                     if inboxFeed:
                         if 'text/html' in self.headers['Accept']:
+                            nickname=self.path.replace('/users/','').replace('/inbox','')
+                            if '?page=' in nickname:
+                                nickname=nickname.split('?page=')[0]
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 inboxFeed=personBoxJson(self.server.baseDir, \
@@ -712,11 +715,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                         self.path+'?page=1', \
                                                         self.server.httpPrefix, \
                                                         maxPostsInFeed, 'inbox', \
-                                                        True,self.server.ocapAlways)                                
+                                                        True,self.server.ocapAlways)
                             self._set_headers('text/html')
                             self.wfile.write(htmlInbox(self.server.session, \
+                                                       self.server.baseDir, \
                                                        self.server.cachedWebfingers, \
                                                        self.server.personCache, \
+                                                       nickname, \
                                                        self.server.domain, \
                                                        inboxFeed).encode('utf-8'))
                         else:
@@ -744,6 +749,9 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.ocapAlways)
         if outboxFeed:
             if 'text/html' in self.headers['Accept']:
+                nickname=self.path.replace('/users/','').replace('/outbox','')
+                if '?page=' in nickname:
+                    nickname=nickname.split('?page=')[0]
                 if 'page=' not in self.path:
                     # if a page wasn't specified then show the first one
                     outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
@@ -755,8 +763,10 @@ class PubServer(BaseHTTPRequestHandler):
                     
                 self._set_headers('text/html')
                 self.wfile.write(htmlOutbox(self.server.session, \
+                                            self.server.baseDir, \
                                             self.server.cachedWebfingers, \
                                             self.server.personCache, \
+                                            nickname, \
                                             self.server.domain, \
                                             outboxFeed).encode('utf-8'))
             else:

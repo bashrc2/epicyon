@@ -284,13 +284,40 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
         '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
         '</div>\n'
 
-def htmlTimeline(session,wfRequest: {},personCache: {}, \
-                 domain: str,timelineJson: {}) -> str:
+def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
+                 nickname: str,domain: str,timelineJson: {},boxName: str) -> str:
     """Show the timeline as html
     """
     if not timelineJson.get('orderedItems'):
         return ""
-    tlStr=htmlHeader()
+
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        profileStyle = \
+            cssFile.read().replace('banner.png', \
+                                   '/users/'+nickname+'/banner.png')
+
+    localButton='button'
+    personalButton='button'
+    federatedButton='button'
+    if boxName=='inbox':
+        localButton='buttonselected'
+    elif boxName=='outbox':
+        personalButton='buttonselected'
+    elif boxName=='federated':
+        federatedButton='buttonselected'
+
+    actor='/users/'+nickname
+    tlStr=htmlHeader(profileStyle)
+    tlStr+= \
+        '<div class="timeline-banner">' \
+        '</div>' \
+        '<div class="container">\n' \
+        '  <center>' \
+        '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Local </span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Personal </span></button></a>' \
+        '    <a href="'+actor+'/federated"><button class="'+federatedButton+'"><span>Federated </span></button></a>' \
+        '  </center>' \
+        '</div>'
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
             tlStr+=individualPostAsHtml(session,wfRequest,personCache, \
@@ -298,19 +325,19 @@ def htmlTimeline(session,wfRequest: {},personCache: {}, \
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlInbox(session,wfRequest: {},personCache: {}, \
-              domain: str,inboxJson: {}) -> str:
+def htmlInbox(session,baseDir: str,wfRequest: {},personCache: {}, \
+              nickname: str,domain: str,inboxJson: {}) -> str:
     """Show the inbox as html
     """
-    return htmlTimeline(session,wfRequest,personCache, \
-                        domain,inboxJson)
+    return htmlTimeline(session,baseDir,wfRequest,personCache, \
+                        nickname,domain,inboxJson,'inbox')
 
-def htmlOutbox(session,wfRequest: {},personCache: {}, \
-               domain: str,outboxJson: {}) -> str:
+def htmlOutbox(session,baseDir: str,wfRequest: {},personCache: {}, \
+               nickname: str,domain: str,outboxJson: {}) -> str:
     """Show the Outbox as html
     """
-    return htmlTimeline(session,wfRequest,personCache, \
-                        domain,outboxJson)
+    return htmlTimeline(session,baseDir,wfRequest,personCache, \
+                        nickname,domain,outboxJson,'outbox')
 
 def htmlIndividualPost(session,wfRequest: {},personCache: {}, \
                        domain: str,postJsonObject: {}) -> str:
