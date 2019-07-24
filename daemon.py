@@ -740,7 +740,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
         authorized=self._isAuthorized()
 
-        shares=getSharesFeedForPerson(self.server.baseDir,self.server.domain, \
+        shares=getSharesFeedForPerson(self.server.baseDir, \
+                                      self.server.domain, \
                                       self.server.port,self.path, \
                                       self.server.httpPrefix, \
                                       sharesPerPage)

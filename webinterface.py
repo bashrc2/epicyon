@@ -104,11 +104,12 @@ def htmlProfileShares(nickname: str,domain: str,sharesJson: {}) -> str:
     profileStr=''
     for item in sharesJson['orderedItems']:
         profileStr+='<div class="container">'
-        profileStr+='<p class="post-title">'+item['displayName']+'</p>'
+        profileStr+='<p class="share-title">'+item['displayName']+'</p>'
+        profileStr+='<img src="'+item['imageUrl']+'" alt="Item image"></a>'
         profileStr+='<p>'+item['summary']+'</p>'
-        profileStr+='<p>Type: '+item['itemType']+' '
-        profileStr+='Category: '+item['itemCategory']+' '
-        profileStr+='Location: '+item['location']+'</p>'
+        profileStr+='<p><b>Type:</b> '+item['itemType']+' '
+        profileStr+='<b>Category:</b> '+item['category']+' '
+        profileStr+='<b>Location:</b> '+item['location']+'</p>'
         profileStr+='</div>'
     if len(profileStr)==0:
         profileStr+='<p>@'+nickname+'@'+domain+' is not sharing any items</p>'

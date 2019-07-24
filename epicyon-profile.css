@@ -195,7 +195,12 @@ body, html {
 
 .post-title {
     margin-top: 0px;
-    color: #999;
+    color: #444;
+}
+
+.share-title {
+    margin-top: 0px;
+    color: #222;
 }
 
 .skill-title {

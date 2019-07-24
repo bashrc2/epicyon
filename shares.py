@@ -167,7 +167,7 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
                     commentjson.dump(sharesJson, fp, indent=4, sort_keys=True)
         
 def getSharesFeedForPerson(baseDir: str, \
-                           nickname: str,domain: str,port: int, \
+                           domain: str,port: int, \
                            path: str,httpPrefix: str, \
                            sharesPerPage=12) -> {}:
     """Returns the shares for an account from GET requests
@@ -200,7 +200,7 @@ def getSharesFeedForPerson(baseDir: str, \
         return None
     if not validNickname(nickname):
         return None
-            
+
     if port!=80 and port!=443:
         domain=domain+':'+str(port)
 
@@ -237,6 +237,7 @@ def getSharesFeedForPerson(baseDir: str, \
         'type': 'OrderedCollectionPage'}        
 
     if not os.path.isfile(sharesFilename):
+        print("test5")
         return shares
     currPage=1
     pageCtr=0
