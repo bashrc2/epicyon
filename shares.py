@@ -18,6 +18,7 @@ from posts import getPersonBox
 from session import postJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from media import removeMetaData
 
 def removeShare(baseDir: str,nickname: str,domain: str, \
                 displayName: str) -> None:
@@ -104,22 +105,19 @@ def addShare(baseDir: str,nickname: str,domain: str, \
                 os.mkdir(baseDir+'/sharefiles/'+nickname)
             itemIDfile=baseDir+'/sharefiles/'+nickname+'/'+itemID
             if imageFilename.endswith('.png'):
+                removeMetaData(imageFilename,itemIDfile+'.png')
                 if moveImage:
-                    os.rename(imageFilename,itemIDfile+'.png')
-                else:
-                    copyfile(imageFilename,itemIDfile+'.png')
+                    os.remove(imageFilename)
                 imageUrl='/sharefiles/'+nickname+'/'+itemID+'.png'
             if imageFilename.endswith('.jpg'):
+                removeMetaData(imageFilename,itemIDfile+'.jpg')
                 if moveImage:
-                    os.rename(imageFilename,itemIDfile+'.jpg')
-                else:
-                    copyfile(imageFilename,itemIDfile+'.jpg')
+                    os.remove(imageFilename)
                 imageUrl='/sharefiles/'+nickname+'/'+itemID+'.jpg'
             if imageFilename.endswith('.gif'):
+                removeMetaData(imageFilename,itemIDfile+'.gif')
                 if moveImage:
-                    os.rename(imageFilename,itemIDfile+'.gif')
-                else:
-                    copyfile(imageFilename,itemIDfile+'.gif')           
+                    os.remove(imageFilename)
                 imageUrl='/sharefiles/'+nickname+'/'+itemID+'.gif'
 
     sharesJson[itemID] = {
