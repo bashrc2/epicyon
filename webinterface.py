@@ -20,7 +20,7 @@ def htmlHeader(css=None,lang='en') -> str:
             '<html lang="'+lang+'">\n' \
             '  <meta charset="utf-8">\n' \
             '  <style>\n' \
-            '    @import url("epicyon.css");\n'+ \
+            '    @import url("epicyon-profile.css");\n'+ \
             '  </style>\n' \
             '  <body>\n'
     else:
@@ -298,15 +298,19 @@ def htmlTimeline(session,wfRequest: {},personCache: {}, \
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlInbox(inboxJson: {}) -> str:
+def htmlInbox(session,wfRequest: {},personCache: {}, \
+              domain: str,inboxJson: {}) -> str:
     """Show the inbox as html
     """
-    return htmlTimeline(inboxJson)
+    return htmlTimeline(session,wfRequest,personCache, \
+                        domain,inboxJson)
 
-def htmlOutbox(outboxJson: {}) -> str:
+def htmlOutbox(session,wfRequest: {},personCache: {}, \
+               domain: str,outboxJson: {}) -> str:
     """Show the Outbox as html
     """
-    return htmlTimeline(outboxJson)
+    return htmlTimeline(session,wfRequest,personCache, \
+                        domain,outboxJson)
 
 def htmlIndividualPost(session,wfRequest: {},personCache: {}, \
                        domain: str,postJsonObject: {}) -> str:

@@ -344,8 +344,8 @@ class PubServer(BaseHTTPRequestHandler):
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
-            if os.path.isfile('epicyon.css'):
-                with open('epicyon.css', 'r') as cssfile:
+            if os.path.isfile('epicyon-profile.css'):
+                with open('epicyon-profile.css', 'r') as cssfile:
                     css = cssfile.read()
                 self._set_headers('text/css')
                 self.wfile.write(css.encode('utf-8'))
@@ -704,8 +704,21 @@ class PubServer(BaseHTTPRequestHandler):
                                             True,self.server.ocapAlways)
                     if inboxFeed:
                         if 'text/html' in self.headers['Accept']:
+                            if 'page=' not in self.path:
+                                # if no page was specified then show the first
+                                inboxFeed=personBoxJson(self.server.baseDir, \
+                                                        self.server.domain, \
+                                                        self.server.port, \
+                                                        self.path+'?page=1', \
+                                                        self.server.httpPrefix, \
+                                                        maxPostsInFeed, 'inbox', \
+                                                        True,self.server.ocapAlways)                                
                             self._set_headers('text/html')
-                            self.wfile.write(htmlInbox(inboxFeed).encode('utf-8'))
+                            self.wfile.write(htmlInbox(self.server.session, \
+                                                       self.server.cachedWebfingers, \
+                                                       self.server.personCache, \
+                                                       self.server.domain, \
+                                                       inboxFeed).encode('utf-8'))
                         else:
                             self._set_headers('application/json')
                             self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
@@ -731,8 +744,21 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.ocapAlways)
         if outboxFeed:
             if 'text/html' in self.headers['Accept']:
+                if 'page=' not in self.path:
+                    # if a page wasn't specified then show the first one
+                    outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
+                                             self.server.port,self.path+'?page=1', \
+                                             self.server.httpPrefix, \
+                                             maxPostsInFeed, 'outbox', \
+                                             self._isAuthorized(), \
+                                             self.server.ocapAlways)
+                    
                 self._set_headers('text/html')
-                self.wfile.write(htmlOutbox(outboxFeed).encode('utf-8'))
+                self.wfile.write(htmlOutbox(self.server.session, \
+                                            self.server.cachedWebfingers, \
+                                            self.server.personCache, \
+                                            self.server.domain, \
+                                            outboxFeed).encode('utf-8'))
             else:
                 self._set_headers('application/json')
                 self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
