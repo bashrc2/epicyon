@@ -19,6 +19,14 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 
+def removeMetaData(imageFilename: str,outputFilename: str):
+    imageFile = open(imageFilename)
+    image = Image.open(imageFilename)
+    data = list(image.getdata())
+    imageWithoutExif = Image.new(image.mode, image.size)
+    imageWithoutExif.putdata(data)
+    imageWithoutExif.save(outputFilename)
+
 def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
 
@@ -80,7 +88,8 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
     postJson['attachment']=[attachmentJson]
 
     if baseDir:
-        copyfile(imageFilename,mediaFilename)
+        removeMetaData(imageFilename,mediaFilename)
+        #copyfile(imageFilename,mediaFilename)
              
     return postJson
 
