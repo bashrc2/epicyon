@@ -20,6 +20,7 @@ from webfinger import storeWebfingerEndpoint
 from posts import createOutbox
 from auth import storeBasicCredentials
 from roles import setRole
+from media import removeMetaData
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -81,9 +82,10 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         personJson[iconFilenameBase]['url']=httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
         with open(personFilename, 'w') as fp:
             commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-
+            
         cmd = '/usr/bin/convert '+imageFilename+' -size '+resolution+' -quality 50 '+profileFilename
         subprocess.call(cmd, shell=True)
+        removeMetaData(profileFilename,profileFilename)
         return True
     return False
 
