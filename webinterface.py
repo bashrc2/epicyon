@@ -403,9 +403,6 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,timelineJson: {},boxName: str) -> str:
     """Show the timeline as html
     """
-    if not timelineJson.get('orderedItems'):
-        return ""
-
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         profileStyle = \
             cssFile.read().replace('banner.png', \
