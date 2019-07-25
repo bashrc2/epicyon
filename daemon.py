@@ -84,10 +84,17 @@ def readFollowList(filename: str):
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
+    def _login_headers(self,fileFormat: str) -> None:            
+        self.send_response(200)
+        self.send_header('Content-type', fileFormat)
+        self.send_header('Host', self.server.domainFull)
+        self.send_header('WWW-Authenticate', 'Basic realm="simple", charset="UTF-8"')
+        self.end_headers()
+
     def _set_headers(self,fileFormat: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
-        self.send_header('WWW-Authenticate', 'Basic realm="simple", charset="UTF-8"')
+        self.send_header('Host', self.server.domainFull)
         self.end_headers()
 
     def _404(self) -> None:
@@ -462,7 +469,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.startswith('/login'):
             # request basic auth
-            self._set_headers('text/html')
+            self._login_headers('text/html')
             self.wfile.write(htmlLogin(self.server.baseDir).encode('utf-8'))
             self.server.GETbusy=False
             return        
@@ -1221,6 +1228,9 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
     httpd.domain=domain
     httpd.port=port
+    httpd.domainFull=domain
+    if port!=80 and port!=443:
+        httpd.domainFull=domain+':'+str(port)
     httpd.httpPrefix=httpPrefix
     httpd.debug=debug
     httpd.federationList=fedList.copy()
