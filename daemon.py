@@ -88,7 +88,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Host', self.server.domainFull)
-        self.send_header('WWW-Authenticate', 'Basic realm="simple", charset="UTF-8"')
+        self.send_header('WWW-Authenticate', 'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
 
     def _set_headers(self,fileFormat: str) -> None:
@@ -998,16 +998,31 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname=None
 
         if self.path.startswith('/login'):
-            print("headers: "+str(self.headers))
-            print("path: "+self.path)
-            loginNickname,loginPassword=htmlGetLoginCredentials(self.path,self.server.lastLoginTime)
+            # get the contents of POST containing login credentials
+            length = int(self.headers['Content-length'])
+            if length>512:
+                print('Login failed - credentials too long')
+                self.send_response(401)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return                
+            loginParams=self.rfile.read(length).decode('utf-8')            
+            loginNickname,loginPassword=htmlGetLoginCredentials(loginParams,self.server.lastLoginTime)
             if loginNickname:
                 self.server.lastLoginTime=int(time.time())
-                print('Nickname: '+loginNickname)
-                print('Password: '+loginPassword)
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+loginNickname+'/outbox',authHeader,False):
+                    print('Login failed: '+loginNickname)
                     self.send_response(401)
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return
+                else:
+                    # login success - redirect with authorization
+                    print('Login success: '+loginNickname)
+                    self.send_response(303)
+                    self.send_header('Location', self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+loginNickname+'/outbox')
+                    self.send_header('Authorization', authHeader)
                     self.end_headers()
                     self.server.POSTbusy=False
                     return
@@ -1015,7 +1030,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy=False
             return
-            #self.path='/users/'+loginNickname+'/outbox'
 
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
             if '/users/' in self.path:

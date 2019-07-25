@@ -16,16 +16,15 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from posts import getPersonBox
 
-def htmlGetLoginCredentials(path: str,lastLoginTime: int) -> (str,str):
-    """Receives login credentials via HTTPServer GET
+def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
+    """Receives login credentials via HTTPServer POST
     """
-    if not path.startswith('/login?'):
+    if not loginParams.startswith('username='):
         return None,None
     # minimum time between login attempts
     currTime=int(time.time())
     if currTime<lastLoginTime+5:
         return None,None
-    loginParams=path.split('?',1)[1]
     if '&' not in loginParams:
         return None,None
     loginArgs=loginParams.split('&')
@@ -33,7 +32,7 @@ def htmlGetLoginCredentials(path: str,lastLoginTime: int) -> (str,str):
     password=None
     for arg in loginArgs:
         if '=' in arg:
-            if arg.split('=',1)[0]=='nickname':
+            if arg.split('=',1)[0]=='username':
                 nickname=arg.split('=',1)[1]
             elif arg.split('=',1)[0]=='password':
                 password=arg.split('=',1)[1]
@@ -118,12 +117,12 @@ def htmlLogin(baseDir: str) -> str:
         '' \
         '  <div class="container">' \
         '    <label for="nickname"><b>Nickname</b></label>' \
-        '    <input type="text" placeholder="Enter Nickname" name="nickname" required>' \
+        '    <input type="text" placeholder="Enter Nickname" name="username" required>' \
         '' \
         '    <label for="password"><b>Password</b></label>' \
         '    <input type="password" placeholder="Enter Password" name="password" required>' \
         '' \
-        '    <button type="submit">Login</button>' \
+        '    <button type="submit" name="submit">Login</button>' \
         '  </div>' \
         '</form>'
     loginForm+=htmlFooter()
