@@ -1066,7 +1066,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+self.server.salts[loginNickname]).encode('utf-8')).hexdigest()
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
-                    self.send_header('Location', '/users/'+loginNickname+'/outbox')
+                    self.send_header('Location', '/users/'+loginNickname+'/inbox')
                     self.end_headers()
                     self.server.POSTbusy=False
                     return
