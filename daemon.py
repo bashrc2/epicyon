@@ -1044,10 +1044,11 @@ class PubServer(BaseHTTPRequestHandler):
                         del self.server.tokensLookup[self.server.tokens[loginNickname]]
                         del self.server.tokens[loginNickname]
                         del self.server.salts[loginNickname]
-                    self.send_response(401)
+                    self.send_response(303)
                     self.send_header('Content-type', 'text/html; charset=utf-8')
                     self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-                    self.end_headers()
+                    self.send_header('Location', '/login')
+                    self.end_headers()                    
                     self.server.POSTbusy=False
                     return
                 else:

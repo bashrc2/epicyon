@@ -41,7 +41,12 @@ def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
 def htmlLogin(baseDir: str) -> str:
     if not os.path.isfile(baseDir+'/accounts/login.png'):
         copyfile(baseDir+'/img/login.png',baseDir+'/accounts/login.png')
-    # /login?nickname=[username]&password=[password]&remember=on
+
+    loginText='<p>Welcome. Please enter your login details below.</p>'
+    if os.path.isfile(baseDir+'/accounts/login.txt'):
+        with open(baseDir+'/accounts/login.txt', 'r') as file:
+            loginText = '<p>'+file.read()+'</p>'    
+        
     loginCSS= \
         'body, html {' \
         '    height: 100%;' \
@@ -112,7 +117,8 @@ def htmlLogin(baseDir: str) -> str:
     loginForm+= \
         ' <form method="POST" action="/login">' \
         '  <div class="imgcontainer">' \
-        '    <img src="login.png" alt="login image" class="loginimage">' \
+        '    <img src="login.png" alt="login image" class="loginimage">'+ \
+        loginText+ \
         '  </div>' \
         '' \
         '  <div class="container">' \
