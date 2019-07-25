@@ -409,6 +409,16 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
             return        
+        # login screen background image
+        if self.path=='/login-background.png':
+            mediaFilename= \
+                self.server.baseDir+'/accounts/login-background.png'
+            if os.path.isfile(mediaFilename):
+                self._set_headers('image/png')
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self.wfile.write(mediaBinary)
+            return        
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:

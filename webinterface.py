@@ -41,78 +41,18 @@ def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
 def htmlLogin(baseDir: str) -> str:
     if not os.path.isfile(baseDir+'/accounts/login.png'):
         copyfile(baseDir+'/img/login.png',baseDir+'/accounts/login.png')
+    if os.path.isfile(baseDir+'/img/login-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/login-background.png'):
+            copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
 
-    loginText='<p>Welcome. Please enter your login details below.</p>'
+    loginText='<p class="login-text">Welcome. Please enter your login details below.</p>'
     if os.path.isfile(baseDir+'/accounts/login.txt'):
         with open(baseDir+'/accounts/login.txt', 'r') as file:
-            loginText = '<p>'+file.read()+'</p>'    
-        
-    loginCSS= \
-        'body, html {' \
-        '    height: 100%;' \
-        '    font-family: Arial, Helvetica, sans-serif;' \
-        '    max-width: 60%;' \
-        '    min-width: 600px;' \
-        '    margin: 0 auto;' \
-        '}' \
-        '' \
-        'form {' \
-        '  border: 3px solid #f1f1f1;' \
-        '}' \
-        '' \
-        'input[type=text], input[type=password] {' \
-        '  width: 100%;' \
-        '  padding: 12px 20px;' \
-        '  margin: 8px 0;' \
-        '  display: inline-block;' \
-        '  border: 1px solid #ccc;' \
-        '  box-sizing: border-box;' \
-        '}' \
-        '' \
-        'button {' \
-        '  background-color: #999;' \
-        '  color: white;' \
-        '  padding: 14px 20px;' \
-        '  margin: 8px 0;' \
-        '  border: none;' \
-        '  cursor: pointer;' \
-        '  width: 100%;' \
-        '  font-size: 24px;' \
-        '}' \
-        '' \
-        'button:hover {' \
-        '  opacity: 0.8;' \
-        '}' \
-        '' \
-        '.imgcontainer {' \
-        '  text-align: center;' \
-        '  margin: 24px 0 12px 0;' \
-        '}' \
-        '' \
-        'img.avatar {' \
-        '  width: 40%;' \
-        '  border-radius: 50%;' \
-        '}' \
-        '' \
-        '.container {' \
-        '  padding: 16px;' \
-        '}' \
-        '' \
-        'span.psw {' \
-        '  float: right;' \
-        '  padding-top: 16px;' \
-        '}' \
-        '' \
-        '@media screen and (max-width: 300px) {' \
-        '  span.psw {' \
-        '    display: block;' \
-        '    float: none;' \
-        '  }' \
-        '  .cancelbtn {' \
-        '    width: 100%;' \
-        '  }' \
-        '}'
-    
+            loginText = '<p class="login-text">'+file.read()+'</p>'    
+
+    with open(baseDir+'/epicyon-login.css', 'r') as cssFile:
+        loginCSS = cssFile.read()
+
     loginForm=htmlHeader(loginCSS)
     loginForm+= \
         ' <form method="POST" action="/login">' \
