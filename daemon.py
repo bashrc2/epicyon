@@ -934,7 +934,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
-                    self._set_headers('text/html',authheader)
+                    self._set_headers('text/html')
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
