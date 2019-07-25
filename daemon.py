@@ -54,6 +54,7 @@ from webinterface import htmlOutbox
 from webinterface import htmlPostReplies
 from webinterface import htmlLogin
 from webinterface import htmlGetLoginCredentials
+from webinterface import htmlNewPost
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -518,6 +519,12 @@ class PubServer(BaseHTTPRequestHandler):
             # request basic auth
             self._login_headers('text/html')
             self.wfile.write(htmlLogin(self.server.baseDir).encode('utf-8'))
+            self.server.GETbusy=False
+            return
+
+        if '/users/' in self.path and self.path.endswith('/newpost'):
+            self._login_headers('text/html')
+            self.wfile.write(htmlNewPost(self.server.baseDir,self.path).encode('utf-8'))
             self.server.GETbusy=False
             return        
 

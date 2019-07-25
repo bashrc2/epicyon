@@ -55,7 +55,7 @@ def htmlLogin(baseDir: str) -> str:
 
     loginForm=htmlHeader(loginCSS)
     loginForm+= \
-        ' <form method="POST" action="/login">' \
+        '<form method="POST" action="/login">' \
         '  <div class="imgcontainer">' \
         '    <img src="login.png" alt="login image" class="loginimage">'+ \
         loginText+ \
@@ -73,6 +73,31 @@ def htmlLogin(baseDir: str) -> str:
         '</form>'
     loginForm+=htmlFooter()
     return loginForm
+
+def htmlNewPost(baseDir: str,path: str) -> str:
+    newPostText='<p class="new-post-text">Enter your post text below.</p>'
+    if os.path.isfile(baseDir+'/accounts/newpost.txt'):
+        with open(baseDir+'/accounts/newpost.txt', 'r') as file:
+            newPostText = '<p class="new-post-text">'+file.read()+'</p>'    
+
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        newPostCSS = cssFile.read()
+
+    newPostForm=htmlHeader(newPostCSS)
+    newPostForm+= \
+        '<form method="POST" action="'+path+'?newpost">' \
+        '  <div class="vertical-center">' \
+        '    <label for="nickname"><b>'+newPostText+'</b></label>' \
+        '    <input type="text" placeholder="Subject or Content Warning (optional)..." name="subject">' \
+        '' \
+        '    <textarea id="message" name="message" placeholder="Write something..." style="height:200px"></textarea>' \
+        '' \
+        '    <input type="submit" value="Cencel">' \
+        '    <input type="submit" value="Submit">' \
+        '  </div>' \
+        '</form>'
+    newPostForm+=htmlFooter()
+    return newPostForm
 
 def htmlHeader(css=None,lang='en') -> str:
     if not css:        
@@ -357,6 +382,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
     localButton='button'
     personalButton='button'
     federatedButton='button'
+    newPostButton='button'
     if boxName=='inbox':
         localButton='buttonselected'
     elif boxName=='outbox':
@@ -366,11 +392,15 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
 
     actor='/users/'+nickname
     tlStr=htmlHeader(profileStyle)
+    newPostStr=''
+    if boxName=='inbox':
+        newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>New Post </span></button></a>'
     tlStr+= \
         '<div class="timeline-banner">' \
         '</div>' \
         '<div class="container">\n' \
-        '  <center>' \
+        '  <center>'+ \
+        newPostStr+ \
         '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Local </span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Personal </span></button></a>' \
         '    <a href="'+actor+'/federated"><button class="'+federatedButton+'"><span>Federated </span></button></a>' \
