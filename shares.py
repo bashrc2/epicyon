@@ -45,7 +45,8 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
         with open(sharesFilename, 'w') as fp:
             commentjson.dump(sharesJson, fp, indent=4, sort_keys=True)
 
-def addShare(baseDir: str,nickname: str,domain: str, \
+def addShare(baseDir: str, \
+             httpPrefix: str,nickname: str,domain: str,port: int, \
              displayName: str, \
              summary: str, \
              imageFilename: str, \
@@ -99,6 +100,9 @@ def addShare(baseDir: str,nickname: str,domain: str, \
     # copy or move the image for the shared item to its destination
     if imageFilename:
         if os.path.isfile(imageFilename):
+            domainFull=domain
+            if port!=80 and port!=443:
+                domainFull=domain+':'+str(port)
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
             if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
@@ -108,17 +112,17 @@ def addShare(baseDir: str,nickname: str,domain: str, \
                 removeMetaData(imageFilename,itemIDfile+'.png')
                 if moveImage:
                     os.remove(imageFilename)
-                imageUrl='/sharefiles/'+nickname+'/'+itemID+'.png'
+                imageUrl=httpPrefix+'://'+domainFull+'/sharefiles/'+nickname+'/'+itemID+'.png'
             if imageFilename.endswith('.jpg'):
                 removeMetaData(imageFilename,itemIDfile+'.jpg')
                 if moveImage:
                     os.remove(imageFilename)
-                imageUrl='/sharefiles/'+nickname+'/'+itemID+'.jpg'
+                imageUrl=httpPrefix+'://'+domainFull+'/sharefiles/'+nickname+'/'+itemID+'.jpg'
             if imageFilename.endswith('.gif'):
                 removeMetaData(imageFilename,itemIDfile+'.gif')
                 if moveImage:
                     os.remove(imageFilename)
-                imageUrl='/sharefiles/'+nickname+'/'+itemID+'.gif'
+                imageUrl=httpPrefix+'://'+domainFull+'/sharefiles/'+nickname+'/'+itemID+'.gif'
 
     sharesJson[itemID] = {
         "displayName": displayName,
@@ -469,7 +473,8 @@ def outboxShareUpload(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: duration missing from Offer')
         return
-    addShare(baseDir,nickname,domain, \
+    addShare(baseDir, \
+             httpPrefix,nickname,domain,port, \
              messageJson['object']['displayName'], \
              messageJson['object']['summary'], \
              messageJson['object']['imageFilename'], \

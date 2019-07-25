@@ -1154,7 +1154,8 @@ if args.testdata:
     setRole(baseDir,nickname,domain,'someproject','assistant')
     setAvailability(baseDir,nickname,domain,'busy')
 
-    addShare(baseDir,nickname,domain, \
+    addShare(baseDir, \
+             httpPrefix,nickname,domain,port, \
              "spanner", \
              "It's a spanner", \
              "img/shares1.png", \
@@ -1163,7 +1164,8 @@ if args.testdata:
              "City", \
              "2 months",
              debug)
-    addShare(baseDir,nickname,domain, \
+    addShare(baseDir, \
+             httpPrefix,nickname,domain,port, \
              "witch hat", \
              "Spooky", \
              "img/shares2.png", \

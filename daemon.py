@@ -382,12 +382,13 @@ class PubServer(BaseHTTPRequestHandler):
         # if not authorized then show the login screen
         if self.headers.get('Accept'):
             if 'text/html' in self.headers['Accept'] and self.path!='/login':
-                if not authorized:
-                    self.send_response(303)
-                    self.send_header('Location', '/login')
-                    self.end_headers()
-                    self.server.POSTbusy=False
-                    return
+                if '/media/' not in self.path and 'sharefiles' not in self.path:
+                    if not authorized:
+                        self.send_response(303)
+                        self.send_header('Location', '/login')
+                        self.end_headers()
+                        self.server.POSTbusy=False
+                        return
             
         # get css
         # Note that this comes before the busy flag to avoid conflicts
