@@ -17,6 +17,7 @@ from Crypto.PublicKey import RSA
 from shutil import copyfile
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
+from posts import createInbox
 from posts import createOutbox
 from auth import storeBasicCredentials
 from roles import setRole

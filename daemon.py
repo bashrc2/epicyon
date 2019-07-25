@@ -487,9 +487,7 @@ class PubServer(BaseHTTPRequestHandler):
             if currTimeGET-self.server.lastGET<10:
                 if self.server.debug:
                     print('DEBUG: GET Busy')
-                self.send_response(429)
-                if authorized:
-                    self.send_header('Authorization')                    
+                self.send_response(429)                    
                 self.end_headers()
                 return
             self.server.lastGET=currTimeGET
@@ -538,14 +536,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={}
                                 if 'text/html' in self.headers['Accept']:
-                                    self._set_headers('text/html')
-                                    if authorized:
-                                        self.send_header('Authorization')                    
+                                    self._set_headers('text/html')                    
                                     self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json')
-                                    if authorized:
-                                        self.send_header('Authorization')                    
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -1068,7 +1062,7 @@ class PubServer(BaseHTTPRequestHandler):
                     # any password changes.
                     if not self.server.salts.get(loginNickname):
                         self.server.salts[loginNickname]=createPassword(32)
-                    self.server.tokens[loginNickname]=str(sha256((loginNickname+loginPassword+self.server.salts[loginNickname]).encode('utf-8')))
+                    self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+self.server.salts[loginNickname]).encode('utf-8')).hexdigest()
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
                     self.send_header('Location', '/users/'+loginNickname+'/outbox')
