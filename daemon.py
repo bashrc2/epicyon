@@ -91,10 +91,12 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('WWW-Authenticate', 'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
 
-    def _set_headers(self,fileFormat: str) -> None:
+    def _set_headers(self,fileFormat: str,authHeader: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Host', self.server.domainFull)
+        if authHeader:
+            self.send_header('Authorization', authHeader)        
         self.end_headers()
 
     def _404(self) -> None:
@@ -103,7 +105,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write("<html><head></head><body><h1>404 Not Found</h1></body></html>".encode('utf-8'))
 
-    def _webfinger(self) -> bool:
+    def _webfinger(self,authHeader: str) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
         if self.server.debug:
@@ -114,7 +116,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/.well-known/host-meta'):
             wfResult=webfingerMeta()
             if wfResult:
-                self._set_headers('application/xrd+xml')
+                self._set_headers('application/xrd+xml',authHeader)
                 self.wfile.write(wfResult.encode('utf-8'))
             return
 
@@ -122,7 +124,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: WEBFINGER lookup '+self.path+' '+str(self.server.baseDir))
         wfResult=webfingerLookup(self.path,self.server.baseDir,self.server.port,self.server.debug)
         if wfResult:
-            self._set_headers('application/jrd+json')
+            self._set_headers('application/jrd+json',authHeader)
             self.wfile.write(json.dumps(wfResult).encode('utf-8'))
         else:
             if self.server.debug:
@@ -348,18 +350,30 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
     
-    def do_GET(self):
+    def do_GET(self):        
         if self.server.debug:
             print('DEBUG: GET from '+self.server.baseDir+ \
                   ' path: '+self.path+' busy: '+ \
                   str(self.server.GETbusy))
+
+        # get the auth header as a local variable
+        authHeader=None
+        authorized = self._isAuthorized()
+        if authorized:
+            authHeader=self.headers['Authorization']
+            if self.server.debug:
+                print('Authorized')
+        else:
+            if self.server.debug:
+                print('Not authorized')
+            
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
             if os.path.isfile('epicyon-profile.css'):
                 with open('epicyon-profile.css', 'r') as cssfile:
                     css = cssfile.read()
-                self._set_headers('text/css')
+                self._set_headers('text/css',authHeader)
                 self.wfile.write(css.encode('utf-8'))
                 return
         # image on login screen
@@ -367,7 +381,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png')
+                self._set_headers('image/png',authHeader)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
@@ -383,11 +397,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/media/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png')
+                        self._set_headers('image/png',authHeader)
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg')
+                        self._set_headers('image/jpeg',authHeader)
                     else:
-                        self._set_headers('image/gif')
+                        self._set_headers('image/gif',authHeader)
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self.wfile.write(mediaBinary)
@@ -405,11 +419,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/sharefiles/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png')
+                        self._set_headers('image/png',authHeader)
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg')
+                        self._set_headers('image/jpeg',authHeader)
                     else:
-                        self._set_headers('image/gif')
+                        self._set_headers('image/gif',authHeader)
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self.wfile.write(mediaBinary)
@@ -432,11 +446,11 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.domain+'/'+avatarFile
                     if os.path.isfile(avatarFilename):
                         if avatarFile.endswith('.png'):
-                            self._set_headers('image/png')
+                            self._set_headers('image/png',authHeader)
                         elif avatarFile.endswith('.jpg'):
-                            self._set_headers('image/jpeg')
+                            self._set_headers('image/jpeg',authHeader)
                         else:
-                            self._set_headers('image/gif')
+                            self._set_headers('image/gif',authHeader)
                         with open(avatarFilename, 'rb') as avFile:
                             avBinary = avFile.read()
                             self.wfile.write(avBinary)
@@ -451,6 +465,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('DEBUG: GET Busy')
                 self.send_response(429)
+                if authorized:
+                    self.send_header('Authorization', authHeader)                    
                 self.end_headers()
                 return
             self.server.lastGET=currTimeGET
@@ -463,7 +479,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         # get webfinger endpoint for a person
-        if self._webfinger():
+        if self._webfinger(authHeader):
             self.server.GETbusy=False
             return
 
@@ -498,14 +514,18 @@ class PubServer(BaseHTTPRequestHandler):
                                     postJsonObject=commentjson.load(fp)
                                     # Only authorized viewers get to see likes on posts
                                     # Otherwize marketers could gain more social graph info
-                                    if not self._isAuthorized():
+                                    if not authorized:
                                         if postJsonObject.get('likes'):
                                             postJsonObject['likes']={}
                                     if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
+                                        self._set_headers('text/html',authHeader)
+                                        if authorized:
+                                            self.send_header('Authorization', authHeader)                    
                                         self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
                                     else:
-                                        self._set_headers('application/json')
+                                        self._set_headers('application/json',authHeader)
+                                        if authorized:
+                                            self.send_header('Authorization', authHeader)                    
                                         self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                                 self.server.GETbusy=False
                                 return
@@ -543,10 +563,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
                                     if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
+                                        self._set_headers('text/html',authHeader)
                                         self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
                                     else:
-                                        self._set_headers('application/json')
+                                        self._set_headers('application/json',authHeader)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
                                     self.server.GETbusy=False
                                     return
@@ -559,8 +579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         ],
                                         'partOf': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber,
                                         'type': 'OrderedCollectionPage'}
-                                    # some messages could be private, so check authorization state
-                                    authorized=self._isAuthorized()
+
                                     # populate the items list with replies
                                     repliesBoxes=['outbox','inbox']
                                     with open(postRepliesFilename,'r') as repliesFile: 
@@ -615,10 +634,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                                     repliesJson['orderedItems'].append(postJsonObject)
                                     # send the replies json
                                     if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
+                                        self._set_headers('text/html',authHeader)
                                         self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
                                     else:
-                                        self._set_headers('application/json')
+                                        self._set_headers('application/json',authHeader)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
                                     self.server.GETbusy=False
                                     return
@@ -638,7 +657,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     personLookup(self.server.domain,self.path.replace('/roles',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    self._set_headers('text/html')
+                                    self._set_headers('text/html',authHeader)
                                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                                  self.server.httpPrefix, \
                                                                  True, \
@@ -649,7 +668,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                                  self.server.personCache, \
                                                                  actorJson['roles']).encode('utf-8'))     
                             else:
-                                self._set_headers('application/json')
+                                self._set_headers('application/json',authHeader)
                                 self.wfile.write(json.dumps(actorJson['roles']).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -669,7 +688,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     personLookup(self.server.domain,self.path.replace('/skills',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    self._set_headers('text/html')
+                                    self._set_headers('text/html',authHeader)
                                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                                  self.server.httpPrefix, \
                                                                  True, \
@@ -680,7 +699,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                                  self.server.personCache, \
                                                                  actorJson['skills']).encode('utf-8'))     
                             else:
-                                self._set_headers('application/json')
+                                self._set_headers('application/json',authHeader)
                                 self.wfile.write(json.dumps(actorJson['skills']).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -706,14 +725,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 postJsonObject=commentjson.load(fp)
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
-                                if not self._isAuthorized():
+                                if not authorized:
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={}                                    
                                 if 'text/html' in self.headers['Accept']:
-                                    self._set_headers('text/html')
+                                    self._set_headers('text/html',authHeader)
                                     self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
                                 else:
-                                    self._set_headers('application/json')
+                                    self._set_headers('application/json',authHeader)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -724,7 +743,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get the inbox for a given person
         if self.path.endswith('/inbox'):
             if '/users/' in self.path:
-                if self._isAuthorized():
+                if authorized:
                     inboxFeed=personBoxJson(self.server.baseDir, \
                                             self.server.domain, \
                                             self.server.port, \
@@ -746,7 +765,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                         self.server.httpPrefix, \
                                                         maxPostsInFeed, 'inbox', \
                                                         True,self.server.ocapAlways)
-                            self._set_headers('text/html')
+                            self._set_headers('text/html',authHeader)
                             self.wfile.write(htmlInbox(self.server.session, \
                                                        self.server.baseDir, \
                                                        self.server.cachedWebfingers, \
@@ -755,7 +774,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                        self.server.domain, \
                                                        inboxFeed).encode('utf-8'))
                         else:
-                            self._set_headers('application/json')
+                            self._set_headers('application/json',authHeader)
                             self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
                         self.server.GETbusy=False
                         return
@@ -775,7 +794,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.port,self.path, \
                                  self.server.httpPrefix, \
                                  maxPostsInFeed, 'outbox', \
-                                 self._isAuthorized(), \
+                                 authorized, \
                                  self.server.ocapAlways)
         if outboxFeed:
             if 'text/html' in self.headers['Accept']:
@@ -788,10 +807,10 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.port,self.path+'?page=1', \
                                              self.server.httpPrefix, \
                                              maxPostsInFeed, 'outbox', \
-                                             self._isAuthorized(), \
+                                             authorized, \
                                              self.server.ocapAlways)
                     
-                self._set_headers('text/html')
+                self._set_headers('text/html',authHeader)
                 self.wfile.write(htmlOutbox(self.server.session, \
                                             self.server.baseDir, \
                                             self.server.cachedWebfingers, \
@@ -800,11 +819,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain, \
                                             outboxFeed).encode('utf-8'))
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',authHeader)
                 self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.server.GETbusy=False
             return
-        authorized=self._isAuthorized()
 
         shares=getSharesFeedForPerson(self.server.baseDir, \
                                       self.server.domain, \
@@ -828,7 +846,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     
-                    self._set_headers('text/html')
+                    self._set_headers('text/html',authHeader)
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
@@ -841,7 +859,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',authHeader)
                 self.wfile.write(json.dumps(shares).encode('utf-8'))
                 self.server.GETbusy=False
                 return
@@ -867,7 +885,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     
-                    self._set_headers('text/html')
+                    self._set_headers('text/html',authHeader)
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
@@ -880,7 +898,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',authHeader)
                 self.wfile.write(json.dumps(following).encode('utf-8'))
                 self.server.GETbusy=False
                 return
@@ -904,7 +922,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
-                    self._set_headers('text/html')
+                    self._set_headers('text/html',authheader)
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
@@ -917,7 +935,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',authHeader)
                 self.wfile.write(json.dumps(followers).encode('utf-8'))
             self.server.GETbusy=False
             return
@@ -931,7 +949,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: creating new session')
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
-                self._set_headers('text/html')
+                self._set_headers('text/html',authHeader)
                 self.wfile.write(htmlProfile(self.server.baseDir, \
                                              self.server.httpPrefix, \
                                              authorized, \
@@ -941,7 +959,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.cachedWebfingers, \
                                              self.server.personCache).encode('utf-8'))
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',authHeader)
                 self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.server.GETbusy=False
             return
@@ -955,7 +973,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the file exists
         filename=self.server.baseDir+self.path
         if os.path.isfile(filename):
-            self._set_headers('application/json')
+            self._set_headers('application/json',authHeader)
             with open(filename, 'r', encoding='utf-8') as File:
                 content = File.read()
                 contentJson=json.loads(content)
@@ -967,7 +985,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.GETbusy=False
 
     def do_HEAD(self):
-        self._set_headers('application/json')
+        self._set_headers('application/json',None)
 
     def do_POST(self):
         if self.server.debug:
