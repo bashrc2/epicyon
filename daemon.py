@@ -378,6 +378,16 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.server.debug:
                 print('GET Not authorized')
+
+        # if not authorized then show the login screen
+        if self.headers.get('Accept'):
+            if 'text/html' in self.headers['Accept'] and self.path!='/login':
+                if not authorized:
+                    self.send_response(303)
+                    self.send_header('Location', '/login')
+                    self.end_headers()
+                    self.server.POSTbusy=False
+                    return
             
         # get css
         # Note that this comes before the busy flag to avoid conflicts
@@ -494,7 +504,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
-
+        
         if self.path.startswith('/login'):
             # request basic auth
             self._login_headers('text/html')
@@ -514,37 +524,34 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname=postSections[0]
                     statusNumber=postSections[1]
                     if len(statusNumber)>10 and statusNumber.isdigit():
-                        domainFull=self.server.domain
-                        if self.server.port!=80 and self.server.port!=443:
-                            domainFull=self.server.domain+':'+str(self.server.port) 
-                            postFilename= \
-                                self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
-                                self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
-                            if os.path.isfile(postFilename):
-                                postJsonObject={}
-                                with open(postFilename, 'r') as fp:
-                                    postJsonObject=commentjson.load(fp)
-                                    # Only authorized viewers get to see likes on posts
-                                    # Otherwize marketers could gain more social graph info
-                                    if not authorized:
-                                        if postJsonObject.get('likes'):
-                                            postJsonObject['likes']={}
-                                    if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
-                                        if authorized:
-                                            self.send_header('Authorization')                    
-                                        self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
-                                    else:
-                                        self._set_headers('application/json')
-                                        if authorized:
-                                            self.send_header('Authorization')                    
-                                        self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
-                                self.server.GETbusy=False
-                                return
-                            else:
-                                self._404()
-                                self.server.GETbusy=False
-                                return
+                        postFilename= \
+                            self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
+                            self.server.httpPrefix+':##'+self.server.domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
+                        if os.path.isfile(postFilename):
+                            postJsonObject={}
+                            with open(postFilename, 'r') as fp:
+                                postJsonObject=commentjson.load(fp)
+                                # Only authorized viewers get to see likes on posts
+                                # Otherwize marketers could gain more social graph info
+                                if not authorized:
+                                    if postJsonObject.get('likes'):
+                                        postJsonObject['likes']={}
+                                if 'text/html' in self.headers['Accept']:
+                                    self._set_headers('text/html')
+                                    if authorized:
+                                        self.send_header('Authorization')                    
+                                    self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
+                                else:
+                                    self._set_headers('application/json')
+                                    if authorized:
+                                        self.send_header('Authorization')                    
+                                    self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
+                            self.server.GETbusy=False
+                            return
+                        else:
+                            self._404()
+                            self.server.GETbusy=False
+                            return
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
             if '/statuses/' in self.path and '/users/' in self.path:
@@ -557,21 +564,18 @@ class PubServer(BaseHTTPRequestHandler):
                             statusNumber=postSections[2]
                             if len(statusNumber)>10 and statusNumber.isdigit():
                                 #get the replies file
-                                domainFull=self.server.domain
-                                if self.server.port!=80 and self.server.port!=443:
-                                    domainFull=self.server.domain+':'+str(self.server.port)
                                 boxname='outbox'
                                 postDir=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/'+boxname
                                 postRepliesFilename= \
                                     postDir+'/'+ \
-                                    self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.replies'
+                                    self.server.httpPrefix+':##'+self.server.domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.replies'
                                 if not os.path.isfile(postRepliesFilename):
                                     # There are no replies, so show empty collection
                                     repliesJson = {
                                         '@context': 'https://www.w3.org/ns/activitystreams',
-                                        'first': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
-                                        'id': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
-                                        'last': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
+                                        'first': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
+                                        'id': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
+                                        'last': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
                                     if 'text/html' in self.headers['Accept']:
@@ -586,10 +590,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     # replies exist. Itterate through the text file containing message ids
                                     repliesJson = {
                                         '@context': 'https://www.w3.org/ns/activitystreams',
-                                        'id': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
+                                        'id': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
                                         'orderedItems': [
                                         ],
-                                        'partOf': self.server.httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+statusNumber,
+                                        'partOf': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber,
                                         'type': 'OrderedCollectionPage'}
 
                                     # populate the items list with replies
@@ -725,12 +729,9 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname=postSections[0]
                     statusNumber=postSections[2]
                     if len(statusNumber)>10 and statusNumber.isdigit():
-                        domainFull=self.server.domain
-                        if self.server.port!=80 and self.server.port!=443:
-                            domainFull=self.server.domain+':'+str(self.server.port) 
                         postFilename= \
                             self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
-                            self.server.httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
+                            self.server.httpPrefix+':##'+self.server.domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
                         if os.path.isfile(postFilename):
                             postJsonObject={}
                             with open(postFilename, 'r') as fp:
