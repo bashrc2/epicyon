@@ -45,7 +45,7 @@ This project is currently *pre alpha* and not recommended for any real world use
 The following are considered antifeatures of other social network systems, since they encourage dysfunctional social interactions.
 
  * Trending hashtags, or trending anything
- * Ranking, rating or recommending mechanisms for posts or people
+ * Ranking, rating or recommending mechanisms for posts or people (other than likes or repeats/boosts)
  * Geolocation features
  * Algorithmic timelines (i.e. non-chronological)
  * Direct payment mechanisms, although integration with other services may be possible
