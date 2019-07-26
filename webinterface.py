@@ -105,8 +105,10 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         placeholderSubject='Name of the shared item...'
         placeholderMessage='Description of the item being shared...'
         extraFields= \
-            '<input type="text" placeholder="Type of shared item. eg. hat" name="itemType">' \
-            '<input type="text" placeholder="Category of shared item. eg. clothing" name="itemCategory">' \
+            '<div class="container">' \
+            '  <input type="text" placeholder="Type of shared item. eg. hat" name="itemType">' \
+            '  <input type="text" placeholder="Category of shared item. eg. clothing" name="category">' \
+            '</div>' \
             '<input type="text" placeholder="City or location of the shared item" name="location">'
 
     newPostForm=htmlHeader(newPostCSS)
@@ -119,18 +121,23 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
         ''+extraFields+ \
         '    <div class="container">' \
-        '    <input type="submit" value="Cancel">' \
-        '    <input type="submit" value="Submit">' \
-        '    <div class="dropdown">' \
-        '      <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
-        '      <div class="dropdown-content">' \
-        '        <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
-        '        <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
-        '        <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
-        '        <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
-        '        <a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>' \
-        '      </div>' \
+        '      <input type="text" placeholder="Image description" name="imageDescription">' \
+        '      <input type="file" id="attachpic" name="attachpic"' \
+        '            accept=".png, .jpg, .jpeg, .gif">' \
         '    </div>' \
+        '    <div class="container">' \
+        '      <input type="submit" value="Cancel">' \
+        '      <input type="submit" value="Submit">' \
+        '      <div class="dropdown">' \
+        '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
+        '        <div class="dropdown-content">' \
+        '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
+        '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
+        '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
+        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
+        '          <a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>' \
+        '        </div>' \
+        '      </div>' \
         '    </div>' \
         '  </div>' \
         '</form>'

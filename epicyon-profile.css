@@ -250,6 +250,16 @@ input[type=submit] {
     font-size: 18px;
 }
 
+input[type=file] {
+    background-color: #555;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
 input[type=submit]:hover {
     background-color: #555;
 }
@@ -258,7 +268,7 @@ input[type=submit]:hover {
     max-width: 90%;
     min-width: 600px;
     margin: 0 auto;
-    padding: 10% 0px;
+    padding: 5% 0px;
 }
 
 .dropbtn {
