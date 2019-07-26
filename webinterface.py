@@ -89,6 +89,7 @@ def htmlNewPost(baseDir: str,path: str) -> str:
     scopeDescription='Public'
     placeholderSubject='Subject or Content Warning (optional)...'
     placeholderMessage='Write something...'
+    extraFields=''
     if path.endswith('/newunlisted'):
         scopeIcon='scope_unlisted.png'
         scopeDescription='Unlisted'
@@ -103,7 +104,11 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         scopeDescription='Shared Item'
         placeholderSubject='Name of the shared item...'
         placeholderMessage='Description of the item being shared...'
-    
+        extraFields= \
+            '<input type="text" placeholder="Type of shared item. eg. hat" name="itemType">' \
+            '<input type="text" placeholder="Category of shared item. eg. clothing" name="itemCategory">' \
+            '<input type="text" placeholder="City or location of the shared item" name="location">'
+
     newPostForm=htmlHeader(newPostCSS)
     newPostForm+= \
         '<form method="POST" action="'+path+'?newpost">' \
@@ -112,7 +117,7 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
         '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
-        '' \
+        ''+extraFields+ \
         '    <div class="container">' \
         '    <input type="submit" value="Cancel">' \
         '    <input type="submit" value="Submit">' \

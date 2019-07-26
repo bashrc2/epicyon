@@ -255,12 +255,10 @@ input[type=submit]:hover {
 }
 
 .vertical-center {
-    top: 50%;
-    -ms-transform: translateY(50%);
-    transform: translateY(50%);
     max-width: 90%;
     min-width: 600px;
     margin: 0 auto;
+    padding: 10% 0px;
 }
 
 .dropbtn {
