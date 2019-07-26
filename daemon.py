@@ -383,7 +383,9 @@ class PubServer(BaseHTTPRequestHandler):
         # if not authorized then show the login screen
         if self.headers.get('Accept'):
             if 'text/html' in self.headers['Accept'] and self.path!='/login':
-                if '/media/' not in self.path and 'sharefiles' not in self.path:
+                if '/media/' not in self.path and \
+                   '/sharefiles/' not in self.path and \
+                   '/icons/' not in self.path:
                     if not authorized:
                         self.send_response(303)
                         self.send_header('Location', '/login')
@@ -466,7 +468,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
-        if '/icons/' in self.path:
+        if self.path.startswith('/icons/'):
             if self.path.endswith('.png'):
                 mediaStr=self.path.split('/icons/')[1]
                 mediaFilename= \
@@ -538,7 +540,12 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
-        if '/users/' in self.path and self.path.endswith('/newpost'):
+        if '/users/' in self.path and \
+           (self.path.endswith('/newpost') or \
+            self.path.endswith('/newunlisted') or \
+            self.path.endswith('/newfollowers') or \
+            self.path.endswith('/newdm') or \
+            self.path.endswith('/newshare')):
             self._login_headers('text/html')
             self.wfile.write(htmlNewPost(self.server.baseDir,self.path).encode('utf-8'))
             self.server.GETbusy=False

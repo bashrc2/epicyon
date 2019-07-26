@@ -83,26 +83,47 @@ def htmlNewPost(baseDir: str,path: str) -> str:
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
+    pathBase=path.replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
+
+    scopeIcon='scope_public.png'
+    scopeDescription='Public'
+    placeholderSubject='Subject or Content Warning (optional)...'
+    placeholderMessage='Write something...'
+    if path.endswith('/newunlisted'):
+        scopeIcon='scope_unlisted.png'
+        scopeDescription='Unlisted'
+    if path.endswith('/newfollowers'):
+        scopeIcon='scope_followers.png'
+        scopeDescription='Followers Only'
+    if path.endswith('/newdm'):
+        scopeIcon='scope_dm.png'
+        scopeDescription='Direct Message'
+    if path.endswith('/newshare'):
+        scopeIcon='scope_share.png'
+        scopeDescription='Shared Item'
+        placeholderSubject='Name of the shared item...'
+        placeholderMessage='Description of the item being shared...'
+    
     newPostForm=htmlHeader(newPostCSS)
     newPostForm+= \
         '<form method="POST" action="'+path+'?newpost">' \
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
-        '    <input type="text" placeholder="Subject or Content Warning (optional)..." name="subject">' \
+        '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
-        '    <textarea id="message" name="message" placeholder="Write something..." style="height:200px"></textarea>' \
+        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
         '' \
         '    <div class="container">' \
         '    <input type="submit" value="Cancel">' \
         '    <input type="submit" value="Submit">' \
         '    <div class="dropdown">' \
-        '      <button class="dropbtn">Scope</button>' \
+        '      <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
         '      <div class="dropdown-content">' \
-        '        <a href="#"><img="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
-        '        <a href="#"><img="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not shown on public timeline</a>' \
-        '        <a href="#"><img="/icons/scope_followers.png"/><b>Followers Only</b><br>Only sent to followers</a>' \
-        '        <a href="#"><img="/icons/scope_dm.png"/><b>Direct Message</b><br>Sent only to mentioned people</a>' \
-        '        <a href="#"><img="/icons/scope_offer.png"/><b>Offer</b><br>Describe a shared item</a>' \
+        '        <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
+        '        <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
+        '        <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
+        '        <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
+        '        <a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>' \
         '      </div>' \
         '    </div>' \
         '    </div>' \
