@@ -92,8 +92,20 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '' \
         '    <textarea id="message" name="message" placeholder="Write something..." style="height:200px"></textarea>' \
         '' \
-        '    <input type="submit" value="Cencel">' \
+        '    <div class="container">' \
+        '    <input type="submit" value="Cancel">' \
         '    <input type="submit" value="Submit">' \
+        '    <div class="dropdown">' \
+        '      <button class="dropbtn">Scope</button>' \
+        '      <div class="dropdown-content">' \
+        '        <a href="#"><img="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
+        '        <a href="#"><img="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not shown on public timeline</a>' \
+        '        <a href="#"><img="/icons/scope_followers.png"/><b>Followers Only</b><br>Only sent to followers</a>' \
+        '        <a href="#"><img="/icons/scope_dm.png"/><b>Direct Message</b><br>Sent only to mentioned people</a>' \
+        '        <a href="#"><img="/icons/scope_offer.png"/><b>Offer</b><br>Describe a shared item</a>' \
+        '      </div>' \
+        '    </div>' \
+        '    </div>' \
         '  </div>' \
         '</form>'
     newPostForm+=htmlFooter()
@@ -399,8 +411,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         '<div class="timeline-banner">' \
         '</div>' \
         '<div class="container">\n' \
-        '  <center>'+ \
-        newPostStr+ \
+        '  <center>'+newPostStr+ \
         '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Local </span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Personal </span></button></a>' \
         '    <a href="'+actor+'/federated"><button class="'+federatedButton+'"><span>Federated </span></button></a>' \

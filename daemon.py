@@ -464,6 +464,22 @@ class PubServer(BaseHTTPRequestHandler):
                     return        
             self._404()
             return
+        # icon images
+        # Note that this comes before the busy flag to avoid conflicts
+        if '/icons/' in self.path:
+            if self.path.endswith('.png'):
+                mediaStr=self.path.split('/icons/')[1]
+                mediaFilename= \
+                    self.server.baseDir+'/img/icons/'+mediaStr
+                if os.path.isfile(mediaFilename):
+                    if mediaFilename.endswith('.png'):
+                        self._set_headers('image/png')
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            self.wfile.write(mediaBinary)
+                        return        
+            self._404()
+            return
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
         if '/users/' in self.path:
