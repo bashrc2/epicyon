@@ -284,8 +284,8 @@ input[type=submit]:hover {
 
 .dropdown img {
     opacity: 1.0;
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     padding: 0px 16px;
     -ms-transform: translateY(-10%);
     transform: translateY(-10%);
@@ -314,8 +314,8 @@ input[type=submit]:hover {
 }
 
 .dropdown-content img {
-    width: 24px;
-    height: 24px;
+    width: 32px;
+    height: 32px;
     padding: 0px 0px;
 }
 
