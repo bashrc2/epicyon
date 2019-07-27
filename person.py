@@ -22,6 +22,7 @@ from posts import createOutbox
 from auth import storeBasicCredentials
 from roles import setRole
 from media import removeMetaData
+from utils import validNickname
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -259,16 +260,6 @@ def createCapabilitiesInbox(baseDir: str,nickname: str,domain: str,port: int, \
     """Generates the capabilities inbox to sign requests
     """
     return createPersonBase(baseDir,nickname,domain,port,httpPrefix,True,None)
-   
-def validNickname(nickname: str) -> bool:
-    forbiddenChars=['.',' ','/','?',':',';','@']
-    for c in forbiddenChars:
-        if c in nickname:
-            return False
-    reservedNames=['inbox','outbox','following','followers','capabilities']
-    if nickname in reservedNames:
-        return False
-    return True
     
 def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """Lookup the person for an given nickname

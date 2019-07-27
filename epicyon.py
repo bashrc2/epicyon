@@ -11,7 +11,6 @@ from person import createSharedInbox
 from person import createCapabilitiesInbox
 from person import setPreferredNickname
 from person import setBio
-from person import validNickname
 from person import setProfileImage
 from skills import setSkillLevel
 from roles import setRole
@@ -44,7 +43,6 @@ from daemon import runDaemon
 import socket
 from follow import clearFollows
 from follow import clearFollowers
-from utils import followPerson
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
@@ -60,6 +58,8 @@ from auth import removePassword
 from auth import createPassword
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
+from utils import followPerson
+from utils import validNickname
 from media import archiveMedia
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer

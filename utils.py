@@ -190,3 +190,13 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
         os.remove(repliesFilename)
     # finally, remove the post itself
     os.remove(postFilename)    
+
+def validNickname(nickname: str) -> bool:
+    forbiddenChars=['.',' ','/','?',':',';','@']
+    for c in forbiddenChars:
+        if c in nickname:
+            return False
+    reservedNames=['inbox','outbox','following','followers','capabilities']
+    if nickname in reservedNames:
+        return False
+    return True

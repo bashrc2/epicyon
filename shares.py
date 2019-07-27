@@ -11,11 +11,11 @@ import commentjson
 import os
 import time
 from shutil import copyfile
-from person import validNickname
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 from session import postJson
+from utils import validNickname
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from media import removeMetaData

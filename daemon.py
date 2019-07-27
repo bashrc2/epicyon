@@ -30,6 +30,9 @@ from posts import savePostToBox
 from posts import sendToFollowers
 from posts import postIsAddressedToPublic
 from posts import sendToNamedAddresses
+from posts import createPublicPost
+from posts import createFollowersOnlyPost
+from posts import createDirectMessagePost
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -1068,6 +1071,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # email style encoding message/rfc822
                 messageFields=msg.get_payload(decode=False).split(boundary)
                 fields={}
+                filename=None
                 for f in messageFields:
                     if ' name="' in f:
                         postStr=f.split(' name="',1)[1]
@@ -1089,7 +1093,6 @@ class PubServer(BaseHTTPRequestHandler):
                                 # of an image
                                 searchStr=b'Content-Type: image/png'
                                 imageLocation=postBytes.find(searchStr)
-                                filename=None
                                 filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
                                 if imageLocation:                                    
                                     filename=filenameBase+'.png'
@@ -1117,43 +1120,68 @@ class PubServer(BaseHTTPRequestHandler):
                                     fd.write(postBytes[startPos:])
                                     fd.close()
 
-                postSubject=None
-                postMessage=None
-                postImageDescription=None
-                postImage=None
-                postType=None
-                postCategory=None
-                postLocation=None
-                for postKey,postValue in fields.items():
-                    if postKey=='subject':
-                        postSubject=postValue
-                    elif postKey=='message':
-                        postMessage=postValue
-                    elif postKey=='imageDescription':
-                        postImageDescription=postValue
-                    elif postKey=='postType':
-                        postType=postValue
-                    elif postKey=='category':
-                        postCategory=postValue
-                    elif postKey=='location':
-                        postLocation=postValue
-                if self.server.debug:
-                    if postSubject:
-                        print('subject: '+postSubject)
-                    if postMessage:
-                        print('message: '+postMessage)
-                    if postImageDescription:
-                        print('image description: '+postImageDescription)
-                    if postType:
-                        print('type: '+postType)
-                    if postCategory:
-                        print('category: '+postCategory)
-                    if postLocation:
-                        print('location: '+postLocation)                    
-                if not postMessage:
-                    return False            
-                return True
-            return False
+                # send the post
+
+                if not fields.get('message'):
+                    return False
+
+                if not fields.get('imageDescription'):
+                    fields['imageDescription']=None
+                if not fields.get('subject'):
+                    fields['subject']=None
+                if not fields.get('replyTo'):
+                    fields['replyTo']=None
+
+                if postType=='newpost':
+                    messageJson= \
+                        createPublicPost(self.server.baseDir, \
+                                         nickname, \
+                                         self.server.domain,self.server.port, \
+                                         self.server.httpPrefix, \
+                                         fields['message'],False,False,False, \
+                                         filename,fields['imageDescription'],True, \
+                                         fields['replyTo'], fields['replyTo'],fields['subject'])
+                    if messageJson:
+                        queueStatus=self._updateInboxQueue(nickname,messageJson)
+                        if queueStatus==0:
+                            return True
+
+                if postType=='newfollowers':
+                    messageJson= \
+                        createFollowersOnlyPost(self.server.baseDir, \
+                                                nickname, \
+                                                self.server.domain,self.server.port, \
+                                                self.server.httpPrefix, \
+                                                fields['message'],True,False,False, \
+                                                filename,fields['imageDescription'],True, \
+                                                fields['replyTo'], fields['replyTo'],fields['subject'])
+                    if messageJson:
+                        queueStatus=self._updateInboxQueue(nickname,messageJson)
+                        if queueStatus==0:
+                            return True
+
+                if postType=='newdm':
+                    messageJson= \
+                        createDirectMessagePost(self.server.baseDir, \
+                                                nickname, \
+                                                self.server.domain,self.server.port, \
+                                                self.server.httpPrefix, \
+                                                fields['message'],True,False,False, \
+                                                filename,fields['imageDescription'],True, \
+                                                fields['replyTo'], fields['replyTo'],fields['subject'])
+                    if messageJson:
+                        queueStatus=self._updateInboxQueue(nickname,messageJson)
+                        if queueStatus==0:
+                            return True
+
+                if postType=='newunlisted':
+                    # TODO
+                    return True
+
+                if postType=='newshare':
+                    # TODO
+                    return True
+
         return False
         
     def do_POST(self):
@@ -1449,7 +1477,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                queueStatus-_updateInboxQueue('inbox',messageJson)
+                queueStatus=_updateInboxQueue('inbox',messageJson)
                 if queueStatus==0:
                     self.send_response(200)
                     self.end_headers()

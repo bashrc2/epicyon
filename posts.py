@@ -35,6 +35,7 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import deletePost
+from utils import validNickname
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachImage
@@ -591,11 +592,76 @@ def createPublicPost(baseDir: str,
                      clientToServer: bool,\
                      attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
-    """Public post to the outbox
+    """Public post
     """
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          httpPrefix, content, followersOnly, saveToFile, \
+                          clientToServer, \
+                          attachImageFilename,imageDescription,useBlurhash, \
+                          inReplyTo, inReplyToAtomUri, subject)
+
+def createFollowersOnlyPost(baseDir: str,
+                            nickname: str, domain: str, port: int,httpPrefix: str, \
+                            content: str, followersOnly: bool, saveToFile: bool,
+                            clientToServer: bool,\
+                            attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                            inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+    """Followers only post
+    """
+    return createPostBase(baseDir,nickname, domain, port, \
+                          httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          None,
+                          httpPrefix, content, followersOnly, saveToFile, \
+                          clientToServer, \
+                          attachImageFilename,imageDescription,useBlurhash, \
+                          inReplyTo, inReplyToAtomUri, subject)
+
+def getMentionedPeople(baseDir: str,httpPrefix: str,content: str,domain: str) -> []:
+    """Extracts a list of mentioned actors from the given message content
+    """
+    if '@' not in content:
+        return None
+    mentions=[]
+    words=content.split(' ')
+    for wrd in words:
+        if wrd.startswith('@'):
+            handle=wrd[1:]
+            if '@' not in handle:
+                handle=handle+'@'+domain
+                if not os.path.isdir(baseDir+'/accounts/'+handle):
+                    continue
+            else:
+                externalDomain=handle.split('@')[1]
+                if not ('.' in externalDomain or externalDomain=='localhost'):
+                    continue
+            mentionedNickname=handle.split('@')[0]
+            if not validNickname(mentionedNickname):
+                continue
+            actor=httpPrefix+'://'+handle.split('@')[1]+'/users/'+mentionedNickname
+            mentions.append(actor)
+    return actor
+
+def createDirectMessagePost(baseDir: str,
+                            nickname: str, domain: str, port: int,httpPrefix: str, \
+                            content: str, followersOnly: bool, saveToFile: bool,
+                            clientToServer: bool,\
+                            attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                            inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+    """Direct Message post
+    """
+    mentionedPeople=getMentionedPeople(baseDir,httpPrefix,content,domain)
+    postTo=None
+    postCc=None
+    if not mentionedPeople:
+        return None
+    if len(mentionedPeople)==1:
+        postTo=mentionedPeople[0]
+    if len(mentionedPeople)>1:
+        postCc=mentionedPeople[1]    
+    return createPostBase(baseDir,nickname, domain, port, \
+                          postTo,postCc, \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \

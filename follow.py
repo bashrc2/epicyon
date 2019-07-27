@@ -11,7 +11,7 @@ import commentjson
 from pprint import pprint
 import os
 import sys
-from person import validNickname
+from utils import validNickname
 from utils import domainPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
