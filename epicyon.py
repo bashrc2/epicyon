@@ -270,6 +270,7 @@ if args.testsnetwork:
     testPostMessageBetweenServers()
     testFollowBetweenServers()
     testClientToServer()
+    print('All tests succeeded')
     sys.exit()
 
 httpPrefix='https'
