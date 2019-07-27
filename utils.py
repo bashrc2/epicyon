@@ -52,7 +52,7 @@ def domainPermitted(domain: str, federationList: []):
     return False
 
 def urlPermitted(url: str, federationList: [],capability: str):
-    if url.endswith('gab.com'):
+    if url.endswith('gab.com') or url.endswith('gabfed.com'):
         return False
     if len(federationList)==0:
         return True

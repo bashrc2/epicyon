@@ -90,20 +90,25 @@ def htmlNewPost(baseDir: str,path: str) -> str:
     placeholderSubject='Subject or Content Warning (optional)...'
     placeholderMessage='Write something...'
     extraFields=''
+    endpoint='newpost'
     if path.endswith('/newunlisted'):
         scopeIcon='scope_unlisted.png'
         scopeDescription='Unlisted'
+        endpoint='newunlisted'
     if path.endswith('/newfollowers'):
         scopeIcon='scope_followers.png'
         scopeDescription='Followers Only'
+        endpoint='newfollowers'
     if path.endswith('/newdm'):
         scopeIcon='scope_dm.png'
         scopeDescription='Direct Message'
+        endpoint='newdm'
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
         scopeDescription='Shared Item'
         placeholderSubject='Name of the shared item...'
         placeholderMessage='Description of the item being shared...'
+        endpoint='newshare'
         extraFields= \
             '<div class="container">' \
             '  <input type="text" placeholder="Type of shared item. eg. hat" name="itemType">' \
@@ -113,7 +118,7 @@ def htmlNewPost(baseDir: str,path: str) -> str:
 
     newPostForm=htmlHeader(newPostCSS)
     newPostForm+= \
-        '<form method="POST" action="'+path+'?newpost">' \
+        '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \

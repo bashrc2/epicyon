@@ -11,6 +11,11 @@ from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import commentjson
 import json
 import time
+import base64
+# used for mime decoding of message POST
+import email.parser
+# for saving images
+from binascii import a2b_base64
 from hashlib import sha256
 from pprint import pprint
 from session import createSession
@@ -547,7 +552,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newdm') or \
             self.path.endswith('/newshare')):
             self._login_headers('text/html')
-            self.wfile.write(htmlNewPost(self.server.baseDir,self.path).encode('utf-8'))
+            self.wfile.write(htmlNewPost(self.server.baseDir,self.path).encode())
             self.server.GETbusy=False
             return        
 
@@ -1035,6 +1040,122 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',None)
 
+    def _receiveNewPost(self,authorized: bool,postType: str) -> bool:
+        if authorized and '/users/' in self.path and self.path.endswith('?'+postType):            
+            if ' boundary=' in self.headers['Content-type']:
+                nickname=None
+                nicknameStr=self.path.split('/users/')[1]
+                if '/' in nicknameStr:
+                    nickname=nicknameStr.split('/')[0]
+                else:
+                    return False
+                length = int(self.headers['Content-length'])
+                if length>self.server.maxPostLength:
+                    print('POST size too large')
+                    return False
+
+                boundary=self.headers['Content-type'].split('boundary=')[1]
+                if ';' in boundary:
+                    boundary=boundary.split(';')[0]
+
+                # Note: we don't use cgi here because it's due to be deprecated
+                # in Python 3.8/3.10
+                # Instead we use the multipart mime parser from the email module
+                postBytes=self.rfile.read(length)
+                msg = email.parser.BytesParser().parsebytes(postBytes)
+                # why don't we just use msg.is_multipart(), rather than splitting?
+                # TL;DR it doesn't work for this use case because we're not using
+                # email style encoding message/rfc822
+                messageFields=msg.get_payload(decode=False).split(boundary)
+                fields={}
+                for f in messageFields:
+                    if ' name="' in f:
+                        postStr=f.split(' name="',1)[1]
+                        if '"' in postStr:
+                            postKey=postStr.split('"',1)[0]
+                            postValueStr=postStr.split('"',1)[1]
+                            if ';' not in postValueStr:
+                                if '\r\n' in postValueStr:
+                                    postLines=postValueStr.split('\r\n')                                    
+                                    postValue=''
+                                    if len(postLines)>2:
+                                        for line in range(2,len(postLines)-1):
+                                            if line>2:
+                                                postValue+='\n'
+                                            postValue+=postLines[line]
+                                    fields[postKey]=postValue
+                            else:
+                                # directly search the binary array for the beginning
+                                # of an image
+                                searchStr=b'Content-Type: image/png'
+                                imageLocation=postBytes.find(searchStr)
+                                filename=None
+                                filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
+                                if imageLocation:                                    
+                                    filename=filenameBase+'.png'
+                                else:        
+                                    searchStr=b'Content-Type: image/jpeg'
+                                    imageLocation=postBytes.find(searchStr)
+                                    if imageLocation:                                    
+                                        filename=filenameBase+'.jpg'
+                                    else:     
+                                        searchStr=b'Content-Type: image/gif'
+                                        imageLocation=postBytes.find(searchStr)
+                                        if imageLocation:                                    
+                                            filename=filenameBase+'.gif'
+                                if filename and imageLocation:
+                                    # locate the beginning of the image, after any
+                                    # carriage returns
+                                    startPos=imageLocation+len(searchStr)
+                                    for offset in range(1,8):
+                                        if postBytes[startPos+offset]!=10:
+                                            if postBytes[startPos+offset]!=13:
+                                                startPos+=offset
+                                                break
+
+                                    fd = open(filename, 'wb')
+                                    fd.write(postBytes[startPos:])
+                                    fd.close()
+
+                postSubject=None
+                postMessage=None
+                postImageDescription=None
+                postImage=None
+                postType=None
+                postCategory=None
+                postLocation=None
+                for postKey,postValue in fields.items():
+                    if postKey=='subject':
+                        postSubject=postValue
+                    elif postKey=='message':
+                        postMessage=postValue
+                    elif postKey=='imageDescription':
+                        postImageDescription=postValue
+                    elif postKey=='postType':
+                        postType=postValue
+                    elif postKey=='category':
+                        postCategory=postValue
+                    elif postKey=='location':
+                        postLocation=postValue
+                if self.server.debug:
+                    if postSubject:
+                        print('subject: '+postSubject)
+                    if postMessage:
+                        print('message: '+postMessage)
+                    if postImageDescription:
+                        print('image description: '+postImageDescription)
+                    if postType:
+                        print('type: '+postType)
+                    if postCategory:
+                        print('category: '+postCategory)
+                    if postLocation:
+                        print('location: '+postLocation)                    
+                if not postMessage:
+                    return False            
+                return True
+            return False
+        return False
+        
     def do_POST(self):
         if self.server.debug:
             print('DEBUG: POST to from '+self.server.baseDir+ \
@@ -1058,6 +1179,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         # remove any trailing slashes from the path
         self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
+
+        # check authorization
+        authorized = self._isAuthorized()
+        if authorized:
+            if self.server.debug:
+                print('POST Authorization granted')
+        else:
+            if self.server.debug:
+                print('POST Not authorized')
 
         # if this is a POST to teh outbox then check authentication
         self.outboxAuthenticated=False
@@ -1115,9 +1245,35 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        if self._receiveNewPost(authorized,'newpost'):
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+        elif self._receiveNewPost(authorized,'newunlisted'):
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+        elif self._receiveNewPost(authorized,'newfollowers'):
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+        elif self._receiveNewPost(authorized,'newdm'):
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+        elif self._receiveNewPost(authorized,'newshare'):
+            self.send_response(200)
+            self.end_headers()
+            self.server.POSTbusy=False
+            return
+        
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
             if '/users/' in self.path:
-                if self._isAuthorized():
+                if authorized:
                     self.outboxAuthenticated=True
                     pathUsersSection=self.path.split('/users/')[1]
                     self.postToNickname=pathUsersSection.split('/')[0]
@@ -1324,6 +1480,8 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
 
     serverAddress = ('', port)
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
+    # max POST size of 10M
+    httpd.maxPostLength=1024*1024*10
     httpd.domain=domain
     httpd.port=port
     httpd.domainFull=domain
