@@ -174,6 +174,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
              federationList: [], \
              personCache: {},raw: bool, \
              simple: bool,debug: bool) -> {}:
+    """Gets public posts from an outbox
+    """
     personPosts={}
     if not outboxUrl:
         return personPosts
@@ -219,6 +221,17 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
         #pprint(item)
         published = item['object']['published']
         if not personPosts.get(item['id']):
+            # check that this is a public post
+            # #Public should appear in the "to" list
+            if item['object'].get('to'):
+                isPublic=False
+                for recipient in item['object']['to']:
+                    if recipient.endswith('#Public'):
+                        isPublic=True
+                        break
+                if not isPublic:
+                    continue
+            
             content = item['object']['content']
 
             mentions=[]
@@ -597,6 +610,22 @@ def createPublicPost(baseDir: str,
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          httpPrefix, content, followersOnly, saveToFile, \
+                          clientToServer, \
+                          attachImageFilename,imageDescription,useBlurhash, \
+                          inReplyTo, inReplyToAtomUri, subject)
+
+def createUnlistedPost(baseDir: str,
+                       nickname: str, domain: str, port: int,httpPrefix: str, \
+                       content: str, followersOnly: bool, saveToFile: bool,
+                       clientToServer: bool,\
+                       attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                       inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+    """Unlisted post. This has the #Public and followers links inverted.
+    """
+    return createPostBase(baseDir,nickname, domain, port, \
+                          httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \

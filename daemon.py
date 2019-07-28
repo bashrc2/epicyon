@@ -31,6 +31,7 @@ from posts import sendToFollowers
 from posts import postIsAddressedToPublic
 from posts import sendToNamedAddresses
 from posts import createPublicPost
+from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
 from posts import createDirectMessagePost
 from inbox import inboxPermittedMessage
@@ -1147,6 +1148,20 @@ class PubServer(BaseHTTPRequestHandler):
                         if queueStatus==0:
                             return True
 
+                if postType=='newunlisted':
+                    messageJson= \
+                        createUnlistedPost(self.server.baseDir, \
+                                           nickname, \
+                                           self.server.domain,self.server.port, \
+                                           self.server.httpPrefix, \
+                                           fields['message'],False,False,False, \
+                                           filename,fields['imageDescription'],True, \
+                                           fields['replyTo'], fields['replyTo'],fields['subject'])
+                    if messageJson:
+                        queueStatus=self._updateInboxQueue(nickname,messageJson)
+                        if queueStatus==0:
+                            return True
+
                 if postType=='newfollowers':
                     messageJson= \
                         createFollowersOnlyPost(self.server.baseDir, \
@@ -1174,10 +1189,6 @@ class PubServer(BaseHTTPRequestHandler):
                         queueStatus=self._updateInboxQueue(nickname,messageJson)
                         if queueStatus==0:
                             return True
-
-                if postType=='newunlisted':
-                    # TODO
-                    return True
 
                 if postType=='newshare':
                     if not fields.get('itemType'):
