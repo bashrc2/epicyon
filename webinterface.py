@@ -430,7 +430,8 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
         '</div>\n'
 
 def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
-                 nickname: str,domain: str,timelineJson: {},boxName: str) -> str:
+                 nickname: str,domain: str,timelineJson: {}, \
+                 boxName: str) -> str:
     """Show the timeline as html
     """
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
@@ -451,9 +452,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
 
     actor='/users/'+nickname
     tlStr=htmlHeader(profileStyle)
-    newPostStr=''
-    if boxName=='inbox':
-        newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>New Post </span></button></a>'
+    newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>New Post </span></button></a>'
     tlStr+= \
         '<div class="timeline-banner">' \
         '</div>' \
