@@ -126,18 +126,7 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
-        '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
-        '' \
-        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
-        ''+extraFields+ \
         '    <div class="container">' \
-        '      <input type="text" placeholder="Image description" name="imageDescription">' \
-        '      <input type="file" id="attachpic" name="attachpic"' \
-        '            accept=".png, .jpg, .jpeg, .gif">' \
-        '    </div>' \
-        '    <div class="container">' \
-        '      <input type="submit" value="Cancel">' \
-        '      <input type="submit" value="Submit">' \
         '      <div class="dropdown">' \
         '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
         '        <div class="dropdown-content">' \
@@ -148,6 +137,17 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '          <a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>' \
         '        </div>' \
         '      </div>' \
+        '      <input type="submit" value="Submit">' \
+        '      <input type="submit" value="Cancel">' \
+        '    </div>' \
+        '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
+        '' \
+        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
+        ''+extraFields+ \
+        '    <div class="container">' \
+        '      <input type="text" placeholder="Image description" name="imageDescription">' \
+        '      <input type="file" id="attachpic" name="attachpic"' \
+        '            accept=".png, .jpg, .jpeg, .gif">' \
         '    </div>' \
         '  </div>' \
         '</form>'
