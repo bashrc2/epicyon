@@ -268,6 +268,18 @@ input[type=submit] {
     font-size: 18px;
 }
 
+.cancelbtn {
+    background-color: #555;
+    color: white;
+    float: right;
+    margin: 0px 10px;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
 input[type=file] {
     background-color: #555;
     color: white;

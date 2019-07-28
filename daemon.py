@@ -1065,6 +1065,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json',None)
 
     def _receiveNewPost(self,authorized: bool,postType: str) -> bool:
+        # 0 = this is not a new post
+        # 1 = new post success
+        # -1 = new post failed
+        # 2 = new post canceled
         if authorized and '/users/' in self.path and self.path.endswith('?'+postType):            
             if ' boundary=' in self.headers['Content-type']:
                 nickname=None
@@ -1072,11 +1076,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nicknameStr:
                     nickname=nicknameStr.split('/')[0]
                 else:
-                    return False
+                    return -1
                 length = int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
                     print('POST size too large')
-                    return False
+                    return -1
 
                 boundary=self.headers['Content-type'].split('boundary=')[1]
                 if ';' in boundary:
@@ -1146,7 +1150,12 @@ class PubServer(BaseHTTPRequestHandler):
                 # send the post
 
                 if not fields.get('message'):
-                    return False
+                    return -1
+                if fields.get('submitPost'):
+                    if fields['submitPost']!='Submit':
+                        return -1
+                else:
+                    return 2
 
                 if not fields.get('imageDescription'):
                     fields['imageDescription']=None
@@ -1166,7 +1175,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        return self._postToOutbox(messageJson)
+                        if self._postToOutbox(messageJson):
+                            return 1
+                        else:
+                            return -1
 
                 if postType=='newunlisted':
                     messageJson= \
@@ -1179,7 +1191,10 @@ class PubServer(BaseHTTPRequestHandler):
                                            fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        return self._postToOutbox(messageJson)
+                        if self._postToOutbox(messageJson):
+                            return 1
+                        else:
+                            return -1
 
                 if postType=='newfollowers':
                     messageJson= \
@@ -1192,7 +1207,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        return self._postToOutbox(messageJson)
+                        if self._postToOutbox(messageJson):
+                            return 1
+                        else:
+                            return -1
 
                 if postType=='newdm':
                     messageJson= \
@@ -1205,7 +1223,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['replyTo'],fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        return self._postToOutbox(messageJson)
+                        if self._postToOutbox(messageJson):
+                            return 1
+                        else:
+                            return -1
 
                 if postType=='newshare':
                     if not fields.get('itemType'):
@@ -1231,8 +1252,13 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(filename):
                         os.remove(filename)
                     self.postToNickname=nickname
-                    return self._postToOutbox(messageJson)
-        return False
+                    if self._postToOutbox(messageJson):
+                        return 1
+                    else:
+                        return -1
+            return -1
+        else:
+            return 0
         
     def do_POST(self):
         if self.server.debug:
@@ -1323,23 +1349,40 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        if self._receiveNewPost(authorized,'newpost'):
+        postState=self._receiveNewPost(authorized,'newpost')
+        if postState!=0:
+            nickname=self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
+            self._redirect_headers('/users/'+nickname+'/outbox')
+            self.server.POSTbusy=False
+            return
+        postState=self._receiveNewPost(authorized,'newunlisted')
+        if postState!=0:
+            nickname=self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
-        elif self._receiveNewPost(authorized,'newunlisted'):
+        postState=self._receiveNewPost(authorized,'newfollowers')
+        if postState!=0:
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
-        elif self._receiveNewPost(authorized,'newfollowers'):
+        postState=self._receiveNewPost(authorized,'newdm')
+        if postState!=0:
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
-        elif self._receiveNewPost(authorized,'newdm'):
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
-            self.server.POSTbusy=False
-            return
-        elif self._receiveNewPost(authorized,'newshare'):
+        postState=self._receiveNewPost(authorized,'newshare')
+        if postState!=0:
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/shares')
             self.server.POSTbusy=False
             return

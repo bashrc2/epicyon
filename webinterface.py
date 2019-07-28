@@ -137,8 +137,8 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '          <a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>' \
         '        </div>' \
         '      </div>' \
-        '      <input type="submit" value="Submit">' \
-        '      <input type="submit" value="Cancel">' \
+        '      <input type="submit" name="submitPost" value="Submit">' \
+        '      <a href="'+pathBase+'/outbox"><button class="cancelbtn">Cancel</button></a>' \
         '    </div>' \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
