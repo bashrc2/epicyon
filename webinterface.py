@@ -295,6 +295,9 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         skillsButton='buttonselected'
     elif selected=='shares':
         sharesButton='buttonselected'
+    loginButton=''
+    if not authorized:
+        loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
     actor=profileJson['id']
     profileStr= \
         ' <div class="hero-image">' \
@@ -302,7 +305,8 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'">' \
         '    <h1>'+preferredName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
-        '    <p>'+profileDescription+'</p>' \
+        '    <p>'+profileDescription+'</p>'+ \
+        loginButton+ \
         '  </div>' \
         '</div>' \
         '<div class="container">\n' \

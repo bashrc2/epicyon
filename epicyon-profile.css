@@ -280,6 +280,19 @@ input[type=submit] {
     font-size: 18px;
 }
 
+.loginButton {
+    background-color: #2965;
+    color: #000;
+    float: center;
+    margin: 0px 10px;
+    padding: 12px 40px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 24px;
+    opacity: 0.7;
+}
+
 input[type=file] {
     background-color: #555;
     color: white;
