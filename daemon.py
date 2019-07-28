@@ -109,6 +109,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', self.server.domainFull)
         self.end_headers()
 
+    def _redirect_headers(self,redirect: str) -> None:
+        self.send_response(303)
+        self.send_header('Content-type', 'text/html')
+        self.send_header('Location', redirect)
+        self.send_header('Host', self.server.domainFull)
+        self.end_headers()
+
     def _404(self) -> None:
         self.send_response(404)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -1317,28 +1324,23 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         if self._receiveNewPost(authorized,'newpost'):
-            self.send_response(200)
-            self.end_headers()
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
         elif self._receiveNewPost(authorized,'newunlisted'):
-            self.send_response(200)
-            self.end_headers()
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
         elif self._receiveNewPost(authorized,'newfollowers'):
-            self.send_response(200)
-            self.end_headers()
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
         elif self._receiveNewPost(authorized,'newdm'):
-            self.send_response(200)
-            self.end_headers()
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
             self.server.POSTbusy=False
             return
         elif self._receiveNewPost(authorized,'newshare'):
-            self.send_response(200)
-            self.end_headers()
+            self._redirect_headers('/users/'+self.postToNickname+'/shares')
             self.server.POSTbusy=False
             return
         
