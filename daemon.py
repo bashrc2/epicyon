@@ -406,7 +406,8 @@ class PubServer(BaseHTTPRequestHandler):
                    '/icons/' not in self.path:
                     divertToLoginScreen=True
                     if self.path.startswith('/users/'):
-                        if '/' not in self.path.split('/users/')[1]:
+                        nickStr=self.path.split('/users/')[1]
+                        if '/' not in nickStr and '?' not in nickStr:
                             divertToLoginScreen=False
                         else:
                             if self.path.endswith('/following') or \
