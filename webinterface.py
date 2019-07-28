@@ -416,7 +416,7 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
     fullDomain=domain
     if port!=80 and port!=443:
         fullDomain=domain+':'+str(port)
-    
+        
     if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
             getPersonBox(session,wfRequest,personCache,'outbox')
@@ -424,18 +424,25 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
             avatarUrl=avatarUrl2
         if preferredName:
             titleStr=preferredName+' '+titleStr
-        
+
+    avatarDropdown= \
+        '    <a href="'+postJsonObject['actor']+'">' \
+        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'        
+    if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+        avatarDropdown= \
+            '  <div class="dropdown-timeline">' \
+            '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
+            '    <div class="dropdown-timeline-content">' \
+            '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
+            '      <a href="/users/'+nickname+'?follow">Follow</a>' \
+            '      <a href="/users/'+nickname+'?block">Block</a>' \
+            '      <a href="/users/'+nickname+'?report">Report</a>' \
+            '    </div>' \
+            '  </div>'
+
     return \
-        '<div class="'+containerClass+'">\n' \
-        '  <div class="dropdown-timeline">' \
-        '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
-        '    <div class="dropdown-content">' \
-        '      <a href="'+postJsonObject['actor']+'">Visit</a>' \
-        '      <a href="/users/'+nickname+'?follow">Follow</a>' \
-        '      <a href="/users/'+nickname+'?block">Block</a>' \
-        '      <a href="/users/'+nickname+'?report">Report</a>' \
-        '    </div>' \
-        '  </div>' \
+        '<div class="'+containerClass+'">\n'+ \
+        avatarDropdown+ \
         '<p class="post-title">'+titleStr+'</p>'+ \
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
