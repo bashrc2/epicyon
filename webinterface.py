@@ -434,9 +434,9 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
             '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
-            '      <a href="/users/'+nickname+'?follow='+postJsonObject['actor']+'">Follow</a>' \
-            '      <a href="/users/'+nickname+'?block='+postJsonObject['actor']+'">Block</a>' \
-            '      <a href="/users/'+nickname+'?report='+postJsonObject['actor']+'">Report</a>' \
+            '      <a href="/users/'+nickname+'?follow='+postJsonObject['actor']+';'+avatarUrl+'">Follow</a>' \
+            '      <a href="/users/'+nickname+'?block='+postJsonObject['actor']+';'+avatarUrl+'">Block</a>' \
+            '      <a href="/users/'+nickname+'?report='+postJsonObject['actor']+';'+avatarUrl+'">Report</a>' \
             '    </div>' \
             '  </div>'
 
