@@ -24,7 +24,7 @@ def getStatusNumber() -> (str,str):
 def createPersonDir(nickname: str,domain: str,baseDir: str,dirname: str) -> str:
     """Create a directory for a person
     """
-    handle=nickname.lower()+'@'+domain.lower()
+    handle=nickname+'@'+domain
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
     boxDir=baseDir+'/accounts/'+handle+'/'+dirname

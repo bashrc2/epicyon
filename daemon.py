@@ -320,7 +320,7 @@ class PubServer(BaseHTTPRequestHandler):
                              messageJson,self.server.debug)
         return True
 
-    def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
+    def _updateInboxQueue(self,nickname: str,messageJson: {},postFromWebInterface: bool) -> int:
         """Update the inbox queue
         """
         # Check if the queue is full
@@ -341,6 +341,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.headers['host'],
                                  self.headers['signature'],
                                  '/'+self.path.split('/')[-1],
+                                 postFromWebInterface,
                                  self.server.debug)
         if queueFilename:
             # add json to the queue
@@ -396,7 +397,18 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
                    '/icons/' not in self.path:
-                    if not authorized:
+                    divertToLoginScreen=True
+                    if self.path.startswith('/users/'):
+                        if '/' not in self.path.split('/users/')[1]:
+                            divertToLoginScreen=False
+                        else:
+                            if self.path.endswith('/following') or \
+                               self.path.endswith('/followers') or \
+                               self.path.endswith('/skills') or \
+                               self.path.endswith('/roles') or \
+                               self.path.endswith('/shares'):
+                                divertToLoginScreen=False
+                    if divertToLoginScreen and not authorized:
                         self.send_response(303)
                         self.send_header('Location', '/login')
                         self.end_headers()
@@ -1075,6 +1087,8 @@ class PubServer(BaseHTTPRequestHandler):
                 fields={}
                 filename=None
                 for f in messageFields:
+                    if f=='--':
+                        continue
                     if ' name="' in f:
                         postStr=f.split(' name="',1)[1]
                         if '"' in postStr:
@@ -1096,19 +1110,19 @@ class PubServer(BaseHTTPRequestHandler):
                                 searchStr=b'Content-Type: image/png'
                                 imageLocation=postBytes.find(searchStr)
                                 filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
-                                if imageLocation:                                    
+                                if imageLocation>-1:
                                     filename=filenameBase+'.png'
                                 else:        
                                     searchStr=b'Content-Type: image/jpeg'
                                     imageLocation=postBytes.find(searchStr)
-                                    if imageLocation:                                    
+                                    if imageLocation>-1:                                    
                                         filename=filenameBase+'.jpg'
                                     else:     
                                         searchStr=b'Content-Type: image/gif'
                                         imageLocation=postBytes.find(searchStr)
-                                        if imageLocation:                                    
+                                        if imageLocation>-1:                                    
                                             filename=filenameBase+'.gif'
-                                if filename and imageLocation:
+                                if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
                                     # carriage returns
                                     startPos=imageLocation+len(searchStr)
@@ -1144,9 +1158,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          filename,fields['imageDescription'],True, \
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
-                        queueStatus=self._updateInboxQueue(nickname,messageJson)
-                        if queueStatus==0:
-                            return True
+                        self.postToNickname=nickname
+                        return self._postToOutbox(messageJson)
 
                 if postType=='newunlisted':
                     messageJson= \
@@ -1158,9 +1171,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            filename,fields['imageDescription'],True, \
                                            fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
-                        queueStatus=self._updateInboxQueue(nickname,messageJson)
-                        if queueStatus==0:
-                            return True
+                        self.postToNickname=nickname
+                        return self._postToOutbox(messageJson)
 
                 if postType=='newfollowers':
                     messageJson= \
@@ -1172,9 +1184,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 filename,fields['imageDescription'],True, \
                                                 fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
-                        queueStatus=self._updateInboxQueue(nickname,messageJson)
-                        if queueStatus==0:
-                            return True
+                        self.postToNickname=nickname
+                        return self._postToOutbox(messageJson)
 
                 if postType=='newdm':
                     messageJson= \
@@ -1184,11 +1195,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.httpPrefix, \
                                                 fields['message'],True,False,False, \
                                                 filename,fields['imageDescription'],True, \
-                                                fields['replyTo'], fields['replyTo'],fields['subject'])
+                                                fields['replyTo'],fields['replyTo'],fields['subject'])
                     if messageJson:
-                        queueStatus=self._updateInboxQueue(nickname,messageJson)
-                        if queueStatus==0:
-                            return True
+                        self.postToNickname=nickname
+                        return self._postToOutbox(messageJson)
 
                 if postType=='newshare':
                     if not fields.get('itemType'):
@@ -1211,11 +1221,10 @@ class PubServer(BaseHTTPRequestHandler):
                              fields['location'], \
                              fields['duration'],
                              self.server.debug)
-                    # TODO distribute shares to followers
                     if os.path.isfile(filename):
                         os.remove(filename)
-                    return True
-
+                    self.postToNickname=nickname
+                    return self._postToOutbox(messageJson)
         return False
         
     def do_POST(self):
@@ -1493,7 +1502,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.postToNickname=pathUsersSection.split('/')[0]
                 if self.postToNickname:
-                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson)
+                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson,False)
                     if queueStatus==0:
                         self.send_response(200)
                         self.end_headers()
@@ -1511,7 +1520,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                queueStatus=_updateInboxQueue('inbox',messageJson)
+                queueStatus=_updateInboxQueue('inbox',messageJson,False)
                 if queueStatus==0:
                     self.send_response(200)
                     self.end_headers()
