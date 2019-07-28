@@ -606,7 +606,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         postJsonObject['likes']={}
                                 if 'text/html' in self.headers['Accept']:
                                     self._set_headers('text/html')                    
-                                    self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
+                                    self.wfile.write(htmlIndividualPost( \
+                                        self.server.session, \
+                                        self.server.cachedWebfingers,self.server.personCache, \
+                                        nickname,self.server.domain,self.server.port, \
+                                        postJsonObject).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json')
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
@@ -807,7 +811,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         postJsonObject['likes']={}                                    
                                 if 'text/html' in self.headers['Accept']:
                                     self._set_headers('text/html')
-                                    self.wfile.write(htmlIndividualPost(postJsonObject).encode('utf-8'))
+                                    self.wfile.write(htmlIndividualPost( \
+                                        self.server.session, \
+                                        self.server.cachedWebfingers,self.server.personCache, \
+                                        nickname,self.server.domain,self.server.port, \
+                                        postJsonObject).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json')
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
@@ -849,6 +857,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                        self.server.personCache, \
                                                        nickname, \
                                                        self.server.domain, \
+                                                       self.server.port, \
                                                        inboxFeed).encode('utf-8'))
                         else:
                             self._set_headers('application/json')
@@ -894,6 +903,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.personCache, \
                                             nickname, \
                                             self.server.domain, \
+                                            self.server.port, \
                                             outboxFeed).encode('utf-8'))
             else:
                 self._set_headers('application/json')

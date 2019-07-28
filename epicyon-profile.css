@@ -335,6 +335,20 @@ input[type=submit]:hover {
     transform: translateY(-10%);
 }
 
+.dropdown-timeline {
+    margin: 10px auto;
+    padding: 0px 0px;
+}
+
+.dropdown-timeline img {
+    opacity: 1.0;
+    width: 90%;
+    height: 90%;
+    padding: 0px 0px;
+    -ms-transform: translateY(-10%);
+    transform: translateY(-10%);
+}
+
 .scope-desc {
     font-size: 18px;
 }
@@ -371,3 +385,9 @@ input[type=submit]:hover {
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+/* Show the dropdown menu on hover */
+.dropdown-timeline:hover .dropdown-content {display: block;}
+
+/* Change the background color of the dropdown button when the dropdown content is shown */
+.dropdown-timeline:hover .dropbtn {background-color: #3e8e41;}

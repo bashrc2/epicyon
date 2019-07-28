@@ -197,7 +197,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         if item['type']=='Create':
             profileStr+= \
                 individualPostAsHtml(session,wfRequest,personCache, \
-                                     domain,item)
+                                     nickname,domain,port,item)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -368,13 +368,14 @@ def individualFollowAsHtml(session,wfRequest: {}, \
         '</div>\n'
 
 def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
-                         domain: str,postJsonObject: {}) -> str:
+                         nickname: str,domain: str,port: int, \
+                         postJsonObject: {}) -> str:
     avatarPosition=''
     containerClass='container'
     timeClass='time-right'
-    nickname=getNicknameFromActor(postJsonObject['actor'])
-    domain,port=getDomainFromActor(postJsonObject['actor'])
-    titleStr='@'+nickname+'@'+domain
+    actorNickname=getNicknameFromActor(postJsonObject['actor'])
+    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+    titleStr='@'+actorNickname+'@'+actorDomain
     if postJsonObject['object']['inReplyTo']:
         containerClass='container darker'
         avatarPosition=' class="right"'
@@ -411,18 +412,29 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
                             attachmentCtr+=1
 
     avatarUrl=postJsonObject['actor']+'/avatar.png'
-    if domain not in postJsonObject['actor']:
+
+    fullDomain=domain
+    if port!=80 and port!=443:
+        fullDomain=domain+':'+str(port)
+    
+    if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
             getPersonBox(session,wfRequest,personCache,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if preferredName:
             titleStr=preferredName+' '+titleStr
-
+        
     return \
         '<div class="'+containerClass+'">\n' \
-        '<a href="'+postJsonObject['actor']+'">' \
-        '<img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'></a>\n'+ \
+        '  <div class="dropdown-timeline">' \
+        '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
+        '    <div class="dropdown-content">' \
+        '      <a href="'+postJsonObject['actor']+'">Visit</a>' \
+        '      <a href="/users/'+nickname+'?follow">Follow</a>' \
+        '      <a href="/users/'+nickname+'?block">Block</a>' \
+        '    </div>' \
+        '  </div>' \
         '<p class="post-title">'+titleStr+'</p>'+ \
         postJsonObject['object']['content']+'\n'+ \
         attachmentStr+ \
@@ -430,7 +442,7 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
         '</div>\n'
 
 def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
-                 nickname: str,domain: str,timelineJson: {}, \
+                 nickname: str,domain: str,port: int,timelineJson: {}, \
                  boxName: str) -> str:
     """Show the timeline as html
     """
@@ -466,31 +478,31 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
             tlStr+=individualPostAsHtml(session,wfRequest,personCache, \
-                                        domain,item)
+                                        nickname,domain,port,item)
     tlStr+=htmlFooter()
     return tlStr
 
 def htmlInbox(session,baseDir: str,wfRequest: {},personCache: {}, \
-              nickname: str,domain: str,inboxJson: {}) -> str:
+              nickname: str,domain: str,port: int,inboxJson: {}) -> str:
     """Show the inbox as html
     """
     return htmlTimeline(session,baseDir,wfRequest,personCache, \
-                        nickname,domain,inboxJson,'inbox')
+                        nickname,domain,port,inboxJson,'inbox')
 
 def htmlOutbox(session,baseDir: str,wfRequest: {},personCache: {}, \
-               nickname: str,domain: str,outboxJson: {}) -> str:
+               nickname: str,domain: str,port: int,outboxJson: {}) -> str:
     """Show the Outbox as html
     """
     return htmlTimeline(session,baseDir,wfRequest,personCache, \
-                        nickname,domain,outboxJson,'outbox')
+                        nickname,domain,port,outboxJson,'outbox')
 
 def htmlIndividualPost(session,wfRequest: {},personCache: {}, \
-                       domain: str,postJsonObject: {}) -> str:
+                       nickname: str,domain: str,port: int,postJsonObject: {}) -> str:
     """Show an individual post as html
     """
     return htmlHeader()+ \
         individualPostAsHtml(session,wfRequest,personCache, \
-                             domain,postJsonObject)+ \
+                             nickname,domain,port,postJsonObject)+ \
         htmlFooter()
 
 def htmlPostReplies(postJsonObject: {}) -> str:
