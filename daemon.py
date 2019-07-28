@@ -66,6 +66,7 @@ from webinterface import htmlNewPost
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
+from shares import addShare
 import os
 import sys
 
@@ -1179,7 +1180,29 @@ class PubServer(BaseHTTPRequestHandler):
                     return True
 
                 if postType=='newshare':
-                    # TODO
+                    if not fields.get('itemType'):
+                        return False
+                    if not fields.get('category'):
+                        return False
+                    if not fields.get('location'):
+                        return False
+                    if not fields.get('duration'):
+                        return False
+                    addShare(self.server.baseDir, \
+                             self.server.httpPrefix, \
+                             nickname, \
+                             self.server.domain,self.server.port, \
+                             fields['subject'], \
+                             fields['message'], \
+                             filename, \
+                             fields['itemType'], \
+                             fields['category'], \
+                             fields['location'], \
+                             fields['duration'],
+                             self.server.debug)
+                    # TODO distribute shares to followers
+                    if os.path.isfile(filename):
+                        os.remove(filename)
                     return True
 
         return False
