@@ -433,6 +433,7 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
         '      <a href="'+postJsonObject['actor']+'">Visit</a>' \
         '      <a href="/users/'+nickname+'?follow">Follow</a>' \
         '      <a href="/users/'+nickname+'?block">Block</a>' \
+        '      <a href="/users/'+nickname+'?report">Report</a>' \
         '    </div>' \
         '  </div>' \
         '<p class="post-title">'+titleStr+'</p>'+ \
