@@ -607,9 +607,13 @@ def createPublicPost(baseDir: str,
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post
     """
+    domainFull=domain
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            domainFull=domain+':'+str(port)
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
-                          httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \
@@ -623,8 +627,12 @@ def createUnlistedPost(baseDir: str,
                        inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
+    domainFull=domain
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            domainFull=domain+':'+str(port)
     return createPostBase(baseDir,nickname, domain, port, \
-                          httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
@@ -639,8 +647,12 @@ def createFollowersOnlyPost(baseDir: str,
                             inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Followers only post
     """
+    domainFull=domain
+    if port!=80 and port!=443: 
+        if ':' not in domain:
+            domainFull=domain+':'+str(port)
     return createPostBase(baseDir,nickname, domain, port, \
-                          httpPrefix+'://'+domain+'/users/'+nickname+'/followers', \
+                          httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           None,
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \

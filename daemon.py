@@ -213,7 +213,7 @@ class PubServer(BaseHTTPRequestHandler):
                         os.rename(uploadMediaFilename,mediaFilename)
                         # change the url of the attachment
                         messageJson['object']['attachment'][attachmentIndex]['url']= \
-                            self.server.httpPrefix+'://'+self.server.domain+'/'+mediaPath
+                            self.server.httpPrefix+'://'+self.server.domainFull+'/'+mediaPath
                 
         permittedOutboxTypes=[
             'Create','Announce','Like','Follow','Undo', \
