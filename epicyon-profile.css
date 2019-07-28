@@ -240,6 +240,22 @@ input[type=text], select, textarea {
     font-size: 18px;
 }
 
+input[type=number] {
+    width: 10%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+    font-size: 18px;
+}
+
+.labels {
+    font-size: 18px;
+}
+
 input[type=submit] {
     background-color: #555;
     color: white;

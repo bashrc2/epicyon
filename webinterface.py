@@ -75,7 +75,11 @@ def htmlLogin(baseDir: str) -> str:
     return loginForm
 
 def htmlNewPost(baseDir: str,path: str) -> str:
-    newPostText='<p class="new-post-text">Enter your post text below.</p>'
+    if not path.endswith('/newshare'):
+        newPostText='<p class="new-post-text">Enter your post text below.</p>'
+    else:
+        newPostText='<p class="new-post-text">Enter the details for your shared item below.</p>'
+        
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
             newPostText = '<p class="new-post-text">'+file.read()+'</p>'    
@@ -111,8 +115,9 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         endpoint='newshare'
         extraFields= \
             '<div class="container">' \
-            '  <input type="text" placeholder="Type of shared item. eg. hat" name="itemType">' \
-            '  <input type="text" placeholder="Category of shared item. eg. clothing" name="category">' \
+            '  <input type="text" class="itemType" placeholder="Type of shared item. eg. hat" name="itemType">' \
+            '  <input type="text" class="category" placeholder="Category of shared item. eg. clothing" name="category">' \
+            '  <label class="labels">Duration of listing in days:</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">' \
             '</div>' \
             '<input type="text" placeholder="City or location of the shared item" name="location">'
 
