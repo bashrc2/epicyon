@@ -85,6 +85,22 @@ body, html {
     margin: 5px;
 }
 
+.followerApprovalsButton {
+    border-radius: 4px;
+    background-color: darkgreen;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px;
+    width: 25%;
+    max-width: 200px;
+    min-width: 100px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+}
+
 .followApprove {
     border-radius: 4px;
     background-color: darkgreen;
@@ -121,10 +137,26 @@ body, html {
     padding: 0px 20px;
 }
 
+.followerApprovalsButton span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
 .button span {
     cursor: pointer;
     display: inline-block;
     position: relative;
+    transition: 0.5s;
+}
+
+.followerApprovalsButton span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
     transition: 0.5s;
 }
 
@@ -137,8 +169,17 @@ body, html {
     transition: 0.5s;
 }
 
+.followerApprovalsButton:hover span {
+    padding-right: 25px;
+}
+
 .button:hover span {
     padding-right: 25px;
+}
+
+.followerApprovalsButton:hover span:after {
+    opacity: 1;
+    right: 0;
 }
 
 .button:hover span:after {

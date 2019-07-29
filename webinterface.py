@@ -513,8 +513,18 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         personalButton='buttonselected'
     elif boxName=='federated':
         federatedButton='buttonselected'
-
     actor='/users/'+nickname
+
+    followApprovals=''
+    followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
+    if os.path.isfile(followRequestsFilename):
+        with open(followRequestsFilename,'r') as f:
+            for line in f:
+                if len(line)>0:
+                    # show a star on the followers tab
+                    followApprovals='<a href="'+actor+'/followers"><button class="followerApprovalsButton"><span>Approvals </span></button></a>'
+                    break
+
     tlStr=htmlHeader(profileStyle)
     newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>New Post </span></button></a>'
     tlStr+= \
@@ -523,8 +533,8 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         '<div class="container">\n' \
         '  <center>'+newPostStr+ \
         '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Local </span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Personal </span></button></a>' \
-        '    <a href="'+actor+'/federated"><button class="'+federatedButton+'"><span>Federated </span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Personal </span></button></a>'+ \
+        followApprovals+ \
         '  </center>' \
         '</div>'
     for item in timelineJson['orderedItems']:
