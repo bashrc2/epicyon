@@ -296,8 +296,41 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     elif selected=='shares':
         sharesButton='buttonselected'
     loginButton=''
+
+    followApprovalsSection=''
+    followApprovals=''
+
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
+    else:
+        # are there any follow requests?
+        followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
+        if os.path.isfile(followRequestsFilename):
+            with open(followRequestsFilename,'r') as f:
+                for line in f:
+                    if len(line)>0:
+                        # show a star on the followers tab
+                        followApprovals='<img class="highlight" src="/icons/new.png"/>'
+                        break
+        if selected=='followers':
+            if len(followApprovals)>0:
+                with open(followRequestsFilename,'r') as f:
+                    for followerHandle in f:
+                        if len(line)>0:
+                            if '://' in followerHandle:
+                                followerActor=followerHandle
+                            else:
+                                followerActor=httpPrefix+'://'+followerHandle.split('@')[1]+'/users/'+followerHandle.split('@')[0]
+                            basePath=httpPrefix+'://'+domainFull+'/users/'+nickname
+                            followApprovalsSection+='<div class="container">'
+                            followApprovalsSection+='<a href="'+followerActor+'">'
+                            followApprovalsSection+='<span class="followRequestHandle">'+followerHandle+'</span></a>'
+                            followApprovalsSection+='<a href="'+basePath+'/followapprove='+followerHandle+'">'
+                            followApprovalsSection+='<button class="followApprove">Approve</button></a>'
+                            followApprovalsSection+='<a href="'+basePath+'/followdeny='+followerHandle+'">'
+                            followApprovalsSection+='<button class="followDeny">Deny</button></a>'
+                            followApprovalsSection+='</div>'
+
     actor=profileJson['id']
     profileStr= \
         ' <div class="hero-image">' \
@@ -313,13 +346,15 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         '  <center>' \
         '    <a href="'+actor+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
         '    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>Following </span></button></a>' \
-        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
+        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span>'+followApprovals+'</button></a>' \
         '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
         '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
         '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
         '  </center>' \
         '</div>'
 
+    profileStr+=followApprovalsSection
+    
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         profileStyle = cssFile.read().replace('image.png',actor+'/image.png')
 

@@ -33,6 +33,10 @@ body, html {
     color: white;
 }
 
+.highlight {
+    width: 2%;
+}
+
 .roles {
     text-align: center;
     left: 35%;
@@ -73,12 +77,48 @@ body, html {
     text-align: center;
     font-size: 18px;
     padding: 10px;
-    width: 20%;
+    width: 25%;
     max-width: 200px;
     min-width: 100px;
     transition: all 0.5s;
     cursor: pointer;
     margin: 5px;
+}
+
+.followApprove {
+    border-radius: 4px;
+    background-color: darkgreen;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px;
+    width: 15%;
+    max-width: 150px;
+    min-width: 100px;
+    cursor: pointer;
+    margin: 0 15px;
+    float: right;
+}
+
+.followDeny {
+    border-radius: 4px;
+    background-color: darkred;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    padding: 10px;
+    width: 15%;
+    max-width: 150px;
+    min-width: 100px;
+    cursor: pointer;
+    margin: 0 15px;
+    float: right;
+}
+
+.followRequestHandle {
+    padding: 0px 20px;
 }
 
 .button span {
@@ -116,7 +156,7 @@ body, html {
     padding: 10px;
     width: 20%;
     max-width: 200px;
-    min-width: 100px;
+    min-width: 140px;
     transition: all 0.5s;
     cursor: pointer;
     margin: 5px;
@@ -169,7 +209,7 @@ body, html {
 .container img {
     float: left;
     max-width: 60px;
-    width: 100%;
+    width: 10%;
     margin-right: 20px;
     border-radius: 10%;
 }
