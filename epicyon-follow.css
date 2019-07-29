@@ -23,6 +23,7 @@ body, html {
 .followAvatar img {
     border-radius: 10%;
     width: 20%;
+    min-width: 200px;
 }
 
 .followText {
@@ -41,7 +42,7 @@ body, html {
     max-width: 200px;
     min-width: 100px;
     cursor: pointer;
-    margin: 5px;
+    margin: 30px;
 }
 
 .button:hover {
