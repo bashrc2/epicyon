@@ -72,6 +72,8 @@ from shares import outboxUndoShareUpload
 from shares import addShare
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from manualapprove import manualDenyFollowRequest
+from manualapprove import manualApproveFollowRequest
 import os
 import sys
 
@@ -1401,6 +1403,41 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy=False
             return
+
+        # send a follow request approval
+        if authorized and '/followapprove=' in self.path:
+            originPathStr=self.path.split('/followapprove=')[0]
+            followerNickname=getNicknameFromActor(originPathStr)
+            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
+            followingHandle=self.path.split('/followapprove=')[1]
+            if '@' in followingHandle:
+                manualApproveFollowRequest(self.server.session, \
+                                           self.server.baseDir, \
+                                           self.server.httpPrefix, \
+                                           followerNickname,followerDomain,FollowerPort, \
+                                           followingHandle, \
+                                           self.server.federationList, \
+                                           self.server.sendThreads, \
+                                           self.server.postLog, \
+                                           self.server.cachedWebfingers, \
+                                           self.server.personCache, \
+                                           self.server.acceptedCaps, \
+                                           self.server.debug)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
+
+        # deny a follow request
+        if authorized and '/followdeny=' in self.path:
+            originPathStr=self.path.split('/followdeny=')[0]
+            followerNickname=getNicknameFromActor(originPathStr)
+            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
+            followingHandle=self.path.split('/followdeny=')[1]
+            if '@' in followingHandle:
+                manualDenyFollowRequest(self.server.baseDir, \
+                                        followerNickname,followerDomain, \
+                                        followingHandle)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/followconfirm'):            
