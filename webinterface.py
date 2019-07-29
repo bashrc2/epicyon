@@ -428,8 +428,8 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
     avatarDropdown= \
         '    <a href="'+postJsonObject['actor']+'">' \
         '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'        
-    if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
-        avatarDropdown= \
+    #if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+    avatarDropdown= \
             '  <div class="dropdown-timeline">' \
             '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
@@ -517,3 +517,33 @@ def htmlPostReplies(postJsonObject: {}) -> str:
     """Show the replies to an individual post as html
     """
     return htmlHeader()+"<h1>Replies</h1>"+htmlFooter()
+
+def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
+    """Asks to confirm a follow
+    """
+    followDomain,port=getDomainFromActor(followActor)
+    
+    if os.path.isfile(baseDir+'/img/follow-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/follow-background.png'):
+            copyfile(baseDir+'/img/follow-background.png',baseDir+'/accounts/follow-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    followStr=htmlHeader(profileStyle)
+    followStr+='<div class="follow">'
+    followStr+='  <div class="followAvatar">'
+    followStr+='  <center>'
+    followStr+='  <a href="'+followActor+'">'
+    followStr+='  <img src="'+followProfileUrl+'"/></a>'
+    followStr+='  <p class="followText">Follow '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
+    followStr+= \
+        '  <form method="POST" action="'+originPathStr+'?followconfirm">' \
+        '    <input type="hidden" name="actor" value="'+followActor+'">' \
+        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '  </form>'
+    followStr+='</center>'
+    followStr+='</div>'
+    followStr+='</div>'
+    followStr+=htmlFooter()
+    return followStr

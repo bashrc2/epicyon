@@ -64,6 +64,7 @@ from webinterface import htmlPostReplies
 from webinterface import htmlLogin
 from webinterface import htmlGetLoginCredentials
 from webinterface import htmlNewPost
+from webinterface import htmlFollowConfirm
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -452,6 +453,16 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
             return        
+        # follow screen background image
+        if self.path=='/follow-background.png':
+            mediaFilename= \
+                self.server.baseDir+'/accounts/follow-background.png'
+            if os.path.isfile(mediaFilename):
+                self._set_headers('image/png')
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    self.wfile.write(mediaBinary)
+            return        
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
@@ -569,6 +580,21 @@ class PubServer(BaseHTTPRequestHandler):
             self.wfile.write(htmlLogin(self.server.baseDir).encode('utf-8'))
             self.server.GETbusy=False
             return
+
+        if '/users/' in self.path:
+           if '?follow=' in self.path:
+               followStr=self.path.split('?follow=')[1]
+               originPathStr=self.path.split('?follow=')[0]
+               if ';' in followStr:
+                   followActor=followStr.split(';')[0]
+                   followProfileUrl=followStr.split(';')[1]
+                   self._login_headers('text/html')
+                   self.wfile.write(htmlFollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode())
+                   self.server.GETbusy=False
+                   return
+               self._redirect_headers(originPathStr)
+               self.server.GETbusy=False
+               return
 
         if '/users/' in self.path and \
            (self.path.endswith('/newpost') or \

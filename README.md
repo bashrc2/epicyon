@@ -10,6 +10,8 @@ https://blog.dereferenced.org/what-is-ocap-and-why-should-i-care
 
 https://alexcastano.com/what-is-activity-pub
 
+https://gitlab.com/spritely/ocappub/blob/master/README.org
+
 This project is currently *pre alpha* and not recommended for any real world uses.
 
 ## Goals
