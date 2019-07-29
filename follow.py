@@ -24,6 +24,29 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from session import postJson
 
+def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
+    """Is the given actor a follower of the given nickname?
+    """
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    handle=nickname+'@'+domain
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        return False
+    followersFile=baseDir+'/accounts/'+handle+'/followers.txt'    
+    if not os.path.isfile(followersFile):
+        return False
+    if actor in open(followersFile).read():
+        return True
+    followerNickname=getNicknameFromActor(actor)
+    followerDomain,followerPort=getDomainFromActor(actor)
+    followerHandle=followerNickname+'@'+followerDomain
+    if followerPort:
+        if followerPort!=80 and followerPort!=443:
+            followerHandle+=':'+str(followerPort)
+    if followerHandle in open(followersFile).read():
+        return True
+    return False
+
 def getFollowersOfPerson(baseDir: str, \
                          nickname: str,domain: str, \
                          followFile='following.txt') -> []:
@@ -33,7 +56,7 @@ def getFollowersOfPerson(baseDir: str, \
     followers=[]
     if ':' in domain:
         domain=domain.split(':')[0]
-    handle=nickname.lower()+'@'+domain.lower()
+    handle=nickname+'@'+domain
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         return followers
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):

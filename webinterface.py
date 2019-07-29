@@ -15,6 +15,7 @@ from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from posts import getPersonBox
+from follow import isFollowingActor
 
 def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     """Receives login credentials via HTTPServer POST
@@ -196,7 +197,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
     for item in outboxFeed['orderedItems']:
         if item['type']=='Create':
             profileStr+= \
-                individualPostAsHtml(session,wfRequest,personCache, \
+                individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item)
     return profileStr
 
@@ -402,7 +403,8 @@ def individualFollowAsHtml(session,wfRequest: {}, \
         '<p>'+titleStr+'</p></a>'+ \
         '</div>\n'
 
-def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
+def individualPostAsHtml(baseDir: str, \
+                         session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}) -> str:
     avatarPosition=''
@@ -462,14 +464,21 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
 
     avatarDropdown= \
         '    <a href="'+postJsonObject['actor']+'">' \
-        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'        
+        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
+
     if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+        # if not following then show "Follow" in the dropdown
+        followUnfollowStr='<a href="/users/'+nickname+'?follow='+postJsonObject['actor']+';'+avatarUrl+'">Follow</a>'
+        # if following then show "Unfollow" in the dropdown
+        if isFollowingActor(baseDir,nickname,domain,postJsonObject['actor']):
+            followUnfollowStr='<a href="/users/'+nickname+'?unfollow='+postJsonObject['actor']+';'+avatarUrl+'">Unfollow</a>'
+
         avatarDropdown= \
             '  <div class="dropdown-timeline">' \
             '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
-            '      <a href="/users/'+nickname+'?follow='+postJsonObject['actor']+';'+avatarUrl+'">Follow</a>' \
+            followUnfollowStr+ \
             '      <a href="/users/'+nickname+'?block='+postJsonObject['actor']+';'+avatarUrl+'">Block</a>' \
             '      <a href="/users/'+nickname+'?report='+postJsonObject['actor']+';'+avatarUrl+'">Report</a>' \
             '    </div>' \
@@ -520,7 +529,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         '</div>'
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
-            tlStr+=individualPostAsHtml(session,wfRequest,personCache, \
+            tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item)
     tlStr+=htmlFooter()
     return tlStr
@@ -539,12 +548,12 @@ def htmlOutbox(session,baseDir: str,wfRequest: {},personCache: {}, \
     return htmlTimeline(session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox')
 
-def htmlIndividualPost(session,wfRequest: {},personCache: {}, \
+def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,postJsonObject: {}) -> str:
     """Show an individual post as html
     """
     return htmlHeader()+ \
-        individualPostAsHtml(session,wfRequest,personCache, \
+        individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject)+ \
         htmlFooter()
 
