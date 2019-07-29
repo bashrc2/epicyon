@@ -40,6 +40,7 @@ from inbox import runInboxQueue
 from inbox import savePostToInboxQueue
 from follow import getFollowingFeed
 from follow import outboxUndoFollow
+from follow import sendFollowRequest
 from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
@@ -69,6 +70,8 @@ from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
 from shares import addShare
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 import os
 import sys
 
@@ -104,15 +107,19 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('WWW-Authenticate', 'title="Login to Epicyon", Basic realm="epicyon"')
         self.end_headers()
 
-    def _set_headers(self,fileFormat: str) -> None:
+    def _set_headers(self,fileFormat: str,cookie: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
+        if cookie:
+            self.send_header('Cookie', cookie)
         self.send_header('Host', self.server.domainFull)
         self.end_headers()
 
-    def _redirect_headers(self,redirect: str) -> None:
+    def _redirect_headers(self,redirect: str,cookie: str) -> None:
         self.send_response(303)
         self.send_header('Content-type', 'text/html')
+        if cookie:
+            self.send_header('Cookie', cookie)
         self.send_header('Location', redirect)
         self.send_header('Host', self.server.domainFull)
         self.end_headers()
@@ -390,6 +397,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print(str(self.headers))
 
+        cookie=None
+        if self.headers.get('Cookie'):
+            cookie=self.headers['Cookie']
+
         # check authorization
         authorized = self._isAuthorized()
         if authorized:
@@ -430,7 +441,7 @@ class PubServer(BaseHTTPRequestHandler):
             if os.path.isfile('epicyon-profile.css'):
                 with open('epicyon-profile.css', 'r') as cssfile:
                     css = cssfile.read()
-                self._set_headers('text/css')
+                self._set_headers('text/css',cookie)
                 self.wfile.write(css.encode('utf-8'))
                 return
         # image on login screen
@@ -438,7 +449,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png')
+                self._set_headers('image/png',cookie)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
@@ -448,7 +459,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login-background.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png')
+                self._set_headers('image/png',cookie)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
@@ -458,7 +469,7 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/follow-background.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png')
+                self._set_headers('image/png',cookie)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
@@ -474,11 +485,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/media/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png')
+                        self._set_headers('image/png',cookie)
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg')
+                        self._set_headers('image/jpeg',cookie)
                     else:
-                        self._set_headers('image/gif')
+                        self._set_headers('image/gif',cookie)
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self.wfile.write(mediaBinary)
@@ -496,11 +507,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/sharefiles/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png')
+                        self._set_headers('image/png',cookie)
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg')
+                        self._set_headers('image/jpeg',cookie)
                     else:
-                        self._set_headers('image/gif')
+                        self._set_headers('image/gif',cookie)
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self.wfile.write(mediaBinary)
@@ -516,7 +527,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/img/icons/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png')
+                        self._set_headers('image/png',cookie)
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             self.wfile.write(mediaBinary)
@@ -539,11 +550,11 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.domain+'/'+avatarFile
                     if os.path.isfile(avatarFilename):
                         if avatarFile.endswith('.png'):
-                            self._set_headers('image/png')
+                            self._set_headers('image/png',cookie)
                         elif avatarFile.endswith('.jpg'):
-                            self._set_headers('image/jpeg')
+                            self._set_headers('image/jpeg',cookie)
                         else:
-                            self._set_headers('image/gif')
+                            self._set_headers('image/gif',cookie)
                         with open(avatarFilename, 'rb') as avFile:
                             avBinary = avFile.read()
                             self.wfile.write(avBinary)
@@ -588,11 +599,11 @@ class PubServer(BaseHTTPRequestHandler):
                if ';' in followStr:
                    followActor=followStr.split(';')[0]
                    followProfileUrl=followStr.split(';')[1]
-                   self._login_headers('text/html')
+                   self._set_headers('text/html',cookie)
                    self.wfile.write(htmlFollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode())
                    self.server.GETbusy=False
                    return
-               self._redirect_headers(originPathStr)
+               self._redirect_headers(originPathStr,cookie)
                self.server.GETbusy=False
                return
 
@@ -602,7 +613,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newfollowers') or \
             self.path.endswith('/newdm') or \
             self.path.endswith('/newshare')):
-            self._login_headers('text/html')
+            self._set_headers('text/html',cookie)
             self.wfile.write(htmlNewPost(self.server.baseDir,self.path).encode())
             self.server.GETbusy=False
             return        
@@ -632,14 +643,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={}
                                 if 'text/html' in self.headers['Accept']:
-                                    self._set_headers('text/html')                    
+                                    self._set_headers('text/html',cookie)                    
                                     self.wfile.write(htmlIndividualPost( \
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \
                                         postJsonObject).encode('utf-8'))
                                 else:
-                                    self._set_headers('application/json')
+                                    self._set_headers('application/json',None)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -674,10 +685,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
                                     if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
+                                        self._set_headers('text/html',cookie)
                                         self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
                                     else:
-                                        self._set_headers('application/json')
+                                        self._set_headers('application/json',None)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
                                     self.server.GETbusy=False
                                     return
@@ -745,10 +756,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                                     repliesJson['orderedItems'].append(postJsonObject)
                                     # send the replies json
                                     if 'text/html' in self.headers['Accept']:
-                                        self._set_headers('text/html')
+                                        self._set_headers('text/html',cookie)
                                         self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
                                     else:
-                                        self._set_headers('application/json')
+                                        self._set_headers('application/json',None)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
                                     self.server.GETbusy=False
                                     return
@@ -768,7 +779,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     personLookup(self.server.domain,self.path.replace('/roles',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    self._set_headers('text/html')
+                                    self._set_headers('text/html',cookie)
                                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                                  self.server.httpPrefix, \
                                                                  True, \
@@ -779,7 +790,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                                  self.server.personCache, \
                                                                  actorJson['roles']).encode('utf-8'))     
                             else:
-                                self._set_headers('application/json')
+                                self._set_headers('application/json',None)
                                 self.wfile.write(json.dumps(actorJson['roles']).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -799,7 +810,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     personLookup(self.server.domain,self.path.replace('/skills',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    self._set_headers('text/html')
+                                    self._set_headers('text/html',cookie)
                                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                                  self.server.httpPrefix, \
                                                                  True, \
@@ -810,7 +821,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                                  self.server.personCache, \
                                                                  actorJson['skills']).encode('utf-8'))     
                             else:
-                                self._set_headers('application/json')
+                                self._set_headers('application/json',None)
                                 self.wfile.write(json.dumps(actorJson['skills']).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -837,14 +848,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={}                                    
                                 if 'text/html' in self.headers['Accept']:
-                                    self._set_headers('text/html')
+                                    self._set_headers('text/html',cookie)
                                     self.wfile.write(htmlIndividualPost( \
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \
                                         postJsonObject).encode('utf-8'))
                                 else:
-                                    self._set_headers('application/json')
+                                    self._set_headers('application/json',None)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
                             self.server.GETbusy=False
                             return
@@ -877,7 +888,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                         self.server.httpPrefix, \
                                                         maxPostsInFeed, 'inbox', \
                                                         True,self.server.ocapAlways)
-                            self._set_headers('text/html')
+                            self._set_headers('text/html',cookie)
                             self.wfile.write(htmlInbox(self.server.session, \
                                                        self.server.baseDir, \
                                                        self.server.cachedWebfingers, \
@@ -887,7 +898,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                        self.server.port, \
                                                        inboxFeed).encode('utf-8'))
                         else:
-                            self._set_headers('application/json')
+                            self._set_headers('application/json',None)
                             self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
                         self.server.GETbusy=False
                         return
@@ -923,7 +934,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              authorized, \
                                              self.server.ocapAlways)
                     
-                self._set_headers('text/html')
+                self._set_headers('text/html',cookie)
                 self.wfile.write(htmlOutbox(self.server.session, \
                                             self.server.baseDir, \
                                             self.server.cachedWebfingers, \
@@ -933,7 +944,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.port, \
                                             outboxFeed).encode('utf-8'))
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
             self.server.GETbusy=False
             return
@@ -960,7 +971,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     
-                    self._set_headers('text/html')
+                    self._set_headers('text/html',cookie)
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
@@ -973,7 +984,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(shares).encode('utf-8'))
                 self.server.GETbusy=False
                 return
@@ -999,7 +1010,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     
-                    self._set_headers('text/html')
+                    self._set_headers('text/html',cookie)
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
@@ -1012,7 +1023,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(following).encode('utf-8'))
                 self.server.GETbusy=False
                 return
@@ -1036,7 +1047,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
-                    self._set_headers('text/html')
+                    self._set_headers('text/html',cookie)
                     self.wfile.write(htmlProfile(self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
@@ -1049,7 +1060,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(followers).encode('utf-8'))
             self.server.GETbusy=False
             return
@@ -1063,7 +1074,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: creating new session')
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
-                self._set_headers('text/html')
+                self._set_headers('text/html',cookie)
                 self.wfile.write(htmlProfile(self.server.baseDir, \
                                              self.server.httpPrefix, \
                                              authorized, \
@@ -1073,7 +1084,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.cachedWebfingers, \
                                              self.server.personCache).encode('utf-8'))
             else:
-                self._set_headers('application/json')
+                self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(getPerson).encode('utf-8'))
             self.server.GETbusy=False
             return
@@ -1087,7 +1098,7 @@ class PubServer(BaseHTTPRequestHandler):
         # check that the file exists
         filename=self.server.baseDir+self.path
         if os.path.isfile(filename):
-            self._set_headers('application/json')
+            self._set_headers('application/json',None)
             with open(filename, 'r', encoding='utf-8') as File:
                 content = File.read()
                 contentJson=json.loads(content)
@@ -1309,7 +1320,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 return              
             self.server.lastPOST=currTimePOST
-
+            
         self.server.POSTbusy=True
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
@@ -1321,6 +1332,10 @@ class PubServer(BaseHTTPRequestHandler):
         # remove any trailing slashes from the path
         self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
 
+        cookie=None
+        if self.headers.get('Cookie'):
+            cookie=self.headers['Cookie']
+
         # check authorization
         authorized = self._isAuthorized()
         if authorized:
@@ -1329,6 +1344,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.server.debug:
                 print('POST Not authorized')
+                print(str(self.headers))
 
         # if this is a POST to teh outbox then check authentication
         self.outboxAuthenticated=False
@@ -1386,12 +1402,52 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        # decision to follow in the web interface is confirmed
+        if authorized and self.path.endswith('/followconfirm'):            
+            originPathStr=self.path.split('/followconfirm')[0]
+            followerNickname=getNicknameFromActor(originPathStr)
+            length = int(self.headers['Content-length'])
+            followConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitYes=' in followConfirmParams:
+                followingActor=followConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
+                if '&' in followingActor:
+                    followingActor=followingActor.split('&')[0]
+                followingNickname=getNicknameFromActor(followingActor)
+                followingDomain,followingPort=getDomainFromActor(followingActor)
+                if followerNickname==followingNickname and \
+                   followingDomain==self.server.domain and \
+                   followingPort==self.server.port:
+                    if self.server.debug:
+                        print('You cannot follow yourself!')
+                else:
+                    if self.server.debug:
+                        print('Sending follow request from '+followerNickname+' to '+followingActor)
+                    sendFollowRequest(self.server.session, \
+                                      self.server.baseDir, \
+                                      followerNickname, \
+                                      self.server.domain,self.server.port, \
+                                      self.server.httpPrefix, \
+                                      followingNickname, \
+                                      followingDomain, \
+                                      followingPort,self.server.httpPrefix, \
+                                      False,self.server.federationList, \
+                                      self.server.sendThreads, \
+                                      self.server.postLog, \
+                                      self.server.cachedWebfingers, \
+                                      self.server.personCache, \
+                                      self.server.debug)
+            else:
+                print('Follow no')
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
+            return
+
         postState=self._receiveNewPost(authorized,'newpost')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/outbox')
+            self._redirect_headers('/users/'+nickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newunlisted')
@@ -1399,31 +1455,31 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newfollowers')
         if postState!=0:
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newdm')
         if postState!=0:
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox')
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newshare')
         if postState!=0:
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/shares')
+            self._redirect_headers('/users/'+self.postToNickname+'/shares',cookie)
             self.server.POSTbusy=False
             return
-        
+
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
             if '/users/' in self.path:
                 if authorized:

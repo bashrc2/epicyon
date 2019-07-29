@@ -427,7 +427,7 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
 def sendFollowRequest(session,baseDir: str, \
                       nickname: str,domain: str,port: int,httpPrefix: str, \
                       followNickname: str,followDomain: str, \
-                      followPort: bool,followHttpPrefix: str, \
+                      followPort: int,followHttpPrefix: str, \
                       clientToServer: bool,federationList: [], \
                       sendThreads: [],postLog: [],cachedWebfingers: {}, \
                       personCache: {},debug : bool) -> {}:

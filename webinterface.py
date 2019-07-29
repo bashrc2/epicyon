@@ -428,8 +428,8 @@ def individualPostAsHtml(session,wfRequest: {},personCache: {}, \
     avatarDropdown= \
         '    <a href="'+postJsonObject['actor']+'">' \
         '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'        
-    #if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
-    avatarDropdown= \
+    if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+        avatarDropdown= \
             '  <div class="dropdown-timeline">' \
             '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
@@ -537,7 +537,7 @@ def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followPro
     followStr+='  <img src="'+followProfileUrl+'"/></a>'
     followStr+='  <p class="followText">Follow '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+= \
-        '  <form method="POST" action="'+originPathStr+'?followconfirm">' \
+        '  <form method="POST" action="'+originPathStr+'/followconfirm">' \
         '    <input type="hidden" name="actor" value="'+followActor+'">' \
         '    <button type="submit" class="button" name="submitYes">Yes</button>' \
         '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
