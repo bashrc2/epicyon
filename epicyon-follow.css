@@ -20,6 +20,11 @@ body, html {
     margin: 15% 0;
 }
 
+.followAvatar img {
+    border-radius: 10%;
+    width: 20%;
+}
+
 .followText {
     font-size: 24px;
 }
@@ -42,19 +47,4 @@ body, html {
 .button:hover {
     background-color: #555;
     color: white;
-}
-
-.container {
-    border: 2px solid #dedede;
-    background-color: #f1f1f1;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0;
-}
-
-.container img {
-    max-width: 60px;
-    width: 100%;
-    margin-right: 20px;
-    border-radius: 10%;
 }
