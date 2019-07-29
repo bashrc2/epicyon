@@ -706,6 +706,7 @@ def outboxUndoFollow(baseDir: str,messageJson: {},debug: bool) -> None:
     """When an unfollow request is received by the outbox from c2s
     This removes the followed handle from the following.txt file
     of the relevant account
+    TODO the unfollow should also be sent to the previously followed account
     """
     if not messageJson.get('type'):
         return

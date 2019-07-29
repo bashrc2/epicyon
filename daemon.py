@@ -66,6 +66,7 @@ from webinterface import htmlLogin
 from webinterface import htmlGetLoginCredentials
 from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
+from webinterface import htmlUnfollowConfirm
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -594,6 +595,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
+        # follow a person from the web interface by selecting Follow on the dropdown
         if '/users/' in self.path:
            if '?follow=' in self.path:
                followStr=self.path.split('?follow=')[1]
@@ -601,8 +603,26 @@ class PubServer(BaseHTTPRequestHandler):
                if ';' in followStr:
                    followActor=followStr.split(';')[0]
                    followProfileUrl=followStr.split(';')[1]
+                   # show the confirm follow screen
                    self._set_headers('text/html',cookie)
                    self.wfile.write(htmlFollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode())
+                   self.server.GETbusy=False
+                   return
+               self._redirect_headers(originPathStr,cookie)
+               self.server.GETbusy=False
+               return
+           
+        # Unfollow a person from the web interface by selecting Unfollow on the dropdown
+        if '/users/' in self.path:
+           if '?unfollow=' in self.path:
+               followStr=self.path.split('?unfollow=')[1]
+               originPathStr=self.path.split('?unfollow=')[0]
+               if ';' in followStr:
+                   followActor=followStr.split(';')[0]
+                   followProfileUrl=followStr.split(';')[1]
+                   # show the confirm follow screen
+                   self._set_headers('text/html',cookie)
+                   self.wfile.write(htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode())
                    self.server.GETbusy=False
                    return
                self._redirect_headers(originPathStr,cookie)
@@ -1440,7 +1460,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
 
         # decision to follow in the web interface is confirmed
-        if authorized and self.path.endswith('/followconfirm'):            
+        if authorized and self.path.endswith('/followconfirm'):
             originPathStr=self.path.split('/followconfirm')[0]
             followerNickname=getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
@@ -1473,8 +1493,43 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.cachedWebfingers, \
                                       self.server.personCache, \
                                       self.server.debug)
-            else:
-                print('Follow no')
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
+            return
+
+        # decision to unfollow in the web interface is confirmed
+        if authorized and self.path.endswith('/unfollowconfirm'):
+            originPathStr=self.path.split('/unfollowconfirm')[0]
+            followerNickname=getNicknameFromActor(originPathStr)
+            length = int(self.headers['Content-length'])
+            followConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitYes=' in followConfirmParams:
+                followingActor=followConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
+                if '&' in followingActor:
+                    followingActor=followingActor.split('&')[0]
+                followingNickname=getNicknameFromActor(followingActor)
+                followingDomain,followingPort=getDomainFromActor(followingActor)
+                if followerNickname==followingNickname and \
+                   followingDomain==self.server.domain and \
+                   followingPort==self.server.port:
+                    if self.server.debug:
+                        print('You cannot unfollow yourself!')
+                else:
+                    if self.server.debug:
+                        print(followerNickname+' stops following '+followingActor)
+                    followActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+followerNickname
+                    unfollowJson = {
+                        'type': 'Undo',
+                        'actor': followActor,
+                        'object': {
+                            'type': 'Follow',
+                            'actor': followActor,
+                            'object': followingActor,
+                            'to': [followingActor],
+                            'cc': ['https://www.w3.org/ns/activitystreams#Public']
+                        }
+                    }
+                    self._postToOutbox(unfollowJson)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return

@@ -591,3 +591,33 @@ def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followPro
     followStr+='</div>'
     followStr+=htmlFooter()
     return followStr
+
+def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
+    """Asks to confirm unfollowing an actor
+    """
+    followDomain,port=getDomainFromActor(followActor)
+    
+    if os.path.isfile(baseDir+'/img/follow-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/follow-background.png'):
+            copyfile(baseDir+'/img/follow-background.png',baseDir+'/accounts/follow-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    followStr=htmlHeader(profileStyle)
+    followStr+='<div class="follow">'
+    followStr+='  <div class="followAvatar">'
+    followStr+='  <center>'
+    followStr+='  <a href="'+followActor+'">'
+    followStr+='  <img src="'+followProfileUrl+'"/></a>'
+    followStr+='  <p class="followText">Stop following '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
+    followStr+= \
+        '  <form method="POST" action="'+originPathStr+'/unfollowconfirm">' \
+        '    <input type="hidden" name="actor" value="'+followActor+'">' \
+        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '  </form>'
+    followStr+='</center>'
+    followStr+='</div>'
+    followStr+='</div>'
+    followStr+=htmlFooter()
+    return followStr
