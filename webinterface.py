@@ -300,10 +300,14 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
 
     followApprovalsSection=''
     followApprovals=''
+    linkToTimelineStart=''
+    linkToTimelineEnd=''
 
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
     else:
+        linkToTimelineStart='<a href="/users/'+nickname+'/inbox">'
+        linkToTimelineEnd='</a>'
         # are there any follow requests?
         followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
         if os.path.isfile(followRequestsFilename):
@@ -334,6 +338,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
 
     actor=profileJson['id']
     profileStr= \
+        linkToTimelineStart+ \
         ' <div class="hero-image">' \
         '  <div class="hero-text">' \
         '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'">' \
@@ -342,7 +347,8 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         '    <p>'+profileDescription+'</p>'+ \
         loginButton+ \
         '  </div>' \
-        '</div>' \
+        '</div>'+ \
+        linkToTimelineEnd+ \
         '<div class="container">\n' \
         '  <center>' \
         '    <a href="'+actor+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
@@ -523,13 +529,14 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
 
     tlStr=htmlHeader(profileStyle)
     tlStr+= \
+        '<a href="/users/'+nickname+'">' \
         '<div class="timeline-banner">' \
-        '</div>' \
+        '</div></a>' \
         '<div class="container">\n'+ \
         '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>Inbox </span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Sent </span></button></a>' \
         '    <a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'+ \
-        '    <a href="'+actor+'/newfollow"><img src="/icons/add.png" title="Add a new follow" alt="Add a new follow" class="right"/></a>'+ \
+        '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
     for item in timelineJson['orderedItems']:
