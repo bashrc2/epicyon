@@ -481,7 +481,7 @@ def individualPostAsHtml(baseDir: str, \
         '    <a href="'+postJsonObject['actor']+'">' \
         '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
 
-    if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+    if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         # if not following then show "Follow" in the dropdown
         followUnfollowStr='<a href="/users/'+nickname+'?follow='+postJsonObject['actor']+';'+avatarUrl+'">Follow</a>'
         # if following then show "Unfollow" in the dropdown
