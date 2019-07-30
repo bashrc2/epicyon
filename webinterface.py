@@ -503,16 +503,12 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
             cssFile.read().replace('banner.png', \
                                    '/users/'+nickname+'/banner.png')
 
-    localButton='button'
-    personalButton='button'
-    federatedButton='button'
-    newPostButton='button'
+    inboxButton='button'
+    sentButton='button'
     if boxName=='inbox':
-        localButton='buttonselected'
+        inboxButton='buttonselected'
     elif boxName=='outbox':
-        personalButton='buttonselected'
-    elif boxName=='federated':
-        federatedButton='buttonselected'
+        sentButton='buttonselected'
     actor='/users/'+nickname
 
     followApprovals=''
@@ -522,19 +518,18 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
             for line in f:
                 if len(line)>0:
                     # show follow approvals icon
-                    followApprovals='<a href="'+actor+'/followers"><img class="right" src="/icons/person.png"/></a>'
+                    followApprovals='<a href="'+actor+'/followers"><img class="right" alt="Approve follow requests" title="Approve follow requests" src="/icons/person.png"/></a>'
                     break
 
     tlStr=htmlHeader(profileStyle)
-    newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>Post </span></button></a>'
     tlStr+= \
         '<div class="timeline-banner">' \
         '</div>' \
         '<div class="container">\n'+ \
-        newPostStr+ \
-        '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Inbox </span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Sent </span></button></a>' \
-        '    <a href="'+actor+'/newfollow"><img src="/icons/add.png" class="right"/></a>'+ \
+        '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>Inbox </span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Sent </span></button></a>' \
+        '    <a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'+ \
+        '    <a href="'+actor+'/newfollow"><img src="/icons/add.png" title="Add a new follow" alt="Add a new follow" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
     for item in timelineJson['orderedItems']:
