@@ -521,21 +521,21 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         with open(followRequestsFilename,'r') as f:
             for line in f:
                 if len(line)>0:
-                    # show a star on the followers tab
-                    followApprovals='<a href="'+actor+'/followers"><button class="followerApprovalsButton"><span>Approvals </span></button></a>'
+                    # show follow approvals icon
+                    followApprovals='<a href="'+actor+'/followers"><img class="right" src="/icons/person.png"/></a>'
                     break
 
     tlStr=htmlHeader(profileStyle)
-    newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>New Post </span></button></a>'
+    newPostStr='    <a href="'+actor+'/newpost"><button class="'+newPostButton+'"><span>Post </span></button></a>'
     tlStr+= \
         '<div class="timeline-banner">' \
         '</div>' \
-        '<div class="container">\n' \
-        '  <center>'+newPostStr+ \
-        '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Local </span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Personal </span></button></a>'+ \
+        '<div class="container">\n'+ \
+        newPostStr+ \
+        '    <a href="'+actor+'/inbox"><button class="'+localButton+'"><span>Inbox </span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+personalButton+'"><span>Sent </span></button></a>' \
+        '    <a href="'+actor+'/newfollow"><img src="/icons/add.png" class="right"/></a>'+ \
         followApprovals+ \
-        '  </center>' \
         '</div>'
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
