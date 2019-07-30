@@ -199,11 +199,6 @@ body, html {
     margin: 10px 0;
 }
 
-.darker {
-    border-color: #ccc;
-    background-color: #ddd;
-}
-
 .container::after {
     content: "";
     clear: both;
@@ -218,6 +213,27 @@ body, html {
     border-radius: 10%;
 }
 
+.containericons {
+    border: 0px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.containericons img {
+    float: right;
+    max-width: 35px;
+    width: 5%;
+    margin-right: 50px;
+    border-radius: 10%;
+}
+
 .container img.attachment {
     max-width: 100%;
     margin-left: 25%;
@@ -229,15 +245,22 @@ body, html {
     margin-left: 20px;
     margin-right:0;
 }
+.containericons img.right {
+    float: right;
+    margin-left: 20px;
+    margin-right:0;
+}
 
 .time-right {
     float: right;
     color: #aaa;
+    margin:10px 30px;
 }
 
 .time-left {
     float: left;
     color: #999;
+    margin:10px 0px;
 }
 
 .post-title {

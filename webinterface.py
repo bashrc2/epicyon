@@ -198,7 +198,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         if item['type']=='Create':
             profileStr+= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,item)
+                                     nickname,domain,port,item,False)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -412,14 +412,17 @@ def individualFollowAsHtml(session,wfRequest: {}, \
 def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
-                         postJsonObject: {}) -> str:
+                         postJsonObject: {}, \
+                         showIcons=False) -> str:
     avatarPosition=''
     containerClass='container'
+    containerClassIcons='containericons'
     timeClass='time-right'
     actorNickname=getNicknameFromActor(postJsonObject['actor'])
     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
     titleStr='@'+actorNickname+'@'+actorDomain
     if postJsonObject['object']['inReplyTo']:
+        containerClassIcons='containericons darker'
         containerClass='container darker'
         avatarPosition=' class="right"'
         timeClass='time-left'
@@ -490,13 +493,21 @@ def individualPostAsHtml(baseDir: str, \
             '    </div>' \
             '  </div>'
 
+    footerStr='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'
+    if showIcons:
+        footerStr='<div class="'+containerClassIcons+'">'
+        footerStr+='<img src="/icons/reply.png"/>'
+        footerStr+='<img src="/icons/repeat_inactive.png"/>'
+        footerStr+='<img src="/icons/like_inactive.png"/>'
+        footerStr+='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>'
+        footerStr+='</div>'
+
     return \
         '<div class="'+containerClass+'">\n'+ \
         avatarDropdown+ \
         '<p class="post-title">'+titleStr+'</p>'+ \
         postJsonObject['object']['content']+'\n'+ \
-        attachmentStr+ \
-        '<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'+ \
+        attachmentStr+footerStr+ \
         '</div>\n'
 
 def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
@@ -517,6 +528,10 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         sentButton='buttonselected'
     actor='/users/'+nickname
 
+    showIndividualPostIcons=True
+    if boxName=='inbox':
+        showIndividualPostIcons=True
+    
     followApprovals=''
     followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
     if os.path.isfile(followRequestsFilename):
@@ -542,7 +557,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                        nickname,domain,port,item)
+                                        nickname,domain,port,item,showIndividualPostIcons)
     tlStr+=htmlFooter()
     return tlStr
 
@@ -566,7 +581,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     """
     return htmlHeader()+ \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject)+ \
+                             nickname,domain,port,postJsonObject,False)+ \
         htmlFooter()
 
 def htmlPostReplies(postJsonObject: {}) -> str:
