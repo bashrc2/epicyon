@@ -49,3 +49,12 @@ body, html {
     background-color: #555;
     color: white;
 }
+
+input[type=text] {
+    width: 70%;
+    clear: both;
+    font-size: 24px;
+    text-align: center;
+    color: var(--text-entry-foreground);
+    background-color: var(--text-entry-background);
+}

@@ -66,7 +66,9 @@ from webinterface import htmlLogin
 from webinterface import htmlGetLoginCredentials
 from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
+from webinterface import htmlSearch
 from webinterface import htmlUnfollowConfirm
+from webinterface import htmlProfileAfterSearch
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -611,7 +613,16 @@ class PubServer(BaseHTTPRequestHandler):
                self._redirect_headers(originPathStr,cookie)
                self.server.GETbusy=False
                return
-           
+
+        # search for a fediverse address from the web interface by selecting search icon
+        if '/users/' in self.path:
+           if self.path.endswith('/search'):
+               # show the search screen
+               self._set_headers('text/html',cookie)
+               self.wfile.write(htmlSearch(self.server.baseDir,self.path).encode())
+               self.server.GETbusy=False
+               return
+
         # Unfollow a person from the web interface by selecting Unfollow on the dropdown
         if '/users/' in self.path:
            if '?unfollow=' in self.path:
@@ -1458,6 +1469,42 @@ class PubServer(BaseHTTPRequestHandler):
                                         followingHandle)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+
+        # decision to follow in the web interface is confirmed
+        if authorized and self.path.endswith('/searchhandle'):
+            actorStr=self.path.replace('/searchhandle','')
+            length = int(self.headers['Content-length'])
+            searchParams=self.rfile.read(length).decode('utf-8')
+            if 'searchtext=' in searchParams:
+                searchStr=searchParams.split('searchtext=')[1]
+                if '&' in searchStr:
+                    searchStr=searchStr.split('&')[0]
+                searchStr=searchStr.replace('+',' ').replace('%40','@')
+                if '@' in searchStr:
+                    print('Search: '+searchStr)
+                    nickname=getNicknameFromActor(self.path)
+                    if not self.server.session:
+                        self.server.session= \
+                            createSession(self.server.domain,self.server.port,self.server.useTor)
+                    profileStr= \
+                        htmlProfileAfterSearch(self.server.baseDir, \
+                                               self.path.replace('/searchhandle',''), \
+                                               self.server.httpPrefix, \
+                                               nickname, \
+                                               self.server.domain,self.server.port, \
+                                               searchStr, \
+                                               self.server.session, \
+                                               self.server.cachedWebfingers, \
+                                               self.server.personCache, \
+                                               self.server.debug)
+                    if profileStr:
+                        self._login_headers('text/html')
+                        self.wfile.write(profileStr.encode('utf-8'))
+                        self.server.POSTbusy=False
+                        return
+            self._redirect_headers(actorStr,cookie)
+            self.server.POSTbusy=False
+            return
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/followconfirm'):

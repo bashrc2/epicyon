@@ -16,6 +16,10 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from posts import getPersonBox
 from follow import isFollowingActor
+from webfinger import webfingerHandle
+from posts import getUserUrl
+from posts import parseUserFeed
+from session import getJson
 
 def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     """Receives login credentials via HTTPServer POST
@@ -198,7 +202,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         if item['type']=='Create':
             profileStr+= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,item,False)
+                                     nickname,domain,port,item,None,True,False)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -413,6 +417,7 @@ def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
+                         avatarUrl: str, showAvatarDropdown: bool,
                          showIcons=False) -> str:
     avatarPosition=''
     containerClass='container'
@@ -457,7 +462,8 @@ def individualPostAsHtml(baseDir: str, \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
 
-    avatarUrl=postJsonObject['actor']+'/avatar.png'
+    if not avatarUrl:
+        avatarUrl=postJsonObject['actor']+'/avatar.png'
 
     fullDomain=domain
     if port!=80 and port!=443:
@@ -484,7 +490,7 @@ def individualPostAsHtml(baseDir: str, \
 
         avatarDropdown= \
             '  <div class="dropdown-timeline">' \
-            '    <img src="'+avatarUrl+'" alt="Avatar"'+avatarPosition+'/>' \
+            '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
             followUnfollowStr+ \
@@ -496,9 +502,12 @@ def individualPostAsHtml(baseDir: str, \
     footerStr='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
-        footerStr+='<img src="/icons/reply.png"/>'
-        footerStr+='<img src="/icons/repeat_inactive.png"/>'
-        footerStr+='<img src="/icons/like_inactive.png"/>'
+        footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'">'
+        footerStr+='<img src="/icons/reply.png"/></a>'
+        footerStr+='<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'">'
+        footerStr+='<img src="/icons/repeat_inactive.png"/></a>'
+        footerStr+='<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'">'
+        footerStr+='<img src="/icons/like_inactive.png"/></a>'
         footerStr+='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>'
         footerStr+='</div>'
 
@@ -557,7 +566,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
     for item in timelineJson['orderedItems']:
         if item['type']=='Create':
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                        nickname,domain,port,item,showIndividualPostIcons)
+                                        nickname,domain,port,item,None,True,showIndividualPostIcons)
     tlStr+=htmlFooter()
     return tlStr
 
@@ -581,7 +590,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     """
     return htmlHeader()+ \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject,False)+ \
+                             nickname,domain,port,postJsonObject,None,True,False)+ \
         htmlFooter()
 
 def htmlPostReplies(postJsonObject: {}) -> str:
@@ -648,3 +657,149 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+='</div>'
     followStr+=htmlFooter()
     return followStr
+
+def htmlSearch(baseDir: str,path: str) -> str:
+    """Search called from the timeline icon
+    """
+    actor=path.replace('/search','')
+    nickname=getNicknameFromActor(actor)
+    domain,port=getDomainFromActor(actor)
+    
+    if os.path.isfile(baseDir+'/img/search-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/search-background.png'):
+            copyfile(baseDir+'/img/search-background.png',baseDir+'/accounts/search-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    followStr=htmlHeader(profileStyle)
+    followStr+='<div class="follow">'
+    followStr+='  <div class="followAvatar">'
+    followStr+='  <center>'    
+    followStr+='  <p class="followText">Enter an address to search for</p>'
+    followStr+= \
+        '  <form method="POST" action="'+actor+'/searchhandle">' \
+        '    <input type="hidden" name="actor" value="'+actor+'">' \
+        '    <input type="text" name="searchtext" autofocus><br>' \
+        '    <button type="submit" class="button" name="submitSearch">Submit</button>' \
+        '    <a href="'+actor+'"><button class="button">Go Back</button></a>' \
+        '  </form>'
+    followStr+='  </center>'
+    followStr+='  </div>'
+    followStr+='</div>'
+    followStr+=htmlFooter()
+    return followStr
+
+def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
+                           nickname: str,domain: str,port: int, \
+                           profileHandle: str, \
+                           session,wfRequest: {},personCache: {},
+                           debug: bool) -> str:
+    """Show a profile page after a search for a fediverse address
+    """
+    if '/users/' in profileHandle:
+        searchNickname=getNicknameFromActor(profileHandle)
+        searchDomain,searchPort=getDomainFromActor(profileHandle)
+    else:
+        if '@' not in profileHandle:
+            if debug:
+                print('DEBUG: no @ in '+profileHandle)
+            return None
+        if profileHandle.startswith('@'):
+            profileHandle=profileHandle[1:]
+        if '@' not in profileHandle:
+            if debug:
+                print('DEBUG: no @ in '+profileHandle)
+            return None
+        searchNickname=profileHandle.split('@')[0]
+        searchDomain=profileHandle.split('@')[1]
+        searchPort=None
+        if ':' in searchDomain:
+            searchPort=int(searchDomain.split(':')[1])
+            searchDomain=searchDomain.split(':')[0]
+    if not searchNickname:
+        if debug:
+            print('DEBUG: No nickname found in '+profileHandle)
+        return None
+    if not searchDomain:
+        if debug:
+            print('DEBUG: No domain found in '+profileHandle)
+        return None
+    searchDomainFull=searchDomain
+    if searchPort:
+        if searchPort!=80 and searchPort!=443:
+            searchDomainFull=searchDomain+':'+str(searchPort)
+    
+    profileStr=''
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        wf = webfingerHandle(session,searchNickname+'@'+searchDomain,httpPrefix,wfRequest)
+        if not wf:
+            if debug:
+                print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomain)
+            return None
+        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        personUrl = getUserUrl(wf)
+        profileJson = getJson(session,personUrl,asHeader,None)
+        if not profileJson:
+            if debug:
+                print('DEBUG: No actor returned from '+personUrl)
+            return None
+        avatarUrl=''
+        if profileJson.get('icon'):
+            if profileJson['icon'].get('url'):
+                avatarUrl=profileJson['icon']['url']
+        preferredName=searchNickname
+        if profileJson.get('preferredUsername'):
+            preferredName=profileJson['preferredUsername']
+        profileDescription=''
+        if profileJson.get('publicKey'):
+            if profileJson['publicKey'].get('summary'):
+                profileDescription=profileJson['publicKey']['summary']
+        outboxUrl=None
+        if not profileJson.get('outbox'):
+            if debug:
+                pprint(profileJson)
+                print('DEBUG: No outbox found')
+            return None
+        outboxUrl=profileJson['outbox']
+        profileBackgroundImage=''
+        if profileJson.get('image'):
+            if profileJson['image'].get('url'):
+                profileBackgroundImage=profileJson['image']['url']
+
+        profileStyle = cssFile.read().replace('image.png',profileBackgroundImage)
+
+        profileStr= \
+            ' <div class="hero-image">' \
+            '  <div class="hero-text">' \
+            '    <img src="'+avatarUrl+'" alt="'+searchNickname+'@'+searchDomainFull+'">' \
+            '    <h1>'+preferredName+'</h1>' \
+            '    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>' \
+            '    <p>'+profileDescription+'</p>'+ \
+            '  </div>' \
+            '</div>'+ \
+            '<div class="container">\n' \
+            '  <center>' \
+            '    <a href="'+path+'"><button class="button"><span>Follow </span></button></a>' \
+            '    <a href="'+path+'"><button class="button"><span>Go Back </span></button></a>' \
+            '  </center>' \
+            '</div>'
+
+        result = []
+        i = 0
+        for item in parseUserFeed(session,outboxUrl,asHeader):
+            if not item.get('type'):
+                continue
+            if item['type']!='Create':
+                continue
+            if not item.get('object'):
+                continue
+            profileStr+= \
+                individualPostAsHtml(baseDir, \
+                                     session,wfRequest,personCache, \
+                                     nickname,domain,port, \
+                                     item,avatarUrl,False,False)
+            i+=1
+            if i>=20:
+                break
+
+    return htmlHeader(profileStyle)+profileStr+htmlFooter()
