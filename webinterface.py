@@ -199,7 +199,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                       authorized, \
                       ocapAlways)
     for item in outboxFeed['orderedItems']:
-        if item['type']=='Create':
+        if item['type']=='Create' or item['type']=='Announce':
             profileStr+= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False)
@@ -419,13 +419,37 @@ def individualPostAsHtml(baseDir: str, \
                          postJsonObject: {}, \
                          avatarUrl: str, showAvatarDropdown: bool,
                          showIcons=False) -> str:
+    """ Shows a single post as html
+    """
+    titleStr=''
+    if postJsonObject['type']=='Announce':
+        if postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], str):
+                # get the announced post
+                asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+                announcedJson = getJson(session,postJsonObject['object'],asHeader,None)
+                if announcedJson:
+                    if not postJsonObject.get('type'):
+                        return ''
+                    if postJsonObject['type']!='Create':
+                        return ''
+                    actorNickname=getNicknameFromActor(postJsonObject['actor'])
+                    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+                    titleStr+='@'+actorNickname+'@'+actorDomain+' announced:\n'
+                    postJsonObject=announcedJson
+                else:
+                    return ''
+            else:
+                return ''
+    if not isinstance(postJsonObject['object'], dict):
+        return ''
     avatarPosition=''
     containerClass='container'
     containerClassIcons='containericons'
     timeClass='time-right'
     actorNickname=getNicknameFromActor(postJsonObject['actor'])
     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-    titleStr='@'+actorNickname+'@'+actorDomain
+    titleStr+='@'+actorNickname+'@'+actorDomain
     if postJsonObject['object']['inReplyTo']:
         containerClassIcons='containericons darker'
         containerClass='container darker'
@@ -564,7 +588,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         followApprovals+ \
         '</div>'
     for item in timelineJson['orderedItems']:
-        if item['type']=='Create':
+        if item['type']=='Create' or item['type']=='Announce':
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,None,True,showIndividualPostIcons)
     tlStr+=htmlFooter()
@@ -773,7 +797,6 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
         if not backUrl.endswith('/inbox'):
             backUrl+='/inbox'
 
-        print('************************  <form method="POST" action="'+backUrl+'/followconfirm">')
         profileStr= \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
@@ -798,7 +821,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
         for item in parseUserFeed(session,outboxUrl,asHeader):
             if not item.get('type'):
                 continue
-            if item['type']!='Create':
+            if item['type']!='Create' and item['type']!='Announce':
                 continue
             if not item.get('object'):
                 continue
