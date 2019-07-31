@@ -134,6 +134,11 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str) -> str:
             '<input type="text" placeholder="City or location of the shared item" name="location">'
 
     newPostForm=htmlHeader(newPostCSS)
+
+    # only show the share option if this is not a reply
+    shareOptionOnDropdown=''
+    if not replyStr:
+        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>'
     newPostForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
         '  <div class="vertical-center">' \
@@ -145,8 +150,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str) -> str:
         '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
         '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
         '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
-        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
-        '          <a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>' \
+        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>'+ \
+        shareOptionOnDropdown+ \
         '        </div>' \
         '      </div>' \
         '      <input type="submit" name="submitPost" value="Submit">' \
