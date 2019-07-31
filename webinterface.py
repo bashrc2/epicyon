@@ -9,6 +9,7 @@ __status__ = "Production"
 import json
 import time
 import os
+from datetime import datetime
 from shutil import copyfile
 from pprint import pprint
 from person import personBoxJson
@@ -539,7 +540,10 @@ def individualPostAsHtml(baseDir: str, \
             '    </div>' \
             '  </div>'
 
-    footerStr='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>\n'
+    publishedStr=postJsonObject['object']['published']
+    datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+    publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
+    footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
         footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'">'
@@ -548,7 +552,7 @@ def individualPostAsHtml(baseDir: str, \
         footerStr+='<img src="/icons/repeat_inactive.png"/></a>'
         footerStr+='<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'">'
         footerStr+='<img src="/icons/like_inactive.png"/></a>'
-        footerStr+='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>'
+        footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 
     if not postJsonObject['object']['sensitive']:
