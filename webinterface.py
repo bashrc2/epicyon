@@ -457,9 +457,9 @@ def individualPostAsHtml(baseDir: str, \
                 asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
                 announcedJson = getJson(session,postJsonObject['object'],asHeader,None)
                 if announcedJson:
-                    if not postJsonObject.get('type'):
+                    if not announcedJson.get('type'):
                         return ''
-                    if postJsonObject['type']!='Create':
+                    if announcedJson['type']!='Create':
                         return ''
                     actorNickname=getNicknameFromActor(postJsonObject['actor'])
                     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
