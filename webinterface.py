@@ -768,6 +768,12 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
 
         profileStyle = cssFile.read().replace('image.png',profileBackgroundImage)
 
+        # url to return to
+        backUrl=path
+        if not backUrl.endswith('/inbox'):
+            backUrl+='/inbox'
+
+        print('************************  <form method="POST" action="'+backUrl+'/followconfirm">')
         profileStr= \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
@@ -778,10 +784,13 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             '  </div>' \
             '</div>'+ \
             '<div class="container">\n' \
-            '  <center>' \
-            '    <a href="'+path+'"><button class="button"><span>Follow </span></button></a>' \
-            '    <a href="'+path+'"><button class="button"><span>Go Back </span></button></a>' \
-            '  </center>' \
+            '  <form method="POST" action="'+backUrl+'/followconfirm">' \
+            '    <center>' \
+            '      <input type="hidden" name="actor" value="'+personUrl+'">' \
+            '      <button type="submit" class="button" name="submitYes">Follow</button>' \
+            '      <a href="'+backUrl+'"><button class="button">Go Back</button></a>' \
+            '    </center>' \
+            '  </form>' \
             '</div>'
 
         result = []

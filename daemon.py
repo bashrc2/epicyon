@@ -1363,7 +1363,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # remove any trailing slashes from the path
-        self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
+        if not self.path.endswith('confirm'):
+            self.path=self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
 
         cookie=None
         if self.headers.get('Cookie'):
