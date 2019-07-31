@@ -435,7 +435,7 @@ def individualPostAsHtml(baseDir: str, \
                         return ''
                     actorNickname=getNicknameFromActor(postJsonObject['actor'])
                     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-                    titleStr+='@'+actorNickname+'@'+actorDomain+' announced:\n'
+                    titleStr+='@'+actorNickname+'@'+actorDomain+' announced:<br>'
                     postJsonObject=announcedJson
                 else:
                     return ''
