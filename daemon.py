@@ -664,8 +664,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.debug)
             if announceJson:
                 self._postToOutbox(announceJson)
-            self._redirect_headers(actor+'/inbox',cookie)
             self.server.GETbusy=False
+            self._redirect_headers(actor+'/inbox',cookie)
             return
             
         inReplyTo=None
@@ -1514,7 +1514,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
-                searchStr=searchStr.replace('+',' ').replace('%40','@')
+                searchStr=searchStr.replace('+',' ').replace('%40','@').strip()
                 if '@' in searchStr:
                     print('Search: '+searchStr)
                     nickname=getNicknameFromActor(self.path)

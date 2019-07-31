@@ -518,8 +518,9 @@ def individualPostAsHtml(baseDir: str, \
         avatarUrl=postJsonObject['actor']+'/avatar.png'
 
     fullDomain=domain
-    if port!=80 and port!=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            fullDomain=domain+':'+str(port)
         
     if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
@@ -555,14 +556,23 @@ def individualPostAsHtml(baseDir: str, \
     datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
     publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
+
+    # don't allow announce/repeat of your own posts
+    announceStr=''
+    likeStr=''
+    if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+        announceStr= \
+            '<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'" title="Repeat this post">' \
+            '<img src="/icons/repeat_inactive.png"/></a>'        
+        likeStr= \
+            '<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'" title="Like this post">' \
+            '<img src="/icons/like_inactive.png"/></a>'
+
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
         footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'" title="Reply to this post">'
         footerStr+='<img src="/icons/reply.png"/></a>'
-        footerStr+='<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'" title="Repeat this post">'
-        footerStr+='<img src="/icons/repeat_inactive.png"/></a>'
-        footerStr+='<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'" title="Like this post">'
-        footerStr+='<img src="/icons/like_inactive.png"/></a>'
+        footerStr+=announceStr+likeStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 
