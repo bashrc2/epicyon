@@ -640,6 +640,11 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.GETbusy=False
                return
 
+        inReplyTo=None
+        if authorized and '?replyto=' in self.path:
+            inReplyTo=self.path.split('?replyto=')[1]
+            self.path=self.path.split('?replyto=')[0]+'/newpost'
+
         if '/users/' in self.path and \
            (self.path.endswith('/newpost') or \
             self.path.endswith('/newunlisted') or \
@@ -647,7 +652,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newdm') or \
             self.path.endswith('/newshare')):
             self._set_headers('text/html',cookie)
-            self.wfile.write(htmlNewPost(self.server.baseDir,self.path).encode())
+            self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyTo).encode())
             self.server.GETbusy=False
             return        
 
@@ -883,6 +888,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if 'text/html' in self.headers['Accept']:
                                     self._set_headers('text/html',cookie)
                                     self.wfile.write(htmlIndividualPost( \
+                                        self.server.baseDir, \
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \

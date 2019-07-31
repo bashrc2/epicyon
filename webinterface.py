@@ -81,9 +81,14 @@ def htmlLogin(baseDir: str) -> str:
     loginForm+=htmlFooter()
     return loginForm
 
-def htmlNewPost(baseDir: str,path: str) -> str:
+def htmlNewPost(baseDir: str,path: str,inReplyTo: str) -> str:
+    replyStr=''
     if not path.endswith('/newshare'):
-        newPostText='<p class="new-post-text">Enter your post text below.</p>'
+        if not inReplyTo:
+            newPostText='<p class="new-post-text">Enter your post text below.</p>'
+        else:
+            newPostText='<p class="new-post-text">Enter your reply to <a href="'+inReplyTo+'">this post</a> below.</p>'
+            replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
     else:
         newPostText='<p class="new-post-text">Enter the details for your shared item below.</p>'
         
@@ -146,7 +151,8 @@ def htmlNewPost(baseDir: str,path: str) -> str:
         '      </div>' \
         '      <input type="submit" name="submitPost" value="Submit">' \
         '      <a href="'+pathBase+'/outbox"><button class="cancelbtn">Cancel</button></a>' \
-        '    </div>' \
+        '    </div>'+ \
+        replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
         '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
@@ -546,11 +552,11 @@ def individualPostAsHtml(baseDir: str, \
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
-        footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'">'
+        footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'" title="Reply to this post">'
         footerStr+='<img src="/icons/reply.png"/></a>'
-        footerStr+='<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'">'
+        footerStr+='<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'" title="Repeat this post">'
         footerStr+='<img src="/icons/repeat_inactive.png"/></a>'
-        footerStr+='<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'">'
+        footerStr+='<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'" title="Like this post">'
         footerStr+='<img src="/icons/like_inactive.png"/></a>'
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
