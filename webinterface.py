@@ -310,7 +310,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
     else:
-        linkToTimelineStart='<a href="/users/'+nickname+'/inbox">'
+        linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="Switch to timeline view" alt="Switch to timeline view">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
         followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
@@ -553,7 +553,7 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
 
     tlStr=htmlHeader(profileStyle)
     tlStr+= \
-        '<a href="/users/'+nickname+'">' \
+        '<a href="/users/'+nickname+'" title="Switch to profile view" alt="Switch to profile view">' \
         '<div class="timeline-banner">' \
         '</div></a>' \
         '<div class="container">\n'+ \
