@@ -77,6 +77,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
+from announce import createAnnounce
 import os
 import sys
 
@@ -640,6 +641,33 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.GETbusy=False
                return
 
+        if authorized and '?repeat=' in self.path:
+            repeatUrl=self.path.split('?repeat=')[1]
+            actor=self.path.split('?repeat=')[0]
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.domain,self.server.port,self.server.useTor)                
+            announceJson= \
+                createAnnounce(self.server.session, \
+                               self.server.baseDir, \
+                               self.server.federationList, \
+                               self.postToNickname, \
+                               self.server.domain,self.server.port, \
+                               'https://www.w3.org/ns/activitystreams#Public', \
+                               None,self.server.httpPrefix, \
+                               repeatUrl,False,False, \
+                               self.server.sendThreads, \
+                               self.server.postLog, \
+                               self.server.personCache, \
+                               self.server.cachedWebfingers, \
+                               self.server.debug)
+            if announceJson:
+                self._postToOutbox(announceJson)
+            self._redirect_headers(actor+'/inbox',cookie)
+            self.server.GETbusy=False
+            return
+            
         inReplyTo=None
         if authorized and '?replyto=' in self.path:
             inReplyTo=self.path.split('?replyto=')[1]

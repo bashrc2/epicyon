@@ -637,7 +637,6 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,None,True,showIndividualPostIcons)
     tlStr+=htmlFooter()
-    print(tlStr)
     return tlStr
 
 def htmlInbox(session,baseDir: str,wfRequest: {},personCache: {}, \
