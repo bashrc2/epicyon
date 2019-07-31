@@ -20,6 +20,7 @@ from webfinger import webfingerHandle
 from posts import getUserUrl
 from posts import parseUserFeed
 from session import getJson
+from auth import createPassword
 
 def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     """Receives login credentials via HTTPServer POST
@@ -198,6 +199,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                       4, 'outbox', \
                       authorized, \
                       ocapAlways)
+    profileStr+='<script>'+contentWarningScript()+'</script>'
     for item in outboxFeed['orderedItems']:
         if item['type']=='Create' or item['type']=='Announce':
             profileStr+= \
@@ -280,7 +282,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     domainFull=domain
     if port:
         domainFull=domain+':'+str(port)
-    profileDescription=profileJson['publicKey']['summary']
+    profileDescription=profileJson['summary']
     profileDescription='A test description'
     postsButton='button'
     followingButton='button'
@@ -413,6 +415,20 @@ def individualFollowAsHtml(session,wfRequest: {}, \
         '<p>'+titleStr+'</p></a>'+ \
         '</div>\n'
 
+def contentWarningScript() -> str:
+    """Returns a script used for content warnings
+    """
+    script= \
+        'function showContentWarning(postID) {' \
+        '  var x = document.getElementById(postID);' \
+        '  if (x.style.display === "none") {' \
+        '    x.style.display = "block";' \
+        '  } else {' \
+        '    x.style.display = "none";' \
+        '  }' \
+        '}'
+    return script
+
 def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -535,12 +551,25 @@ def individualPostAsHtml(baseDir: str, \
         footerStr+='<span class="'+timeClass+'">'+postJsonObject['object']['published']+'</span>'
         footerStr+='</div>'
 
+    if not postJsonObject['object']['sensitive']:
+        contentStr=postJsonObject['object']['content']+attachmentStr
+    else:
+        postID='post'+str(createPassword(8))
+        contentStr=''
+        if postJsonObject['object'].get('summary'):
+            contentStr+='<b>'+postJsonObject['object']['summary']+'</b> '
+        else:
+            contentStr+='<b>Sensitive</b> '
+        contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
+        contentStr+='<div class="cwText" id="'+postID+'">'
+        contentStr+=postJsonObject['object']['content']+attachmentStr
+        contentStr+='</div>'
+
     return \
         '<div class="'+containerClass+'">\n'+ \
         avatarDropdown+ \
         '<p class="post-title">'+titleStr+'</p>'+ \
-        postJsonObject['object']['content']+'\n'+ \
-        attachmentStr+footerStr+ \
+        contentStr+footerStr+ \
         '</div>\n'
 
 def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
@@ -587,11 +616,13 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
+    tlStr+='<script>'+contentWarningScript()+'</script>'
     for item in timelineJson['orderedItems']:
         if item['type']=='Create' or item['type']=='Announce':
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,None,True,showIndividualPostIcons)
     tlStr+=htmlFooter()
+    print(tlStr)
     return tlStr
 
 def htmlInbox(session,baseDir: str,wfRequest: {},personCache: {}, \
@@ -775,9 +806,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
         if profileJson.get('preferredUsername'):
             preferredName=profileJson['preferredUsername']
         profileDescription=''
-        if profileJson.get('publicKey'):
-            if profileJson['publicKey'].get('summary'):
-                profileDescription=profileJson['publicKey']['summary']
+        if profileJson.get('summary'):
+            profileDescription=profileJson['summary']
         outboxUrl=None
         if not profileJson.get('outbox'):
             if debug:
@@ -815,6 +845,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             '    </center>' \
             '  </form>' \
             '</div>'
+
+        profileStr+='<script>'+contentWarningScript()+'</script>'
 
         result = []
         i = 0

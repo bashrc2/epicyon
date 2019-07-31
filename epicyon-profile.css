@@ -6,6 +6,22 @@ body, html {
     margin: 0 auto;
 }
 
+.cwButton {
+    border-radius: 4px;
+    background-color: #999;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    padding: 2px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.cwText {
+  display: none;
+}
+
 .timeline-banner {
     background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("banner.png");
     height: 10%;

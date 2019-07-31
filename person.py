@@ -162,6 +162,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'name': nickname,
                  'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
                  'preferredUsername': ''+nickname,
+                 'summary': '',
                  'publicKey': {'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
                                'owner': httpPrefix+'://'+domain+'/users/'+nickname,
                                'publicKeyPem': publicKeyPem,
@@ -406,9 +407,9 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
         personJson=commentjson.load(fp)
     if not personJson:
         return False
-    if not personJson.get('publicKey'):
+    if not personJson.get('summary'):
         return False
-    personJson['publicKey']['summary']=bio
+    personJson['summary']=bio
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True

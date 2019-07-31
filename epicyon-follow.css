@@ -58,3 +58,19 @@ input[type=text] {
     color: var(--text-entry-foreground);
     background-color: var(--text-entry-background);
 }
+
+.cwButton {
+    border-radius: 4px;
+    background-color: #999;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    padding: 2px;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.cwText {
+  display: none;
+}
