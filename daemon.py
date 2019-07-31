@@ -82,7 +82,7 @@ import os
 import sys
 
 # maximum number of posts to list in outbox feed
-maxPostsInFeed=20
+maxPostsInFeed=4
 
 # number of follows/followers per page
 followsPerPage=12
@@ -944,8 +944,14 @@ class PubServer(BaseHTTPRequestHandler):
                     if inboxFeed:
                         if 'text/html' in self.headers['Accept']:
                             nickname=self.path.replace('/users/','').replace('/inbox','')
+                            pageNumber=1
                             if '?page=' in nickname:
+                                pageNumber=nickname.split('?page=')[1]
                                 nickname=nickname.split('?page=')[0]
+                                if pageNumber.isdigit():
+                                    pageNumber=int(pageNumber)
+                                else:
+                                    pageNumber=1                                
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 inboxFeed=personBoxJson(self.server.baseDir, \
@@ -956,7 +962,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                         maxPostsInFeed, 'inbox', \
                                                         True,self.server.ocapAlways)
                             self._set_headers('text/html',cookie)
-                            self.wfile.write(htmlInbox(self.server.session, \
+                            self.wfile.write(htmlInbox(pageNumber,maxPostsInFeed, \
+                                                       self.server.session, \
                                                        self.server.baseDir, \
                                                        self.server.cachedWebfingers, \
                                                        self.server.personCache, \
@@ -990,8 +997,14 @@ class PubServer(BaseHTTPRequestHandler):
         if outboxFeed:
             if 'text/html' in self.headers['Accept']:
                 nickname=self.path.replace('/users/','').replace('/outbox','')
+                pageNumber=1
                 if '?page=' in nickname:
+                    pageNumber=nickname.split('?page=')[1]
                     nickname=nickname.split('?page=')[0]
+                    if pageNumber.isdigit():
+                        pageNumber=int(pageNumber)
+                    else:
+                        pageNumber=1
                 if 'page=' not in self.path:
                     # if a page wasn't specified then show the first one
                     outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
@@ -1002,7 +1015,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.ocapAlways)
                     
                 self._set_headers('text/html',cookie)
-                self.wfile.write(htmlOutbox(self.server.session, \
+                self.wfile.write(htmlOutbox(pageNumber,maxPostsInFeed, \
+                                            self.server.session, \
                                             self.server.baseDir, \
                                             self.server.cachedWebfingers, \
                                             self.server.personCache, \

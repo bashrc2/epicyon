@@ -597,7 +597,8 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+footerStr+ \
         '</div>\n'
 
-def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
+def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
+                 wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,timelineJson: {}, \
                  boxName: str) -> str:
     """Show the timeline as html
@@ -642,25 +643,33 @@ def htmlTimeline(session,baseDir: str,wfRequest: {},personCache: {}, \
         followApprovals+ \
         '</div>'
     tlStr+='<script>'+contentWarningScript()+'</script>'
+    if pageNumber>1:
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+    itemCtr=0
     for item in timelineJson['orderedItems']:
         if item['type']=='Create' or item['type']=='Announce':
+            itemCtr+=1
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,None,True,showIndividualPostIcons)
+    if itemCtr>=itemsPerPage:
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlInbox(session,baseDir: str,wfRequest: {},personCache: {}, \
+def htmlInbox(pageNumber: int,itemsPerPage: int, \
+              session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}) -> str:
     """Show the inbox as html
     """
-    return htmlTimeline(session,baseDir,wfRequest,personCache, \
+    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox')
 
-def htmlOutbox(session,baseDir: str,wfRequest: {},personCache: {}, \
+def htmlOutbox(pageNumber: int,itemsPerPage: int, \
+               session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int,outboxJson: {}) -> str:
     """Show the Outbox as html
     """
-    return htmlTimeline(session,baseDir,wfRequest,personCache, \
+    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox')
 
 def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
