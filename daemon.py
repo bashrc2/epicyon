@@ -82,7 +82,7 @@ import os
 import sys
 
 # maximum number of posts to list in outbox feed
-maxPostsInFeed=4
+maxPostsInFeed=12
 
 # number of follows/followers per page
 followsPerPage=12
