@@ -59,6 +59,21 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug:
             with open(postFilename, 'w') as fp:
                 commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
 
+def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
+    """Returns True if the given post is liked by the given actor
+    """
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('likes'):
+        return False
+    actorMatch=domain+'/users/'+nickname
+    for item in postJsonObject['object']['likes']['items']:
+        if item['actor'].endswith(actorMatch):
+            return True
+    return False
+
 def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """

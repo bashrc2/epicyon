@@ -641,6 +641,7 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.GETbusy=False
                return
 
+        # announce/repeat from the web interface
         if authorized and '?repeat=' in self.path:
             repeatUrl=self.path.split('?repeat=')[1]
             actor=self.path.split('?repeat=')[0]
@@ -667,7 +668,58 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
-            
+
+        # like from the web interface icon
+        if authorized and '?like=' in self.path:
+            likeUrl=self.path.split('?like=')[1]
+            actor=self.path.split('?like=')[0]
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.domain,self.server.port,self.server.useTor)
+            likeActor=self.server.httpPrefix+'://'+self.server.fullDomain+'/users/'+self.postToNickname
+            likeJson= {
+                'type': 'Like',
+                'actor': likeActor,
+                'object': likeUrl,
+                'to': [likeActor+'/followers'],
+                'cc': []
+            }    
+            if likeJson:
+                self._postToOutbox(likeJson)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/inbox',cookie)
+            return
+
+        # undo a like from the web interface icon
+        if authorized and '?unlike=' in self.path:
+            likeUrl=self.path.split('?unlike=')[1]
+            actor=self.path.split('?unlike=')[0]
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.domain,self.server.port,self.server.useTor)
+            undoActor=self.server.httpPrefix+'://'+self.server.fullDomain+'/users/'+self.postToNickname
+            undoLikeJson= {
+                'type': 'Undo',
+                'actor': undoActor,
+                'object': {
+                    'type': 'Like',
+                    'actor': undoActor,
+                    'object': likeUrl,
+                    'to': [undoActor+'/followers'],
+                    'cc': []
+                },
+                'to': [undoActor+'/followers'],
+                'cc': []
+            }    
+            if undoLikeJson:
+                self._postToOutbox(undoLikeJson)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/inbox',cookie)
+            return
+
+        # reply from the web interface icon
         inReplyTo=None
         if authorized and '?replyto=' in self.path:
             inReplyTo=self.path.split('?replyto=')[1]

@@ -22,6 +22,7 @@ from posts import getUserUrl
 from posts import parseUserFeed
 from session import getJson
 from auth import createPassword
+from like import likedByPerson
 
 def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     """Receives login credentials via HTTPServer POST
@@ -563,10 +564,15 @@ def individualPostAsHtml(baseDir: str, \
     if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         announceStr= \
             '<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'" title="Repeat this post">' \
-            '<img src="/icons/repeat_inactive.png"/></a>'        
+            '<img src="/icons/repeat_inactive.png"/></a>'
+        likeIcon='like_inactive.png'
+        likeLink='like'
+        if likedByPerson(postJsonObject,nickname,fullDomain):
+            likeIcon='like.png'
+            likeLink='unlike'
         likeStr= \
-            '<a href="/users/'+nickname+'?like='+postJsonObject['object']['id']+'" title="Like this post">' \
-            '<img src="/icons/like_inactive.png"/></a>'
+            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="Like this post">' \
+            '<img src="/icons/'+likeIcon+'"/></a>'
 
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
