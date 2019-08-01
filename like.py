@@ -60,7 +60,7 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug:
                 commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
-    """Returns True if the given post is liked by the given actor
+    """Returns True if the given post is liked by the given person
     """
     if not postJsonObject.get('object'):
         return False

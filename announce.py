@@ -19,6 +19,110 @@ from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
+def undoAnnounceCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+    """Undoes an announce for a particular actor
+    """
+    with open(postFilename, 'r') as fp:
+        postJsonObject=commentjson.load(fp)
+        if not postJsonObject.get('type'):
+            if postJsonObject['type']!='Create':
+                return
+            return
+        if not postJsonObject.get('object'):
+            if debug:
+                pprint(postJsonObject)
+                print('DEBUG: post '+objectUrl+' has no object')
+            return
+        if not postJsonObject['object'].get('shares'):
+            return
+        if not postJsonObject['object']['shares'].get('items'):
+            return
+        totalItems=0
+        if postJsonObject['object']['shares'].get('totalItems'):
+            totalItems=postJsonObject['object']['shares']['totalItems']
+        itemFound=False
+        for likeItem in postJsonObject['object']['shares']['items']:
+            if likeItem.get('actor'):
+                if likeItem['actor']==actor:
+                    if debug:
+                        print('DEBUG: Announce was removed for '+actor)
+                    postJsonObject['object']['shares']['items'].remove(likeItem)
+                    itemFound=True
+                    break
+        if itemFound:
+            if totalItems==1:
+                if debug:
+                    print('DEBUG: shares (announcements) was removed from post')
+                postJsonObject['object'].remove(postJsonObject['object']['shares'])
+            else:
+                postJsonObject['object']['shares']['totalItems']=len(postJsonObject['shares']['items'])
+            with open(postFilename, 'w') as fp:
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
+
+def updateAnnounceCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+    """Updates the announcements collection within a post
+    Confusingly this is known as "shares", but isn't the same as shared items within shares.py
+    """
+    with open(postFilename, 'r') as fp:
+        postJsonObject=commentjson.load(fp)
+        if not postJsonObject.get('object'):
+            if debug:
+                pprint(postJsonObject)
+                print('DEBUG: post '+objectUrl+' has no object')
+            return
+        if not objectUrl.endswith('/shares'):
+            objectUrl=objectUrl+'/shares'
+        if not postJsonObject['object'].get('shares'):
+            if debug:
+                print('DEBUG: Adding initial shares to '+objectUrl)
+            announcementsJson = {
+                'id': objectUrl,
+                'type': 'Collection',
+                "totalItems": 1,
+                'items': [{
+                    'type': 'Announce',
+                    'actor': actor                    
+                }]
+            }
+            postJsonObject['object']['shares']=announcementsJson
+        else:
+            if postJsonObject['object']['shares'].get('items'):
+                for announceItem in postJsonObject['shares']['items']:
+                    if announceItem.get('actor'):
+                        if announceItem['actor']==actor:
+                            return
+                newAnnounce={
+                    'type': 'Announce',
+                    'actor': actor
+                }
+                postJsonObject['object']['shares']['items'].append(newAnnounce)
+                postJsonObject['object']['shares']['totalItems']=len(postJsonObject['shares']['items'])
+            else:
+                if debug:
+                    print('DEBUG: shares (announcements) section of post has no items list')
+
+        if debug:
+            print('DEBUG: saving post with shares (announcements) added')
+            pprint(postJsonObject)
+        with open(postFilename, 'w') as fp:
+            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)
+
+def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
+    """Returns True if the given post is announced by the given person
+    """
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    # not to be confused with shared items
+    if not postJsonObject['object'].get('shares'):
+        return False
+    actorMatch=domain+'/users/'+nickname
+    for item in postJsonObject['object']['shares']['items']:
+        if item['actor'].endswith(actorMatch):
+            return True
+    return False
+
 def createAnnounce(session,baseDir: str,federationList: [], \
                    nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, \
