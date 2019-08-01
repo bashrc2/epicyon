@@ -20,7 +20,9 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
 def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> None:
-    """Undoes an announce for a particular actor
+    """Undoes an announce for a particular actor by removing it from the "shares"
+    collection within a post. Note that the "shares" collection has no relation
+    to shared items in shares.py. It's shares of posts, not shares of physical objects.
     """
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
@@ -62,6 +64,7 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
 def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the same as shared items within shares.py
+    It's shares of posts, not shares of physical objects.
     """
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
