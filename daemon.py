@@ -673,6 +673,33 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor+'/inbox',cookie)
             return
 
+        # undo an announce/repeat from the web interface
+        if authorized and '?unrepeat=' in self.path:
+            repeatUrl=self.path.split('?unrepeat=')[1]
+            actor=self.path.split('?unrepeat=')[0]
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.domain,self.server.port,self.server.useTor)
+            undoAnnounceActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
+            newUndoAnnounce = {
+                'actor': undoAnnounceActor,
+                'type': 'Undo',
+                'cc': [undoAnnounceActor+'/followers'],
+                'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                'object': {
+                    'actor': undoAnnounceActor,
+                    'cc': [undoAnnounceActor+'/followers'],
+                    'object': repeatUrl,
+                    'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                    'type': 'Announce'
+                }
+            }                
+            self._postToOutbox(newUndoAnnounce)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/inbox',cookie)
+            return
+
         # like from the web interface icon
         if authorized and '?like=' in self.path:
             likeUrl=self.path.split('?like=')[1]

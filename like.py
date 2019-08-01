@@ -55,7 +55,7 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug:
             if totalItems==1:
                 if debug:
                     print('DEBUG: likes was removed from post')
-                postJsonObject['object'].remove(postJsonObject['object']['likes'])
+                del postJsonObject['object']['likes']
             else:
                 postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
             with open(postFilename, 'w') as fp:

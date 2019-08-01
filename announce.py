@@ -82,19 +82,19 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
         if postJsonObject['object']['shares'].get('totalItems'):
             totalItems=postJsonObject['object']['shares']['totalItems']
         itemFound=False
-        for likeItem in postJsonObject['object']['shares']['items']:
-            if likeItem.get('actor'):
-                if likeItem['actor']==actor:
+        for announceItem in postJsonObject['object']['shares']['items']:
+            if announceItem.get('actor'):
+                if announceItem['actor']==actor:
                     if debug:
                         print('DEBUG: Announce was removed for '+actor)
-                    postJsonObject['object']['shares']['items'].remove(likeItem)
+                    postJsonObject['object']['shares']['items'].remove(announceItem)
                     itemFound=True
                     break
         if itemFound:
             if totalItems==1:
                 if debug:
                     print('DEBUG: shares (announcements) was removed from post')
-                postJsonObject['object'].remove(postJsonObject['object']['shares'])
+                del postJsonObject['object']['shares']
             else:
                 postJsonObject['object']['shares']['totalItems']=len(postJsonObject['shares']['items'])
             with open(postFilename, 'w') as fp:

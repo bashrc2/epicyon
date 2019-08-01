@@ -23,6 +23,7 @@ from posts import parseUserFeed
 from session import getJson
 from auth import createPassword
 from like import likedByPerson
+from announce import announcedByPerson
 
 def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     """Receives login credentials via HTTPServer POST
@@ -559,20 +560,27 @@ def individualPostAsHtml(baseDir: str, \
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
     # don't allow announce/repeat of your own posts
-    announceStr=''
-    likeStr=''
-    if fullDomain+'/users/'+nickname not in postJsonObject['actor']:
-        announceStr= \
-            '<a href="/users/'+nickname+'?repeat='+postJsonObject['object']['id']+'" title="Repeat this post">' \
-            '<img src="/icons/repeat_inactive.png"/></a>'
-        likeIcon='like_inactive.png'
-        likeLink='like'
-        if likedByPerson(postJsonObject,nickname,fullDomain):
-            likeIcon='like.png'
-            likeLink='unlike'
-        likeStr= \
-            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="Like this post">' \
-            '<img src="/icons/'+likeIcon+'"/></a>'
+    announceIcon='repeat_inactive.png'
+    announceLink='repeat'
+    announceTitle='Repeat this post'
+    if announcedByPerson(postJsonObject,nickname,fullDomain):
+        announceIcon='repeat.png'
+        announceLink='unrepeat'
+        announceTitle='Undo the repeat this post'
+    announceStr= \
+        '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+'" title="'+announceTitle+'">' \
+        '<img src="/icons/'+announceIcon+'"/></a>'
+
+    likeIcon='like_inactive.png'
+    likeLink='like'
+    likeTitle='Like this post'
+    if likedByPerson(postJsonObject,nickname,fullDomain):
+        likeIcon='like.png'
+        likeLink='unlike'
+        likeTitle='Undo the like of this post'
+    likeStr= \
+        '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
+        '<img src="/icons/'+likeIcon+'"/></a>'
 
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
