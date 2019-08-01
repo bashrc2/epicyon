@@ -78,6 +78,7 @@ from utils import getDomainFromActor
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
+from announce import outboxAnnounce
 import os
 import sys
 
@@ -258,6 +259,9 @@ class PubServer(BaseHTTPRequestHandler):
                       postId, \
                       self.postToNickname, \
                       domainFull,messageJson,'outbox')
+        if outboxAnnounce(self.server.baseDir,messageJson,self.server.debug):
+            if self.server.debug:
+                print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
         if not self.server.session:
             if self.server.debug:
                 print('DEBUG: creating new session for c2s')

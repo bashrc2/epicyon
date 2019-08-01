@@ -346,11 +346,12 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None
 
 def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
                   nickname: str, domain: str,postJsonObject: {}, \
-                  boxname: str) -> None:
+                  boxname: str) -> str:
     """Saves the give json to the give box
+    Returns the filename
     """
     if boxname!='inbox' and boxname!='outbox':
-        return
+        return None
     originalDomain=domain    
     if ':' in domain:
         domain=domain.split(':')[0]
@@ -369,6 +370,7 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
     filename=boxDir+'/'+postId.replace('/','#')+'.json'
     with open(filename, 'w') as fp:
         commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+    return filename
 
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \

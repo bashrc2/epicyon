@@ -8,16 +8,53 @@ __status__ = "Production"
 
 import json
 import commentjson
+from pprint import pprint
 from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import locatePost
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
+
+def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
+    """ Adds or removes announce entries from the shares collection
+    within a given post
+    """
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('type'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if messageJson['type']=='Announce':
+        if not isinstance(messageJson['object'], str):
+            return
+        nickname=getNicknameFromActor(messageJson['actor'])
+        domain,port=getDomainFromActor(messageJson['actor'])
+        postFilename=locatePost(baseDir,nickname,domain,messageJson['object'])
+        if postFilename:
+            updateAnnounceCollection(postFilename,messageJson['actor'],debug)
+            return True
+    if messageJson['type']=='Undo':
+        if not isinstance(messageJson['object'], dict):
+            return    
+        if not messageJson['object'].get('type'):
+            return False
+        if messageJson['object']['type']=='Announce':
+            if not isinstance(messageJson['object']['object'], str):
+                return
+            nickname=getNicknameFromActor(messageJson['actor'])
+            domain,port=getDomainFromActor(messageJson['actor'])
+            postFilename=locatePost(baseDir,nickname,domain,messageJson['object']['object'])
+            if postFilename:
+                undoAnnounceCollectionEntry(postFilename,messageJson['actor'],debug)
+                return True
+    return False
 
 def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from the "shares"
@@ -27,13 +64,15 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
         if not postJsonObject.get('type'):
-            if postJsonObject['type']!='Create':
-                return
+            return
+        if postJsonObject['type']!='Create':
             return
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
                 print('DEBUG: post has no object')
+            return
+        if not isinstance(postJsonObject['object'], dict):
             return
         if not postJsonObject['object'].get('shares'):
             return
@@ -72,6 +111,8 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
             if debug:
                 pprint(postJsonObject)
                 print('DEBUG: post '+announceUrl+' has no object')
+            return
+        if not isinstance(postJsonObject['object'], dict):
             return
         postUrl=postJsonObject['id'].replace('/activity','')+'/shares'
         if not postJsonObject['object'].get('shares'):

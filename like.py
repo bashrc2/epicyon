@@ -25,13 +25,15 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug:
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
         if not postJsonObject.get('type'):
-            if postJsonObject['type']!='Create':
-                return
+            return
+        if postJsonObject['type']!='Create':
             return
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
                 print('DEBUG: post '+objectUrl+' has no object')
+            return
+        if not isinstance(postJsonObject['object'], dict):
             return
         if not postJsonObject['object'].get('likes'):
             return
