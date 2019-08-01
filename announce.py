@@ -19,7 +19,7 @@ from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
-def undoAnnounceCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> None:
     """Undoes an announce for a particular actor
     """
     with open(postFilename, 'r') as fp:
@@ -31,7 +31,7 @@ def undoAnnounceCollectionEntry(postFilename: str,objectUrl: str, actor: str,deb
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
-                print('DEBUG: post '+objectUrl+' has no object')
+                print('DEBUG: post has no object')
             return
         if not postJsonObject['object'].get('shares'):
             return
@@ -59,7 +59,7 @@ def undoAnnounceCollectionEntry(postFilename: str,objectUrl: str, actor: str,deb
             with open(postFilename, 'w') as fp:
                 commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
 
-def updateAnnounceCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the same as shared items within shares.py
     """
@@ -68,15 +68,14 @@ def updateAnnounceCollection(postFilename: str,objectUrl: str, actor: str,debug:
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
-                print('DEBUG: post '+objectUrl+' has no object')
+                print('DEBUG: post '+announceUrl+' has no object')
             return
-        if not objectUrl.endswith('/shares'):
-            objectUrl=objectUrl+'/shares'
+        postUrl=postJsonObject['id'].replace('/activity','')+'/shares'
         if not postJsonObject['object'].get('shares'):
             if debug:
-                print('DEBUG: Adding initial shares to '+objectUrl)
+                print('DEBUG: Adding initial shares (announcements) to '+postUrl)
             announcementsJson = {
-                'id': objectUrl,
+                'id': postUrl,
                 'type': 'Collection',
                 "totalItems": 1,
                 'items': [{

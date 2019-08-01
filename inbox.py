@@ -39,6 +39,7 @@ from like import updateLikesCollection
 from like import undoLikesCollectionEntry
 from blocking import isBlocked
 from filters import isFiltered
+from announce import updateAnnounceCollection
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -743,13 +744,14 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
         return False
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of announce - '+handle)
-    # if this post in the outbox of the person?
+    # is this post in the outbox of the person?
     postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
     if not postFilename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
             print(messageJson['object'])
         return True
+    updateAnnounceCollection(postFilename,messageJson['actor'],debug)
     if debug:
         print('DEBUG: announced/repeated post found in inbox')
     return True
@@ -799,8 +801,9 @@ def receiveUndoAnnounce(session,handle: str,baseDir: str, \
         if not postJsonObject.get('type'):
             if postJsonObject['type']!='Announce':
                 if debug:
-                    print("DEBUG: Attenpt to undo something which isn't an announcement")
+                    print("DEBUG: Attempt to undo something which isn't an announcement")
                 return False        
+    undoAnnounceCollectionEntry(postFilename,messageJson['actor'],debug)
     os.remove(postFilename)
     return True
 
