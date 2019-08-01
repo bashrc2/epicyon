@@ -708,7 +708,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
-            likeActor=self.server.httpPrefix+'://'+self.server.fullDomain+'/users/'+self.postToNickname
+            likeActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
             likeJson= {
                 'type': 'Like',
                 'actor': likeActor,
@@ -730,7 +730,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
-            undoActor=self.server.httpPrefix+'://'+self.server.fullDomain+'/users/'+self.postToNickname
+            undoActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
             undoLikeJson= {
                 'type': 'Undo',
                 'actor': undoActor,
@@ -743,7 +743,7 @@ class PubServer(BaseHTTPRequestHandler):
                 },
                 'to': [undoActor+'/followers'],
                 'cc': []
-            }    
+            }
             if undoLikeJson:
                 self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False

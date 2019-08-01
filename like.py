@@ -19,9 +19,9 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 
-def undoLikesCollectionEntry(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: bool) -> None:
     """Undoes a like for a particular actor
-    """
+    """    
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
         if not postJsonObject.get('type'):
@@ -480,22 +480,15 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
     """ When an undo like request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
-        if debug:
-            print('DEBUG: undo like - no type')
         return
     if not messageJson['type']=='Undo':
-        if debug:
-            print('DEBUG: not an undo of Like')
         return
     if not messageJson.get('object'):
-        if debug:
-            print('DEBUG: no object in undo like')
         return
-    if not isinstance(messageJson['object']['object'], dict):
+    if not isinstance(messageJson['object'], dict):
         if debug:
             print('DEBUG: undo like object is not dict')
-        return
-    
+        return    
     if not messageJson['object'].get('type'):
         if debug:
             print('DEBUG: undo like - no type')
