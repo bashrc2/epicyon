@@ -579,7 +579,10 @@ def individualPostAsHtml(baseDir: str, \
     timeClass='time-right'
     actorNickname=getNicknameFromActor(postJsonObject['actor'])
     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-    titleStr+='@'+actorNickname+'@'+actorDomain
+    messageId=''
+    if postJsonObject.get('id'):
+        messageId=postJsonObject['id'].replace('/activity','')
+    titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
     if postJsonObject['object']['inReplyTo']:
         containerClassIcons='containericons darker'
         containerClass='container darker'
@@ -800,7 +803,8 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        postJsonObject: {}) -> str:
     """Show an individual post as html
     """
-    postStr= \
+    postStr='<script>'+contentWarningScript()+'</script>'
+    postStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False)
     messageId=postJsonObject['id'].replace('/activity','')
