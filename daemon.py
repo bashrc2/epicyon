@@ -53,6 +53,8 @@ from like import outboxLike
 from like import outboxUndoLike
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
+from blocking import addBlock
+from blocking import removeBlock
 from config import setConfigParam
 from roles import outboxDelegate
 from skills import outboxSkills
@@ -624,6 +626,23 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.GETbusy=False
                return
 
+        # block a person from the web interface by selecting Block on the dropdown
+        if '/users/' in self.path:
+           if '?block=' in self.path:
+               blockStr=self.path.split('?block=')[1]
+               originPathStr=self.path.split('?block=')[0]
+               if ';' in blockStr:
+                   blockActor=blockStr.split(';')[0]
+                   blockProfileUrl=blockStr.split(';')[1]
+                   # show the confirm block screen
+                   self._set_headers('text/html',cookie)
+                   self.wfile.write(htmlBlockConfirm(self.server.baseDir,originPathStr,blockActor,blockProfileUrl).encode())
+                   self.server.GETbusy=False
+                   return
+               self._redirect_headers(originPathStr,cookie)
+               self.server.GETbusy=False
+               return
+
         # search for a fediverse address from the web interface by selecting search icon
         if '/users/' in self.path:
            if self.path.endswith('/search'):
@@ -644,6 +663,23 @@ class PubServer(BaseHTTPRequestHandler):
                    # show the confirm follow screen
                    self._set_headers('text/html',cookie)
                    self.wfile.write(htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode())
+                   self.server.GETbusy=False
+                   return
+               self._redirect_headers(originPathStr,cookie)
+               self.server.GETbusy=False
+               return
+
+        # Unblock a person from the web interface by selecting Unblock on the dropdown
+        if '/users/' in self.path:
+           if '?unblock=' in self.path:
+               blockStr=self.path.split('?unblock=')[1]
+               originPathStr=self.path.split('?unblock=')[0]
+               if ';' in blockStr:
+                   blockActor=blockStr.split(';')[0]
+                   blockProfileUrl=blockStr.split(';')[1]
+                   # show the confirm unblock screen
+                   self._set_headers('text/html',cookie)
+                   self.wfile.write(htmlUnblockConfirm(self.server.baseDir,originPathStr,blockActor,blockProfileUrl).encode())
                    self.server.GETbusy=False
                    return
                self._redirect_headers(originPathStr,cookie)
@@ -1868,6 +1904,66 @@ class PubServer(BaseHTTPRequestHandler):
                         }
                     }
                     self._postToOutbox(unfollowJson)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
+            return
+
+        # decision to unblock in the web interface is confirmed
+        if authorized and self.path.endswith('/unblockconfirm'):
+            originPathStr=self.path.split('/unblockconfirm')[0]
+            blockerNickname=getNicknameFromActor(originPathStr)
+            length = int(self.headers['Content-length'])
+            blockConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitYes=' in blockConfirmParams:
+                blockingActor=blockConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
+                if '&' in blockingActor:
+                    blockingActor=blockingActor.split('&')[0]
+                blockingNickname=getNicknameFromActor(blockingActor)
+                blockingDomain,blockingPort=getDomainFromActor(blockingActor)
+                blockingDomainFull=blockingDomain
+                if blockingPort:
+                    if blockingPort!=80 and blockingPort!=443:
+                        blockingDomainFull=blockingDomain+':'+str(blockingPort)
+                if blockerNickname==blockingNickname and \
+                   blockingDomain==self.server.domain and \
+                   blockingPort==self.server.port:
+                    if self.server.debug:
+                        print('You cannot unblock yourself!')
+                else:
+                    if self.server.debug:
+                        print(blockerNickname+' stops blocking '+blockingActor)
+                    removeBlock(self.server.baseDir,blockerNickname,self.server.domain, \
+                                blockingNickname,blockingDomainFull)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
+            return
+
+        # decision to block in the web interface is confirmed
+        if authorized and self.path.endswith('/blockconfirm'):
+            originPathStr=self.path.split('/blockconfirm')[0]
+            blockerNickname=getNicknameFromActor(originPathStr)
+            length = int(self.headers['Content-length'])
+            blockConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitYes=' in blockConfirmParams:
+                blockingActor=blockConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
+                if '&' in blockingActor:
+                    blockingActor=blockingActor.split('&')[0]
+                blockingNickname=getNicknameFromActor(blockingActor)
+                blockingDomain,blockingPort=getDomainFromActor(blockingActor)
+                blockingDomainFull=blockingDomain
+                if blockingPort:
+                    if blockingPort!=80 and blockingPort!=443:
+                        blockingDomainFull=blockingDomain+':'+str(blockingPort)
+                if blockerNickname==blockingNickname and \
+                   blockingDomain==self.server.domain and \
+                   blockingPort==self.server.port:
+                    if self.server.debug:
+                        print('You cannot block yourself!')
+                else:
+                    if self.server.debug:
+                        print('Adding block by '+blockerNickname+' of '+blockingActor)
+                    addBlock(self.server.baseDir,blockerNickname,self.server.domain, \
+                             blockingNickname,blockingDomainFull)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return

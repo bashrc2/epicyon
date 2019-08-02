@@ -25,6 +25,7 @@ from session import getJson
 from auth import createPassword
 from like import likedByPerson
 from announce import announcedByPerson
+from blocking import isBlocked
 
 def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
@@ -640,13 +641,22 @@ def individualPostAsHtml(baseDir: str, \
         if isFollowingActor(baseDir,nickname,domain,postJsonObject['actor']):
             followUnfollowStr='<a href="/users/'+nickname+'?unfollow='+postJsonObject['actor']+';'+avatarUrl+'">Unfollow</a>'
 
+        blockUnblockStr='<a href="/users/'+nickname+'?block='+postJsonObject['actor']+';'+avatarUrl+'">Block</a>'
+        # if blocking then show "Unblock" in the dropdown
+        actorDomainFull=actorDomain
+        if actorPort:
+            if actorPort!=80 and actorPort!=443:
+                actorDomainFull=actorDomain+':'+str(actorPort)
+        if isBlocked(baseDir,nickname,domain,actorNickname,actorDomainFull):
+            blockUnblockStr='<a href="/users/'+nickname+'?unblock='+postJsonObject['actor']+';'+avatarUrl+'">Unblock</a>'
+
         avatarDropdown= \
             '  <div class="dropdown-timeline">' \
             '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
             followUnfollowStr+ \
-            '      <a href="/users/'+nickname+'?block='+postJsonObject['actor']+';'+avatarUrl+'">Block</a>' \
+            blockUnblockStr+ \
             '      <a href="/users/'+nickname+'?report='+postJsonObject['actor']+';'+avatarUrl+'">Report</a>' \
             '    </div>' \
             '  </div>'
@@ -856,6 +866,66 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+='</div>'
     followStr+=htmlFooter()
     return followStr
+
+def htmlBlockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProfileUrl: str) -> str:
+    """Asks to confirm a block
+    """
+    blockDomain,port=getDomainFromActor(blockActor)
+    
+    if os.path.isfile(baseDir+'/img/block-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/block-background.png'):
+            copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    blockStr=htmlHeader(profileStyle)
+    blockStr+='<div class="block">'
+    blockStr+='  <div class="blockAvatar">'
+    blockStr+='  <center>'
+    blockStr+='  <a href="'+blockActor+'">'
+    blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
+    blockStr+='  <p class="blockText">Block '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
+    blockStr+= \
+        '  <form method="POST" action="'+originPathStr+'/blockconfirm">' \
+        '    <input type="hidden" name="actor" value="'+blockActor+'">' \
+        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '  </form>'
+    blockStr+='</center>'
+    blockStr+='</div>'
+    blockStr+='</div>'
+    blockStr+=htmlFooter()
+    return blockStr
+
+def htmlUnblockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProfileUrl: str) -> str:
+    """Asks to confirm unblocking an actor
+    """
+    blockDomain,port=getDomainFromActor(blockActor)
+    
+    if os.path.isfile(baseDir+'/img/block-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/block-background.png'):
+            copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    blockStr=htmlHeader(profileStyle)
+    blockStr+='<div class="block">'
+    blockStr+='  <div class="blockAvatar">'
+    blockStr+='  <center>'
+    blockStr+='  <a href="'+blockActor+'">'
+    blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
+    blockStr+='  <p class="blockText">Stop blocking '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
+    blockStr+= \
+        '  <form method="POST" action="'+originPathStr+'/unblockconfirm">' \
+        '    <input type="hidden" name="actor" value="'+blockActor+'">' \
+        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '  </form>'
+    blockStr+='</center>'
+    blockStr+='</div>'
+    blockStr+='</div>'
+    blockStr+=htmlFooter()
+    return blockStr
 
 def htmlSearch(baseDir: str,path: str) -> str:
     """Search called from the timeline icon
