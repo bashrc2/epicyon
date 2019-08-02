@@ -803,7 +803,22 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     postStr= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False)
-    postFilename=locatePost(baseDir,nickname,domain,postJsonObject['id'].replace('/activity',''))
+    messageId=postJsonObject['id'].replace('/activity','')
+
+    # show the previous posts
+    while postJsonObject['object'].get('inReplyTo'):
+        postFilename=locatePost(baseDir,nickname,domain,postJsonObject['object']['inReplyTo'])
+        if not postFilename:
+            break
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+            postStr= \
+                individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                     nickname,domain,port,postJsonObject, \
+                                     None,True,False)+postStr
+
+    # show the following posts
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
     if postFilename:
         # is there a replies file for this post?
         repliesFilename=postFilename.replace('.json','.replies')
