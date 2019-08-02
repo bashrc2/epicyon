@@ -16,11 +16,13 @@ from pprint import pprint
 from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
-from posts import getPersonBox
+from utils import locatePost
 from follow import isFollowingActor
 from webfinger import webfingerHandle
+from posts import getPersonBox
 from posts import getUserUrl
 from posts import parseUserFeed
+from posts import populateRepliesJson
 from session import getJson
 from auth import createPassword
 from like import likedByPerson
@@ -794,21 +796,26 @@ def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                         nickname,domain,port,outboxJson,'outbox')
 
 def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
-                       nickname: str,domain: str,port: int,postJsonObject: {}) -> str:
+                       nickname: str,domain: str,port: int,authorized: bool, \
+                       postJsonObject: {}) -> str:
     """Show an individual post as html
     """
     postStr= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False)
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('replies'):
-                repliesJson=postJsonObject['object']['replies']
-                if repliesJson.get('orderedItems'):
-                    for item in repliesJson['orderedItems']:
-                        postStr+= \
-                            individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                                 nickname,domain,port,item,None,True,False)
+    postFilename=locatePost(baseDir,nickname,domain,postJsonObject['id'].replace('/activity',''))
+    if postFilename:
+        # is there a replies file for this post?
+        repliesFilename=postFilename.replace('.json','.replies')
+        if os.path.isfile(repliesFilename):
+            # get items from the replies file
+            repliesJson={'orderedItems': []}
+            populateRepliesJson(baseDir,nickname,domain,repliesFilename,authorized,repliesJson)
+            # add items to the html output
+            for item in repliesJson['orderedItems']:
+                postStr+= \
+                    individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                         nickname,domain,port,item,None,True,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \

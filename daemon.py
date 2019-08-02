@@ -848,7 +848,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \
-                                        postJsonObject).encode('utf-8'))
+                                        authorized,postJsonObject).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json',None)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
@@ -1036,7 +1036,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \
-                                        postJsonObject).encode('utf-8'))
+                                        authorized,postJsonObject).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json',None)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
@@ -1419,15 +1419,13 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        result=self._postToOutbox(messageJson)
-                        print('_postToOutbox ********************************************** '+str(result))
-                        populateReplies(self.server.baseDir, \
-                                        self.server.httpPrefix, \
-                                        self.server.domainFull, \
-                                        messageJson, \
-                                        self.server.maxReplies, \
-                                        self.server.debug)
-                        if result:
+                        if self._postToOutbox(messageJson):
+                            populateReplies(self.server.baseDir, \
+                                            self.server.httpPrefix, \
+                                            self.server.domainFull, \
+                                            messageJson, \
+                                            self.server.maxReplies, \
+                                            self.server.debug)
                             return 1
                         else:
                             return -1

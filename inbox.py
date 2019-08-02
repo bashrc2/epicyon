@@ -812,26 +812,19 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
     """Updates the list of replies for a post on this domain if 
     a reply to it arrives
     """
-    print("Test1")
     if not messageJson.get('id'):
         return False
-    print("Test2")
     if not messageJson.get('object'):
         return False
-    print("Test3")
     if not isinstance(messageJson['object'], dict):
         return False
-    print("Test4")
     if not messageJson['object'].get('inReplyTo'):
         return False
-    print("Test5")
     if not messageJson['object'].get('to'):
         return False
-    print("Test6")
     replyTo=messageJson['object']['inReplyTo']
     if debug:
         print('DEBUG: post contains a reply')
-    print("Test7")
     # is this a reply to a post on this domain?
     if not replyTo.startswith(httpPrefix+'://'+domain+'/'):
         if debug:
@@ -839,40 +832,33 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
             print(replyTo)
             print('Expected: '+httpPrefix+'://'+domain+'/')
         return False
-    print("Test8")
     replyToNickname=getNicknameFromActor(replyTo)
     if not replyToNickname:
         if debug:
             print('DEBUG: no nickname found for '+replyTo)
         return False
-    print("Test9")
     replyToDomain,replyToPort=getDomainFromActor(replyTo)
     if not replyToDomain:
         if debug:
             print('DEBUG: no domain found for '+replyTo)
         return False
-    print("Test10")
     postFilename=locatePost(baseDir,replyToNickname,replyToDomain,replyTo)
     if not postFilename:
         if debug:
             print('DEBUG: post may have expired - '+replyTo)
         return False    
-    print("Test11")
     # populate a text file containing the ids of replies
     postRepliesFilename=postFilename.replace('.json','.replies')
     messageId=messageJson['id'].replace('/activity','')
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
-        print("Test12 "+str(numLines))
         if numLines>maxReplies:
             return False
-        print("Test13")
         if messageId not in open(postRepliesFilename).read():
             repliesFile=open(postRepliesFilename, "a")
             repliesFile.write(messageId+'\n')
             repliesFile.close()
     else:
-        print("Test14")
         repliesFile=open(postRepliesFilename, "w")
         repliesFile.write(messageId+'\n')
         repliesFile.close()
