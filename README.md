@@ -26,6 +26,7 @@ This project is currently *pre alpha* and not recommended for any real world use
  * Sharings collection, similar to the gnusocial sharings plugin
  * Quotas for received posts per day, per domain and per account
  * Hellthread detection and removal
+ * Instance and account level federation lists
  * Support content warnings, reporting and blocking
  * http signatures and basic auth
  * Compatible with http (onion addresses), https and dat
