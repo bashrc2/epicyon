@@ -1482,3 +1482,57 @@ def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
                           federationList, \
                           sendThreads,postLog,cachedWebfingers, \
                           personCache,debug)
+
+def populateRepliesJson(baseDir: str,nickname: str,domain: str,postRepliesFilename: str,authorized: bool,repliesJson: {}) -> None:
+    # populate the items list with replies
+    repliesBoxes=['outbox','inbox']
+    with open(postRepliesFilename,'r') as repliesFile: 
+        for messageId in repliesFile:
+            replyFound=False
+            # examine inbox and outbox
+            for boxname in repliesBoxes:
+                searchFilename= \
+                    baseDir+ \
+                    '/accounts/'+nickname+'@'+ \
+                    domain+'/'+ \
+                    boxname+'/'+ \
+                    messageId.replace('\n','').replace('/','#')+'.json'
+                if os.path.isfile(searchFilename):
+                    if authorized or \
+                       'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
+                        with open(searchFilename, 'r') as fp:
+                            postJsonObject=commentjson.load(fp)
+                            if postJsonObject['object'].get('cc'):                                                            
+                                if authorized or \
+                                   ('https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to'] or \
+                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['cc']):
+                                    repliesJson['orderedItems'].append(postJsonObject)
+                                    replyFound=True
+                            else:
+                                if authorized or \
+                                   'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
+                                    repliesJson['orderedItems'].append(postJsonObject)
+                                    replyFound=True
+                    break
+            # if not in either inbox or outbox then examine the shared inbox
+            if not replyFound:
+                searchFilename= \
+                    baseDir+ \
+                    '/accounts/inbox@'+ \
+                    domain+'/inbox/'+ \
+                    messageId.replace('\n','').replace('/','#')+'.json'
+                if os.path.isfile(searchFilename):
+                    if authorized or \
+                       'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
+                        # get the json of the reply and append it to the collection
+                        with open(searchFilename, 'r') as fp:
+                            postJsonObject=commentjson.load(fp)
+                            if postJsonObject['object'].get('cc'):                                                            
+                                if authorized or \
+                                   ('https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to'] or \
+                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['cc']):
+                                    repliesJson['orderedItems'].append(postJsonObject)
+                            else:
+                                if authorized or \
+                                   'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
+                                    repliesJson['orderedItems'].append(postJsonObject)
