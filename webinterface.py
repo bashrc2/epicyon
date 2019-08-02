@@ -384,7 +384,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     loginButton=''
 
     followApprovalsSection=''
-    followApprovals=''
+    followApprovals=False
     linkToTimelineStart=''
     linkToTimelineEnd=''
     editProfileStr=''
@@ -402,11 +402,13 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
             with open(followRequestsFilename,'r') as f:
                 for line in f:
                     if len(line)>0:
-                        # show a star on the followers tab
-                        followApprovals='<img class="highlight" src="/icons/new.png"/>'
+                        followApprovals=True
+                        followersButton='buttonhighlighted'
+                        if selected=='followers':
+                            followersButton='buttonselectedhighlighted'
                         break
         if selected=='followers':
-            if len(followApprovals)>0:
+            if followApprovals:
                 with open(followRequestsFilename,'r') as f:
                     for followerHandle in f:
                         if len(line)>0:
@@ -440,7 +442,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         '  <center>' \
         '    <a href="'+actor+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
         '    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>Following </span></button></a>' \
-        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span>'+followApprovals+'</button></a>' \
+        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
         '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
         '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
         '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>'+ \
