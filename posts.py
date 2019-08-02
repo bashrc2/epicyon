@@ -1232,6 +1232,8 @@ def createBoxBase(baseDir: str,boxname: str, \
     postsCtr=0
     postsInPersonInbox=os.listdir(boxDir)
     for postFilename in postsInPersonInbox:
+        if not postFilename.endswith('.json'):
+            continue
         # extract the status number
         statusNumber=getStatusNumberFromPostFilename(postFilename)
         if statusNumber:

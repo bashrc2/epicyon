@@ -38,6 +38,7 @@ from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
 from inbox import savePostToInboxQueue
+from inbox import populateReplies
 from follow import getFollowingFeed
 from follow import outboxUndoFollow
 from follow import sendFollowRequest
@@ -889,9 +890,11 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.session= \
                                                 createSession(self.server.domain,self.server.port,self.server.useTor)
                                         self._set_headers('text/html',cookie)
+                                        print('----------------------------------------------------')
+                                        pprint(repliesJson)
                                         self.wfile.write(htmlPostReplies(self.server.baseDir, \
                                                                          self.server.session, \
-                                                                         self.server.webfingerCache, \
+                                                                         self.server.cachedWebfingers, \
                                                                          self.server.personCache, \
                                                                          nickname, \
                                                                          self.server.domain, \
@@ -974,7 +977,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self._set_headers('text/html',cookie)
                                         self.wfile.write(htmlPostReplies(self.server.baseDir, \
                                                                          self.server.session, \
-                                                                         self.server.webfingerCache, \
+                                                                         self.server.cachedWebfingers, \
                                                                          self.server.personCache, \
                                                                          nickname, \
                                                                          self.server.domain, \
@@ -1459,7 +1462,15 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        result=self._postToOutbox(messageJson)
+                        print('_postToOutbox ********************************************** '+str(result))
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domainFull, \
+                                        messageJson, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        if result:
                             return 1
                         else:
                             return -1
@@ -1476,6 +1487,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if messageJson:
                         self.postToNickname=nickname
                         if self._postToOutbox(messageJson):
+                            populateReplies(self.server.baseDir, \
+                                            self.server.httpPrefix, \
+                                            self.server.domain, \
+                                            messageJson, \
+                                            self.server.maxReplies, \
+                                            self.server.debug)
                             return 1
                         else:
                             return -1
@@ -1492,6 +1509,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if messageJson:
                         self.postToNickname=nickname
                         if self._postToOutbox(messageJson):
+                            populateReplies(self.server.baseDir, \
+                                            self.server.httpPrefix, \
+                                            self.server.domain, \
+                                            messageJson, \
+                                            self.server.maxReplies, \
+                                            self.server.debug)
                             return 1
                         else:
                             return -1
@@ -1508,6 +1531,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if messageJson:
                         self.postToNickname=nickname
                         if self._postToOutbox(messageJson):
+                            populateReplies(self.server.baseDir, \
+                                            self.server.httpPrefix, \
+                                            self.server.domain, \
+                                            messageJson, \
+                                            self.server.maxReplies, \
+                                            self.server.debug)
                             return 1
                         else:
                             return -1
@@ -2271,6 +2300,7 @@ def runDaemon(instanceId,clientToServer: bool, \
     httpd.maxImageSize=10*1024*1024
     httpd.allowDeletion=allowDeletion
     httpd.lastLoginTime=0
+    httpd.maxReplies=maxReplies
     httpd.salts={}
     httpd.tokens={}
     httpd.tokensLookup={}
