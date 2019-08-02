@@ -1656,6 +1656,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 searchStr=b'Content-Type: image/png'                                
                                 imageLocation=postBytes.find(searchStr,lastImageLocation)
                                 filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/'+postKey
+                                # Note: a .temp extension is used here so that at no time is
+                                # an image with metadata publicly exposed, even for a few mS
                                 if imageLocation>-1:
                                     filename=filenameBase+'.png.temp'
                                 else:        
@@ -1678,7 +1680,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 startPos+=offset
                                                 break
 
-                                    # look for the end
+                                    # look for the end of the image
                                     imageLocationEnd=postBytes.find(b'-------',imageLocation+1)
 
                                     fd = open(filename, 'wb')
@@ -1687,6 +1689,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     else:
                                         fd.write(postBytes[startPos:])
                                     fd.close()
+
+                                    # remove exif/metadata
                                     removeMetaData(filename,filename.replace('.temp',''))
                                     os.remove(filename)
                                     lastImageLocation=imageLocation+1
