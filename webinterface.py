@@ -68,6 +68,12 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr=blockedfile.read()
 
+    allowedInstancesStr=''
+    allowedInstancesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
+    if os.path.isfile(allowedInstancesFilename):
+        with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
+            allowedInstancesStr=allowedInstancesFile.read()
+
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
@@ -93,10 +99,15 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '    </div>' \
         '    <div class="container">' \
         '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>Approve follower requests<br>' \
-        '      <br>Filtered words' \
-        '      <textarea id="message" name="filteredWords" placeholder="Filtered words or phrases (one per line)" style="height:200px">'+filterStr+'</textarea>' \
-        '      <br>Blocked accounts' \
-        '      <textarea id="message" name="blocked" placeholder="Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain" style="height:200px">'+blockedStr+'</textarea>' \
+        '      <br><b>Filtered words</b>' \
+        '      <br>One per line' \
+        '      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>' \
+        '      <br><b>Blocked accounts</b>' \
+        '      <br>Blocked accounts, one per line, in the form <i>nickname@domain</i> or <i>*@blockeddomain</i>' \
+        '      <textarea id="message" name="blocked" placeholder="" style="height:200px">'+blockedStr+'</textarea>' \
+        '      <br><b>Allowed instances</b>' \
+        '      <br>Federate only with a defined set of instances. One domain name per line.' \
+        '      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
         '      <input type="submit" name="submitProfile" value="Submit">' \

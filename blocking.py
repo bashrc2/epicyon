@@ -49,6 +49,10 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
               blockNickname: str,blockDomain: str) -> bool:
     """Is the given nickname blocked?
     """
+    allowFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
+    if os.path.isfile(allowFilename):
+        if blockDomain not in open(allowFilename).read():
+            return True
     blockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
     blockHandle=blockNickname+'@'+blockDomain
     if os.path.isfile(blockingFilename):

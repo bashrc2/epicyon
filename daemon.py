@@ -1743,6 +1743,14 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if os.path.isfile(blockedFilename):
                                 os.remove(blockedFilename)
+                        # save allowed instances list
+                        allowedInstancesFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/allowedinstances.txt'
+                        if fields.get('allowedInstances'):
+                            with open(allowedInstancesFilename, "w") as allowedInstancesFile:
+                                allowedInstancesFile.write(fields['allowedInstances'])
+                        else:
+                            if os.path.isfile(allowedInstancesFilename):
+                                os.remove(allowedInstancesFilename)
                         # save actor json file within accounts
                         if actorChanged:
                             with open(actorFilename, 'w') as fp:
