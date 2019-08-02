@@ -9,6 +9,7 @@ __status__ = "Production"
 import json
 import time
 import os
+import commentjson
 from datetime import datetime
 from shutil import copyfile
 from pprint import pprint
@@ -24,6 +25,71 @@ from session import getJson
 from auth import createPassword
 from like import likedByPerson
 from announce import announcedByPerson
+
+def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
+    """Shows the edit profile screen
+    """
+    pathOriginal=path
+    path=path.replace('/inbox','').replace('/outbox','').replace('/shares','')
+    nickname=getNicknameFromActor(path)
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+
+    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    if not os.path.isfile(actorFilename):
+        return ''
+
+    preferredNickname=nickname
+    bioStr=''
+    manuallyApprovesFollowers='checked'
+    with open(actorFilename, 'r') as fp:
+        actorJson=commentjson.load(fp)
+        if actorJson.get('preferredUsername'):
+            preferredNickname=actorJson['preferredUsername']
+        if actorJson.get('summary'):
+            bioStr=actorJson['summary']
+        if actorJson.get('manuallyApprovesFollowers'):
+            if actorJson['manuallyApprovesFollowers']:
+                manuallyApprovesFollowers='checked'
+            else:
+                manuallyApprovesFollowers=''
+                
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        newPostCSS = cssFile.read()
+
+    editProfileForm=htmlHeader(newPostCSS)
+    editProfileForm+= \
+        '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
+        '  <div class="vertical-center">' \
+        '    <p class="new-post-text">Edit profile for '+nickname+'@'+domainFull+'</p>' \
+        '    <div class="container">' \
+        '      <input type="text" placeholder="Preferred name" name="preferredNickname" value="'+preferredNickname+'">' \
+        '      <textarea id="message" name="bio" placeholder="Your bio..." style="height:200px">'+bioStr+'</textarea>' \
+        '    </div>' \
+        '    <div class="container">' \
+        '      Avatar image' \
+        '      <input type="file" id="avatar" name="avatar"' \
+        '            accept=".png">' \
+        '      <br>Background image' \
+        '      <input type="file" id="image" name="image"' \
+        '            accept=".png">' \
+        '      <br>Timeline banner image' \
+        '      <input type="file" id="banner" name="banner"' \
+        '            accept=".png">' \
+        '    </div>' \
+        '    <div class="container">' \
+        '      <input type="checkbox" name="approveFollowers" '+manuallyApprovesFollowers+'>Approve follower requests<br>' \
+        '    </div>' \
+        '    <div class="container">' \
+        '      <input type="submit" name="submitProfile" value="Submit">' \
+        '      <a href="'+pathOriginal+'"><button class="cancelbtn">Cancel</button></a>' \
+        '    </div>'+ \
+        '  </div>' \
+        '</form>'
+    editProfileForm+=htmlFooter()
+    return editProfileForm
 
 def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     """Receives login credentials via HTTPServer POST
@@ -297,7 +363,6 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     if port:
         domainFull=domain+':'+str(port)
     profileDescription=profileJson['summary']
-    profileDescription='A test description'
     postsButton='button'
     followingButton='button'
     followersButton='button'
@@ -322,10 +387,13 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     followApprovals=''
     linkToTimelineStart=''
     linkToTimelineEnd=''
+    editProfileStr=''
+    actor=profileJson['id']
 
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
     else:
+        editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>Edit </span></button></a>'
         linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="Switch to timeline view" alt="Switch to timeline view">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
@@ -356,11 +424,10 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                             followApprovalsSection+='<button class="followDeny">Deny</button></a>'
                             followApprovalsSection+='</div>'
 
-    actor=profileJson['id']
     profileStr= \
         linkToTimelineStart+ \
         ' <div class="hero-image">' \
-        '  <div class="hero-text">' \
+        '  <div class="hero-text">'+ \
         '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'">' \
         '    <h1>'+preferredName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
@@ -376,7 +443,8 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
         '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span>'+followApprovals+'</button></a>' \
         '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
         '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
-        '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>' \
+        '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>'+ \
+        editProfileStr+ \
         '  </center>' \
         '</div>'
 

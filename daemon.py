@@ -69,6 +69,7 @@ from webinterface import htmlFollowConfirm
 from webinterface import htmlSearch
 from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
+from webinterface import htmlEditProfile
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -79,6 +80,8 @@ from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
 from announce import outboxAnnounce
+from content import addMentions
+from media import removeMetaData
 import os
 import sys
 
@@ -756,6 +759,14 @@ class PubServer(BaseHTTPRequestHandler):
             inReplyTo=self.path.split('?replyto=')[1]
             self.path=self.path.split('?replyto=')[0]+'/newpost'
 
+        # edit profile in web interface
+        if '/users/' in self.path and self.path.endswith('/editprofile'):
+            self._set_headers('text/html',cookie)
+            self.wfile.write(htmlEditProfile(self.server.baseDir,self.path,self.server.domain,self.server.port).encode())
+            self.server.GETbusy=False
+            return        
+
+        # Various types of new post in the web interface
         if '/users/' in self.path and \
            (self.path.endswith('/newpost') or \
             self.path.endswith('/newunlisted') or \
@@ -1360,7 +1371,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     fd.close()
 
                 # send the post
-
                 if not fields.get('message'):
                     return -1
                 if fields.get('submitPost'):
@@ -1601,6 +1611,116 @@ class PubServer(BaseHTTPRequestHandler):
                                         followingHandle)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+
+        # update of profile/avatar from web interface
+        if authorized and self.path.endswith('/profiledata'):
+            if ' boundary=' in self.headers['Content-type']:
+                boundary=self.headers['Content-type'].split('boundary=')[1]
+                if ';' in boundary:
+                    boundary=boundary.split(';')[0]
+
+                actorStr=self.path.replace('/profiledata','').replace('/editprofile','')
+                nickname=getNicknameFromActor(actorStr)
+                if not nickname:
+                    self._redirect_headers(actorStr,cookie)
+                    self.server.POSTbusy=False
+                    return
+                length = int(self.headers['Content-length'])
+                postBytes=self.rfile.read(length)
+                msg = email.parser.BytesParser().parsebytes(postBytes)                
+                messageFields=msg.get_payload(decode=False).split(boundary)
+                fields={}
+                filename=None
+                lastImageLocation=0
+                for f in messageFields:
+                    if f=='--':
+                        continue
+                    if ' name="' in f:
+                        postStr=f.split(' name="',1)[1]
+                        if '"' in postStr:
+                            postKey=postStr.split('"',1)[0]
+                            postValueStr=postStr.split('"',1)[1]
+                            if ';' not in postValueStr:
+                                if '\r\n' in postValueStr:
+                                    postLines=postValueStr.split('\r\n')                                    
+                                    postValue=''
+                                    if len(postLines)>2:
+                                        for line in range(2,len(postLines)-1):
+                                            if line>2:
+                                                postValue+='\n'
+                                            postValue+=postLines[line]
+                                    fields[postKey]=postValue
+                            else:
+                                # directly search the binary array for the beginning
+                                # of an image
+                                searchStr=b'Content-Type: image/png'                                
+                                imageLocation=postBytes.find(searchStr,lastImageLocation)
+                                filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/'+postKey
+                                if imageLocation>-1:
+                                    filename=filenameBase+'.png.temp'
+                                else:        
+                                    searchStr=b'Content-Type: image/jpeg'
+                                    imageLocation=postBytes.find(searchStr,lastImageLocation)
+                                    if imageLocation>-1:                                    
+                                        filename=filenameBase+'.jpg.temp'
+                                    else:     
+                                        searchStr=b'Content-Type: image/gif'
+                                        imageLocation=postBytes.find(searchStr,lastImageLocation)
+                                        if imageLocation>-1:                                    
+                                            filename=filenameBase+'.gif.temp'
+                                if filename and imageLocation>-1:
+                                    # locate the beginning of the image, after any
+                                    # carriage returns
+                                    startPos=imageLocation+len(searchStr)
+                                    for offset in range(1,8):
+                                        if postBytes[startPos+offset]!=10:
+                                            if postBytes[startPos+offset]!=13:
+                                                startPos+=offset
+                                                break
+
+                                    # look for the end
+                                    imageLocationEnd=postBytes.find(b'-------',imageLocation+1)
+
+                                    fd = open(filename, 'wb')
+                                    if imageLocationEnd>-1:
+                                        fd.write(postBytes[startPos:][:imageLocationEnd-startPos])
+                                    else:
+                                        fd.write(postBytes[startPos:])
+                                    fd.close()
+                                    removeMetaData(filename,filename.replace('.temp',''))
+                                    os.remove(filename)
+                                    lastImageLocation=imageLocation+1
+                                    
+                actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
+                if os.path.isfile(actorFilename):
+                    with open(actorFilename, 'r') as fp:
+                        actorJson=commentjson.load(fp)
+                        actorChanged=False
+                        if fields.get('preferredNickname'):
+                            if fields['preferredNickname']!=actorJson['preferredUsername']:
+                                actorJson['preferredUsername']=fields['preferredNickname']
+                                actorChanged=True
+                        if fields.get('bio'):
+                            if fields['bio']!=actorJson['summary']:
+                                actorJson['summary']= \
+                                    addMentions(self.server.baseDir, \
+                                                self.server.httpPrefix, \
+                                                nickname, \
+                                                self.server.domain,fields['bio'])                                
+                                actorChanged=True
+                        if fields.get('approveFollowers'):
+                            approveFollowers=False
+                            if fields['approveFollowers']!='no':
+                                approveFollowers=True
+                            if approveFollowers!=actorJson['manuallyApprovesFollowers']:
+                                actorJson['manuallyApprovesFollowers']=approveFollowers
+                                actorChanged=True
+                        if actorChanged:
+                            with open(actorFilename, 'w') as fp:
+                                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+            self._redirect_headers(actorStr,cookie)
+            self.server.POSTbusy=False
+            return
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/searchhandle'):
