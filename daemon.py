@@ -1651,6 +1651,14 @@ class PubServer(BaseHTTPRequestHandler):
                                             postValue+=postLines[line]
                                     fields[postKey]=postValue
                             else:
+                                if 'filename="' not in postStr:
+                                    continue
+                                filenameStr=postStr.split('filename="')[1]
+                                if '"' not in filenameStr:
+                                    continue
+                                postImageFilename=filenameStr.split('"')[0]
+                                if '.' not in postImageFilename:
+                                    continue
                                 # directly search the binary array for the beginning
                                 # of an image
                                 searchStr=b'Content-Type: image/png'                                
@@ -1694,6 +1702,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     removeMetaData(filename,filename.replace('.temp',''))
                                     os.remove(filename)
                                     lastImageLocation=imageLocation+1
+                print('**********************************************************')
+                pprint(fields)
                                     
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
