@@ -797,15 +797,31 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,postJsonObject: {}) -> str:
     """Show an individual post as html
     """
-    return htmlHeader()+ \
+    postStr= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject,None,True,False)+ \
-        htmlFooter()
+                             nickname,domain,port,postJsonObject,None,True,False)
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('replies'):
+                repliesJson=postJsonObject['object']['replies']
+                if repliesJson.get('orderedItems'):
+                    for item in repliesJson['orderedItems']:
+                        postStr+= \
+                            individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                                 nickname,domain,port,item,None,True,False)
+    return htmlHeader()+postStr+htmlFooter()
 
-def htmlPostReplies(postJsonObject: {}) -> str:
+def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
+                    nickname: str,domain: str,port: int,repliesJson: {}) -> str:
     """Show the replies to an individual post as html
     """
-    return htmlHeader()+"<h1>Replies</h1>"+htmlFooter()
+    repliesStr=''
+    if repliesJson.get('orderedItems'):
+        for item in repliesJson['orderedItems']:
+            repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                             nickname,domain,port,item,None,True,False)    
+
+    return htmlHeader()+repliesStr+htmlFooter()
 
 def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
     """Asks to confirm a follow

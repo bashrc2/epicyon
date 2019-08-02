@@ -883,8 +883,20 @@ class PubServer(BaseHTTPRequestHandler):
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
                                     if 'text/html' in self.headers['Accept']:
+                                        if not self.server.session:
+                                            if self.server.debug:
+                                                print('DEBUG: creating new session')
+                                            self.server.session= \
+                                                createSession(self.server.domain,self.server.port,self.server.useTor)
                                         self._set_headers('text/html',cookie)
-                                        self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
+                                        self.wfile.write(htmlPostReplies(self.server.baseDir, \
+                                                                         self.server.session, \
+                                                                         self.server.webfingerCache, \
+                                                                         self.server.personCache, \
+                                                                         nickname, \
+                                                                         self.server.domain, \
+                                                                         self.server.port, \
+                                                                         repliesJson).encode('utf-8'))
                                     else:
                                         self._set_headers('application/json',None)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
@@ -954,8 +966,20 @@ class PubServer(BaseHTTPRequestHandler):
                                                                     repliesJson['orderedItems'].append(postJsonObject)
                                     # send the replies json
                                     if 'text/html' in self.headers['Accept']:
+                                        if not self.server.session:
+                                            if self.server.debug:
+                                                print('DEBUG: creating new session')
+                                            self.server.session= \
+                                                createSession(self.server.domain,self.server.port,self.server.useTor)
                                         self._set_headers('text/html',cookie)
-                                        self.wfile.write(htmlPostReplies(repliesJson).encode('utf-8'))
+                                        self.wfile.write(htmlPostReplies(self.server.baseDir, \
+                                                                         self.server.session, \
+                                                                         self.server.webfingerCache, \
+                                                                         self.server.personCache, \
+                                                                         nickname, \
+                                                                         self.server.domain, \
+                                                                         self.server.port, \
+                                                                         repliesJson).encode('utf-8'))
                                     else:
                                         self._set_headers('application/json',None)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
