@@ -55,7 +55,19 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
                 manuallyApprovesFollowers='checked'
             else:
                 manuallyApprovesFollowers=''
-                
+
+    filterStr=''
+    filterFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/filters.txt'
+    if os.path.isfile(filterFilename):
+        with open(filterFilename, 'r') as filterfile:
+            filterStr=filterfile.read()
+
+    blockedStr=''
+    blockedFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
+    if os.path.isfile(blockedFilename):
+        with open(blockedFilename, 'r') as blockedfile:
+            blockedStr=blockedfile.read()
+
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
@@ -80,7 +92,11 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '            accept=".png">' \
         '    </div>' \
         '    <div class="container">' \
-        '      <input type="checkbox" name="approveFollowers" '+manuallyApprovesFollowers+'>Approve follower requests<br>' \
+        '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>Approve follower requests<br>' \
+        '      <br>Filtered words' \
+        '      <textarea id="message" name="filteredWords" placeholder="Filtered words or phrases (one per line)" style="height:200px">'+filterStr+'</textarea>' \
+        '      <br>Blocked accounts' \
+        '      <textarea id="message" name="blocked" placeholder="Blocked accounts, one per line, in the form nickname@domain" style="height:200px">'+blockedStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
         '      <input type="submit" name="submitProfile" value="Submit">' \

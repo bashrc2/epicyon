@@ -1702,8 +1702,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     removeMetaData(filename,filename.replace('.temp',''))
                                     os.remove(filename)
                                     lastImageLocation=imageLocation+1
-                print('**********************************************************')
-                pprint(fields)
                                     
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
@@ -1729,6 +1727,23 @@ class PubServer(BaseHTTPRequestHandler):
                             if approveFollowers!=actorJson['manuallyApprovesFollowers']:
                                 actorJson['manuallyApprovesFollowers']=approveFollowers
                                 actorChanged=True
+                        # save filtered words list
+                        filterFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/filters.txt'
+                        if fields.get('filteredWords'):
+                            with open(filterFilename, "w") as filterfile:
+                                filterfile.write(fields['filteredWords'])
+                        else:
+                            if os.path.isfile(filterFilename):
+                                os.remove(filterFilename)
+                        # save blocked accounts list
+                        blockedFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/blocking.txt'
+                        if fields.get('blocked'):
+                            with open(blockedFilename, "w") as blockedfile:
+                                blockedfile.write(fields['blocked'])
+                        else:
+                            if os.path.isfile(blockedFilename):
+                                os.remove(blockedFilename)
+                        # save actor json file within accounts
                         if actorChanged:
                             with open(actorFilename, 'w') as fp:
                                 commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
