@@ -96,7 +96,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '      <br>Filtered words' \
         '      <textarea id="message" name="filteredWords" placeholder="Filtered words or phrases (one per line)" style="height:200px">'+filterStr+'</textarea>' \
         '      <br>Blocked accounts' \
-        '      <textarea id="message" name="blocked" placeholder="Blocked accounts, one per line, in the form nickname@domain" style="height:200px">'+blockedStr+'</textarea>' \
+        '      <textarea id="message" name="blocked" placeholder="Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain" style="height:200px">'+blockedStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
         '      <input type="submit" name="submitProfile" value="Submit">' \
