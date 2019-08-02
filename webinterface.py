@@ -105,7 +105,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '      <br><b>Blocked accounts</b>' \
         '      <br>Blocked accounts, one per line, in the form <i>nickname@domain</i> or <i>*@blockeddomain</i>' \
         '      <textarea id="message" name="blocked" placeholder="" style="height:200px">'+blockedStr+'</textarea>' \
-        '      <br><b>Allowed instances</b>' \
+        '      <br><b>Federation list</b>' \
         '      <br>Federate only with a defined set of instances. One domain name per line.' \
         '      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>' \
         '    </div>' \
