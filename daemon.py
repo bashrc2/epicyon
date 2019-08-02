@@ -123,6 +123,7 @@ class PubServer(BaseHTTPRequestHandler):
         if cookie:
             self.send_header('Cookie', cookie)
         self.send_header('Host', self.server.domainFull)
+        self.send_header('InstanceID', self.server.instanceId)
         self.end_headers()
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
@@ -132,6 +133,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookie)
         self.send_header('Location', redirect)
         self.send_header('Host', self.server.domainFull)
+        self.send_header('InstanceID', self.server.instanceId)
         self.end_headers()
 
     def _404(self) -> None:
@@ -2101,7 +2103,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
-def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
+def runDaemon(instanceId,clientToServer: bool, \
+              baseDir: str,domain: str, \
               port=80,httpPrefix='https', \
               fedList=[],noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
@@ -2128,6 +2131,7 @@ def runDaemon(clientToServer: bool,baseDir: str,domain: str, \
     httpd.debug=debug
     httpd.federationList=fedList.copy()
     httpd.baseDir=baseDir
+    httpd.instanceId=instanceId
     httpd.personCache={}
     httpd.cachedWebfingers={}
     httpd.useTor=useTor

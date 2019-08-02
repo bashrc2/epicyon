@@ -310,6 +310,13 @@ if args.domain:
     domain=args.domain
     setConfigParam(baseDir,'domain',domain)
 
+# unique ID for the instance
+instanceId=getConfigParam(baseDir,'instanceId')
+if not instanceId:
+    instanceId=createPassword(32)
+    setConfigParam(baseDir,'instanceId',instanceId)
+    print('Instance ID: '+instanceId)
+
 # get domain name from configuration
 configDomain=getConfigParam(baseDir,'domain')
 if configDomain:
@@ -1196,7 +1203,8 @@ if args.testdata:
     followerOfPerson(baseDir,nickname,domain,'drokk',domainFull,federationList,False)
     followerOfPerson(baseDir,nickname,domain,'maxboardroom',domainFull,federationList,False)
 
-runDaemon(args.client,baseDir,domain,port,httpPrefix, \
+runDaemon(instanceId,args.client,baseDir, \
+          domain,port,httpPrefix, \
           federationList, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways, \

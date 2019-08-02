@@ -181,7 +181,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon(False,path,domain,port,httpPrefix,federationList, \
+    runDaemon("instanceId",False,path,domain,port,httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
@@ -233,7 +233,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon(False,path,domain,port,httpPrefix,federationList, \
+    runDaemon("instanceId",False,path,domain,port,httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
@@ -265,7 +265,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     global testServerEveRunning
     testServerEveRunning = True
     print('Server running: Eve')
-    runDaemon(False,path,domain,port,httpPrefix,federationList, \
+    runDaemon("instanceId",False,path,domain,port,httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies,allowDeletion,True)
 
