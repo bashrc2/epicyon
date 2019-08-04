@@ -693,12 +693,15 @@ def individualPostAsHtml(baseDir: str, \
     likeStr= \
         '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
         '<img src="/icons/'+likeIcon+'"/></a>'
+    deleteStr= \
+        '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
+        '<img src="/icons/delete.png"/></a>'
 
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
         footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'" title="Reply to this post">'
         footerStr+='<img src="/icons/reply.png"/></a>'
-        footerStr+=announceStr+likeStr
+        footerStr+=announceStr+likeStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 

@@ -759,8 +759,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'to': [likeActor+'/followers'],
                 'cc': []
             }    
-            if likeJson:
-                self._postToOutbox(likeJson)
+            self._postToOutbox(likeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
@@ -787,8 +786,28 @@ class PubServer(BaseHTTPRequestHandler):
                 'to': [undoActor+'/followers'],
                 'cc': []
             }
-            if undoLikeJson:
-                self._postToOutbox(undoLikeJson)
+            self._postToOutbox(undoLikeJson)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/inbox',cookie)
+            return
+
+        # delete a post from the web interface icon
+        if authorized and '?delete=' in self.path:
+            deleteUrl=self.path.split('?delete=')[1]
+            actor=self.path.split('?delete=')[0]
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.domain,self.server.port,self.server.useTor)
+            deleteActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
+            deleteJson= {
+                'actor': actor,
+                'object': deleteUrl,
+                'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                'cc': [actor+'/followers'],
+                'type': 'Delete'
+            }            
+            self._postToOutbox(deleteJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
