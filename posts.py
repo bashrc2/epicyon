@@ -996,13 +996,14 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         if sharedInbox and sharedInboxUrl:        
             inboxUrl=sharedInboxUrl
 
-    if debug:
-        print('DEBUG: Sending to endpoint '+inboxUrl)
-                     
     if not inboxUrl:
         if debug:
             print('DEBUG: missing inboxUrl')
         return 3
+
+    if debug:
+        print('DEBUG: Sending to endpoint '+inboxUrl)
+                     
     if not pubKey:
         if debug:
             print('DEBUG: missing pubkey')
