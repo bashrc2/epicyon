@@ -310,11 +310,12 @@ class PubServer(BaseHTTPRequestHandler):
         outboxUndoLike(self.server.baseDir,self.server.httpPrefix, \
                        self.postToNickname,self.server.domain,self.server.port, \
                        messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle delete requests')
-        outboxDelete(self.server.baseDir,self.server.httpPrefix, \
-                     self.postToNickname,self.server.domain, \
-                     messageJson,self.server.debug)
+        if self.server.allowDeletion:
+            if self.server.debug:
+                print('DEBUG: handle delete requests')        
+            outboxDelete(self.server.baseDir,self.server.httpPrefix, \
+                         self.postToNickname,self.server.domain, \
+                         messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle block requests')
         outboxBlock(self.server.baseDir,self.server.httpPrefix, \
@@ -792,7 +793,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # delete a post from the web interface icon
-        if authorized and '?delete=' in self.path:
+        if authorized and self.server.allowDeletion and '?delete=' in self.path:
             deleteUrl=self.path.split('?delete=')[1]
             actor=self.path.split('?delete=')[0]
             if actor not in deleteUrl:
