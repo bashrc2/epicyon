@@ -1119,6 +1119,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                 else:
                     if self.server.debug:
+                        nickname=self.path.replace('/users/','').replace('/inbox','')
                         print('DEBUG: '+nickname+ \
                               ' was not authorized to access '+self.path)
             if self.server.debug:

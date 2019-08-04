@@ -381,7 +381,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: follow request does not contain a nickname for the account followed')
         return False
-    handleToFollow=nicknameToFollow.lower()+'@'+domainToFollow.lower()
+    handleToFollow=nicknameToFollow+'@'+domainToFollow
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
             if debug:
