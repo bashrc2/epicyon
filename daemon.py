@@ -795,6 +795,11 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and '?delete=' in self.path:
             deleteUrl=self.path.split('?delete=')[1]
             actor=self.path.split('?delete=')[0]
+            if actor not in deleteUrl:
+                # You can only delete your own posts
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/inbox',cookie)
+                return
             self.postToNickname=getNicknameFromActor(actor)
             if not self.server.session:
                 self.server.session= \

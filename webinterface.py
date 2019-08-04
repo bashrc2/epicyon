@@ -693,9 +693,11 @@ def individualPostAsHtml(baseDir: str, \
     likeStr= \
         '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
         '<img src="/icons/'+likeIcon+'"/></a>'
-    deleteStr= \
-        '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
-        '<img src="/icons/delete.png"/></a>'
+    deleteStr=''
+    if '/users/'+nickname+'/' in postJsonObject['object']['id']:
+        deleteStr= \
+            '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
+            '<img src="/icons/delete.png"/></a>'
 
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
