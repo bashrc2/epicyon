@@ -1839,7 +1839,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
-                searchStr=searchStr.replace('+',' ').replace('%40','@').strip()
+                searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').strip()
                 if '@' in searchStr:
                     print('Search: '+searchStr)
                     nickname=getNicknameFromActor(self.path)

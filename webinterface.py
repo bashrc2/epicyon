@@ -1047,10 +1047,10 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
     
     profileStr=''
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
-        wf = webfingerHandle(session,searchNickname+'@'+searchDomain,httpPrefix,wfRequest)
+        wf = webfingerHandle(session,searchNickname+'@'+searchDomainFull,httpPrefix,wfRequest)
         if not wf:
             if debug:
-                print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomain)
+                print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomainFull)
             return None
         asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         personUrl = getUserUrl(wf)
