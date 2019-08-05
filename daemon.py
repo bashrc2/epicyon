@@ -355,7 +355,7 @@ class PubServer(BaseHTTPRequestHandler):
                              messageJson,self.server.debug)
         return True
 
-    def _updateInboxQueue(self,nickname: str,messageJson: {},postFromWebInterface: bool) -> int:
+    def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
         """Update the inbox queue
         """
         # Check if the queue is full
@@ -376,7 +376,6 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.headers['host'],
                                  self.headers['signature'],
                                  '/'+self.path.split('/')[-1],
-                                 postFromWebInterface,
                                  self.server.debug)
         if queueFilename:
             # add json to the queue
@@ -2200,7 +2199,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.postToNickname=pathUsersSection.split('/')[0]
                 if self.postToNickname:
-                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson,False)
+                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson)
                     if queueStatus==0:
                         self.send_response(200)
                         self.end_headers()
@@ -2218,7 +2217,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                queueStatus=_updateInboxQueue('inbox',messageJson,False)
+                queueStatus=_updateInboxQueue('inbox',messageJson)
                 if queueStatus==0:
                     self.send_response(200)
                     self.end_headers()

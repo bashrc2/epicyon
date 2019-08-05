@@ -158,7 +158,7 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},host: str,headers: str,postPath: str,postFromWebInterface: bool,debug: bool) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},host: str,headers: str,postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -222,8 +222,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         'path': postPath,
         'post': postJsonObject,
         'filename': filename,
-        'destination': destination,
-        'postFromWebInterface': postFromWebInterface
+        'destination': destination
     }
 
     if debug:
@@ -1054,8 +1053,6 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             pubKey=None
             keyId=None
             for tries in range(8):
-                if queueJson['postFromWebInterface']:
-                    break
                 keyId=None
                 signatureParams=queueJson['headers'].split(',')
                 for signatureItem in signatureParams:
@@ -1079,31 +1076,30 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                     print('DEBUG: Retry '+str(tries+1)+' obtaining public key for '+keyId)
                 time.sleep(5)
 
-            if not queueJson['postFromWebInterface']:
-                if not pubKey:
-                    if debug:
-                        print('DEBUG: public key could not be obtained from '+keyId)
-                    os.remove(queueFilename)
-                    queue.pop(0)
-                    continue
-
-                # check the signature
-                verifyHeaders={
-                    'host': queueJson['host'],
-                    'signature': queueJson['headers']
-                }
-                if not verifyPostHeaders(httpPrefix, \
-                                         pubKey, verifyHeaders, \
-                                         queueJson['path'], False, \
-                                         json.dumps(queueJson['post'])):
-                    if debug:
-                        print('DEBUG: Header signature check failed')
-                    os.remove(queueFilename)
-                    queue.pop(0)
-                    continue
-
+            if not pubKey:
                 if debug:
-                    print('DEBUG: Signature check success')
+                    print('DEBUG: public key could not be obtained from '+keyId)
+                    os.remove(queueFilename)
+                    queue.pop(0)
+                continue
+
+            # check the signature
+            verifyHeaders={
+                'host': queueJson['host'],
+                'signature': queueJson['headers']
+            }
+            if not verifyPostHeaders(httpPrefix, \
+                                     pubKey, verifyHeaders, \
+                                     queueJson['path'], False, \
+                                     json.dumps(queueJson['post'])):
+                if debug:
+                    print('DEBUG: Header signature check failed')
+                    os.remove(queueFilename)
+                    queue.pop(0)
+                continue
+
+            if debug:
+                print('DEBUG: Signature check success')
 
             if receiveUndo(session, \
                            baseDir,httpPrefix,port, \
