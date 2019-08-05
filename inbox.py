@@ -995,6 +995,11 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
         'domains': {},
         'accounts': {}
     }
+
+    # keep track of the number of queue item read failures
+    # so that if a file is corrupt then it will eventually
+    # be ignored rather than endlessly retried
+    itemReadFailed=0
     
     while True:
         time.sleep(1)
@@ -1020,9 +1025,16 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                 with open(queueFilename, 'r') as fp:
                     queueJson=commentjson.load(fp)
             except:
-                print('WARN: Failed to load inbox queue item '+queueFilename)
+                itemReadFailed+=1
+                print('WARN: Failed to load inbox queue item '+queueFilename+' (try '+str(itemReadFailed)+')')
+                if itemReadFailed>4:
+                    # After a few tries we can assume that the file
+                    # is probably corrupt/unreadable
+                    queue.pop(0)
+                    itemReadFailed=0
                 continue
-
+            itemReadFailed=0
+            
             # clear the daily quotas for maximum numbers of received posts
             if currTime-quotasLastUpdate>60*60*24:
                 quotas={
