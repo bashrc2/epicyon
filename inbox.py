@@ -179,12 +179,12 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
             if postPort!=80 and postPort!=443:
                 postDomain=postDomain+':'+str(postPort)
 
-        if postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], dict):
-                if postJsonObject['object'].get('content'):
-                    if isinstance(postJsonObject['object']['content'], str):
-                        if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
-                            return None
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('content'):
+                if isinstance(postJsonObject['object']['content'], str):
+                    if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
+                        return None
 
     if postJsonObject.get('id'):
         postId=postJsonObject['id'].replace('/activity','')
