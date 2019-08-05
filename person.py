@@ -268,8 +268,10 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     if path.endswith('#main-key'):
         path=path.replace('#main-key','')
     # is this a shared inbox lookup?
+    isSharedInbox=False
     if path=='/inbox' or path=='/users/inbox' or path=='/sharedInbox':
         path='/users/inbox'
+        isSharedInbox=True
     else:
         notPersonLookup=['/inbox','/outbox','/outboxarchive', \
                          '/followers','/following','/featured', \
@@ -284,7 +286,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         nickname=path.replace('/@','',1)
     if not nickname:
         return None
-    if not validNickname(nickname):
+    if not isSharedInbox and not validNickname(nickname):
         return None
     if ':' in domain:
         domain=domain.split(':')[0]
