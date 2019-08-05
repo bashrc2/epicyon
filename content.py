@@ -39,6 +39,9 @@ def addMentions(baseDir: str,httpPrefix: str, \
                     replaceFound=False
                     for follow in following:
                         if follow.replace('\n','')==possibleHandle:
+                            recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
+                            if recipientActor not in recipients:
+                                recipients.append(recipientActor)
                             replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
                             replaceFound=True
                             break
