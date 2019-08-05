@@ -149,7 +149,7 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
                 return False
             if messageJson['object'].get('inReplyTo'):
                 inReplyTo=messageJson['object']['inReplyTo']
-                if not urlPermitted(inReplyTo,federationList):
+                if not urlPermitted(inReplyTo,federationList,"inbox:write"):
                     return False
 
     return True
