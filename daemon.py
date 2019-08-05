@@ -2223,7 +2223,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                queueStatus=_updateInboxQueue('inbox',messageJson)
+                queueStatus=self._updateInboxQueue('inbox',messageJson)
                 if queueStatus==0:
                     self.send_response(200)
                     self.end_headers()
