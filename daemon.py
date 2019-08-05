@@ -429,12 +429,17 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('GET Not authorized')
 
+        # treat shared inbox paths consistently
+        if self.path=='/sharedInbox' or self.path=='/users/inbox':
+            self.path='/inbox'
+
         # if not authorized then show the login screen
         if self.headers.get('Accept'):
             if 'text/html' in self.headers['Accept'] and self.path!='/login':
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
-                   '/icons/' not in self.path:
+                   '/icons/' not in self.path and \
+                   self.path != '/inbox':
                     divertToLoginScreen=True
                     if self.path.startswith('/users/'):
                         nickStr=self.path.split('/users/')[1]
