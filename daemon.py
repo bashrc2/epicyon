@@ -822,9 +822,9 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # reply from the web interface icon
-        inReplyTo=None
+        inReplyToUrl=None
         if authorized and '?replyto=' in self.path:
-            inReplyTo=self.path.split('?replyto=')[1]
+            inReplyToUrl=self.path.split('?replyto=')[1]
             self.path=self.path.split('?replyto=')[0]+'/newpost'
 
         # edit profile in web interface
@@ -842,7 +842,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newdm') or \
             self.path.endswith('/newshare')):
             self._set_headers('text/html',cookie)
-            self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyTo).encode())
+            self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyToUrl).encode())
             self.server.GETbusy=False
             return        
 
