@@ -295,8 +295,12 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     if not os.path.isfile(filename):
         return None
     personJson={"user": "unknown"}
-    with open(filename, 'r') as fp:
-        personJson=commentjson.load(fp)
+    try:
+        with open(filename, 'r') as fp:
+            personJson=commentjson.load(fp)
+    except:
+        print('WARN: Failed to load actor '+filename)
+        return None
     return personJson
 
 def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
