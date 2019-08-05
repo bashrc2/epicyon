@@ -438,8 +438,7 @@ class PubServer(BaseHTTPRequestHandler):
             if 'text/html' in self.headers['Accept'] and self.path!='/login':
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
-                   '/icons/' not in self.path and \
-                   self.path != '/inbox':
+                   '/icons/' not in self.path:
                     divertToLoginScreen=True
                     if self.path.startswith('/users/'):
                         nickStr=self.path.split('/users/')[1]

@@ -267,12 +267,15 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """
     if path.endswith('#main-key'):
         path=path.replace('#main-key','')
-    notPersonLookup=['/inbox','/outbox','/outboxarchive', \
-                     '/followers','/following','/featured', \
-                     '.png','.jpg','.gif','.mpv']
-    for ending in notPersonLookup:        
-        if path.endswith(ending):
-            return None
+    if path=='/inbox' or path=='/users/inbox' or path=='/sharedInbox':
+        path='/users/inbox'
+    else:
+        notPersonLookup=['/inbox','/outbox','/outboxarchive', \
+                         '/followers','/following','/featured', \
+                         '.png','.jpg','.gif','.mpv']
+        for ending in notPersonLookup:        
+            if path.endswith(ending):
+                return None
     nickname=None
     if path.startswith('/users/'):
         nickname=path.replace('/users/','',1)
@@ -284,8 +287,8 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         return None
     if ':' in domain:
         domain=domain.split(':')[0]
-    handle=nickname.lower()+'@'+domain.lower()
-    filename=baseDir+'/accounts/'+handle.lower()+'.json'
+    handle=nickname+'@'+domain
+    filename=baseDir+'/accounts/'+handle+'.json'
     if not os.path.isfile(filename):
         return None
     personJson={"user": "unknown"}
