@@ -1795,7 +1795,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     addMentions(self.server.baseDir, \
                                                 self.server.httpPrefix, \
                                                 nickname, \
-                                                self.server.domain,fields['bio'])                                
+                                                self.server.domain,fields['bio'],[])                                
                                 actorChanged=True
                         if fields.get('approveFollowers'):
                             approveFollowers=False

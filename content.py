@@ -10,7 +10,8 @@ import os
 import commentjson
 
 def addMentions(baseDir: str,httpPrefix: str, \
-                nickname: str,domain: str,content: str) -> str:
+                nickname: str,domain: str,content: str, \
+                recipients: []) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
@@ -44,8 +45,11 @@ def addMentions(baseDir: str,httpPrefix: str, \
                     if not replaceFound:
                         # fall back to a best effort match if an exact one is not found
                         for follow in following:
-                            if follow.startsWith(possibleNickname+'@'):
+                            if follow.startswith(possibleNickname+'@'):
                                 replaceDomain=follow.replace('\n','').split('@')[1]
+                                recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
+                                if recipientActor not in recipients:
+                                    recipients.append(recipientActor)
                                 replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
                                 replaceFound=True
                                 break

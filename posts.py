@@ -379,10 +379,12 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
+    mentionedRecipients=[]
     if not clientToServer:
         # convert content to html
         content=addMentions(baseDir,httpPrefix, \
-                            nickname,domain,content)
+                            nickname,domain,content, \
+                            mentionedRecipients)
 
     if port!=80 and port!=443:
         if ':' not in domain:
@@ -404,6 +406,9 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         summary=subject
         sensitive=True
 
+    # who to send to
+    toRecipients=[toUrl] + mentionedRecipients
+         
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
 
@@ -434,7 +439,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 'published': published,
                 'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
                 'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
-                'to': [toUrl],
+                'to': toRecipients,
                 'cc': [],
                 'sensitive': sensitive,
                 'atomUri': newPostId,
@@ -471,7 +476,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             'published': published,
             'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
             'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
-            'to': [toUrl],
+            'to': toRecipients,
             'cc': [],
             'sensitive': sensitive,
             'atomUri': newPostId,
