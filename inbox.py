@@ -1062,7 +1062,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                             break
                 if not keyId:
                     if debug:
-                        print('DEBUG: No keyId in signature: '+queueJson['headers']['signature'])
+                        print('DEBUG: No keyId in signature: '+ \
+                              queueJson['headers']['signature'])
                     os.remove(queueFilename)
                     queue.pop(0)
                     continue
@@ -1073,7 +1074,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                     break
                     
                 if debug:
-                    print('DEBUG: Retry '+str(tries+1)+' obtaining public key for '+keyId)
+                    print('DEBUG: Retry '+str(tries+1)+ \
+                          ' obtaining public key for '+keyId)
                 time.sleep(5)
 
             if not pubKey:
@@ -1089,8 +1091,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                 'signature': queueJson['headers']
             }
             if not verifyPostHeaders(httpPrefix, \
-                                     pubKey, verifyHeaders, \
-                                     queueJson['path'], False, \
+                                     pubKey,verifyHeaders, \
+                                     queueJson['path'],False, \
                                      json.dumps(queueJson['post'])):
                 if debug:
                     print('DEBUG: Header signature check failed')
@@ -1105,7 +1107,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                            baseDir,httpPrefix,port, \
                            sendThreads,postLog, \
                            cachedWebfingers,
-                           personCache,
+                           personCache, \
                            queueJson['post'], \
                            federationList, \
                            debug, \
@@ -1120,7 +1122,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                                     baseDir,httpPrefix,port, \
                                     sendThreads,postLog, \
                                     cachedWebfingers,
-                                    personCache,
+                                    personCache, \
                                     queueJson['post'], \
                                     federationList, \
                                     debug, \
@@ -1134,8 +1136,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             if receiveAcceptReject(session, \
                                    baseDir,httpPrefix,domain,port, \
                                    sendThreads,postLog, \
-                                   cachedWebfingers,
-                                   personCache,
+                                   cachedWebfingers, \
+                                   personCache, \
                                    queueJson['post'], \
                                    federationList, \
                                    debug):
@@ -1149,8 +1151,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                              baseDir,httpPrefix, \
                              domain,port, \
                              sendThreads,postLog, \
-                             cachedWebfingers,
-                             personCache,
+                             cachedWebfingers, \
+                             personCache, \
                              queueJson['post'], \
                              federationList, \
                              debug):
@@ -1162,7 +1164,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
 
             # get recipients list
             recipientsDict,recipientsDictFollowers= \
-                inboxPostRecipients(baseDir,queueJson['post'],httpPrefix,domain,port,debug)
+                inboxPostRecipients(baseDir,queueJson['post'], \
+                                    httpPrefix,domain,port,debug)
             if len(recipientsDict.items())==0 and \
                len(recipientsDictFollowers.items())==0:
                 if debug:
@@ -1178,7 +1181,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             if noOfFollowItems>0:
                 if noOfFollowItems<5:
                     if debug:
-                        print('DEBUG: moving '+str(noOfFollowItems)+' inbox posts addressed to followers')
+                        print('DEBUG: moving '+str(noOfFollowItems)+ \
+                              ' inbox posts addressed to followers')
                     for handle,postItem in recipientsDictFollowers.items():
                         recipientsDict[handle]=postItem
                     recipientsDictFollowers={}
@@ -1209,7 +1213,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             # See posts.py/createBoxBase
             if len(recipientsDictFollowers)>0:                
                 with open(queueJson['destination'].replace(inboxHandle,inboxHandle), 'w') as fp:
-                    commentjson.dump(queueJson['post'], fp, indent=4, sort_keys=False)
+                    commentjson.dump(queueJson['post'],fp,indent=4, \
+                                     sort_keys=False)
 
             # for posts addressed to specific accounts
             for handle,capsId in recipientsDict.items():              
