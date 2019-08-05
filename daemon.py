@@ -1125,12 +1125,14 @@ class PubServer(BaseHTTPRequestHandler):
                         nickname=self.path.replace('/users/','').replace('/inbox','')
                         print('DEBUG: '+nickname+ \
                               ' was not authorized to access '+self.path)
-            if self.server.debug:
-                print('DEBUG: GET access to inbox is unauthorized')
-            self.send_response(405)
-            self.end_headers()
-            self.server.POSTbusy=False
-            return
+            if self.path!='/inbox':
+                # not the shared inbox
+                if self.server.debug:
+                    print('DEBUG: GET access to inbox is unauthorized')
+                self.send_response(405)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
         
         # get outbox feed for a person
         outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \

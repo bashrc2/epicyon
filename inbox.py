@@ -86,6 +86,10 @@ def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
     if not personUrl:
         return None
     personUrl=personUrl.replace('#main-key','')
+    if personUrl.endswith('/users/inbox'):
+        if debug:
+            print('DEBUG: Obtaining public key for shared inbox')
+        personUrl=personUrl.replace('/users/inbox','/inbox')        
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
         if debug:
