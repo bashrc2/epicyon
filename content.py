@@ -68,7 +68,7 @@ def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\
     mentions=[]
     if matchStr not in htmlText:
         return mentions
-    mentionsList=htmlStr.split(matchStr)
+    mentionsList=htmlText.split(matchStr)
     for mentionStr in mentionsList:
         if '"' not in mentionStr:
             continue
