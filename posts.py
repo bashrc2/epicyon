@@ -1069,16 +1069,13 @@ def sendToNamedAddresses(session,baseDir: str, \
         return
     if not postJsonObject.get('object'):
         return
-    toList=[]
     if isinstance(postJsonObject['object'], dict): 
         if not postJsonObject['object'].get('to'):
             return
-        toList=postJsonObject['object']['to']
         recipientsObject=postJsonObject['object']
     else: 
         if not postJsonObject.get('to'):
             return
-        toList=postJsonObject['to']
         recipientsObject=postJsonObject
 
     recipients=[]
