@@ -360,6 +360,7 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # Check if the queue is full
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
+            print('Inbox queue is full')
             return 1
 
         domainFull=self.server.domain

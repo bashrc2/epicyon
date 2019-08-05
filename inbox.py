@@ -1011,13 +1011,17 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
             queueFilename=queue[0]
             if not os.path.isfile(queueFilename):
                 if debug:
-                    print("DEBUG: queue item rejected becase it has no file: "+queueFilename)
+                    print("DEBUG: queue item rejected because it has no file: "+queueFilename)
                 queue.pop(0)
                 continue
 
             # Load the queue json
-            with open(queueFilename, 'r') as fp:
-                queueJson=commentjson.load(fp)
+            try:
+                with open(queueFilename, 'r') as fp:
+                    queueJson=commentjson.load(fp)
+            except:
+                print('WARN: Failed to load inbox queue item '+queueFilename)
+                continue
 
             # clear the daily quotas for maximum numbers of received posts
             if currTime-quotasLastUpdate>60*60*24:
@@ -1033,6 +1037,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                 if domainMaxPostsPerDay>0:
                     if quotas['domains'].get(postDomain):
                         if quotas['domains'][postDomain]>domainMaxPostsPerDay:
+                            if debug:
+                                print('DEBUG: Maximum posts for '+postDomain+' reached')
                             queue.pop(0)
                             continue
                         quotas['domains'][postDomain]+=1
@@ -1043,6 +1049,8 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                     postHandle=queueJson['postNickname']+'@'+postDomain
                     if quotas['accounts'].get(postHandle):
                         if quotas['accounts'][postHandle]>accountMaxPostsPerDay:
+                            if debug:
+                                print('DEBUG: Maximum posts for '+postHandle+' reached')
                             queue.pop(0)
                             continue
                         quotas['accounts'][postHandle]+=1

@@ -1090,7 +1090,7 @@ def sendToNamedAddresses(session,baseDir: str, \
     if not recipients:
         return
     if debug:
-        print('Sending individually addressed posts: '+str(recipients))
+        print('DEBUG: Sending individually addressed posts: '+str(recipients))
     # this is after the message has arrived at the server
     clientToServer=False
     for address in recipients:
@@ -1109,7 +1109,7 @@ def sendToNamedAddresses(session,baseDir: str, \
             if toPort:
                 if toPort!=80 and toPort!=443:
                     toDomainFull=toDomain+':'+str(toPort)
-            print('Post sending s2s: '+nickname+'@'+domainFull+' to '+toNickname+'@'+toDomainFull)
+            print('DEBUG: Post sending s2s: '+nickname+'@'+domainFull+' to '+toNickname+'@'+toDomainFull)
         cc=[]
         sendSignedJson(postJsonObject,session,baseDir, \
                        nickname,domain,port, \
