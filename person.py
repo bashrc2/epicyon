@@ -267,6 +267,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """
     if path.endswith('#main-key'):
         path=path.replace('#main-key','')
+    # is this a shared inbox lookup?
     if path=='/inbox' or path=='/users/inbox' or path=='/sharedInbox':
         path='/users/inbox'
     else:
