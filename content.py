@@ -62,3 +62,18 @@ def addMentions(baseDir: str,httpPrefix: str, \
     content=content.replace('\n','</p><p>')
     return '<p>'+content+'</p>'
                 
+def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
+    """Extracts mentioned actors from the given html content string
+    """
+    mentions=[]
+    if matchStr not in htmlText:
+        return mentions
+    mentionsList=htmlStr.split(matchStr)
+    for mentionStr in mentionsList:
+        if '"' not in mentionStr:
+            continue
+        actorStr=mentionStr.split('"')[0]
+        if actorStr.startswith('http') or \
+           actorStr.startswith('dat:'):
+            mentions.append(actorStr)
+    return mentions

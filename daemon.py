@@ -823,8 +823,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         # reply from the web interface icon
         inReplyToUrl=None
+        replyToList=[]
         if authorized and '?replyto=' in self.path:
             inReplyToUrl=self.path.split('?replyto=')[1]
+            if '?' in inReplyToUrl:
+                mentionsList=inReplyToUrl.split('?')
+                for m in mentionsList:
+                    if m.startswith('mention='):
+                        replyToList.append(m.replace('mention=',''))
+                inReplyToUrl=mentionsList[0]
             self.path=self.path.split('?replyto=')[0]+'/newpost'
 
         # edit profile in web interface
@@ -842,7 +849,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newdm') or \
             self.path.endswith('/newshare')):
             self._set_headers('text/html',cookie)
-            self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyToUrl).encode())
+            self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList).encode())
             self.server.GETbusy=False
             return        
 

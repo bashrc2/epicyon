@@ -28,6 +28,7 @@ from auth import createPassword
 from like import likedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
+from content import getMentionsFromHtml
 
 def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
@@ -179,7 +180,7 @@ def htmlLogin(baseDir: str) -> str:
     loginForm+=htmlFooter()
     return loginForm
 
-def htmlNewPost(baseDir: str,path: str,inReplyTo: str) -> str:
+def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     replyStr=''
     if not path.endswith('/newshare'):
         if not inReplyTo:
@@ -237,6 +238,20 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str) -> str:
     shareOptionOnDropdown=''
     if not replyStr:
         shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>'
+
+    mentionsStr=''
+    for m in mentions:
+        mentionNickname=getNicknameFromActor(m)
+        if not mentionNickname:
+            continue
+        mentionDomain,mentionPort=getDomainFromActor(m)
+        if not mentionDomain:
+            continue
+        if mentionPort:            
+            mentionsStr+='@'+mentionNickname+'@'+mentionDomain+':'+str(mentionPort)+' '
+        else:
+            mentionsStr+='@'+mentionNickname+'@'+mentionDomain+' '
+
     newPostForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
         '  <div class="vertical-center">' \
@@ -258,7 +273,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str) -> str:
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
-        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px"></textarea>' \
+        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px" autofocus>'+mentionsStr+'</textarea>' \
         ''+extraFields+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="Image description" name="imageDescription">' \
@@ -700,8 +715,20 @@ def individualPostAsHtml(baseDir: str, \
             '<img src="/icons/delete.png"/></a>'
 
     if showIcons:
+        replyToLink=postJsonObject['object']['id']
+        if postJsonObject['object'].get('attributedTo'):
+            replyToLink+='?mention='+postJsonObject['object']['attributedTo']
+        if postJsonObject['object'].get('content'):
+            mentionedActors=getMentionsFromHtml(postJsonObject['object']['content'])
+            if mentionedActors:
+                for actorUrl in mentionedActors:
+                    if '?mention='+actorUrl not in replyToLink:
+                        replyToLink+='?mention='+actorUrl
+                        if len(replyToLink)>500:
+                            break
+
         footerStr='<div class="'+containerClassIcons+'">'
-        footerStr+='<a href="/users/'+nickname+'?replyto='+postJsonObject['object']['id']+'" title="Reply to this post">'
+        footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
         footerStr+='<img src="/icons/reply.png"/></a>'
         footerStr+=announceStr+likeStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
