@@ -24,11 +24,12 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
         return
     if denyHandle not in open(approveFollowsFilename).read():
         return
-    with open(approveFollowsFilename+'.new', 'w+') as approvefilenew:
+    approvefilenew = open(approveFollowsFilename+'.new', 'w+'):
         with open(approveFollowsFilename, 'r') as approvefile:
             for approveHandle in approvefile:
                 if not approveHandle.startswith(denyHandle):
                     approvefilenew.write(approveHandle)
+    approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
     print('Follow request from '+denyHandle+' was denied.')
 
@@ -42,11 +43,12 @@ def addHandleToApproveFile(baseDir: str,nickname: str,domain: str,addHandle: str
     if os.path.isfile(approveFollowsFilename):
         if addHandle in open(approveFollowsFilename).read():
             appendHandle=False
-    with open(approveFollowsFilename+'.add', 'w+') as approvefilenew:
+    approvefilenew = open(approveFollowsFilename+'.add', 'w+'):
         with open(approveFollowsFilename, 'r') as approvefile:
             for handle in approvefile:
                 approvefilenew.write(handle)
             approvefilenew.write(addHandle)
+    approvefilenew.close()
     os.rename(approveFollowsFilename+'.add',approveFollowsFilename)
     
 def manualApproveFollowRequest(session,baseDir: str, \
@@ -71,7 +73,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         if debug:
             print(handle+' not in '+approveFollowsFilename)
         return
-    with open(approveFollowsFilename+'.new', 'w+') as approvefilenew:
+    approvefilenew = with open(approveFollowsFilename+'.new', 'w+'):
         with open(approveFollowsFilename, 'r') as approvefile:
             for handle in approvefile:
                 if handle.startswith(approveHandle):
@@ -100,4 +102,5 @@ def manualApproveFollowRequest(session,baseDir: str, \
                             os.remove(followActivityfilename)
                 else:
                     approvefilenew.write(handle)
+    approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
