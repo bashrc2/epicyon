@@ -61,17 +61,18 @@ def manualApproveFollowRequest(session,baseDir: str, \
     with open(approveFollowsFilename, 'r') as approvefile:
         for handle in approvefile:
             if handle.startswith(approveHandle):
+                handle=handle.replace('\n','')
                 print('Test5: '+handle)
                 port2=port
                 if ':' in handle:
-                    port2=int(handle.split(':')[1].replace('\n',''))
+                    port2=int(handle.split(':')[1])
                 requestsDir=accountsDir+'/requests'
                 followActivityfilename=requestsDir+'/'+handle+'.follow'
                 print('Test6: '+followActivityfilename)
                 if os.path.isfile(followActivityfilename):
-                    print('Test6')
+                    print('Test7')
                     with open(followActivityfilename, 'r') as fp:
-                        print('Test7')
+                        print('Test8')
                         followJson=commentjson.load(fp)
                         approveNickname=approveHandle.split('@')[0]
                         approveDomain=approveHandle.split('@')[1].replace('\n','')
@@ -79,7 +80,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                         if ':' in approveDomain:
                             approvePort=approveDomain.split(':')[1]
                             approveDomain=approveDomain.split(':')[0]
-                        print('Test8: '+approveNickname+' '+approveDomain+' '+approvePort+' '+followJson['actor'])
+                        print('Test9: '+approveNickname+' '+approveDomain+' '+approvePort+' '+followJson['actor'])
                         followedAccountAccepts(session,baseDir,httpPrefix, \
                                                nickname,domain,port, \
                                                approveNickname,approveDomain,approvePort, \
@@ -88,7 +89,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                sendThreads,postLog, \
                                                cachedWebfingers,personCache, \
                                                debug)
-                        print("Test9")
+                        print("Test10")
                         os.remove(followActivityfilename)
             else:
                 approvefilenew.write(handle)
