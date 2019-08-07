@@ -163,13 +163,14 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
                  'preferredUsername': ''+nickname,
                  'summary': '',
-                 'publicKey': {'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
-                               'owner': httpPrefix+'://'+domain+'/users/'+nickname,
-                               'publicKeyPem': publicKeyPem,
-                               'summary': '',
-                               'tag': [],
-                               'type': 'Person',
-                               'url': httpPrefix+'://'+domain+'/@'+nickname}
+                 'publicKey': {
+                     'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
+                     'owner': httpPrefix+'://'+domain+'/users/'+nickname,
+                     'publicKeyPem': publicKeyPem
+                 },
+                 'tag': [],
+                 'type': 'Person',
+                 'url': httpPrefix+'://'+domain+'/@'+nickname
     }
 
     if saveToFile:
