@@ -758,7 +758,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
             likeActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
-            actorLiked=self.path.split('/statuses/')[0]
+            actorLiked=likeUrl.split('/statuses/')[0]
             likeJson= {
                 'type': 'Like',
                 'actor': likeActor,
@@ -772,7 +772,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # undo a like from the web interface icon
-        if authorized and '?unlike=' in self.path:
+        if authorized and '?unlike=' in self.path and '/statuses/' in self.path:
             likeUrl=self.path.split('?unlike=')[1]
             actor=self.path.split('?unlike=')[0]
             self.postToNickname=getNicknameFromActor(actor)
@@ -780,6 +780,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
             undoActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
+            actorLiked=likeUrl.split('/statuses/')[0]
             undoLikeJson= {
                 'type': 'Undo',
                 'actor': undoActor,
@@ -787,11 +788,11 @@ class PubServer(BaseHTTPRequestHandler):
                     'type': 'Like',
                     'actor': undoActor,
                     'object': likeUrl,
-                    'to': [undoActor+'/followers'],
-                    'cc': []
+                    'cc': [undoActor+'/followers'],
+                    'to': [actorLiked]
                 },
-                'to': [undoActor+'/followers'],
-                'cc': []
+                'cc': [undoActor+'/followers'],
+                'to': [actorLiked]
             }
             self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False
