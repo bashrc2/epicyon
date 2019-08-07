@@ -754,10 +754,15 @@ class PubServer(BaseHTTPRequestHandler):
             originPathStr=self.path.split('/followapprove=')[0]
             followerNickname=originPathStr.replace('/users/','')
             followingHandle=self.path.split('/followapprove=')[1]
+            print('*********************************************')
+            print('followingHandle: '+followingHandle)
+            print('followerNickname: '+followerNickname)
             if '@' in followingHandle:
+                print('Test1')
                 if not self.server.session:
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
+                print('Test2')
                 manualApproveFollowRequest(self.server.session, \
                                            self.server.baseDir, \
                                            self.server.httpPrefix, \

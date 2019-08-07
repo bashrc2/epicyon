@@ -44,6 +44,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                debug: bool) -> None:
     """Manually approve a follow request
     """
+    print('Test3')
     handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountsDir+'/followrequests.txt'
@@ -55,17 +56,22 @@ def manualApproveFollowRequest(session,baseDir: str, \
         if debug:
             print(handle+' not in '+approveFollowsFilename)
         return
+    print('Test4')
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
         for handle in approvefile:
             if handle.startswith(approveHandle):
+                print('Test5: '+handle)
                 port2=port
                 if ':' in handle:
                     port2=int(handle.split(':')[1].replace('\n',''))
                 requestsDir=accountsDir+'/requests'
                 followActivityfilename=requestsDir+'/'+handle+'.follow'
+                print('Test6: '+followActivityfilename)
                 if os.path.isfile(followActivityfilename):
+                    print('Test6')
                     with open(followActivityfilename, 'r') as fp:
+                        print('Test7')
                         followJson=commentjson.load(fp)
                         approveNickname=approveHandle.split('@')[0]
                         approveDomain=approveHandle.split('@')[1].replace('\n','')
@@ -73,6 +79,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                         if ':' in approveDomain:
                             approvePort=approveDomain.split(':')[1]
                             approveDomain=approveDomain.split(':')[0]
+                        print('Test8: '+approveNickname+' '+approveDomain+' '+approvePort+' '+followJson['actor'])
                         followedAccountAccepts(session,baseDir,httpPrefix, \
                                                nickname,domain,port, \
                                                approveNickname,approveDomain,approvePort, \
@@ -81,6 +88,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                sendThreads,postLog, \
                                                cachedWebfingers,personCache, \
                                                debug)
+                        print("Test9")
                         os.remove(followActivityfilename)
             else:
                 approvefilenew.write(handle)
