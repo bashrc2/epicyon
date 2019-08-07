@@ -341,12 +341,15 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
                          authorized: bool,ocapAlways: bool, \
                          nickname: str,domain: str,port: int, \
                          session,wfRequest: {},personCache: {}, \
-                         followingJson: {}) -> str:
+                         followingJson: {}, \
+                         buttons: []) -> str:
     """Shows following on the profile screen
     """
     profileStr=''
     for item in followingJson['orderedItems']:
-        profileStr+=individualFollowAsHtml(session,wfRequest,personCache,domain,item)
+        profileStr+= \
+            individualFollowAsHtml(session,wfRequest,personCache, \
+                                   domain,item,authorized,buttons)
     return profileStr
 
 def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
@@ -510,12 +513,20 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                 htmlProfilePosts(baseDir,httpPrefix,authorized, \
                                  ocapAlways,nickname,domain,port, \
                                  session,wfRequest,personCache)
-        if selected=='following' or selected=='followers':
+        if selected=='following':
             profileStr+= \
                 htmlProfileFollowing(baseDir,httpPrefix, \
                                      authorized,ocapAlways,nickname, \
                                      domain,port,session, \
-                                     wfRequest,personCache,extraJson)
+                                     wfRequest,personCache,extraJson, \
+                                     ["unfollow"])
+        if selected=='followers':
+            profileStr+= \
+                htmlProfileFollowing(baseDir,httpPrefix, \
+                                     authorized,ocapAlways,nickname, \
+                                     domain,port,session, \
+                                     wfRequest,personCache,extraJson, \
+                                     ["block"])
         if selected=='roles':
             profileStr+= \
                 htmlProfileRoles(nickname,domainFull,extraJson)
@@ -530,7 +541,9 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
 
 def individualFollowAsHtml(session,wfRequest: {}, \
                            personCache: {},domain: str, \
-                           followUrl: str) -> str:
+                           followUrl: str, \
+                           authorized: bool, \
+                           buttons=[]) -> str:
     nickname=getNicknameFromActor(followUrl)
     domain,port=getDomainFromActor(followUrl)
     titleStr='@'+nickname+'@'+domain
@@ -542,11 +555,20 @@ def individualFollowAsHtml(session,wfRequest: {}, \
             avatarUrl=avatarUrl2
         if preferredName:
             titleStr=preferredName+' '+titleStr
+
+    buttonsStr=''
+    if authorized:
+        for b in buttons:
+            if b=='block':
+                buttonsStr+='<a href="/inbox"><button class="buttonunfollow">Block</button></a>'
+            if b=='unfollow':
+                buttonsStr+='<a href="/inbox"><button class="buttonunfollow">Unfollow</button></a>'
+
     return \
         '<div class="container">\n' \
         '<a href="'+followUrl+'">' \
-        '<img src="'+avatarUrl+'" alt="Avatar">\n'+ \
-        '<p>'+titleStr+'</p></a>'+ \
+        '<p><img src="'+avatarUrl+'" alt="Avatar">\n'+ \
+        titleStr+'</a>'+buttonsStr+'</p>' \
         '</div>\n'
 
 def contentWarningScript() -> str:
