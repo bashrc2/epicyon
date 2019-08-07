@@ -756,6 +756,9 @@ class PubServer(BaseHTTPRequestHandler):
             followerDomain,FollowerPort=getDomainFromActor(originPathStr)
             followingHandle=self.path.split('/followapprove=')[1]
             if '@' in followingHandle:
+                if not self.server.session:
+                    self.server.session= \
+                        createSession(self.server.domain,self.server.port,self.server.useTor)
                 manualApproveFollowRequest(self.server.session, \
                                            self.server.baseDir, \
                                            self.server.httpPrefix, \
