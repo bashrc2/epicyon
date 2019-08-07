@@ -749,22 +749,15 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor+'/inbox',cookie)
             return
 
-        print('88888888888888888888888888888888888888888888888888')
-        print(str(authorized)+' '+self.path)
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and self.path.startswith('/users/'):
             originPathStr=self.path.split('/followapprove=')[0]
             followerNickname=originPathStr.replace('/users/','')
             followingHandle=self.path.split('/followapprove=')[1]
-            print('*********************************************')
-            print('followingHandle: '+followingHandle)
-            print('followerNickname: '+followerNickname)
             if '@' in followingHandle:
-                print('Test1')
                 if not self.server.session:
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
-                print('Test2')
                 manualApproveFollowRequest(self.server.session, \
                                            self.server.baseDir, \
                                            self.server.httpPrefix, \
