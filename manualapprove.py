@@ -24,7 +24,7 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
         return
     if denyHandle not in open(approveFollowsFilename).read():
         return
-    approvefilenew = open(approveFollowsFilename+'.new', 'w+'):
+    approvefilenew = open(approveFollowsFilename+'.new', 'w+')
         with open(approveFollowsFilename, 'r') as approvefile:
             for approveHandle in approvefile:
                 if not approveHandle.startswith(denyHandle):
@@ -43,7 +43,7 @@ def addHandleToApproveFile(baseDir: str,nickname: str,domain: str,addHandle: str
     if os.path.isfile(approveFollowsFilename):
         if addHandle in open(approveFollowsFilename).read():
             appendHandle=False
-    approvefilenew = open(approveFollowsFilename+'.add', 'w+'):
+    approvefilenew = open(approveFollowsFilename+'.add', 'w+')
         with open(approveFollowsFilename, 'r') as approvefile:
             for handle in approvefile:
                 approvefilenew.write(handle)
@@ -73,7 +73,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         if debug:
             print(handle+' not in '+approveFollowsFilename)
         return
-    approvefilenew = with open(approveFollowsFilename+'.new', 'w+'):
+    approvefilenew = with open(approveFollowsFilename+'.new', 'w+')
         with open(approveFollowsFilename, 'r') as approvefile:
             for handle in approvefile:
                 if handle.startswith(approveHandle):
