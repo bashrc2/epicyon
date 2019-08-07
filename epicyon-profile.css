@@ -531,3 +531,13 @@ input[type=submit]:hover {
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown-timeline:hover .dropbtn {background-color: #3e8e41;}
+
+input[type=checkbox]
+{
+  -ms-transform: scale(2);
+  -moz-transform: scale(2);
+  -webkit-transform: scale(2);
+  -o-transform: scale(2);
+  transform: scale(2);
+  padding: 10px;
+}

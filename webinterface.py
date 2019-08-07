@@ -47,7 +47,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
 
     preferredNickname=nickname
     bioStr=''
-    manuallyApprovesFollowers='checked'
+    manuallyApprovesFollowers=''
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
         if actorJson.get('preferredUsername'):
