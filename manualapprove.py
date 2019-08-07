@@ -18,14 +18,15 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     handle=args.nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountsDir+'/followrequests.txt'
-    if handle in open(approveFollowsFilename).read():
-        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
-            with open(approveFollowsFilename, 'r') as approvefile:
-                for approveHandle in approvefile:
-                    if not approveHandle.startswith(denyHandle):
-                        approvefilenew.write(approveHandle)
-        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
-        print('Follow request from '+denyHandle+' was denied.')
+    if handle not in open(approveFollowsFilename).read():
+        return
+    with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
+        with open(approveFollowsFilename, 'r') as approvefile:
+            for approveHandle in approvefile:
+                if not approveHandle.startswith(denyHandle):
+                    approvefilenew.write(approveHandle)
+    os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    print('Follow request from '+denyHandle+' was denied.')
     
 def manualApproveFollowRequest(session,baseDir: str, \
                                httpPrefix: str,
@@ -35,39 +36,46 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                sendThreads: [],postLog: [], \
                                cachedWebfingers: {},personCache: {}, \
                                acceptedCaps: [], \
-                               debug: bool):
+                               debug: bool) -> None:
     """Manually approve a follow request
     """
     handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountsDir+'/followrequests.txt'
-    if handle in open(approveFollowsFilename).read():
-        with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
-            with open(approveFollowsFilename, 'r') as approvefile:
-                for handle in approvefile:
-                    if handle.startswith(approveHandle):
-                        if ':' in handle:
-                            port=int(handle.split(':')[1].replace('\n',''))
-                        requestsDir=accountsDir+'/requests'
-                        followActivityfilename=requestsDir+'/'+handle+'.follow'
-                        if os.path.isfile(followActivityfilename):
-                            with open(followActivityfilename, 'r') as fp:
-                                followJson=commentjson.load(fp)
-                                approveNickname=approveHandle.split('@')[0]
-                                approveDomain=approveHandle.split('@')[1].replace('\n','')
-                                approvePort=port
-                                if ':' in approveDomain:
-                                    approvePort=approveDomain.split(':')[1]
-                                    approveDomain=approveDomain.split(':')[0]
-                                followedAccountAccepts(session,baseDir,httpPrefix, \
-                                                       nickname,domain,port, \
-                                                       approveNickname,approveDomain,approvePort, \
-                                                       followJson['actor'],federationList, \
-                                                       followJson,acceptedCaps, \
-                                                       sendThreads,postLog, \
-                                                       cachedWebfingers,personCache, \
-                                                       debug)
-                                os.remove(followActivityfilename)
-                    else:
-                        approvefilenew.write(handle)
-        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    if not os.path.isfile(approveFollowsFilename):
+        if debug:
+            print('WARN: Follow requests file '+approveFollowsFilename+' not found')
+        return
+    if handle not in open(approveFollowsFilename).read():
+        if debug:
+            print(handle+' not in '+approveFollowsFilename)
+        return
+    with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
+        with open(approveFollowsFilename, 'r') as approvefile:
+            for handle in approvefile:
+                if handle.startswith(approveHandle):
+                    if ':' in handle:
+                        port=int(handle.split(':')[1].replace('\n',''))
+                    requestsDir=accountsDir+'/requests'
+                    followActivityfilename=requestsDir+'/'+handle+'.follow'
+                    if os.path.isfile(followActivityfilename):
+                        with open(followActivityfilename, 'r') as fp:
+                            followJson=commentjson.load(fp)
+                            approveNickname=approveHandle.split('@')[0]
+                            approveDomain=approveHandle.split('@')[1].replace('\n','')
+                            approvePort=port
+                            if ':' in approveDomain:
+                                approvePort=approveDomain.split(':')[1]
+                                approveDomain=approveDomain.split(':')[0]
+                            followedAccountAccepts(session,baseDir,httpPrefix, \
+                                                   nickname,domain,port, \
+                                                   approveNickname,approveDomain,approvePort, \
+                                                   followJson['actor'],federationList, \
+                                                   followJson,acceptedCaps, \
+                                                   sendThreads,postLog, \
+                                                   cachedWebfingers,personCache, \
+                                                   debug)
+                            os.remove(followActivityfilename)
+                else:
+                    approvefilenew.write(handle)
+    os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
