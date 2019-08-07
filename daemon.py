@@ -749,6 +749,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor+'/inbox',cookie)
             return
 
+        print('88888888888888888888888888888888888888888888888888')
+        print(str(authorized)+' '+self.path)
         # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path and self.path.startswith('/users/'):
             originPathStr=self.path.split('/followapprove=')[0]
