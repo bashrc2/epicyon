@@ -749,7 +749,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor+'/inbox',cookie)
             return
 
-        # send a follow request approval
+        # send a follow request approval from the web interface
         if authorized and '/followapprove=' in self.path:
             originPathStr=self.path.split('/followapprove=')[0]
             followerNickname=getNicknameFromActor(originPathStr)
@@ -772,7 +772,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
-        # deny a follow request
+        # deny a follow request from the web interface
         if authorized and '/followdeny=' in self.path:
             originPathStr=self.path.split('/followdeny=')[0]
             followerNickname=getNicknameFromActor(originPathStr)
