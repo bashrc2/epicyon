@@ -73,7 +73,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         if debug:
             print(handle+' not in '+approveFollowsFilename)
         return
-    approvefilenew = with open(approveFollowsFilename+'.new', 'w+')
+    approvefilenew = open(approveFollowsFilename+'.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
         for handle in approvefile:
             if handle.startswith(approveHandle):
