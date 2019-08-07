@@ -296,7 +296,7 @@ def storeFollowRequest(baseDir: str, \
     """Stores the follow request for later use
     """
     accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
-    if not os.path.isdir(accountDir):
+    if not os.path.isdir(accountsDir):
         return False
     
     if port!=80 and port!=443:
@@ -305,7 +305,7 @@ def storeFollowRequest(baseDir: str, \
         approveHandle=nickname+'@'+domain
 
     # add to a file which contains a list of requests
-    approveFollowsFilename=accountDir+'/followrequests.txt'
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
         if approveHandle not in open(approveFollowsFilename).read():
             with open(approveFollowsFilename, "a") as fp:
