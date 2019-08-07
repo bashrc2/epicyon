@@ -25,10 +25,10 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     if denyHandle not in open(approveFollowsFilename).read():
         return
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
-        with open(approveFollowsFilename, 'r') as approvefile:
-            for approveHandle in approvefile:
-                if not approveHandle.startswith(denyHandle):
-                    approvefilenew.write(approveHandle)
+    with open(approveFollowsFilename, 'r') as approvefile:
+        for approveHandle in approvefile:
+            if not approveHandle.startswith(denyHandle):
+                approvefilenew.write(approveHandle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
     print('Follow request from '+denyHandle+' was denied.')
@@ -44,10 +44,10 @@ def addHandleToApproveFile(baseDir: str,nickname: str,domain: str,addHandle: str
         if addHandle in open(approveFollowsFilename).read():
             appendHandle=False
     approvefilenew = open(approveFollowsFilename+'.add', 'w+')
-        with open(approveFollowsFilename, 'r') as approvefile:
-            for handle in approvefile:
-                approvefilenew.write(handle)
-            approvefilenew.write(addHandle)
+    with open(approveFollowsFilename, 'r') as approvefile:
+        for handle in approvefile:
+            approvefilenew.write(handle)
+        approvefilenew.write(addHandle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.add',approveFollowsFilename)
     
@@ -74,33 +74,33 @@ def manualApproveFollowRequest(session,baseDir: str, \
             print(handle+' not in '+approveFollowsFilename)
         return
     approvefilenew = with open(approveFollowsFilename+'.new', 'w+')
-        with open(approveFollowsFilename, 'r') as approvefile:
-            for handle in approvefile:
-                if handle.startswith(approveHandle):
-                    port2=port
-                    if ':' in handle:
-                        port2=int(handle.split(':')[1].replace('\n',''))
-                    requestsDir=accountsDir+'/requests'
-                    followActivityfilename=requestsDir+'/'+handle+'.follow'
-                    if os.path.isfile(followActivityfilename):
-                        with open(followActivityfilename, 'r') as fp:
-                            followJson=commentjson.load(fp)
-                            approveNickname=approveHandle.split('@')[0]
-                            approveDomain=approveHandle.split('@')[1].replace('\n','')
-                            approvePort=port2
-                            if ':' in approveDomain:
-                                approvePort=approveDomain.split(':')[1]
-                                approveDomain=approveDomain.split(':')[0]
-                            followedAccountAccepts(session,baseDir,httpPrefix, \
-                                                   nickname,domain,port, \
-                                                   approveNickname,approveDomain,approvePort, \
-                                                   followJson['actor'],federationList, \
-                                                   followJson,acceptedCaps, \
-                                                   sendThreads,postLog, \
-                                                   cachedWebfingers,personCache, \
-                                                   debug)
-                            os.remove(followActivityfilename)
-                else:
-                    approvefilenew.write(handle)
+    with open(approveFollowsFilename, 'r') as approvefile:
+        for handle in approvefile:
+            if handle.startswith(approveHandle):
+                port2=port
+                if ':' in handle:
+                    port2=int(handle.split(':')[1].replace('\n',''))
+                requestsDir=accountsDir+'/requests'
+                followActivityfilename=requestsDir+'/'+handle+'.follow'
+                if os.path.isfile(followActivityfilename):
+                    with open(followActivityfilename, 'r') as fp:
+                        followJson=commentjson.load(fp)
+                        approveNickname=approveHandle.split('@')[0]
+                        approveDomain=approveHandle.split('@')[1].replace('\n','')
+                        approvePort=port2
+                        if ':' in approveDomain:
+                            approvePort=approveDomain.split(':')[1]
+                            approveDomain=approveDomain.split(':')[0]
+                        followedAccountAccepts(session,baseDir,httpPrefix, \
+                                               nickname,domain,port, \
+                                               approveNickname,approveDomain,approvePort, \
+                                               followJson['actor'],federationList, \
+                                               followJson,acceptedCaps, \
+                                               sendThreads,postLog, \
+                                               cachedWebfingers,personCache, \
+                                               debug)
+                        os.remove(followActivityfilename)
+            else:
+                approvefilenew.write(handle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
