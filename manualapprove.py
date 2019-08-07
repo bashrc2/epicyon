@@ -17,7 +17,7 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     """
     handle=args.nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountDir+'/followrequests.txt'
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
     if handle in open(approveFollowsFilename).read():
         with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
             with open(approveFollowsFilename, 'r') as approvefile:
@@ -40,7 +40,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
     """
     handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountDir+'/followrequests.txt'
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
     if handle in open(approveFollowsFilename).read():
         with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
             with open(approveFollowsFilename, 'r') as approvefile:

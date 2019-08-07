@@ -395,7 +395,7 @@ if args.followerspending:
         sys.exit()
 
     accountsDir=baseDir+'/accounts/'+args.nickname+'@'+domain
-    approveFollowsFilename=accountDir+'/followrequests.txt'
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
     approveCtr=0
     if os.path.isfile(approveFollowsFilename):
         with open(approveFollowsFilename, 'r') as approvefile:
