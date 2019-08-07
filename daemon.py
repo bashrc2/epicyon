@@ -749,6 +749,43 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor+'/inbox',cookie)
             return
 
+        # send a follow request approval
+        if authorized and '/followapprove=' in self.path:
+            originPathStr=self.path.split('/followapprove=')[0]
+            followerNickname=getNicknameFromActor(originPathStr)
+            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
+            followingHandle=self.path.split('/followapprove=')[1]
+            if '@' in followingHandle:
+                manualApproveFollowRequest(self.server.session, \
+                                           self.server.baseDir, \
+                                           self.server.httpPrefix, \
+                                           followerNickname,followerDomain,FollowerPort, \
+                                           followingHandle, \
+                                           self.server.federationList, \
+                                           self.server.sendThreads, \
+                                           self.server.postLog, \
+                                           self.server.cachedWebfingers, \
+                                           self.server.personCache, \
+                                           self.server.acceptedCaps, \
+                                           self.server.debug)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.GETbusy=False
+            return
+
+        # deny a follow request
+        if authorized and '/followdeny=' in self.path:
+            originPathStr=self.path.split('/followdeny=')[0]
+            followerNickname=getNicknameFromActor(originPathStr)
+            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
+            followingHandle=self.path.split('/followdeny=')[1]
+            if '@' in followingHandle:
+                manualDenyFollowRequest(self.server.baseDir, \
+                                        followerNickname,followerDomain, \
+                                        followingHandle)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.GETbusy=False
+            return
+
         # like from the web interface icon
         if authorized and '?like=' in self.path and '/statuses/' in self.path:
             likeUrl=self.path.split('?like=')[1]
@@ -1664,41 +1701,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy=False
             return
-
-        # send a follow request approval
-        if authorized and '/followapprove=' in self.path:
-            originPathStr=self.path.split('/followapprove=')[0]
-            followerNickname=getNicknameFromActor(originPathStr)
-            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
-            followingHandle=self.path.split('/followapprove=')[1]
-            if '@' in followingHandle:
-                manualApproveFollowRequest(self.server.session, \
-                                           self.server.baseDir, \
-                                           self.server.httpPrefix, \
-                                           followerNickname,followerDomain,FollowerPort, \
-                                           followingHandle, \
-                                           self.server.federationList, \
-                                           self.server.sendThreads, \
-                                           self.server.postLog, \
-                                           self.server.cachedWebfingers, \
-                                           self.server.personCache, \
-                                           self.server.acceptedCaps, \
-                                           self.server.debug)
-            self._redirect_headers(originPathStr,cookie)
-            self.server.POSTbusy=False
-
-        # deny a follow request
-        if authorized and '/followdeny=' in self.path:
-            originPathStr=self.path.split('/followdeny=')[0]
-            followerNickname=getNicknameFromActor(originPathStr)
-            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
-            followingHandle=self.path.split('/followdeny=')[1]
-            if '@' in followingHandle:
-                manualDenyFollowRequest(self.server.baseDir, \
-                                        followerNickname,followerDomain, \
-                                        followingHandle)
-            self._redirect_headers(originPathStr,cookie)
-            self.server.POSTbusy=False
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
