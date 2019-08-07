@@ -53,6 +53,11 @@ body, html {
     color: white;
 }
 
+.new-post-text {
+    font-size: 24px;
+    padding: 4px 0;
+}
+
 .highlight {
     width: 2%;
 }

@@ -85,7 +85,11 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     editProfileForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
         '  <div class="vertical-center">' \
-        '    <p class="new-post-text">Edit profile for '+nickname+'@'+domainFull+'</p>' \
+        '    <p class="new-post-text">Profile for '+nickname+'@'+domainFull+'</p>' \
+        '    <div class="container">' \
+        '      <input type="submit" name="submitProfile" value="Submit">' \
+        '      <a href="'+pathOriginal+'"><button class="cancelbtn">Cancel</button></a>' \
+        '    </div>'+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="Preferred name" name="preferredNickname" value="'+preferredNickname+'">' \
         '      <textarea id="message" name="bio" placeholder="Your bio..." style="height:200px">'+bioStr+'</textarea>' \
@@ -113,10 +117,6 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '      <br>Federate only with a defined set of instances. One domain name per line.' \
         '      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>' \
         '    </div>' \
-        '    <div class="container">' \
-        '      <input type="submit" name="submitProfile" value="Submit">' \
-        '      <a href="'+pathOriginal+'"><button class="cancelbtn">Cancel</button></a>' \
-        '    </div>'+ \
         '  </div>' \
         '</form>'
     editProfileForm+=htmlFooter()
