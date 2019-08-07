@@ -735,7 +735,7 @@ if args.actor:
     nickname=args.actor.split('@')[0]
     domain=args.actor.split('@')[1].replace('\n','')
     wfCache={}
-    if domain.endswith('.onion'):
+    if args.http or domain.endswith('.onion'):
         httpPrefix='http'
         port=80
     else:
