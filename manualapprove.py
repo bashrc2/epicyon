@@ -15,7 +15,7 @@ from follow import followedAccountAccepts
 def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: str) -> None:
     """Manually deny a follow request
     """
-    handle=args.nickname+'@'+domain
+    handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountsDir+'/followrequests.txt'
     if not os.path.isfile(approveFollowsFilename):
