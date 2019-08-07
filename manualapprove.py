@@ -18,7 +18,11 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     handle=args.nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountsDir+'/followrequests.txt'
-    if handle not in open(approveFollowsFilename).read():
+    if not os.path.isfile(approveFollowsFilename):
+        if debug:
+            print('WARN: Follow requests file '+approveFollowsFilename+' not found')
+        return
+    if denyHandle not in open(approveFollowsFilename).read():
         return
     with open(approveFollowsFilename+'.new', 'w') as approvefilenew:
         with open(approveFollowsFilename, 'r') as approvefile:
@@ -27,6 +31,23 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
                     approvefilenew.write(approveHandle)
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
     print('Follow request from '+denyHandle+' was denied.')
+
+def addHandleToApproveFile(baseDir: str,nickname: str,domain: str,addHandle: str) -> None:
+    """Adds the given handle to the follow requests for the given account
+    """
+    handle=nickname+'@'+domain
+    accountsDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
+    appendHandle=True
+    if os.path.isfile(approveFollowsFilename):
+        if addHandle in open(approveFollowsFilename).read():
+            appendHandle=False
+    with open(approveFollowsFilename+'.add', 'w') as approvefilenew:
+        with open(approveFollowsFilename, 'r') as approvefile:
+            for handle in approvefile:
+                approvefilenew.write(handle)
+            approvefilenew.write(addHandle)
+    os.rename(approveFollowsFilename+'.add',approveFollowsFilename)
     
 def manualApproveFollowRequest(session,baseDir: str, \
                                httpPrefix: str,
@@ -46,7 +67,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         if debug:
             print('WARN: Follow requests file '+approveFollowsFilename+' not found')
         return
-    if handle not in open(approveFollowsFilename).read():
+    if approveHandle not in open(approveFollowsFilename).read():
         if debug:
             print(handle+' not in '+approveFollowsFilename)
         return
@@ -54,8 +75,9 @@ def manualApproveFollowRequest(session,baseDir: str, \
         with open(approveFollowsFilename, 'r') as approvefile:
             for handle in approvefile:
                 if handle.startswith(approveHandle):
+                    port2=port
                     if ':' in handle:
-                        port=int(handle.split(':')[1].replace('\n',''))
+                        port2=int(handle.split(':')[1].replace('\n',''))
                     requestsDir=accountsDir+'/requests'
                     followActivityfilename=requestsDir+'/'+handle+'.follow'
                     if os.path.isfile(followActivityfilename):
@@ -63,7 +85,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                             followJson=commentjson.load(fp)
                             approveNickname=approveHandle.split('@')[0]
                             approveDomain=approveHandle.split('@')[1].replace('\n','')
-                            approvePort=port
+                            approvePort=port2
                             if ':' in approveDomain:
                                 approvePort=approveDomain.split(':')[1]
                                 approveDomain=approveDomain.split(':')[0]

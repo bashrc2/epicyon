@@ -82,6 +82,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
+from manualapprove import addHandleToApproveFile
 from announce import createAnnounce
 from announce import outboxAnnounce
 from content import addMentions
@@ -759,6 +760,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
+                addHandleToApproveFile(self.server.baseDir, \
+                                       followerNickname,followerDomain, \
+                                       followingHandle)
                 manualApproveFollowRequest(self.server.session, \
                                            self.server.baseDir, \
                                            self.server.httpPrefix, \
@@ -782,6 +786,9 @@ class PubServer(BaseHTTPRequestHandler):
             followerDomain,FollowerPort=getDomainFromActor(originPathStr)
             followingHandle=self.path.split('/followdeny=')[1]
             if '@' in followingHandle:
+                addHandleToApproveFile(self.server.baseDir, \
+                                       followerNickname,followerDomain, \
+                                       followingHandle)
                 manualDenyFollowRequest(self.server.baseDir, \
                                         followerNickname,followerDomain, \
                                         followingHandle)
