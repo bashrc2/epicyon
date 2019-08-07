@@ -82,7 +82,6 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
-from manualapprove import addHandleToApproveFile
 from announce import createAnnounce
 from announce import outboxAnnounce
 from content import addMentions
@@ -751,22 +750,18 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # send a follow request approval from the web interface
-        if authorized and '/followapprove=' in self.path:
+        if authorized and '/followapprove=' in self.path and self.path.startswith('/users/'):
             originPathStr=self.path.split('/followapprove=')[0]
-            followerNickname=getNicknameFromActor(originPathStr)
-            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
+            followerNickname=originPathStr.replace('/users/','')
             followingHandle=self.path.split('/followapprove=')[1]
             if '@' in followingHandle:
                 if not self.server.session:
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
-                addHandleToApproveFile(self.server.baseDir, \
-                                       followerNickname,followerDomain, \
-                                       followingHandle)
                 manualApproveFollowRequest(self.server.session, \
                                            self.server.baseDir, \
                                            self.server.httpPrefix, \
-                                           followerNickname,followerDomain,FollowerPort, \
+                                           followerNickname,self.server.domain,self.server.port, \
                                            followingHandle, \
                                            self.server.federationList, \
                                            self.server.sendThreads, \
@@ -780,17 +775,13 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # deny a follow request from the web interface
-        if authorized and '/followdeny=' in self.path:
+        if authorized and '/followdeny=' in self.path and self.path.startswith('/users/'):
             originPathStr=self.path.split('/followdeny=')[0]
-            followerNickname=getNicknameFromActor(originPathStr)
-            followerDomain,FollowerPort=getDomainFromActor(originPathStr)
+            followerNickname=originPathStr.replace('/users/','')
             followingHandle=self.path.split('/followdeny=')[1]
             if '@' in followingHandle:
-                addHandleToApproveFile(self.server.baseDir, \
-                                       followerNickname,followerDomain, \
-                                       followingHandle)
                 manualDenyFollowRequest(self.server.baseDir, \
-                                        followerNickname,followerDomain, \
+                                        followerNickname,self.server.domain, \
                                         followingHandle)
             self._redirect_headers(originPathStr,cookie)
             self.server.GETbusy=False

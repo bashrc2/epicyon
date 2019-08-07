@@ -32,24 +32,6 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
     print('Follow request from '+denyHandle+' was denied.')
-
-def addHandleToApproveFile(baseDir: str,nickname: str,domain: str,addHandle: str) -> None:
-    """Adds the given handle to the follow requests for the given account
-    """
-    handle=nickname+'@'+domain
-    accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountsDir+'/followrequests.txt'
-    appendHandle=True
-    if os.path.isfile(approveFollowsFilename):
-        if addHandle in open(approveFollowsFilename).read():
-            appendHandle=False
-    approvefilenew = open(approveFollowsFilename+'.add', 'w+')
-    with open(approveFollowsFilename, 'r') as approvefile:
-        for handle in approvefile:
-            approvefilenew.write(handle)
-        approvefilenew.write(addHandle)
-    approvefilenew.close()
-    os.rename(approveFollowsFilename+'.add',approveFollowsFilename)
     
 def manualApproveFollowRequest(session,baseDir: str, \
                                httpPrefix: str,
