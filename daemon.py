@@ -1811,12 +1811,21 @@ class PubServer(BaseHTTPRequestHandler):
                                                 nickname, \
                                                 self.server.domain,fields['bio'],[])                                
                                 actorChanged=True
+                        approveFollowers=False
                         if fields.get('approveFollowers'):
-                            approveFollowers=False
-                            if fields['approveFollowers']!='no':
+                            if fields['approveFollowers']=='on':
                                 approveFollowers=True
-                            if approveFollowers!=actorJson['manuallyApprovesFollowers']:
-                                actorJson['manuallyApprovesFollowers']=approveFollowers
+                        if approveFollowers!=actorJson['manuallyApprovesFollowers']:
+                            actorJson['manuallyApprovesFollowers']=approveFollowers
+                            actorChanged=True
+                        if fields.get('isBot'):
+                            if fields['isBot']=='on':
+                                if actorJson['type']!='Service':
+                                    actorJson['type']='Service'
+                                    actorChanged=True
+                        else:
+                            if actorJson['type']!='Person':
+                                actorJson['type']='Person'
                                 actorChanged=True
                         # save filtered words list
                         filterFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/filters.txt'

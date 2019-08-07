@@ -19,7 +19,7 @@ body, html {
 }
 
 .cwText {
-  display: none;
+    display: none;
 }
 
 .pageicon {
@@ -539,10 +539,11 @@ input[type=submit]:hover {
 
 input[type=checkbox]
 {
-  -ms-transform: scale(2);
-  -moz-transform: scale(2);
-  -webkit-transform: scale(2);
-  -o-transform: scale(2);
-  transform: scale(2);
-  padding: 10px;
+    -ms-transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    transform: scale(2);
+    padding: 10px;
+    margin: 10px 5px;
 }

@@ -45,6 +45,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     if not os.path.isfile(actorFilename):
         return ''
 
+    isBot=''
     preferredNickname=nickname
     bioStr=''
     manuallyApprovesFollowers=''
@@ -59,7 +60,10 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
                 manuallyApprovesFollowers='checked'
             else:
                 manuallyApprovesFollowers=''
-
+        if actorJson.get('type'):
+            if actorJson['type']=='Service':
+                isBot='checked'
+                
     filterStr=''
     filterFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/filters.txt'
     if os.path.isfile(filterFilename):
@@ -107,6 +111,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '    </div>' \
         '    <div class="container">' \
         '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>Approve follower requests<br>' \
+        '      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>This is a bot account<br>' \
         '      <br><b>Filtered words</b>' \
         '      <br>One per line' \
         '      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>' \
