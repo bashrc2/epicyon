@@ -750,7 +750,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # like from the web interface icon
-        if authorized and '?like=' in self.path:
+        if authorized and '?like=' in self.path and '/statuses/' in self.path:
             likeUrl=self.path.split('?like=')[1]
             actor=self.path.split('?like=')[0]
             self.postToNickname=getNicknameFromActor(actor)
@@ -758,12 +758,13 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
             likeActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
+            actorLiked=self.path.split('/statuses/')[0]
             likeJson= {
                 'type': 'Like',
                 'actor': likeActor,
                 'object': likeUrl,
-                'to': [likeActor+'/followers'],
-                'cc': []
+                'to': [actorLiked],
+                'cc': [likeActor+'/followers']
             }    
             self._postToOutbox(likeJson)
             self.server.GETbusy=False

@@ -141,12 +141,16 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
         if ':' not in domain:
             fullDomain=domain+':'+str(port)
 
+    likeTo=[]
+    if '/statuses/' in objectUrl:
+        likeTo=[objectUrl.split('/statuses/')[0]]
+
     newLikeJson = {
         'type': 'Like',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'object': objectUrl,
-        'to': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
-        'cc': []
+        'to': likeTo,
+        'cc': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers']
     }
     if ccList:
         if len(ccList)>0:
@@ -220,6 +224,10 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
         if ':' not in domain:
             fullDomain=domain+':'+str(port)
 
+    likeTo=[]
+    if '/statuses/' in objectUrl:
+        likeTo=[objectUrl.split('/statuses/')[0]]
+
     newUndoLikeJson = {
         'type': 'Undo',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
@@ -227,11 +235,11 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
             'type': 'Like',
             'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
             'object': objectUrl,
-            'to': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
-            'cc': []
+            'to': likeTo,
+            'cc': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers']
         },
-        'to': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
-        'cc': []
+        'cc': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
+        'to': likeTo
     }
     if ccList:
         if len(ccList)>0:
@@ -306,14 +314,17 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
     if fromPort!=80 and fromPort!=443:
         fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    toUrl = ['https://www.w3.org/ns/activitystreams#Public']
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
+    if '/statuses/' in likeUrl:
+        toUrl=[likeUrl.split('/statuses/')[0]]
+    
     newLikeJson = {
         'type': 'Like',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'object': likeUrl,
-        'to': [toUrl],
+        'to': toUrl,
         'cc': [ccUrl]
     }
 
@@ -373,8 +384,11 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
     if fromPort!=80 and fromPort!=443:
         fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    toUrl = ['https://www.w3.org/ns/activitystreams#Public']
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+
+    if '/statuses/' in likeUrl:
+        toUrl=[likeUrl.split('/statuses/')[0]]
 
     newUndoLikeJson = {
         'type': 'Undo',
@@ -383,7 +397,7 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
             'type': 'Like',
             'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
             'object': likeUrl,
-            'to': [toUrl],
+            'to': toUrl,
             'cc': [ccUrl]
         }
     }
