@@ -1193,6 +1193,8 @@ if args.testdata:
     password='boringpassword'
     print('Generating some test data for user: '+nickname)
 
+    setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
+
     createPerson(baseDir,'maxboardroom',domain,port,httpPrefix,True,password)
     createPerson(baseDir,'ultrapancake',domain,port,httpPrefix,True,password)
     createPerson(baseDir,'drokk',domain,port,httpPrefix,True,password)

@@ -17,6 +17,7 @@ from person import personBoxJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
+from utils import noOfAccounts
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import getPersonBox
@@ -29,6 +30,7 @@ from like import likedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from content import getMentionsFromHtml
+from config import getConfigParam
 
 def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
@@ -150,13 +152,18 @@ def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
     return nickname,password
 
 def htmlLogin(baseDir: str) -> str:
+    accounts=noOfAccounts(baseDir)
+
     if not os.path.isfile(baseDir+'/accounts/login.png'):
         copyfile(baseDir+'/img/login.png',baseDir+'/accounts/login.png')
     if os.path.isfile(baseDir+'/img/login-background.png'):
         if not os.path.isfile(baseDir+'/accounts/login-background.png'):
             copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
 
-    loginText='<p class="login-text">Welcome. Please enter your login details below.</p>'
+    if accounts>0:
+        loginText='<p class="login-text">Welcome. Please enter your login details below.</p>'
+    else:
+        loginText='<p class="login-text">Please enter some credentials</p><p>You will become the admin of this site.</p>'
     if os.path.isfile(baseDir+'/accounts/login.txt'):
         with open(baseDir+'/accounts/login.txt', 'r') as file:
             loginText = '<p class="login-text">'+file.read()+'</p>'    
@@ -164,6 +171,16 @@ def htmlLogin(baseDir: str) -> str:
     with open(baseDir+'/epicyon-login.css', 'r') as cssFile:
         loginCSS = cssFile.read()
 
+    # show the register button
+    registerButtonStr=''
+    if getConfigParam(baseDir,'registration')=='open':
+        if int(getConfigParam(baseDir,'registrationsRemaining'))>0:
+            registerButtonStr='<button type="submit" name="register">Register</button>'
+
+    loginButtonStr=''
+    if accounts>0:
+        loginButtonStr='<button type="submit" name="submit">Login</button>'
+            
     loginForm=htmlHeader(loginCSS)
     loginForm+= \
         '<form method="POST" action="/login">' \
@@ -177,9 +194,8 @@ def htmlLogin(baseDir: str) -> str:
         '    <input type="text" placeholder="Enter Nickname" name="username" required>' \
         '' \
         '    <label for="password"><b>Password</b></label>' \
-        '    <input type="password" placeholder="Enter Password" name="password" required>' \
-        '' \
-        '    <button type="submit" name="submit">Login</button>' \
+        '    <input type="password" placeholder="Enter Password" name="password" required>'+ \
+        registerButtonStr+loginButtonStr+ \
         '  </div>' \
         '</form>'
     loginForm+=htmlFooter()

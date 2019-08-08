@@ -200,3 +200,14 @@ def validNickname(nickname: str) -> bool:
     if nickname in reservedNames:
         return False
     return True
+
+def noOfAccounts(baseDir: str) -> bool:
+    """Returns the number of accounts on the system
+    """
+    accountCtr=0
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            if '@' in account:
+                if not account.startswith('inbox'):
+                    accountCtr+=1
+    return accountCtr

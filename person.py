@@ -23,6 +23,7 @@ from auth import storeBasicCredentials
 from roles import setRole
 from media import removeMetaData
 from utils import validNickname
+from utils import noOfAccounts
 from config import setConfigParam
 from config import getConfigParam
 
@@ -216,17 +217,6 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
             storeBasicCredentials(baseDir,nickname,password)
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
-
-def noOfAccounts(baseDir: str) -> bool:
-    """Returns the number of accounts on the system
-    """
-    accountCtr=0
-    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
-        for account in dirs:
-            if '@' in account:
-                if not account.startswith('inbox'):
-                    accountCtr+=1
-    return accountCtr
 
 def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
