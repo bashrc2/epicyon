@@ -260,14 +260,11 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             pprint(messageJson)
             print('DEBUG: savePostToBox')
-        domainFull=self.server.domain
-        if self.server.port!=80 and self.server.port!=443:
-            domainFull=self.server.domain+':'+str(self.server.port)
         savePostToBox(self.server.baseDir, \
                       self.server.httpPrefix, \
                       postId, \
                       self.postToNickname, \
-                      domainFull,messageJson,'outbox')
+                      self.server.domainFull,messageJson,'outbox')
         if outboxAnnounce(self.server.baseDir,messageJson,self.server.debug):
             if self.server.debug:
                 print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
@@ -362,17 +359,13 @@ class PubServer(BaseHTTPRequestHandler):
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
             print('Inbox queue is full')
             return 1
-
-        domainFull=self.server.domain
-        if self.server.port!=80 and self.server.port!=443:
-            domainFull=self.server.domain+':'+str(self.server.port)
         
         # save the json for later queue processing            
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir, \
                                  self.server.httpPrefix, \
                                  nickname, \
-                                 domainFull, \
+                                 self.server.domainFull, \
                                  messageJson,
                                  self.headers['host'],
                                  self.headers['signature'],
