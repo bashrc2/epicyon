@@ -358,8 +358,10 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
 
     if not postId:
         statusNumber,published = getStatusNumber()
-        postId=httpPrefix+'://'+originalDomain+'/users/'+ \
-            nickname+'/statuses/'+statusNumber
+        print('*****originalDomain: '+str(originalDomain))
+        print('*****nickname: '+str(nickname))
+        print('*****statusNumber: '+str(statusNumber))
+        postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
         postJsonObject['id']=postId+'/activity'
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
