@@ -349,7 +349,7 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
     for item in followingJson['orderedItems']:
         profileStr+= \
             individualFollowAsHtml(session,wfRequest,personCache, \
-                                   domain,item,authorized,buttons)
+                                   domain,item,authorized,nickname,buttons)
     return profileStr
 
 def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
@@ -543,6 +543,7 @@ def individualFollowAsHtml(session,wfRequest: {}, \
                            personCache: {},domain: str, \
                            followUrl: str, \
                            authorized: bool, \
+                           actorNickname: str, \
                            buttons=[]) -> str:
     nickname=getNicknameFromActor(followUrl)
     domain,port=getDomainFromActor(followUrl)
@@ -560,9 +561,9 @@ def individualFollowAsHtml(session,wfRequest: {}, \
     if authorized:
         for b in buttons:
             if b=='block':
-                buttonsStr+='<a href="/inbox"><button class="buttonunfollow">Block</button></a>'
+                buttonsStr+='<a href="/users/'+actorNickname+'?block='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">Block</button></a>'
             if b=='unfollow':
-                buttonsStr+='<a href="/inbox"><button class="buttonunfollow">Unfollow</button></a>'
+                buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">Unfollow</button></a>'
 
     return \
         '<div class="container">\n' \
