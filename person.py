@@ -218,6 +218,23 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
 
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
+def registerAccount(baseDir: str,httpPrefix: str,domain: str,port: int, \
+                    nickname: str,password: str) -> bool:
+    """Registers a new account from the web interface
+    """
+    if not validNickname(nickname):
+        print('REGISTER: Nickname '+nickname+' is invalid')
+        return False
+    if len(password)<8:
+        print('REGISTER: Password should be at least 8 characters')
+        return False
+    privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint= \
+        createPerson(baseDir,nickname,domain,port, \
+                     httpPrefix,True,password)
+    if privateKeyPem:
+        return True
+    return False
+
 def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint

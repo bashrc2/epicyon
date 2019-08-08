@@ -22,6 +22,7 @@ from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
+from person import registerAccount
 from person import personLookup
 from person import personBoxJson
 from person import createSharedInbox
@@ -74,6 +75,7 @@ from webinterface import htmlSearch
 from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
+from webinterface import htmlTermsOfService
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -429,7 +431,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if self.headers.get('Accept'):
-            if 'text/html' in self.headers['Accept'] and self.path!='/login':
+            if 'text/html' in self.headers['Accept'] and self.path!='/login' and self.path!='/terms':                
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
                    '/statuses/' not in self.path and \
@@ -602,7 +604,13 @@ class PubServer(BaseHTTPRequestHandler):
         if self._webfinger():
             self.server.GETbusy=False
             return
-        
+
+        if self.path.startswith('/terms'):
+            self._login_headers('text/html')
+            self.wfile.write(htmlTermsOfService(self.server.baseDir).encode())
+            self.server.GETbusy=False
+            return
+
         if self.path.startswith('/login'):
             # request basic auth
             self._login_headers('text/html')
@@ -1654,9 +1662,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return                
             loginParams=self.rfile.read(length).decode('utf-8')            
-            loginNickname,loginPassword=htmlGetLoginCredentials(loginParams,self.server.lastLoginTime)
+            loginNickname,loginPassword,register=htmlGetLoginCredentials(loginParams,self.server.lastLoginTime)
             if loginNickname:
                 self.server.lastLoginTime=int(time.time())
+                if register:
+                    if not registerAccount(self.server.baseDir,self.server.httpPrefix, \
+                                           self.server.domain,self.server.port, \
+                                           loginNickname,loginPassword):
+                        self.server.POSTbusy=False
+                        self._redirect_headers('/login',cookie)
+                        return
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+loginNickname+'/outbox',authHeader,False):
                     print('Login failed: '+loginNickname)

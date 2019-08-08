@@ -129,27 +129,30 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     editProfileForm+=htmlFooter()
     return editProfileForm
 
-def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str):
+def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str,bool):
     """Receives login credentials via HTTPServer POST
     """
     if not loginParams.startswith('username='):
-        return None,None
+        return None,None,None
     # minimum time between login attempts
     currTime=int(time.time())
-    if currTime<lastLoginTime+5:
-        return None,None
+    if currTime<lastLoginTime+10:
+        return None,None,None
     if '&' not in loginParams:
-        return None,None
+        return None,None,None
     loginArgs=loginParams.split('&')
     nickname=None
     password=None
+    register=False
     for arg in loginArgs:
         if '=' in arg:
             if arg.split('=',1)[0]=='username':
                 nickname=arg.split('=',1)[1]
             elif arg.split('=',1)[0]=='password':
                 password=arg.split('=',1)[1]
-    return nickname,password
+            elif arg.split('=',1)[0]=='register':
+                register=True
+    return nickname,password,register
 
 def htmlLogin(baseDir: str) -> str:
     accounts=noOfAccounts(baseDir)
@@ -175,7 +178,11 @@ def htmlLogin(baseDir: str) -> str:
     registerButtonStr=''
     if getConfigParam(baseDir,'registration')=='open':
         if int(getConfigParam(baseDir,'registrationsRemaining'))>0:
+            if accounts>0:
+                loginText='<p class="login-text">Welcome. Please login or register a new account.</p>'
             registerButtonStr='<button type="submit" name="register">Register</button>'
+
+    TOSstr='<p class="login-text"><a href="/terms">Terms of Service</a></p>'
 
     loginButtonStr=''
     if accounts>0:
@@ -186,7 +193,7 @@ def htmlLogin(baseDir: str) -> str:
         '<form method="POST" action="/login">' \
         '  <div class="imgcontainer">' \
         '    <img src="login.png" alt="login image" class="loginimage">'+ \
-        loginText+ \
+        loginText+TOSstr+ \
         '  </div>' \
         '' \
         '  <div class="container">' \
@@ -200,6 +207,27 @@ def htmlLogin(baseDir: str) -> str:
         '</form>'
     loginForm+=htmlFooter()
     return loginForm
+
+def htmlTermsOfService(baseDir: str) -> str:
+    if not os.path.isfile(baseDir+'/accounts/tos.txt'):
+        copyfile(baseDir+'/default_tos.txt',baseDir+'/accounts/tos.txt')
+    if os.path.isfile(baseDir+'/img/login-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/login-background.png'):
+            copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
+
+    TOSText='Terms of Service go here.'
+    if os.path.isfile(baseDir+'/accounts/tos.txt'):
+        with open(baseDir+'/accounts/tos.txt', 'r') as file:
+            TOSText = file.read()    
+
+    TOSForm=''
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        termsCSS = cssFile.read()
+            
+        TOSForm=htmlHeader(termsCSS)
+        TOSForm+='<div class="container">'+TOSText+'</div>'
+        TOSForm+=htmlFooter()
+    return TOSForm
 
 def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     replyStr=''
