@@ -1958,6 +1958,8 @@ class PubServer(BaseHTTPRequestHandler):
                             'cc': ['https://www.w3.org/ns/activitystreams#Public']
                         }
                     }
+                    pathUsersSection=self.path.split('/users/')[1]
+                    self.postToNickname=pathUsersSection.split('/')[0]
                     self._postToOutbox(unfollowJson)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
