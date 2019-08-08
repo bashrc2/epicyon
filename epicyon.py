@@ -255,6 +255,13 @@ parser.add_argument('--location', dest='location', type=str,default=None, \
                     help='Location/City of item being shared')
 parser.add_argument('--duration', dest='duration', type=str,default=None, \
                     help='Duration for which to share an item')
+parser.add_argument('--registration', dest='registration', type=str,default=None, \
+                    help='Whether new registrations are open or closed')
+parser.add_argument('--maxregistrations', dest='maxRegistrations', type=int,default=None, \
+                    help='The maximum number of new registrations')
+parser.add_argument("--resetregistrations", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Reset the number of remaining registrations")
 args = parser.parse_args()
 
 debug=False
@@ -309,7 +316,44 @@ if baseDir.endswith('/'):
 if args.domain:
     domain=args.domain
     setConfigParam(baseDir,'domain',domain)
+    
+# maximum number of new registrations
+if not args.maxRegistrations:
+    maxRegistrations=getConfigParam(baseDir,'maxRegistrations')
+    if not maxRegistrations:
+        maxRegistrations=10
+        setConfigParam(baseDir,'maxRegistrations',str(maxRegistrations))
+    else:
+        maxRegistrations=int(maxRegistrations)
+else:
+    maxRegistrations=args.maxRegistrations
+    setConfigParam(baseDir,'maxRegistrations',str(maxRegistrations))
 
+# if this is the initial run then allow new registrations
+if not getConfigParam(baseDir,'registration'):
+    setConfigParam(baseDir,'registration','open')
+    setConfigParam(baseDir,'maxRegistrations',str(maxRegistrations))
+    setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
+
+if args.resetregistrations:    
+    setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
+    print('Number of new registrations reset to '+str(maxRegistrations))
+    
+# whether new registrations are open or closed
+if args.registration:
+    if args.registration.lower()=='open':        
+        registration=getConfigParam(baseDir,'registration')
+        if not registration:
+            setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
+        else:
+            if registration!='open':
+                setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
+        setConfigParam(baseDir,'registration','open')
+        print('New registrations open')
+    else:
+        setConfigParam(baseDir,'registration','closed')
+        print('New registrations closed')
+    
 # unique ID for the instance
 instanceId=getConfigParam(baseDir,'instanceId')
 if not instanceId:

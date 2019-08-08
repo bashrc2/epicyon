@@ -23,6 +23,8 @@ from auth import storeBasicCredentials
 from roles import setRole
 from media import removeMetaData
 from utils import validNickname
+from config import setConfigParam
+from config import getConfigParam
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -232,6 +234,11 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     """
     if not validNickname(nickname):
        return None,None,None,None
+
+    registrationsRemaining=int(getConfigParam(baseDir,'registrationsRemaining'))
+    if registrationsRemaining<=0:
+       return None,None,None,None
+
     privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint = \
         createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
     if noOfAccounts(baseDir)==1:
@@ -249,6 +256,8 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         copyfile(baseDir+'/img/image.png',baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
     if os.path.isfile(baseDir+'/img/banner.png'):
         copyfile(baseDir+'/img/banner.png',baseDir+'/accounts/'+nickname+'@'+domain+'/banner.png')
+    registrationsRemaining-=1
+    setConfigParam(baseDir,'registrationsRemaining',str(registrationsRemaining))
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
