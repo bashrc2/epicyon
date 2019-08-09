@@ -232,7 +232,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
                 if not isPublic:
                     continue
             
-            content = item['object']['content']
+            content = item['object']['content'].replace('&apos;',"'")
 
             mentions=[]
             emoji={}

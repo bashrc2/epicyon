@@ -1807,6 +1807,27 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(actorFilename, 'r') as fp:
                         actorJson=commentjson.load(fp)
                         actorChanged=False
+                        skillCtr=1
+                        newSkills={}
+                        while skillCtr<10:
+                            skillName=fields.get('skillName'+str(skillCtr))
+                            if not skillName:
+                                skillCtr+=1
+                                continue
+                            skillValue=fields.get('skillValue'+str(skillCtr))
+                            if not skillValue:
+                                skillCtr+=1
+                                continue
+                            if not actorJson['skills'].get(skillName):
+                                actorChanged=True
+                            else:
+                                if actorJson['skills'][skillName]!=int(skillValue):
+                                    actorChanged=True
+                            newSkills[skillName]=int(skillValue)
+                            skillCtr+=1
+                        if len(actorJson['skills'].items())!=len(newSkills.items()):
+                            actorChanged=True
+                        actorJson['skills']=newSkills
                         if fields.get('preferredNickname'):
                             if fields['preferredNickname']!=actorJson['preferredUsername']:
                                 actorJson['preferredUsername']=fields['preferredNickname']

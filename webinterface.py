@@ -31,6 +31,7 @@ from announce import announcedByPerson
 from blocking import isBlocked
 from content import getMentionsFromHtml
 from config import getConfigParam
+from skills import getSkills
 
 def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
@@ -84,6 +85,18 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr=allowedInstancesFile.read()
 
+    skills=getSkills(baseDir,nickname,domain)
+    skillsStr=''
+    skillCtr=1
+    if skills:
+        for skillDesc,skillValue in skills.items():
+            skillsStr+='<p><input type="text" placeholder="Skill '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="'+skillDesc+'" style="width:40%">'
+            skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="'+str(skillValue)+'"></p>'
+            skillCtr+=1
+
+    skillsStr+='<p><input type="text" placeholder="Skill '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="" style="width:40%">'
+    skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="50"></p>' \
+            
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
@@ -123,6 +136,11 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '      <br><b>Federation list</b>' \
         '      <br>Federate only with a defined set of instances. One domain name per line.' \
         '      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>' \
+        '    </div>' \
+        '    <div class="container">' \
+        '      <b>Skills</b><br>' \
+        '      If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.'+ \
+        skillsStr+ \
         '    </div>' \
         '  </div>' \
         '</form>'
