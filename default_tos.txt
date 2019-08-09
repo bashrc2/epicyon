@@ -23,3 +23,9 @@
 <p>Commercial use of original content on this instance is strictly forbidden without the prior written permission of the account holder. Publication or federation of content does not imply permission for commercial use.</p>
 
 <p>Commercial use includes the harvesting of data to create products which are then sold, such as statistics, business reports or machine learning models.</p>
+
+<h3>Copyrights</h3>
+
+<p>Epicyon is licensed under <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU AGPL version 3</a>
+
+<p>All emojis designed by <a href="https://openmoji.org">OpenMoji</a> – the open-source emoji and icon project. License: <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></p>

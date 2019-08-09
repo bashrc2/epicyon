@@ -435,6 +435,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
                    '/statuses/' not in self.path and \
+                   '/emoji/' not in self.path and \
                    '/icons/' not in self.path:
                     divertToLoginScreen=True
                     if self.path.startswith('/users/'):
@@ -493,7 +494,28 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
-            return        
+            return
+        # emoji images
+        if '/emoji/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif'):
+                emojiStr=self.path.split('/emoji/')[1]
+                emojiFilename= \
+                    self.server.baseDir+'/emoji/'+emojiStr
+                if os.path.isfile(emojiFilename):
+                    if emojiFilename.endswith('.png'):
+                        self._set_headers('image/png',cookie)
+                    elif emojiFilename.endswith('.jpg'):
+                        self._set_headers('image/jpeg',cookie)
+                    else:
+                        self._set_headers('image/gif',cookie)
+                    with open(emojiFilename, 'rb') as avFile:
+                        emojiBinary = avFile.read()
+                        self.wfile.write(emojiBinary)
+                    return        
+            self._404()
+            return
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
