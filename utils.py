@@ -170,10 +170,37 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
 def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool):
     """Recursively deletes a post and its replies and attachments
     """
-    # remove any attachment
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
+
+        # remove any attachment
         removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
+
+        # remove any hashtags index entries
+        removeHashtagIndex=False
+        if postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], dict):
+                if postJsonObject['object'].get('content'):
+                    if '#' in postJsonObject['object']['content']:
+                        removeHashtagIndex=True
+        if removeHashtagIndex:
+            if postJsonObject['object'].get('id') and postJsonObject['object'].get('tag'):
+                # get the id of the post
+                postId=postJsonObject['object']['id'].replace('/activity','')
+                for tag in postJsonObject['object']['tag']:
+                    if tag['type']!='Hashtag':
+                        continue
+                    # find the index file for this tag
+                    tagIndexFilename=baseDir+'/tags/'+tag['name'][1:]+'.txt'
+                    if not os.path.isfile(tagIndexFilename):
+                        continue
+                    # remove postId from the tag index file
+                    with open(tagIndexFilename, "r") as f:
+                        lines = f.readlines()
+                    with open(tagIndexFilename, "w+") as f:
+                        for line in lines:
+                            if line.strip("\n") != postId:
+                                f.write(line)
 
     # remove any replies
     repliesFilename=postFilename.replace('.json','.replies')
