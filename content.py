@@ -9,6 +9,37 @@ __status__ = "Production"
 import os
 import commentjson
 
+def validHashTag(hashtag: str) -> bool:
+    """Returns true if the give hashtag contains valid characters
+    """
+    validChars = set('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    if set(hashtag).issubset(validChars):
+        return True
+    return False
+
+def addHashTags(wordStr: str,httpPrefix: str,domain: str,replaceHashTags: {},postHashtags: {}) -> bool:
+    """Detects hashtags and adds them to the replacements dict
+    Also updates the hashtags list to be added to the post
+    """
+    if not wordStr.startswith('#'):
+        return False
+    if len(wordStr)<2:
+        return False
+    if replaceHashTags.get(wordStr):
+       return True
+    hashtag=wordStr[1:]
+    if not validHashTag(hashtag):
+        return False
+    hashtagUrl=httpPrefix+"://"+domain+"/tags/"+hashtag
+    postHashtags[hashtag]= {
+        'href': hashtagUrl,
+        'name': '#'+hashtag,
+        'type': 'Hashtag'
+    }
+    replaceHashTags[wordStr]= \
+        "<a href=\""+hashtagUrl+"\" class=\"mention hashtag\" rel=\"tag\">#<span>"+hashtag+"</span></a>"
+    return True
+
 def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: []) -> bool:
     """Detects mentions and adds them to the replacements dict and recipients list
     """
@@ -44,7 +75,7 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
 
 def addHtmlTags(baseDir: str,httpPrefix: str, \
                 nickname: str,domain: str,content: str, \
-                recipients: []) -> str:
+                recipients: [],hashtags: {}) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
@@ -53,6 +84,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     wordsOnly=content.replace(',',' ').replace(';',' ').replace('.',' ').replace(':',' ')
     words=wordsOnly.split(' ')
     replaceMentions={}
+    replaceHashTags={}
     if ':' in domain:
         domain=domain.split(':')[0]
     followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
@@ -70,10 +102,14 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     for wordStr in words:
         if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
             continue
+        addHashTags(wordStr,httpPrefix,domain,replaceHashTags,hashtags)
 
     # replace words with their html versions
     for wordStr,replaceStr in replaceMentions.items():
         content=content.replace(wordStr,replaceStr)
+    for wordStr,replaceStr in replaceHashTags.items():
+        content=content.replace(wordStr,replaceStr)
+        
     content=content.replace('\n','</p><p>')
     return '<p>'+content+'</p>'
                 

@@ -371,6 +371,22 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
         commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
     return filename
 
+def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
+    """Writes the post url for hashtags to a file
+    This allows posts for a hashtag to be quickly looked up
+    """
+    # create hashtags directory
+    tagsDir=baseDir+'/tags'
+    if not os.path.isdir(tagsDir):
+        os.mkdir(tagsDir)
+    tagName=tag['name']
+    tagsFilename=tagsDir+'/'+tagName[1:]+'.txt'
+    tagFile=open(tagsFilename, "a+")
+    if not tagFile:
+        return
+    tagFile.write(newPostId+'\n')
+    tagFile.close()
+
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
                    followersOnly: bool, saveToFile: bool, clientToServer: bool,
@@ -379,11 +395,15 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     """Creates a message
     """
     mentionedRecipients=[]
+    tags=[]
+    hashtagsDict={}
     if not clientToServer:
         # convert content to html
-        content=addHtmlTags(baseDir,httpPrefix, \
-                            nickname,domain,content, \
-                            mentionedRecipients)
+        content= \
+            addHtmlTags(baseDir,httpPrefix, \
+                        nickname,domain,content, \
+                        mentionedRecipients, \
+                        hashtagsDict)
 
     if port!=80 and port!=443:
         if ':' not in domain:
@@ -407,7 +427,13 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
 
     # who to send to
     toRecipients=[toUrl] + mentionedRecipients
-         
+
+    # create a list of hashtags
+    if hashtagsDict:        
+        for tagName,tag in hashtagsDict.items():
+            tags.append(tag)
+            updateHashtagsIndex(baseDir,tag,newPostId)
+
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
 
@@ -449,7 +475,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                     'en': content
                 },
                 'attachment': [],
-                'tag': [],
+                'tag': tags,
                 'replies': {
                     'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
                     'type': 'Collection',
@@ -486,7 +512,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 'en': content
             },
             'attachment': [],
-            'tag': [],
+            'tag': tags,
             'replies': {
                 'id': 'https://'+domain+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
                 'type': 'Collection',

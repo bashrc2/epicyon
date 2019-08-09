@@ -353,7 +353,7 @@ def testPostMessageBetweenServers():
     sendResult = \
         sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
-                 'Why is a mouse when it spins?', followersOnly, \
+                 'Why is a mouse when it spins? #sillyquestion', followersOnly, \
                  saveToFile, clientToServer,attachedImageFilename, \
                  attachedImageDescription,useBlurhash, federationList, \
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers, \

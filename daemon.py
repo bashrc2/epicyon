@@ -1838,7 +1838,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     addHtmlTags(self.server.baseDir, \
                                                 self.server.httpPrefix, \
                                                 nickname, \
-                                                self.server.domain,fields['bio'],[])                                
+                                                self.server.domain,fields['bio'],[],{})
                                 actorChanged=True
                         approveFollowers=False
                         if fields.get('approveFollowers'):
