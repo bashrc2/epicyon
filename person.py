@@ -242,9 +242,11 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     if not validNickname(nickname):
        return None,None,None,None
 
-    registrationsRemaining=int(getConfigParam(baseDir,'registrationsRemaining'))
-    if registrationsRemaining<=0:
-       return None,None,None,None
+    remainingVal=getConfigParam(baseDir,'registrationsRemaining')
+    if remainingVal:
+        registrationsRemaining=int(remainingVal)
+        if registrationsRemaining<=0:
+            return None,None,None,None
 
     privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint = \
         createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
@@ -263,8 +265,9 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         copyfile(baseDir+'/img/image.png',baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
     if os.path.isfile(baseDir+'/img/banner.png'):
         copyfile(baseDir+'/img/banner.png',baseDir+'/accounts/'+nickname+'@'+domain+'/banner.png')
-    registrationsRemaining-=1
-    setConfigParam(baseDir,'registrationsRemaining',str(registrationsRemaining))
+    if remainingVal:
+        registrationsRemaining-=1
+        setConfigParam(baseDir,'registrationsRemaining',str(registrationsRemaining))
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
 
 def createSharedInbox(baseDir: str,nickname: str,domain: str,port: int, \
