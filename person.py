@@ -242,9 +242,9 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     if not validNickname(nickname):
        return None,None,None,None
 
-    remainingVal=getConfigParam(baseDir,'registrationsRemaining')
-    if remainingVal:
-        registrationsRemaining=int(remainingVal)
+    remainingConfigExists=getConfigParam(baseDir,'registrationsRemaining')
+    if remainingConfigExists:
+        registrationsRemaining=int(remainingConfigExists)
         if registrationsRemaining<=0:
             return None,None,None,None
 
@@ -265,7 +265,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         copyfile(baseDir+'/img/image.png',baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
     if os.path.isfile(baseDir+'/img/banner.png'):
         copyfile(baseDir+'/img/banner.png',baseDir+'/accounts/'+nickname+'@'+domain+'/banner.png')
-    if remainingVal:
+    if remainingConfigExists:
         registrationsRemaining-=1
         setConfigParam(baseDir,'registrationsRemaining',str(registrationsRemaining))
     return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
