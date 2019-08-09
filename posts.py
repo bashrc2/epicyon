@@ -397,17 +397,18 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     mentionedRecipients=[]
     tags=[]
     hashtagsDict={}
-    if not clientToServer:
-        # convert content to html
-        content= \
-            addHtmlTags(baseDir,httpPrefix, \
-                        nickname,domain,content, \
-                        mentionedRecipients, \
-                        hashtagsDict)
 
     if port!=80 and port!=443:
         if ':' not in domain:
             domain=domain+':'+str(port)
+
+    #if not clientToServer:
+    #    # convert content to html
+    content= \
+        addHtmlTags(baseDir,httpPrefix, \
+                    nickname,domain,content, \
+                    mentionedRecipients, \
+                    hashtagsDict)
 
     statusNumber,published = getStatusNumber()
     conversationDate=published.split('T')[0]

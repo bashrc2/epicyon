@@ -1856,11 +1856,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorChanged=True
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:
+                                actorTags={}
                                 actorJson['summary']= \
                                     addHtmlTags(self.server.baseDir, \
                                                 self.server.httpPrefix, \
                                                 nickname, \
-                                                self.server.domain,fields['bio'],[],{})
+                                                self.server.domainFull, \
+                                                fields['bio'],[],actorTags)
+                                if actorTags:
+                                    actorJson['tag']=[]
+                                    for tagName,tag in actorTags.items():
+                                        actorJson['tag'].append(tag)
                                 actorChanged=True
                         approveFollowers=False
                         if fields.get('approveFollowers'):

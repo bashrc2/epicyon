@@ -40,6 +40,62 @@ def addHashTags(wordStr: str,httpPrefix: str,domain: str,replaceHashTags: {},pos
         "<a href=\""+hashtagUrl+"\" class=\"mention hashtag\" rel=\"tag\">#<span>"+hashtag+"</span></a>"
     return True
 
+def loadEmojiDict(emojiDataFilename: str,emojiDict: {}) -> None:
+    """Creates an emoji dictionary based on emoji/emoji-data.txt
+    """
+    if not os.path.isfile(emojiDataFilename):
+        return
+    with open (emojiDataFilename, "r") as fileHandler:
+        for line in fileHandler:
+            if len(line)<5:
+                continue
+            if line.startswith('#'):
+                continue
+            if '; Emoji' not in line:
+                continue
+            if ')' not in line:
+                continue
+            emojiUnicode=line.split(' ')[0]
+            if len(emojiUnicode)<4:
+                continue
+            if '..' in emojiUnicode:
+                emojiUnicode=emojiUnicode.split('..')[0]
+            emojiName=line.split(')',1)[1].replace('\n','').replace(' ','').replace('-','')
+            if '..' in emojiName:
+                emojiName=emojiName.split('..')[0]
+            emojiDict[emojiName.lower()]=emojiUnicode
+
+def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji: {},postTags: {},emojiDict: {}) -> bool:
+    """Detects Emoji and adds them to the replacements dict
+    Also updates the tags list to be added to the post
+    """
+    if not wordStr.startswith(':'):
+        return False
+    if not wordStr.endswith(':'):
+        return False
+    if len(wordStr)<3:
+        return False
+    if replaceEmoji.get(wordStr):
+       return True
+    emoji=wordStr[1:]
+    emoji=emoji[:-1]
+    if not validHashTag(emoji):
+        return False
+    if not emojiDict.get(emoji):
+        return False
+    emojiFilename=baseDir+'/emoji/'+emojiDict[emoji]+'.png'
+    if not os.path.isfile(emojiFilename):
+        return False
+    emojiUrl=httpPrefix+"://"+domain+"/emoji/"+emojiDict[emoji]+'.png'
+    postTags[emoji]= {
+        'href': emojiUrl,
+        'name': ':'+emoji+':',
+        'type': 'Emoji'
+    }
+    replaceEmoji[wordStr]= \
+        "<img src=\""+emojiUrl+"\" class=\"emoji\"/>"
+    return True
+
 def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: []) -> bool:
     """Detects mentions and adds them to the replacements dict and recipients list
     """
@@ -81,10 +137,13 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     """
     if content.startswith('<p>'):
         return content
-    wordsOnly=content.replace(',',' ').replace(';',' ').replace('.',' ').replace(':',' ')
+    wordsOnly=content.replace(',',' ').replace(';',' ').replace('.',' ')
     words=wordsOnly.split(' ')
     replaceMentions={}
     replaceHashTags={}
+    replaceEmoji={}
+    emojiDict={}
+    originalDomain=domain
     if ':' in domain:
         domain=domain.split(':')[0]
     followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
@@ -102,12 +161,19 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     for wordStr in words:
         if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
             continue
-        addHashTags(wordStr,httpPrefix,domain,replaceHashTags,hashtags)
+        if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
+            continue
+        if len(wordStr)>2 and wordStr.startswith(':') and wordStr.endswith(':') and not emojiDict:
+            print('Loading emoji lookup')
+            loadEmojiDict(baseDir+'/emoji/emoji-data.txt',emojiDict)
+        addEmoji(baseDir,wordStr,httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
     # replace words with their html versions
     for wordStr,replaceStr in replaceMentions.items():
         content=content.replace(wordStr,replaceStr)
     for wordStr,replaceStr in replaceHashTags.items():
+        content=content.replace(wordStr,replaceStr)
+    for wordStr,replaceStr in replaceEmoji.items():
         content=content.replace(wordStr,replaceStr)
         
     content=content.replace('\n','</p><p>')
