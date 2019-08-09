@@ -39,7 +39,7 @@ from utils import validNickname
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachImage
-from content import addMentions
+from content import addHtmlTags
 from auth import createBasicAuthHeader
 try: 
     from BeautifulSoup import BeautifulSoup
@@ -381,7 +381,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     mentionedRecipients=[]
     if not clientToServer:
         # convert content to html
-        content=addMentions(baseDir,httpPrefix, \
+        content=addHtmlTags(baseDir,httpPrefix, \
                             nickname,domain,content, \
                             mentionedRecipients)
 

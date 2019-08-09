@@ -86,7 +86,7 @@ from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
 from announce import outboxAnnounce
-from content import addMentions
+from content import addHtmlTags
 from media import removeMetaData
 import os
 import sys
@@ -1835,7 +1835,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:
                                 actorJson['summary']= \
-                                    addMentions(self.server.baseDir, \
+                                    addHtmlTags(self.server.baseDir, \
                                                 self.server.httpPrefix, \
                                                 nickname, \
                                                 self.server.domain,fields['bio'],[])                                
