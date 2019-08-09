@@ -242,6 +242,8 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     if not validNickname(nickname):
        return None,None,None,None
 
+    # If a config.json file doesn't exist then don't decrement
+    # remaining registrations counter
     remainingConfigExists=getConfigParam(baseDir,'registrationsRemaining')
     if remainingConfigExists:
         registrationsRemaining=int(remainingConfigExists)
