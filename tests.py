@@ -65,14 +65,22 @@ testServerEveRunning = False
 
 def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
+
+    baseDir=os.getcwd()
+    path=baseDir+'/.testHttpsigBase'
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
+    os.chdir(path)
+
     nickname='socrates'
     domain='argumentative.social'
     httpPrefix='https'
     port=5576
-    baseDir=os.getcwd()
     password='SuperSecretPassword'
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
-        createPerson(baseDir,nickname,domain,port,httpPrefix,False,password)
+        createPerson(path,nickname,domain,port,httpPrefix,False,password)
+    assert privateKeyPem
     messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
 
     headersDomain=domain
@@ -86,9 +94,9 @@ def testHttpsigBase(withDigest):
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
         headers = {'host': headersDomain, 'digest': f'SHA-256={bodyDigest}'}
 
-    path='/inbox'
+    boxpath='/inbox'
     signatureHeader = \
-        signPostHeaders(privateKeyPem, nickname, domain, port, path, httpPrefix, None)
+        signPostHeaders(privateKeyPem, nickname, domain, port, boxpath, httpPrefix, None)
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
                              '/inbox' ,False, messageBodyJsonStr)
@@ -107,6 +115,8 @@ def testHttpsigBase(withDigest):
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
                              '/inbox', True, messageBodyJsonStr) == False
+    os.chdir(baseDir)
+    shutil.rmtree(path)
 
 def testHttpsig():
     testHttpsigBase(False)

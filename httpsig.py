@@ -30,7 +30,7 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
-        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
+        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}
     privateKeyPem = RSA.import_key(privateKeyPem)
     headers.update({
         '(request-target)': f'post {path}',

@@ -258,6 +258,8 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         setRole(baseDir,nickname,domain,'instance','moderator')
         setRole(baseDir,nickname,domain,'instance','delegator')
 
+    if not os.path.isdir(baseDir+'/accounts'):
+        os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         os.mkdir(baseDir+'/accounts/'+nickname+'@'+domain)
     
