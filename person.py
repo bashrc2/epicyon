@@ -113,6 +113,13 @@ def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
             commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
     return True
 
+def accountExists(baseDir: str,nickname: str,domain: str) -> bool:
+    """Returns true if the given account exists
+    """
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    return os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain)
+
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
@@ -222,6 +229,8 @@ def registerAccount(baseDir: str,httpPrefix: str,domain: str,port: int, \
                     nickname: str,password: str) -> bool:
     """Registers a new account from the web interface
     """
+    if accountExists(baseDir,nickname,domain):
+        return False
     if not validNickname(nickname):
         print('REGISTER: Nickname '+nickname+' is invalid')
         return False
