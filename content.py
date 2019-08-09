@@ -60,7 +60,7 @@ def loadEmojiDict(emojiDataFilename: str,emojiDict: {}) -> None:
                 continue
             if '..' in emojiUnicode:
                 emojiUnicode=emojiUnicode.split('..')[0]
-            emojiName=line.split(')',1)[1].replace('\n','').replace(' ','').replace('-','')
+            emojiName=line.split(')',1)[1].strip().replace('\n','').replace(' ','').replace('-','')
             if '..' in emojiName:
                 emojiName=emojiName.split('..')[0]
             emojiDict[emojiName.lower()]=emojiUnicode

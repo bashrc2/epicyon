@@ -80,6 +80,8 @@ body, html {
 
 .hero-text img.emoji {
     width: 50px;
+    padding: 0 0;
+    margin: 0 0;
     float: none;
 }
 
@@ -294,8 +296,13 @@ body, html {
 }
 
 .container img.emoji {
-    width: 50px;
     float: none;
+    width: 50px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    border-radius: 0px;
 }
 
 .containericons {

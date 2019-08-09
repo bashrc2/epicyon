@@ -24,7 +24,16 @@
 
 0023          ; Emoji                #  1.1  [1] (#️)       number sign
 002A          ; Emoji                #  1.1  [1] (*️)       asterisk
-0030..0039    ; Emoji                #  1.1 [10] (0️..9️)    digit zero..digit nine
+0030..0039    ; Emoji                #  1.1 [10] (0️..9️)    zero
+0031    ; Emoji                #  1.1 [10] (0️..9️)    one
+0032    ; Emoji                #  1.1 [10] (0️..9️)    two
+0033    ; Emoji                #  1.1 [10] (0️..9️)    three
+0034    ; Emoji                #  1.1 [10] (0️..9️)    four
+0035    ; Emoji                #  1.1 [10] (0️..9️)    five
+0036    ; Emoji                #  1.1 [10] (0️..9️)    six
+0037    ; Emoji                #  1.1 [10] (0️..9️)    seven
+0038    ; Emoji                #  1.1 [10] (0️..9️)    eight
+0039    ; Emoji                #  1.1 [10] (0️..9️)    none
 00A9          ; Emoji                #  1.1  [1] (©️)       copyright
 00AE          ; Emoji                #  1.1  [1] (®️)       registered
 203C          ; Emoji                #  1.1  [1] (‼️)       double exclamation mark
@@ -49,20 +58,25 @@
 2614..2615    ; Emoji                #  4.0  [2] (☔..☕)    umbrella with rain drops..hot beverage
 2618          ; Emoji                #  4.1  [1] (☘️)       shamrock
 261D          ; Emoji                #  1.1  [1] (☝️)       index pointing up
-2620          ; Emoji                #  1.1  [1] (☠️)       skull and crossbones
+2620          ; Emoji                #  1.1  [1] (☠️)       skullcrossbones
+2620          ; Emoji                #  1.1  [1] (☠️)       skull
 2622..2623    ; Emoji                #  1.1  [2] (☢️..☣️)    radioactive..biohazard
 2626          ; Emoji                #  1.1  [1] (☦️)       orthodox cross
 262A          ; Emoji                #  1.1  [1] (☪️)       star and crescent
 262E..262F    ; Emoji                #  1.1  [2] (☮️..☯️)    peace symbol..yin yang
 2638..263A    ; Emoji                #  1.1  [3] (☸️..☺️)    wheel of dharma..smiling face
-2640          ; Emoji                #  1.1  [1] (♀️)       female sign
-2642          ; Emoji                #  1.1  [1] (♂️)       male sign
+2639    ; Emoji                #  1.1  [3] (☸️..☺️)    sad
+263A    ; Emoji                #  1.1  [3] (☸️..☺️)    smile
+2640          ; Emoji                #  1.1  [1] (♀️)       female
+2642          ; Emoji                #  1.1  [1] (♂️)       male
 2648..2653    ; Emoji                #  1.1 [12] (♈..♓)    Aries..Pisces
 265F..2660    ; Emoji                #  1.1  [2] (♟️..♠️)    chess pawn..spade suit
 2663          ; Emoji                #  1.1  [1] (♣️)       club suit
-2665..2666    ; Emoji                #  1.1  [2] (♥️..♦️)    heart suit..diamond suit
+2665          ; Emoji                #  1.1  [2] (♥️..♦️)    heart
+2666          ; Emoji                #  1.1  [2] (♥️..♦️)    diamond
 2668          ; Emoji                #  1.1  [1] (♨️)       hot springs
-267B          ; Emoji                #  3.2  [1] (♻️)       recycling symbol
+267B          ; Emoji                #  3.2  [1] (♻️)       recycle
+267B          ; Emoji                #  3.2  [1] (♻️)       recycling
 267E..267F    ; Emoji                #  4.1  [2] (♾️..♿)    infinity..wheelchair symbol
 2692..2697    ; Emoji                #  4.1  [6] (⚒️..⚗️)    hammer and pick..alembic
 2699          ; Emoji                #  4.1  [1] (⚙️)       gear
@@ -71,6 +85,8 @@
 26AA..26AB    ; Emoji                #  4.1  [2] (⚪..⚫)    white circle..black circle
 26B0..26B1    ; Emoji                #  4.1  [2] (⚰️..⚱️)    coffin..funeral urn
 26BD..26BE    ; Emoji                #  5.2  [2] (⚽..⚾)    soccer ball..baseball
+26BD    ; Emoji                #  5.2  [2] (⚽..⚾)    football
+26BE    ; Emoji                #  5.2  [2] (⚽..⚾)    baseball
 26C4..26C5    ; Emoji                #  5.2  [2] (⛄..⛅)    snowman without snow..sun behind cloud
 26C8          ; Emoji                #  5.2  [1] (⛈️)       cloud with lightning and rain
 26CE          ; Emoji                #  6.0  [1] (⛎)       Ophiuchus
@@ -151,6 +167,46 @@
 1F3F7         ; Emoji                #  7.0  [1] (🏷️)       label
 1F3F8..1F3FF  ; Emoji                #  8.0  [8] (🏸..🏿)    badminton..dark skin tone
 1F400..1F43E  ; Emoji                #  6.0 [63] (🐀..🐾)    rat..paw prints
+1F401  ; Emoji                #  6.0 [63] (🐀..🐾)    mouse
+1F402  ; Emoji                #  6.0 [63] (🐀..🐾)    bull
+1F403  ; Emoji                #  6.0 [63] (🐀..🐾)    gnu
+1F404  ; Emoji                #  6.0 [63] (🐀..🐾)    cow
+1F405  ; Emoji                #  6.0 [63] (🐀..🐾)    tiger
+1F406  ; Emoji                #  6.0 [63] (🐀..🐾)    leopard
+1F407  ; Emoji                #  6.0 [63] (🐀..🐾)    rabbit
+1F408  ; Emoji                #  6.0 [63] (🐀..🐾)    cat
+1F409  ; Emoji                #  6.0 [63] (🐀..🐾)    dragon
+1F410  ; Emoji                #  6.0 [63] (🐀..🐾)    goat
+1F411  ; Emoji                #  6.0 [63] (🐀..🐾)    sheep
+1F412  ; Emoji                #  6.0 [63] (🐀..🐾)    monkey
+1F413  ; Emoji                #  6.0 [63] (🐀..🐾)    chicken
+1F414  ; Emoji                #  6.0 [63] (🐀..🐾)    hen
+1F415  ; Emoji                #  6.0 [63] (🐀..🐾)    dog
+1F415-200D-1F9-BA  ; Emoji                #  6.0 [63] (🐀..🐾)    guidedog
+1F416  ; Emoji                #  6.0 [63] (🐀..🐾)    pig
+1F417  ; Emoji                #  6.0 [63] (🐀..🐾)    boar
+1F418  ; Emoji                #  6.0 [63] (🐀..🐾)    elephant
+1F419  ; Emoji                #  6.0 [63] (🐀..🐾)    octopus
+1F420  ; Emoji                #  6.0 [63] (🐀..🐾)    angelfish
+1F421  ; Emoji                #  6.0 [63] (🐀..🐾)    pufferfish
+1F422  ; Emoji                #  6.0 [63] (🐀..🐾)    turtle
+1F423  ; Emoji                #  6.0 [63] (🐀..🐾)    chickhatch
+1F424  ; Emoji                #  6.0 [63] (🐀..🐾)    chickface
+1F425  ; Emoji                #  6.0 [63] (🐀..🐾)    chick
+1F426  ; Emoji                #  6.0 [63] (🐀..🐾)    bird
+1F427  ; Emoji                #  6.0 [63] (🐀..🐾)    penguin
+1F428  ; Emoji                #  6.0 [63] (🐀..🐾)    koala
+1F429  ; Emoji                #  6.0 [63] (🐀..🐾)    poodle
+1F430  ; Emoji                #  6.0 [63] (🐀..🐾)    rabbitface
+1F431  ; Emoji                #  6.0 [63] (🐀..🐾)    catface
+1F432  ; Emoji                #  6.0 [63] (🐀..🐾)    monkeyface
+1F433  ; Emoji                #  6.0 [63] (🐀..🐾)    orca
+1F434  ; Emoji                #  6.0 [63] (🐀..🐾)    horsehead
+1F435  ; Emoji                #  6.0 [63] (🐀..🐾)    chimpface
+1F436  ; Emoji                #  6.0 [63] (🐀..🐾)    dogface
+1F437  ; Emoji                #  6.0 [63] (🐀..🐾)    pigface
+1F438  ; Emoji                #  6.0 [63] (🐀..🐾)    frogface
+1F439  ; Emoji                #  6.0 [63] (🐀..🐾)    hamsterface
 1F43F         ; Emoji                #  7.0  [1] (🐿️)       chipmunk
 1F440         ; Emoji                #  6.0  [1] (👀)       eyes
 1F441         ; Emoji                #  7.0  [1] (👁️)       eye
@@ -243,7 +299,8 @@
 1F950..1F95E  ; Emoji                #  9.0 [15] (🥐..🥞)    croissant..pancakes
 1F95F..1F96B  ; Emoji                # 10.0 [13] (🥟..🥫)    dumpling..canned food
 1F96C..1F970  ; Emoji                # 11.0  [5] (🥬..🥰)    leafy green..smiling face with hearts
-1F971         ; Emoji                # 12.0  [1] (🥱)       yawning face
+1F970         ; Emoji                # 12.0  [1] (🥱)       love
+1F971         ; Emoji                # 12.0  [1] (🥱)       yawn
 1F973..1F976  ; Emoji                # 11.0  [4] (🥳..🥶)    partying face..cold face
 1F97A         ; Emoji                # 11.0  [1] (🥺)       pleading face
 1F97B         ; Emoji                # 12.0  [1] (🥻)       sari
@@ -382,9 +439,14 @@
 1F7E0..1F7EB  ; Emoji_Presentation   # 12.0 [12] (🟠..🟫)    orange circle..brown square
 1F90D..1F90F  ; Emoji_Presentation   # 12.0  [3] (🤍..🤏)    white heart..pinching hand
 1F910..1F918  ; Emoji_Presentation   #  8.0  [9] (🤐..🤘)    zipper-mouth face..sign of the horns
+1F914  ; Emoji_Presentation   #  8.0  [9] (🤐..🤘)    thinking
+1F915  ; Emoji_Presentation   #  8.0  [9] (🤐..🤘)    sick
+1F916  ; Emoji_Presentation   #  8.0  [9] (🤐..🤘)    robot
+1F917  ; Emoji_Presentation   #  8.0  [9] (🤐..🤘)    happy
 1F919..1F91E  ; Emoji_Presentation   #  9.0  [6] (🤙..🤞)    call me hand..crossed fingers
 1F91F         ; Emoji_Presentation   # 10.0  [1] (🤟)       love-you gesture
 1F920..1F927  ; Emoji_Presentation   #  9.0  [8] (🤠..🤧)    cowboy hat face..sneezing face
+1F923  ; Emoji_Presentation   #  9.0  [8] (🤠..🤧)    laugh
 1F928..1F92F  ; Emoji_Presentation   # 10.0  [8] (🤨..🤯)    face with raised eyebrow..exploding head
 1F930         ; Emoji_Presentation   #  9.0  [1] (🤰)       pregnant woman
 1F931..1F932  ; Emoji_Presentation   # 10.0  [2] (🤱..🤲)    breast-feeding..palms up together
@@ -644,6 +706,8 @@ E0020..E007F  ; Emoji_Component      #  3.1 [96] (󠀠..󠁿)      tag space..ca
 1F440         ; Extended_Pictographic#  6.0  [1] (👀)       eyes
 1F441         ; Extended_Pictographic#  7.0  [1] (👁️)       eye
 1F442..1F4F7  ; Extended_Pictographic#  6.0[182] (👂..📷)    ear..camera
+1F48B  ; Extended_Pictographic#  6.0[182] (👂..📷)    lips
+1F48C  ; Extended_Pictographic#  6.0[182] (👂..📷)    loveletter
 1F4F8         ; Extended_Pictographic#  7.0  [1] (📸)       camera with flash
 1F4F9..1F4FC  ; Extended_Pictographic#  6.0  [4] (📹..📼)    video camera..videocassette
 1F4FD..1F4FE  ; Extended_Pictographic#  7.0  [2] (📽️..📾)    film projector..PORTABLE STEREO
@@ -662,22 +726,30 @@ E0020..E007F  ; Emoji_Component      #  3.1 [96] (󠀠..󠁿)      tag space..ca
 1F601..1F610  ; Extended_Pictographic#  6.0 [16] (😁..😐)    beaming face with smiling eyes..neutral face
 1F611         ; Extended_Pictographic#  6.1  [1] (😑)       expressionless face
 1F612..1F614  ; Extended_Pictographic#  6.0  [3] (😒..😔)    unamused face..pensive face
-1F615         ; Extended_Pictographic#  6.1  [1] (😕)       confused face
-1F616         ; Extended_Pictographic#  6.0  [1] (😖)       confounded face
-1F617         ; Extended_Pictographic#  6.1  [1] (😗)       kissing face
-1F618         ; Extended_Pictographic#  6.0  [1] (😘)       face blowing a kiss
+1F612  ; Extended_Pictographic#  6.0  [3] (😒..😔)    glum
+1F613  ; Extended_Pictographic#  6.0  [3] (😒..😔)    cry
+1F614  ; Extended_Pictographic#  6.0  [3] (😒..😔)    sad
+1F615         ; Extended_Pictographic#  6.1  [1] (😕)       confused
+1F616         ; Extended_Pictographic#  6.0  [1] (😖)       confounded
+1F617         ; Extended_Pictographic#  6.1  [1] (😗)       kissing
+1F618         ; Extended_Pictographic#  6.0  [1] (😘)       blowkiss
 1F619         ; Extended_Pictographic#  6.1  [1] (😙)       kissing face with smiling eyes
 1F61A         ; Extended_Pictographic#  6.0  [1] (😚)       kissing face with closed eyes
 1F61B         ; Extended_Pictographic#  6.1  [1] (😛)       face with tongue
 1F61C..1F61E  ; Extended_Pictographic#  6.0  [3] (😜..😞)    winking face with tongue..disappointed face
 1F61F         ; Extended_Pictographic#  6.1  [1] (😟)       worried face
-1F620..1F625  ; Extended_Pictographic#  6.0  [6] (😠..😥)    angry face..sad but relieved face
+1F620  ; Extended_Pictographic#  6.0  [6] (😠..😥)    angry
+1F621  ; Extended_Pictographic#  6.0  [6] (😠..😥)    angry2
+1F622  ; Extended_Pictographic#  6.0  [6] (😠..😥)    sadface
+1F623  ; Extended_Pictographic#  6.0  [6] (😠..😥)    dismay
+1F624  ; Extended_Pictographic#  6.0  [6] (😠..😥)    happyeyebrow
 1F626..1F627  ; Extended_Pictographic#  6.1  [2] (😦..😧)    frowning face with open mouth..anguished face
 1F628..1F62B  ; Extended_Pictographic#  6.0  [4] (😨..😫)    fearful face..tired face
 1F62C         ; Extended_Pictographic#  6.1  [1] (😬)       grimacing face
 1F62D         ; Extended_Pictographic#  6.0  [1] (😭)       loudly crying face
 1F62E..1F62F  ; Extended_Pictographic#  6.1  [2] (😮..😯)    face with open mouth..hushed face
 1F630..1F633  ; Extended_Pictographic#  6.0  [4] (😰..😳)    anxious face with sweat..flushed face
+1F631  ; Extended_Pictographic#  6.0  [4] (😰..😳)    shocked
 1F634         ; Extended_Pictographic#  6.1  [1] (😴)       sleeping face
 1F635..1F640  ; Extended_Pictographic#  6.0 [12] (😵..🙀)    dizzy face..weary cat
 1F641..1F642  ; Extended_Pictographic#  7.0  [2] (🙁..🙂)    slightly frowning face..slightly smiling face
@@ -744,9 +816,10 @@ E0020..E007F  ; Emoji_Component      #  3.1 [96] (󠀠..󠁿)      tag space..ca
 1F9AE..1F9AF  ; Extended_Pictographic# 12.0  [2] (🦮..🦯)    guide dog..probing cane
 1F9B0..1F9B9  ; Extended_Pictographic# 11.0 [10] (🦰..🦹)    red hair..supervillain
 1F9BA..1F9BF  ; Extended_Pictographic# 12.0  [6] (🦺..🦿)    safety vest..mechanical leg
-1F9C0         ; Extended_Pictographic#  8.0  [1] (🧀)       cheese wedge
-1F9C1..1F9C2  ; Extended_Pictographic# 11.0  [2] (🧁..🧂)    cupcake..salt
+1F9C0         ; Extended_Pictographic#  8.0  [1] (🧀)       cheese
+1F9C1..1F9C2  ; Extended_Pictographic# 11.0  [2] (🧁..🧂)    cupcake
 1F9C3..1F9CA  ; Extended_Pictographic# 12.0  [8] (🧃..🧊)    beverage box..ice cube
+1F9C5  ; Extended_Pictographic# 12.0  [8] (🧃..🧊)    onion
 1F9CB..1F9CC  ; Extended_Pictographic#   NA  [2] (🧋..🧌)    <reserved-1F9CB>..<reserved-1F9CC>
 1F9CD..1F9CF  ; Extended_Pictographic# 12.0  [3] (🧍..🧏)    person standing..deaf person
 1F9D0..1F9E6  ; Extended_Pictographic# 10.0 [23] (🧐..🧦)    face with monocle..socks
@@ -763,6 +836,8 @@ E0020..E007F  ; Emoji_Component      #  3.1 [96] (󠀠..󠁿)      tag space..ca
 1FA83..1FA8F  ; Extended_Pictographic#   NA [13] (🪃..🪏)    <reserved-1FA83>..<reserved-1FA8F>
 1FA90..1FA95  ; Extended_Pictographic# 12.0  [6] (🪐..🪕)    ringed planet..banjo
 1FA96..1FFFD  ; Extended_Pictographic#   NA[1384] (🪖..🿽)   <reserved-1FA96>..<reserved-1FFFD>
+E040  ; Extended_Pictographic#   NA[1384] (🪖..🿽)   twitter
+E042  ; Extended_Pictographic#   NA[1384] (🪖..🿽)   facebook
 
 # Total elements: 3793
 
