@@ -396,7 +396,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         if item['type']=='Create' or item['type']=='Announce':
             profileStr+= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,item,None,True,False)
+                                     nickname,domain,port,item,None,True,False,False)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -653,7 +653,7 @@ def individualPostAsHtml(baseDir: str, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
                          avatarUrl: str, showAvatarDropdown: bool,
-                         showIcons=False) -> str:
+                         allowDeletion: bool,showIcons=False) -> str:
     """ Shows a single post as html
     """
     titleStr=''
@@ -799,10 +799,11 @@ def individualPostAsHtml(baseDir: str, \
         '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
         '<img src="/icons/'+likeIcon+'"/></a>'
     deleteStr=''
-    if '/users/'+nickname+'/' in postJsonObject['object']['id']:
-        deleteStr= \
-            '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
-            '<img src="/icons/delete.png"/></a>'
+    if allowDeletion:
+        if '/users/'+nickname+'/' in postJsonObject['object']['id']:
+            deleteStr= \
+                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
+                '<img src="/icons/delete.png"/></a>'
 
     if showIcons:
         replyToLink=postJsonObject['object']['id']
@@ -848,7 +849,7 @@ def individualPostAsHtml(baseDir: str, \
 def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,timelineJson: {}, \
-                 boxName: str) -> str:
+                 boxName: str,allowDeletion: bool) -> str:
     """Show the timeline as html
     """
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
@@ -898,7 +899,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         if item['type']=='Create' or item['type']=='Announce':
             itemCtr+=1
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                        nickname,domain,port,item,None,True,showIndividualPostIcons)
+                                        nickname,domain,port,item,None,True, \
+                                        allowDeletion,showIndividualPostIcons)
     if itemCtr>=itemsPerPage:
         tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
     tlStr+=htmlFooter()
@@ -906,19 +908,21 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
 
 def htmlInbox(pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
-              nickname: str,domain: str,port: int,inboxJson: {}) -> str:
+              nickname: str,domain: str,port: int,inboxJson: {}, \
+              allowDeletion: bool) -> str:
     """Show the inbox as html
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,inboxJson,'inbox')
+                        nickname,domain,port,inboxJson,'inbox',allowDeletion)
 
 def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
-               nickname: str,domain: str,port: int,outboxJson: {}) -> str:
+               nickname: str,domain: str,port: int,outboxJson: {}, \
+               allowDeletion: bool) -> str:
     """Show the Outbox as html
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,outboxJson,'outbox')
+                        nickname,domain,port,outboxJson,'outbox',allowDeletion)
 
 def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,authorized: bool, \
@@ -928,7 +932,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     postStr='<script>'+contentWarningScript()+'</script>'
     postStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject,None,True,False)
+                             nickname,domain,port,postJsonObject,None,True,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -941,7 +945,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
             postStr= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
-                                     None,True,False)+postStr
+                                     None,True,False,False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -956,7 +960,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
             for item in repliesJson['orderedItems']:
                 postStr+= \
                     individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                         nickname,domain,port,item,None,True,False)
+                                         nickname,domain,port,item,None,True,False,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
@@ -967,7 +971,7 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                             nickname,domain,port,item,None,True,False)    
+                                             nickname,domain,port,item,None,True,False,False)    
 
     return htmlHeader()+repliesStr+htmlFooter()
 
@@ -1239,7 +1243,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                 individualPostAsHtml(baseDir, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
-                                     item,avatarUrl,False,False)
+                                     item,avatarUrl,False,False,False)
             i+=1
             if i>=20:
                 break

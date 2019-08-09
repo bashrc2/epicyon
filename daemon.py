@@ -450,6 +450,9 @@ class PubServer(BaseHTTPRequestHandler):
                                self.path.endswith('/shares'):
                                 divertToLoginScreen=False
                     if divertToLoginScreen and not authorized:
+                        if self.server.debug:
+                            print('DEBUG: divertToLoginScreen='+str(divertToLoginScreen))
+                            print('DEBUG: authorized='+str(authorized))
                         self.send_response(303)
                         self.send_header('Location', '/login')
                         self.end_headers()
@@ -863,7 +866,10 @@ class PubServer(BaseHTTPRequestHandler):
         # delete a post from the web interface icon
         if authorized and self.server.allowDeletion and '?delete=' in self.path:
             deleteUrl=self.path.split('?delete=')[1]
-            actor=self.path.split('?delete=')[0]
+            actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?delete=')[0]
+            if self.server.debug:
+                print('DEBUG: deleteUrl='+deleteUrl)
+                print('DEBUG: actor='+actor)
             if actor not in deleteUrl:
                 # You can only delete your own posts
                 self.server.GETbusy=False
@@ -877,10 +883,12 @@ class PubServer(BaseHTTPRequestHandler):
             deleteJson= {
                 'actor': actor,
                 'object': deleteUrl,
-                'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                'to': ['https://www.w3.org/ns/activitystreams#Public',actor],
                 'cc': [actor+'/followers'],
                 'type': 'Delete'
-            }            
+            }
+            if self.server.debug:
+                pprint(deleteJson)
             self._postToOutbox(deleteJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
@@ -1186,7 +1194,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                        nickname, \
                                                        self.server.domain, \
                                                        self.server.port, \
-                                                       inboxFeed).encode('utf-8'))
+                                                       inboxFeed, \
+                                                       self.server.allowDeletion).encode('utf-8'))
                         else:
                             self._set_headers('application/json',None)
                             self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
@@ -1242,7 +1251,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             nickname, \
                                             self.server.domain, \
                                             self.server.port, \
-                                            outboxFeed).encode('utf-8'))
+                                            outboxFeed, \
+                                            self.server.allowDeletion).encode('utf-8'))
             else:
                 self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
