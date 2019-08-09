@@ -80,6 +80,7 @@ body, html {
 
 .hero-text img.emoji {
     width: 50px;
+    float: none;
 }
 
 .hero-text button {
@@ -294,10 +295,7 @@ body, html {
 
 .container img.emoji {
     width: 50px;
-    padding: 0px 7px;
-    margin-right: 20px;
-    border-radius: 10%;
-    float: center;
+    float: none;
 }
 
 .containericons {

@@ -375,7 +375,9 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
     """Writes the post url for hashtags to a file
     This allows posts for a hashtag to be quickly looked up
     """
-    # create hashtags directory
+    if tag['type']!='Hashtag':
+        return
+    # create hashtags directory    
     tagsDir=baseDir+'/tags'
     if not os.path.isdir(tagsDir):
         os.mkdir(tagsDir)

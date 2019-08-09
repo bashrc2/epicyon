@@ -513,7 +513,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(emojiFilename, 'rb') as avFile:
                         emojiBinary = avFile.read()
                         self.wfile.write(emojiBinary)
-                    return        
+                    return
             self._404()
             return
         # show media
