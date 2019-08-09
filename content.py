@@ -17,20 +17,20 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
     if len(wordStr)<2:
         return False
     possibleHandle=wordStr[1:]
-    #if '@' not in possibleHandle:
-    #    # fall back to a best effort match against the following list
-    #    # if no domain was specified. eg. @nick
-    #    possibleNickname=possibleHandle
-    #    for follow in following:
-    #        if follow.startswith(possibleNickname+'@'):
-    #            replaceDomain=follow.replace('\n','').split('@')[1]
-    #            recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
-    #            if recipientActor not in recipients:
-    #                recipients.append(recipientActor)
-    #            replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
-    #            replaceFound=True
-    #            return True
-    #    return False
+    if '@' not in possibleHandle:
+        # fall back to a best effort match against the following list
+        # if no domain was specified. eg. @nick
+        possibleNickname=possibleHandle
+        for follow in following:
+            if follow.startswith(possibleNickname+'@'):
+                replaceDomain=follow.replace('\n','').split('@')[1]
+                recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
+                if recipientActor not in recipients:
+                    recipients.append(recipientActor)
+                replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+                replaceFound=True
+                return True
+        return False
     possibleNickname=possibleHandle.split('@')[0]
     possibleDomain=possibleHandle.split('@')[1]
     for follow in following:
