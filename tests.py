@@ -1117,7 +1117,7 @@ def testClientToServer():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==0
     sendResult= \
-        sendPostViaServer(sessionAlice,'alice',password, \
+        sendPostViaServer(aliceDir,sessionAlice,'alice',password, \
                           aliceDomain,alicePort, \
                           'bob',bobDomain,bobPort,None, \
                           httpPrefix,'Sent from my ActivityPub client',followersOnly, \

@@ -860,7 +860,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
-def sendPostViaServer(session,fromNickname: str,password: str, \
+def sendPostViaServer(baseDir,session,fromNickname: str,password: str, \
                       fromDomain: str, fromPort: int, \
                       toNickname: str, toDomain: str, toPort: int, cc: str, \
                       httpPrefix: str, content: str, followersOnly: bool, \
@@ -923,7 +923,7 @@ def sendPostViaServer(session,fromNickname: str,password: str, \
                 toDomainFull=toDomain+':'+str(toPort)        
             toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
     postJsonObject = \
-            createPostBase(None, \
+            createPostBase(baseDir, \
                            fromNickname,fromDomain,fromPort, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \

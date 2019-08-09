@@ -505,7 +505,7 @@ if args.message:
     followersOnly=False
     print('Sending post to '+args.sendto)
 
-    sendPostViaServer(session,args.nickname,args.password, \
+    sendPostViaServer(baseDir,session,args.nickname,args.password, \
                       domain,port, \
                       toNickname,toDomain,toPort,ccUrl, \
                       httpPrefix,sendMessage,followersOnly, \
