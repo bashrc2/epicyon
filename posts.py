@@ -435,7 +435,13 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     if hashtagsDict:        
         for tagName,tag in hashtagsDict.items():
             tags.append(tag)
-            updateHashtagsIndex(baseDir,tag,newPostId)
+            isPublic=False
+            for recipient in toRecipients:
+                if recipient.endswith('#Public'):
+                    isPublic=True
+                    break
+            if isPublic:
+                updateHashtagsIndex(baseDir,tag,newPostId)
 
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
