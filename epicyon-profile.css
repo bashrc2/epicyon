@@ -3,6 +3,7 @@
 :root {
     --main-bg-color: #282c37;
     --main-bg-color-darker: #232c37;
+    --main-header-color-roles: #282237;
     --main-fg-color: #9baec8;
     --main-link-color: #2980d9;
     --main-visited-color: #1580d9;
@@ -98,12 +99,12 @@ a:link {
 .roles {
     text-align: center;
     left: 35%;
-    background-color: #f1f1f1;
+    background-color: var(--main-header-color-roles);
 }
 
 .roles-inner {
     padding: 10px 25px;
-    background-color: #ffffff;
+    background-color: var(--main-bg-color);
 }
 
 .hero-text img {
@@ -400,7 +401,7 @@ a:link {
 
 .share-title {
     margin-top: 0px;
-    color: #222;
+    color: var(--main-fg-color);
 }
 
 .skill-title {
@@ -435,6 +436,8 @@ input[type=text], select, textarea {
     margin-bottom: 16px;
     resize: vertical;
     font-size: 18px;
+    background-color: var(--main-bg-color-darker);
+    color: var(--main-fg-color);
 }
 
 input[type=number] {
@@ -554,7 +557,7 @@ input[type=submit]:hover {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f1f1f1;
+    background-color: var(--main-bg-color);
     min-width: 300px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
@@ -562,7 +565,7 @@ input[type=submit]:hover {
 
 /* Links inside the dropdown */
 .dropdown-content a {
-    color: black;
+    color: var(--main-fg-color);
     padding: 12px 16px;
     text-decoration: none;
     display: block;
@@ -592,7 +595,7 @@ input[type=submit]:hover {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #ddd;}
+.dropdown-content a:hover {background-color: #111;}
 
 /* Show the dropdown menu on hover */
 .dropdown:hover .dropdown-content {display: block;}
