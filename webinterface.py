@@ -59,7 +59,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
         endIndex=0
         
     hashtagSearchForm=htmlHeader(hashtagSearchCSS)
-    hashtagSearchForm+='<center><h1>Results for #'+hashtag+'</h1></center>'
+    hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
     if startIndex!=len(lines)-1:
         # previous page link
         hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
