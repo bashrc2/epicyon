@@ -570,7 +570,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
     else:
-        editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>Profile </span></button></a>'
+        editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>Edit </span></button></a>'
         linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="Switch to timeline view" alt="Switch to timeline view">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
