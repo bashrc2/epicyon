@@ -601,7 +601,7 @@ input[type=submit]:hover {
 .dropdown:hover .dropdown-content {display: block;}
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
+.dropdown:hover .dropbtn {background-color: var(--main-fg-color);}
 
 .dropdown-timeline-content a:hover {background-color: #ddd;}
 
@@ -609,7 +609,7 @@ input[type=submit]:hover {
 .dropdown-timeline:hover .dropdown-timeline-content {display: block;}
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown-timeline:hover .dropbtn {background-color: #3e8e41;}
+.dropdown-timeline:hover .dropbtn {background-color: var(--main-fg-color);}
 
 input[type=checkbox]
 {
@@ -645,13 +645,13 @@ input[type=checkbox]
   appearance: none;
   width: 25px;
   height: 25px;
-  background: #4CAF50;
+  background: var(--main-bg-color);
   cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
   width: 25px;
   height: 25px;
-  background: #4CAF50;
+  background: var(--main-bg-color);
   cursor: pointer;
 }
