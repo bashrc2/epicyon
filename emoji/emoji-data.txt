@@ -145,12 +145,24 @@
 1F232..1F23A  ; Emoji                #  6.0  [9] (🈲..🈺)    Japanese “prohibited” button..Japanese “open for business” button
 1F250..1F251  ; Emoji                #  6.0  [2] (🉐..🉑)    Japanese “bargain” button..Japanese “acceptable” button
 1F300..1F320  ; Emoji                #  6.0 [33] (🌀..🌠)    cyclone..shooting star
+1F308  ; Emoji                #  6.0 [33] (🌀..🌠)    rainbow
 1F321         ; Emoji                #  7.0  [1] (🌡️)       thermometer
 1F324..1F32C  ; Emoji                #  7.0  [9] (🌤️..🌬️)    sun behind small cloud..wind face
 1F32D..1F32F  ; Emoji                #  8.0  [3] (🌭..🌯)    hot dog..burrito
-1F330..1F335  ; Emoji                #  6.0  [6] (🌰..🌵)    chestnut..cactus
-1F336         ; Emoji                #  7.0  [1] (🌶️)       hot pepper
-1F337..1F37C  ; Emoji                #  6.0 [70] (🌷..🍼)    tulip..baby bottle
+1F332  ; Emoji                #  6.0  [6] (🌰..🌵)    pinetree
+1F335  ; Emoji                #  6.0  [6] (🌰..🌵)    cactus
+1F336         ; Emoji                #  7.0  [1] (🌶️)       redpepper
+1F337  ; Emoji                #  6.0 [70] (🌷..🍼)    tulip
+1F339  ; Emoji                #  6.0 [70] (🌷..🍼)    rose
+1F383  ; Emoji                #  6.0 [70] (🌷..🍼)    halloween
+1F344  ; Emoji                #  6.0 [70] (🌷..🍼)    mushroom
+1F345  ; Emoji                #  6.0 [70] (🌷..🍼)    tomato
+1F347  ; Emoji                #  6.0 [70] (🌷..🍼)    grapes
+1F349  ; Emoji                #  6.0 [70] (🌷..🍼)    mellon
+1F352  ; Emoji                #  6.0 [70] (🌷..🍼)    cherry
+1F353  ; Emoji                #  6.0 [70] (🌷..🍼)    strawberry
+1F354  ; Emoji                #  6.0 [70] (🌷..🍼)    burger
+1F355  ; Emoji                #  6.0 [70] (🌷..🍼)    pizza
 1F369  ; Emoji                #  6.0 [70] (🌷..🍼)    donut
 1F370  ; Emoji                #  6.0 [70] (🌷..🍼)    cake
 1F372  ; Emoji                #  6.0 [70] (🌷..🍼)    tea
@@ -315,7 +327,10 @@
 1F90D..1F90F  ; Emoji                # 12.0  [3] (🤍..🤏)    white heart..pinching hand
 1F910..1F918  ; Emoji                #  8.0  [9] (🤐..🤘)    zipper-mouth face..sign of the horns
 1F919..1F91E  ; Emoji                #  9.0  [6] (🤙..🤞)    call me hand..crossed fingers
+1F91D  ; Emoji                #  9.0  [6] (🤙..🤞)    handshake
 1F91F         ; Emoji                # 10.0  [1] (🤟)       love-you gesture
+1F92A  ; Emoji                #  9.0  [8] (🤠..🤧)    silly
+1F92B  ; Emoji                #  9.0  [8] (🤠..🤧)    secret
 1F920..1F927  ; Emoji                #  9.0  [8] (🤠..🤧)    cowboy hat face..sneezing face
 1F928..1F92F  ; Emoji                # 10.0  [8] (🤨..🤯)    face with raised eyebrow..exploding head
 1F930         ; Emoji                #  9.0  [1] (🤰)       pregnant woman
@@ -580,6 +595,8 @@
 1F595..1F596  ; Emoji_Modifier_Base  #  7.0  [2] (🖕..🖖)    middle finger..vulcan salute
 1F645..1F647  ; Emoji_Modifier_Base  #  6.0  [3] (🙅..🙇)    person gesturing NO..person bowing
 1F64B..1F64F  ; Emoji_Modifier_Base  #  6.0  [5] (🙋..🙏)    person raising hand..folded hands
+1F64B-1F3FE-200D-2642-FE0F  ; Emoji_Modifier_Base  #  6.0  [5] (🙋..🙏)    waveman
+1F64B-1F3FE-200D-2640-FE0F  ; Emoji_Modifier_Base  #  6.0  [5] (🙋..🙏)    wavewoman
 1F6A3         ; Emoji_Modifier_Base  #  6.0  [1] (🚣)       person rowing boat
 1F6B2  ; Emoji_Modifier_Base  #  6.0  [3] (🚴..🚶)    bicycle
 1F6B4..1F6B6  ; Emoji_Modifier_Base  #  6.0  [3] (🚴..🚶)    person biking..person walking
@@ -908,6 +925,7 @@ E249  ; Emoji   NA[1384] (🪖..🿽)   network
 7B2F1  ; Emoji   NA[1384] (🪖..🿽)   thinkingstallman
 7B2F2  ; Emoji   NA[1384] (🪖..🿽)   heartanarchy
 7B2F3  ; Emoji   NA[1384] (🪖..🿽)   anarchy
+7B2F4  ; Emoji   NA[1384] (🪖..🿽)   anarchy2
 
 # Total elements: 3793
 
