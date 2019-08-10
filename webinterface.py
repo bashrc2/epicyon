@@ -235,6 +235,8 @@ def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str,boo
     return nickname,password,register
 
 def htmlLogin(baseDir: str) -> str:
+    """Shows the login screen
+    """
     accounts=noOfAccounts(baseDir)
 
     if not os.path.isfile(baseDir+'/accounts/login.png'):
@@ -248,6 +250,7 @@ def htmlLogin(baseDir: str) -> str:
     else:
         loginText='<p class="login-text">Please enter some credentials</p><p>You will become the admin of this site.</p>'
     if os.path.isfile(baseDir+'/accounts/login.txt'):
+        # custom login message
         with open(baseDir+'/accounts/login.txt', 'r') as file:
             loginText = '<p class="login-text">'+file.read()+'</p>'    
 
@@ -426,6 +429,7 @@ def htmlHeader(css=None,lang='en') -> str:
             '  <meta charset="utf-8">\n' \
             '  <style>\n' \
             '    @import url("epicyon-profile.css");\n'+ \
+            '    background-color: #282c37' \
             '  </style>\n' \
             '  <body>\n'
     else:

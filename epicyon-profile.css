@@ -1,9 +1,41 @@
+@charset "UTF-8";
+
+:root {
+    --main-bg-color: #282c37;
+    --main-bg-color-darker: #232c37;
+    --main-fg-color: #9baec8;
+    --main-link-color: #2980d9;
+    --main-visited-color: #1580d9;
+    --border-color: #505050;
+    --font-size-header: 18px;
+    --font-color-header: #ccc;
+    --font-size: 22px;
+}
+
 body, html {
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
     max-width: 80%;
     min-width: 600px;
     margin: 0 auto;
+    font-size: var(--font-size);
+}
+
+a, u {
+    color: var(--main-fg-color);
+}
+
+a:visited{
+    color: var(--main-visited-color);
+    font-weight: bold;
+}
+
+a:link {
+    color: var(--main-link-color);
+    font-weight: bold;
 }
 
 .cwButton {
@@ -50,7 +82,8 @@ body, html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
+    color: var(--font-color-header);
+    font-size: var(--font-size-header);
 }
 
 .new-post-text {
@@ -273,8 +306,8 @@ body, html {
 }
 
 .container {
-    border: 2px solid #dedede;
-    background-color: #f1f1f1;
+    border: 2px solid var(--border-color);
+    background-color: var(--main-bg-color);
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
@@ -328,7 +361,7 @@ body, html {
 
 .darker {
     border-color: #ccc;
-    background-color: #ddd;
+    background-color: var(--main-bg-color-darker);
 }
 
 .container img.attachment {
