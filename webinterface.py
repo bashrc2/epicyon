@@ -18,6 +18,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import noOfAccounts
+from utils import isPublicPost
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import getPersonBox
@@ -79,31 +80,13 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
             continue
         with open(postFilename, 'r') as fp:
             postJsonObject=commentjson.load(fp)
-            if not postJsonObject.get('type'):
+            if not isPublicPost(postJsonObject):
                 index-=1
                 continue
-            if postJsonObject['type']!='Create':
-                index-=1
-                continue
-            if not postJsonObject.get('object'):
-                index-=1
-                continue
-            if not isinstance(postJsonObject['object'], dict):
-                index-=1
-                continue
-            if not postJsonObject['object'].get('to'):
-                index-=1
-                continue
-            isPublic=False
-            for recipient in postJsonObject['object']['to']:
-                if recipient.endswith('#Public'):
-                    isPublic=True
-                    break
-            if isPublic:
-                hashtagSearchForm+= \
-                    individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                         nickname,domain,port,postJsonObject, \
-                                         None,True,False,False)
+            hashtagSearchForm+= \
+                individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                     nickname,domain,port,postJsonObject, \
+                                     None,True,False,False)
         index-=1
 
     if endIndex>0:

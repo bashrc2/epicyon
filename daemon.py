@@ -1957,7 +1957,6 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr=self.path.replace('/searchhandle','')
             length = int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
-            #print('******************searchParams '+searchParams)
             if 'searchtext=' in searchParams:
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:

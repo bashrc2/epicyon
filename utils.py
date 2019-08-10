@@ -238,3 +238,21 @@ def noOfAccounts(baseDir: str) -> bool:
                 if not account.startswith('inbox'):
                     accountCtr+=1
     return accountCtr
+
+def isPublicPost(postJsonObject: {}) -> bool:
+    """Returns true if the given post is public
+    """
+    if not postJsonObject.get('type'):
+        return False
+    if postJsonObject['type']!='Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('to'):
+        return False
+    for recipient in postJsonObject['object']['to']:
+        if recipient.endswith('#Public'):
+            return True
+    return False
