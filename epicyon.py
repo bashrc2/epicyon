@@ -1193,6 +1193,9 @@ if args.testdata:
     password='boringpassword'
     print('Generating some test data for user: '+nickname)
 
+    if os.path.isdir(baseDir+'/tags'):
+        shutil.rmtree(baseDir+'/tags')
+    
     setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
 
     createPerson(baseDir,'maxboardroom',domain,port,httpPrefix,True,password)
@@ -1231,13 +1234,13 @@ if args.testdata:
     
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a test, man",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a #test, man",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Zoiks!!!",False,True,False,None,None,useBlurhash)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more milkshakes",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Hey scoob we need like a hundred more #milkshakes",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"Getting kinda spooky around here",False,True,False,None,None,useBlurhash,'someone')
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"And they would have gotten away with it too if it wasn't for those pesky hackers",False,True,False,'img/logo.png','Description of image',useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"man, these centralized sites are, like, the worst!",False,True,False,None,None,useBlurhash)
-    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved hey",False,True,False,None,None,useBlurhash)
+    createPublicPost(baseDir,nickname,domain,port,httpPrefix,"another mystery solved #test",False,True,False,None,None,useBlurhash)
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"let's go bowling",False,True,False,None,None,useBlurhash)
 
     domainFull=domain+':'+str(port)

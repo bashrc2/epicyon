@@ -33,6 +33,85 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 
+def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int,
+                      session,wfRequest: {},personCache: {}) -> str:
+    """Show a page containing search results for a hashtag
+    """
+    if hashtag.startswith('#'):
+        hashtag=hashtag[1:]
+    hashtagIndexFile=baseDir+'/tags/'+hashtag+'.txt'
+    if not os.path.isfile(hashtagIndexFile):
+        return None
+
+    # read the index
+    with open(hashtagIndexFile, "r") as f:
+        lines = f.readlines()
+
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        hashtagSearchCSS = cssFile.read()
+
+    startIndex=len(lines)-1-int(pageNumber*postsPerPage)
+    if startIndex<0:
+        startIndex=len(lines)-1
+    endIndex=startIndex-postsPerPage
+    if endIndex<0:
+        endIndex=0
+        
+    hashtagSearchForm=htmlHeader(hashtagSearchCSS)
+    hashtagSearchForm+='<center><h1>Results for #'+hashtag+'</h1></center>'
+    if startIndex!=len(lines)-1:
+        # previous page link
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+    index=startIndex
+    while index>=endIndex:
+        postId=lines[index].strip('\n')
+        nickname=getNicknameFromActor(postId)
+        if not nickname:
+            index-=1
+            continue
+        domain,port=getDomainFromActor(postId)
+        if not domain:
+            index-=1
+            continue
+        postFilename=locatePost(baseDir,nickname,domain,postId)
+        if not postFilename:
+            index-=1
+            continue
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+            if not postJsonObject.get('type'):
+                index-=1
+                continue
+            if postJsonObject['type']!='Create':
+                index-=1
+                continue
+            if not postJsonObject.get('object'):
+                index-=1
+                continue
+            if not isinstance(postJsonObject['object'], dict):
+                index-=1
+                continue
+            if not postJsonObject['object'].get('to'):
+                index-=1
+                continue
+            isPublic=False
+            for recipient in postJsonObject['object']['to']:
+                if recipient.endswith('#Public'):
+                    isPublic=True
+                    break
+            if isPublic:
+                hashtagSearchForm+= \
+                    individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                         nickname,domain,port,postJsonObject, \
+                                         None,True,False,False)
+        index-=1
+
+    if endIndex>0:
+        # next page link
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+    hashtagSearchForm+=htmlFooter()
+    return hashtagSearchForm
+
 def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
     """

@@ -76,6 +76,7 @@ from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
+from webinterface import htmlHashtagSearch
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -436,6 +437,7 @@ class PubServer(BaseHTTPRequestHandler):
                    '/sharefiles/' not in self.path and \
                    '/statuses/' not in self.path and \
                    '/emoji/' not in self.path and \
+                   '/tags/' not in self.path and \
                    '/icons/' not in self.path:
                     divertToLoginScreen=True
                     if self.path.startswith('/users/'):
@@ -676,6 +678,30 @@ class PubServer(BaseHTTPRequestHandler):
                self._redirect_headers(originPathStr,cookie)
                self.server.GETbusy=False
                return
+
+        # hashtag search
+        if self.path.startswith('/tags/'):
+            pageNumber=1
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+            hashtag=self.path.split('/tags/')[1]
+            if '?page=' in hashtag:
+                hashtag=hashtag.split('?page=')[0]
+            hashtagStr= \
+                htmlHashtagSearch(self.server.baseDir,hashtag,pageNumber, \
+                                  maxPostsInFeed,self.server.session, \
+                                  self.server.cachedWebfingers, \
+                                  self.server.personCache)
+            self._set_headers('text/html',cookie)
+            if hashtagStr:
+               self.wfile.write(hashtagStr.encode())
+            else:
+               originPathStr=self.path.split('/tags/')[0]
+               self._redirect_headers(originPathStr+'/search',cookie)                
+            self.server.GETbusy=False
+            return
 
         # search for a fediverse address from the web interface by selecting search icon
         if '/users/' in self.path:
@@ -1931,12 +1957,26 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr=self.path.replace('/searchhandle','')
             length = int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
+            #print('******************searchParams '+searchParams)
             if 'searchtext=' in searchParams:
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
-                searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').strip()
+                searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+                if searchStr.startswith('#'):                    
+                    # hashtag search
+                    hashtagStr= \
+                        htmlHashtagSearch(self.server.baseDir,searchStr[1:],1, \
+                                          maxPostsInFeed,self.server.session, \
+                                          self.server.cachedWebfingers, \
+                                          self.server.personCache)
+                    if hashtagStr:
+                        self._login_headers('text/html')
+                        self.wfile.write(hashtagStr.encode('utf-8'))
+                        self.server.POSTbusy=False
+                        return
                 if '@' in searchStr:
+                    # profile search
                     print('Search: '+searchStr)
                     nickname=getNicknameFromActor(self.path)
                     if not self.server.session:
