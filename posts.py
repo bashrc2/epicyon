@@ -404,8 +404,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         if ':' not in domain:
             domain=domain+':'+str(port)
 
-    #if not clientToServer:
-    #    # convert content to html
+    # convert content to html
     content= \
         addHtmlTags(baseDir,httpPrefix, \
                     nickname,domain,content, \
