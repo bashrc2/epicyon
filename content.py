@@ -147,20 +147,19 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     if ':' in domain:
         domain=domain.split(':')[0]
     followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
-    if not os.path.isfile(followingFilename):
-        content=content.replace('\n','</p><p>')
-        content='<p>'+content+'</p>'
-        return content.replace('<p></p>','')
 
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
-    with open(followingFilename, "r") as f:
-        following = f.readlines()
+    following=None
+    if os.path.isfile(followingFilename):
+        with open(followingFilename, "r") as f:
+            following = f.readlines()
 
     # extract mentions and tags from words
     for wordStr in words:
-        if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
-            continue
+        if following:
+            if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
+                continue
         if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
             continue
         if len(wordStr)>2 and wordStr.startswith(':') and wordStr.endswith(':') and not emojiDict:

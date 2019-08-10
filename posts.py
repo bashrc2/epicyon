@@ -432,14 +432,14 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     toRecipients=[toUrl] + mentionedRecipients
 
     # create a list of hashtags
-    if hashtagsDict:        
+    if hashtagsDict:
+        isPublic=False
+        for recipient in toRecipients:
+            if recipient.endswith('#Public'):
+                isPublic=True
+                break
         for tagName,tag in hashtagsDict.items():
             tags.append(tag)
-            isPublic=False
-            for recipient in toRecipients:
-                if recipient.endswith('#Public'):
-                    isPublic=True
-                    break
             if isPublic:
                 updateHashtagsIndex(baseDir,tag,newPostId)
 
