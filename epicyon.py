@@ -1195,6 +1195,16 @@ if args.testdata:
 
     if os.path.isdir(baseDir+'/tags'):
         shutil.rmtree(baseDir+'/tags')
+    if os.path.isdir(baseDir+'/accounts'):
+        shutil.rmtree(baseDir+'/accounts')
+    if os.path.isdir(baseDir+'/keys'):
+        shutil.rmtree(baseDir+'/keys')
+    if os.path.isdir(baseDir+'/media'):
+        shutil.rmtree(baseDir+'/media')
+    if os.path.isdir(baseDir+'/sharefiles'):
+        shutil.rmtree(baseDir+'/sharefiles')
+    if os.path.isdir(baseDir+'/wfendpoints'):
+        shutil.rmtree(baseDir+'/wfendpoints')
     
     setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
 
@@ -1206,7 +1216,7 @@ if args.testdata:
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,'likewhateveryouwantscoob')
     setSkillLevel(baseDir,nickname,domain,'testing',60)
     setSkillLevel(baseDir,nickname,domain,'typing',50)
-    setRole(baseDir,nickname,domain,'epicyon','tester')
+    setRole(baseDir,nickname,domain,'instance','admin')
     setRole(baseDir,nickname,domain,'epicyon','hacker')
     setRole(baseDir,nickname,domain,'someproject','assistant')
     setAvailability(baseDir,nickname,domain,'busy')
@@ -1251,6 +1261,7 @@ if args.testdata:
     followPerson(baseDir,nickname,domain,'drokk',domainFull,federationList,False)
     followerOfPerson(baseDir,nickname,domain,'drokk',domainFull,federationList,False)
     followerOfPerson(baseDir,nickname,domain,'maxboardroom',domainFull,federationList,False)
+    setConfigParam(baseDir,'admin',nickname)
 
 runDaemon(instanceId,args.client,baseDir, \
           domain,port,httpPrefix, \

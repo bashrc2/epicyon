@@ -280,6 +280,10 @@ body, html {
     margin: 10px 0;
 }
 
+.container p.administeredby {
+    font-size: 18px;
+}
+
 .container::after {
     content: "";
     clear: both;

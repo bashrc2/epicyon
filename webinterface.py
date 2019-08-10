@@ -288,7 +288,8 @@ def htmlLogin(baseDir: str) -> str:
     loginForm+=htmlFooter()
     return loginForm
 
-def htmlTermsOfService(baseDir: str) -> str:
+def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
+    adminNickname = getConfigParam(baseDir,'admin')
     if not os.path.isfile(baseDir+'/accounts/tos.txt'):
         copyfile(baseDir+'/default_tos.txt',baseDir+'/accounts/tos.txt')
     if os.path.isfile(baseDir+'/img/login-background.png'):
@@ -306,6 +307,9 @@ def htmlTermsOfService(baseDir: str) -> str:
             
         TOSForm=htmlHeader(termsCSS)
         TOSForm+='<div class="container">'+TOSText+'</div>'
+        if adminNickname:
+            adminActor=httpPrefix+'://'+domainFull+'/users/'+adminNickname
+            TOSForm+='<div class="container"><center><p class="administeredby">Administered by <a href="'+adminActor+'">'+adminNickname+'</a></p></center></div>'
         TOSForm+=htmlFooter()
     return TOSForm
 

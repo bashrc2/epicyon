@@ -634,7 +634,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.startswith('/terms'):
             self._login_headers('text/html')
-            self.wfile.write(htmlTermsOfService(self.server.baseDir).encode())
+            self.wfile.write(htmlTermsOfService(self.server.baseDir, \
+                                                self.server.httpPrefix, \
+                                                self.server.domainFull).encode())
             self.server.GETbusy=False
             return
 
