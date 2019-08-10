@@ -1,9 +1,39 @@
+@charset "UTF-8";
+
+:root {
+    --main-bg-color: #282c37;
+    --main-fg-color: #9baec8;
+    --main-link-color: #2980d9;
+    --main-visited-color: #1580d9;
+    --border-color: #505050;
+    --font-size-header: 18px;
+    --font-color-header: #ccc;
+    --font-size: 22px;
+}
+
 body, html {
+    background-color: var(--main-bg-color);
+    color: var(--main-fg-color);
+
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
     max-width: 80%;
     min-width: 600px;
     margin: 0 auto;
+}
+
+a, u {
+    color: var(--main-fg-color);
+}
+
+a:visited{
+    color: var(--main-visited-color);
+    font-weight: bold;
+}
+
+a:link {
+    color: var(--main-link-color);
+    font-weight: bold;
 }
 
 .follow {
@@ -13,7 +43,7 @@ body, html {
     background-repeat: no-repeat;
     background-size: cover;
     position: relative;
-    background-color: white;
+    background-color: var(--main-bg-color);
 }
 
 .followAvatar {
@@ -27,7 +57,7 @@ body, html {
 }
 
 .followText {
-    font-size: 24px;
+    font-size: var(--font-size);
 }
 
 .button {
@@ -36,7 +66,7 @@ body, html {
     border: none;
     color: white;
     text-align: center;
-    font-size: 24px;
+    font-size: var(--font-size);
     padding: 10px;
     width: 20%;
     max-width: 200px;
@@ -72,5 +102,5 @@ input[type=text] {
 }
 
 .cwText {
-  display: none;
+    display: none;
 }
