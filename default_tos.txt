@@ -16,7 +16,7 @@
 
 <p>Violent or abusive content will be subject to moderation and is likely to be removed.</p>
 
-<p>Content of a sexual nature may be published providing that only consenting adults (aged 18 or over) are depicted and an appropriate content warning message is added. Posting sexual content without a content warning is a terms of service violation. Sexual content is defined both as photographs of real people and also artistic or fictional depictions, edited/generated photos or narratives.</p>.
+<p>Content of a sexual nature may be published providing that only consenting adults (aged 18 or over) are depicted and an appropriate content warning message is added. Posting sexual content without a content warning is a terms of service violation. Sexual content is defined both as photographs of real people and also artistic or fictional depictions, edited/generated photos or narratives.</p>
 
 <p>Content found to be non-compliant with this policy will be removed and any accounts on this instance producing, repeating or linking to such content will be deleted typically without prior notification.</p>
 
