@@ -34,6 +34,9 @@ def addModerator(baseDir: str,nickname: str):
                 moderator=moderator.strip('\n')
                 if len(moderator)>1:
                     f.write(moderator+'\n')
+    else:
+        with open(moderatorsFile, "w+") as f:
+            f.write(nickname+'\n')
         
 def removeModerator(baseDir: str,nickname: str):
     """Removes a moderator nickname from the file
