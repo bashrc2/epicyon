@@ -840,14 +840,16 @@ def individualPostAsHtml(baseDir: str, \
         if isBlocked(baseDir,nickname,domain,actorNickname,actorDomainFull):
             blockUnblockStr='<a href="/users/'+nickname+'?unblock='+postJsonObject['actor']+';'+avatarUrl+'">Unblock</a>'
 
+        reportStr=''
+        if messageId:
+            reportStr='<a href="/users/'+nickname+'?report='+messageId+';'+avatarUrl+'">Report</a>'
+
         avatarDropdown= \
             '  <div class="dropdown-timeline">' \
             '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
-            followUnfollowStr+ \
-            blockUnblockStr+ \
-            '      <a href="/users/'+nickname+'?report='+postJsonObject['actor']+';'+avatarUrl+'">Report</a>' \
+            followUnfollowStr+blockUnblockStr+reportStr+ \
             '    </div>' \
             '  </div>'
 
