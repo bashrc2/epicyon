@@ -490,5 +490,14 @@
     "zebra": "1F993",
     "zero": "0030",
     "zerowidthjoiner": "200D",
-    "zippermouthface": "1F910"
+    "zippermouthface": "1F910",
+    "ghost": "1F47B",
+    "spaceinvader": "1F47E",
+    "fly": "1F99F",
+    "mail": "2709",
+    "unicorn": "E001",
+    "rpi": "E1C9",
+    "yingyang": "262F",
+    "trans": "8642",
+    "teddybear": "1F9F8"
 }
