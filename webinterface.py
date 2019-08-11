@@ -331,8 +331,18 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
                 replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
         else:
             newPostText= \
-                '<p class="new-post-text">Enter your report below.</p>' \
-                '<p class="new-post-subtext">This message <i>only goes to moderators</i>, even if it mentions other fediverse addresses.</p>'
+                '<p class="new-post-text">Enter your report below.</p>'
+
+            # custom report header with any additional instructions
+            if os.path.isfile(baseDir+'/accounts/report.txt'):
+                with open(baseDir+'/accounts/report.txt', 'r') as file:
+                    customReportText=file.read()
+                    if '</p>' not in customReportText:
+                        customReportText='<p class="login-subtext">'+customReportText+'</p>'
+                        customReportText=customReportText.replace('<p>','<p class="login-subtext">')
+                        newPostText+=customReportText
+
+            newPostText+='<p class="new-post-subtext">This message <i>only goes to moderators</i>, even if it mentions other fediverse addresses.</p><p class="new-post-subtext">You can also refer to points within the <a href="/terms">Terms of Service</a> if necessary.</p>'
     else:
         newPostText='<p class="new-post-text">Enter the details for your shared item below.</p>'
         
