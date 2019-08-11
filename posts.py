@@ -762,6 +762,14 @@ def createReportPost(baseDir: str,
         if port!=80 and port!=443:
             domainFull=domain+':'+str(port)
 
+    # add a title to distinguish moderation reports from other posts
+    reportTitle='Moderation Report'
+    if not subject:
+        subject=reportTitle
+    else:
+        if not subject.startswith(reportTitle):
+            subject=reportTitle+': '+subject
+
     # create the list of moderators from teh moderators file
     moderatorsList=[]
     moderatorsFile=baseDir+'/accounts/moderators.txt'
