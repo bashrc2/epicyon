@@ -950,6 +950,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newfollowers') or \
             self.path.endswith('/newdm') or \
             self.path.endswith('/newreport') or \
+            '/newreport?=' in self.path or \
             self.path.endswith('/newshare')):
             self._set_headers('text/html',cookie)
             self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList).encode())

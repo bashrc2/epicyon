@@ -317,6 +317,10 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
     return TOSForm
 
 def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
+    reportUrl=None
+    if '/newreport?=' in path:
+        reportUrl=path.split('/newreport?=')[1]
+        path=path.split('/newreport?=')[0]
     replyStr=''
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
@@ -397,6 +401,13 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         else:
             mentionsStr+='@'+mentionNickname+'@'+mentionDomain+' '
 
+    reportOptionOnDropdown='<a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'
+
+    # For moderation reports add a link to the post reported
+    if reportUrl:
+        mentionStr='Reported link: '+reportUrl+'\n\n'
+        reportOptionOnDropdown='<a href="'+pathBase+'/newreport?url='+reportUrl+'"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'
+        
     newPostForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
         '  <div class="vertical-center">' \
@@ -408,9 +419,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
         '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
         '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
-        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
-        '          <a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
-        shareOptionOnDropdown+ \
+        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>'+ \
+        reportOptionOnDropdown+shareOptionOnDropdown+ \
         '        </div>' \
         '      </div>' \
         '      <input type="submit" name="submitPost" value="Submit">' \
@@ -842,7 +852,7 @@ def individualPostAsHtml(baseDir: str, \
 
         reportStr=''
         if messageId:
-            reportStr='<a href="/users/'+nickname+'?report='+messageId+';'+avatarUrl+'">Report</a>'
+            reportStr='<a href="/users/'+nickname+'/newreport?url='+messageId+';'+avatarUrl+'">Report</a>'
 
         avatarDropdown= \
             '  <div class="dropdown-timeline">' \
