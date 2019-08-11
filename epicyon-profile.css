@@ -3,6 +3,7 @@
 :root {
     --main-bg-color: #282c37;
     --main-bg-color-darker: #232c37;
+    --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
     --main-link-color: #999;
@@ -370,6 +371,11 @@ a:link {
 .darker {
     border-color: #ccc;
     background-color: var(--main-bg-color-darker);
+}
+
+.report {
+    border-color: #255;
+    background-color: var(--main-bg-color-report);
 }
 
 .container img.attachment {

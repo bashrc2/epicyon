@@ -934,6 +934,8 @@ def individualPostAsHtml(baseDir: str, \
         contentStr=''
         if postJsonObject['object'].get('summary'):
             contentStr+='<b>'+postJsonObject['object']['summary']+'</b> '
+            if postJsonObject['object'].get('moderationStatus'):
+                containerClass='container report'
         else:
             contentStr+='<b>Sensitive</b> '
         contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'

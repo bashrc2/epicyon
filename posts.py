@@ -392,9 +392,10 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
 
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
-                   followersOnly: bool, saveToFile: bool, clientToServer: bool,
-                   attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
-                   inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+                   followersOnly: bool, saveToFile: bool, clientToServer: bool, \
+                   attachImageFilename: str,imageDescription: str, \
+                   useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
+                   inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
     mentionedRecipients=[]
@@ -421,7 +422,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         postTo=postCC
         postCC=''
     newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
-    
+
     sensitive=False
     summary=None
     if subject:
@@ -547,6 +548,14 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost['cc']=[ccUrl]
             if newPost.get('object'):
                 newPost['object']['cc']=[ccUrl]
+
+    # if this is a moderation report then add a status
+    if isModerationReport:
+        if newPost.get('object'):
+            newPost['object']['moderationStatus']='pending'
+        else:
+            newPost['moderationStatus']='pending'
+
     if saveToFile:
         savePostToBox(baseDir,httpPrefix,newPostId, \
                       nickname,domain,newPost,'outbox')
@@ -663,7 +672,7 @@ def createPublicPost(baseDir: str,
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \
-                          inReplyTo, inReplyToAtomUri, subject)
+                          False,inReplyTo,inReplyToAtomUri,subject)
 
 def createUnlistedPost(baseDir: str,
                        nickname: str, domain: str, port: int,httpPrefix: str, \
@@ -683,7 +692,7 @@ def createUnlistedPost(baseDir: str,
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \
-                          inReplyTo, inReplyToAtomUri, subject)
+                          False,inReplyTo, inReplyToAtomUri, subject)
 
 def createFollowersOnlyPost(baseDir: str,
                             nickname: str, domain: str, port: int,httpPrefix: str, \
@@ -703,7 +712,7 @@ def createFollowersOnlyPost(baseDir: str,
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \
-                          inReplyTo, inReplyToAtomUri, subject)
+                          False,inReplyTo, inReplyToAtomUri, subject)
 
 def getMentionedPeople(baseDir: str,httpPrefix: str,content: str,domain: str) -> []:
     """Extracts a list of mentioned actors from the given message content
@@ -752,7 +761,7 @@ def createDirectMessagePost(baseDir: str,
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \
-                          inReplyTo, inReplyToAtomUri, subject)
+                          False,inReplyTo, inReplyToAtomUri, subject)
 
 def createReportPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
@@ -823,7 +832,7 @@ def createReportPost(baseDir: str,
                            httpPrefix, content, followersOnly, saveToFile, \
                            clientToServer, \
                            attachImageFilename,imageDescription,useBlurhash, \
-                           None, None, subject)
+                           True,None, None, subject)
     return postJsonObject
 
 def threadSendPost(session,postJsonObject: {},federationList: [],\
@@ -914,7 +923,7 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
                            attachImageFilename,imageDescription,useBlurhash, \
-                           inReplyTo,inReplyToAtomUri,subject)
+                           False,inReplyTo,inReplyToAtomUri,subject)
 
     # get the senders private key
     privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
@@ -1013,7 +1022,7 @@ def sendPostViaServer(baseDir,session,fromNickname: str,password: str, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
                            attachImageFilename,imageDescription,useBlurhash, \
-                           inReplyTo,inReplyToAtomUri,subject)
+                           False,inReplyTo,inReplyToAtomUri,subject)
     
     authHeader=createBasicAuthHeader(fromNickname,password)
 
