@@ -486,6 +486,8 @@ A description of the proposed object capabilities model [is here](ocaps.md).
 
 ## Customizations
 
+You can customize the terms of service by editing **accounts/tos.txt**. If it doesn't already exist then you can use **default_tos.txt** as a template.
+
 On the login screen you can provide a custom welcome message by creating the file **accounts/login.txt**. This could be used to show a motd or scheduled maintenance information.
 
 You can customize the image on the login screen by saving your instance logo to **accounts/login.png**. A background image can also be set for the login screen by adding **accounts/login-background.png**
