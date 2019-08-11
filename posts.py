@@ -428,6 +428,11 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         summary=subject
         sensitive=True
 
+    if toUrl:
+        if not isinstance(toUrl, str):
+            print('ERROR: toUrl is not a string')
+            return None
+
     # who to send to
     toRecipients=[toUrl] + mentionedRecipients
 
@@ -810,12 +815,16 @@ def createReportPost(baseDir: str,
         print(str(moderatorsList))
     postTo=moderatorsList
     postCc=None
-    return createPostBase(baseDir,nickname, domain, port, \
-                          postTo,postCc, \
-                          httpPrefix, content, followersOnly, saveToFile, \
-                          clientToServer, \
-                          attachImageFilename,imageDescription,useBlurhash, \
-                          None, None, subject)
+    postJsonObject=None
+    for toUrl in postTo:
+        postJsonObject= \
+            createPostBase(baseDir,nickname, domain, port, \
+                           toUrl,postCc, \
+                           httpPrefix, content, followersOnly, saveToFile, \
+                           clientToServer, \
+                           attachImageFilename,imageDescription,useBlurhash, \
+                           None, None, subject)
+    return postJsonObject
 
 def threadSendPost(session,postJsonObject: {},federationList: [],\
                    inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],

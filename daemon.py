@@ -2183,6 +2183,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         postState=self._receiveNewPost(authorized,'newfollowers')
         if postState!=0:
+            nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
@@ -2190,6 +2191,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         postState=self._receiveNewPost(authorized,'newdm')
         if postState!=0:
+            nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
@@ -2197,6 +2199,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         postState=self._receiveNewPost(authorized,'newreport')
         if postState!=0:
+            nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
@@ -2204,6 +2207,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
         postState=self._receiveNewPost(authorized,'newshare')
         if postState!=0:
+            nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+self.postToNickname+'/shares',cookie)

@@ -36,7 +36,7 @@ def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: st
     ocDir=baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+subdir
     if not os.path.isdir(ocDir):
         os.mkdir(ocDir)
-        
+
     return baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+subdir+'/'+actor.replace('/','#')+'.json'
 
 def CapablePost(postJson: {}, capabilityList: [], debug :bool) -> bool:
