@@ -494,5 +494,5 @@ A custom background image can be supplied for the search screen by adding **acco
 
 When a moderator report is created the message at the top of the screen can be customized to provide any additional information, advice or alerts. Edit **accounts/report.txt** and add your text.
 
-Extra emoji can be added to the *emoji* directory and you should then update the **emoji/emoji.txt** file.
+Extra emoji can be added to the *emoji* directory and you should then update the **emoji/emoji.json** file, which maps the name to the filename (without the .png extension).
 

@@ -165,9 +165,11 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             continue
         if len(wordStr)>2 and wordStr.startswith(':') and wordStr.endswith(':') and not emojiDict:
             print('Loading emoji lookup')
-            if not os.path.isfile(baseDir+'/emoji/emoji.txt'):
-                copyfile(baseDir+'/emoji/default_emoji.txt',baseDir+'/emoji/emoji.txt')
-            loadEmojiDict(baseDir+'/emoji/emoji.txt',emojiDict)
+            if not os.path.isfile(baseDir+'/emoji/emoji.json'):
+                copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+            with open(baseDir+'/emoji/emoji.json', 'r') as fp:
+                emojiDict=commentjson.load(fp)
+
         addEmoji(baseDir,wordStr,httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
     # replace words with their html versions
