@@ -32,6 +32,7 @@ from posts import sendToFollowers
 from posts import postIsAddressedToPublic
 from posts import sendToNamedAddresses
 from posts import createPublicPost
+from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
 from posts import createDirectMessagePost
@@ -948,6 +949,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newunlisted') or \
             self.path.endswith('/newfollowers') or \
             self.path.endswith('/newdm') or \
+            self.path.endswith('/newreport') or \
             self.path.endswith('/newshare')):
             self._set_headers('text/html',cookie)
             self.wfile.write(htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList).encode())
@@ -1616,14 +1618,16 @@ class PubServer(BaseHTTPRequestHandler):
                             return -1
 
                 if postType=='newdm':
-                    messageJson= \
-                        createDirectMessagePost(self.server.baseDir, \
-                                                nickname, \
-                                                self.server.domain,self.server.port, \
-                                                self.server.httpPrefix, \
-                                                fields['message'],True,False,False, \
-                                                filename,fields['imageDescription'],True, \
-                                                fields['replyTo'],fields['replyTo'],fields['subject'])
+                    messageJson=None
+                    if '@' in fields['message']:
+                        messageJson= \
+                            createDirectMessagePost(self.server.baseDir, \
+                                                    nickname, \
+                                                    self.server.domain,self.server.port, \
+                                                    self.server.httpPrefix, \
+                                                    fields['message'],True,False,False, \
+                                                    filename,fields['imageDescription'],True, \
+                                                    fields['replyTo'],fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
                         if self._postToOutbox(messageJson):
@@ -1633,6 +1637,26 @@ class PubServer(BaseHTTPRequestHandler):
                                             messageJson, \
                                             self.server.maxReplies, \
                                             self.server.debug)
+                            return 1
+                        else:
+                            return -1
+
+                if postType=='newreport':
+                    # So as to be sure that this only goes to moderators
+                    # and not accounts being reported we disable any
+                    # included fediverse addresses by replacing '@' with '-at-'
+                    fields['message']=fields['message'].replace('@','-at-')
+                    messageJson= \
+                        createReportPost(self.server.baseDir, \
+                                         nickname, \
+                                         self.server.domain,self.server.port, \
+                                         self.server.httpPrefix, \
+                                         fields['message'],True,False,False, \
+                                         filename,fields['imageDescription'],True, \
+                                         self.server.debug,fields['subject'])
+                    if messageJson:
+                        self.postToNickname=nickname
+                        if self._postToOutbox(messageJson):
                             return 1
                         else:
                             return -1
@@ -2164,6 +2188,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newdm')
+        if postState!=0:
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
+            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
+            self.server.POSTbusy=False
+            return
+        postState=self._receiveNewPost(authorized,'newreport')
         if postState!=0:
             if '/' in nickname:
                 nickname=nickname.split('/')[0]

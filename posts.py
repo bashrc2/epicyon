@@ -41,6 +41,7 @@ from capabilities import capabilitiesUpdate
 from media import attachImage
 from content import addHtmlTags
 from auth import createBasicAuthHeader
+from config import getConfigParam
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -747,6 +748,66 @@ def createDirectMessagePost(baseDir: str,
                           clientToServer, \
                           attachImageFilename,imageDescription,useBlurhash, \
                           inReplyTo, inReplyToAtomUri, subject)
+
+def createReportPost(baseDir: str,
+                     nickname: str, domain: str, port: int,httpPrefix: str, \
+                     content: str, followersOnly: bool, saveToFile: bool,
+                     clientToServer: bool,\
+                     attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                     debug: bool,subject=None) -> {}:
+    """Send a report to moderators
+    """
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+
+    # create the list of moderators from teh moderators file
+    moderatorsList=[]
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+    if os.path.isfile(moderatorsFile):
+        with open (moderatorsFile, "r") as fileHandler:
+            for line in fileHandler:
+                line=line.strip('\n')
+                if line.startswith('#'):
+                    continue
+                if line.startswith('/users/'):
+                    line=line.replace('users','')
+                if line.startswith('@'):
+                    line=line[1:]
+                if '@' in line:
+                    moderatorActor=httpPrefix+'://'+domainFull+'/users/'+line.split('@')[0]
+                    if moderatorActor not in moderatorList:
+                        moderatorsList.append(moderatorActor)
+                    continue
+                if line.startswith('http') or line.startswith('dat'):
+                    # must be a local address - no remote moderators
+                    if '://'+domainFull+'/' in line:
+                        if line not in moderatorsList:
+                            moderatorsList.append(line)
+                else:
+                    if '/' not in line:
+                        moderatorActor=httpPrefix+'://'+domainFull+'/users/'+line
+                        if moderatorActor not in moderatorsList:
+                            moderatorsList.append(moderatorActor)
+    if len(moderatorsList)==0:
+        # if there are no moderators then the admin becomes the moderator
+        adminNickname=getConfigParam(baseDir,'admin')
+        if adminNickname:
+            moderatorsList.append(httpPrefix+'://'+domainFull+'/users/'+adminNickname)            
+    if not moderatorsList:
+        return None
+    if debug:
+        print('DEBUG: Sending report to moderators')
+        print(str(moderatorsList))
+    postTo=moderatorsList
+    postCc=None
+    return createPostBase(baseDir,nickname, domain, port, \
+                          postTo,postCc, \
+                          httpPrefix, content, followersOnly, saveToFile, \
+                          clientToServer, \
+                          attachImageFilename,imageDescription,useBlurhash, \
+                          None, None, subject)
 
 def threadSendPost(session,postJsonObject: {},federationList: [],\
                    inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],

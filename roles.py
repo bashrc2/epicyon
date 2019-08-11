@@ -16,6 +16,39 @@ from session import postJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
+def addModerator(baseDir: str,nickname: str):
+    """Adds a moderator nickname to the file
+    """
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+    if os.path.isfile(moderatorsFile):
+        # is this nickname already in the file?
+        with open(moderatorsFile, "r") as f:
+            lines = f.readlines()
+        for moderator in lines:
+            moderator=moderator.strip('\n')
+            if line==nickname:
+                return
+        lines.append(nickname)
+        with open(moderatorsFile, "w") as f:
+            for moderator in lines:
+                moderator=moderator.strip('\n')
+                if len(moderator)>1:
+                    f.write(moderator+'\n')
+        
+def removeModerator(baseDir: str,nickname: str):
+    """Removes a moderator nickname from the file
+    """
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+    if not os.path.isfile(moderatorsFile):
+        return
+    with open(moderatorsFile, "r") as f:
+        lines = f.readlines()
+    with open(moderatorsFile, "w") as f:
+        for moderator in lines:
+            moderator=moderator.strip('\n')
+            if len(moderator)>1 and moderator!=nickname:
+                f.write(moderator+'\n')
+
 def setRole(baseDir: str,nickname: str,domain: str, \
             project: str,role: str) -> bool:
     """Set a person's role within a project
@@ -30,12 +63,18 @@ def setRole(baseDir: str,nickname: str,domain: str, \
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
         if role:
+            # add the role
+            if project=='instance' and 'role'=='moderator':
+                addModerator(baseDir,nickname)
             if actorJson['roles'].get(project):
                 if role not in actorJson['roles'][project]:
                     actorJson['roles'][project].append(role)
             else:
                 actorJson['roles'][project]=[role]
         else:
+            # remove the role
+            if project=='instance':
+                removeModerator(baseDir,nickname)
             if actorJson['roles'].get(project):
                 actorJson['roles'][project].remove(role)
                 # if the project contains no roles then remove it

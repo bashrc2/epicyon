@@ -319,11 +319,16 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
 def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     replyStr=''
     if not path.endswith('/newshare'):
-        if not inReplyTo:
-            newPostText='<p class="new-post-text">Enter your post text below.</p>'
+        if not path.endswith('/newreport'):
+            if not inReplyTo:
+                newPostText='<p class="new-post-text">Enter your post text below.</p>'
+            else:
+                newPostText='<p class="new-post-text">Enter your reply to <a href="'+inReplyTo+'">this post</a> below.</p>'
+                replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
         else:
-            newPostText='<p class="new-post-text">Enter your reply to <a href="'+inReplyTo+'">this post</a> below.</p>'
-            replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
+            newPostText= \
+                '<p class="new-post-text">Enter your report below.</p>' \
+                '<p class="new-post-subtext">This message <i>only goes to moderators</i>, even if it mentions other fediverse addresses.</p>'
     else:
         newPostText='<p class="new-post-text">Enter the details for your shared item below.</p>'
         
@@ -334,7 +339,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
-    pathBase=path.replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
+    pathBase=path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
 
     scopeIcon='scope_public.png'
     scopeDescription='Public'
@@ -354,6 +359,10 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         scopeIcon='scope_dm.png'
         scopeDescription='Direct Message'
         endpoint='newdm'
+    if path.endswith('/newreport'):
+        scopeIcon='scope_report.png'
+        scopeDescription='Report'
+        endpoint='newreport'
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
         scopeDescription='Shared Item'
@@ -399,7 +408,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
         '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
         '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
-        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>'+ \
+        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
+        '          <a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
         shareOptionOnDropdown+ \
         '        </div>' \
         '      </div>' \
