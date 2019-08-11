@@ -483,3 +483,16 @@ python3 epicyon.py --undoItemName "spanner" --nickname [yournick] --domain [your
 ## Object Capabilities Security
 
 A description of the proposed object capabilities model [is here](ocaps.md).
+
+## Customizations
+
+On the login screen you can provide a custom welcome message by creating the file **accounts/login.txt**. This could be used to show a motd or scheduled maintenance information.
+
+You can customize the image on the login screen by saving your instance logo to **accounts/login.png**. A background image can also be set for the login screen by adding **accounts/login-background.png**
+
+A custom background image can be supplied for the search screen by adding **accounts/search-background.png**
+
+When a moderator report is created the message at the top of the screen can be customized to provide any additional information, advice or alerts. Edit **accounts/report.txt** and add your text.
+
+Extra emoji can be added to the *emoji* directory and you should then update the **emoji/emoji.txt** file.
+

@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import os
 import commentjson
+from shutil import copyfile
 
 def validHashTag(hashtag: str) -> bool:
     """Returns true if the give hashtag contains valid characters
@@ -164,7 +165,9 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             continue
         if len(wordStr)>2 and wordStr.startswith(':') and wordStr.endswith(':') and not emojiDict:
             print('Loading emoji lookup')
-            loadEmojiDict(baseDir+'/emoji/emoji-data.txt',emojiDict)
+            if not os.path.isfile(baseDir+'/emoji/emoji.txt'):
+                copyfile(baseDir+'/emoji/default_emoji.txt',baseDir+'/emoji/emoji.txt')
+            loadEmojiDict(baseDir+'/emoji/emoji.txt',emojiDict)
         addEmoji(baseDir,wordStr,httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
     # replace words with their html versions
