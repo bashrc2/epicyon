@@ -770,7 +770,7 @@ def createReportPost(baseDir: str,
         if not subject.startswith(reportTitle):
             subject=reportTitle+': '+subject
 
-    # create the list of moderators from teh moderators file
+    # create the list of moderators from the moderators file
     moderatorsList=[]
     moderatorsFile=baseDir+'/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):

@@ -2,9 +2,9 @@
 
 :root {
     --main-bg-color: #282c37;
-    --main-fg-color: #9baec8;
-    --main-link-color: #2980d9;
-    --main-visited-color: #1580d9;
+    --main-fg-color: #dddddd;
+    --main-link-color: #999;
+    --main-visited-color: #888;
     --border-color: #505050;
     --font-size-header: 18px;
     --font-color-header: #ccc;
