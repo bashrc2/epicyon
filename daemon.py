@@ -67,6 +67,7 @@ from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
 from webinterface import htmlInbox
 from webinterface import htmlOutbox
+from webinterface import htmlModeration
 from webinterface import htmlPostReplies
 from webinterface import htmlLogin
 from webinterface import htmlGetLoginCredentials
@@ -1185,8 +1186,9 @@ class PubServer(BaseHTTPRequestHandler):
                             self._404()
                             self.server.GETbusy=False
                             return
+
         # get the inbox for a given person
-        if self.path.endswith('/inbox'):
+        if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
                     inboxFeed=personBoxJson(self.server.baseDir, \
@@ -1243,7 +1245,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: GET access to inbox is unauthorized')
                 self.send_response(405)
                 self.end_headers()
-                self.server.POSTbusy=False
+                self.server.GETbusy=False
                 return
         
         # get outbox feed for a person
@@ -1290,6 +1292,67 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
+        # get the moderation feed for a moderator
+        if self.path.endswith('/moderation') or '/moderation?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    moderationFeed= \
+                        personBoxJson(self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path, \
+                                      self.server.httpPrefix, \
+                                      maxPostsInFeed, 'moderation', \
+                                      True,self.server.ocapAlways)
+                    if moderationFeed:
+                        if 'text/html' in self.headers['Accept']:
+                            nickname=self.path.replace('/users/','').replace('/moderation','')
+                            pageNumber=1
+                            if '?page=' in nickname:
+                                pageNumber=nickname.split('?page=')[1]
+                                nickname=nickname.split('?page=')[0]
+                                if pageNumber.isdigit():
+                                    pageNumber=int(pageNumber)
+                                else:
+                                    pageNumber=1                                
+                            if 'page=' not in self.path:
+                                # if no page was specified then show the first
+                                moderationFeed= \
+                                    personBoxJson(self.server.baseDir, \
+                                                  self.server.domain, \
+                                                  self.server.port, \
+                                                  self.path+'?page=1', \
+                                                  self.server.httpPrefix, \
+                                                  maxPostsInFeed, 'moderation', \
+                                                  True,self.server.ocapAlways)
+                            self._set_headers('text/html',cookie)
+                            self.wfile.write(htmlModeration(pageNumber,maxPostsInFeed, \
+                                                            self.server.session, \
+                                                            self.server.baseDir, \
+                                                            self.server.cachedWebfingers, \
+                                                            self.server.personCache, \
+                                                            nickname, \
+                                                            self.server.domain, \
+                                                            self.server.port, \
+                                                            moderationFeed, \
+                                                            True).encode('utf-8'))
+                        else:
+                            self._set_headers('application/json',None)
+                            self.wfile.write(json.dumps(moderationFeed).encode('utf-8'))
+                        self.server.GETbusy=False
+                        return
+                else:
+                    if self.server.debug:
+                        nickname=self.path.replace('/users/','').replace('/moderation','')
+                        print('DEBUG: '+nickname+ \
+                              ' was not authorized to access '+self.path)
+            if self.server.debug:
+                print('DEBUG: GET access to moderation feed is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy=False
+            return
+        
         shares=getSharesFeedForPerson(self.server.baseDir, \
                                       self.server.domain, \
                                       self.server.port,self.path, \

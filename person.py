@@ -19,6 +19,7 @@ from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createInbox
 from posts import createOutbox
+from posts import createModeration
 from auth import storeBasicCredentials
 from roles import setRole
 from media import removeMetaData
@@ -340,9 +341,9 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
 def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
                   httpPrefix: str,noOfItems: int,boxname: str, \
                   authorized: bool,ocapAlways: bool) -> []:
-    """Obtain the inbox/outbox feed for the given person
+    """Obtain the inbox/outbox/moderation feed for the given person
     """
-    if boxname!='inbox' and boxname!='outbox':
+    if boxname!='inbox' and boxname!='outbox' and boxname!='moderation':
         return None
 
     if not '/'+boxname in path:
@@ -379,8 +380,13 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
     if boxname=='inbox':
         return createInbox(baseDir,nickname,domain,port,httpPrefix, \
                            noOfItems,headerOnly,ocapAlways,pageNumber)
-    return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
-                        noOfItems,headerOnly,authorized,pageNumber)
+    elif boxname=='outbox':
+        return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
+                            noOfItems,headerOnly,authorized,pageNumber)
+    elif boxname=='moderation':
+        return createModeration(baseDir,nickname,domain,port,httpPrefix, \
+                                noOfItems,headerOnly,authorized,pageNumber)
+    return None
 
 def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
                     httpPrefix: str,noOfItems: int,ocapAlways: bool) -> []:

@@ -25,6 +25,7 @@ from posts import getPersonBox
 from posts import getUserUrl
 from posts import parseUserFeed
 from posts import populateRepliesJson
+from posts import isModerator
 from session import getJson
 from auth import createPassword
 from like import likedByPerson
@@ -33,6 +34,17 @@ from blocking import isBlocked
 from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
+
+def noOfModerationPosts(baseDir: str) -> int:
+    """Returns the number of posts addressed to moderators
+    """
+    moderationIndexFile=baseDir+'/accounts/moderation.txt'
+    if not os.path.isfile(moderationIndexFile):
+        return 0
+    with open(moderationIndexFile, "r") as f:
+        lines = f.readlines()
+        return len(lines)
+    return 0
 
 def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int,
                       session,wfRequest: {},personCache: {}) -> str:
@@ -961,12 +973,17 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             cssFile.read().replace('banner.png', \
                                    '/users/'+nickname+'/banner.png')
 
+    moderator=isModerator(baseDir,nickname)
+
     inboxButton='button'
     sentButton='button'
+    moderationButton='button'
     if boxName=='inbox':
         inboxButton='buttonselected'
     elif boxName=='outbox':
         sentButton='buttonselected'
+    elif boxName=='moderation':
+        moderationButton='buttonselected'
     actor='/users/'+nickname
 
     showIndividualPostIcons=True
@@ -983,6 +1000,11 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                     followApprovals='<a href="'+actor+'/followers"><img class="right" alt="Approve follow requests" title="Approve follow requests" src="/icons/person.png"/></a>'
                     break
 
+    moderationButtonStr=''
+    if moderator:
+        if noOfModerationPosts(baseDir)>0:
+            moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Moderate </span></button></a>'
+    
     tlStr=htmlHeader(profileStyle)
     tlStr+= \
         '<a href="/users/'+nickname+'" title="Switch to profile view" alt="Switch to profile view">' \
@@ -990,7 +1012,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         '</div></a>' \
         '<div class="container">\n'+ \
         '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>Inbox </span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Sent </span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Sent </span></button></a>'+ \
+        moderationButtonStr+ \
         '    <a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'+ \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
         followApprovals+ \
@@ -1018,6 +1041,15 @@ def htmlInbox(pageNumber: int,itemsPerPage: int, \
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion)
+
+def htmlModeration(pageNumber: int,itemsPerPage: int, \
+                   session,baseDir: str,wfRequest: {},personCache: {}, \
+                   nickname: str,domain: str,port: int,inboxJson: {}, \
+                   allowDeletion: bool) -> str:
+    """Show the moderation feed as html
+    """
+    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'moderation',allowDeletion)
 
 def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \

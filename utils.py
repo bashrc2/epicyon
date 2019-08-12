@@ -175,6 +175,23 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
 
         # remove any attachment
         removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
+        
+        # remove from moderation index file
+        if postJsonObject.get('moderationStatus'):
+            moderationIndexFile=baseDir+'/accounts/moderation.txt'
+            if os.path.isfile(moderationIndexFile):
+                if postJsonObject.get('object'):
+                    if isinstance(postJsonObject['object'], dict):
+                        if postJsonObject['object'].get('id'):
+                            # get the id of the post
+                            postId=postJsonObject['object']['id'].replace('/activity','')
+                            if postId in open(moderationIndexFile).read():
+                                with open(moderationIndexFile, "r") as f:
+                                    lines = f.readlines()
+                                with open(moderationIndexFile, "w+") as f:
+                                    for line in lines:
+                                        if line.strip("\n") != postId:
+                                            f.write(line)
 
         # remove any hashtags index entries
         removeHashtagIndex=False

@@ -47,6 +47,27 @@ try:
 except ImportError:
     from bs4 import BeautifulSoup
 
+def isModerator(baseDir: str,nickname: str) -> bool:
+    """Returns true if the given nickname is a moderator
+    """
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+
+    if not os.path.isfile(moderatorsFile):
+        if getConfigParam(baseDir,'admin')==nickname:
+            return True
+        return False
+
+    with open(moderatorsFile, "r") as f:
+        lines = f.readlines()
+        if len(lines)==0:
+            if getConfigParam(baseDir,'admin')==nickname:
+                return True
+        for moderator in lines:
+            moderator=moderator.strip('\n')
+            if moderator==nickname:
+                return True
+    return False
+
 def noOfFollowersOnDomain(baseDir: str,handle: str, \
                           domain: str, followFile='followers.txt') -> int:
     """Returns the number of followers of the given handle from the given domain
@@ -551,10 +572,17 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
 
     # if this is a moderation report then add a status
     if isModerationReport:
+        # add status
         if newPost.get('object'):
             newPost['object']['moderationStatus']='pending'
         else:
             newPost['moderationStatus']='pending'
+        # save to index file
+        moderationIndexFile=baseDir+'/accounts/moderation.txt'
+        modFile=open(moderationIndexFile, "a+")
+        if modFile:
+            modFile.write(newPostId+'\n')
+            modFile.close()
 
     if saveToFile:
         savePostToBox(baseDir,httpPrefix,newPostId, \
@@ -1298,10 +1326,68 @@ def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,authorized,False,pageNumber)
+
+def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                     itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
+    boxname='moderation'
+
+    if port!=80 and port!=443:
+        domain = domain+':'+str(port)
+
+    if not pageNumber:
+        pageNumber=1
+        
+    pageStr='?page='+str(pageNumber)
+    boxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
+                 'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+                 'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+                 'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+                 'totalItems': 0,
+                 'type': 'OrderedCollection'}
+    boxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
+                'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
+                'orderedItems': [
+                ],
+                'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+                'type': 'OrderedCollectionPage'}
+
+    if isModerator(baseDir,nickname):
+        moderationIndexFile=baseDir+'/accounts/moderation.txt'
+        if os.path.isfile(moderationIndexFile):
+            with open(moderationIndexFile, "r") as f:
+                lines = f.readlines()
+            boxHeader['totalItems']=len(lines)
+            if headerOnly:
+                return boxHeader
+
+            pageLines=[]
+            if len(lines)>0:
+                endLineNumber=len(lines)-1-int(itemsPerPage*pageNumber)
+                if endLineNumber<0:
+                    endLineNumber=0
+                startLineNumber=len(lines)-1-int(itemsPerPage*(pageNumber-1))
+                if startLineNumber<0:
+                    startLineNumber=0
+                lineNumber=startLineNumber
+                while lineNumber>=endLineNumber:
+                    pageLines.append(lines[lineNumber].strip('\n'))
+                    lineNumber-=1
+            
+            for postUrl in pageLines:
+                postFilename=boxDir+'/'+postUrl.replace('/','#')+'.json'
+                if os.path.isfile(postFilename):
+                    with open(postFilename, 'r') as fp:
+                        postJsonObject=commentjson.load(fp)
+                        boxItems['orderedItems'].append(postJsonObject)
+    if headerOnly:
+        return boxHeader
+    return boxItems
 
 def getStatusNumberFromPostFilename(filename) -> int:
     """Gets the status number from a post filename
