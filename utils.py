@@ -167,6 +167,24 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
         os.remove(mediaFilename)
     postJson['attachment']=[]
 
+def removeModerationPostFromIndex(baseDir: str,postUrl: str,debug: bool) -> None:
+    """Removes a url from the moderation index
+    """
+    moderationIndexFile=baseDir+'/accounts/moderation.txt'
+    if not os.path.isfile(moderationIndexFile):
+        return
+    postId=postUrl.replace('/activity','')
+    if postId in open(moderationIndexFile).read():
+        with open(moderationIndexFile, "r") as f:
+            lines = f.readlines()
+            with open(moderationIndexFile, "w+") as f:
+                for line in lines:
+                    if line.strip("\n") != postId:
+                        f.write(line)
+                    else:
+                        if debug:
+                            print('DEBUG: removed '+postId+' from moderation index')
+
 def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool):
     """Recursively deletes a post and its replies and attachments
     """
@@ -178,20 +196,11 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
         
         # remove from moderation index file
         if postJsonObject.get('moderationStatus'):
-            moderationIndexFile=baseDir+'/accounts/moderation.txt'
-            if os.path.isfile(moderationIndexFile):
-                if postJsonObject.get('object'):
-                    if isinstance(postJsonObject['object'], dict):
-                        if postJsonObject['object'].get('id'):
-                            # get the id of the post
-                            postId=postJsonObject['object']['id'].replace('/activity','')
-                            if postId in open(moderationIndexFile).read():
-                                with open(moderationIndexFile, "r") as f:
-                                    lines = f.readlines()
-                                with open(moderationIndexFile, "w+") as f:
-                                    for line in lines:
-                                        if line.strip("\n") != postId:
-                                            f.write(line)
+            if postJsonObject.get('object'):
+                if isinstance(postJsonObject['object'], dict):
+                    if postJsonObject['object'].get('id'):
+                        postId=postJsonObject['object']['id'].replace('/activity','')
+                        removeModerationPostFromIndex(baseDir,postId,debug)
 
         # remove any hashtags index entries
         removeHashtagIndex=False

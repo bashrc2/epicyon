@@ -22,6 +22,7 @@ from utils import domainPermitted
 from utils import locatePost
 from utils import deletePost
 from utils import removeAttachment
+from utils import removeModerationPostFromIndex
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -661,7 +662,7 @@ def receiveDelete(session,handle: str,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
                   personCache: {},messageJson: {},federationList: [], \
-                  debug : bool) -> bool:
+                  debug : bool,allowDeletion: bool) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
     """
     if messageJson['type']!='Delete':
@@ -680,6 +681,17 @@ def receiveDelete(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' object is not a string')
         return False
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+    deletePrefix=httpPrefix+'://'+domainFull+'/'
+    if not allowDeletion and \
+       (not messageJson['object'].startswith(deletePrefix) or \
+        not messageJson['actor'].startswith(deletePrefix)):
+        if debug:
+            print('DEBUG: delete not permitted from other instances')
+        return False        
     if not messageJson.get('to'):
         if debug:
             print('DEBUG: '+messageJson['type']+' has no "to" list')
@@ -696,9 +708,10 @@ def receiveDelete(session,handle: str,baseDir: str, \
         if debug:
             print('DEBUG: actor is not the owner of the post to be deleted')    
     if not os.path.isdir(baseDir+'/accounts/'+handle):
-        print('DEBUG: unknown recipient of like - '+handle)
+        print('DEBUG: unknown recipient of like - '+handle)    
     # if this post in the outbox of the person?
     messageId=messageJson['object'].replace('/activity','')
+    removeModerationPostFromIndex(baseDir,messageId,debug)
     postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageId)
     if not postFilename:
         if debug:
@@ -928,22 +941,21 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Undo announce accepted from '+keyId)
         return False
 
-    if allowDeletion:
-        if receiveDelete(session,handle, \
-                         baseDir,httpPrefix, \
-                         domain,port, \
-                         sendThreads,postLog, \
-                         cachedWebfingers, \
-                         personCache, \
-                         messageJson, \
-                         federationList, \
-                         debug):
-            if debug:
-                print('DEBUG: Delete accepted from '+keyId)
-            return False
-            
+    if receiveDelete(session,handle, \
+                     baseDir,httpPrefix, \
+                     domain,port, \
+                     sendThreads,postLog, \
+                     cachedWebfingers, \
+                     personCache, \
+                     messageJson, \
+                     federationList, \
+                     debug,allowDeletion):
+        if debug:
+            print('DEBUG: Delete accepted from '+keyId)
+        return False
+
     populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
-    
+
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)

@@ -312,12 +312,12 @@ class PubServer(BaseHTTPRequestHandler):
         outboxUndoLike(self.server.baseDir,self.server.httpPrefix, \
                        self.postToNickname,self.server.domain,self.server.port, \
                        messageJson,self.server.debug)
-        if self.server.allowDeletion:
-            if self.server.debug:
-                print('DEBUG: handle delete requests')        
-            outboxDelete(self.server.baseDir,self.server.httpPrefix, \
-                         self.postToNickname,self.server.domain, \
-                         messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle delete requests')        
+        outboxDelete(self.server.baseDir,self.server.httpPrefix, \
+                     self.postToNickname,self.server.domain, \
+                     messageJson,self.server.debug, \
+                     self.server.allowDeletion)
         if self.server.debug:
             print('DEBUG: handle block requests')
         outboxBlock(self.server.baseDir,self.server.httpPrefix, \
@@ -894,32 +894,34 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # delete a post from the web interface icon
-        if authorized and self.server.allowDeletion and '?delete=' in self.path:
+        if authorized and '?delete=' in self.path:
             deleteUrl=self.path.split('?delete=')[1]
             actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?delete=')[0]
-            if self.server.debug:
-                print('DEBUG: deleteUrl='+deleteUrl)
-                print('DEBUG: actor='+actor)
-            if actor not in deleteUrl:
-                # You can only delete your own posts
-                self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox',cookie)
-                return
-            self.postToNickname=getNicknameFromActor(actor)
-            if not self.server.session:
-                self.server.session= \
-                    createSession(self.server.domain,self.server.port,self.server.useTor)
-            deleteActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
-            deleteJson= {
-                'actor': actor,
-                'object': deleteUrl,
-                'to': ['https://www.w3.org/ns/activitystreams#Public',actor],
-                'cc': [actor+'/followers'],
-                'type': 'Delete'
-            }
-            if self.server.debug:
-                pprint(deleteJson)
-            self._postToOutbox(deleteJson)
+            if self.server.allowDeletion or \
+               deleteUrl.startswith(actor):
+                if self.server.debug:
+                    print('DEBUG: deleteUrl='+deleteUrl)
+                    print('DEBUG: actor='+actor)
+                if actor not in deleteUrl:
+                    # You can only delete your own posts
+                    self.server.GETbusy=False
+                    self._redirect_headers(actor+'/inbox',cookie)
+                    return
+                self.postToNickname=getNicknameFromActor(actor)
+                if not self.server.session:
+                    self.server.session= \
+                        createSession(self.server.domain,self.server.port,self.server.useTor)
+                deleteActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
+                deleteJson= {
+                    'actor': actor,
+                    'object': deleteUrl,
+                    'to': ['https://www.w3.org/ns/activitystreams#Public',actor],
+                    'cc': [actor+'/followers'],
+                    'type': 'Delete'
+                }
+                if self.server.debug:
+                    pprint(deleteJson)
+                self._postToOutbox(deleteJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return

@@ -921,7 +921,9 @@ def individualPostAsHtml(baseDir: str, \
             '<img src="/icons/'+likeIcon+'"/></a>'
 
     deleteStr=''
-    if allowDeletion:
+    if allowDeletion or \
+       ('/'+fullDomain+'/' in postJsonObject['actor'] and \
+        postJsonObject['object']['id'].startswith(postJsonObject['actor'])):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr= \
                 '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \

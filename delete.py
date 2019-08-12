@@ -16,6 +16,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import deletePost
+from utils import removeModerationPostFromIndex
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -195,7 +196,8 @@ def deletePostPub(session,baseDir: str,federationList: [], \
 
 def outboxDelete(baseDir: str,httpPrefix: str, \
                  nickname: str,domain: str, \
-                 messageJson: {},debug: bool) -> None:
+                 messageJson: {},debug: bool,
+                 allowDeletion: bool) -> None:
     """ When a delete request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -216,7 +218,13 @@ def outboxDelete(baseDir: str,httpPrefix: str, \
         return
     if debug:
         print('DEBUG: c2s delete request arrived in outbox')
-
+    deletePrefix=httpPrefix+'://'+domain
+    if not allowDeletion and \
+       (not messageJson['object'].startswith(deletePrefix) or \
+        not messageJson['actor'].startswith(deletePrefix)):
+        if debug:
+            print('DEBUG: delete not permitted from other instances')
+        return
     messageId=messageJson['object'].replace('/activity','')
     if '/statuses/' not in messageId:
         if debug:
@@ -238,6 +246,7 @@ def outboxDelete(baseDir: str,httpPrefix: str, \
         if debug:
             print("DEBUG: you can't delete a post which wasn't created by you (domain does not match)")
         return        
+    removeModerationPostFromIndex(baseDir,messageId,debug)
     postFilename=locatePost(baseDir,deleteNickname,deleteDomain,messageId)
     if not postFilename:
         if debug:
