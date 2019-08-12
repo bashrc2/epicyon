@@ -790,6 +790,9 @@ def individualPostAsHtml(baseDir: str, \
                 return ''
     if not isinstance(postJsonObject['object'], dict):
         return ''
+    isModerationPost=False
+    if postJsonObject['object'].get('moderationStatus'):
+        isModerationPost=True
     avatarPosition=''
     containerClass='container'
     containerClassIcons='containericons'
@@ -890,28 +893,33 @@ def individualPostAsHtml(baseDir: str, \
     publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
-    # don't allow announce/repeat of your own posts
-    announceIcon='repeat_inactive.png'
-    announceLink='repeat'
-    announceTitle='Repeat this post'
-    if announcedByPerson(postJsonObject,nickname,fullDomain):
-        announceIcon='repeat.png'
-        announceLink='unrepeat'
-        announceTitle='Undo the repeat this post'
-    announceStr= \
-        '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+'" title="'+announceTitle+'">' \
-        '<img src="/icons/'+announceIcon+'"/></a>'
+    announceStr=''
+    if not isModerationPost:
+        # don't allow announce/repeat of your own posts
+        announceIcon='repeat_inactive.png'
+        announceLink='repeat'
+        announceTitle='Repeat this post'
+        if announcedByPerson(postJsonObject,nickname,fullDomain):
+            announceIcon='repeat.png'
+            announceLink='unrepeat'
+            announceTitle='Undo the repeat this post'
+        announceStr= \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+'" title="'+announceTitle+'">' \
+            '<img src="/icons/'+announceIcon+'"/></a>'
 
-    likeIcon='like_inactive.png'
-    likeLink='like'
-    likeTitle='Like this post'
-    if likedByPerson(postJsonObject,nickname,fullDomain):
-        likeIcon='like.png'
-        likeLink='unlike'
-        likeTitle='Undo the like of this post'
-    likeStr= \
-        '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
-        '<img src="/icons/'+likeIcon+'"/></a>'
+    likeStr=''
+    if not isModerationPost:
+        likeIcon='like_inactive.png'
+        likeLink='like'
+        likeTitle='Like this post'
+        if likedByPerson(postJsonObject,nickname,fullDomain):
+            likeIcon='like.png'
+            likeLink='unlike'
+            likeTitle='Undo the like of this post'
+        likeStr= \
+            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
+            '<img src="/icons/'+likeIcon+'"/></a>'
+
     deleteStr=''
     if allowDeletion:
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
@@ -946,7 +954,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr=''
         if postJsonObject['object'].get('summary'):
             contentStr+='<b>'+postJsonObject['object']['summary']+'</b> '
-            if postJsonObject['object'].get('moderationStatus'):
+            if isModerationPost:
                 containerClass='container report'
         else:
             contentStr+='<b>Sensitive</b> '
