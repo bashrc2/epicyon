@@ -174,6 +174,21 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
+    moderatorsStr=''
+    adminNickname=getConfigParam(baseDir,'admin')
+    if path.startswith('/users/'+adminNickname+'/'):
+        moderators=''
+        moderatorsFile=baseDir+'/accounts/moderators.txt'
+        if os.path.isfile(moderatorsFile):
+            with open(moderatorsFile, "r") as f:
+                moderators = f.read()
+        moderatorsStr= \
+            '<div class="container">' \
+            '  <b>Moderators</b><br>' \
+            '  A list of moderator nicknames. One per line.' \
+            '  <textarea id="message" name="moderators" placeholder="List of moderator nicknames..." style="height:200px">'+moderators+'</textarea>' \
+            '</div>'
+        
     editProfileForm=htmlHeader(newPostCSS)
     editProfileForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
@@ -214,7 +229,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '    <div class="container">' \
         '      <b>Skills</b><br>' \
         '      If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.'+ \
-        skillsStr+ \
+        skillsStr+moderatorsStr+ \
         '    </div>' \
         '  </div>' \
         '</form>'

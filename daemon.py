@@ -60,7 +60,10 @@ from blocking import outboxUndoBlock
 from blocking import addBlock
 from blocking import removeBlock
 from config import setConfigParam
+from config import getConfigParam
 from roles import outboxDelegate
+from roles import setRole
+from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
 from webinterface import htmlIndividualPost
@@ -2008,6 +2011,36 @@ class PubServer(BaseHTTPRequestHandler):
                                     for tagName,tag in actorTags.items():
                                         actorJson['tag'].append(tag)
                                 actorChanged=True
+                        if fields.get('moderators'):
+                            adminNickname=getConfigParam(self.server.baseDir,'admin')
+                            if self.path.startswith('/users/'+adminNickname+'/'):
+                                moderatorsFile=self.server.baseDir+'/accounts/moderators.txt'
+                                clearModeratorStatus(self.server.baseDir)
+                                if ',' in fields['moderators']:
+                                    # if the list was given as comma separated
+                                    modFile=open(moderatorsFile,"w+")
+                                    for modNick in fields['moderators'].split(','):
+                                        modNick=modNick.strip()
+                                        if os.path.isdir(self.server.baseDir+'/accounts/'+modNick+'@'+self.server.domain):
+                                            modFile.write(modNick+'\n')
+                                    modFile.close()
+                                    for modNick in fields['moderators'].split(','):
+                                        modNick=modNick.strip()
+                                        if os.path.isdir(self.server.baseDir+'/accounts/'+modNick+'@'+self.server.domain):
+                                            setRole(self.server.baseDir,modNick,self.server.domain,'instance','moderator')
+                                else:
+                                    # nicknames on separate lines
+                                    modFile=open(moderatorsFile,"w+")
+                                    for modNick in fields['moderators'].split('\n'):
+                                        modNick=modNick.strip()
+                                        if os.path.isdir(self.server.baseDir+'/accounts/'+modNick+'@'+self.server.domain):
+                                            modFile.write(modNick+'\n')
+                                    modFile.close()
+                                    for modNick in fields['moderators'].split('\n'):
+                                        modNick=modNick.strip()
+                                        if os.path.isdir(self.server.baseDir+'/accounts/'+modNick+'@'+self.server.domain):
+                                            setRole(self.server.baseDir,modNick,self.server.domain,'instance','moderator')
+                                        
                         approveFollowers=False
                         if fields.get('approveFollowers'):
                             if fields['approveFollowers']=='on':

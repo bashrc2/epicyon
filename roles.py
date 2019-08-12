@@ -16,9 +16,30 @@ from session import postJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
-def addModerator(baseDir: str,nickname: str):
+def clearModeratorStatus(baseDir: str) -> None:
+    """Removes moderator status from all accounts
+    This could be slow if there are many users, but only happens
+    rarely when moderators are appointed or removed
+    """
+    directory = os.fsencode(baseDir+'/accounts/')
+    for f in os.listdir(directory):
+        filename = os.fsdecode(f)
+        if filename.endswith(".json") and '@' in filename: 
+            filename=os.path.join(baseDir+'/accounts/', filename)
+            if '"moderator"' in open(filename).read():
+                with open(filename, 'r') as fp:
+                    actorJson=commentjson.load(fp)
+                    if actorJson['roles'].get('instance'):
+                        if 'moderator' in actorJson['roles']['instance']:
+                            actorJson['roles']['instance'].remove('moderator')
+                            with open(filename, 'w') as fp:
+                                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+
+def addModerator(baseDir: str,nickname: str,domain: str) -> None:
     """Adds a moderator nickname to the file
     """
+    if ':' in domain:
+        domain=domain.split(':')[0]
     moderatorsFile=baseDir+'/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         # is this nickname already in the file?
@@ -33,10 +54,12 @@ def addModerator(baseDir: str,nickname: str):
             for moderator in lines:
                 moderator=moderator.strip('\n')
                 if len(moderator)>1:
-                    f.write(moderator+'\n')
+                    if os.path.isdir(baseDir+'/accounts/'+moderator+'@'+domain):
+                        f.write(moderator+'\n')
     else:
         with open(moderatorsFile, "w+") as f:
-            f.write(nickname+'\n')
+            if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+                f.write(nickname+'\n')
         
 def removeModerator(baseDir: str,nickname: str):
     """Removes a moderator nickname from the file
@@ -68,7 +91,7 @@ def setRole(baseDir: str,nickname: str,domain: str, \
         if role:
             # add the role
             if project=='instance' and 'role'=='moderator':
-                addModerator(baseDir,nickname)
+                addModerator(baseDir,nickname,domain)
             if actorJson['roles'].get(project):
                 if role not in actorJson['roles'][project]:
                     actorJson['roles'][project].append(role)
