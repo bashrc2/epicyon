@@ -941,7 +941,10 @@ def individualPostAsHtml(baseDir: str, \
                             break
 
         footerStr='<div class="'+containerClassIcons+'">'
-        footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
+        if not isModerationPost:
+            footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
+        else:
+            footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="Reply to this post">'
         footerStr+='<img src="/icons/reply.png"/></a>'
         footerStr+=announceStr+likeStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
@@ -1014,6 +1017,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Moderate </span></button></a>'
     
     tlStr=htmlHeader(profileStyle)
+
+    # banner and row of buttons
     tlStr+= \
         '<a href="/users/'+nickname+'" title="Switch to profile view" alt="Switch to profile view">' \
         '<div class="timeline-banner">' \
@@ -1026,9 +1031,24 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
+
+    # second row of buttons for moderator actions
+    if moderator and boxName=='moderation':
+        tlStr+= \
+            '<div class="container">\n'+ \
+            '    <a href="'+actor+'/modremove"><button title="Remove an account" class="button"><span>Remove </span></button></a>' \
+            '    <a href="'+actor+'/modsuspend"><button title="Suspend an account" class="button"><span>Suspend </span></button></a>' \
+            '    <a href="'+actor+'/modblock"><button title="Block an account on another instance" class="button"><span>Block </span></button></a>' \
+            '</div>'
+
+    # add the javascript for content warnings
     tlStr+='<script>'+contentWarningScript()+'</script>'
+
+    # page up arrow
     if pageNumber>1:
         tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+
+    # show the posts
     itemCtr=0
     for item in timelineJson['orderedItems']:
         if item['type']=='Create' or item['type']=='Announce':
@@ -1036,6 +1056,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,None,True, \
                                         allowDeletion,showIndividualPostIcons)
+
+    # page down arrow
     if itemCtr>=itemsPerPage:
         tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
     tlStr+=htmlFooter()

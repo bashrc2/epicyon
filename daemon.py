@@ -926,6 +926,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # reply from the web interface icon
         inReplyToUrl=None
+        replyWithDM=False
         replyToList=[]
         if authorized and '?replyto=' in self.path:
             inReplyToUrl=self.path.split('?replyto=')[1]
@@ -936,6 +937,17 @@ class PubServer(BaseHTTPRequestHandler):
                         replyToList.append(m.replace('mention=',''))
                 inReplyToUrl=mentionsList[0]
             self.path=self.path.split('?replyto=')[0]+'/newpost'
+
+        # replying as a direct message, for moderation posts
+        if authorized and '?replydm=' in self.path:
+            inReplyToUrl=self.path.split('?replydm=')[1]
+            if '?' in inReplyToUrl:
+                mentionsList=inReplyToUrl.split('?')
+                for m in mentionsList:
+                    if m.startswith('mention='):
+                        replyToList.append(m.replace('mention=',''))
+                inReplyToUrl=mentionsList[0]
+            self.path=self.path.split('?replydm=')[0]+'/newdm'
 
         # edit profile in web interface
         if '/users/' in self.path and self.path.endswith('/editprofile'):
