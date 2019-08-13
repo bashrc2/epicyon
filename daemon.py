@@ -2358,6 +2358,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not (self.path.endswith('/outbox') or \
                 self.path.endswith('/inbox') or \
                 self.path.endswith('/shares') or \
+                self.path.endswith('/moderationaction') or \
                 self.path.endswith('/caps/new') or \
                 self.path=='/sharedInbox'):
             print('Attempt to POST to invalid path '+self.path)

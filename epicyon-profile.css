@@ -368,8 +368,12 @@ a:link {
     border-radius: 0%;
 }
 
+.replyingto {
+    color: var(--main-fg-color);
+}
+
 .darker {
-    border-color: #ccc;
+    border: 2px solid var(--border-color);
     background-color: var(--main-bg-color-darker);
 }
 
