@@ -538,12 +538,12 @@ def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
 def removeAccount(baseDir: str,nickname: str,domain: str) -> bool:
     """Removes an account
     """
-    # Don't suspend the admin
+    # Don't remove the admin
     adminNickname=getConfigParam(baseDir,'admin')
     if nickname==adminNickname:
         return False
 
-    # Don't suspend moderators
+    # Don't remove moderators
     moderatorsFile=baseDir+'/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, "r") as f:
