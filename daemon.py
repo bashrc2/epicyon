@@ -26,6 +26,7 @@ from person import registerAccount
 from person import personLookup
 from person import personBoxJson
 from person import createSharedInbox
+from person import isSuspended
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowers
@@ -73,6 +74,7 @@ from webinterface import htmlOutbox
 from webinterface import htmlModeration
 from webinterface import htmlPostReplies
 from webinterface import htmlLogin
+from webinterface import htmlSuspended
 from webinterface import htmlGetLoginCredentials
 from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
@@ -1853,6 +1855,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy=False
                     return
                 else:
+                    if isSuspended(self.server.baseDir,loginNickname):
+                        self._login_headers('text/html')
+                        self.wfile.write(htmlSuspended(self.server.baseDir).encode('utf-8'))
+                        self.server.POSTbusy=False
+                        return                        
                     # login success - redirect with authorization
                     print('Login success: '+loginNickname)
                     self.send_response(303)

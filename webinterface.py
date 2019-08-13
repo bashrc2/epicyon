@@ -319,6 +319,8 @@ def htmlLogin(baseDir: str) -> str:
     return loginForm
 
 def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
+    """Show the terms of service screen
+    """
     adminNickname = getConfigParam(baseDir,'admin')
     if not os.path.isfile(baseDir+'/accounts/tos.txt'):
         copyfile(baseDir+'/default_tos.txt',baseDir+'/accounts/tos.txt')
@@ -342,6 +344,20 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
             TOSForm+='<div class="container"><center><p class="administeredby">Administered by <a href="'+adminActor+'">'+adminNickname+'</a></p></center></div>'
         TOSForm+=htmlFooter()
     return TOSForm
+
+def htmlSuspended(baseDir: str) -> str:
+    """Show the screen for suspended accounts
+    """
+    suspendedForm=''
+    with open(baseDir+'/epicyon-suspended.css', 'r') as cssFile:
+        suspendedCSS=cssFile.read()            
+        suspendedForm=htmlHeader(suspendedCSS)
+        suspendedForm+='<div><center>'
+        suspendedForm+='  <p class="screentitle">Account Suspended</p>'
+        suspendedForm+='  <p>See <a href="/terms">Terms of Service</a></p>'
+        suspendedForm+='</center></div>'
+        suspendedForm+=htmlFooter()
+    return suspendedForm
 
 def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     reportUrl=None

@@ -463,3 +463,72 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True
+
+def isSuspended(baseDir: str,nickname: str) -> bool:
+    """Returns true if the given nickname is suspended
+    """
+    adminNickname=getConfigParam(baseDir,'admin')
+    if nickname==adminNickname:
+        return False
+
+    suspendedFilename=baseDir+'/accounts/suspended.txt'
+    if os.path.isfile(suspendedFilename):
+        with open(suspendedFilename, "r") as f:
+            lines = f.readlines()
+        suspendedFile=open(suspendedFilename,"w+")
+        for suspended in lines:
+            if suspended.strip('\n')==nickname:
+                return True
+    return False
+
+def unsuspendAccount(baseDir: str,nickname: str) -> None:
+    """Removes an account suspention
+    """
+    suspendedFilename=baseDir+'/accounts/suspended.txt'
+    if os.path.isfile(suspendedFilename):
+        with open(suspendedFilename, "r") as f:
+            lines = f.readlines()
+        suspendedFile=open(suspendedFilename,"w+")
+        for suspended in lines:
+            if suspended.strip('\n')!=nickname:
+                suspendedFile.write(suspended)
+        suspendedFile.close()
+
+def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
+    """Suspends the given account
+    This also changes the salt used by the authentication token
+    so that the person can't continue to use the system without
+    going through the login screen
+    """
+    # Don't suspend the admin
+    adminNickname=getConfigParam(baseDir,'admin')
+    if nickname==adminNickname:
+        return
+
+    # Don't suspend moderators
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+    if os.path.isfile(moderatorsFile):
+        with open(moderatorsFile, "r") as f:
+            lines = f.readlines()
+        for moderator in lines:
+            if moderator.strip('\n')==nickname:
+                return
+
+    suspendedFilename=baseDir+'/accounts/suspended.txt'
+    if os.path.isfile(suspendedFilename):
+        with open(suspendedFilename, "r") as f:
+            lines = f.readlines()
+        for suspended in lines:
+            if suspended.strip('\n')==nickname:
+                return
+        suspendedFile=open(suspendedFilename,'a+')
+        if suspendedFile:
+            suspendedFile.write(nickname+'\n')
+            suspendedFile.close()
+            salts[nickname]=createPassword(32)            
+    else:
+        suspendedFile=open(suspendedFilename,'w+')
+        if suspendedFile:
+            suspendedFile.write(nickname+'\n')
+            suspendedFile.close()
+            salts[nickname]=createPassword(32)            
