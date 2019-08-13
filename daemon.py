@@ -2139,24 +2139,15 @@ class PubServer(BaseHTTPRequestHandler):
                     if '@' in nickname:
                         nickname=nickname.split('@')[0]
                     if moderationButton=='suspend':
-                        print('**************** suspend')
                         suspendAccount(self.server.baseDir,nickname,self.server.salts)
                     if moderationButton=='unsuspend':
                         unsuspendAccount(self.server.baseDir,nickname)
                     if moderationButton=='block':
-                        blockDomain,blockPort=getDomainFromActor(moderationText)
-                        fullBlockDomain=blockDomain
-                        if blockPort:
-                            if blockPort!=80 and blockPort!=443:
-                                fullBlockDomain=blockDomain+':'+str(blockPort)                                
+                        fullBlockDomain=moderationText.split('@')[1]
                         addGlobalBlock(self.server.baseDir, \
                                        nickname,fullBlockDomain)
                     if moderationButton=='unblock':
-                        blockDomain,blockPort=getDomainFromActor(moderationText)
-                        fullBlockDomain=blockDomain
-                        if blockPort:
-                            if blockPort!=80 and blockPort!=443:
-                                fullBlockDomain=blockDomain+':'+str(blockPort)                                
+                        fullBlockDomain=moderationText.split('@')[1]
                         removeGlobalBlock(self.server.baseDir, \
                                           nickname,fullBlockDomain)
                     if moderationButton=='remove':

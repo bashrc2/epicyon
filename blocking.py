@@ -13,7 +13,7 @@ def addGlobalBlock(baseDir: str, \
     """Global block which applies to all accounts
     """
     blockingFilename=baseDir+'/accounts/blocking.txt'
-    blockHandle=blockNickName+'@'+blockDomain
+    blockHandle=blockNickname+'@'+blockDomain
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
             return False
@@ -29,7 +29,7 @@ def addBlock(baseDir: str,nickname: str,domain: str, \
     if ':' in domain:
         domain=domain.split(':')[0]
     blockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
-    blockHandle=blockNickName+'@'+blockDomain
+    blockHandle=blockNickname+'@'+blockDomain
     if os.path.isfile(blockingFilename):
         if blockHandle in open(blockingFilename).read():
             return False
@@ -44,7 +44,7 @@ def removeGlobalBlock(baseDir: str, \
     """Unblock the given global block
     """
     unblockingFilename=baseDir+'/accounts/blocking.txt'
-    unblockHandle=unblockNickName+'@'+unblockDomain
+    unblockHandle=unblockNickname+'@'+unblockDomain
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
             with open(unblockingFilename, 'r') as fp:
@@ -65,7 +65,7 @@ def removeBlock(baseDir: str,nickname: str,domain: str, \
     if ':' in domain:
         domain=domain.split(':')[0]
     unblockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
-    unblockHandle=unblockNickName+'@'+unblockDomain
+    unblockHandle=unblockNickname+'@'+unblockDomain
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
             with open(unblockingFilename, 'r') as fp:
