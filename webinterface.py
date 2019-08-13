@@ -1069,7 +1069,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         tlStr+= \
             '<form method="POST" action="/users/'+nickname+'/moderationaction">' \
             '<div class="container">\n'+ \
-            '    <input type="text" placeholder="Nickname or URL..." name="moderationAction" value="">' \
+            '    <input type="text" placeholder="Nickname or URL. Block using *@domain or nickname@domain" name="moderationAction" value="">' \
             '    <input type="submit" title="Remove the above item" name="submitRemove" value="Remove">' \
             '    <input type="submit" title="Suspend the above account nickname" name="submitSuspend" value="Suspend">' \
             '    <input type="submit" title="Remove a suspension for an account nickname" name="submitUnsuspend" value="Unsuspend">' \

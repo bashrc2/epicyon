@@ -2143,13 +2143,33 @@ class PubServer(BaseHTTPRequestHandler):
                     if moderationButton=='unsuspend':
                         unsuspendAccount(self.server.baseDir,nickname)
                     if moderationButton=='block':
-                        fullBlockDomain=moderationText.split('@')[1]
-                        addGlobalBlock(self.server.baseDir, \
-                                       nickname,fullBlockDomain)
+                        fullBlockDomain=None
+                        if moderationText.startswith('http') or \
+                           moderationText.startswith('dat'):
+                            blockDomain,blockPort=getDomainFromActor(moderationText)
+                            fullBlockDomain=blockDomain
+                            if blockPort:
+                                if blockPort!=80 and blockPort!=443:
+                                    fullBlockDomain=blockDomain+':'+str(blockPort)
+                        if '@' in moderationText:
+                            fullBlockDomain=moderationText.split('@')[1]
+                        if fullBlockDomain:
+                            addGlobalBlock(self.server.baseDir, \
+                                           nickname,fullBlockDomain)
                     if moderationButton=='unblock':
-                        fullBlockDomain=moderationText.split('@')[1]
-                        removeGlobalBlock(self.server.baseDir, \
-                                          nickname,fullBlockDomain)
+                        fullBlockDomain=None
+                        if moderationText.startswith('http') or \
+                           moderationText.startswith('dat'):
+                            blockDomain,blockPort=getDomainFromActor(moderationText)
+                            fullBlockDomain=blockDomain
+                            if blockPort:
+                                if blockPort!=80 and blockPort!=443:
+                                    fullBlockDomain=blockDomain+':'+str(blockPort)
+                        if '@' in moderationText:
+                            fullBlockDomain=moderationText.split('@')[1]
+                        if fullBlockDomain:
+                            removeGlobalBlock(self.server.baseDir, \
+                                              nickname,fullBlockDomain)
                     if moderationButton=='remove':
                         if '/statuses/' not in moderationText:
                             removeAccount(self.server.baseDir, \
