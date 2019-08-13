@@ -535,7 +535,34 @@ def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
             suspendedFile.close()
             salts[nickname]=createPassword(32)            
 
-def removeAccount(baseDir: str,nickname: str,domain: str) -> bool:
+def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> None:
+    """Removes tags for a nickname
+    """
+    if not os.path.isdir(baseDir+'/tags'):
+        return
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+    matchStr=domainFull+'/users/'+nickname+'/'
+    directory = os.fsencode(baseDir+'/tags/')
+    for f in os.listdir(directory):
+        filename = os.fsdecode(f)
+        if not filename.endswith(".txt"):
+            continue
+        tagFilename=os.path.join(baseDir+'/accounts/',filename)
+        if matchStr not in open(tagFilename).read():
+            continue
+        with open(tagFilename, "r") as f:
+            lines = f.readlines()
+        tagFile=open(tagFilename,"w+")
+        if tagFile:
+            for tagline in lines:
+                if matchStr not in tagline:
+                    tagFile.write(tagline)
+            tagFile.close()                
+
+def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
     """Removes an account
     """
     # Don't remove the admin
@@ -555,6 +582,7 @@ def removeAccount(baseDir: str,nickname: str,domain: str) -> bool:
     unsuspendAccount(baseDir,nickname)
     handle=nickname+'@'+domain
     removePassword(baseDir,nickname)
+    removeTagsForNickname(baseDir,nickname,domain,port)
     if os.path.isdir(baseDir+'/accounts/'+handle):
         shutil.rmtree(baseDir+'/accounts/'+handle)
     if os.path.isfile(baseDir+'/accounts/'+handle+'.json'):

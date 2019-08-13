@@ -844,7 +844,7 @@ if args.rmaccount:
         if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-    if removeAccount(baseDir,nickname,domain):
+    if removeAccount(baseDir,nickname,domain,port):
         print('Account for '+handle+' was removed')
     sys.exit()
 
