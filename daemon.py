@@ -91,6 +91,7 @@ from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
 from webinterface import htmlHashtagSearch
 from webinterface import htmlModerationInfo
+from webinterface import htmlSearchSharedItems
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -2213,7 +2214,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
                 searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
-                if searchStr.startswith('#'):                    
+                if searchStr.startswith('#'):      
                     # hashtag search
                     hashtagStr= \
                         htmlHashtagSearch(self.server.baseDir,searchStr[1:],1, \
@@ -2225,9 +2226,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.wfile.write(hashtagStr.encode('utf-8'))
                         self.server.POSTbusy=False
                         return
-                if '@' in searchStr:
+                elif '@' in searchStr:
                     # profile search
-                    print('Search: '+searchStr)
                     nickname=getNicknameFromActor(self.path)
                     if not self.server.session:
                         self.server.session= \
@@ -2246,6 +2246,15 @@ class PubServer(BaseHTTPRequestHandler):
                     if profileStr:
                         self._login_headers('text/html')
                         self.wfile.write(profileStr.encode('utf-8'))
+                        self.server.POSTbusy=False
+                        return
+                else:
+                    # shared items search
+                    sharedItemsStr= \
+                        htmlSearchSharedItems(self.server.baseDir,searchStr)
+                    if sharedItemsStr:
+                        self._login_headers('text/html')
+                        self.wfile.write(sharedItemsStr.encode('utf-8'))
                         self.server.POSTbusy=False
                         return
             self._redirect_headers(actorStr,cookie)

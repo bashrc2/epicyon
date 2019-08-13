@@ -35,6 +35,49 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 
+def htmlSearchSharedItems(baseDir: str,searchStr: str) -> str:
+    sharedItemsForm=''
+    searchStrLower=searchStr.lower()
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        sharedItemsCSS=cssFile.read()
+        sharedItemsForm=htmlHeader(sharedItemsCSS)
+        sharedItemsForm+='<center><h1>Shared Items Search</h1></center>'
+        resultsExist=False
+        for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+            for handle in dirs:
+                if '@' not in handle:
+                    continue
+                sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'
+                if not os.path.isfile(sharesFilename):
+                    continue
+                with open(sharesFilename, 'r') as fp:
+                    sharesJson=commentjson.load(fp)
+                for name,sharedItem in sharesJson.items():
+                    matched=False
+                    if sharedItem['location'].lower() in searchStrLower:
+                        matched=True
+                    elif searchStrLower in sharedItem['summary'].lower():
+                        matched=True
+                    elif sharedItem['displayName'].lower() in searchStrLower:
+                        matched=True
+                    elif sharedItem['category'].lower() in searchStrLower:
+                        matched=True
+                    if matched:
+                        sharedItemsForm+='<div class="container">'
+                        sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
+                        sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
+                        sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
+                        sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
+                        sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
+                        sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
+                        sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
+                        sharedItemsForm+='</div>'
+                        resultsExist=True
+        if not resultsExist:
+            sharedItemsForm+='<center><h5>No results</h5></center>'
+        sharedItemsForm+=htmlFooter()
+    return sharedItemsForm    
+
 def htmlModerationInfo(baseDir: str) -> str:
     infoForm=''
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
