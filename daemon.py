@@ -1881,7 +1881,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             self.server.POSTbusy=False
-            return
+            return            
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
@@ -2093,6 +2093,17 @@ class PubServer(BaseHTTPRequestHandler):
                             with open(actorFilename, 'w') as fp:
                                 commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
             self._redirect_headers(actorStr,cookie)
+            self.server.POSTbusy=False
+            return
+
+        # moderator action buttons
+        if authorized and '/users/' in self.path and \
+           self.path.endswith('/moderatoraction'):
+            actorStr=self.path.replace('/moderatoraction','')
+            length = int(self.headers['Content-length'])
+            moderationParams=self.rfile.read(length).decode('utf-8')
+            print('moderationParams: '+moderationParams)
+            self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
             return
 

@@ -172,7 +172,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="50"></p>' \
             
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
-        newPostCSS = cssFile.read()
+        editProfileCSS = cssFile.read()
 
     moderatorsStr=''
     adminNickname=getConfigParam(baseDir,'admin')
@@ -189,7 +189,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
             '  <textarea id="message" name="moderators" placeholder="List of moderator nicknames..." style="height:200px">'+moderators+'</textarea>' \
             '</div>'
         
-    editProfileForm=htmlHeader(newPostCSS)
+    editProfileForm=htmlHeader(editProfileCSS)
     editProfileForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
         '  <div class="vertical-center">' \
