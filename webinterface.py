@@ -37,7 +37,8 @@ from skills import getSkills
 
 def htmlSearchSharedItems(baseDir: str,searchStr: str) -> str:
     sharedItemsForm=''
-    searchStrLower=searchStr.lower()
+    searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
+    searchStrLowerList=searchStrLower.split('+')
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         sharedItemsCSS=cssFile.read()
         sharedItemsForm=htmlHeader(sharedItemsCSS)
@@ -53,15 +54,23 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str) -> str:
                 with open(sharesFilename, 'r') as fp:
                     sharesJson=commentjson.load(fp)
                 for name,sharedItem in sharesJson.items():
-                    matched=False
-                    if sharedItem['location'].lower() in searchStrLower:
-                        matched=True
-                    elif searchStrLower in sharedItem['summary'].lower():
-                        matched=True
-                    elif sharedItem['displayName'].lower() in searchStrLower:
-                        matched=True
-                    elif sharedItem['category'].lower() in searchStrLower:
-                        matched=True
+                    matched=True
+                    ctr=0
+                    for searchSubstr in searchStrLowerList:
+                        subStrMatched=False
+                        searchSubstr=searchSubstr.strip()
+                        if searchSubstr in sharedItem['location'].lower():
+                            subStrMatched=True
+                        elif searchSubstr in sharedItem['summary'].lower():
+                            subStrMatched=True
+                        elif searchSubstr in sharedItem['displayName'].lower():
+                            subStrMatched=True
+                        elif searchSubstr in sharedItem['category'].lower():
+                            subStrMatched=True
+                        if not subStrMatched:
+                            matched=False
+                            break
+                        ctr+=1
                     if matched:
                         sharedItemsForm+='<div class="container">'
                         sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
