@@ -1068,11 +1068,15 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
     # second row of buttons for moderator actions
     if moderator and boxName=='moderation':
         tlStr+= \
+            '<form method="POST" action="/users/'+nickname+'/moderationaction">' \
             '<div class="container">\n'+ \
-            '    <a href="'+actor+'/modremove"><button title="Remove an account" class="button"><span>Remove </span></button></a>' \
-            '    <a href="'+actor+'/modsuspend"><button title="Suspend an account" class="button"><span>Suspend </span></button></a>' \
-            '    <a href="'+actor+'/modblock"><button title="Block an account on another instance" class="button"><span>Block </span></button></a>' \
-            '</div>'
+            '    <input type="text" placeholder="Nickname or URL..." name="moderationAction" value="">' \
+            '    <input type="submit" title="Remove the above item" name="submitRemove" value="Remove">' \
+            '    <input type="submit" title="Suspend the above account nickname" name="submitSuspend" value="Suspend">' \
+            '    <input type="submit" title="Remove a suspension for an account nickname" name="submitUnsuspend" value="Unsuspend">' \
+            '    <input type="submit" title="Block an account on another instance" name="submitBlock" value="Block">' \
+            '    <input type="submit" title="Unblock an account on another instance" name="submitUnblock" value="Unblock">' \
+            '</div></form>'
 
     # add the javascript for content warnings
     tlStr+='<script>'+contentWarningScript()+'</script>'
