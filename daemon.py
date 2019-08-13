@@ -64,6 +64,8 @@ from blocking import outboxBlock
 from blocking import outboxUndoBlock
 from blocking import addBlock
 from blocking import removeBlock
+from blocking import addGlobalBlock
+from blocking import removeGlobalBlock
 from config import setConfigParam
 from config import getConfigParam
 from roles import outboxDelegate
@@ -2141,6 +2143,22 @@ class PubServer(BaseHTTPRequestHandler):
                         suspendAccount(self.server.baseDir,nickname,self.server.salts)
                     if moderationButton=='unsuspend':
                         unsuspendAccount(self.server.baseDir,nickname)
+                    if moderationButton=='block':
+                        blockDomain,blockPort=getDomainFromActor(moderationText)
+                        fullBlockDomain=blockDomain
+                        if blockPort:
+                            if blockPort!=80 and blockPort!=443:
+                                fullBlockDomain=blockDomain+':'+str(blockPort)                                
+                        addGlobalBlock(self.server.baseDir, \
+                                       nickname,fullBlockDomain)
+                    if moderationButton=='unblock':
+                        blockDomain,blockPort=getDomainFromActor(moderationText)
+                        fullBlockDomain=blockDomain
+                        if blockPort:
+                            if blockPort!=80 and blockPort!=443:
+                                fullBlockDomain=blockDomain+':'+str(blockPort)                                
+                        removeGlobalBlock(self.server.baseDir, \
+                                          nickname,fullBlockDomain)
                     if moderationButton=='remove':
                         if '/statuses/' not in moderationText:
                             removeAccount(self.server.baseDir, \

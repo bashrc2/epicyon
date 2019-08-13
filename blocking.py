@@ -8,6 +8,20 @@ __status__ = "Production"
 
 import os
 
+def addGlobalBlock(baseDir: str, \
+                   blockNickname: str,blockDomain: str) -> bool:
+    """Global block which applies to all accounts
+    """
+    blockingFilename=baseDir+'/accounts/blocking.txt'
+    blockHandle=blockNickName+'@'+blockDomain
+    if os.path.isfile(blockingFilename):
+        if blockHandle in open(blockingFilename).read():
+            return False
+    blockFile=open(blockingFilename, "a+")
+    blockFile.write(blockHandle+'\n')
+    blockFile.close()
+    return True
+
 def addBlock(baseDir: str,nickname: str,domain: str, \
              blockNickname: str,blockDomain: str) -> bool:
     """Block the given account
@@ -23,6 +37,26 @@ def addBlock(baseDir: str,nickname: str,domain: str, \
     blockFile.write(blockHandle+'\n')
     blockFile.close()
     return True
+
+def removeGlobalBlock(baseDir: str, \
+                      unblockNickname: str, \
+                      unblockDomain: str) -> bool:
+    """Unblock the given global block
+    """
+    unblockingFilename=baseDir+'/accounts/blocking.txt'
+    unblockHandle=unblockNickName+'@'+unblockDomain
+    if os.path.isfile(unblockingFilename):
+        if unblockHandle in open(unblockingFilename).read():
+            with open(unblockingFilename, 'r') as fp:
+                with open(unblockingFilename+'.new', 'w') as fpnew:
+                    for line in fp:
+                        handle=line.replace('\n','')
+                        if unblockHandle not in line:
+                            fpnew.write(handle+'\n')
+            if os.path.isfile(unblockingFilename+'.new'):
+                os.rename(unblockingFilename+'.new',unblockingFilename)
+                return True
+    return False
 
 def removeBlock(baseDir: str,nickname: str,domain: str, \
                 unblockNickname: str,unblockDomain: str) -> bool:
@@ -49,15 +83,22 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
               blockNickname: str,blockDomain: str) -> bool:
     """Is the given nickname blocked?
     """
+    globalBlockingFilename=baseDir+'/accounts/blocking.txt'
+    if os.path.isfile(globalBlockingFilename):
+        if '*@'+blockDomain in open(globalBlockingFilename).read():
+            return True
+        blockHandle=blockNickname+'@'+blockDomain
+        if blockHandle in open(globalBlockingFilename).read():
+            return True
     allowFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
     if os.path.isfile(allowFilename):
         if blockDomain not in open(allowFilename).read():
             return True
     blockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
-    blockHandle=blockNickname+'@'+blockDomain
     if os.path.isfile(blockingFilename):
         if '*@'+blockDomain in open(blockingFilename).read():
             return True
+        blockHandle=blockNickname+'@'+blockDomain
         if blockHandle in open(blockingFilename).read():
             return True
     return False
