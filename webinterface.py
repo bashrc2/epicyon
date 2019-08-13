@@ -35,16 +35,42 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 
-def noOfModerationPosts(baseDir: str) -> int:
-    """Returns the number of posts addressed to moderators
-    """
-    moderationIndexFile=baseDir+'/accounts/moderation.txt'
-    if not os.path.isfile(moderationIndexFile):
-        return 0
-    with open(moderationIndexFile, "r") as f:
-        lines = f.readlines()
-        return len(lines)
-    return 0
+def htmlModerationInfo(baseDir: str) -> str:
+    infoForm=''
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        infoCSS=cssFile.read()
+        infoForm=htmlHeader(infoCSS)
+
+        infoForm+='<center><h1>Moderation Information</h1></center>'
+
+        infoShown=False        
+        suspendedFilename=baseDir+'/accounts/suspended.txt'
+        if os.path.isfile(suspendedFilename):
+            with open(suspendedFilename, "r") as f:
+                suspendedStr = f.read()
+                infoForm+= \
+                    '<div class="container">' \
+                    '  <br><b>Suspended accounts</b>' \
+                    '  <br>These are currently suspended' \
+                    '  <textarea id="message" name="suspended" style="height:200px">'+suspendedStr+'</textarea>' \
+                    '</div>'
+                infoShown=True
+
+        blockingFilename=baseDir+'/accounts/blocking.txt'
+        if os.path.isfile(blockingFilename):
+            with open(blockingFilename, "r") as f:
+                blockedStr = f.read()
+                infoForm+= \
+                    '<div class="container">' \
+                    '  <br><b>Blocked accounts</b>' \
+                    '  <br>These are globally blocked for all accounts on this instance' \
+                    '  <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>' \
+                    '</div>'        
+                infoShown=True
+        if not infoShown:
+            infoForm+='<center><p>Any blocks or suspensions made by moderators will be shown here.</p></center>'
+        infoForm+=htmlFooter()
+    return infoForm    
 
 def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int,
                       session,wfRequest: {},personCache: {}) -> str:
@@ -1075,6 +1101,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             '    <input type="submit" title="Remove a suspension for an account nickname" name="submitUnsuspend" value="Unsuspend">' \
             '    <input type="submit" title="Block an account on another instance" name="submitBlock" value="Block">' \
             '    <input type="submit" title="Unblock an account on another instance" name="submitUnblock" value="Unblock">' \
+            '    <input type="submit" title="Information about current blocks/suspensions" name="submitInfo" value="Info">' \
             '</div></form>'
 
     # add the javascript for content warnings

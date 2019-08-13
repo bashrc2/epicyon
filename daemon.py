@@ -90,6 +90,7 @@ from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
 from webinterface import htmlHashtagSearch
+from webinterface import htmlModerationInfo
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -2118,6 +2119,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if '=' in moderationStr:
                             moderationText=moderationStr.split('=')[1].strip()
                             moderationText=moderationText.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+                    elif moderationStr.startswith('submitInfo'):
+                        self._login_headers('text/html')
+                        self.wfile.write(htmlModerationInfo(self.server.baseDir).encode('utf-8'))
+                        self.server.POSTbusy=False
+                        return                        
                     elif moderationStr.startswith('submitBlock'):
                         moderationButton='block'
                     elif moderationStr.startswith('submitUnblock'):
