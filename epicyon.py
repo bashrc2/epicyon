@@ -12,6 +12,7 @@ from person import createCapabilitiesInbox
 from person import setPreferredNickname
 from person import setBio
 from person import setProfileImage
+from person import removeAccount
 from skills import setSkillLevel
 from roles import setRole
 from person import setOrganizationScheme
@@ -843,25 +844,7 @@ if args.rmaccount:
         if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-    handle=nickname+'@'+domain
-    accountRemoved=False
-    removePassword(baseDir,nickname)
-    if os.path.isdir(baseDir+'/accounts/'+handle):
-        shutil.rmtree(baseDir+'/accounts/'+handle)
-        accountRemoved=True
-    if os.path.isfile(baseDir+'/accounts/'+handle+'.json'):
-        os.remove(baseDir+'/accounts/'+handle+'.json')
-        accountRemoved=True
-    if os.path.isfile(baseDir+'/wfendpoints/'+handle+'.json'):
-        os.remove(baseDir+'/wfendpoints/'+handle+'.json')
-        accountRemoved=True
-    if os.path.isfile(baseDir+'/keys/private/'+handle+'.key'):
-        os.remove(baseDir+'/keys/private/'+handle+'.key')
-        accountRemoved=True
-    if os.path.isfile(baseDir+'/keys/public/'+handle+'.pem'):
-        os.remove(baseDir+'/keys/public/'+handle+'.pem')
-        accountRemoved=True
-    if accountRemoved:
+    if removeAccount(baseDir,nickname,domain):
         print('Account for '+handle+' was removed')
     sys.exit()
 

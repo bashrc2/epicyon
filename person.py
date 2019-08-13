@@ -11,6 +11,7 @@ import commentjson
 import os
 import fileinput
 import subprocess
+import shutil
 from pprint import pprint
 from pathlib import Path
 from Crypto.PublicKey import RSA
@@ -21,6 +22,7 @@ from posts import createInbox
 from posts import createOutbox
 from posts import createModeration
 from auth import storeBasicCredentials
+from auth import removePassword
 from roles import setRole
 from media import removeMetaData
 from utils import validNickname
@@ -532,3 +534,37 @@ def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
             suspendedFile.write(nickname+'\n')
             suspendedFile.close()
             salts[nickname]=createPassword(32)            
+
+def removeAccount(baseDir: str,nickname: str,domain: str) -> bool:
+    """Removes an account
+    """
+    # Don't suspend the admin
+    adminNickname=getConfigParam(baseDir,'admin')
+    if nickname==adminNickname:
+        return False
+
+    # Don't suspend moderators
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+    if os.path.isfile(moderatorsFile):
+        with open(moderatorsFile, "r") as f:
+            lines = f.readlines()
+        for moderator in lines:
+            if moderator.strip('\n')==nickname:
+                return False
+
+    unsuspendAccount(baseDir,nickname)
+    handle=nickname+'@'+domain
+    removePassword(baseDir,nickname)
+    if os.path.isdir(baseDir+'/accounts/'+handle):
+        shutil.rmtree(baseDir+'/accounts/'+handle)
+    if os.path.isfile(baseDir+'/accounts/'+handle+'.json'):
+        os.remove(baseDir+'/accounts/'+handle+'.json')
+    if os.path.isfile(baseDir+'/wfendpoints/'+handle+'.json'):
+        os.remove(baseDir+'/wfendpoints/'+handle+'.json')
+    if os.path.isfile(baseDir+'/keys/private/'+handle+'.key'):
+        os.remove(baseDir+'/keys/private/'+handle+'.key')
+    if os.path.isfile(baseDir+'/keys/public/'+handle+'.pem'):
+        os.remove(baseDir+'/keys/public/'+handle+'.pem')
+    if os.path.isdir(baseDir+'/sharefiles/'+nickname):
+        shutil.rmtree(baseDir+'/sharefiles/'+nickname)
+    return True

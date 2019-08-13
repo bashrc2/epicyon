@@ -27,6 +27,8 @@ from person import personLookup
 from person import personBoxJson
 from person import createSharedInbox
 from person import isSuspended
+from person import suspendAccount
+from person import unsuspendAccount
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowers
@@ -2098,11 +2100,40 @@ class PubServer(BaseHTTPRequestHandler):
 
         # moderator action buttons
         if authorized and '/users/' in self.path and \
-           self.path.endswith('/moderatoraction'):
-            actorStr=self.path.replace('/moderatoraction','')
+           self.path.endswith('/moderationaction'):
+            actorStr=self.path.replace('/moderationaction','')
             length = int(self.headers['Content-length'])
             moderationParams=self.rfile.read(length).decode('utf-8')
             print('moderationParams: '+moderationParams)
+            if '&' in moderationParams:
+                moderationText=None
+                moderationButton=None
+                for moderationStr in moderationParams.split('&'):
+                    if moderationStr=='moderationAction':
+                        if '=' in moderationStr:
+                            moderationText=moderationStr.split('=')[1].strip()
+                            moderationText=moderationText.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+                    elif moderationStr.startswith('submitBlock'):
+                        moderationButton='block'
+                    elif moderationStr.startswith('submitUnblock'):
+                        moderationButton='unblock'
+                    elif moderationStr.startswith('submitSuspend'):
+                        moderationButton='suspend'
+                    elif moderationStr.startswith('submitUnsuspend'):
+                        moderationButton='unsuspend'
+                    elif moderationStr.startswith('submitRemove'):
+                        moderationButton='remove'
+                if moderationButton and moderationText:
+                    nickname=moderationText
+                    if nickname.startswith('http') or \
+                       nickname.startswith('dat'):
+                        nickname=getNicknameFromActor(nickname)
+                    if '@' in nickname:
+                        nickname=nickname.split('@')[0]
+                    if moderationButton=='suspend':
+                        suspendAccount(self.server.baseDir,nickname,self.server.salts)
+                    if moderationButton=='unsuspend':
+                        unsuspendAccount(self.server.baseDir,nickname)
             self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
             return
