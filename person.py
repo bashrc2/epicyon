@@ -536,6 +536,32 @@ def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
             suspendedFile.close()
             salts[nickname]=createPassword(32)            
 
+def canRemovePost(baseDir: str,nickname: str,domain: str,port: int,postId: str) -> bool:
+    """Returns true if the given post can be removed
+    """
+    if '/statuses/' not in postId:
+        return False
+
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+
+    # is the post by the admin?
+    adminNickname=getConfigParam(baseDir,'admin')
+    if domainFull+'/users/'+adminNickname+'/' in postId:
+        return False
+
+    # is the post by a moderator?
+    moderatorsFile=baseDir+'/accounts/moderators.txt'
+    if os.path.isfile(moderatorsFile):
+        with open(moderatorsFile, "r") as f:
+            lines = f.readlines()
+        for moderator in lines:
+            if domainFull+'/users/'+moderator.strip('\n')+'/' in postId:
+                return False
+    return True
+
 def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> None:
     """Removes tags for a nickname
     """

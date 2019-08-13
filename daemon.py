@@ -30,6 +30,7 @@ from person import isSuspended
 from person import suspendAccount
 from person import unsuspendAccount
 from person import removeAccount
+from person import canRemovePost
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowers
@@ -2147,16 +2148,22 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain, \
                                           self.server.port)
                         else:
+                            # remove a post or thread                            
                             postFilename= \
                                 locatePost(self.server.baseDir, \
                                            nickname,self.server.domain, \
                                            moderationText)
-                            if postFilename:                            
-                                deletePost(self.server.baseDir, \
-                                           self.server.httpPrefix, \
-                                           nickname,self.server.omain, \
-                                           postFilename, \
-                                           self.server.debug)
+                            if postFilename:
+                                if canRemovePost(self.server.baseDir, \
+                                                 nickname, \
+                                                 self.server.domain, \
+                                                 self.server.port, \
+                                                 moderationText):                                
+                                    deletePost(self.server.baseDir, \
+                                               self.server.httpPrefix, \
+                                               nickname,self.server.omain, \
+                                               postFilename, \
+                                               self.server.debug)
             self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
             return
