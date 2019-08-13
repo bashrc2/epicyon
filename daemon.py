@@ -29,6 +29,7 @@ from person import createSharedInbox
 from person import isSuspended
 from person import suspendAccount
 from person import unsuspendAccount
+from person import removeAccount
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowers
@@ -2109,7 +2110,8 @@ class PubServer(BaseHTTPRequestHandler):
                 moderationText=None
                 moderationButton=None
                 for moderationStr in moderationParams.split('&'):
-                    if moderationStr=='moderationAction':
+                    print('moderationStr: '+moderationStr)
+                    if moderationStr.startswith('moderationAction'):
                         if '=' in moderationStr:
                             moderationText=moderationStr.split('=')[1].strip()
                             moderationText=moderationText.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
@@ -2124,6 +2126,9 @@ class PubServer(BaseHTTPRequestHandler):
                     elif moderationStr.startswith('submitRemove'):
                         moderationButton='remove'
                 if moderationButton and moderationText:
+                    if self.server.debug:
+                        print('moderationButton: '+moderationButton)
+                        print('moderationText: '+moderationText)
                     nickname=moderationText
                     if nickname.startswith('http') or \
                        nickname.startswith('dat'):
@@ -2131,9 +2136,27 @@ class PubServer(BaseHTTPRequestHandler):
                     if '@' in nickname:
                         nickname=nickname.split('@')[0]
                     if moderationButton=='suspend':
+                        print('**************** suspend')
                         suspendAccount(self.server.baseDir,nickname,self.server.salts)
                     if moderationButton=='unsuspend':
                         unsuspendAccount(self.server.baseDir,nickname)
+                    if moderationButton=='remove':
+                        if '/statuses/' not in moderationText:
+                            removeAccount(self.server.baseDir, \
+                                          nickname, \
+                                          self.server.domain, \
+                                          self.server.port)
+                        else:
+                            postFilename= \
+                                locatePost(self.server.baseDir, \
+                                           nickname,self.server.domain, \
+                                           moderationText)
+                            if postFilename:                            
+                                deletePost(self.server.baseDir, \
+                                           self.server.httpPrefix, \
+                                           nickname,self.server.omain, \
+                                           postFilename, \
+                                           self.server.debug)
             self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
             return

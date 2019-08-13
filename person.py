@@ -27,6 +27,7 @@ from roles import setRole
 from media import removeMetaData
 from utils import validNickname
 from utils import noOfAccounts
+from auth import createPassword
 from config import setConfigParam
 from config import getConfigParam
 
@@ -564,7 +565,7 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
 
 def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
     """Removes an account
-    """
+    """    
     # Don't remove the admin
     adminNickname=getConfigParam(baseDir,'admin')
     if nickname==adminNickname:

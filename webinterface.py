@@ -1046,8 +1046,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
 
     moderationButtonStr=''
     if moderator:
-        if noOfModerationPosts(baseDir)>0:
-            moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Moderate </span></button></a>'
+        moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Moderate </span></button></a>'
     
     tlStr=htmlHeader(profileStyle)
 
