@@ -1589,7 +1589,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
 
         result = []
         i = 0
-        for item in parseUserFeed(session,outboxUrl,asHeader):
+        for item in parseUserFeed(session,outboxUrl,asHeader, \
+                                  projectVersion,httpPrefix,domain):
             if not item.get('type'):
                 continue
             if item['type']!='Create' and item['type']!='Announce':
