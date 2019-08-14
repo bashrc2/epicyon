@@ -2581,7 +2581,8 @@ class PubServer(BaseHTTPRequestHandler):
             return            
 
         # refuse to receive non-json content
-        if self.headers['Content-type'] != 'application/json':
+        if self.headers['Content-type'] != 'application/json' and \
+           self.headers['Content-type'] != 'application/activity+json':
             print("POST is not json: "+self.headers['Content-type'])
             if self.server.debug:
                 print(str(self.headers))
@@ -2674,7 +2675,10 @@ class PubServer(BaseHTTPRequestHandler):
                         self.send_response(503)
                         self.end_headers()
                         self.server.POSTbusy=False
-                        return                    
+                        return
+                else:
+                    if self.server.debug:
+                        print('self.postToNickname is None')
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
