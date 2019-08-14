@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import sys
 import requests
 from utils import urlPermitted
 import json
@@ -24,14 +25,17 @@ def createSession(domain: str, port: int, onionRoute: bool):
         session.proxies['https'] = 'socks5h://localhost:9050'
     return session
 
-def getJson(session,url: str,headers: {},params: {}) -> {}:
+def getJson(session,url: str,headers: {},params: {}, \
+            version='0.01',httpPrefix='https',domain='testdomain') -> {}:
     sessionParams={}
     sessionHeaders={}
     if headers:
         sessionHeaders=headers
     if params:
         sessionParams=params
-    sessionHeaders['User-agent'] = "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5)"
+    pythonVersion=str(sys.version_info[0])+'.'+str(sys.version_info[1])+'.'+str(sys.version_info[2])
+    sessionHeaders['User-Agent']='http.py/'+pythonVersion+' (Epicyon/'+version+'; +'+httpPrefix+'://'+domain+'/)'
+    #"Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5)"
     if not session:
         print('WARN: no session specified for getJson')
     session.cookies.clear()
