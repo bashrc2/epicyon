@@ -191,7 +191,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     global testServerAliceRunning
     testServerAliceRunning = True
     print('Server running: Alice')
-    runDaemon("instanceId",False,path,domain,port,port, \
+    runDaemon(__version__,"instanceId",False,path,domain,port,port, \
               httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
@@ -244,7 +244,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     global testServerBobRunning
     testServerBobRunning = True
     print('Server running: Bob')
-    runDaemon("instanceId",False,path,domain,port,port, \
+    runDaemon(__version__,"instanceId",False,path,domain,port,port, \
               httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
@@ -277,7 +277,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     global testServerEveRunning
     testServerEveRunning = True
     print('Server running: Eve')
-    runDaemon("instanceId",False,path,domain,port,port, \
+    runDaemon(__version__,"instanceId",False,path,domain,port,port, \
               httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies,allowDeletion,True)
@@ -354,7 +354,8 @@ def testPostMessageBetweenServers():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
 
     sendResult = \
-        sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
+        sendPost(__version__, \
+                 sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
                  'Why is a mouse when it spins? #sillyquestion', followersOnly, \
                  saveToFile, clientToServer,attachedImageFilename, \
@@ -410,7 +411,8 @@ def testPostMessageBetweenServers():
                     'bob',bobDomain,bobPort,httpPrefix, \
                     'alice',aliceDomain,alicePort,[], \
                     statusNumber,False,bobSendThreads,bobPostLog, \
-                    bobPersonCache,bobCachedWebfingers,True)
+                    bobPersonCache,bobCachedWebfingers, \
+                    True,__version__)
 
     for i in range(20):
         if 'likes' in open(outboxPostFilename).read():
@@ -436,7 +438,7 @@ def testPostMessageBetweenServers():
                    objectUrl, \
                    False,bobSendThreads,bobPostLog, \
                    bobPersonCache,bobCachedWebfingers, \
-                   True)
+                   True,__version__)
     announceMessageArrived=False
     for i in range(10):
         time.sleep(1)
@@ -558,7 +560,8 @@ def testFollowBetweenServers():
                           'bob',bobDomain,bobPort,httpPrefix, \
                           clientToServer,federationList, \
                           aliceSendThreads,alicePostLog, \
-                          aliceCachedWebfingers,alicePersonCache,True)
+                          aliceCachedWebfingers,alicePersonCache, \
+                          True,__version__)
     print('sendResult: '+str(sendResult))
 
     bobCapsFilename=bobDir+'/accounts/bob@'+bobDomain+'/ocap/accept/'+httpPrefix+':##'+aliceDomain+':'+str(alicePort)+'#users#alice.json'
@@ -592,7 +595,8 @@ def testFollowBetweenServers():
     evePostLog=[]
     useBlurhash=False
     sendResult = \
-        sendPost(sessionEve,eveDir,'eve', eveDomain, evePort, \
+        sendPost(__version__, \
+                 sessionEve,eveDir,'eve', eveDomain, evePort, \
                  'bob', bobDomain, bobPort, ccUrl, \
                  httpPrefix, 'Eve message', followersOnly, \
                  saveToFile, clientToServer,None,None, \
@@ -626,7 +630,8 @@ def testFollowBetweenServers():
     alicePostLog=[]
     useBlurhash=False
     sendResult = \
-        sendPost(sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
+        sendPost(__version__, \
+                 sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, \
                  httpPrefix, 'Alice message', followersOnly, saveToFile, \
                  clientToServer,None,None,useBlurhash, federationList, \
@@ -679,7 +684,7 @@ def testFollowBetweenServers():
                            newCapabilities, \
                            bobSendThreads, bobPostLog, \
                            bobCachedWebfingers,bobPersonCache, \
-                           federationList,True)
+                           federationList,True,__version__)
 
     bobChanged=False
     bobNewCapsJson=None
@@ -1120,7 +1125,8 @@ def testClientToServer():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==0
     sendResult= \
-        sendPostViaServer(aliceDir,sessionAlice,'alice',password, \
+        sendPostViaServer(__version__, \
+                          aliceDir,sessionAlice,'alice',password, \
                           aliceDomain,alicePort, \
                           'bob',bobDomain,bobPort,None, \
                           httpPrefix,'Sent from my ActivityPub client',followersOnly, \
@@ -1170,7 +1176,7 @@ def testClientToServer():
                                'bob',bobDomain,bobPort, \
                                httpPrefix, \
                                cachedWebfingers,personCache, \
-                               True)
+                               True,__version__)
     for t in range(10):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
             if 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
@@ -1192,7 +1198,7 @@ def testClientToServer():
                                'alice',aliceDomain,alicePort, \
                                httpPrefix, \
                                cachedWebfingers,personCache, \
-                               True)
+                               True,__version__)
     for t in range(10):
         if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt'):
             if 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/followers.txt').read():
@@ -1220,7 +1226,7 @@ def testClientToServer():
                       bobDomain,bobPort, \
                       httpPrefix,outboxPostId, \
                       cachedWebfingers,personCache, \
-                      True)
+                      True,__version__)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2:
@@ -1240,7 +1246,7 @@ def testClientToServer():
                           bobDomain,bobPort, \
                           httpPrefix,outboxPostId, \
                           cachedWebfingers, \
-                          personCache,True)
+                          personCache,True,__version__)
     for i in range(20):
         if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==3:
@@ -1262,7 +1268,7 @@ def testClientToServer():
                         aliceDomain,alicePort, \
                         httpPrefix,outboxPostId, \
                         cachedWebfingers,personCache, \
-                        True)
+                        True,__version__)
     for i in range(30):
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==postsBefore-1:
@@ -1282,7 +1288,7 @@ def testClientToServer():
                                  'bob',bobDomain,bobPort, \
                                  httpPrefix, \
                                  cachedWebfingers,personCache, \
-                                 True)
+                                 True,__version__)
     for t in range(10):
         if 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
             if 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read():

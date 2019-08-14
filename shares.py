@@ -274,7 +274,8 @@ def sendShareViaServer(session,fromNickname: str,password: str,
                        location: str, \
                        duration: str, \
                        cachedWebfingers: {},personCache: {}, \
-                       debug: bool) -> {}:
+                       debug: bool, \
+                       projectVersion: str) -> {}:
     """Creates an item share via c2s
     """
     if not session:
@@ -310,7 +311,8 @@ def sendShareViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -320,7 +322,8 @@ def sendShareViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:
@@ -359,7 +362,7 @@ def sendUndoShareViaServer(session,fromNickname: str,password: str,
                            httpPrefix: str, \
                            displayName: str, \
                            cachedWebfingers: {},personCache: {}, \
-                           debug: bool) -> {}:
+                           debug: bool,projectVersion: str) -> {}:
     """Undoes a share via c2s
     """
     if not session:
@@ -390,7 +393,8 @@ def sendUndoShareViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -400,7 +404,8 @@ def sendUndoShareViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:

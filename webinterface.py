@@ -153,7 +153,8 @@ def htmlModerationInfo(baseDir: str) -> str:
     return infoForm    
 
 def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int,
-                      session,wfRequest: {},personCache: {}) -> str:
+                      session,wfRequest: {},personCache: {}, \
+                      httpPrefix: str,projectVersion: str) -> str:
     """Show a page containing search results for a hashtag
     """
     if hashtag.startswith('#'):
@@ -204,7 +205,9 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
             hashtagSearchForm+= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
-                                     None,True,False,False)
+                                     None,True,False, \
+                                     httpPrefix,projectVersion, \
+                                     False)
         index-=1
 
     if endIndex>0:
@@ -643,7 +646,8 @@ def htmlFooter() -> str:
 def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                      authorized: bool,ocapAlways: bool, \
                      nickname: str,domain: str,port: int, \
-                     session,wfRequest: {},personCache: {}) -> str:
+                     session,wfRequest: {},personCache: {}, \
+                     projectVersion: str) -> str:
     """Shows posts on the profile screen
     """
     profileStr=''
@@ -659,14 +663,16 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         if item['type']=='Create' or item['type']=='Announce':
             profileStr+= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,item,None,True,False,False)
+                                     nickname,domain,port,item,None,True,False, \
+                                     httpPrefix,projectVersion, \
+                                     False)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
                          authorized: bool,ocapAlways: bool, \
                          nickname: str,domain: str,port: int, \
                          session,wfRequest: {},personCache: {}, \
-                         followingJson: {}, \
+                         followingJson: {},projectVersion: str, \
                          buttons: []) -> str:
     """Shows following on the profile screen
     """
@@ -674,7 +680,9 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
     for item in followingJson['orderedItems']:
         profileStr+= \
             individualFollowAsHtml(session,wfRequest,personCache, \
-                                   domain,item,authorized,nickname,buttons)
+                                   domain,item,authorized,nickname, \
+                                   httpPrefix,projectVersion, \
+                                   buttons)
     return profileStr
 
 def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
@@ -724,7 +732,8 @@ def htmlProfileShares(nickname: str,domain: str,sharesJson: {}) -> str:
         profileStr='<div class="share-title">'+profileStr+'</div>'
     return profileStr
 
-def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
+def htmlProfile(projectVersion: str, \
+                baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
                 extraJson=None) -> str:
@@ -837,13 +846,15 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
             profileStr+= \
                 htmlProfilePosts(baseDir,httpPrefix,authorized, \
                                  ocapAlways,nickname,domain,port, \
-                                 session,wfRequest,personCache)
+                                 session,wfRequest,personCache, \
+                                 projectVersion)
         if selected=='following':
             profileStr+= \
                 htmlProfileFollowing(baseDir,httpPrefix, \
                                      authorized,ocapAlways,nickname, \
                                      domain,port,session, \
                                      wfRequest,personCache,extraJson, \
+                                     projectVersion, \
                                      ["unfollow"])
         if selected=='followers':
             profileStr+= \
@@ -851,6 +862,7 @@ def htmlProfile(baseDir: str,httpPrefix: str,authorized: bool, \
                                      authorized,ocapAlways,nickname, \
                                      domain,port,session, \
                                      wfRequest,personCache,extraJson, \
+                                     projectVersion,
                                      ["block"])
         if selected=='roles':
             profileStr+= \
@@ -869,6 +881,8 @@ def individualFollowAsHtml(session,wfRequest: {}, \
                            followUrl: str, \
                            authorized: bool, \
                            actorNickname: str, \
+                           httpPrefix: str, \
+                           projectVersion: str, \
                            buttons=[]) -> str:
     nickname=getNicknameFromActor(followUrl)
     domain,port=getDomainFromActor(followUrl)
@@ -876,7 +890,8 @@ def individualFollowAsHtml(session,wfRequest: {}, \
     avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
-            getPersonBox(session,wfRequest,personCache,'outbox')
+            getPersonBox(session,wfRequest,personCache, \
+                         projectVersion,httpPrefix,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if preferredName:
@@ -916,7 +931,9 @@ def individualPostAsHtml(baseDir: str, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
                          avatarUrl: str, showAvatarDropdown: bool,
-                         allowDeletion: bool,showIcons=False) -> str:
+                         allowDeletion: bool, \
+                         httpPrefix: str, projectVersion: str, \
+                         showIcons=False) -> str:
     """ Shows a single post as html
     """
     titleStr=''
@@ -925,7 +942,7 @@ def individualPostAsHtml(baseDir: str, \
             if isinstance(postJsonObject['object'], str):
                 # get the announced post
                 asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-                announcedJson = getJson(session,postJsonObject['object'],asHeader,None)
+                announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                 if announcedJson:
                     if not announcedJson.get('type'):
                         return ''
@@ -1000,7 +1017,8 @@ def individualPostAsHtml(baseDir: str, \
         
     if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
-            getPersonBox(session,wfRequest,personCache,'outbox')
+            getPersonBox(session,wfRequest,personCache, \
+                         projectVersion,httpPrefix,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if preferredName:
@@ -1129,7 +1147,8 @@ def individualPostAsHtml(baseDir: str, \
 def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,timelineJson: {}, \
-                 boxName: str,allowDeletion: bool) -> str:
+                 boxName: str,allowDeletion: bool, \
+                 httpPrefix: str,projectVersion: str) -> str:
     """Show the timeline as html
     """
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
@@ -1212,7 +1231,9 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             itemCtr+=1
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,None,True, \
-                                        allowDeletion,showIndividualPostIcons)
+                                        allowDeletion, \
+                                        httpPrefix,projectVersion,
+                                        showIndividualPostIcons)
 
     # page down arrow
     if itemCtr>=itemsPerPage:
@@ -1223,39 +1244,46 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
 def htmlInbox(pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}, \
-              allowDeletion: bool) -> str:
+              allowDeletion: bool, \
+              httpPrefix: str,projectVersion: str) -> str:
     """Show the inbox as html
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,inboxJson,'inbox',allowDeletion)
+                        nickname,domain,port,inboxJson,'inbox',allowDeletion, \
+                        httpPrefix,projectVersion)
 
 def htmlModeration(pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
-                   allowDeletion: bool) -> str:
+                   allowDeletion: bool, \
+                   httpPrefix: str,projectVersion: str) -> str:
     """Show the moderation feed as html
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,inboxJson,'moderation',allowDeletion)
+                        nickname,domain,port,inboxJson,'moderation',allowDeletion, \
+                        httpPrefix,projectVersion)
 
 def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int,outboxJson: {}, \
-               allowDeletion: bool) -> str:
+               allowDeletion: bool,
+               httpPrefix: str,projectVersion: str) -> str:
     """Show the Outbox as html
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,outboxJson,'outbox',allowDeletion)
+                        nickname,domain,port,outboxJson,'outbox',allowDeletion, \
+                        httpPrefix,projectVersion)
 
 def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,authorized: bool, \
-                       postJsonObject: {}) -> str:
+                       postJsonObject: {},httpPrefix: str,projectVersion: str) -> str:
     """Show an individual post as html
     """
     postStr='<script>'+contentWarningScript()+'</script>'
     postStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject,None,True,False,False)
+                             nickname,domain,port,postJsonObject,None,True,False, \
+                             httpPrefix,projectVersion,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -1268,7 +1296,9 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
             postStr= \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
-                                     None,True,False,False)+postStr
+                                     None,True,False, \
+                                     httpPrefix,projectVersion, \
+                                     False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -1283,18 +1313,21 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
             for item in repliesJson['orderedItems']:
                 postStr+= \
                     individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                         nickname,domain,port,item,None,True,False,False)
+                                         nickname,domain,port,item,None,True,False, \
+                                         httpPrefix,projectVersion,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
-                    nickname: str,domain: str,port: int,repliesJson: {}) -> str:
+                    nickname: str,domain: str,port: int,repliesJson: {}, \
+                    httpPrefix: str,projectVersion: str) -> str:
     """Show the replies to an individual post as html
     """
     repliesStr=''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                             nickname,domain,port,item,None,True,False,False)    
+                                             nickname,domain,port,item,None,True,False, \
+                                             httpPrefix,projectVersion,False)    
 
     return htmlHeader()+repliesStr+htmlFooter()
 
@@ -1453,7 +1486,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                            nickname: str,domain: str,port: int, \
                            profileHandle: str, \
                            session,wfRequest: {},personCache: {},
-                           debug: bool) -> str:
+                           debug: bool,projectVersion: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
     if '/users/' in profileHandle:
@@ -1491,14 +1524,15 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
     
     profileStr=''
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
-        wf = webfingerHandle(session,searchNickname+'@'+searchDomainFull,httpPrefix,wfRequest)
+        wf = webfingerHandle(session,searchNickname+'@'+searchDomainFull,httpPrefix,wfRequest, \
+                             domain,projectVersion)
         if not wf:
             if debug:
                 print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomainFull)
             return None
         asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         personUrl = getUserUrl(wf)
-        profileJson = getJson(session,personUrl,asHeader,None)
+        profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
             if debug:
                 print('DEBUG: No actor returned from '+personUrl)
@@ -1566,7 +1600,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                 individualPostAsHtml(baseDir, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
-                                     item,avatarUrl,False,False,False)
+                                     item,avatarUrl,False,False, \
+                                     httpPrefix,projectVersion,False)
             i+=1
             if i>=20:
                 break

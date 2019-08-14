@@ -90,7 +90,7 @@ def sendSkillViaServer(session,nickname: str,password: str,
                        httpPrefix: str, \
                        skill: str,skillLevelPercent: int, \
                        cachedWebfingers: {},personCache: {}, \
-                       debug: bool) -> {}:
+                       debug: bool,projectVersion: str) -> {}:
     """Sets a skill for a person via c2s
     """
     if not session:
@@ -119,7 +119,8 @@ def sendSkillViaServer(session,nickname: str,password: str,
     handle=httpPrefix+'://'+domainFull+'/@'+nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                domain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -129,7 +130,8 @@ def sendSkillViaServer(session,nickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,domain,postToBox)
                      
     if not inboxUrl:
         if debug:

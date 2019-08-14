@@ -127,7 +127,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
 def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
          sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
-         debug: bool) -> {}:
+         debug: bool,projectVersion: str) -> {}:
     """Creates a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -176,7 +176,8 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
                        likedPostNickname,likedPostDomain,likedPostPort, \
                        'https://www.w3.org/ns/activitystreams#Public', \
                        httpPrefix,True,clientToServer,federationList, \
-                       sendThreads,postLog,cachedWebfingers,personCache,debug)
+                       sendThreads,postLog,cachedWebfingers,personCache, \
+                       debug,projectVersion)
 
     return newLikeJson
 
@@ -187,7 +188,7 @@ def likePost(session,baseDir: str,federationList: [], \
              likeStatusNumber: int,clientToServer: bool, \
              sendThreads: [],postLog: [], \
              personCache: {},cachedWebfingers: {}, \
-             debug: bool) -> {}:
+             debug: bool,projectVersion: str) -> {}:
     """Likes a given status post
     """
     likeDomain=likeDomain
@@ -205,12 +206,13 @@ def likePost(session,baseDir: str,federationList: [], \
         
     return like(session,baseDir,federationList,nickname,domain,port, \
                 ccList,httpPrefix,objectUrl,clientToServer, \
-                sendThreads,postLog,personCache,cachedWebfingers,debug)
+                sendThreads,postLog,personCache,cachedWebfingers, \
+                debug,projectVersion)
 
 def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
              ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
              sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
-             debug: bool) -> {}:
+             debug: bool,projectVersion: str) -> {}:
     """Removes a like
     actor is the person doing the liking
     'to' might be a specific person (actor) whose post was liked
@@ -266,7 +268,8 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
                        likedPostNickname,likedPostDomain,likedPostPort, \
                        'https://www.w3.org/ns/activitystreams#Public', \
                        httpPrefix,True,clientToServer,federationList, \
-                       sendThreads,postLog,cachedWebfingers,personCache,debug)
+                       sendThreads,postLog,cachedWebfingers,personCache, \
+                       debug,projectVersion)
     else:
         return None
 
@@ -303,7 +306,7 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
                       fromDomain: str,fromPort: int, \
                       httpPrefix: str,likeUrl: str, \
                       cachedWebfingers: {},personCache: {}, \
-                      debug: bool) -> {}:
+                      debug: bool,projectVersion: str) -> {}:
     """Creates a like via c2s
     """
     if not session:
@@ -331,7 +334,8 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -341,7 +345,8 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:
@@ -373,7 +378,7 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
                           fromDomain: str,fromPort: int, \
                           httpPrefix: str,likeUrl: str, \
                           cachedWebfingers: {},personCache: {}, \
-                          debug: bool) -> {}:
+                          debug: bool,projectVersion: str) -> {}:
     """Undo a like via c2s
     """
     if not session:
@@ -405,7 +410,8 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -415,7 +421,8 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:

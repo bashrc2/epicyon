@@ -296,7 +296,8 @@ if args.posts:
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
     getPublicPostsOfPerson(nickname,domain,False,True, \
-                           args.tor,args.port,httpPrefix,debug)
+                           args.tor,args.port,httpPrefix,debug, \
+                           __version__)
     sys.exit()
 
 if args.postsraw:
@@ -308,7 +309,8 @@ if args.postsraw:
     nickname=args.postsraw.split('@')[0]
     domain=args.postsraw.split('@')[1]
     getPublicPostsOfPerson(nickname,domain,False,False, \
-                           args.tor,args.port,httpPrefix,debug)
+                           args.tor,args.port,httpPrefix,debug, \
+                           __version__)
     sys.exit()
 
 baseDir=args.baseDir
@@ -429,7 +431,7 @@ if args.approve:
                                sendThreads,postLog, \
                                cachedWebfingers,personCache, \
                                acceptedCaps, \
-                               debug)
+                               debug,__version__)
     sys.exit()
 
 if args.deny:
@@ -514,7 +516,8 @@ if args.message:
     followersOnly=False
     print('Sending post to '+args.sendto)
 
-    sendPostViaServer(baseDir,session,args.nickname,args.password, \
+    sendPostViaServer(__version__, \
+                      baseDir,session,args.nickname,args.password, \
                       domain,port, \
                       toNickname,toDomain,toPort,ccUrl, \
                       httpPrefix,sendMessage,followersOnly, \
@@ -544,7 +547,7 @@ if args.announce:
                           domain,port, \
                           httpPrefix,args.announce, \
                           cachedWebfingers,personCache, \
-                          True)
+                          True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -596,7 +599,7 @@ if args.itemName:
                        args.location, \
                        args.duration, \
                        cachedWebfingers,personCache, \
-                       debug)
+                       debug,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -622,7 +625,7 @@ if args.undoItemName:
                            httpPrefix, \
                            args.undoItemName, \
                            cachedWebfingers,personCache, \
-                           debug)
+                           debug,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -646,7 +649,7 @@ if args.like:
                       domain,port, \
                       httpPrefix,args.like, \
                       cachedWebfingers,personCache, \
-                      True)
+                      True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -670,7 +673,7 @@ if args.undolike:
                           domain,port, \
                           httpPrefix,args.undolike, \
                           cachedWebfingers,personCache, \
-                          True)
+                          True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -694,7 +697,7 @@ if args.delete:
                         domain,port, \
                         httpPrefix,args.delete, \
                         cachedWebfingers,personCache, \
-                        True)
+                        True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -727,7 +730,7 @@ if args.follow:
                                followNickname,followDomain,followPort, \
                                httpPrefix, \
                                cachedWebfingers,personCache, \
-                               debug)
+                               debug,__version__)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -761,7 +764,7 @@ if args.unfollow:
                                  followNickname,followDomain,followPort, \
                                  httpPrefix, \
                                  cachedWebfingers,personCache, \
-                                 debug)
+                                 debug,__version__)
     for t in range(20):
         time.sleep(1)
         # TODO some method to know if it worked
@@ -798,13 +801,14 @@ if args.actor:
         httpPrefix='https'
         port=443
     session = createSession(domain,port,useTor)
-    wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache)
+    wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
+                                domain,__version__)
     if not wfRequest:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
-    personJson = getJson(session,personUrl,asHeader,None)
+    personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,domain)
     if personJson:
         pprint(personJson)
     else:
@@ -814,7 +818,7 @@ if args.actor:
 if args.json:
     session = createSession(domain,port,True)
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    testJson = getJson(session,args.json,asHeader,None)
+    testJson = getJson(session,args.json,asHeader,None,__version__,httpPrefix,domain)
     pprint(testJson)
     sys.exit()
 
@@ -986,7 +990,7 @@ if args.skill:
                        httpPrefix, \
                        args.skill,args.skillLevelPercent, \
                        cachedWebfingers,personCache, \
-                       True)
+                       True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1011,7 +1015,7 @@ if args.availability:
                               httpPrefix, \
                               args.availability, \
                               cachedWebfingers,personCache, \
-                              True)
+                              True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1055,7 +1059,7 @@ if args.block:
                        domain,port, \
                        httpPrefix,args.block, \
                        cachedWebfingers,personCache, \
-                       True)
+                       True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1092,7 +1096,7 @@ if args.delegate:
                       httpPrefix,args.delegate, \
                       args.project,args.role, \
                       cachedWebfingers,personCache, \
-                      True)
+                      True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1125,7 +1129,7 @@ if args.undelegate:
                       httpPrefix,args.delegate, \
                       args.project,None, \
                       cachedWebfingers,personCache, \
-                      True)
+                      True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1159,7 +1163,7 @@ if args.unblock:
                            domain,port, \
                            httpPrefix,args.unblock, \
                            cachedWebfingers,personCache, \
-                           True)
+                           True,__version__)
     for i in range(10):
         # TODO detect send success/fail
         time.sleep(1)
@@ -1257,7 +1261,8 @@ if args.testdata:
     followerOfPerson(baseDir,nickname,domain,'maxboardroom',domainFull,federationList,False)
     setConfigParam(baseDir,'admin',nickname)
 
-runDaemon(instanceId,args.client,baseDir, \
+runDaemon(__version__, \
+          instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \
           federationList, \
           args.noreply,args.nolike,args.nopics, \

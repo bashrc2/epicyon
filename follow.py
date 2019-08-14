@@ -332,7 +332,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                          port: int,sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
                          messageJson: {},federationList: [], \
-                         debug : bool, \
+                         debug : bool,projectVersion: str, \
                          acceptedCaps=["inbox:write","objects:read"]) -> bool:
     """Receives a follow request within the POST section of HTTPServer
     """
@@ -412,7 +412,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                                   messageJson,acceptedCaps, \
                                   sendThreads,postLog, \
                                   cachedWebfingers,personCache, \
-                                  debug)
+                                  debug,projectVersion)
 
 def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
                            nicknameToFollow: str,domainToFollow: str,port: int, \
@@ -421,7 +421,7 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
                            followJson: {},acceptedCaps: [], \
                            sendThreads: [],postLog: [], \
                            cachedWebfingers: {},personCache: {}, \
-                           debug: bool):
+                           debug: bool,projectVersion: str):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -445,7 +445,7 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
                           httpPrefix,True,clientToServer, \
                           federationList, \
                           sendThreads,postLog,cachedWebfingers, \
-                          personCache,debug)
+                          personCache,debug,projectVersion)
 
 def sendFollowRequest(session,baseDir: str, \
                       nickname: str,domain: str,port: int,httpPrefix: str, \
@@ -453,7 +453,8 @@ def sendFollowRequest(session,baseDir: str, \
                       followPort: int,followHttpPrefix: str, \
                       clientToServer: bool,federationList: [], \
                       sendThreads: [],postLog: [],cachedWebfingers: {}, \
-                      personCache: {},debug : bool) -> {}:
+                      personCache: {},debug : bool, \
+                      projectVersion: str) -> {}:
     """Gets the json object for sending a follow request
     """    
     if not domainPermitted(followDomain,federationList):
@@ -487,7 +488,8 @@ def sendFollowRequest(session,baseDir: str, \
                    'https://www.w3.org/ns/activitystreams#Public', \
                    httpPrefix,True,clientToServer, \
                    federationList, \
-                   sendThreads,postLog,cachedWebfingers,personCache, debug)
+                   sendThreads,postLog,cachedWebfingers,personCache, \
+                   debug,projectVersion)
 
     return newFollowJson
 
@@ -496,7 +498,7 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
                                followNickname: str,followDomain: str,followPort: int, \
                                httpPrefix: str, \
                                cachedWebfingers: {},personCache: {}, \
-                               debug: bool) -> {}:
+                               debug: bool,projectVersion: str) -> {}:
     """Creates a follow request via c2s
     """
     if not session:
@@ -527,7 +529,8 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -537,7 +540,8 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:
@@ -570,7 +574,7 @@ def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
                                  followNickname: str,followDomain: str,followPort: int, \
                                  httpPrefix: str, \
                                  cachedWebfingers: {},personCache: {}, \
-                                 debug: bool) -> {}:
+                                 debug: bool,projectVersion: str) -> {}:
     """Creates a unfollow request via c2s
     """
     if not session:
@@ -602,7 +606,8 @@ def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -612,7 +617,8 @@ def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:

@@ -304,7 +304,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.postLog, \
                         self.server.cachedWebfingers, \
                         self.server.personCache, \
-                        messageJson,self.server.debug)
+                        messageJson,self.server.debug, \
+                        self.server.projectVersion)
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
@@ -369,7 +370,8 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.postLog, \
                              self.server.cachedWebfingers, \
                              self.server.personCache, \
-                             messageJson,self.server.debug)
+                             messageJson,self.server.debug, \
+                             self.server.projectVersion)
         return True
 
     def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
@@ -717,7 +719,9 @@ class PubServer(BaseHTTPRequestHandler):
                 htmlHashtagSearch(self.server.baseDir,hashtag,pageNumber, \
                                   maxPostsInFeed,self.server.session, \
                                   self.server.cachedWebfingers, \
-                                  self.server.personCache)
+                                  self.server.personCache, \
+                                  self.server.httpPrefix, \
+                                  self.server.projectVersion)
             self._set_headers('text/html',cookie)
             if hashtagStr:
                self.wfile.write(hashtagStr.encode())
@@ -791,7 +795,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.postLog, \
                                self.server.personCache, \
                                self.server.cachedWebfingers, \
-                               self.server.debug)
+                               self.server.debug, \
+                               self.server.projectVersion)
             if announceJson:
                 self._postToOutbox(announceJson)
             self.server.GETbusy=False
@@ -845,7 +850,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.cachedWebfingers, \
                                            self.server.personCache, \
                                            self.server.acceptedCaps, \
-                                           self.server.debug)
+                                           self.server.debug, \
+                                           self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.GETbusy=False
             return
@@ -1022,7 +1028,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \
-                                        authorized,postJsonObject).encode('utf-8'))
+                                        authorized,postJsonObject, \
+                                        self.server.httpPrefix, \
+                                        self.server.projectVersion).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json',None)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
@@ -1074,7 +1082,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                                          nickname, \
                                                                          self.server.domain, \
                                                                          self.server.port, \
-                                                                         repliesJson).encode('utf-8'))
+                                                                         repliesJson, \
+                                                                         self.server.httpPrefix, \
+                                                                         self.server.projectVersion).encode('utf-8'))
                                     else:
                                         self._set_headers('application/json',None)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
@@ -1113,7 +1123,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                                          nickname, \
                                                                          self.server.domain, \
                                                                          self.server.port, \
-                                                                         repliesJson).encode('utf-8'))
+                                                                         repliesJson, \
+                                                                         self.server.httpPrefix, \
+                                                                         self.server.projectVersion).encode('utf-8'))
                                     else:
                                         self._set_headers('application/json',None)
                                         self.wfile.write(json.dumps(repliesJson).encode('utf-8'))
@@ -1136,7 +1148,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.baseDir)
                                 if getPerson:
                                     self._set_headers('text/html',cookie)
-                                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                    self.wfile.write(htmlProfile(self.server.projectVersion, \
+                                                                 self.server.baseDir, \
                                                                  self.server.httpPrefix, \
                                                                  True, \
                                                                  self.server.ocapAlways, \
@@ -1167,7 +1180,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.server.baseDir)
                                 if getPerson:
                                     self._set_headers('text/html',cookie)
-                                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                                    self.wfile.write(htmlProfile(self.server.projectVersion, \
+                                                                 self.server.baseDir, \
                                                                  self.server.httpPrefix, \
                                                                  True, \
                                                                  self.server.ocapAlways, \
@@ -1210,7 +1224,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.session, \
                                         self.server.cachedWebfingers,self.server.personCache, \
                                         nickname,self.server.domain,self.server.port, \
-                                        authorized,postJsonObject).encode('utf-8'))
+                                        authorized,postJsonObject, \
+                                        self.server.httpPrefix, \
+                                        self.server.projectVersion).encode('utf-8'))
                                 else:
                                     self._set_headers('application/json',None)
                                     self.wfile.write(json.dumps(postJsonObject).encode('utf-8'))
@@ -1262,7 +1278,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                        self.server.domain, \
                                                        self.server.port, \
                                                        inboxFeed, \
-                                                       self.server.allowDeletion).encode('utf-8'))
+                                                       self.server.allowDeletion, \
+                                                       self.server.httpPrefix, \
+                                                       self.server.projectVersion).encode('utf-8'))
                         else:
                             self._set_headers('application/json',None)
                             self.wfile.write(json.dumps(inboxFeed).encode('utf-8'))
@@ -1319,7 +1337,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain, \
                                             self.server.port, \
                                             outboxFeed, \
-                                            self.server.allowDeletion).encode('utf-8'))
+                                            self.server.allowDeletion, \
+                                            self.server.httpPrefix, \
+                                            self.server.projectVersion).encode('utf-8'))
             else:
                 self._set_headers('application/json',None)
                 self.wfile.write(json.dumps(outboxFeed).encode('utf-8'))
@@ -1369,7 +1389,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.server.domain, \
                                                             self.server.port, \
                                                             moderationFeed, \
-                                                            True).encode('utf-8'))
+                                                            True, \
+                                                            self.server.httpPrefix, \
+                                                            self.server.projectVersion).encode('utf-8'))
                         else:
                             self._set_headers('application/json',None)
                             self.wfile.write(json.dumps(moderationFeed).encode('utf-8'))
@@ -1410,7 +1432,8 @@ class PubServer(BaseHTTPRequestHandler):
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     
                     self._set_headers('text/html',cookie)
-                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                    self.wfile.write(htmlProfile(self.server.projectVersion, \
+                                                 self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
                                                  self.server.ocapAlways, \
@@ -1449,7 +1472,8 @@ class PubServer(BaseHTTPRequestHandler):
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     
                     self._set_headers('text/html',cookie)
-                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                    self.wfile.write(htmlProfile(self.server.projectVersion, \
+                                                 self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
                                                  self.server.ocapAlways, \
@@ -1486,7 +1510,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
                     self._set_headers('text/html',cookie)
-                    self.wfile.write(htmlProfile(self.server.baseDir, \
+                    self.wfile.write(htmlProfile(self.server.projectVersion, \
+                                                 self.server.baseDir, \
                                                  self.server.httpPrefix, \
                                                  authorized, \
                                                  self.server.ocapAlways, \
@@ -1513,7 +1538,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
                 self._set_headers('text/html',cookie)
-                self.wfile.write(htmlProfile(self.server.baseDir, \
+                self.wfile.write(htmlProfile(self.server.projectVersion, \
+                                             self.server.baseDir, \
                                              self.server.httpPrefix, \
                                              authorized, \
                                              self.server.ocapAlways, \
@@ -2236,7 +2262,9 @@ class PubServer(BaseHTTPRequestHandler):
                         htmlHashtagSearch(self.server.baseDir,searchStr[1:],1, \
                                           maxPostsInFeed,self.server.session, \
                                           self.server.cachedWebfingers, \
-                                          self.server.personCache)
+                                          self.server.personCache, \
+                                          self.server.httpPrefix, \
+                                          self.server.projectVersion)
                     if hashtagStr:
                         self._login_headers('text/html')
                         self.wfile.write(hashtagStr.encode('utf-8'))
@@ -2260,7 +2288,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.session, \
                                                self.server.cachedWebfingers, \
                                                self.server.personCache, \
-                                               self.server.debug)
+                                               self.server.debug, \
+                                               self.server.projectVersion)
                     if profileStr:
                         self._login_headers('text/html')
                         self.wfile.write(profileStr.encode('utf-8'))
@@ -2314,7 +2343,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.postLog, \
                                       self.server.cachedWebfingers, \
                                       self.server.personCache, \
-                                      self.server.debug)
+                                      self.server.debug, \
+                                      self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -2661,7 +2691,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
-def runDaemon(instanceId,clientToServer: bool, \
+def runDaemon(projectVersion, \
+              instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
               fedList=[],noreply=False,nolike=False,nopics=False, \
@@ -2679,6 +2710,7 @@ def runDaemon(instanceId,clientToServer: bool, \
     serverAddress = ('', proxyPort)
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
     # max POST size of 10M
+    httpd.projectVersion=projectVersion
     httpd.maxPostLength=1024*1024*10
     httpd.domain=domain
     httpd.port=port
@@ -2732,7 +2764,8 @@ def runDaemon(instanceId,clientToServer: bool, \
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
         threadWithTrace(target=runInboxQueue, \
-                        args=(baseDir,httpPrefix,httpd.sendThreads, \
+                        args=(projectVersion, \
+                              baseDir,httpPrefix,httpd.sendThreads, \
                               httpd.postLog,httpd.cachedWebfingers, \
                               httpd.personCache,httpd.inboxQueue, \
                               domain,port,useTor,httpd.federationList, \

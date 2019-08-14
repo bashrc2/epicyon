@@ -207,7 +207,7 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
                       httpPrefix: str,nickname: str, \
                       project: str,role: str, \
                       cachedWebfingers: {},personCache: {}, \
-                      debug: bool) -> {}:
+                      debug: bool,projectVersion: str) -> {}:
     """A delegator creates a role for a person via c2s
     Setting role to an empty string or None removes the role
     """
@@ -243,7 +243,8 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
     handle=httpPrefix+'://'+delegatorDomainFull+'/@'+delegatorNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                delegatorDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -253,7 +254,8 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,delegatorDomain,postToBox)
                      
     if not inboxUrl:
         if debug:

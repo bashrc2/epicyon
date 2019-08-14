@@ -41,7 +41,8 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                sendThreads: [],postLog: [], \
                                cachedWebfingers: {},personCache: {}, \
                                acceptedCaps: [], \
-                               debug: bool) -> None:
+                               debug: bool, \
+                               projectVersion: str) -> None:
     """Manually approve a follow request
     """
     handle=nickname+'@'+domain
@@ -81,7 +82,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                followJson,acceptedCaps, \
                                                sendThreads,postLog, \
                                                cachedWebfingers,personCache, \
-                                               debug)
+                                               debug,projectVersion)
                         os.remove(followActivityfilename)
             else:
                 approvefilenew.write(handle)

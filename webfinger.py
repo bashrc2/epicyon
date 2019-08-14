@@ -35,7 +35,8 @@ def parseHandle(handle: str) -> (str,str):
 
     return nickname, domain
 
-def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) -> {}:
+def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
+                    fromDomain: str,projectVersion: str) -> {}:
     if not session:
         print('WARN: No session specified for webfingerHandle')
         return None
@@ -55,7 +56,7 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}) ->
     par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}
     try:
-        result = getJson(session, url, hdr, par)
+        result = getJson(session, url, hdr, par,projectVersion,httpPrefix,fromDomain)
     except:
         print("Unable to webfinger " + url)
         print('headers: '+str(hdr))

@@ -173,7 +173,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
                    clientToServer: bool, \
                    sendThreads: [],postLog: [], \
                    personCache: {},cachedWebfingers: {}, \
-                   debug: bool) -> {}:
+                   debug: bool,projectVersion: str) -> {}:
     """Creates an announce message
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and the
@@ -224,7 +224,8 @@ def createAnnounce(session,baseDir: str,federationList: [], \
                        announceNickname,announceDomain,announcePort, \
                        'https://www.w3.org/ns/activitystreams#Public', \
                        httpPrefix,True,clientToServer,federationList, \
-                       sendThreads,postLog,cachedWebfingers,personCache,debug)
+                       sendThreads,postLog,cachedWebfingers,personCache, \
+                       debug,projectVersion)
             
     return newAnnounce
 
@@ -233,7 +234,7 @@ def announcePublic(session,baseDir: str,federationList: [], \
                    objectUrl: str,clientToServer: bool, \
                    sendThreads: [],postLog: [], \
                    personCache: {},cachedWebfingers: {}, \
-                   debug: bool) -> {}:
+                   debug: bool,projectVersion: str) -> {}:
     """Makes a public announcement
     """
     fromDomain=domain
@@ -249,7 +250,7 @@ def announcePublic(session,baseDir: str,federationList: [], \
                           objectUrl,True,clientToServer, \
                           sendThreads,postLog, \
                           personCache,cachedWebfingers, \
-                          debug)
+                          debug,projectVersion)
 
 def repeatPost(session,baseDir: str,federationList: [], \
                nickname: str, domain: str, port: int, httpPrefix: str, \
@@ -258,7 +259,7 @@ def repeatPost(session,baseDir: str,federationList: [], \
                announceStatusNumber: int,clientToServer: bool, \
                sendThreads: [],postLog: [], \
                personCache: {},cachedWebfingers: {}, \
-               debug: bool) -> {}:
+               debug: bool,projectVersion: str) -> {}:
     """Repeats a given status post
     """
     announcedDomain=announceDomain
@@ -274,7 +275,7 @@ def repeatPost(session,baseDir: str,federationList: [], \
                           objectUrl,clientToServer, \
                           sendThreads,postLog, \
                           personCache,cachedWebfingers, \
-                          debug)
+                          debug,projectVersion)
 
 def undoAnnounce(session,baseDir: str,federationList: [], \
                  nickname: str, domain: str, port: int, \
@@ -385,7 +386,7 @@ def sendAnnounceViaServer(session,fromNickname: str,password: str,
                           fromDomain: str,fromPort: int, \
                           httpPrefix: str,repeatObjectUrl: str, \
                           cachedWebfingers: {},personCache: {}, \
-                          debug: bool) -> {}:
+                          debug: bool,projectVersion: str) -> {}:
     """Creates an announce message via c2s
     """
     if not session:
@@ -418,7 +419,9 @@ def sendAnnounceViaServer(session,fromNickname: str,password: str,
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -428,7 +431,8 @@ def sendAnnounceViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:

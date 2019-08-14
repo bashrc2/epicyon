@@ -117,8 +117,10 @@ def getUserUrl(wfRequest) -> str:
                     return link['href']
     return None
 
-def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
-    feedJson = getJson(session,feedUrl,asHeader,None)
+def parseUserFeed(session,feedUrl: str,asHeader: {}, \
+                  projectVersion: str,httpPrefix: str,domain: str) -> None:
+    feedJson = getJson(session,feedUrl,asHeader,None, \
+                       projectVersion,httpPrefix,domain)
     if not feedJson:
         return
 
@@ -133,10 +135,12 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}) -> None:
         nextUrl = feedJson['next']
 
     if nextUrl:
-        for item in parseUserFeed(session,nextUrl,asHeader):
+        for item in parseUserFeed(session,nextUrl,asHeader, \
+                                  projectVersion,httpPrefix,domain):
             yield item
     
 def getPersonBox(session,wfRequest: {},personCache: {}, \
+                 projectVersion: str,httpPrefix: str,domain: str, \
                  boxName='inbox') -> (str,str,str,str,str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
@@ -144,7 +148,8 @@ def getPersonBox(session,wfRequest: {},personCache: {}, \
         return None,None,None,None,None,None,None,None
     personJson = getPersonFromCache(personUrl,personCache)
     if not personJson:
-        personJson = getJson(session,personUrl,asHeader,None)
+        personJson = getJson(session,personUrl,asHeader,None, \
+                             projectVersion,httpPrefix,domain)
         if not personJson:
             return None,None,None,None,None,None,None,None
     boxJson=None
@@ -195,7 +200,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
              maxEmoji: int,maxAttachments: int, \
              federationList: [], \
              personCache: {},raw: bool, \
-             simple: bool,debug: bool) -> {}:
+             simple: bool,debug: bool, \
+             projectVersion: str,httpPrefix: str,domain: str) -> {}:
     """Gets public posts from an outbox
     """
     personPosts={}
@@ -206,7 +212,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
     if raw:
         result = []
         i = 0
-        for item in parseUserFeed(session,outboxUrl,asHeader):
+        for item in parseUserFeed(session,outboxUrl,asHeader, \
+                                  projectVersion,httpPrefix,domain):
             result.append(item)
             i += 1
             if i == maxPosts:
@@ -215,7 +222,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
         return None
 
     i = 0
-    for item in parseUserFeed(session,outboxUrl,asHeader):
+    for item in parseUserFeed(session,outboxUrl,asHeader, \
+                              projectVersion,httpPrefix,domain):
         if not item.get('id'):
             if debug:
                 print('No id')
@@ -896,7 +904,8 @@ def threadSendPost(session,postJsonObject: {},federationList: [],\
         time.sleep(backoffTime)
         backoffTime *= 2
 
-def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
+def sendPost(projectVersion: str, \
+             session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
              httpPrefix: str, content: str, followersOnly: bool, \
              saveToFile: bool, clientToServer: bool, \
@@ -915,7 +924,8 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                domain,projectVersion)
     if not wfRequest:
         return 1
 
@@ -926,7 +936,8 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,domain,postToBox)
 
     # If there are more than one followers on the target domain
     # then send to the shared inbox indead of the individual inbox
@@ -982,7 +993,8 @@ def sendPost(session,baseDir: str,nickname: str, domain: str, port: int, \
     thr.start()
     return 0
 
-def sendPostViaServer(baseDir,session,fromNickname: str,password: str, \
+def sendPostViaServer(projectVersion: str, \
+                      baseDir,session,fromNickname: str,password: str, \
                       fromDomain: str, fromPort: int, \
                       toNickname: str, toDomain: str, toPort: int, cc: str, \
                       httpPrefix: str, content: str, followersOnly: bool, \
@@ -1003,7 +1015,8 @@ def sendPostViaServer(baseDir,session,fromNickname: str,password: str, \
     handle=httpPrefix+'://'+fromDomain+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger failed for '+handle)
@@ -1013,7 +1026,8 @@ def sendPostViaServer(baseDir,session,fromNickname: str,password: str, \
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:
@@ -1103,7 +1117,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    httpPrefix: str, saveToFile: bool, clientToServer: bool, \
                    federationList: [], \
                    sendThreads: [], postLog: [], cachedWebfingers: {}, \
-                   personCache: {}, debug: bool) -> int:
+                   personCache: {}, debug: bool,projectVersion: str) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -1126,7 +1140,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
 
     # lookup the inbox for the To handle
-    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              domain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for '+handle+' failed')
@@ -1139,7 +1154,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     
     # get the actor inbox/outbox/capabilities for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache,postToBox)
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,domain,postToBox)
 
     if nickname=='capabilities':
         inboxUrl=capabilityAcquisition
@@ -1209,7 +1225,8 @@ def sendToNamedAddresses(session,baseDir: str, \
                          httpPrefix: str,federationList: [], \
                          sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
-                         postJsonObject: {},debug: bool) -> None:
+                         postJsonObject: {},debug: bool, \
+                         projectVersion: str) -> None:
     """sends a post to the specific named addresses in to/cc
     """
     if not session:
@@ -1265,14 +1282,15 @@ def sendToNamedAddresses(session,baseDir: str, \
                        cc,httpPrefix,True,clientToServer, \
                        federationList, \
                        sendThreads,postLog,cachedWebfingers, \
-                       personCache,debug)
+                       personCache,debug,projectVersion)
 
 def sendToFollowers(session,baseDir: str, \
                     nickname: str, domain: str, port: int, \
                     httpPrefix: str,federationList: [], \
                     sendThreads: [],postLog: [], \
                     cachedWebfingers: {},personCache: {}, \
-                    postJsonObject: {},debug: bool) -> None:
+                    postJsonObject: {},debug: bool, \
+                    projectVersion: str) -> None:
     """sends a post to the followers of the given nickname
     """
     if not session:
@@ -1317,7 +1335,7 @@ def sendToFollowers(session,baseDir: str, \
                        cc,httpPrefix,True,clientToServer, \
                        federationList, \
                        sendThreads,postLog,cachedWebfingers, \
-                       personCache,debug)
+                       personCache,debug,projectVersion)
         if debug:
             print('DEBUG: End of sendToFollowers')
         
@@ -1629,7 +1647,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
 def getPublicPostsOfPerson(nickname: str,domain: str, \
                            raw: bool,simple: bool,useTor: bool, \
                            port: int,httpPrefix: str, \
-                           debug: bool) -> None:
+                           debug: bool,projectVersion: str) -> None:
     """ This is really just for test purposes
     """
     session = createSession(domain,port,useTor)
@@ -1642,12 +1660,14 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
         domainFull=domain+':'+str(port)
     handle=httpPrefix+"://"+domainFull+"/@"+nickname
     wfRequest = \
-        webfingerHandle(session,handle,httpPrefix,cachedWebfingers)
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        domain,projectVersion)
     if not wfRequest:
         sys.exit()
 
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,preferredName= \
-        getPersonBox(session,wfRequest,personCache,'outbox')
+        getPersonBox(session,wfRequest,personCache, \
+                     projectVersion,httpPrefix,domain,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
 
     maxMentions=10
@@ -1655,7 +1675,8 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     maxAttachments=5
     userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
                          maxAttachments,federationList, \
-                         personCache,raw,simple,debug)
+                         personCache,raw,simple,debug, \
+                         projectVersion,httpPrefix,domain)
     #print(str(userPosts))
 
 def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
@@ -1663,7 +1684,8 @@ def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
                            followerUrl,updateCaps: [], \
                            sendThreads: [],postLog: [], \
                            cachedWebfingers: {},personCache: {}, \
-                           federationList :[],debug :bool) -> int:
+                           federationList :[],debug :bool, \
+                           projectVersion: str) -> int:
     """When the capabilities for a follower are changed this
     sends out an update. followerUrl is the actor of the follower.
     """
@@ -1690,7 +1712,7 @@ def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
                           httpPrefix,True,clientToServer, \
                           federationList, \
                           sendThreads,postLog,cachedWebfingers, \
-                          personCache,debug)
+                          personCache,debug,projectVersion)
 
 def populateRepliesJson(baseDir: str,nickname: str,domain: str,postRepliesFilename: str,authorized: bool,repliesJson: {}) -> None:
     # populate the items list with replies

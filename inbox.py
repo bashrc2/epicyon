@@ -83,7 +83,8 @@ def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
                 return False
     return True    
 
-def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
+def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool, \
+                    projectVersion: str,httpPrefix: str,domain: str) -> str:
     if not personUrl:
         return None
     personUrl=personUrl.replace('#main-key','')
@@ -96,7 +97,7 @@ def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool) -> str:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
         asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-        personJson = getJson(session,personUrl,asHeader,None)
+        personJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not personJson:
             return None
     pubKey=None
@@ -980,7 +981,8 @@ def restoreQueueItems(baseDir: str,queue: []) -> None:
                     for qfile in queuefiles:
                         queue.append(os.path.join(queueDir, qfile))
 
-def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
+def runInboxQueue(projectVersion: str, \
+                  baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \
                   domain: str,port: int,useTor: bool,federationList: [], \
                   ocapAlways: bool,maxReplies: int, \
@@ -1104,7 +1106,9 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                     queue.pop(0)
                     continue
 
-                pubKey=getPersonPubKey(session,keyId,personCache,debug)
+                pubKey= \
+                    getPersonPubKey(session,keyId,personCache,debug, \
+                                    projectVersion,httpPrefix,domain)
                 if pubKey:
                     print('DEBUG: public key: '+str(pubKey))
                     break
@@ -1161,7 +1165,7 @@ def runInboxQueue(baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                                     personCache, \
                                     queueJson['post'], \
                                     federationList, \
-                                    debug, \
+                                    debug,projectVersion, \
                                     acceptedCaps=["inbox:write","objects:read"]):
                 if debug:
                     print('DEBUG: Follow accepted from '+keyId)
