@@ -451,6 +451,20 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         TOSForm+=htmlFooter()
     return TOSForm
 
+def htmlHashtagBlocked(baseDir: str) -> str:
+    """Show the screen for a blocked hashtag
+    """
+    blockedHashtagForm=''
+    with open(baseDir+'/epicyon-suspended.css', 'r') as cssFile:
+        blockedHashtagCSS=cssFile.read()            
+        blockedHashtagForm=htmlHeader(blockedHashtagCSS)
+        blockedHashtagForm+='<div><center>'
+        blockedHashtagForm+='  <p class="screentitle">Hashtag Blocked</p>'
+        blockedHashtagForm+='  <p>See <a href="/terms">Terms of Service</a></p>'
+        blockedHashtagForm+='</center></div>'
+        blockedHashtagForm+=htmlFooter()
+    return blockedHashtagForm
+    
 def htmlSuspended(baseDir: str) -> str:
     """Show the screen for suspended accounts
     """

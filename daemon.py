@@ -66,6 +66,7 @@ from blocking import addBlock
 from blocking import removeBlock
 from blocking import addGlobalBlock
 from blocking import removeGlobalBlock
+from blocking import isBlockedHashtag
 from config import setConfigParam
 from config import getConfigParam
 from roles import outboxDelegate
@@ -92,6 +93,7 @@ from webinterface import htmlTermsOfService
 from webinterface import htmlHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
+from webinterface import htmlHashtagBlocked
 from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
@@ -706,6 +708,11 @@ class PubServer(BaseHTTPRequestHandler):
             hashtag=self.path.split('/tags/')[1]
             if '?page=' in hashtag:
                 hashtag=hashtag.split('?page=')[0]
+            if isBlockedHashtag(self.server.baseDir,hashtag):
+                self._login_headers('text/html')
+                self.wfile.write(htmlHashtagBlocked(self.server.baseDir).encode('utf-8'))
+                self.server.GETbusy=False
+                return
             hashtagStr= \
                 htmlHashtagSearch(self.server.baseDir,hashtag,pageNumber, \
                                   maxPostsInFeed,self.server.session, \
@@ -2160,7 +2167,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     fullBlockDomain=blockDomain+':'+str(blockPort)
                         if '@' in moderationText:
                             fullBlockDomain=moderationText.split('@')[1]
-                        if fullBlockDomain:
+                        if fullBlockDomain or nickname.startswith('#'):
                             addGlobalBlock(self.server.baseDir, \
                                            nickname,fullBlockDomain)
                     if moderationButton=='unblock':
@@ -2174,7 +2181,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     fullBlockDomain=blockDomain+':'+str(blockPort)
                         if '@' in moderationText:
                             fullBlockDomain=moderationText.split('@')[1]
-                        if fullBlockDomain:
+                        if fullBlockDomain or nickname.startswith('#'):
                             removeGlobalBlock(self.server.baseDir, \
                                               nickname,fullBlockDomain)
                     if moderationButton=='remove':

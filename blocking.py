@@ -13,13 +13,22 @@ def addGlobalBlock(baseDir: str, \
     """Global block which applies to all accounts
     """
     blockingFilename=baseDir+'/accounts/blocking.txt'
-    blockHandle=blockNickname+'@'+blockDomain
-    if os.path.isfile(blockingFilename):
-        if blockHandle in open(blockingFilename).read():
-            return False
-    blockFile=open(blockingFilename, "a+")
-    blockFile.write(blockHandle+'\n')
-    blockFile.close()
+    if not blockNickname.startswith('#'):        
+        blockHandle=blockNickname+'@'+blockDomain
+        if os.path.isfile(blockingFilename):
+            if blockHandle in open(blockingFilename).read():
+                return False
+        blockFile=open(blockingFilename, "a+")
+        blockFile.write(blockHandle+'\n')
+        blockFile.close()
+    else:
+        blockHashtag=blockNickname
+        if os.path.isfile(blockingFilename):
+            if blockHashtag+'\n' in open(blockingFilename).read():
+                return False
+        blockFile=open(blockingFilename, "a+")
+        blockFile.write(blockHashtag+'\n')
+        blockFile.close()
     return True
 
 def addBlock(baseDir: str,nickname: str,domain: str, \
@@ -44,18 +53,32 @@ def removeGlobalBlock(baseDir: str, \
     """Unblock the given global block
     """
     unblockingFilename=baseDir+'/accounts/blocking.txt'
-    unblockHandle=unblockNickname+'@'+unblockDomain
-    if os.path.isfile(unblockingFilename):
-        if unblockHandle in open(unblockingFilename).read():
-            with open(unblockingFilename, 'r') as fp:
-                with open(unblockingFilename+'.new', 'w') as fpnew:
-                    for line in fp:
-                        handle=line.replace('\n','')
-                        if unblockHandle not in line:
-                            fpnew.write(handle+'\n')
-            if os.path.isfile(unblockingFilename+'.new'):
-                os.rename(unblockingFilename+'.new',unblockingFilename)
-                return True
+    if not unblockNickname.startswith('#'):        
+        unblockHandle=unblockNickname+'@'+unblockDomain
+        if os.path.isfile(unblockingFilename):
+            if unblockHandle in open(unblockingFilename).read():
+                with open(unblockingFilename, 'r') as fp:
+                    with open(unblockingFilename+'.new', 'w') as fpnew:
+                        for line in fp:
+                            handle=line.replace('\n','')
+                            if unblockHandle not in line:
+                                fpnew.write(handle+'\n')
+                if os.path.isfile(unblockingFilename+'.new'):
+                    os.rename(unblockingFilename+'.new',unblockingFilename)
+                    return True
+    else:
+        unblockHashtag=unblockNickname
+        if os.path.isfile(unblockingFilename):
+            if unblockHashtag+'\n' in open(unblockingFilename).read():
+                with open(unblockingFilename, 'r') as fp:
+                    with open(unblockingFilename+'.new', 'w') as fpnew:
+                        for line in fp:
+                            blockLine=line.replace('\n','')
+                            if unblockHashtag not in line:
+                                fpnew.write(blockLine+'\n')
+                if os.path.isfile(unblockingFilename+'.new'):
+                    os.rename(unblockingFilename+'.new',unblockingFilename)
+                    return True
     return False
 
 def removeBlock(baseDir: str,nickname: str,domain: str, \
@@ -78,7 +101,17 @@ def removeBlock(baseDir: str,nickname: str,domain: str, \
                 os.rename(unblockingFilename+'.new',unblockingFilename)
                 return True
     return False
-                    
+
+def isBlockedHashtag(baseDir: str,hashtag: str) -> bool:
+    """Is the given hashtag blocked?
+    """
+    globalBlockingFilename=baseDir+'/accounts/blocking.txt'
+    if os.path.isfile(globalBlockingFilename):
+        hashtag=hashtag.strip('\n')
+        if hashtag+'\n' in open(globalBlockingFilename).read():
+            return True
+    return False
+
 def isBlocked(baseDir: str,nickname: str,domain: str, \
               blockNickname: str,blockDomain: str) -> bool:
     """Is the given nickname blocked?
