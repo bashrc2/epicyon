@@ -2204,8 +2204,17 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        # decision to follow in the web interface is confirmed
-        if authorized and self.path.endswith('/searchhandle'):
+        # a search was made
+        if authorized and \
+           (self.path.endswith('/searchhandle') or '/searchhandle?page=' in self.path):
+            # get the page number
+            pageNumber=1
+            if '/searchhandle?page=' in self.path:
+                pageNumberStr=self.path.split('/searchhandle?page=')[1]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+                self.path=self.path.split('?page=')[0]
+
             actorStr=self.path.replace('/searchhandle','')
             length = int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
@@ -2231,7 +2240,9 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname=getNicknameFromActor(self.path)
                     if not self.server.session:
                         self.server.session= \
-                            createSession(self.server.domain,self.server.port,self.server.useTor)
+                            createSession(self.server.domain, \
+                                          self.server.port, \
+                                          self.server.useTor)
                     profileStr= \
                         htmlProfileAfterSearch(self.server.baseDir, \
                                                self.path.replace('/searchhandle',''), \
@@ -2251,7 +2262,9 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # shared items search
                     sharedItemsStr= \
-                        htmlSearchSharedItems(self.server.baseDir,searchStr)
+                        htmlSearchSharedItems(self.server.baseDir, \
+                                              searchStr,pageNumber, \
+                                              maxPostsInFeed,actorStr)
                     if sharedItemsStr:
                         self._login_headers('text/html')
                         self.wfile.write(sharedItemsStr.encode('utf-8'))

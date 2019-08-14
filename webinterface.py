@@ -35,7 +35,11 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 
-def htmlSearchSharedItems(baseDir: str,searchStr: str) -> str:
+def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPerPage: int,actor: str) -> str:
+    """Search results for shared items
+    """
+    currPage=1
+    ctr=0
     sharedItemsForm=''
     searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
     searchStrLowerList=searchStrLower.split('+')
@@ -55,7 +59,6 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str) -> str:
                     sharesJson=commentjson.load(fp)
                 for name,sharedItem in sharesJson.items():
                     matched=True
-                    ctr=0
                     for searchSubstr in searchStrLowerList:
                         subStrMatched=False
                         searchSubstr=searchSubstr.strip()
@@ -70,18 +73,43 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str) -> str:
                         if not subStrMatched:
                             matched=False
                             break
-                        ctr+=1
                     if matched:
-                        sharedItemsForm+='<div class="container">'
-                        sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
-                        sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
-                        sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
-                        sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
-                        sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
-                        sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
-                        sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
-                        sharedItemsForm+='</div>'
-                        resultsExist=True
+                        if currPage==pageNumber:
+                            sharedItemsForm+='<div class="container">'
+                            sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
+                            sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
+                            sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
+                            sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
+                            sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
+                            sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
+                            sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
+                            sharedItemsForm+='</div>'
+                            if not resultsExist and currPage>1:
+                                # previous page link, needs to be a POST
+                                sharedItemsForm+= \
+                                    '<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber-1)+'">' \
+                                    '  <input type="hidden" name="actor" value="'+actor+'">' \
+                                    '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
+                                    '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
+                                    '    <img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"/></a>' \
+                                    '  </center>' \
+                                    '</form>'
+                            resultsExist=True
+                        ctr+=1
+                        if ctr>=resultsPerPage:
+                            currPage+=1
+                            if currPage>pageNumber:
+                                # next page link, needs to be a POST
+                                sharedItemsForm+= \
+                                    '<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber+1)+'">' \
+                                    '  <input type="hidden" name="actor" value="'+actor+'">' \
+                                    '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
+                                    '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
+                                    '    <img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"/></a>' \
+                                    '  </center>' \
+                                    '</form>'
+                                break
+                            ctr=0
         if not resultsExist:
             sharedItemsForm+='<center><h5>No results</h5></center>'
         sharedItemsForm+=htmlFooter()
@@ -181,7 +209,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
 
     if endIndex>0:
         # next page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
