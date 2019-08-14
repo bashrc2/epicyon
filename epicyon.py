@@ -99,6 +99,8 @@ parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
 parser.add_argument('-p','--port', dest='port', type=int,default=None, \
                     help='Port number to run on')
+parser.add_argument('--proxy', dest='proxyPort', type=int,default=None, \
+                    help='Proxy port number to run on')
 parser.add_argument('--path', dest='baseDir', \
                     type=str,default=os.getcwd(), \
                     help='Directory in which to store posts')
@@ -375,6 +377,12 @@ if configPort:
     port=configPort
 else:
     port=8085
+
+configProxyPort=getConfigParam(baseDir,'proxyPort')
+if configProxyPort:
+    proxyPort=configProxyPort
+else:
+    proxyPort=port
 
 nickname=None
 if args.nickname:
@@ -767,6 +775,9 @@ if args.domain:
 if args.port:
     port=args.port
     setConfigParam(baseDir,'port',port)
+if args.proxyPort:
+    proxyPort=args.proxyPort
+    setConfigParam(baseDir,'proxyPort',proxyPort)
 ocapAlways=False    
 if args.ocap:
     ocapAlways=args.ocap
@@ -1247,7 +1258,7 @@ if args.testdata:
     setConfigParam(baseDir,'admin',nickname)
 
 runDaemon(instanceId,args.client,baseDir, \
-          domain,port,httpPrefix, \
+          domain,port,proxyPort,httpPrefix, \
           federationList, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways, \

@@ -2663,7 +2663,7 @@ class PubServer(BaseHTTPRequestHandler):
 
 def runDaemon(instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
-              port=80,httpPrefix='https', \
+              port=80,proxyPort=80,httpPrefix='https', \
               fedList=[],noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
@@ -2676,7 +2676,7 @@ def runDaemon(instanceId,clientToServer: bool, \
             print('Invalid domain: ' + domain)
             return
 
-    serverAddress = ('', port)
+    serverAddress = ('', proxyPort)
     httpd = ThreadingHTTPServer(serverAddress, PubServer)
     # max POST size of 10M
     httpd.maxPostLength=1024*1024*10
@@ -2741,7 +2741,7 @@ def runDaemon(instanceId,clientToServer: bool, \
                               allowDeletion,debug,httpd.acceptedCaps),daemon=True)
     httpd.thrInboxQueue.start()
     if clientToServer:
-        print('Running ActivityPub client on ' + domain + ' port ' + str(port))
+        print('Running ActivityPub client on ' + domain + ' port ' + str(proxyPort))
     else:
-        print('Running ActivityPub server on ' + domain + ' port ' + str(port))
+        print('Running ActivityPub server on ' + domain + ' port ' + str(proxyPort))
     httpd.serve_forever()
