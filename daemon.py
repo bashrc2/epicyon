@@ -2583,6 +2583,12 @@ class PubServer(BaseHTTPRequestHandler):
         # refuse to receive non-json content
         if self.headers['Content-type'] != 'application/json':
             print("POST is not json: "+self.headers['Content-type'])
+            if self.server.debug:
+                print(str(self.headers))
+                length = int(self.headers['Content-length'])
+                if length<self.server.maxPostLength:
+                    unknownPost=self.rfile.read(length).decode('utf-8')
+                    print(str(unknownPost))
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
