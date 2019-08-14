@@ -142,7 +142,7 @@ def htmlModerationInfo(baseDir: str) -> str:
                 blockedStr = f.read()
                 infoForm+= \
                     '<div class="container">' \
-                    '  <br><b>Blocked accounts</b>' \
+                    '  <br><b>Blocked accounts and hashtags</b>' \
                     '  <br>These are globally blocked for all accounts on this instance' \
                     '  <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>' \
                     '</div>'        
