@@ -42,11 +42,12 @@ def getJson(session,url: str,headers: {},params: {}, \
     try:
         result=session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
-    except:
+    except Exception as e:
         print('ERROR: getJson failed')
         print('url: '+url)
         print('headers: '+str(sessionHeaders))
         print('params: '+str(sessionParams))
+        print(e)
     return None
 
 def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers: {},capability: str) -> str:

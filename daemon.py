@@ -631,7 +631,7 @@ class PubServer(BaseHTTPRequestHandler):
         # should be above this
         if self.server.GETbusy:
             currTimeGET=int(time.time())
-            if currTimeGET-self.server.lastGET<10:
+            if currTimeGET-self.server.lastGET==0:
                 if self.server.debug:
                     print('DEBUG: GET Busy')
                 self.send_response(429)                    
@@ -1824,7 +1824,7 @@ class PubServer(BaseHTTPRequestHandler):
                   str(self.server.POSTbusy))
         if self.server.POSTbusy:
             currTimePOST=int(time.time())
-            if currTimePOST-self.server.lastPOST<10:
+            if currTimePOST-self.server.lastPOST==0:
                 self.send_response(429)
                 self.end_headers()
                 return              
