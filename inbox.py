@@ -1037,6 +1037,8 @@ def runInboxQueue(projectVersion: str, \
                 queue.pop(0)
                 continue
 
+            print('Loading queue item '+queueFilename)
+            
             # Load the queue json
             try:
                 with open(queueFilename, 'r') as fp:
