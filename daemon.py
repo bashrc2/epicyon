@@ -477,7 +477,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.send_response(303)
                         self.send_header('Location', '/login')
                         self.end_headers()
-                        self.server.POSTbusy=False
+                        self.server.GETbusy=False
                         return
             
         # get css
@@ -488,6 +488,7 @@ class PubServer(BaseHTTPRequestHandler):
                     css = cssfile.read()
                 self._set_headers('text/css',cookie)
                 self.wfile.write(css.encode('utf-8'))
+                self.wfile.flush() 
                 return
         # image on login screen
         if self.path=='/login.png':
@@ -498,6 +499,7 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
+                    self.wfile.flush() 
             return        
         # login screen background image
         if self.path=='/login-background.png':
@@ -508,6 +510,7 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
+                    self.wfile.flush() 
             return        
         # follow screen background image
         if self.path=='/follow-background.png':
@@ -518,6 +521,7 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     self.wfile.write(mediaBinary)
+                    self.wfile.flush() 
             return
         # emoji images
         if '/emoji/' in self.path:
@@ -537,6 +541,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(emojiFilename, 'rb') as avFile:
                         emojiBinary = avFile.read()
                         self.wfile.write(emojiBinary)
+                        self.wfile.flush() 
                     return
             self._404()
             return
@@ -559,6 +564,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self.wfile.write(mediaBinary)
+                        self.wfile.flush() 
                     return        
             self._404()
             return
@@ -581,6 +587,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self.wfile.write(mediaBinary)
+                        self.wfile.flush() 
                     return        
             self._404()
             return
@@ -597,6 +604,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             self.wfile.write(mediaBinary)
+                            self.wfile.flush() 
                         return        
             self._404()
             return
@@ -624,6 +632,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(avatarFilename, 'rb') as avFile:
                             avBinary = avFile.read()
                             self.wfile.write(avBinary)
+                            self.wfile.flush() 
                         return
 
         # This busy state helps to avoid flooding
