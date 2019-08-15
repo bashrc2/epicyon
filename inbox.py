@@ -980,6 +980,8 @@ def restoreQueueItems(baseDir: str,queue: []) -> None:
                 for queuesubdir,queuedirs,queuefiles in os.walk(queueDir):
                     for qfile in queuefiles:
                         queue.append(os.path.join(queueDir, qfile))
+    if len(queue)>0:
+        print('Restored '+len(queue)+' inbox queue items')
 
 def runInboxQueue(projectVersion: str, \
                   baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
@@ -1087,6 +1089,8 @@ def runInboxQueue(projectVersion: str, \
                     if accountMaxPostsPerDay>0 or domainMaxPostsPerDay>0:
                         pprint(quotas)
 
+            print('Obtaining public key for '+queueJson['id'])
+                        
             # Try a few times to obtain the public key
             pubKey=None
             keyId=None
