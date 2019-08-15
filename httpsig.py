@@ -7,6 +7,8 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+# see https://tools.ietf.org/html/draft-cavage-http-signatures-06
+
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 #from Crypto.Signature import PKCS1_v1_5
