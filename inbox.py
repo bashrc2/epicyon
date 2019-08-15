@@ -1023,7 +1023,8 @@ def runInboxQueue(projectVersion: str, \
             currTime=int(time.time())
 
             # recreate the session periodically
-            if currTime-sessionLastUpdate>1200:
+            if not session or currTime-sessionLastUpdate>1200:
+                print('Creating inbox session')
                 session=createSession(domain,port,useTor)
                 sessionLastUpdate=currTime            
 
