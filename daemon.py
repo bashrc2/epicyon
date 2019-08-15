@@ -6,7 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
+from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer,HTTPServer
 #import socketserver
 import commentjson
 import json
@@ -2718,7 +2718,8 @@ def runDaemon(projectVersion, \
             return
 
     serverAddress = ('', proxyPort)
-    httpd = ThreadingHTTPServer(serverAddress, PubServer)
+    httpd = HTTPServer(serverAddress, PubServer)
+    #httpd = ThreadingHTTPServer(serverAddress, PubServer)
     # max POST size of 10M
     httpd.projectVersion=projectVersion
     httpd.maxPostLength=1024*1024*10
