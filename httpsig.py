@@ -112,6 +112,12 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
         if signedHeader == '(request-target)':
             signedHeaderList.append(
                 f'(request-target): {method.lower()} {path}')
+        elif signedHeader.lower() == 'content-type':
+            continue
+        elif signedHeader == 'date':
+            dateJson=messageBodyJsonStr.encode()
+            print('*********************date: '+str(dateJson))
+            #signedHeaderList.append(f'date: SHA-256={dateStr}')
         elif signedHeader == 'digest':
             bodyDigest = \
                 base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
