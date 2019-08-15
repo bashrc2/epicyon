@@ -1161,6 +1161,8 @@ def runInboxQueue(projectVersion: str, \
                 queue.pop(0)
                 continue
 
+            if debug:
+                print('DEBUG: checking for follow requests')
             if receiveFollowRequest(session, \
                                     baseDir,httpPrefix,port, \
                                     sendThreads,postLog, \
@@ -1175,6 +1177,9 @@ def runInboxQueue(projectVersion: str, \
                 os.remove(queueFilename)
                 queue.pop(0)
                 continue
+            else:
+                if debug:
+                    print('DEBUG: No follow requests')
 
             if receiveAcceptReject(session, \
                                    baseDir,httpPrefix,domain,port, \

@@ -338,6 +338,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     """
     if not messageJson['type'].startswith('Follow'):
         return False
+    print('Receiving follow request')
     if not messageJson.get('actor'):
         if debug:
             print('DEBUG: follow request has no actor')
@@ -400,11 +401,13 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     # what is the followers policy?
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug):
+        print('Storing follow request for approval')
         return storeFollowRequest(baseDir, \
                                   nicknameToFollow,domainToFollow,port, \
                                   nickname,domain,fromPort,
                                   messageJson,debug)
-        
+
+    print('Beginning follow accept')
     return followedAccountAccepts(session,baseDir,httpPrefix, \
                                   nicknameToFollow,domainToFollow,port, \
                                   nickname,domain,fromPort, \
