@@ -14,6 +14,7 @@ from Crypto.Signature import pkcs1_15
 from requests.auth import AuthBase
 import base64
 import json
+from time import gmtime, strftime
 
 def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
                     port: int,path: str, \
@@ -30,7 +31,7 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
-        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}
+        headers = {'host': domain, 'date': strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime()),'digest': f'SHA-256={bodyDigest}'}
     privateKeyPem = RSA.import_key(privateKeyPem)
     headers.update({
         '(request-target)': f'post {path}',
@@ -72,7 +73,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
         messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'host': headerDomain, 'digest': f'SHA-256={bodyDigest}'}        
+        headers = {'host': headerDomain, 'date': strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime()), 'digest': f'SHA-256={bodyDigest}'}        
     path='/inbox'
     signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
                                       path, httpPrefix, None)
