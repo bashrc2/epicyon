@@ -972,7 +972,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 def restoreQueueItems(baseDir: str,queue: []) -> None:
     """Checks the queue for each account and appends filenames
     """
-    queue=[]
+    queue.clear()
     for subdir,dirs,files in os.walk(baseDir+'/accounts'):
         for account in dirs:
             queueDir=baseDir+'/accounts/'+account+'/queue'
@@ -1018,7 +1018,7 @@ def runInboxQueue(projectVersion: str, \
     itemReadFailed=0
     
     while True:
-        time.sleep(1)
+        time.sleep(1)        
         if len(queue)>0:
             currTime=int(time.time())
 
