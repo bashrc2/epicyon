@@ -120,7 +120,6 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
         elif signedHeader.lower() == 'content-type':
             continue
         elif signedHeader == 'date':
-            signedHeaderList.append(f'date: {date}')
             continue
         elif signedHeader == 'digest':
             bodyDigest = \
