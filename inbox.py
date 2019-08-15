@@ -981,7 +981,7 @@ def restoreQueueItems(baseDir: str,queue: []) -> None:
                     for qfile in queuefiles:
                         queue.append(os.path.join(queueDir, qfile))
     if len(queue)>0:
-        print('Restored '+len(queue)+' inbox queue items')
+        print('Restored '+str(len(queue))+' inbox queue items')
 
 def runInboxQueue(projectVersion: str, \
                   baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
