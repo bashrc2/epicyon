@@ -82,7 +82,6 @@ def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
     signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
                                       path, httpPrefix, None)
     headers['signature'] = signatureHeader
-    #print('******************************************************http headers: '+str(headers))
     return headers
 
 def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
@@ -132,6 +131,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                     signedHeaderList.append(
                         f'{signedHeader}: {headers[signedHeaderCap]}')
 
+    print('signedHeaderList: '+str(signedHeaderList))
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
     headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
