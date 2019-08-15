@@ -400,6 +400,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  messageJson,
                                  self.headers['host'],
                                  self.headers['signature'],
+                                 self.headers,
                                  '/'+self.path.split('/')[-1],
                                  self.server.debug)
         if queueFilename:

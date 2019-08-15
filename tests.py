@@ -82,7 +82,7 @@ def testHttpsigBase(withDigest):
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,False,password)
     assert privateKeyPem
-    messageBodyJsonStr = '{"a key": "a value", "another key": "A string","yet another key": "A string"}'
+    messageBodyJsonStr = '{"a key": "a value", "another key": "A string","yet another key": "Another string"}'
 
     headersDomain=domain
     if port!=80 and port !=443:
@@ -90,39 +90,43 @@ def testHttpsigBase(withDigest):
 
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
-        headers = {'host': headersDomain}
+        headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json'}
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'host': headersDomain, 'date': dateStr, 'digest': f'SHA-256={bodyDigest}'}
+        headers = {'host': headersDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
 
     boxpath='/inbox'
     signatureHeader = \
         signPostHeaders(privateKeyPem, nickname, domain, port, boxpath, httpPrefix, None)
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             '/inbox' ,False, messageBodyJsonStr)
+                             '/inbox' ,False, \
+                             messageBodyJsonStr)
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             '/parambulator/inbox', False , messageBodyJsonStr) == False
+                             '/parambulator/inbox',False, \
+                             messageBodyJsonStr) == False
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             '/inbox', True, messageBodyJsonStr) == False
+                             '/inbox',True, \
+                             messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
-        headers = {'host': 'bogon.domain'}
+        headers = {'host': 'bogon.domain','date': dateStr,'content-type': 'application/json'}
     else:
         # correct domain but fake message
-        messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "Fake GNUs"}'
+        messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'
         bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'host': domain, 'date': dateStr, 'digest': f'SHA-256={bodyDigest}'}        
+        headers = {'host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             '/inbox', True, messageBodyJsonStr) == False
+    assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
+                             '/inbox',True, \
+                             messageBodyJsonStr) == False
     os.chdir(baseDir)
     shutil.rmtree(path)
 
 def testHttpsig():
-    testHttpsigBase(False)
     testHttpsigBase(True)
+    testHttpsigBase(False)
 
 def testCache():
     print('testCache')

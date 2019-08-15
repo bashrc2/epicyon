@@ -28,20 +28,21 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     keyID = httpPrefix+'://'+domain+'/users/'+nickname+'#main-key'
     if not messageBodyJson:
-        headers = {'host': domain}
+        headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'content-type': 'application/json'}
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
-        headers = {'host': domain,'digest': f'SHA-256={bodyDigest}'}
+        headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
     privateKeyPem = RSA.import_key(privateKeyPem)
-    headers.update({
-        '(request-target)': f'post {path}',
-    })
+    #headers.update({
+    #    '(request-target)': f'post {path}',
+    #})
     # build a digest for signing
     signedHeaderKeys = headers.keys()
     signedHeaderText = ''
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
+        #print(f'headerKey: {headerKey}: {headers[headerKey]}')
     signedHeaderText = signedHeaderText.strip()
     headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
 
@@ -53,13 +54,11 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     signatureDict = {
         'keyId': keyID,
         'algorithm': 'rsa-sha256',
-#        'date': dateStr,
         'headers': ' '.join(signedHeaderKeys),
         'signature': signature
     }
     signatureHeader = ','.join(
         [f'{k}="{v}"' for k, v in signatureDict.items()])
-#    print('signatureHeader: '+str(signatureHeader))
     return signatureHeader
 
 def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
@@ -67,27 +66,27 @@ def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
                        messageBodyJson: {}) -> {}:
     headerDomain=domain
 
-    if port!=80 and port!=443:
-        headerDomain=headerDomain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            headerDomain=headerDomain+':'+str(port)
 
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    path='/inbox'
     if not withDigest:
-        headers = {'host': headerDomain}
+        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr}
     else:
         messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'host': headerDomain, 'digest': f'SHA-256={bodyDigest}'}        
-    path='/inbox'
+        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
     signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
                                       path, httpPrefix, None)
-    headers['date'] = dateStr
     headers['signature'] = signatureHeader
-    headers['Content-type'] = 'application/json'
+    #print('******************************************************http headers: '+str(headers))
     return headers
 
-def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
-                      path: str, GETmethod: bool, \
+def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
+                      path: str,GETmethod: bool, \
                       messageBodyJsonStr: str) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
@@ -109,6 +108,8 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
         k: v[1:-1]
         for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
     }
+    #print('signatureHeader: '+str(signatureHeader))
+    #print('signatureDict: '+str(signatureDict))
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
@@ -117,21 +118,19 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
         if signedHeader == '(request-target)':
             signedHeaderList.append(
                 f'(request-target): {method.lower()} {path}')
-        elif signedHeader.lower() == 'content-type':
-            continue
-        elif signedHeader == 'date':
-            continue
         elif signedHeader == 'digest':
             bodyDigest = \
                 base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
         else:
-            try:
+            if headers.get(signedHeader):
                 signedHeaderList.append(
                     f'{signedHeader}: {headers[signedHeader]}')
-            except Exception as e:
-                print('http signature check failure')
-                print(e)
+            else:
+                signedHeaderCap=signedHeader.capitalize()
+                if headers.get(signedHeaderCap):
+                    signedHeaderList.append(
+                        f'{signedHeader}: {headers[signedHeaderCap]}')
 
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
