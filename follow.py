@@ -363,6 +363,8 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: follow request does not contain a nickname')
         return False
+    if not messageJson.get('to'):
+        messageJson['to']=messageJson['object']
     handle=nickname.lower()+'@'+domain.lower()
     if '/users/' not in messageJson['object']:
         if debug:

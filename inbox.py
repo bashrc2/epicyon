@@ -445,7 +445,9 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: actors do not match')
         return False
-        
+    if not messageJson['object'].get('to'):
+        messageJson['object']['to']=messageJson['object']['object']
+
     nicknameFollower=getNicknameFromActor(messageJson['object']['actor'])
     domainFollower,portFollower=getDomainFromActor(messageJson['object']['actor'])
     domainFollowerFull=domainFollower
