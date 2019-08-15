@@ -461,7 +461,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if self.headers.get('Accept'):
-            if 'text/html' in self.headers['Accept'] and self.path!='/login' and self.path!='/terms':                
+            if 'text/html' in self.headers['Accept'] and self.path!='/login' and self.path!='/' and self.path!='/terms':                
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
                    '/statuses/' not in self.path and \
@@ -688,7 +688,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
-        if self.path.startswith('/login'):
+        if self.path.startswith('/login') or self.path=='/':
             # request basic auth
             msg=htmlLogin(self.server.baseDir).encode('utf-8')
             self._login_headers('text/html',len(msg))
