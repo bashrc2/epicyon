@@ -164,7 +164,7 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},host: str,headers: str,httpHeaders: str,postPath: str,debug: bool) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},host: str,headers: str,httpHeaders: {},postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -1140,7 +1140,8 @@ def runInboxQueue(projectVersion: str, \
                 print('DEBUG: checking http headers')
                 pprint(queueJson['headers'])
             if not verifyPostHeaders(httpPrefix, \
-                                     pubKey,queueJson['headers'], \
+                                     pubKey, \
+                                     queueJson['httpHeaders'], \
                                      queueJson['path'],False, \
                                      json.dumps(queueJson['post'])):
                 if debug:

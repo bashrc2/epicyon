@@ -134,7 +134,7 @@ def readFollowList(filename: str):
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.1'
+    protocol_version = 'HTTP/1.0'
 
     def _login_headers(self,fileFormat: str,length: int) -> None:
         self.send_response(200)
@@ -390,8 +390,19 @@ class PubServer(BaseHTTPRequestHandler):
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
             print('Inbox queue is full')
             return 1
-        
-        # save the json for later queue processing            
+
+        #TODO convert headers to dict
+        headersDict={}
+        headersDict['host']=self.headers['host']
+        headersDict['signature']=self.headers['signature']
+        if self.headers.get('Date'):
+            headersDict['Date']=self.headers['Date']
+        if self.headers.get('digest'):
+            headersDict['digest']=self.headers['digest']
+        if self.headers.get('Content-type'):
+            headersDict['Content-type']=self.headers['Content-type']
+         
+        # save the json for later queue processing
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir, \
                                  self.server.httpPrefix, \
@@ -400,7 +411,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  messageJson,
                                  self.headers['host'],
                                  self.headers['signature'],
-                                 self.headers,
+                                 headersDict,
                                  '/'+self.path.split('/')[-1],
                                  self.server.debug)
         if queueFilename:
