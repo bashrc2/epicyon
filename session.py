@@ -40,7 +40,7 @@ def getJson(session,url: str,headers: {},params: {}, \
         print('WARN: no session specified for getJson')
     session.cookies.clear()
     try:
-        result=session.get(url, headers=sessionHeaders, params=sessionParams)
+        result=session.get(url, headers=sessionHeaders, params=sessionParams, allow_redirects=True)
         return result.json()
     except Exception as e:
         print('ERROR: getJson failed')
@@ -62,7 +62,7 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
             print('postJson: '+inboxUrl+' not permitted')
             return None
 
-    postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
+    postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers, allow_redirects=True)
     return postResult.text
 
 def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
