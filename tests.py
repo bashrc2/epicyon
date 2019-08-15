@@ -11,6 +11,7 @@ import time
 import os, os.path
 import shutil
 import commentjson
+from time import gmtime, strftime
 from pprint import pprint
 from person import createPerson
 from Crypto.Hash import SHA256
@@ -81,18 +82,19 @@ def testHttpsigBase(withDigest):
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,False,password)
     assert privateKeyPem
-    messageBodyJsonStr = '{"a key": "a value", "another key": "A string"}'
+    messageBodyJsonStr = '{"a key": "a value", "another key": "A string","yet another key": "A string"}'
 
     headersDomain=domain
     if port!=80 and port !=443:
         headersDomain=domain+':'+str(port)
 
+    dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
         headers = {'host': headersDomain}
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'host': headersDomain, 'digest': f'SHA-256={bodyDigest}'}
+        headers = {'host': headersDomain, 'date': dateStr, 'digest': f'SHA-256={bodyDigest}'}
 
     boxpath='/inbox'
     signatureHeader = \
@@ -109,9 +111,9 @@ def testHttpsigBase(withDigest):
         headers = {'host': 'bogon.domain'}
     else:
         # correct domain but fake message
-        messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs"}'
+        messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "Fake GNUs"}'
         bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'host': domain, 'digest': f'SHA-256={bodyDigest}'}        
+        headers = {'host': domain, 'date': dateStr, 'digest': f'SHA-256={bodyDigest}'}        
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
                              '/inbox', True, messageBodyJsonStr) == False
