@@ -150,6 +150,16 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('InstanceID', self.server.instanceId)
         self.end_headers()
 
+    def _set_headers_length(self,fileFormat: str,length: int,cookie: str) -> None:
+        self.send_response(200)
+        self.send_header('Content-type', fileFormat)
+        self.send_header('Content-Length', str(length))
+        if cookie:
+            self.send_header('Cookie', cookie)
+        self.send_header('Host', self.server.domainFull)
+        self.send_header('InstanceID', self.server.instanceId)
+        self.end_headers()
+
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
         self.send_response(303)
         self.send_header('Content-type', 'text/html')
@@ -495,9 +505,9 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png',cookie)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
+                    self._set_headers_length('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
             return        
@@ -506,9 +516,9 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login-background.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png',cookie)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
+                    self._set_headers_length('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
             return        
@@ -517,9 +527,9 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/follow-background.png'
             if os.path.isfile(mediaFilename):
-                self._set_headers('image/png',cookie)
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
+                    self._set_headers_length('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
             return
@@ -555,14 +565,16 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaFilename= \
                     self.server.baseDir+'/media/'+mediaStr
                 if os.path.isfile(mediaFilename):
+                    mediaFileType='png'
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png',cookie)
+                        mediaFileType='png'
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg',cookie)
+                        mediaFileType='jepg'
                     else:
-                        self._set_headers('image/gif',cookie)
+                        mediaFileType='gif'
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
+                        self._set_headers_length('image/'+mediaFileType,len(mediaBinary),cookie)
                         self.wfile.write(mediaBinary)
                         self.wfile.flush() 
                     return        
@@ -578,14 +590,16 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaFilename= \
                     self.server.baseDir+'/sharefiles/'+mediaStr
                 if os.path.isfile(mediaFilename):
+                    mediaFileType='png'
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png',cookie)
+                        mediaFileType='png'
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg',cookie)
+                        mediaFileType='jpeg'
                     else:
-                        self._set_headers('image/gif',cookie)
+                        mediaFileType='gif'
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
+                        self._set_headers_length('image/'+mediaFileType,len(mediaBinary),cookie)
                         self.wfile.write(mediaBinary)
                         self.wfile.flush() 
                     return        
@@ -600,9 +614,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/img/icons/'+mediaStr
                 if os.path.isfile(mediaFilename):
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png',cookie)
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
+                            self._set_headers_length('image/png',len(mediaBinary),cookie)
                             self.wfile.write(mediaBinary)
                             self.wfile.flush() 
                         return        
