@@ -134,7 +134,7 @@ def readFollowList(filename: str):
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.0'
+    protocol_version = 'HTTP/1.1'
 
     def _login_headers(self,fileFormat: str,length: int) -> None:
         self.send_response(200)
@@ -156,12 +156,13 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
         self.send_response(303)
-        self.send_header('Content-type', 'text/html')
+        #self.send_header('Content-type', 'text/html')
         if cookie:
             self.send_header('Cookie', cookie)
         self.send_header('Location', redirect)
         self.send_header('Host', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('Content-Length', '0')
         self.end_headers()
 
     def _404(self) -> None:
@@ -484,6 +485,7 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: authorized='+str(authorized))
                         self.send_response(303)
                         self.send_header('Location', '/login')
+                        self.send_header('Content-Length', '0')
                         self.end_headers()
                         self.server.GETbusy=False
                         return
@@ -1930,7 +1932,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy=False
                 return                
-            loginParams=self.rfile.read(length).decode('utf-8')            
+            loginParams=self.rfile.read(length).decode('utf-8')
             loginNickname,loginPassword,register=htmlGetLoginCredentials(loginParams,self.server.lastLoginTime)
             if loginNickname:
                 self.server.lastLoginTime=int(time.time())
@@ -1950,7 +1952,7 @@ class PubServer(BaseHTTPRequestHandler):
                         del self.server.tokens[loginNickname]
                         del self.server.salts[loginNickname]
                     self.send_response(303)
-                    self.send_header('Content-type', 'text/html; charset=utf-8')
+                    self.send_header('Content-Length', '0')
                     self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
                     self.send_header('Location', '/login')
                     self.end_headers()                    
@@ -1978,6 +1980,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
                     self.send_header('Location', '/users/'+loginNickname+'/inbox')
+                    self.send_header('Content-Length', '0')
                     self.end_headers()
                     self.server.POSTbusy=False
                     return
