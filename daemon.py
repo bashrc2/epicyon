@@ -134,8 +134,9 @@ def readFollowList(filename: str):
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
+    protocol_version = 'HTTP/1.0'
+
     def _login_headers(self,fileFormat: str,length: int) -> None:
-        self.protocol_version='HTTP/1.1'
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
@@ -144,7 +145,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
-        self.protocol_version='HTTP/1.1'
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
@@ -155,7 +155,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
-        self.protocol_version='HTTP/1.1'
         self.send_response(303)
         self.send_header('Content-type', 'text/html')
         if cookie:
@@ -166,7 +165,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def _404(self) -> None:
-        self.protocol_version='HTTP/1.1'
         msg="<html><head></head><body><h1>404 Not Found</h1></body></html>".encode('utf-8')
         self.send_response(404)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -461,7 +459,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if self.headers.get('Accept'):
-            if 'text/html' in self.headers['Accept'] and self.path!='/login' and self.path!='/' and self.path!='/terms':                
+            if 'text/html' in self.headers['Accept'] and self.path!='/login' and self.path!='/' and self.path!='/terms':  
                 if '/media/' not in self.path and \
                    '/sharefiles/' not in self.path and \
                    '/statuses/' not in self.path and \
