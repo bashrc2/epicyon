@@ -117,8 +117,12 @@ def verifyPostHeaders(httpPrefix: str, publicKeyPem: str, headers: dict, \
                 base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
         else:
-            signedHeaderList.append(
-                f'{signedHeader}: {headers[signedHeader]}')
+            try:
+                signedHeaderList.append(
+                    f'{signedHeader}: {headers[signedHeader]}')
+            except Exception as e:
+                print('http signature check failure')
+                print(e)
 
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
