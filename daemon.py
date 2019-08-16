@@ -394,12 +394,6 @@ class PubServer(BaseHTTPRequestHandler):
         # Convert the headers needed for signature verification to dict
         headersDict={}
         headersDict['host']=self.headers['host']
-        #if messageJson.get('actor'):
-        #    actorDomain,actorPort=getDomainFromActor(messageJson['actor'])
-        #    if actorPort:
-        #        if actorPort!=80 and actorPort!=443:
-        #            actorDomain=actorDomain+':'+str(actorPort)
-        #    headersDict['host']=actorDomain
         headersDict['signature']=self.headers['signature']
         if self.headers.get('Date'):
             headersDict['Date']=self.headers['Date']
@@ -2765,7 +2759,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         return
                     if self.server.debug:
-                        print('Unknown status from _updateInboxQueue')
+                        print('_updateInboxQueue exited without doing anything')
                 else:
                     if self.server.debug:
                         print('self.postToNickname is None')
