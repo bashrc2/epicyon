@@ -1001,6 +1001,9 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         print('DEBUG: object capabilities passed')
         print('copy from '+queueFilename+' to '+destinationFilename)
 
+    if not os.path.isfile(destinationFilename):
+        return False
+
     if messageJson.get('postNickname'):
         with open(destinationFilename, 'w') as fp:
             commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
