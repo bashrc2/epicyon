@@ -394,12 +394,12 @@ class PubServer(BaseHTTPRequestHandler):
         # Convert the headers needed for signature verification to dict
         headersDict={}
         headersDict['host']=self.headers['host']
-        if messageJson.get('actor'):
-            actorDomain,actorPort=getDomainFromActor(messageJson['actor'])
-            if actorPort:
-                if actorPort!=80 and actorPort!=443:
-                    actorDomain=actorDomain+':'+str(actorPort)
-            headersDict['host']=actorDomain
+        #if messageJson.get('actor'):
+        #    actorDomain,actorPort=getDomainFromActor(messageJson['actor'])
+        #    if actorPort:
+        #        if actorPort!=80 and actorPort!=443:
+        #            actorDomain=actorDomain+':'+str(actorPort)
+        #    headersDict['host']=actorDomain
         headersDict['signature']=self.headers['signature']
         if self.headers.get('Date'):
             headersDict['Date']=self.headers['Date']
