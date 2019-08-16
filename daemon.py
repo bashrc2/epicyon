@@ -2632,7 +2632,7 @@ class PubServer(BaseHTTPRequestHandler):
            '/users/' in self.path:
             if not self.outboxAuthenticated:
                 if self.server.debug:
-                    print('DEBUG: unathenticated attempt to post image to outbox')
+                    print('DEBUG: unauthenticated attempt to post image to outbox')
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -2698,6 +2698,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
             else:
+                if self.server.debug:
+                    print('Failed to post to outbox')
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -2736,10 +2738,10 @@ class PubServer(BaseHTTPRequestHandler):
             if 'keyId=' not in self.headers['signature']:
                 if self.server.debug:
                     print('DEBUG: POST to inbox has no keyId in header signature parameter')
-                    self.send_response(403)
-                    self.end_headers()
-                    self.server.POSTbusy=False
-                    return
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy=False
+                return
         
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
@@ -2762,6 +2764,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.end_headers()
                         self.server.POSTbusy=False
                         return
+                    if self.server.debug:
+                        print('Unknown status from _updateInboxQueue')
                 else:
                     if self.server.debug:
                         print('self.postToNickname is None')
