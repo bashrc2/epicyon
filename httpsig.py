@@ -33,7 +33,7 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
         headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'content-type': 'application/json'}
     else:
         bodyDigest = \
-            base64.b64encode(SHA256.new(messageBodyJson.encode()).digest())
+            base64.b64encode(SHA256.new(messageBodyJson.encode()).digest()).decode('utf-8')
         headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
     privateKeyPem = RSA.import_key(privateKeyPem)
     #headers.update({
@@ -121,7 +121,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 f'(request-target): {method.lower()} {path}')
         elif signedHeader == 'digest':
             bodyDigest = \
-                base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).encode('utf-8')
+                base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
         else:
             if headers.get(signedHeader):
