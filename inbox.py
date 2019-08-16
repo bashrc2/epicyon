@@ -1136,7 +1136,7 @@ def runInboxQueue(projectVersion: str, \
             # check the signature
             if debug:
                 print('DEBUG: checking http headers')
-                pprint(queueJson['headers'])
+                pprint(queueJson['httpHeaders'])
             if not verifyPostHeaders(httpPrefix, \
                                      pubKey, \
                                      queueJson['httpHeaders'], \
