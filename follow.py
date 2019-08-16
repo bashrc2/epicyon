@@ -22,6 +22,7 @@ from posts import getPersonBox
 from acceptreject import createAccept
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
+from auth import createPassword
 from session import postJson
 
 def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
@@ -490,12 +491,11 @@ def sendFollowRequest(session,baseDir: str, \
     followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
 
     newFollowJson = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': followActor+'#follows/'+followNickname,
         'type': 'Follow',
         'actor': followActor,
-        'object': followedId,
-        'to': [followedId],
-        'cc': ['https://www.w3.org/ns/activitystreams#Public'],
-        'published': published
+        'object': followedId
     }
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
@@ -537,12 +537,11 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
 
     statusNumber,published = getStatusNumber()
     newFollowJson = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': followActor+'#follows/'+followNickname,
         'type': 'Follow',
         'actor': followActor,
-        'object': followedId,
-        'to': [followedId],
-        'cc': ['https://www.w3.org/ns/activitystreams#Public'],
-        'published': published
+        'object': followedId
     }
 
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
@@ -615,14 +614,15 @@ def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
     followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
 
     unfollowJson = {
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': followActor+'#follows/'+followNickname+'/undo',
         'type': 'Undo',
         'actor': followActor,
         'object': {
+            'id': followActor+'#follows/'+followNickname,
             'type': 'Follow',
             'actor': followActor,
-            'object': followedId,
-            'to': [followedId],
-            'cc': ['https://www.w3.org/ns/activitystreams#Public']
+            'object': followedId
         }
     }
 

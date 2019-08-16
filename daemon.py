@@ -2456,15 +2456,17 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print(followerNickname+' stops following '+followingActor)
                     followActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+followerNickname
+                    followId=followActor+'#follows/'+followingNickname
                     unfollowJson = {
+                        '@context': 'https://www.w3.org/ns/activitystreams',
+                        'id': followId+'/undo',
                         'type': 'Undo',
                         'actor': followActor,
                         'object': {
+                            'id': followId,
                             'type': 'Follow',
                             'actor': followActor,
-                            'object': followingActor,
-                            'to': [followingActor],
-                            'cc': ['https://www.w3.org/ns/activitystreams#Public']
+                            'object': followingActor
                         }
                     }
                     pathUsersSection=self.path.split('/users/')[1]
