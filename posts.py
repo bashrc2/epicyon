@@ -971,12 +971,14 @@ def sendPost(projectVersion: str, \
 
     if toDomain not in inboxUrl:
         return 7
-    postPath='/'+inboxUrl.split('/')[-1]
+    #postPath='/'+inboxUrl.split('/')[-1]
+    postPath=inboxUrl.split(toDomain)[1]
             
     # construct the http header
     signatureHeaderJson = \
-        createSignedHeader(privateKeyPem, nickname, domain, port, \
-                           postPath, httpPrefix, withDigest, postJsonObject)
+        createSignedHeader(privateKeyPem,nickname,domain,port, \
+                           toDomain,toPort, \
+                           postPath,httpPrefix,withDigest,postJsonObject)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
@@ -1198,8 +1200,9 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             
     # construct the http header
     signatureHeaderJson = \
-        createSignedHeader(privateKeyPem, nickname, domain, port, \
-                           postPath, httpPrefix, withDigest, postJsonObject)
+        createSignedHeader(privateKeyPem,nickname,domain,port, \
+                           toDomain,toPort, \
+                           postPath,httpPrefix,withDigest,postJsonObject)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:

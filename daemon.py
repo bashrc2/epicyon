@@ -417,7 +417,6 @@ class PubServer(BaseHTTPRequestHandler):
                                  messageJson,
                                  headersDict,
                                  self.path,
-                                 #'/'+self.path.split('/')[-1],
                                  self.server.debug)
         if queueFilename:
             # add json to the queue

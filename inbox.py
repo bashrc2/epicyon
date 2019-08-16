@@ -79,6 +79,7 @@ def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
                 print('filename: '+filename)
                 return False
             if not expectedStr in filename:
+                print('Expected: '+expectedStr)
                 print('Invalid filename: '+filename)
                 return False
     return True    
@@ -198,8 +199,11 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         originalPostId=postJsonObject['id'].replace('/activity','')
     
     statusNumber,published = getStatusNumber()
-    postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
-    postJsonObject['id']=postId
+    if actor:
+        postId=actor+'/statuses/'+statusNumber
+    else:
+        postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
+    # NOTE: don't change postJsonObject['id'] before signature check
     
     currTime=datetime.datetime.utcnow()
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")

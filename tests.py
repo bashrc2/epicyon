@@ -96,13 +96,19 @@ def testHttpsigBase(withDigest):
     if not withDigest:
         headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json'}
         signatureHeader = \
-            signPostHeaders(privateKeyPem, nickname, domain, port, boxpath, httpPrefix, None)
+            signPostHeaders(dateStr,privateKeyPem, nickname, \
+                            domain, port, \
+                            domain, port, \
+                            boxpath, httpPrefix, None)
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
         headers = {'host': headersDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
         signatureHeader = \
-            signPostHeaders(privateKeyPem, nickname, domain, port, boxpath, httpPrefix, messageBodyJson)
+            signPostHeaders(dateStr,privateKeyPem, nickname, \
+                            domain, port, \
+                            domain, port, \
+                            boxpath, httpPrefix, messageBodyJson)
 
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \

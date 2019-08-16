@@ -17,25 +17,37 @@ from requests.auth import AuthBase
 import base64
 import json
 from time import gmtime, strftime
+from pprint import pprint
 
-def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
-                    port: int,path: str, \
+def signPostHeaders(dateStr: str,privateKeyPem: str, \
+                    nickname: str, \
+                    domain: str,port: int, \
+                    toDomain: str,toPort: int, \
+                    path: str, \
                     httpPrefix: str, messageBodyJson: {}) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
-    dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
+    if toPort:
+        if toPort!=80 and toPort!=443:
+            if ':' not in toDomain:
+                toDomain=toDomain+':'+str(port)
+
+    if not dateStr:
+        dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     keyID = httpPrefix+'://'+domain+'/users/'+nickname+'#main-key'
     if not messageBodyJson:
-        headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'content-type': 'application/json'}
+        headers = {'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json'}
     else:
         messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
-        headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
+        headers = {'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
     privateKeyPem = RSA.import_key(privateKeyPem)
     #headers.update({
     #    '(request-target)': f'post {path}',
@@ -45,8 +57,9 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     signedHeaderText = ''
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
-        #print(f'headerKey: {headerKey}: {headers[headerKey]}')
+        print(f'*********************signing:  headerKey: {headerKey}: {headers[headerKey]}')
     signedHeaderText = signedHeaderText.strip()
+    print('******************************Send: signedHeaderText: '+signedHeaderText)
     headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
 
     # Sign the digest
@@ -64,31 +77,44 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
         [f'{k}="{v}"' for k, v in signatureDict.items()])
     return signatureHeader
 
-def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
+def createSignedHeader(privateKeyPem: str,nickname: str, \
+                       domain: str,port: int, \
+                       toDomain: str,toPort: int, \
                        path: str,httpPrefix: str,withDigest: bool, \
                        messageBodyJson: {}) -> {}:
-    headerDomain=domain
+    """Note that the domain is the destination, not the sender
+    """
+    contentType='application/activity+json'
+    headerDomain=toDomain
 
-    if port:
-        if port!=80 and port!=443:
-            headerDomain=headerDomain+':'+str(port)
+    if toPort:
+        if toPort!=80 and toPort!=443:
+            if ':' not in headerDomain:
+                headerDomain=headerDomain+':'+str(toPort)
 
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-    path='/inbox'
-    print('Testing 123 '+str(withDigest))
     if not withDigest:
         headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr}
         signatureHeader = \
-            signPostHeaders(privateKeyPem, nickname, domain, port, \
-                            path, httpPrefix, None)
+            signPostHeaders(dateStr,privateKeyPem,nickname, \
+                            domain,port,toDomain,toPort, \
+                            path,httpPrefix,None)
     else:
         messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
-        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
+        print('***************************Send (request-target): post '+path)
+        print('***************************Send host: '+headerDomain)
+        print('***************************Send date: '+dateStr)
+        print('***************************Send digest: '+bodyDigest)
+        print('***************************Send Content-type: '+contentType)
+        print('***************************Send messageBodyJsonStr: '+messageBodyJsonStr)
+        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
         signatureHeader = \
-            signPostHeaders(privateKeyPem, nickname, domain, port, \
-                            path, httpPrefix, messageBodyJson)
+            signPostHeaders(dateStr,privateKeyPem,nickname, \
+                            domain,port, \
+                            toDomain,toPort, \
+                            path,httpPrefix,messageBodyJson)
     headers['signature'] = signatureHeader
     return headers
 
@@ -115,8 +141,8 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
         k: v[1:-1]
         for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
     }
-    #print('signatureHeader: '+str(signatureHeader))
-    #print('signatureDict: '+str(signatureDict))
+    print('********************signatureHeader: '+str(signatureHeader))
+    print('********************signatureDict: '+str(signatureDict))
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
@@ -125,23 +151,30 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
         if signedHeader == '(request-target)':
             signedHeaderList.append(
                 f'(request-target): {method.lower()} {path}')
+            print('***************************Verify (request-target): '+method.lower()+' '+path)
         elif signedHeader == 'digest':
             bodyDigest = \
-                base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+                base64.b64encode(SHA256.new(messageBodyJsonStr.strip().encode()).digest()).decode('utf-8')
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
+            print('***************************Verify digest: SHA-256='+bodyDigest)
+            print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
         else:
             if headers.get(signedHeader):
+                print('***************************Verify '+signedHeader+': '+headers[signedHeader])
                 signedHeaderList.append(
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 signedHeaderCap=signedHeader.capitalize()
+                print('***************************Verify '+signedHeaderCap+': '+headers[signedHeaderCap])
                 if headers.get(signedHeaderCap):
                     signedHeaderList.append(
                         f'{signedHeader}: {headers[signedHeaderCap]}')
 
-    #print('signedHeaderList: '+str(signedHeaderList))
+    print('***********************signedHeaderList: ')
+    pprint(signedHeaderList)
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
+    print('***********************Verify: signedHeaderText: '+signedHeaderText)
     headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
 
     # Get the signature, verify with public key, return result
