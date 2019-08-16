@@ -186,7 +186,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: WEBFINGER host-meta')
         if self.path.startswith('/.well-known/host-meta'):
-            wfResult=webfingerMeta()
+            wfResult=webfingerMeta(self.server.httpPrefix,self.server.domainFull)
             if wfResult:
                 msg=wfResult.encode('utf-8')
                 self._set_headers('application/xrd+xml',len(msg),None)

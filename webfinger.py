@@ -140,17 +140,25 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
     }
     return account
 
-def webfingerMeta() -> str:
+def webfingerMeta(httpPrefix: str,domainFull: str) -> str:
+    """Return /.well-known/host-meta
     """
-    """
-    return "<?xml version=’1.0' encoding=’UTF-8'?>" \
+    return \
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
+        "<XRD xmlns=\"http://docs.oasis-open.org/ns/xri/xrd-1.0\">" \
+        "<Link rel=\"lrdd\" type=\"application/xrd+xml\" template=\""+httpPrefix+"://"+domainFull+"/.well-known/webfinger?resource={uri}\"/>" \
+        "</XRD>"
+
+
+
+"<?xml version=’1.0' encoding=’UTF-8'?>" \
         "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" \
         " xmlns:hm=’http://host-meta.net/xrd/1.0'>" \
         "" \
-        "<hm:Host>example.com</hm:Host>" \
+        "<hm:Host>"+domainFull+"</hm:Host>" \
         "" \
         "<Link rel=’lrdd’" \
-        " template=’http://example.com/describe?uri={uri}'>" \
+        " template=’"+httpPrefix+"://"+domainFull+"/describe?uri={uri}'>" \
         " <Title>Resource Descriptor</Title>" \
         " </Link>" \
         "</XRD>"
