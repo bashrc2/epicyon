@@ -149,20 +149,6 @@ def webfingerMeta(httpPrefix: str,domainFull: str) -> str:
         "<Link rel=\"lrdd\" type=\"application/xrd+xml\" template=\""+httpPrefix+"://"+domainFull+"/.well-known/webfinger?resource={uri}\"/>" \
         "</XRD>"
 
-
-
-"<?xml version=’1.0' encoding=’UTF-8'?>" \
-        "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" \
-        " xmlns:hm=’http://host-meta.net/xrd/1.0'>" \
-        "" \
-        "<hm:Host>"+domainFull+"</hm:Host>" \
-        "" \
-        "<Link rel=’lrdd’" \
-        " template=’"+httpPrefix+"://"+domainFull+"/describe?uri={uri}'>" \
-        " <Title>Resource Descriptor</Title>" \
-        " </Link>" \
-        "</XRD>"
-
 def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
