@@ -167,6 +167,10 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
     if likedPostNickname:
         postFilename=locatePost(baseDir,nickname,domain,objectUrl)
         if not postFilename:
+            print('DEBUG: like baseDir: '+baseDir)
+            print('DEBUG: like nickname: '+nickname)
+            print('DEBUG: like domain: '+domain)
+            print('DEBUG: like objectUrl: '+objectUrl)
             return None
         
         updateLikesCollection(postFilename,objectUrl,newLikeJson['actor'],debug)
@@ -193,7 +197,8 @@ def likePost(session,baseDir: str,federationList: [], \
     """
     likeDomain=likeDomain
     if likePort!=80 and likePort!=443:
-        likeDomain=likeDomain+':'+str(likePort)
+        if ':' not in likeDomain:
+            likeDomain=likeDomain+':'+str(likePort)
 
     objectUrl = \
         httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \

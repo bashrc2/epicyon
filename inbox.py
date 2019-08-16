@@ -197,17 +197,23 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     originalPostId=None
     if postJsonObject.get('id'):
         originalPostId=postJsonObject['id'].replace('/activity','')
+
+    currTime=datetime.datetime.utcnow()
+
+    postId=None
+    if postJsonObject.get('id'):
+        #if '/statuses/' not in postJsonObject['id']:
+        postId=postJsonObject['id'].replace('/activity','')
+        published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    if not postId:
+        statusNumber,published = getStatusNumber()
+        if actor:
+            postId=actor+'/statuses/'+statusNumber
+        else:
+            postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
     
-    statusNumber,published = getStatusNumber()
-    if actor:
-        postId=actor+'/statuses/'+statusNumber
-    else:
-        postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
     # NOTE: don't change postJsonObject['id'] before signature check
     
-    currTime=datetime.datetime.utcnow()
-    published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-
     inboxQueueDir=createInboxQueueDir(nickname,domain,baseDir)
 
     handle=nickname+'@'+domain
@@ -1160,6 +1166,11 @@ def runInboxQueue(projectVersion: str, \
             if debug:
                 print('DEBUG: Signature check success')
 
+            # set the id to the same as the post filename
+            # This makes the filename and the id consistent
+            #if queueJson['post'].get('id'):
+            #    queueJson['post']['id']=queueJson['id']
+            
             if receiveUndo(session, \
                            baseDir,httpPrefix,port, \
                            sendThreads,postLog, \
