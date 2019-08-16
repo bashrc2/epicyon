@@ -379,11 +379,15 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
             if postJsonObject['object'].get('to'):
+                if isinstance(postJsonObject['object']['to'], list):
+                    recipientsList=postJsonObject['object']['to']
+                else:
+                    recipientsList=[postJsonObject['object']['to']]
                 if debug:
                     print('DEBUG: resolving "to"')
                 includesFollowers,recipientsDict= \
                     inboxPostRecipientsAdd(baseDir,httpPrefix, \
-                                           postJsonObject['object']['to'], \
+                                           recipientsList, \
                                            recipientsDict, \
                                            domainMatch,domainBase, \
                                            actor,debug)
@@ -394,9 +398,13 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
                     print('DEBUG: inbox post has no "to"')
 
             if postJsonObject['object'].get('cc'):
+                if isinstance(postJsonObject['object']['cc'], list):
+                    recipientsList=postJsonObject['object']['cc']
+                else:
+                    recipientsList=[postJsonObject['object']['cc']]
                 includesFollowers,recipientsDict= \
                     inboxPostRecipientsAdd(baseDir,httpPrefix, \
-                                           postJsonObject['object']['cc'], \
+                                           recipientsList, \
                                            recipientsDict, \
                                            domainMatch,domainBase, \
                                            actor,debug)
@@ -415,9 +423,13 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
                             print('DEBUG: inbox item is a link to an actor')
 
     if postJsonObject.get('to'):
+        if isinstance(postJsonObject['to'], list):
+            recipientsList=postJsonObject['to']
+        else:
+            recipientsList=[postJsonObject['to']]
         includesFollowers,recipientsDict= \
             inboxPostRecipientsAdd(baseDir,httpPrefix, \
-                                   postJsonObject['to'], \
+                                   recipientsList, \
                                    recipientsDict, \
                                    domainMatch,domainBase, \
                                    actor,debug)
@@ -425,9 +437,13 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
             followerRecipients=True
 
     if postJsonObject.get('cc'):
+        if isinstance(postJsonObject['cc'], list):
+            recipientsList=postJsonObject['cc']
+        else:
+            recipientsList=[postJsonObject['cc']]
         includesFollowers,recipientsDict= \
             inboxPostRecipientsAdd(baseDir,httpPrefix, \
-                                   postJsonObject['cc'], \
+                                   recipientsList, \
                                    recipientsDict, \
                                    domainMatch,domainBase, \
                                    actor,debug)
