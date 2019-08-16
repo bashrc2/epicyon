@@ -1100,7 +1100,7 @@ def runInboxQueue(projectVersion: str, \
             keyId=None
             for tries in range(8):
                 keyId=None
-                signatureParams=queueJson['headers'].split(',')
+                signatureParams=queueJson['httpHeaders']['signature'].split(',')
                 for signatureItem in signatureParams:
                     if signatureItem.startswith('keyId='):
                         if '"' in signatureItem:
@@ -1109,7 +1109,7 @@ def runInboxQueue(projectVersion: str, \
                 if not keyId:
                     if debug:
                         print('DEBUG: No keyId in signature: '+ \
-                              queueJson['headers']['signature'])
+                              queueJson['httpHeaders']['signature'])
                     os.remove(queueFilename)
                     queue.pop(0)
                     continue
