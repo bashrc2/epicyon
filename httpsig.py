@@ -34,7 +34,7 @@ def signPostHeaders(privateKeyPem: str, nickname: str, domain: str, \
     else:
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJson.encode()).digest()).decode('utf-8')
-        headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
+        headers = {'(request-target)': f'post {path}','host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
     privateKeyPem = RSA.import_key(privateKeyPem)
     #headers.update({
     #    '(request-target)': f'post {path}',
@@ -80,7 +80,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
         messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest = \
             base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
-        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/json'}
+        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
     signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
                                       path, httpPrefix, None)
     headers['signature'] = signatureHeader
