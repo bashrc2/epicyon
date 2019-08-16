@@ -111,14 +111,14 @@ def testHttpsigBase(withDigest):
                             boxpath, httpPrefix, messageBodyJson)
 
     headers['signature'] = signatureHeader
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             boxpath,False, \
+    assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
+                             boxpath,False,None, \
                              messageBodyJsonStr)
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             '/parambulator'+boxpath,False, \
+    assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
+                             '/parambulator'+boxpath,False,None, \
                              messageBodyJsonStr) == False
-    assert verifyPostHeaders(httpPrefix, publicKeyPem, headers, \
-                             boxpath,True, \
+    assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
+                             boxpath,True,None, \
                              messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
@@ -130,7 +130,7 @@ def testHttpsigBase(withDigest):
         headers = {'host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
-                             boxpath,True, \
+                             boxpath,True,None, \
                              messageBodyJsonStr) == False
     os.chdir(baseDir)
     shutil.rmtree(path)

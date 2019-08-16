@@ -383,7 +383,7 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.projectVersion)
         return True
 
-    def _updateInboxQueue(self,nickname: str,messageJson: {}) -> int:
+    def _updateInboxQueue(self,nickname: str,messageJson: {},messageBytes: str) -> int:
         """Update the inbox queue
         """
         # Check if the queue is full
@@ -410,11 +410,12 @@ class PubServer(BaseHTTPRequestHandler):
          
         # save the json for later queue processing
         queueFilename = \
-            savePostToInboxQueue(self.server.baseDir, \
-                                 self.server.httpPrefix, \
-                                 nickname, \
-                                 self.server.domainFull, \
+            savePostToInboxQueue(self.server.baseDir,
+                                 self.server.httpPrefix,
+                                 nickname,
+                                 self.server.domainFull,
                                  messageJson,
+                                 messageBytes.decode('utf-8'),
                                  headersDict,
                                  self.path,
                                  self.server.debug)
@@ -2750,7 +2751,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self.postToNickname=pathUsersSection.split('/')[0]
                 if self.postToNickname:
-                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson)
+                    queueStatus=self._updateInboxQueue(self.postToNickname,messageJson,messageBytes)
                     if queueStatus==0:
                         self.send_response(200)
                         self.end_headers()
@@ -2771,7 +2772,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
-                queueStatus=self._updateInboxQueue('inbox',messageJson)
+                queueStatus=self._updateInboxQueue('inbox',messageJson,messageBytes)
                 if queueStatus==0:
                     self.send_response(200)
                     self.end_headers()

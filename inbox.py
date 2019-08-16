@@ -41,6 +41,7 @@ from like import undoLikesCollectionEntry
 from blocking import isBlocked
 from filters import isFiltered
 from announce import updateAnnounceCollection
+from httpsig import messageContentDigest
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -165,7 +166,7 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},httpHeaders: {},postPath: str,debug: bool) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},messageBytes: str,httpHeaders: {},postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -241,6 +242,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         'httpHeaders': httpHeaders,
         'path': postPath,
         'post': postJsonObject,
+        'digest': messageContentDigest(messageBytes),
         'filename': filename,
         'destination': destination
     }
@@ -1156,6 +1158,7 @@ def runInboxQueue(projectVersion: str, \
                                      pubKey, \
                                      queueJson['httpHeaders'], \
                                      queueJson['path'],False, \
+                                     queueJson['digest'], \
                                      json.dumps(queueJson['post'])):
                 if debug:
                     print('DEBUG: Header signature check failed')

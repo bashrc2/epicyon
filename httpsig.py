@@ -19,12 +19,16 @@ import json
 from time import gmtime, strftime
 from pprint import pprint
 
+def messageContentDigest(messageBodyJsonStr: str) -> str:
+    return base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+
 def signPostHeaders(dateStr: str,privateKeyPem: str, \
                     nickname: str, \
                     domain: str,port: int, \
                     toDomain: str,toPort: int, \
                     path: str, \
-                    httpPrefix: str, messageBodyJson: {}) -> str:
+                    httpPrefix: str, \
+                    messageBodyJson: {}) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
@@ -45,8 +49,7 @@ def signPostHeaders(dateStr: str,privateKeyPem: str, \
         headers = {'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json'}
     else:
         messageBodyJsonStr=json.dumps(messageBodyJson)
-        bodyDigest = \
-            base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+        bodyDigest=messageContentDigest(messageBodyJsonStr)
         headers = {'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
     privateKeyPem = RSA.import_key(privateKeyPem)
     #headers.update({
@@ -101,8 +104,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
                             path,httpPrefix,None)
     else:
         messageBodyJsonStr=json.dumps(messageBodyJson)
-        bodyDigest = \
-            base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+        bodyDigest=messageContentDigest(messageBodyJsonStr)
         print('***************************Send (request-target): post '+path)
         print('***************************Send host: '+headerDomain)
         print('***************************Send date: '+dateStr)
@@ -120,6 +122,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
 
 def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                       path: str,GETmethod: bool, \
+                      messageBodyDigest: str, \
                       messageBodyJsonStr: str) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
@@ -153,8 +156,10 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 f'(request-target): {method.lower()} {path}')
             print('***************************Verify (request-target): '+method.lower()+' '+path)
         elif signedHeader == 'digest':
-            bodyDigest = \
-                base64.b64encode(SHA256.new(messageBodyJsonStr.strip().encode()).digest()).decode('utf-8')
+            if messageBodyDigest:
+                bodyDigest=messageBodyDigest
+            else:
+                bodyDigest = messageContentDigest(messageBodyJsonStr)
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
             print('***************************Verify digest: SHA-256='+bodyDigest)
             print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
