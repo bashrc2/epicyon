@@ -1132,10 +1132,11 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     sharedInbox=False
     if toNickname=='inbox':
         sharedInbox=True
-    
-    if toPort!=80 and toPort!=443:
-        if ':' not in toDomain:
-            toDomain=toDomain+':'+str(toPort)        
+
+    if toPort:
+        if toPort!=80 and toPort!=443:
+            if ':' not in toDomain:
+                toDomain=toDomain+':'+str(toPort)        
 
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
     if debug:
@@ -1194,7 +1195,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
 
     if toDomain not in inboxUrl:
         if debug:
-            print('DEBUG: '+toDomain+' not in '+inboxUrl)
+            print('DEBUG: '+toDomain+' is not in '+inboxUrl)
         return 7
     postPath='/'+inboxUrl.split('/')[-1]
             
