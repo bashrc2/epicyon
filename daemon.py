@@ -391,7 +391,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('Inbox queue is full')
             return 1
 
-        #TODO convert headers to dict
+        # Convert the headers needed for signature verification to dict
         headersDict={}
         headersDict['host']=self.headers['host']
         if messageJson.get('actor'):
@@ -415,10 +415,9 @@ class PubServer(BaseHTTPRequestHandler):
                                  nickname, \
                                  self.server.domainFull, \
                                  messageJson,
-                                 self.headers['host'],
-                                 self.headers['signature'],
                                  headersDict,
-                                 '/'+self.path.split('/')[-1],
+                                 self.path,
+                                 #'/'+self.path.split('/')[-1],
                                  self.server.debug)
         if queueFilename:
             # add json to the queue

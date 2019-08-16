@@ -164,7 +164,7 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},host: str,headers: str,httpHeaders: {},postPath: str,debug: bool) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},httpHeaders: {},postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -223,8 +223,6 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         'postDomain': postDomain,
         'sharedInbox': sharedInboxItem,
         'published': published,
-        'host': host,
-        'headers': headers,
         'httpHeaders': httpHeaders,
         'path': postPath,
         'post': postJsonObject,
