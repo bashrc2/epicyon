@@ -283,7 +283,7 @@ class PubServer(BaseHTTPRequestHandler):
                       ' is not a permitted activity type')
             return False
         if messageJson.get('id'):
-            postId=messageJson['id'].replace('/activity','')
+            postId=messageJson['id'].replace('/activity','').replace('/undo','')
             if self.server.debug:
                 print('DEBUG: id attribute exists within POST to outbox')
         else:
@@ -2690,7 +2690,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._postToOutbox(messageJson):                
                 if messageJson.get('id'):
                     self.headers['Location']= \
-                        messageJson['id'].replace('/activity','')
+                        messageJson['id'].replace('/activity','').replace('/undo','')
                 self.send_response(201)
                 self.end_headers()
                 self.server.POSTbusy=False

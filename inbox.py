@@ -197,14 +197,14 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
                         return None
     originalPostId=None
     if postJsonObject.get('id'):
-        originalPostId=postJsonObject['id'].replace('/activity','')
+        originalPostId=postJsonObject['id'].replace('/activity','').replace('/undo','')
 
     currTime=datetime.datetime.utcnow()
 
     postId=None
     if postJsonObject.get('id'):
         #if '/statuses/' not in postJsonObject['id']:
-        postId=postJsonObject['id'].replace('/activity','')
+        postId=postJsonObject['id'].replace('/activity','').replace('/undo','')
         published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not postId:
         statusNumber,published = getStatusNumber()
@@ -745,7 +745,7 @@ def receiveDelete(session,handle: str,baseDir: str, \
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of like - '+handle)    
     # if this post in the outbox of the person?
-    messageId=messageJson['object'].replace('/activity','')
+    messageId=messageJson['object'].replace('/activity','').replace('/undo','')
     removeModerationPostFromIndex(baseDir,messageId,debug)
     postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageId)
     if not postFilename:
@@ -900,7 +900,7 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
         return False    
     # populate a text file containing the ids of replies
     postRepliesFilename=postFilename.replace('.json','.replies')
-    messageId=messageJson['id'].replace('/activity','')
+    messageId=messageJson['id'].replace('/activity','').replace('/undo','')
     if os.path.isfile(postRepliesFilename):
         numLines = sum(1 for line in open(postRepliesFilename))
         if numLines>maxReplies:
