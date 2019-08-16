@@ -2271,7 +2271,8 @@ class PubServer(BaseHTTPRequestHandler):
                             fullBlockDomain=blockDomain
                             if blockPort:
                                 if blockPort!=80 and blockPort!=443:
-                                    fullBlockDomain=blockDomain+':'+str(blockPort)
+                                    if ':' not in blockDomain:
+                                        fullBlockDomain=blockDomain+':'+str(blockPort)
                         if '@' in moderationText:
                             fullBlockDomain=moderationText.split('@')[1]
                         if fullBlockDomain or nickname.startswith('#'):
@@ -2285,7 +2286,8 @@ class PubServer(BaseHTTPRequestHandler):
                             fullBlockDomain=blockDomain
                             if blockPort:
                                 if blockPort!=80 and blockPort!=443:
-                                    fullBlockDomain=blockDomain+':'+str(blockPort)
+                                    if ':' not in blockDomain:
+                                        fullBlockDomain=blockDomain+':'+str(blockPort)
                         if '@' in moderationText:
                             fullBlockDomain=moderationText.split('@')[1]
                         if fullBlockDomain or nickname.startswith('#'):
@@ -2487,7 +2489,8 @@ class PubServer(BaseHTTPRequestHandler):
                 blockingDomainFull=blockingDomain
                 if blockingPort:
                     if blockingPort!=80 and blockingPort!=443:
-                        blockingDomainFull=blockingDomain+':'+str(blockingPort)
+                        if ':' not in blockingDomain:
+                            blockingDomainFull=blockingDomain+':'+str(blockingPort)
                 if blockerNickname==blockingNickname and \
                    blockingDomain==self.server.domain and \
                    blockingPort==self.server.port:
@@ -2517,7 +2520,8 @@ class PubServer(BaseHTTPRequestHandler):
                 blockingDomainFull=blockingDomain
                 if blockingPort:
                     if blockingPort!=80 and blockingPort!=443:
-                        blockingDomainFull=blockingDomain+':'+str(blockingPort)
+                        if ':' not in blockingDomain:
+                            blockingDomainFull=blockingDomain+':'+str(blockingPort)
                 if blockerNickname==blockingNickname and \
                    blockingDomain==self.server.domain and \
                    blockingPort==self.server.port:
@@ -2813,8 +2817,10 @@ def runDaemon(projectVersion, \
     httpd.domain=domain
     httpd.port=port
     httpd.domainFull=domain
-    if port!=80 and port!=443:
-        httpd.domainFull=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                httpd.domainFull=domain+':'+str(port)
     httpd.httpPrefix=httpPrefix
     httpd.debug=debug
     httpd.federationList=fedList.copy()

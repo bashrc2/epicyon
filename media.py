@@ -67,9 +67,10 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
         mediaType='image/gif'        
         fileExtension='gif'
 
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     mPath=getMediaPath()
     mediaPath=mPath+'/'+createPassword(32)+'.'+fileExtension

@@ -186,8 +186,10 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     if ':' in domain:
         domain=domain.split(':')[0]
     fullDomain=domain
-    if port!=80 and port!=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
     newAnnounceId= \
@@ -238,9 +240,10 @@ def announcePublic(session,baseDir: str,federationList: [], \
     """Makes a public announcement
     """
     fromDomain=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            fromDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fromDomain=domain+':'+str(port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
@@ -263,9 +266,10 @@ def repeatPost(session,baseDir: str,federationList: [], \
     """Repeats a given status post
     """
     announcedDomain=announceDomain
-    if announcePort!=80 and announcePort!=443:
-        if ':' not in announcedDomain:
-            announcedDomain=announcedDomain+':'+str(announcePort)
+    if announcePort:
+        if announcePort!=80 and announcePort!=443:
+            if ':' not in announcedDomain:
+                announcedDomain=announcedDomain+':'+str(announcePort)
 
     objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
@@ -297,8 +301,10 @@ def undoAnnounce(session,baseDir: str,federationList: [], \
     if ':' in domain:
         domain=domain.split(':')[0]
     fullDomain=domain
-    if port!=80 and port!=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
 
     newUndoAnnounce = {
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
@@ -343,9 +349,10 @@ def undoAnnouncePublic(session,baseDir: str,federationList: [], \
     """Undoes a public announcement
     """
     fromDomain=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            fromDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fromDomain=domain+':'+str(port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
@@ -368,9 +375,10 @@ def undoRepeatPost(session,baseDir: str,federationList: [], \
     """Undoes a status post repeat
     """
     announcedDomain=announceDomain
-    if announcePort!=80 and announcePort!=443:
-        if ':' not in announcedDomain:
-            announcedDomain=announcedDomain+':'+str(announcePort)
+    if announcePort:
+        if announcePort!=80 and announcePort!=443:
+            if ':' not in announcedDomain:
+                announcedDomain=announcedDomain+':'+str(announcePort)
 
     objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
@@ -396,8 +404,10 @@ def sendAnnounceViaServer(session,fromNickname: str,password: str,
     withDigest=True
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'

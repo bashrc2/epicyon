@@ -148,8 +148,10 @@ def sendBlockViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
@@ -218,8 +220,10 @@ def sendUndoBlockViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
@@ -326,7 +330,8 @@ def outboxBlock(baseDir: str,httpPrefix: str, \
     domainBlockedFull=domainBlocked
     if portBlocked:
         if portBlocked!=80 and portBlocked!=443:
-            domainBlockedFull=domainBlocked+':'+str(portBlocked)
+            if ':' not in domainBlocked:
+                domainBlockedFull=domainBlocked+':'+str(portBlocked)
 
     addBlock(baseDir,nickname,domain, \
              nicknameBlocked,domainBlockedFull)
@@ -397,7 +402,8 @@ def outboxUndoBlock(baseDir: str,httpPrefix: str, \
     domainBlockedFull=domainBlocked
     if portBlocked:
         if portBlocked!=80 and portBlocked!=443:
-            domainBlockedFull=domainBlocked+':'+str(portBlocked)
+            if ':' not in domainBlocked:
+                domainBlockedFull=domainBlocked+':'+str(portBlocked)
 
     removeBlock(baseDir,nickname,domain, \
                 nicknameBlocked,domainBlockedFull)

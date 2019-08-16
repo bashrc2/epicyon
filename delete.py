@@ -42,8 +42,10 @@ def createDelete(session,baseDir: str,federationList: [], \
     if ':' in domain:
         domain=domain.split(':')[0]
         fullDomain=domain
-    if port!=80 and port!=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
 
     statusNumber,published = getStatusNumber()
     newDeleteId= \
@@ -91,8 +93,10 @@ def sendDeleteViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
@@ -157,9 +161,10 @@ def deletePublic(session,baseDir: str,federationList: [], \
     """Makes a public delete activity
     """
     fromDomain=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            fromDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fromDomain=domain+':'+str(port)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
@@ -182,9 +187,10 @@ def deletePostPub(session,baseDir: str,federationList: [], \
     """Deletes a given status post
     """
     deletedDomain=deleteDomain
-    if deletePort!=80 and deletePort!=443:
-        if ':' not in deletedDomain:
-            deletedDomain=deletedDomain+':'+str(deletePort)
+    if deletePort:
+        if deletePort!=80 and deletePort!=443:
+            if ':' not in deletedDomain:
+                deletedDomain=deletedDomain+':'+str(deletePort)
 
     objectUrl = deleteHttpsPrefix + '://'+deletedDomain+'/users/'+ \
         deleteNickname+'/statuses/'+str(deleteStatusNumber)

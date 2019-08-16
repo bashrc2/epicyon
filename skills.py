@@ -98,8 +98,10 @@ def sendSkillViaServer(session,nickname: str,password: str,
         return 6
 
     domainFull=domain
-    if port!=80 and port!=443:
-        domainFull=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
         
     toUrl = httpPrefix+'://'+domainFull+'/users/'+nickname
     ccUrl = httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'

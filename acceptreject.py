@@ -34,8 +34,10 @@ def createAcceptReject(baseDir: str,federationList: [], \
     if not urlPermitted(objectJson['actor'],federationList,"inbox:write"):
         return None
 
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     newAccept = {
         'type': acceptType,

@@ -110,8 +110,10 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
         return None
 
     fullDomain=domain
-    if port!=80 and port !=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port !=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
     
     # make directories to store capabilities
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
@@ -169,8 +171,10 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
         return None
 
     fullDomain=domain
-    if port!=80 and port !=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port !=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
     
     # Get the filename of the capability
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,updateActor,'accept')

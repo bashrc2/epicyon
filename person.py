@@ -56,8 +56,10 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
     if ':' in domain:
         domain=domain.split(':')[0]
     fullDomain=domain
-    if port!=80 and port!=443:
-        fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
 
     handle=nickname.lower()+'@'+domain.lower()
     personFilename=baseDir+'/accounts/'+handle+'.json'
@@ -135,8 +137,10 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         storeWebfingerEndpoint(nickname,domain,port,baseDir,webfingerEndpoint)
 
     handle=nickname.lower()+'@'+domain.lower()
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     newPerson = {'@context': ['https://www.w3.org/ns/activitystreams',
                               'https://w3id.org/security/v1',
@@ -545,7 +549,8 @@ def canRemovePost(baseDir: str,nickname: str,domain: str,port: int,postId: str) 
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
 
     # is the post by the admin?
     adminNickname=getConfigParam(baseDir,'admin')
@@ -570,7 +575,8 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     matchStr=domainFull+'/users/'+nickname+'/'
     directory = os.fsencode(baseDir+'/tags/')
     for f in os.listdir(directory):

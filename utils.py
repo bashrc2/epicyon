@@ -156,9 +156,10 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
         return
     if not postJson['attachment'][0].get('url'):
         return
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
     attachmentUrl=postJson['attachment'][0]['url']
     if not attachmentUrl:
         return

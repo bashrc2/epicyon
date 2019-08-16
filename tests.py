@@ -88,8 +88,10 @@ def testHttpsigBase(withDigest):
     messageBodyJsonStr=json.dumps(messageBodyJson)
 
     headersDomain=domain
-    if port!=80 and port !=443:
-        headersDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port !=443:
+            if ':' not in domain:
+                headersDomain=domain+':'+str(port)
 
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath='/inbox'

@@ -79,8 +79,10 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
                            wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
     handle=nickname+'@'+domain
     wfSubdir='/wfendpoints'
     if not os.path.isdir(baseDir+wfSubdir):
@@ -95,8 +97,10 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
     """Creates a webfinger endpoint for a user
     """
     originalDomain=domain
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     account = {
         "aliases": [
@@ -178,9 +182,10 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
         if debug:
             print('DEBUG: WEBFINGER no @ in handle '+handle)
         return None
-    if port!=80 and port !=443:
-        if ':' not in handle:
-            handle=handle+':'+str(port)
+    if port:
+        if port!=80 and port !=443:
+            if ':' not in handle:
+                handle=handle+':'+str(port)
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
     if debug:
         print('DEBUG: WEBFINGER filename '+filename)

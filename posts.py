@@ -431,9 +431,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     tags=[]
     hashtagsDict={}
 
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     # convert content to html
     content= \
@@ -604,9 +605,10 @@ def outboxMessageCreateWrap(httpPrefix: str, \
     https://www.w3.org/TR/activitypub/#object-without-create
     """
 
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
     statusNumber,published = getStatusNumber()
     if messageJson.get('published'):
         published = messageJson['published']
@@ -638,8 +640,10 @@ def postIsAddressedToFollowers(baseDir: str,
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     if not postJsonObject.get('object'):
         return False
@@ -699,9 +703,10 @@ def createPublicPost(baseDir: str,
     """Public post
     """
     domainFull=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domainFull=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     return createPostBase(baseDir,nickname, domain, port, \
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
@@ -719,9 +724,10 @@ def createUnlistedPost(baseDir: str,
     """Unlisted post. This has the #Public and followers links inverted.
     """
     domainFull=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            domainFull=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     return createPostBase(baseDir,nickname, domain, port, \
                           httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           'https://www.w3.org/ns/activitystreams#Public', \
@@ -739,9 +745,10 @@ def createFollowersOnlyPost(baseDir: str,
     """Followers only post
     """
     domainFull=domain
-    if port!=80 and port!=443: 
-        if ':' not in domain:
-            domainFull=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443: 
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     return createPostBase(baseDir,nickname, domain, port, \
                           httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           None,
@@ -810,7 +817,8 @@ def createReportPost(baseDir: str,
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
 
     # add a title to distinguish moderation reports from other posts
     reportTitle='Moderation Report'
@@ -917,9 +925,10 @@ def sendPost(projectVersion: str, \
     """
     withDigest=True
 
-    if toPort!=80 and toPort!=443:
-        if ':' not in toDomain:
-            toDomain=toDomain+':'+str(toPort)        
+    if toPort:
+        if toPort!=80 and toPort!=443:
+            if ':' not in toDomain:
+                toDomain=toDomain+':'+str(toPort)        
 
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
@@ -1010,9 +1019,10 @@ def sendPostViaServer(projectVersion: str, \
         return 6
     withDigest=True
 
-    if toPort!=80 and toPort!=443:
-        if ':' not in fromDomain:
-            fromDomain=fromDomain+':'+str(fromPort)
+    if toPort:
+        if toPort!=80 and toPort!=443:
+            if ':' not in fromDomain:
+                fromDomain=fromDomain+':'+str(fromPort)
 
     handle=httpPrefix+'://'+fromDomain+'/@'+fromNickname
 
@@ -1049,7 +1059,8 @@ def sendPostViaServer(projectVersion: str, \
         fromDomainFull=fromDomain
         if fromPort:
             if fromPort!=80 and fromPort!=443:
-                fromDomainFull=fromDomain+':'+str(fromPort)                
+                if ':' not in fromDomain:
+                    fromDomainFull=fromDomain+':'+str(fromPort)                
         cc=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
     else:
         if toDomain.lower().endswith('followers') or \
@@ -1057,8 +1068,10 @@ def sendPostViaServer(projectVersion: str, \
             toPersonId=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
         else:
             toDomainFull=toDomain
-            if toPort!=80 and toDomain!=443:
-                toDomainFull=toDomain+':'+str(toPort)        
+            if toPort:
+                if toPort!=80 and toPort!=443:
+                    if ':' not in toDomain:
+                        toDomainFull=toDomain+':'+str(toPort)        
             toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
     postJsonObject = \
             createPostBase(baseDir, \
@@ -1273,11 +1286,13 @@ def sendToNamedAddresses(session,baseDir: str, \
             domainFull=domain
             if port:
                 if port!=80 and port!=443:
-                    domainFull=domain+':'+str(port)
+                    if ':' not in domain:
+                        domainFull=domain+':'+str(port)
             toDomainFull=toDomain
             if toPort:
                 if toPort!=80 and toPort!=443:
-                    toDomainFull=toDomain+':'+str(toPort)
+                    if ':' not in toDomain:
+                        toDomainFull=toDomain+':'+str(toPort)
             print('DEBUG: Post sending s2s: '+nickname+'@'+domainFull+' to '+toNickname+'@'+toDomainFull)
         cc=[]
         sendSignedJson(postJsonObject,session,baseDir, \
@@ -1359,8 +1374,10 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
     boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     boxname='moderation'
 
-    if port!=80 and port!=443:
-        domain = domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     if not pageNumber:
         pageNumber=1
@@ -1433,8 +1450,10 @@ def createBoxBase(baseDir: str,boxname: str, \
     if boxname=='inbox':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
 
-    if port!=80 and port!=443:
-        domain = domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
         
     pageStr='?page=true'
     if pageNumber:
@@ -1660,8 +1679,10 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
     federationList=[]
 
     domainFull=domain
-    if port!=80 and port!=443:
-        domainFull=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     handle=httpPrefix+"://"+domainFull+"/@"+nickname
     wfRequest = \
         webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \

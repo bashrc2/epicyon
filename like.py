@@ -137,9 +137,10 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
         return None
 
     fullDomain=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
 
     likeTo=[]
     if '/statuses/' in objectUrl:
@@ -196,18 +197,20 @@ def likePost(session,baseDir: str,federationList: [], \
     """Likes a given status post
     """
     likeDomain=likeDomain
-    if likePort!=80 and likePort!=443:
-        if ':' not in likeDomain:
-            likeDomain=likeDomain+':'+str(likePort)
+    if likePort:
+        if likePort!=80 and likePort!=443:
+            if ':' not in likeDomain:
+                likeDomain=likeDomain+':'+str(likePort)
 
     objectUrl = \
         httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \
         '/statuses/'+str(likeStatusNumber)
 
-    if likePort!=80 and likePort!=443:
-        ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
-    else:
-        ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
+    ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
+    if likePort:
+        if likePort!=80 and likePort!=443:
+            if ':' not in likeDomain:
+                ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
         
     return like(session,baseDir,federationList,nickname,domain,port, \
                 ccList,httpPrefix,objectUrl,clientToServer, \
@@ -227,9 +230,10 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
         return None
 
     fullDomain=domain
-    if port!=80 and port!=443:
-        if ':' not in domain:
-            fullDomain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
 
     likeTo=[]
     if '/statuses/' in objectUrl:
@@ -291,17 +295,20 @@ def undoLikePost(session,baseDir: str,federationList: [], \
     """Removes a liked post
     """
     likeDomain=likeDomain
-    if likePort!=80 and likePort!=443:
-        likeDomain=likeDomain+':'+str(likePort)
+    if likePort:
+        if likePort!=80 and likePort!=443:
+            if ':' not in likeDomain:
+                likeDomain=likeDomain+':'+str(likePort)
 
     objectUrl = \
         httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \
         '/statuses/'+str(likeStatusNumber)
 
-    if likePort!=80 and likePort!=443:
-        ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
-    else:
-        ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
+    ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
+    if likePort:
+        if likePort!=80 and likePort!=443:
+            if ':' not in likeDomain:
+                ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
         
     return undoLike(session,baseDir,federationList,nickname,domain,port, \
                     ccList,httpPrefix,objectUrl,clientToServer, \
@@ -319,8 +326,10 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = ['https://www.w3.org/ns/activitystreams#Public']
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
@@ -391,8 +400,10 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = ['https://www.w3.org/ns/activitystreams#Public']
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'

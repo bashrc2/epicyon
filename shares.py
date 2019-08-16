@@ -101,8 +101,10 @@ def addShare(baseDir: str, \
     if imageFilename:
         if os.path.isfile(imageFilename):
             domainFull=domain
-            if port!=80 and port!=443:
-                domainFull=domain+':'+str(port)
+            if port:
+                if port!=80 and port!=443:
+                    if ':' not in domain:
+                        domainFull=domain+':'+str(port)
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
             if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
@@ -203,8 +205,10 @@ def getSharesFeedForPerson(baseDir: str, \
     if not validNickname(nickname):
         return None
 
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
 
     handleDomain=domain
     if ':' in handleDomain:
@@ -283,8 +287,10 @@ def sendShareViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
@@ -370,8 +376,10 @@ def sendUndoShareViaServer(session,fromNickname: str,password: str,
         return 6
 
     fromDomainFull=fromDomain
-    if fromPort!=80 and fromPort!=443:
-        fromDomainFull=fromDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in fromDomain:
+                fromDomainFull=fromDomain+':'+str(fromPort)
 
     toUrl = 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'

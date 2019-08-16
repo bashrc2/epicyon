@@ -187,7 +187,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
             return None
         if postPort:
             if postPort!=80 and postPort!=443:
-                postDomain=postDomain+':'+str(postPort)
+                if ':' not in postDomain:
+                    postDomain=postDomain+':'+str(postPort)
 
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
@@ -368,8 +369,10 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain :
     if ':' in domain:
         domain=domain.split(':')[0]
     domainBase=domain
-    if port!=80 and port!=443:
-        domain=domain+':'+str(port)
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
     domainMatch='/'+domain+'/users/'
 
     actor = postJsonObject['actor']
@@ -485,14 +488,16 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
     domainFollowerFull=domainFollower
     if portFollower:
         if portFollower!=80 and portFollower!=443:
-            domainFollowerFull=domainFollower+':'+str(portFollower)
+            if ':' not in domainFollower:
+                domainFollowerFull=domainFollower+':'+str(portFollower)
     
     nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
     domainFollowing,portFollowing=getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull=domainFollowing
     if portFollowing:
         if portFollowing!=80 and portFollowing!=443:
-            domainFollowingFull=domainFollowing+':'+str(portFollowing)
+            if ':' not in domainFollowing:
+                domainFollowingFull=domainFollowing+':'+str(portFollowing)
 
     if unfollowerOfPerson(baseDir, \
                           nicknameFollowing,domainFollowingFull, \
@@ -719,7 +724,8 @@ def receiveDelete(session,handle: str,baseDir: str, \
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     deletePrefix=httpPrefix+'://'+domainFull+'/'
     if not allowDeletion and \
        (not messageJson['object'].startswith(deletePrefix) or \

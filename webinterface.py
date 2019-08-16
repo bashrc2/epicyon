@@ -225,7 +225,8 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
 
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
@@ -1013,7 +1014,8 @@ def individualPostAsHtml(baseDir: str, \
     fullDomain=domain
     if port:
         if port!=80 and port!=443:
-            fullDomain=domain+':'+str(port)
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
         
     if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
@@ -1040,7 +1042,8 @@ def individualPostAsHtml(baseDir: str, \
         actorDomainFull=actorDomain
         if actorPort:
             if actorPort!=80 and actorPort!=443:
-                actorDomainFull=actorDomain+':'+str(actorPort)
+                if ':' not in actorDomain:
+                    actorDomainFull=actorDomain+':'+str(actorPort)
         if isBlocked(baseDir,nickname,domain,actorNickname,actorDomainFull):
             blockUnblockStr='<a href="/users/'+nickname+'?unblock='+postJsonObject['actor']+';'+avatarUrl+'">Unblock</a>'
 
@@ -1520,7 +1523,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
     searchDomainFull=searchDomain
     if searchPort:
         if searchPort!=80 and searchPort!=443:
-            searchDomainFull=searchDomain+':'+str(searchPort)
+            if ':' not in searchDomain:
+                searchDomainFull=searchDomain+':'+str(searchPort)
     
     profileStr=''
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:

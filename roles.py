@@ -183,7 +183,8 @@ def outboxDelegate(baseDir: str,authenticatedNickname: str,messageJson: {},debug
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
     role=messageJson['object']['object'].split(';')[1].strip().lower()
 
     if not role:
@@ -216,8 +217,10 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
         return 6
 
     delegatorDomainFull=delegatorDomain
-    if fromPort!=80 and fromPort!=443:
-        delegatorDomainFull=delegatorDomain+':'+str(fromPort)
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:
+            if ':' not in delegatorDomain:
+                delegatorDomainFull=delegatorDomain+':'+str(fromPort)
         
     toUrl = httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname
     ccUrl = httpPrefix+'://'+delegatorDomainFull+'/users/'+delegatorNickname+'/followers'
