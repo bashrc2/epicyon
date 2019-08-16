@@ -171,7 +171,11 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', str(len(msg)))
         self.end_headers()
-        self.wfile.write(msg)
+        try:
+            self.wfile.write(msg)
+        except Exception as e:
+            print('Error when showing 404')
+            print(e)
 
     def _webfinger(self) -> bool:
         if not self.path.startswith('/.well-known'):
