@@ -176,7 +176,9 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     # isn't written to file
     postNickname=None
     postDomain=None
+    actor=None
     if postJsonObject.get('actor'):
+        actor=postJsonObject['actor']
         postNickname=getNicknameFromActor(postJsonObject['actor'])
         postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
         if isBlocked(baseDir,nickname,domain,postNickname,postDomain):            
@@ -191,12 +193,13 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
                         return None
-
+    originalPostId=None
     if postJsonObject.get('id'):
-        postId=postJsonObject['id'].replace('/activity','')
-    else:
-        statusNumber,published = getStatusNumber()
-        postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
+        originalPostId=postJsonObject['id'].replace('/activity','')
+    
+    statusNumber,published = getStatusNumber()
+    postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
+    postJsonObject['id']=postId
     
     currTime=datetime.datetime.utcnow()
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -216,7 +219,9 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         sharedInboxItem=True
         
     newQueueItem = {
+        'originalId': originalPostId,
         'id': postId,
+        'actor': actor,
         'nickname': nickname,
         'domain': domain,
         'postNickname': postNickname,
@@ -1093,7 +1098,7 @@ def runInboxQueue(projectVersion: str, \
                     if accountMaxPostsPerDay>0 or domainMaxPostsPerDay>0:
                         pprint(quotas)
 
-            print('Obtaining public key for '+queueJson['id'])
+            print('Obtaining public key for actor '+queueJson['actor'])
                         
             # Try a few times to obtain the public key
             pubKey=None
