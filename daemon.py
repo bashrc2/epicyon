@@ -526,6 +526,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
+            self._404()
             return        
         # login screen background image
         if self.path=='/login-background.png':
@@ -537,7 +538,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
-            return        
+                    return
+            self._404()
+            return
         # follow screen background image
         if self.path=='/follow-background.png':
             mediaFilename= \
@@ -548,6 +551,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
+            self._404()
             return
         # emoji images
         if '/emoji/' in self.path:
