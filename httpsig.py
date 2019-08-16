@@ -79,7 +79,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str,domain: str,port: int, \
     else:
         messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest = \
-            base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest())
+            base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
         headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
     signatureHeader = signPostHeaders(privateKeyPem, nickname, domain, port, \
                                       path, httpPrefix, None)
@@ -121,7 +121,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 f'(request-target): {method.lower()} {path}')
         elif signedHeader == 'digest':
             bodyDigest = \
-                base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+                base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8').decode('utf-8')
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
         else:
             if headers.get(signedHeader):
