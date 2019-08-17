@@ -149,8 +149,8 @@ def getNoOfFollows(baseDir: str,nickname: str,domain: str, \
     """
     # only show number of followers to authenticated
     # account holders
-    if not authenticated:
-        return 9999
+    #if not authenticated:
+    #    return 9999
     handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
