@@ -25,7 +25,7 @@ from pprint import pprint
 from random import randint
 from session import createSession
 from session import getJson
-from session import postJson
+from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
@@ -879,7 +879,7 @@ def createReportPost(baseDir: str,
                            True,None, None, subject)
     return postJsonObject
 
-def threadSendPost(session,postJsonObject: {},federationList: [],\
+def threadSendPost(session,postJsonStr: str,federationList: [],\
                    inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
                    debug :bool) -> None:
     """Sends a post with exponential backoff
@@ -887,14 +887,15 @@ def threadSendPost(session,postJsonObject: {},federationList: [],\
     tries=0
     backoffTime=60
     for attempt in range(20):
-        postResult = postJson(session,postJsonObject,federationList, \
-                              inboxUrl,signatureHeaderJson, \
-                              "inbox:write")
+        postResult = \
+            postJsonString(session,postJsonStr,federationList, \
+                        inboxUrl,signatureHeaderJson, \
+                        "inbox:write")
         if postResult:
             if debug:
                 print('DEBUG: json post to '+inboxUrl+' succeeded')
-            if postJsonObject.get('published'):
-                postLog.append(postJsonObject['published']+' '+postResult+'\n')
+            #if postJsonObject.get('published'):
+            #    postLog.append(postJsonObject['published']+' '+postResult+'\n')
             # keep the length of the log finite
             # Don't accumulate massive files on systems with limited resources
             while len(postLog)>64:
@@ -982,19 +983,23 @@ def sendPost(projectVersion: str, \
         return 7
     #postPath='/'+inboxUrl.split('/')[-1]
     postPath=inboxUrl.split(toDomain)[1]
-            
-    # construct the http header
+
+    # convert json to string so that there are no
+    # subsequent conversions after creating message body digest
+    postJsonStr=json.dumps(postJsonObject)
+
+    # construct the http header, including the message body digest
     signatureHeaderJson = \
         createSignedHeader(privateKeyPem,nickname,domain,port, \
                            toDomain,toPort, \
-                           postPath,httpPrefix,withDigest,postJsonObject)
+                           postPath,httpPrefix,withDigest,postJsonStr)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
         sendThreads[0].kill()
         sendThreads.pop(0)
     thr = threadWithTrace(target=threadSendPost,args=(session, \
-                                                      postJsonObject.copy(), \
+                                                      postJsonStr, \
                                                       federationList, \
                                                       inboxUrl,baseDir, \
                                                       signatureHeaderJson.copy(), \
@@ -1097,7 +1102,7 @@ def sendPostViaServer(projectVersion: str, \
                'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
-        postJson(session,postJsonObject,[],inboxUrl,headers,"inbox:write")
+        postJsonString(session,json.dumps(postJsonObject),[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
     #        print('DEBUG: POST failed for c2s to '+inboxUrl)
@@ -1211,12 +1216,16 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             print('DEBUG: '+toDomain+' is not in '+inboxUrl)
         return 7
     postPath='/'+inboxUrl.split('/')[-1]
-            
-    # construct the http header
+
+    # convert json to string so that there are no
+    # subsequent conversions after creating message body digest
+    postJsonStr=json.dumps(postJsonObject)
+
+    # construct the http header, including the message body digest
     signatureHeaderJson = \
         createSignedHeader(privateKeyPem,nickname,domain,port, \
                            toDomain,toPort, \
-                           postPath,httpPrefix,withDigest,postJsonObject)
+                           postPath,httpPrefix,withDigest,postJsonStr)
 
     # Keep the number of threads being used small
     while len(sendThreads)>10:
@@ -1227,7 +1236,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         pprint(postJsonObject)
     thr = threadWithTrace(target=threadSendPost, \
                           args=(session, \
-                                postJsonObject.copy(), \
+                                postJsonStr, \
                                 federationList, \
                                 inboxUrl,baseDir, \
                                 signatureHeaderJson.copy(), \

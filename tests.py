@@ -18,6 +18,7 @@ from person import createPerson
 from Crypto.Hash import SHA256
 from httpsig import signPostHeaders
 from httpsig import verifyPostHeaders
+from httpsig import messageContentDigest
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from threads import threadWithTrace
@@ -103,14 +104,13 @@ def testHttpsigBase(withDigest):
                             domain, port, \
                             boxpath, httpPrefix, None)
     else:
-        bodyDigest = \
-            base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+        bodyDigest = messageContentDigest(messageBodyJsonStr)
         headers = {'host': headersDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
         signatureHeader = \
             signPostHeaders(dateStr,privateKeyPem, nickname, \
                             domain, port, \
                             domain, port, \
-                            boxpath, httpPrefix, messageBodyJson)
+                            boxpath, httpPrefix, messageBodyJsonStr)
 
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
@@ -128,7 +128,7 @@ def testHttpsigBase(withDigest):
     else:
         # correct domain but fake message
         messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'
-        bodyDigest = base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+        bodyDigest = messageContentDigest(messageBodyJsonStr)
         headers = {'host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \

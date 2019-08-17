@@ -134,7 +134,7 @@ def readFollowList(filename: str):
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.1'
+    protocol_version = 'HTTP/1.0'
 
     def _login_headers(self,fileFormat: str,length: int) -> None:
         self.send_response(200)

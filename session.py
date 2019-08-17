@@ -65,6 +65,24 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
     return postResult.text
 
+def postJsonString(session,postJsonStr: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
+    """Post a json message string to the inbox of another person
+    Supplying a capability, such as "inbox:write"
+    NOTE: Here we post a string rather than the original json so that
+    conversions between string and json format don't invalidate
+    the message body digest of http signatures
+    """
+
+    # always allow capability requests
+    if not capability.startswith('cap'):    
+        # check that we are posting to a permitted domain
+        if not urlPermitted(inboxUrl,federationList,capability):
+            print('postJson: '+inboxUrl+' not permitted')
+            return None
+
+    postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
+    return postResult.text
+
 def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
     """Post an image to the inbox of another person or outbox via c2s
     Supplying a capability, such as "inbox:write"

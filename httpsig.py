@@ -20,7 +20,7 @@ from time import gmtime, strftime
 from pprint import pprint
 
 def messageContentDigest(messageBodyJsonStr: str) -> str:
-    return base64.b64encode(SHA256.new(messageBodyJsonStr.encode()).digest()).decode('utf-8')
+    return base64.b64encode(SHA256.new(messageBodyJsonStr.encode('utf-8')).digest()).decode('utf-8')
 
 def signPostHeaders(dateStr: str,privateKeyPem: str, \
                     nickname: str, \
@@ -28,7 +28,7 @@ def signPostHeaders(dateStr: str,privateKeyPem: str, \
                     toDomain: str,toPort: int, \
                     path: str, \
                     httpPrefix: str, \
-                    messageBodyJson: {}) -> str:
+                    messageBodyJsonStr: str) -> str:
     """Returns a raw signature string that can be plugged into a header and
     used to verify the authenticity of an HTTP transmission.
     """
@@ -44,14 +44,13 @@ def signPostHeaders(dateStr: str,privateKeyPem: str, \
 
     if not dateStr:
         dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
-    keyID = httpPrefix+'://'+domain+'/users/'+nickname+'#main-key'
-    if not messageBodyJson:
-        headers = {'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json'}
+    keyID=httpPrefix+'://'+domain+'/users/'+nickname+'#main-key'
+    if not messageBodyJsonStr:
+        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json'}
     else:
-        messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest=messageContentDigest(messageBodyJsonStr)
-        headers = {'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
-    privateKeyPem = RSA.import_key(privateKeyPem)
+        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
+    privateKeyPem=RSA.import_key(privateKeyPem)
     #headers.update({
     #    '(request-target)': f'post {path}',
     #})
@@ -84,7 +83,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
                        domain: str,port: int, \
                        toDomain: str,toPort: int, \
                        path: str,httpPrefix: str,withDigest: bool, \
-                       messageBodyJson: {}) -> {}:
+                       messageBodyJsonStr: str) -> {}:
     """Note that the domain is the destination, not the sender
     """
     contentType='application/activity+json'
@@ -103,7 +102,6 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
                             domain,port,toDomain,toPort, \
                             path,httpPrefix,None)
     else:
-        messageBodyJsonStr=json.dumps(messageBodyJson)
         bodyDigest=messageContentDigest(messageBodyJsonStr)
         print('***************************Send (request-target): post '+path)
         print('***************************Send host: '+headerDomain)
@@ -116,7 +114,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
             signPostHeaders(dateStr,privateKeyPem,nickname, \
                             domain,port, \
                             toDomain,toPort, \
-                            path,httpPrefix,messageBodyJson)
+                            path,httpPrefix,messageBodyJsonStr)
     headers['signature'] = signatureHeader
     return headers
 
