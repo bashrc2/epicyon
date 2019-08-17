@@ -981,7 +981,6 @@ def sendPost(projectVersion: str, \
 
     if toDomain not in inboxUrl:
         return 7
-    #postPath='/'+inboxUrl.split('/')[-1]
     postPath=inboxUrl.split(toDomain)[1]
 
     # convert json to string so that there are no
@@ -1215,7 +1214,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         if debug:
             print('DEBUG: '+toDomain+' is not in '+inboxUrl)
         return 7
-    postPath='/'+inboxUrl.split('/')[-1]
+    postPath=inboxUrl.split(toDomain)[1]
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest

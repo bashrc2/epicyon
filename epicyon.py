@@ -1269,4 +1269,4 @@ runDaemon(__version__, \
           args.noannounce,args.cw,ocapAlways, \
           useTor,args.maxReplies, \
           args.domainMaxPostsPerDay,args.accountMaxPostsPerDay, \
-          args.allowdeletion,debug)
+          args.allowdeletion,debug,False)

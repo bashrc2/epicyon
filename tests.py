@@ -215,7 +215,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-              allowDeletion,True)
+              allowDeletion,True,True)
 
 def createServerBob(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool):
@@ -268,7 +268,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-              allowDeletion,True)
+              allowDeletion,True,True)
 
 def createServerEve(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool):
@@ -299,7 +299,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     runDaemon(__version__,"instanceId",False,path,domain,port,port, \
               httpPrefix,federationList, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
-              useTor,maxReplies,allowDeletion,True)
+              useTor,maxReplies,allowDeletion,True,True)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')

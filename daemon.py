@@ -2799,6 +2799,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
         self.server.POSTbusy=False
 
+class PubServerUnitTest(PubServer):
+    protocol_version = 'HTTP/1.0'
+
 def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
@@ -2807,7 +2810,7 @@ def runDaemon(projectVersion, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
               domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
-              allowDeletion=False,debug=False) -> None:
+              allowDeletion=False,debug=False,unitTest=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -2816,7 +2819,10 @@ def runDaemon(projectVersion, \
             return
 
     serverAddress = ('', proxyPort)
-    httpd = ThreadingHTTPServer(serverAddress, PubServer)
+    if unitTest: 
+        httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
+    else:
+        httpd = ThreadingHTTPServer(serverAddress, PubServer)
     # max POST size of 10M
     httpd.projectVersion=projectVersion
     httpd.maxPostLength=1024*1024*10
