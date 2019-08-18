@@ -487,11 +487,12 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         capabilityId=None
         capabilityIdList=[]
         ocapFilename=getOcapFilename(baseDir,nickname,domain,toUrl,'granted')
-        if os.path.isfile(ocapFilename):
-            with open(ocapFilename, 'r') as fp:
-                oc=commentjson.load(fp)
-                if oc.get('id'):
-                    capabilityIdList=[oc['id']]
+        if ocapFilename:
+            if os.path.isfile(ocapFilename):
+                with open(ocapFilename, 'r') as fp:
+                    oc=commentjson.load(fp)
+                    if oc.get('id'):
+                        capabilityIdList=[oc['id']]
 
         newPost = {
             "@context": "https://www.w3.org/ns/activitystreams",

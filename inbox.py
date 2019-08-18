@@ -276,6 +276,8 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
         getOcapFilename(baseDir, \
                         queueJson['nickname'],queueJson['domain'], \
                         actor,'accept')
+    if not ocapFilename:
+        return False
     if not os.path.isfile(ocapFilename):
         if debug:
             print('DEBUG: capabilities for '+ \
