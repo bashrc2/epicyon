@@ -43,7 +43,7 @@ def getPersonAvatarUrl(personUrl: str,personCache: {}) -> str:
     if personJson:
         if personJson.get('icon'):
             if personJson['icon'].get('url'):
-                return prersonJson['icon']['url']
+                return personJson['icon']['url']
     return None
 
 def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPerPage: int,actor: str) -> str:
