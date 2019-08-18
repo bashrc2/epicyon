@@ -1031,6 +1031,8 @@ class PubServer(BaseHTTPRequestHandler):
                         replyToList.append(m.replace('mention=',''))
                 inReplyToUrl=mentionsList[0]
             self.path=self.path.split('?replyto=')[0]+'/newpost'
+            if self.server.debug:
+                print('DEBUG: replyto path '+self.path)
 
         # replying as a direct message, for moderation posts
         if authorized and '?replydm=' in self.path:
@@ -1042,6 +1044,8 @@ class PubServer(BaseHTTPRequestHandler):
                         replyToList.append(m.replace('mention=',''))
                 inReplyToUrl=mentionsList[0]
             self.path=self.path.split('?replydm=')[0]+'/newdm'
+            if self.server.debug:
+                print('DEBUG: replydm path '+self.path)
 
         # edit profile in web interface
         if '/users/' in self.path and self.path.endswith('/editprofile'):
