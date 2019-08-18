@@ -1022,7 +1022,7 @@ class PubServer(BaseHTTPRequestHandler):
         inReplyToUrl=None
         replyWithDM=False
         replyToList=[]
-        if authorized and '?replyto=' in self.path:
+        if '?replyto=' in self.path:
             inReplyToUrl=self.path.split('?replyto=')[1]
             if '?' in inReplyToUrl:
                 mentionsList=inReplyToUrl.split('?')
