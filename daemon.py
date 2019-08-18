@@ -482,37 +482,42 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path=='/sharedInbox' or self.path=='/users/inbox':
             self.path='/inbox'
 
-        # if not authorized then show the login screen
+        # is this a html request?
+        htmlGET=False
         if self.headers.get('Accept'):
-            if 'text/html' in self.headers['Accept'] and self.path!='/login' and self.path!='/' and self.path!='/terms':  
-                if '/media/' not in self.path and \
-                   '/sharefiles/' not in self.path and \
-                   '/statuses/' not in self.path and \
-                   '/emoji/' not in self.path and \
-                   '/tags/' not in self.path and \
-                   '/icons/' not in self.path:
-                    divertToLoginScreen=True
-                    if self.path.startswith('/users/'):
-                        nickStr=self.path.split('/users/')[1]
-                        if '/' not in nickStr and '?' not in nickStr:
+            if 'text/html' in self.headers['Accept']:
+                htmlGET=True
+            
+        # if not authorized then show the login screen
+        if htmlGET and self.path!='/login' and self.path!='/' and self.path!='/terms':  
+            if '/media/' not in self.path and \
+               '/sharefiles/' not in self.path and \
+               '/statuses/' not in self.path and \
+               '/emoji/' not in self.path and \
+               '/tags/' not in self.path and \
+               '/icons/' not in self.path:
+                divertToLoginScreen=True
+                if self.path.startswith('/users/'):
+                    nickStr=self.path.split('/users/')[1]
+                    if '/' not in nickStr and '?' not in nickStr:
+                        divertToLoginScreen=False
+                    else:
+                        if self.path.endswith('/following') or \
+                           self.path.endswith('/followers') or \
+                           self.path.endswith('/skills') or \
+                           self.path.endswith('/roles') or \
+                           self.path.endswith('/shares'):
                             divertToLoginScreen=False
-                        else:
-                            if self.path.endswith('/following') or \
-                               self.path.endswith('/followers') or \
-                               self.path.endswith('/skills') or \
-                               self.path.endswith('/roles') or \
-                               self.path.endswith('/shares'):
-                                divertToLoginScreen=False
-                    if divertToLoginScreen and not authorized:
-                        if self.server.debug:
-                            print('DEBUG: divertToLoginScreen='+str(divertToLoginScreen))
-                            print('DEBUG: authorized='+str(authorized))
-                        self.send_response(303)
-                        self.send_header('Location', '/login')
-                        self.send_header('Content-Length', '0')
-                        self.end_headers()
-                        self.server.GETbusy=False
-                        return
+                if divertToLoginScreen and not authorized:
+                    if self.server.debug:
+                        print('DEBUG: divertToLoginScreen='+str(divertToLoginScreen))
+                        print('DEBUG: authorized='+str(authorized))
+                    self.send_response(303)
+                    self.send_header('Location', '/login')
+                    self.send_header('Content-Length', '0')
+                    self.end_headers()
+                    self.server.GETbusy=False
+                    return
             
         # get css
         # Note that this comes before the busy flag to avoid conflicts
@@ -794,7 +799,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # search for a fediverse address from the web interface by selecting search icon
-        if '/users/' in self.path:
+        if htmlGET and '/users/' in self.path:
            if self.path.endswith('/search'):
                # show the search screen
                msg=htmlSearch(self.server.baseDir,self.path).encode()
@@ -804,7 +809,7 @@ class PubServer(BaseHTTPRequestHandler):
                return
 
         # Unfollow a person from the web interface by selecting Unfollow on the dropdown
-        if '/users/' in self.path:
+        if htmlGET and '/users/' in self.path:
            if '?unfollow=' in self.path:
                followStr=self.path.split('?unfollow=')[1]
                originPathStr=self.path.split('?unfollow=')[0]
@@ -822,7 +827,7 @@ class PubServer(BaseHTTPRequestHandler):
                return
 
         # Unblock a person from the web interface by selecting Unblock on the dropdown
-        if '/users/' in self.path:
+        if htmlGET and '/users/' in self.path:
            if '?unblock=' in self.path:
                blockStr=self.path.split('?unblock=')[1]
                originPathStr=self.path.split('?unblock=')[0]
@@ -840,7 +845,7 @@ class PubServer(BaseHTTPRequestHandler):
                return
 
         # announce/repeat from the web interface
-        if authorized and '?repeat=' in self.path:
+        if htmlGET and '?repeat=' in self.path:
             repeatUrl=self.path.split('?repeat=')[1]
             actor=self.path.split('?repeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
@@ -869,7 +874,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # undo an announce/repeat from the web interface
-        if authorized and '?unrepeat=' in self.path:
+        if htmlGET and '?unrepeat=' in self.path:
             repeatUrl=self.path.split('?unrepeat=')[1]
             actor=self.path.split('?unrepeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
@@ -936,7 +941,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # like from the web interface icon
-        if authorized and '?like=' in self.path and '/statuses/' in self.path:
+        if htmlGET and '?like=' in self.path and '/statuses/' in self.path:
             likeUrl=self.path.split('?like=')[1]
             actor=self.path.split('?like=')[0]
             self.postToNickname=getNicknameFromActor(actor)
@@ -957,7 +962,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # undo a like from the web interface icon
-        if authorized and '?unlike=' in self.path and '/statuses/' in self.path:
+        if htmlGET and '?unlike=' in self.path and '/statuses/' in self.path:
             likeUrl=self.path.split('?unlike=')[1]
             actor=self.path.split('?unlike=')[0]
             self.postToNickname=getNicknameFromActor(actor)
@@ -982,7 +987,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # delete a post from the web interface icon
-        if authorized and '?delete=' in self.path:
+        if htmlGET and '?delete=' in self.path:
             deleteUrl=self.path.split('?delete=')[1]
             actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?delete=')[0]
             if self.server.allowDeletion or \
@@ -1019,7 +1024,7 @@ class PubServer(BaseHTTPRequestHandler):
         inReplyToUrl=None
         replyWithDM=False
         replyToList=[]
-        if '?replyto=' in self.path:
+        if htmlGET and '?replyto=' in self.path:
             inReplyToUrl=self.path.split('?replyto=')[1]
             if '?' in inReplyToUrl:
                 mentionsList=inReplyToUrl.split('?')
@@ -1032,7 +1037,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: replyto path '+self.path)
 
         # replying as a direct message, for moderation posts
-        if authorized and '?replydm=' in self.path:
+        if htmlGET and '?replydm=' in self.path:
             inReplyToUrl=self.path.split('?replydm=')[1]
             if '?' in inReplyToUrl:
                 mentionsList=inReplyToUrl.split('?')
@@ -1045,7 +1050,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: replydm path '+self.path)
 
         # edit profile in web interface
-        if '/users/' in self.path and self.path.endswith('/editprofile'):
+        if htmlGET and '/users/' in self.path and self.path.endswith('/editprofile'):
             msg=htmlEditProfile(self.server.baseDir,self.path,self.server.domain,self.server.port).encode()
             self._set_headers('text/html',len(msg),cookie)
             self.wfile.write(msg)
@@ -1053,7 +1058,7 @@ class PubServer(BaseHTTPRequestHandler):
             return        
 
         # Various types of new post in the web interface
-        if '/users/' in self.path and \
+        if htmlGET and '/users/' in self.path and \
            (self.path.endswith('/newpost') or \
             self.path.endswith('/newunlisted') or \
             self.path.endswith('/newfollowers') or \
