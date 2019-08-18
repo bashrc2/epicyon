@@ -229,11 +229,11 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
 
     handle=nickname+'@'+domain
     destination=baseDir+'/accounts/'+handle+'/inbox/'+postId.replace('/','#')+'.json'
-    if os.path.isfile(destination):
-        if debug:
-            print(destination)
-            print('DEBUG: inbox item already exists')
-        return None
+    #if os.path.isfile(destination):
+    #    if debug:
+    #        print(destination)
+    #        print('DEBUG: inbox item already exists')
+    #    return None
     filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
 
     sharedInboxItem=False
