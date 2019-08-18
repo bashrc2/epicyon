@@ -1340,8 +1340,10 @@ def sendToNamedAddresses(session,baseDir: str, \
             continue
         if isinstance(recipientsObject[rType], list):
             if debug:
-                print('recipientsObject: '+str(recipientsObject))
+                print('recipientsObject: '+str(recipientsObject[rType]))
             for address in recipientsObject[rType]:
+                if '/' not in address:
+                    continue
                 if address.endswith('#Public'):
                     continue
                 if address.endswith('/followers'):
