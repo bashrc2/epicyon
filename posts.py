@@ -908,6 +908,7 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
             # our work here is done
             break
         if debug:
+            print(postJsonStr)
             print('DEBUG: json post to '+inboxUrl+' failed. Waiting for '+ \
                   str(backoffTime)+' seconds.')
         time.sleep(backoffTime)
