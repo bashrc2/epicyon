@@ -91,6 +91,7 @@ def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
     # This could also be added to a follow activity
     ocapId=createPassword(32)
     ocapRequest = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+ocapId,
         "type": "Request",
         "capability": requestedCaps,
@@ -132,6 +133,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
         else:
             ocapId=acceptedActorNickname+'@'+acceptedActorDomain+'#'+createPassword(32)
         ocapAccept = {
+            "@context": "https://www.w3.org/ns/activitystreams",
             "id": httpPrefix+"://"+fullDomain+"/caps/"+ocapId,
             "type": "Capability",
             "capability": acceptedCaps,
@@ -185,6 +187,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
 
     # create an update activity
     ocapUpdate = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Update',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'to': [updateActor],
