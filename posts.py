@@ -1339,6 +1339,8 @@ def sendToNamedAddresses(session,baseDir: str, \
         if not recipientsObject.get(rType):
             continue
         if isinstance(recipientsObject[rType], list):
+            if debug:
+                print('recipientsObject: '+str(recipientsObject))
             for address in recipientsObject[rType]:
                 if address.endswith('#Public'):
                     continue
