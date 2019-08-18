@@ -1270,7 +1270,10 @@ def addToField(activityType: str,postJsonObject: {},debug: bool) -> ({},bool):
                     isSameType=True
                     if debug:
                         print('DEBUG: "to" field assigned to Follow')
-                    postJsonObject['to']=[postJsonObject['object']]
+                    toAddress=postJsonObject['object']
+                    if '/statuses/' in toAddress:
+                        toAddress=toAddress.split('/statuses/')[0]
+                    postJsonObject['to']=[toAddress]
                     toFieldAdded=True
         elif isinstance(postJsonObject['object'], dict):
             if postJsonObject['object'].get('type'):
@@ -1279,7 +1282,10 @@ def addToField(activityType: str,postJsonObject: {},debug: bool) -> ({},bool):
                     if isinstance(postJsonObject['object']['object'], str):
                         if debug:
                             print('DEBUG: "to" field assigned to Follow')
-                        postJsonObject['object']['to']=[postJsonObject['object']['object']]
+                        toAddress=postJsonObject['object']['object']
+                        if '/statuses/' in toAddress:
+                            toAddress=toAddress.split('/statuses/')[0]
+                        postJsonObject['object']['to']=[toAddress]
                         postJsonObject['to']=[postJsonObject['object']['object']]
                         toFieldAdded=True
 
@@ -1319,6 +1325,9 @@ def sendToNamedAddresses(session,baseDir: str, \
         recipientsObject=postJsonObject['object']
     else: 
         postJsonObject,fieldAdded=addToField('Follow',postJsonObject,debug)
+        if not fieldAdded:
+            return
+        postJsonObject,fieldAdded=addToField('Like',postJsonObject,debug)
         if not fieldAdded:
             return
         recipientsObject=postJsonObject

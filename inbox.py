@@ -125,7 +125,7 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
         if not messageJson.get(param):
             return False
     if not messageJson.get('to'):
-        allowedWithoutToParam=['Follow','Request','Accept','Capability','Undo']
+        allowedWithoutToParam=['Like','Follow','Request','Accept','Capability','Undo']
         if messageJson['type'] not in allowedWithoutToParam:
             return False
     return True

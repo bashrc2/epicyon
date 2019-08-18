@@ -409,6 +409,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # For follow activities add a 'to' field, which is a copy of the object field
         messageJson,toFieldExists=addToField('Follow',messageJson,self.server.debug)
+        
+        # For like activities add a 'to' field, which is a copy of the actor within the object field
+        messageJson,toFieldExists=addToField('Like',messageJson,self.server.debug)
 
         pprint(messageJson)
 
