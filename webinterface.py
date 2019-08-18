@@ -35,6 +35,16 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 
+def getPersonAvatarUrl(personUrl: str,personCache: {}) -> str:
+    """Returns the avatar url for the person
+    """
+    personJson = getPersonFromCache(personUrl,personCache)
+    if personJson:
+        if personJson.get('icon'):
+            if personJson['icon'].get('url'):
+                return prersonJson['icon']['url']
+    return None
+
 def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPerPage: int,actor: str) -> str:
     """Search results for shared items
     """
@@ -888,7 +898,9 @@ def individualFollowAsHtml(session,wfRequest: {}, \
     nickname=getNicknameFromActor(followUrl)
     domain,port=getDomainFromActor(followUrl)
     titleStr='@'+nickname+'@'+domain
-    avatarUrl=followUrl+'/avatar.png'
+    avatarUrl=getPersonAvatarUrl(followUrl,personCache)
+    if not avatarUrl:
+        avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
             getPersonBox(session,wfRequest,personCache, \
@@ -1008,6 +1020,8 @@ def individualPostAsHtml(baseDir: str, \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
 
+    if not avatarUrl:
+        avatarUrl=getPersonAvatarUrl(postJsonObject['actor'],personCache)
     if not avatarUrl:
         avatarUrl=postJsonObject['actor']+'/avatar.png'
 
@@ -1232,8 +1246,9 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
     for item in timelineJson['orderedItems']:
         if item['type']=='Create' or item['type']=='Announce':
             itemCtr+=1
+            avatarUrl=getPersonAvatarUrl(item['actor'],personCache)
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                        nickname,domain,port,item,None,True, \
+                                        nickname,domain,port,item,avatarUrl,True, \
                                         allowDeletion, \
                                         httpPrefix,projectVersion,
                                         showIndividualPostIcons)
@@ -1545,6 +1560,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
         if profileJson.get('icon'):
             if profileJson['icon'].get('url'):
                 avatarUrl=profileJson['icon']['url']
+        if not avatarUrl:
+            avatarUrl=getPersonAvatarUrl(personUrl,personCache)
         preferredName=searchNickname
         if profileJson.get('preferredUsername'):
             preferredName=profileJson['preferredUsername']
