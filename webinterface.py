@@ -996,7 +996,7 @@ def individualPostAsHtml(baseDir: str, \
             if replyNickname and replyDomain:
                 titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
         else:
-            titleStr+=' <i class="replyingto">replying to</i> '+postJsonObject['object']['inReplyTo']
+            titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postJsonObject['object']['inReplyTo']+'</a>'
     attachmentStr=''
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):
