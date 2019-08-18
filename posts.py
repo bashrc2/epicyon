@@ -1338,13 +1338,23 @@ def sendToNamedAddresses(session,baseDir: str, \
     for rType in recipientType:
         if not recipientsObject.get(rType):
             continue
-        for address in recipientsObject[rType]:
+        if isinstance(recipientsObject[rType], list):
+            for address in recipientsObject[rType]:
+                if address.endswith('#Public'):
+                    continue
+                if address.endswith('/followers'):
+                    continue
+                recipients.append(address)
+        elif isinstance(recipientsObject[rType], str):
+            address=recipientsObject[rType]
             if address.endswith('#Public'):
                 continue
             if address.endswith('/followers'):
                 continue
             recipients.append(address)
     if not recipients:
+        if debug:
+            print('DEBUG: no individual recipients')
         return
     if debug:
         print('DEBUG: Sending individually addressed posts: '+str(recipients))
