@@ -130,10 +130,6 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
             {
                 "href": generateMagicKey(publicKeyPem),
                 "rel": "magic-public-key"
-            },
-            {
-                "rel": "http://ostatus.org/schema/1.0/subscribe",
-                "template": httpPrefix+"://"+domain+"/authorize_interaction?uri={uri}"
             }
         ],
         "subject": "acct:"+nickname+"@"+originalDomain
