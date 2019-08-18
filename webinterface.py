@@ -996,7 +996,10 @@ def individualPostAsHtml(baseDir: str, \
             if replyNickname and replyDomain:
                 titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
         else:
-            titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postJsonObject['object']['inReplyTo']+'</a>'
+            postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
+            if '/' in postDomain:
+                postDomain=postDomain.split('/',1)[0]
+            titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):
