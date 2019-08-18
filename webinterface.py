@@ -34,6 +34,7 @@ from blocking import isBlocked
 from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
+from cache import getPersonFromCache
 
 def getPersonAvatarUrl(personUrl: str,personCache: {}) -> str:
     """Returns the avatar url for the person
