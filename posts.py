@@ -1342,6 +1342,8 @@ def sendToNamedAddresses(session,baseDir: str, \
             if debug:
                 print('recipientsObject: '+str(recipientsObject[rType]))
             for address in recipientsObject[rType]:
+                if not address:
+                    continue
                 if '/' not in address:
                     continue
                 if address.endswith('#Public'):
@@ -1351,11 +1353,13 @@ def sendToNamedAddresses(session,baseDir: str, \
                 recipients.append(address)
         elif isinstance(recipientsObject[rType], str):
             address=recipientsObject[rType]
-            if address.endswith('#Public'):
-                continue
-            if address.endswith('/followers'):
-                continue
-            recipients.append(address)
+            if address:
+                if '/' in address:
+                    if address.endswith('#Public'):
+                        continue
+                    if address.endswith('/followers'):
+                        continue
+                    recipients.append(address)
     if not recipients:
         if debug:
             print('DEBUG: no individual recipients')
