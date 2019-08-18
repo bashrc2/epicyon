@@ -93,11 +93,17 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         if debug:
             print('DEBUG: No "to" parameter in follow Accept')
         return
-    if len(messageJson['object']['to'])!=1:
-        if debug:
-            print('DEBUG: "to" does not contain a single recipient')
-            print(str(messageJson['object']['to']))
-        return        
+    #if len(messageJson['object']['to'])!=1:
+    #    if debug:
+    #        print('DEBUG: "to" does not contain a single recipient')
+    #        print(str(messageJson['object']['to']))
+    #    if messageJson['object'].get('object'):
+    #        if not isinstance(messageJson['object']['object'], str):
+    #            messageJson['object']['to']=messageJson['object']['object']
+    #        else:
+    #            return
+    #    else:
+    #        return        
     if debug:
         print('DEBUG: follow Accept received')
     thisActor=messageJson['object']['actor']

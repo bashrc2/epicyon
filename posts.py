@@ -1245,6 +1245,46 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     thr.start()
     return 0
 
+def addToField(activityType: str,postJsonObject: {},debug: bool) -> ({},bool):
+    """The Follow activity doesn't have a 'to' field and so one
+    needs to be added so that activity distribution happens in a consistent way
+    Returns true if a 'to' field exists or was added
+    """
+    if postJsonObject.get('to'):
+        return postJsonObject,True
+    
+    if debug:
+        pprint(postJsonObject)
+        print('DEBUG: no "to" field when sending to named addresses 2')
+
+    isSameType=False
+    toFieldAdded=False
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], str):
+            if postJsonObject.get('type'):
+                if postJsonObject['type']==activityType:
+                    isSameType=True
+                    if debug:
+                        print('DEBUG: "to" field assigned to Follow')
+                    postJsonObject['to']=[postJsonObject['object']]
+                    toFieldAdded=True
+        elif isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('type'):
+                if postJsonObject['object']['type']==activityType:
+                    isSameType=True
+                    if isinstance(postJsonObject['object']['object'], str):
+                        if debug:
+                            print('DEBUG: "to" field assigned to Follow')
+                        postJsonObject['object']['to']=[postJsonObject['object']['object']]
+                        postJsonObject['to']=[postJsonObject['object']['object']]
+                        toFieldAdded=True
+
+    if not isSameType:
+        return postJsonObject,True
+    if toFieldAdded:
+        return postJsonObject,True
+    return postJsonObject,False
+
 def sendToNamedAddresses(session,baseDir: str, \
                          nickname: str, domain: str, port: int, \
                          httpPrefix: str,federationList: [], \
@@ -1261,16 +1301,29 @@ def sendToNamedAddresses(session,baseDir: str, \
         return
     if isinstance(postJsonObject['object'], dict): 
         if not postJsonObject['object'].get('to'):
-            return
+            if debug:
+                pprint(postJsonObject)
+                print('DEBUG: no "to" field when sending to named addresses')
+            if postJsonObject['object'].get('type'):
+                if postJsonObject['object']['type']=='Follow':
+                    if isinstance(postJsonObject['object']['object'], str):
+                        if debug:
+                            print('DEBUG: "to" field assigned to Follow')
+                        postJsonObject['object']['to']=[postJsonObject['object']['object']]
+            if not postJsonObject['object'].get('to'):
+                return
         recipientsObject=postJsonObject['object']
     else: 
-        if not postJsonObject.get('to'):
+        postJsonObject,fieldAdded=addToField('Follow',postJsonObject,debug)
+        if not fieldAdded:
             return
         recipientsObject=postJsonObject
 
     recipients=[]
     recipientType=['to','cc']
     for rType in recipientType:
+        if not recipientsObject.get(rType):
+            continue
         for address in recipientsObject[rType]:
             if address.endswith('#Public'):
                 continue

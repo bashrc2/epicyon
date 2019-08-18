@@ -166,7 +166,12 @@ def validPublishedDate(published) -> bool:
         return False
     return True
 
-def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str,postJsonObject: {},messageBytes: str,httpHeaders: {},postPath: str,debug: bool) -> str:
+def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
+                         nickname: str, domain: str, \
+                         postJsonObject: {}, \
+                         messageBytes: str, \
+                         httpHeaders: {}, \
+                         postPath: str,debug: bool) -> str:
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
@@ -183,7 +188,9 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
         actor=postJsonObject['actor']
         postNickname=getNicknameFromActor(postJsonObject['actor'])
         postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
-        if isBlocked(baseDir,nickname,domain,postNickname,postDomain):            
+        if isBlocked(baseDir,nickname,domain,postNickname,postDomain):
+            if debug:
+                print('DEBUG: post from '+postNickname+' blocked')
             return None
         if postPort:
             if postPort!=80 and postPort!=443:
@@ -195,6 +202,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
             if postJsonObject['object'].get('content'):
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
+                        if debug:
+                            print('DEBUG: post was filtered out due to content')
                         return None
     originalPostId=None
     if postJsonObject.get('id'):
@@ -222,6 +231,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str,nickname: str, domain: str
     destination=baseDir+'/accounts/'+handle+'/inbox/'+postId.replace('/','#')+'.json'
     if os.path.isfile(destination):
         if debug:
+            print(destination)
             print('DEBUG: inbox item already exists')
         return None
     filename=inboxQueueDir+'/'+postId.replace('/','#')+'.json'
@@ -480,8 +490,6 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: actors do not match')
         return False
-    if not messageJson['object'].get('to'):
-        messageJson['object']['to']=messageJson['object']['object']
 
     nicknameFollower=getNicknameFromActor(messageJson['object']['actor'])
     domainFollower,portFollower=getDomainFromActor(messageJson['object']['actor'])
@@ -1342,7 +1350,7 @@ def runInboxQueue(projectVersion: str, \
                                                maxReplies,allowDeletion)
                     else:
                         if debug:
-                            print('DEBUG: object capabilities check failed')
+                            print('DEBUG: object capabilities check has failed')
                             pprint(queueJson['post'])
                 else:
                     if not ocapAlways:
@@ -1358,6 +1366,9 @@ def runInboxQueue(projectVersion: str, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion)
                     if debug:
+                        pprint(queueJson['post'])
+                        print('No capability list within post')
+                        print('ocapAlways: '+str(ocapAlways))
                         print('DEBUG: object capabilities check failed')
             
                 if debug:

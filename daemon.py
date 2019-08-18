@@ -42,6 +42,7 @@ from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
 from posts import createDirectMessagePost
 from posts import populateRepliesJson
+from posts import addToField
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -405,7 +406,12 @@ class PubServer(BaseHTTPRequestHandler):
             headersDict['digest']=self.headers['digest']
         if self.headers.get('Content-type'):
             headersDict['Content-type']=self.headers['Content-type']
-         
+
+        # For follow activities add a 'to' field, which is a copy of the object field
+        messageJson,toFieldExists=addToField('Follow',messageJson,self.server.debug)
+
+        pprint(messageJson)
+
         # save the json for later queue processing
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir,
@@ -2460,7 +2466,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print(followerNickname+' stops following '+followingActor)
                     followActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+followerNickname
-                    followId=followActor+'#follows/'+followingNickname
+                    statusNumber,published = getStatusNumber()
+                    followId=followActor+'/statuses/'+str(statusNumber)
                     unfollowJson = {
                         '@context': 'https://www.w3.org/ns/activitystreams',
                         'id': followId+'/undo',

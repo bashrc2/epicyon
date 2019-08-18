@@ -104,7 +104,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
             postJsonObject['object']['likes']=likesJson
         else:
             if postJsonObject['object']['likes'].get('items'):
-                for likeItem in postJsonObject['likes']['items']:
+                for likeItem in postJsonObject['object']['likes']['items']:
                     if likeItem.get('actor'):
                         if likeItem['actor']==actor:
                             return

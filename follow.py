@@ -492,7 +492,7 @@ def sendFollowRequest(session,baseDir: str, \
 
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': followActor+'#follows/'+followNickname,
+        'id': followActor+'/statuses/'+str(statusNumber),
         'type': 'Follow',
         'actor': followActor,
         'object': followedId
@@ -538,7 +538,7 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
     statusNumber,published = getStatusNumber()
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': followActor+'#follows/'+followNickname,
+        'id': followActor+'/statuses/'+str(statusNumber),
         'type': 'Follow',
         'actor': followActor,
         'object': followedId
@@ -612,14 +612,15 @@ def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
 
     followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
     followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
+    statusNumber,published = getStatusNumber()
 
     unfollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': followActor+'#follows/'+followNickname+'/undo',
+        'id': followActor+'/statuses/'+str(statusNumber)+'/undo',
         'type': 'Undo',
         'actor': followActor,
         'object': {
-            'id': followActor+'#follows/'+followNickname,
+            'id': followActor+'/statuses/'+str(statusNumber),
             'type': 'Follow',
             'actor': followActor,
             'object': followedId
