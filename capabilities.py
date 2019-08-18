@@ -19,6 +19,9 @@ def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: st
     """Returns the filename for a particular capability accepted or granted
     Also creates directories as needed
     """
+    if not actor:
+        return None
+
     if ':' in domain:
         domain=domain.split(':')[0]
 
@@ -118,6 +121,8 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
     
     # make directories to store capabilities
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
+    if not ocapFilename:
+        return None
     ocapAccept=None
 
     # if the capability already exists then load it from file
@@ -155,6 +160,8 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     if not ocap.get('actor'):
         return False
     ocapFilename=getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
+    if not ocapFilename:
+        return False
     with open(ocapFilename, 'w') as fp:
         commentjson.dump(ocap, fp, indent=4, sort_keys=False)
     return True
@@ -180,6 +187,8 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
     
     # Get the filename of the capability
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,updateActor,'accept')
+    if not ocapFilename:
+        return None
 
     # The capability should already exist for it to be updated
     if not os.path.isfile(ocapFilename):
@@ -227,6 +236,9 @@ def capabilitiesReceiveUpdate(baseDir :str, \
     """
     ocapFilename= \
         getOcapFilename(baseDir,nickname,domain,actor,'granted')
+    if not ocapFilename:
+        return False
+
     if not os.path.isfile(ocapFilename):
         if debug:
             print('DEBUG: capabilities file not found during update')
