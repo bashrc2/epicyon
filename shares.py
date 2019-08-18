@@ -296,6 +296,7 @@ def sendShareViaServer(session,fromNickname: str,password: str,
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     newShareJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Add',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'target': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/shares',
@@ -385,6 +386,7 @@ def sendUndoShareViaServer(session,fromNickname: str,password: str,
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     undoShareJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Remove',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'target': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/shares',

@@ -158,6 +158,7 @@ def sendBlockViaServer(session,fromNickname: str,password: str,
 
     blockActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
     newBlockJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Block',
         'actor': blockActor,
         'object': blockedUrl,
@@ -230,6 +231,7 @@ def sendUndoBlockViaServer(session,fromNickname: str,password: str,
 
     blockActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
     newBlockJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': blockActor,
         'object': {

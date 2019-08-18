@@ -40,6 +40,7 @@ def createAcceptReject(baseDir: str,federationList: [], \
                 domain=domain+':'+str(port)
 
     newAccept = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'to': [toUrl],

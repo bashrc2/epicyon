@@ -65,7 +65,12 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
     return postResult.text
 
-def postJsonString(session,postJsonStr: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
+def postJsonString(session,postJsonStr: str, \
+                   federationList: [], \
+                   inboxUrl: str, \
+                   headers: {}, \
+                   capability: str, \
+                   debug: bool) -> str:
     """Post a json message string to the inbox of another person
     Supplying a capability, such as "inbox:write"
     NOTE: Here we post a string rather than the original json so that
@@ -77,7 +82,7 @@ def postJsonString(session,postJsonStr: str,federationList: [],inboxUrl: str,hea
     if not capability.startswith('cap'):    
         # check that we are posting to a permitted domain
         if not urlPermitted(inboxUrl,federationList,capability):
-            print('postJson: '+inboxUrl+' not permitted')
+            print('postJson: '+inboxUrl+' not permitted by capabilities')
             return None
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)

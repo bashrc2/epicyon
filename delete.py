@@ -51,6 +51,7 @@ def createDelete(session,baseDir: str,federationList: [], \
     newDeleteId= \
         httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber
     newDelete = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'atomUri': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
         'cc': [],
@@ -102,6 +103,7 @@ def sendDeleteViaServer(session,fromNickname: str,password: str,
     ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     newDeleteJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'cc': [ccUrl],
         'object': deleteObjectUrl,

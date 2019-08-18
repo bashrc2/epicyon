@@ -92,6 +92,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
             if debug:
                 print('DEBUG: Adding initial likes to '+objectUrl)
             likesJson = {
+                "@context": "https://www.w3.org/ns/activitystreams",
                 'id': objectUrl,
                 'type': 'Collection',
                 "totalItems": 1,
@@ -147,6 +148,7 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
         likeTo=[objectUrl.split('/statuses/')[0]]
 
     newLikeJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'object': objectUrl,
@@ -240,6 +242,7 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
         likeTo=[objectUrl.split('/statuses/')[0]]
 
     newUndoLikeJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'object': {
@@ -338,6 +341,7 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
         toUrl=[likeUrl.split('/statuses/')[0]]
     
     newLikeJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'object': likeUrl,
@@ -412,6 +416,7 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
         toUrl=[likeUrl.split('/statuses/')[0]]
 
     newUndoLikeJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'object': {

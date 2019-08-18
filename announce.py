@@ -119,6 +119,7 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
             if debug:
                 print('DEBUG: Adding initial shares (announcements) to '+postUrl)
             announcementsJson = {
+                "@context": "https://www.w3.org/ns/activitystreams",
                 'id': postUrl,
                 'type': 'Collection',
                 "totalItems": 1,
@@ -195,6 +196,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     newAnnounceId= \
         httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber
     newAnnounce = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'atomUri': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
         'cc': [],
@@ -307,6 +309,7 @@ def undoAnnounce(session,baseDir: str,federationList: [], \
                 fullDomain=domain+':'+str(port)
 
     newUndoAnnounce = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'type': 'Undo',
         'cc': [],
@@ -416,6 +419,7 @@ def sendAnnounceViaServer(session,fromNickname: str,password: str,
     newAnnounceId= \
         httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/statuses/'+statusNumber
     newAnnounceJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'atomUri': newAnnounceId,
         'cc': [ccUrl],

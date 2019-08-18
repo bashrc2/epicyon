@@ -494,6 +494,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                     capabilityIdList=[oc['id']]
 
         newPost = {
+            "@context": "https://www.w3.org/ns/activitystreams",
             'id': newPostId+'/activity',
             'capability': capabilityIdList,
             'type': 'Create',
@@ -539,6 +540,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                             imageDescription,useBlurhash)            
     else:
         newPost = {
+            "@context": "https://www.w3.org/ns/activitystreams",
             'id': newPostId,
             'type': 'Note',
             'summary': summary,
@@ -619,6 +621,7 @@ def outboxMessageCreateWrap(httpPrefix: str, \
     # TODO
     capabilityUrl=[]
     newPost = {
+        "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId+'/activity',
         'capability': capabilityUrl,
         'type': 'Create',
@@ -889,8 +892,8 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
     for attempt in range(20):
         postResult = \
             postJsonString(session,postJsonStr,federationList, \
-                        inboxUrl,signatureHeaderJson, \
-                        "inbox:write")
+                           inboxUrl,signatureHeaderJson, \
+                           "inbox:write",debug)
         if postResult:
             if debug:
                 print('DEBUG: json post to '+inboxUrl+' succeeded')
@@ -1102,7 +1105,7 @@ def sendPostViaServer(projectVersion: str, \
                'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
-        postJsonString(session,json.dumps(postJsonObject),[],inboxUrl,headers,"inbox:write")
+        postJsonString(session,json.dumps(postJsonObject),[],inboxUrl,headers,"inbox:write",debug)
     #if not postResult:
     #    if debug:
     #        print('DEBUG: POST failed for c2s to '+inboxUrl)

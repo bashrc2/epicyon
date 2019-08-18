@@ -875,6 +875,7 @@ class PubServer(BaseHTTPRequestHandler):
                     createSession(self.server.domain,self.server.port,self.server.useTor)
             undoAnnounceActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
             newUndoAnnounce = {
+                "@context": "https://www.w3.org/ns/activitystreams",
                 'actor': undoAnnounceActor,
                 'type': 'Undo',
                 'cc': [undoAnnounceActor+'/followers'],
@@ -942,6 +943,7 @@ class PubServer(BaseHTTPRequestHandler):
             likeActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
             actorLiked=likeUrl.split('/statuses/')[0]
             likeJson= {
+                "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Like',
                 'actor': likeActor,
                 'object': likeUrl,
@@ -964,6 +966,7 @@ class PubServer(BaseHTTPRequestHandler):
             undoActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
             actorLiked=likeUrl.split('/statuses/')[0]
             undoLikeJson= {
+                "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Undo',
                 'actor': undoActor,
                 'object': {
@@ -1001,6 +1004,7 @@ class PubServer(BaseHTTPRequestHandler):
                         createSession(self.server.domain,self.server.port,self.server.useTor)
                 deleteActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
                 deleteJson= {
+                    "@context": "https://www.w3.org/ns/activitystreams",
                     'actor': actor,
                     'object': deleteUrl,
                     'to': ['https://www.w3.org/ns/activitystreams#Public',actor],
