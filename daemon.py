@@ -949,9 +949,7 @@ class PubServer(BaseHTTPRequestHandler):
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Like',
                 'actor': likeActor,
-                'object': likeUrl,
-                'to': [actorLiked],
-                'cc': [likeActor+'/followers']
+                'object': likeUrl
             }    
             self._postToOutbox(likeJson)
             self.server.GETbusy=False
@@ -975,12 +973,8 @@ class PubServer(BaseHTTPRequestHandler):
                 'object': {
                     'type': 'Like',
                     'actor': undoActor,
-                    'object': likeUrl,
-                    'cc': [undoActor+'/followers'],
-                    'to': [actorLiked]
-                },
-                'cc': [undoActor+'/followers'],
-                'to': [actorLiked]
+                    'object': likeUrl
+                }
             }
             self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False

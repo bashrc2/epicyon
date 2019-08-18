@@ -99,7 +99,6 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
                 'items': [{
                     'type': 'Like',
                     'actor': actor
-                    
                 }]                
             }
             postJsonObject['object']['likes']=likesJson
@@ -151,9 +150,7 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
-        'object': objectUrl,
-        'to': likeTo,
-        'cc': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers']
+        'object': objectUrl
     }
     if ccList:
         if len(ccList)>0:
@@ -248,12 +245,8 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
         'object': {
             'type': 'Like',
             'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
-            'object': objectUrl,
-            'to': likeTo,
-            'cc': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers']
-        },
-        'cc': [httpPrefix+'://'+fullDomain+'/users/'+nickname+'/followers'],
-        'to': likeTo
+            'object': objectUrl
+        }
     }
     if ccList:
         if len(ccList)>0:
@@ -344,9 +337,7 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
-        'object': likeUrl,
-        'to': toUrl,
-        'cc': [ccUrl]
+        'object': likeUrl
     }
 
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
@@ -422,9 +413,7 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
         'object': {
             'type': 'Like',
             'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
-            'object': likeUrl,
-            'to': toUrl,
-            'cc': [ccUrl]
+            'object': likeUrl
         }
     }
 
