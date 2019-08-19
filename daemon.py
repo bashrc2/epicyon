@@ -2414,7 +2414,7 @@ class PubServer(BaseHTTPRequestHandler):
                     emojiStr= \
                         htmlSearchEmoji(self.server.baseDir,searchStr)
                     if emojiStr:
-                        msg=sharedItemsStr.encode('utf-8')
+                        msg=emojiStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
                         self.wfile.write(msg)
                         self.server.POSTbusy=False
