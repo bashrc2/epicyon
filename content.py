@@ -149,12 +149,12 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     """
     if content.startswith('<p>'):
         return content
-    words=content.replace(',',' ').replace(';',' ')
+    words=content.replace(',',' ').replace(';',' ').split(' ')
 
     # remove . for words which are not mentions
     wordCtr=0
     newWords=[]
-    for wordIndex in range(0,len(words)-1):
+    for wordIndex in range(0,len(words)):
         wordStr=words[wordIndex]
         if wordStr.endswith('.'):
             if not wordStr.startswith('@'):
