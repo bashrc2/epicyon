@@ -105,6 +105,7 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
     if len(wordStr)<2:
         return False
     possibleHandle=wordStr[1:]
+    print('Possible mention: '+possibleHandle)
     # @nick
     if '@' not in possibleHandle:
         # fall back to a best effort match against the following list
