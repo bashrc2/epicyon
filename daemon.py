@@ -2357,7 +2357,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         searchForEmoji=False
-        if authorized and self.path.endswith('/searchhandleemoji':
+        if authorized and self.path.endswith('/searchhandleemoji'):
             searchForEmoji=True
             self.path=self.path.replace('/searchhandleemoji','/searchhandle')
 
