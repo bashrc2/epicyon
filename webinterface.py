@@ -77,6 +77,8 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
             for emojiName,filename in emojiJson.items():
                 if emojiName in searchStr:
                     results[emojiName] = filename+'.png'
+            if len(results.items())>0:
+                emojiForm+='<center><h5>Copy the text then paste it into your post</h5></center>'
             emojiForm+='<center>'
             for emojiName,filename in results.items():
                 emojiForm+='<h3>:'+emojiName+':<img class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
