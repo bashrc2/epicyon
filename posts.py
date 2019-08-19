@@ -461,13 +461,14 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         summary=subject
         sensitive=True
 
+    toRecipients=[]
     if toUrl:
         if not isinstance(toUrl, str):
             print('ERROR: toUrl is not a string')
             return None
+        toRecipients=[toUrl]        
 
     # who to send to
-    toRecipients=[toUrl]
     for mention in mentionedRecipients:
         if mention not in toRecipients:
             toRecipients.append(mention)
