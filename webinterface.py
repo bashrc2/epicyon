@@ -46,6 +46,46 @@ def getPersonAvatarUrl(personUrl: str,personCache: {}) -> str:
                 return personJson['icon']['url']
     return None
 
+def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
+    """Search results for emoji
+    """
+
+    searchStr=searchStr.lower().replace(':','').strip('\n')
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        emojiCSS=cssFile.read()
+        emojiLookupFilename=baseDir+'/emoji/emoji.json'
+
+        # create header
+        emojiForm=htmlHeader(emojiCSS)
+        emojiForm+='<center><h1>Emoji Search</h1></center>'
+
+        # does the lookup file exist?
+        if not os.path.isfile(emojiLookupFilename):
+            emojiForm+='<center><h5>No results</h5></center>'
+            emojiForm+=htmlFooter()
+            return emojiForm
+        
+        with open(emojiLookupFilename, 'r') as fp:
+            emojiJson=commentjson.load(fp)
+            results={}
+            if emojiJson.get(searchStr):
+                # exact match
+                results[searchStr] = emojiJson[searchStr]+'.png'
+            else:
+                for emojiName,filename in emojiJson.items():
+                    if searchStr in emojiName:
+                        results[emojiName] = filename+'.png'
+                for emojiName,filename in emojiJson.items():
+                    if emojiName in searchStr:
+                        results[emojiName] = filename+'.png'
+            emojiForm+='<center>'
+            for emojiName,filename in results.items():
+                emojiForm+='<h5>:'+emojiName+':<img src="/emoji/'+filename+'"/></h5>'
+            emojiForm+='</center>'
+
+        emojiForm+=htmlFooter()
+    return emojiForm
+
 def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPerPage: int,actor: str) -> str:
     """Search results for shared items
     """

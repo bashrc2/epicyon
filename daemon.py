@@ -87,6 +87,7 @@ from webinterface import htmlGetLoginCredentials
 from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
 from webinterface import htmlSearch
+from webinterface import htmlSearchEmoji
 from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
@@ -2400,6 +2401,20 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.projectVersion)
                     if profileStr:
                         msg=profileStr.encode('utf-8')
+                        self._login_headers('text/html',len(msg))
+                        self.wfile.write(msg)
+                        self.server.POSTbusy=False
+                        return
+                elif searchStr.startswith(':') or \
+                     searchStr.lower().strip('\n').endswith(' emoji'):
+                    # eg. "cat emoji"
+                    if searchStr.lower().strip('\n').endswith(' emoji'):
+                        searchStr=searchStr.lower().strip('\n').replace(' emoji','')
+                    # emoji search
+                    emojiStr= \
+                        htmlSearchEmoji(self.server.baseDir,searchStr)
+                    if emojiStr:
+                        msg=sharedItemsStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
                         self.wfile.write(msg)
                         self.server.POSTbusy=False
