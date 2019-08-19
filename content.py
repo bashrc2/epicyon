@@ -130,8 +130,10 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
             return True
     # @nick@domain
     if '@' in possibleHandle:
+        replaceDomain=possibleHandle.split('@')[1]
+        if not (replaceDomain=='localhost' or '.' in replaceDomain):
+            return False
         possibleNickname=possibleHandle.split('@')[0]
-        replaceDomain=possibleHandle.split('@')[1]        
         recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
         if recipientActor not in recipients:
             recipients.append(recipientActor)
