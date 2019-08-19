@@ -30,4 +30,4 @@
 
 <p>Epicyon is licensed under <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU AGPL version 3</a>
 
-<p>All emojis designed by <a href="https://openmoji.org">OpenMoji</a> – the open-source emoji and icon project. License: <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></p>
+<p>Emojis designed by <a href="https://openmoji.org">OpenMoji</a> – the open-source emoji and icon project. License: <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></p>

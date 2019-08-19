@@ -14,7 +14,7 @@ https://gitlab.com/spritely/ocappub/blob/master/README.org
 
 This project is currently *pre alpha* and not recommended for any real world uses.
 
-All emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
+Emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
 
 ## Goals
 
