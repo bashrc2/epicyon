@@ -163,6 +163,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             wordStr=wordStr[1:]
         newWords.append(wordStr)
     words=newWords
+    print(str(words))
 
     replaceMentions={}
     replaceHashTags={}
