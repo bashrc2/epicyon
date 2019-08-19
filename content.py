@@ -192,6 +192,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=content.replace('\n','</p><p>')
+    print('Tags extracted from post: '+str(hashtags))
     return '<p>'+content+'</p>'
                 
 def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:

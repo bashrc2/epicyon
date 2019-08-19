@@ -445,6 +445,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                     mentionedRecipients, \
                     hashtagsDict)
 
+    print('Tags extracted from post content: '+str(hashtagsDict))
+    
     statusNumber,published = getStatusNumber()
     conversationDate=published.split('T')[0]
     conversationId=statusNumber
