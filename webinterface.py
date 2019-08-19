@@ -940,6 +940,24 @@ def contentWarningScript() -> str:
         '}'
     return script
 
+def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
+    """Uses the tags to replace :emoji: with html image markup
+    """
+    for tagItem in tag:
+        if not tagItem.get('id'):
+            continue
+        if not tagItem.get('type'):
+            continue
+        if not tagItem.get('name'):
+            continue
+        if tagItem['type']!='Emoji':
+            continue
+        if tagItem['name'] not in content:
+            continue
+        emojiHtml="<img src=\""+tagItem['id']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\"emoji\"/>"
+        content=content.replace(tagItem['name'],emojiHtml)
+    return content
+
 def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -1157,6 +1175,9 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr+='</div>'
+
+    if postJsonObject['object'].get('tag'):
+        contentStr=htmlRemplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
 
     return \
         '<div class="'+containerClass+'">\n'+ \
