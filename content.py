@@ -149,8 +149,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     """
     if content.startswith('<p>'):
         return content
-    wordsOnly=content.replace(',',' ').replace(';',' ').replace('.',' ')
-    words=wordsOnly.split(' ')
+    words=content.replace(',',' ').replace(';',' ')
     replaceMentions={}
     replaceHashTags={}
     replaceEmoji={}
