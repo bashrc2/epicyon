@@ -342,12 +342,12 @@ a:link {
 }
 
 .searchEmoji {
+    -ms-transform: translateY(30%);
+    transform: translateY(30%);
     float: none;
     width: 80px;
-    margin-left: 0px;
-    margin-right: 0px;
-    padding-right: 0px;
-    padding-left: 0px;
+    margin: 0px 10px;
+    padding: 0px 0px;
     border-radius: 0px;
 }
 
