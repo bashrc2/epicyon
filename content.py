@@ -122,12 +122,13 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
     possibleNickname=possibleHandle.split('@')[0]
     possibleDomain=possibleHandle.split('@')[1].strip('\n')
     for follow in following:
-        if follow.replace('\n','')==possibleHandle:
-            recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
-            if recipientActor not in recipients:
-                recipients.append(recipientActor)
-            replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
-            return True
+        if follow.replace('\n','')!=possibleHandle:
+            continue
+        recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
+        if recipientActor not in recipients:
+            recipients.append(recipientActor)
+        replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+        return True
     # @nick@domain
     if '@' in possibleHandle:
         if not (possibleDomain=='localhost' or '.' in possibleDomain):
@@ -135,8 +136,8 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
         if recipientActor not in recipients:
             recipients.append(recipientActor)
-            replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
-            return True
+        replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+        return True
     return False
 
 def addHtmlTags(baseDir: str,httpPrefix: str, \
