@@ -341,6 +341,16 @@ a:link {
     border-radius: 10%;
 }
 
+.searchEmoji {
+    float: none;
+    width: 80px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    border-radius: 0px;
+}
+
 .container img.emoji {
     float: none;
     width: 50px;

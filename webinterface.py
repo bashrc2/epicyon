@@ -68,19 +68,15 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
         with open(emojiLookupFilename, 'r') as fp:
             emojiJson=commentjson.load(fp)
             results={}
-            if emojiJson.get(searchStr):
-                # exact match
-                results[searchStr] = emojiJson[searchStr]+'.png'
-            else:
-                for emojiName,filename in emojiJson.items():
-                    if searchStr in emojiName:
-                        results[emojiName] = filename+'.png'
-                for emojiName,filename in emojiJson.items():
-                    if emojiName in searchStr:
-                        results[emojiName] = filename+'.png'
+            for emojiName,filename in emojiJson.items():
+                if searchStr in emojiName:
+                    results[emojiName] = filename+'.png'
+            for emojiName,filename in emojiJson.items():
+                if emojiName in searchStr:
+                    results[emojiName] = filename+'.png'
             emojiForm+='<center>'
             for emojiName,filename in results.items():
-                emojiForm+='<h5>:'+emojiName+':<img src="/emoji/'+filename+'"/></h5>'
+                emojiForm+='<p><h3>:'+emojiName+':</h3><img class="searchEmoji" src="/emoji/'+filename+'"/></p>'
             emojiForm+='</center>'
 
         emojiForm+=htmlFooter()
