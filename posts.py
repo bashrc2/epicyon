@@ -1340,6 +1340,7 @@ def sendToNamedAddresses(session,baseDir: str, \
             continue
         if isinstance(recipientsObject[rType], list):
             if debug:
+                pprint(recipientsObject)
                 print('recipientsObject: '+str(recipientsObject[rType]))
             for address in recipientsObject[rType]:
                 if not address:
