@@ -487,11 +487,12 @@ input[type=submit] {
     color: white;
     float: right;
     margin: 10px 10px;
-    padding: 12px 40px;
+    padding: 12px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 18px;
+    width: 120px;
 }
 
 .cancelbtn {
@@ -499,11 +500,12 @@ input[type=submit] {
     color: white;
     float: right;
     margin: 10px 10px;
-    padding: 12px 40px;
+    padding: 12px 10px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 18px;
+    width: 120px;
 }
 
 .loginButton {
