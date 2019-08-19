@@ -12,7 +12,7 @@
 
 <h3>Content Policy</h3>
 
-<p>This instance will not host content containing sexism, racism, homophobia, transphobia, misogyny, antisemitism or other forms of bigotry or discrimination on the basis of nationality. Claims that transgressions of this type were intended to be "ironic" will be treated as a terms of service violation.</p>
+<p>This instance will not host content containing sexism, racism, homophobia, transphobia, misogyny, antisemitism or other forms of bigotry or discrimination on the basis of nationality or immigration status. Claims that transgressions of this type were intended to be "ironic" will be treated as a terms of service violation.</p>
 
 <p>Violent or abusive content will be subject to moderation and is likely to be removed.</p>
 
