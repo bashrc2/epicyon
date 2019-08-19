@@ -427,7 +427,9 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
     """
-    mentionedRecipients=[]
+    mentionedRecipients= \
+        getMentionedPeople(baseDir,httpPrefix,content,domain,False)
+
     tags=[]
     hashtagsDict={}
 
@@ -465,7 +467,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             return None
 
     # who to send to
-    toRecipients=[toUrl] + mentionedRecipients
+    toRecipients=[toUrl]
+    for mention in mentionedRecipients:
+        if mention not in toRecipients:
+            toRecipients.append(mention)
 
     # create a list of hashtags
     if hashtagsDict:
@@ -800,14 +805,10 @@ def createDirectMessagePost(baseDir: str,
     mentionedPeople=getMentionedPeople(baseDir,httpPrefix,content,domain,debug)
     if debug:
         print('mentionedPeople: '+str(mentionedPeople))
-    postTo=None
-    postCc=None
     if not mentionedPeople:
         return None
-    if len(mentionedPeople)==1:
-        postTo=mentionedPeople[0]
-    if len(mentionedPeople)>1:
-        postCc=mentionedPeople[1]    
+    postTo=None
+    postCc=None
     return createPostBase(baseDir,nickname, domain, port, \
                           postTo,postCc, \
                           httpPrefix, content, followersOnly, saveToFile, \
