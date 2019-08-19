@@ -107,7 +107,7 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
     possibleHandle=wordStr[1:]
     print('Possible mention: '+possibleHandle)
     # @nick
-    if '@' not in possibleHandle:
+    if following and '@' not in possibleHandle:
         # fall back to a best effort match against the following list
         # if no domain was specified. eg. @nick
         possibleNickname=possibleHandle
@@ -122,14 +122,15 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         return False
     possibleNickname=possibleHandle.split('@')[0]
     possibleDomain=possibleHandle.split('@')[1].strip('\n')
-    for follow in following:
-        if follow.replace('\n','')!=possibleHandle:
-            continue
-        recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
-        if recipientActor not in recipients:
-            recipients.append(recipientActor)
-        replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
-        return True
+    if following:
+        for follow in following:
+            if follow.replace('\n','')!=possibleHandle:
+                continue
+            recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
+            if recipientActor not in recipients:
+                recipients.append(recipientActor)
+            replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+            return True
     # @nick@domain
     if '@' in possibleHandle:
         if not (possibleDomain=='localhost' or '.' in possibleDomain):
@@ -183,9 +184,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
 
     # extract mentions and tags from words
     for wordStr in words:
-        if following:
-            if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
-                continue
+        if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
+            continue
         if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
             continue
         if len(wordStr)>2 and wordStr.startswith(':') and wordStr.endswith(':') and not emojiDict:
