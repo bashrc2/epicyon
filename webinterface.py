@@ -1566,7 +1566,6 @@ def htmlSearchEmojiTextEntry(baseDir: str,path: str) -> str:
         '    <input type="hidden" name="actor" value="'+actor+'">' \
         '    <input type="text" name="searchtext" autofocus><br>' \
         '    <button type="submit" class="button" name="submitSearch">Submit</button>' \
-        '    <a href="'+actor+'"><button class="button">Go Back</button></a>' \
         '  </form>'
     emojiStr+='  </center>'
     emojiStr+='  </div>'
@@ -1597,7 +1596,6 @@ def htmlSearch(baseDir: str,path: str) -> str:
         '    <input type="hidden" name="actor" value="'+actor+'">' \
         '    <input type="text" name="searchtext" autofocus><br>' \
         '    <button type="submit" class="button" name="submitSearch">Submit</button>' \
-        '    <a href="'+actor+'"><button class="button">Go Back</button></a>' \
         '  </form>'
     followStr+='  </center>'
     followStr+='  </div>'
