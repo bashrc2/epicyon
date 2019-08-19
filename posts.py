@@ -471,9 +471,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         toRecipients=[toUrl]        
 
     # who to send to
-    for mention in mentionedRecipients:
-        if mention not in toRecipients:
-            toRecipients.append(mention)
+    if mentionedRecipients:
+        for mention in mentionedRecipients:
+            if mention not in toRecipients:
+                toRecipients.append(mention)
 
     # create a list of hashtags
     if hashtagsDict:
