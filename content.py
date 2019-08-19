@@ -156,9 +156,9 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         wordStr=words[wordIndex]
         if wordStr.endswith('.'):
             if not wordStr.startswith('@'):
-                words[wordIndex]=words[wordIndex][:-1]
+                words[wordIndex]=wordStr[:-1]
         if wordStr.startswith('.'):
-            words[wordIndex]=words[wordIndex][1:]
+            words[wordIndex]=wordStr[1:]
     replaceMentions={}
     replaceHashTags={}
     replaceEmoji={}
