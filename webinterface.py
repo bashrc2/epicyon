@@ -76,7 +76,7 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
                     results[emojiName] = filename+'.png'
             emojiForm+='<center>'
             for emojiName,filename in results.items():
-                emojiForm+='<p><h3>:'+emojiName+':</h3><img class="searchEmoji" src="/emoji/'+filename+'"/></p>'
+                emojiForm+='<h3>:'+emojiName+':<img class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
             emojiForm+='</center>'
 
         emojiForm+=htmlFooter()
