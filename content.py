@@ -97,7 +97,7 @@ def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji:
         "<img src=\""+emojiUrl+"\" alt=\""+emoji+"\" align=\"middle\" class=\"emoji\"/>"
     return True
 
-def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: []) -> bool:
+def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: [],tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and recipients list
     """
     if not wordStr.startswith('@'):
@@ -117,6 +117,11 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
                 recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
                 if recipientActor not in recipients:
                     recipients.append(recipientActor)
+                    tags[wordStr]= {
+                        'href': recipientActor,
+                        'name': wordStr,
+                        'type': 'Mention'
+                    }
                 replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
                 return True
         return False
@@ -129,6 +134,11 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
             recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
             if recipientActor not in recipients:
                 recipients.append(recipientActor)
+                tags[wordStr]= {
+                    'href': recipientActor,
+                    'name': wordStr,
+                    'type': 'Mention'
+                }
             replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
             return True
     # @nick@domain
@@ -138,6 +148,11 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
         if recipientActor not in recipients:
             recipients.append(recipientActor)
+            tags[wordStr]= {
+                'href': recipientActor,
+                'name': wordStr,
+                'type': 'Mention'
+            }
         replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
         return True
     return False
@@ -184,7 +199,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
 
     # extract mentions and tags from words
     for wordStr in words:
-        if addMention(wordStr,httpPrefix,following,replaceMentions,recipients):
+        if addMention(wordStr,httpPrefix,following,replaceMentions,recipients,hashtags):
             continue
         if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
             continue
