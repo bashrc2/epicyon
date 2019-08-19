@@ -1852,6 +1852,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     fields['replyTo'],fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
+                        if self.server.debug:
+                            print('DEBUG: new DM to '+str(messageJson['object']['to']))
                         if self._postToOutbox(messageJson):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
