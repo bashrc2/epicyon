@@ -77,11 +77,14 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
             for emojiName,filename in emojiJson.items():
                 if emojiName in searchStr:
                     results[emojiName] = filename+'.png'
-            if len(results.items())>0:
-                emojiForm+='<center><h5>Copy the text then paste it into your post</h5></center>'
+            headingShown=False
             emojiForm+='<center>'
             for emojiName,filename in results.items():
-                emojiForm+='<h3>:'+emojiName+':<img class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
+                if os.path.isfile(baseDir+'/emoji/'+filename):
+                    if not headingShown:
+                        emojiForm+='<center><h5>Copy the text then paste it into your post</h5></center>'
+                        headingShown=True
+                    emojiForm+='<h3>:'+emojiName+':<img class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
             emojiForm+='</center>'
 
         emojiForm+=htmlFooter()
