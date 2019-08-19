@@ -50,6 +50,9 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
     """Search results for emoji
     """
 
+    if not os.path.isfile(baseDir+'/emoji/emoji.json'):
+        copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+
     searchStr=searchStr.lower().replace(':','').strip('\n')
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         emojiCSS=cssFile.read()
@@ -1538,6 +1541,9 @@ def htmlUnblockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProf
 def htmlSearchEmojiTextEntry(baseDir: str,path: str) -> str:
     """Search for an emoji by name
     """
+    if not os.path.isfile(baseDir+'/emoji/emoji.json'):
+        copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+
     actor=path.replace('/search','')
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
