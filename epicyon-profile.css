@@ -373,7 +373,6 @@ a:link {
 }
 
 .darker {
-    border: 2px solid var(--border-color);
     background-color: var(--main-bg-color-darker);
 }
 
