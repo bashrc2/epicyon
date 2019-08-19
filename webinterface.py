@@ -1591,7 +1591,7 @@ def htmlSearch(baseDir: str,path: str) -> str:
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'    
-    followStr+='  <p class="followText">Enter an address to search for</p>'
+    followStr+='  <p class="followText">Enter an address, shared item, #hashtag or :emoji: to search for</p>'
     followStr+= \
         '  <form method="POST" action="'+actor+'/searchhandle">' \
         '    <input type="hidden" name="actor" value="'+actor+'">' \
