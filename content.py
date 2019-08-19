@@ -89,12 +89,14 @@ def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji:
         return False
     emojiUrl=httpPrefix+"://"+domain+"/emoji/"+emojiDict[emoji]+'.png'
     postTags[emoji]= {
-        'id': emojiUrl,
+        'icon': {
+            'mediaType': 'image/png',
+            'type': 'Image',
+            'url': emojiUrl
+        },
         'name': ':'+emoji+':',
         'type': 'Emoji'
     }
-    #replaceEmoji[wordStr]= \
-    #    "<img src=\""+emojiUrl+"\" alt=\""+emoji+"\" align=\"middle\" class=\"emoji\"/>"
     return True
 
 def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: [],tags: {}) -> bool:

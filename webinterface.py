@@ -944,17 +944,19 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tagItem in tag:
-        if not tagItem.get('id'):
-            continue
         if not tagItem.get('type'):
-            continue
-        if not tagItem.get('name'):
             continue
         if tagItem['type']!='Emoji':
             continue
+        if not tagItem.get('name'):
+            continue
+        if not tagItem.get('icon'):
+            continue
+        if not tagItem['icon'].get('url'):
+            continue
         if tagItem['name'] not in content:
             continue
-        emojiHtml="<img src=\""+tagItem['id']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\"emoji\"/>"
+        emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\"emoji\"/>"
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
