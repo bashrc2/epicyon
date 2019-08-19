@@ -150,15 +150,20 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     if content.startswith('<p>'):
         return content
     words=content.replace(',',' ').replace(';',' ')
+
     # remove . for words which are not mentions
     wordCtr=0
+    newWords=[]
     for wordIndex in range(0,len(words)-1):
         wordStr=words[wordIndex]
         if wordStr.endswith('.'):
             if not wordStr.startswith('@'):
-                words[wordIndex]=wordStr[:-1]
+                wordStr=wordStr[:-1]
         if wordStr.startswith('.'):
-            words[wordIndex]=wordStr[1:]
+            wordStr=wordStr[1:]
+        newWords.append(wordStr)
+    words=newWords
+
     replaceMentions={}
     replaceHashTags={}
     replaceEmoji={}
