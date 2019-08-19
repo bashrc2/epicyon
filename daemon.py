@@ -1849,7 +1849,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.httpPrefix, \
                                                     fields['message'],True,False,False, \
                                                     filename,fields['imageDescription'],True, \
-                                                    fields['replyTo'],fields['replyTo'],fields['subject'])
+                                                    fields['replyTo'],fields['replyTo'], \
+                                                    fields['subject'], \
+                                                    self.server.debug)
                     if messageJson:
                         self.postToNickname=nickname
                         if self.server.debug:

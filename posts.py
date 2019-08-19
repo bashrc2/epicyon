@@ -761,7 +761,8 @@ def createFollowersOnlyPost(baseDir: str,
                           attachImageFilename,imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject)
 
-def getMentionedPeople(baseDir: str,httpPrefix: str,content: str,domain: str) -> []:
+def getMentionedPeople(baseDir: str,httpPrefix: str, \
+                       content: str,domain: str,debug: bool) -> []:
     """Extracts a list of mentioned actors from the given message content
     """
     if '@' not in content:
@@ -771,6 +772,8 @@ def getMentionedPeople(baseDir: str,httpPrefix: str,content: str,domain: str) ->
     for wrd in words:
         if wrd.startswith('@'):
             handle=wrd[1:]
+            if debug:
+                print('DEBUG: mentioned handle '+handle)
             if '@' not in handle:
                 handle=handle+'@'+domain
                 if not os.path.isdir(baseDir+'/accounts/'+handle):
@@ -791,10 +794,12 @@ def createDirectMessagePost(baseDir: str,
                             content: str, followersOnly: bool, saveToFile: bool,
                             clientToServer: bool,\
                             attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
-                            inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
+                            inReplyTo=None, inReplyToAtomUri=None, subject=None,debug=False) -> {}:
     """Direct Message post
     """
-    mentionedPeople=getMentionedPeople(baseDir,httpPrefix,content,domain)
+    mentionedPeople=getMentionedPeople(baseDir,httpPrefix,content,domain,debug)
+    if debug:
+        print('mentionedPeople: '+str(mentionedPeople))
     postTo=None
     postCc=None
     if not mentionedPeople:
