@@ -531,6 +531,8 @@ def htmlSuspended(baseDir: str) -> str:
     return suspendedForm
 
 def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
+    """New post screen
+    """
     reportUrl=None
     if '/newreport?=' in path:
         reportUrl=path.split('/newreport?=')[1]
@@ -649,6 +651,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         '      </div>' \
         '      <input type="submit" name="submitPost" value="Submit">' \
         '      <a href="'+pathBase+'/outbox"><button class="cancelbtn">Cancel</button></a>' \
+        '      <a href="'+pathBase+'/search"><img src="/icons/search.png" title="Search for emoji" alt="Search for emoji" class="right"/></a>'+ \
         '    </div>'+ \
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
