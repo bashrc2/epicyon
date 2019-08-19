@@ -2365,7 +2365,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('authorized: '+str(authorized))
 
         # a search was made
-        if authorized and \
+        if (authorized or searchForEmoji) and \
            (self.path.endswith('/searchhandle') or '/searchhandle?page=' in self.path):
             # get the page number
             pageNumber=1
