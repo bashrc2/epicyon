@@ -105,6 +105,7 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
     if len(wordStr)<2:
         return False
     possibleHandle=wordStr[1:]
+    # @nick
     if '@' not in possibleHandle:
         # fall back to a best effort match against the following list
         # if no domain was specified. eg. @nick
@@ -116,7 +117,6 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
                 if recipientActor not in recipients:
                     recipients.append(recipientActor)
                 replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
-                replaceFound=True
                 return True
         return False
     possibleNickname=possibleHandle.split('@')[0]
@@ -127,6 +127,15 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
             if recipientActor not in recipients:
                 recipients.append(recipientActor)
             replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+            return True
+    # @nick@domain
+    if '@' in possibleHandle:
+        possibleNickname=possibleHandle.split('@')[0]
+        replaceDomain=possibleHandle.split('@')[1]        
+        recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
+        if recipientActor not in recipients:
+            recipients.append(recipientActor)
+            replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
             return True
     return False
 
