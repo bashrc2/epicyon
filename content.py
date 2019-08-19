@@ -105,7 +105,6 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
     if len(wordStr)<2:
         return False
     possibleHandle=wordStr[1:]
-    print('Possible mention: '+possibleHandle)
     # @nick
     if following and '@' not in possibleHandle:
         # fall back to a best effort match against the following list
@@ -179,7 +178,6 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             wordStr=wordStr[1:]
         newWords.append(wordStr)
     words=newWords
-    print(str(words))
 
     replaceMentions={}
     replaceHashTags={}
@@ -221,7 +219,6 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=content.replace('\n','</p><p>')
-    print('Tags extracted from post: '+str(hashtags))
     return '<p>'+content+'</p>'
                 
 def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
