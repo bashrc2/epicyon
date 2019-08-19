@@ -1535,6 +1535,37 @@ def htmlUnblockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProf
     blockStr+=htmlFooter()
     return blockStr
 
+def htmlSearchEmojiTextEntry(baseDir: str,path: str) -> str:
+    """Search for an emoji by name
+    """
+    actor=path.replace('/search','')
+    nickname=getNicknameFromActor(actor)
+    domain,port=getDomainFromActor(actor)
+    
+    if os.path.isfile(baseDir+'/img/search-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/search-background.png'):
+            copyfile(baseDir+'/img/search-background.png',baseDir+'/accounts/search-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    emojiStr=htmlHeader(profileStyle)
+    emojiStr+='<div class="follow">'
+    emojiStr+='  <div class="followAvatar">'
+    emojiStr+='  <center>'    
+    emojiStr+='  <p class="followText">Enter an emoji name to search for</p>'
+    emojiStr+= \
+        '  <form method="POST" action="'+actor+'/searchhandleemoji">' \
+        '    <input type="hidden" name="actor" value="'+actor+'">' \
+        '    <input type="text" name="searchtext" autofocus><br>' \
+        '    <button type="submit" class="button" name="submitSearch">Submit</button>' \
+        '    <a href="'+actor+'"><button class="button">Go Back</button></a>' \
+        '  </form>'
+    emojiStr+='  </center>'
+    emojiStr+='  </div>'
+    emojiStr+='</div>'
+    emojiStr+=htmlFooter()
+    return emojiStr
+
 def htmlSearch(baseDir: str,path: str) -> str:
     """Search called from the timeline icon
     """

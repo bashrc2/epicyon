@@ -88,6 +88,7 @@ from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
 from webinterface import htmlSearch
 from webinterface import htmlSearchEmoji
+from webinterface import htmlSearchEmojiTextEntry
 from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
@@ -799,11 +800,21 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
-        # search for a fediverse address from the web interface by selecting search icon
+        # search for a fediverse address, shared item or emoji from the web interface by selecting search icon
         if htmlGET and '/users/' in self.path:
            if self.path.endswith('/search'):
                # show the search screen
                msg=htmlSearch(self.server.baseDir,self.path).encode()
+               self._set_headers('text/html',len(msg),cookie)
+               self.wfile.write(msg)
+               self.server.GETbusy=False
+               return
+
+        # search for emoji by name
+        if htmlGET and '/users/' in self.path:
+           if self.path.endswith('/searchemoji'):
+               # show the search screen
+               msg=htmlSearchEmojiTextEntry(self.server.baseDir,self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
                self.wfile.write(msg)
                self.server.GETbusy=False
@@ -2345,6 +2356,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        searchForEmoji=False
+        if authorized and self.path.endswith('/searchhandleemoji':
+            searchForEmoji=True
+            self.path=self.path.replace('/searchhandleemoji','/searchhandle')
+
         # a search was made
         if authorized and \
            (self.path.endswith('/searchhandle') or '/searchhandle?page=' in self.path):
@@ -2364,6 +2380,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
                 searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+                if searchForEmoji:
+                    searchStr=':'+searchStr+':'
                 if searchStr.startswith('#'):      
                     # hashtag search
                     hashtagStr= \
