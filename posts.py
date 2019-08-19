@@ -787,7 +787,7 @@ def getMentionedPeople(baseDir: str,httpPrefix: str, \
                 continue
             actor=httpPrefix+'://'+handle.split('@')[1]+'/users/'+mentionedNickname
             mentions.append(actor)
-    return actor
+    return mentions
 
 def createDirectMessagePost(baseDir: str,
                             nickname: str, domain: str, port: int,httpPrefix: str, \
