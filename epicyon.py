@@ -295,7 +295,7 @@ if args.posts:
         args.port=443
     nickname=args.posts.split('@')[0]
     domain=args.posts.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain,False,True, \
+    getPublicPostsOfPerson(baseDir,nickname,domain,False,True, \
                            args.tor,args.port,httpPrefix,debug, \
                            __version__)
     sys.exit()
@@ -308,7 +308,7 @@ if args.postsraw:
         args.port=443
     nickname=args.postsraw.split('@')[0]
     domain=args.postsraw.split('@')[1]
-    getPublicPostsOfPerson(nickname,domain,False,False, \
+    getPublicPostsOfPerson(baseDir,nickname,domain,False,False, \
                            args.tor,args.port,httpPrefix,debug, \
                            __version__)
     sys.exit()
@@ -543,7 +543,7 @@ if args.announce:
     cachedWebfingers={}
     print('Sending announce/repeat of '+args.announce)
 
-    sendAnnounceViaServer(session,args.nickname,args.password,
+    sendAnnounceViaServer(baseDir,session,args.nickname,args.password,
                           domain,port, \
                           httpPrefix,args.announce, \
                           cachedWebfingers,personCache, \
@@ -587,7 +587,7 @@ if args.itemName:
     cachedWebfingers={}
     print('Sending shared item: '+args.itemName)
 
-    sendShareViaServer(session, \
+    sendShareViaServer(baseDir,session, \
                        args.nickname,args.password, \
                        domain,port, \
                        httpPrefix, \
@@ -645,7 +645,8 @@ if args.like:
     cachedWebfingers={}
     print('Sending like of '+args.like)
 
-    sendLikeViaServer(session,args.nickname,args.password,
+    sendLikeViaServer(baseDir,session, \
+                      args.nickname,args.password, \
                       domain,port, \
                       httpPrefix,args.like, \
                       cachedWebfingers,personCache, \
@@ -669,7 +670,8 @@ if args.undolike:
     cachedWebfingers={}
     print('Sending undo like of '+args.undolike)
 
-    sendUndoLikeViaServer(session,args.nickname,args.password,
+    sendUndoLikeViaServer(baseDir,session, \
+                          args.nickname,args.password, \
                           domain,port, \
                           httpPrefix,args.undolike, \
                           cachedWebfingers,personCache, \
@@ -693,7 +695,8 @@ if args.delete:
     cachedWebfingers={}
     print('Sending delete request of '+args.delete)
 
-    sendDeleteViaServer(session,args.nickname,args.password,
+    sendDeleteViaServer(baseDir,session, \
+                        args.nickname,args.password, \
                         domain,port, \
                         httpPrefix,args.delete, \
                         cachedWebfingers,personCache, \
@@ -725,7 +728,8 @@ if args.follow:
     if args.follow.startswith('https'):
         followHttpPrefix='https'
 
-    sendFollowRequestViaServer(session,args.nickname,args.password, \
+    sendFollowRequestViaServer(baseDir,session, \
+                               args.nickname,args.password, \
                                domain,port, \
                                followNickname,followDomain,followPort, \
                                httpPrefix, \
@@ -759,7 +763,8 @@ if args.unfollow:
     if args.follow.startswith('https'):
         followHttpPrefix='https'
 
-    sendUnfollowRequestViaServer(session,args.nickname,args.password, \
+    sendUnfollowRequestViaServer(baseDir,session, \
+                                 args.nickname,args.password, \
                                  domain,port, \
                                  followNickname,followDomain,followPort, \
                                  httpPrefix, \
@@ -985,7 +990,8 @@ if args.skill:
     cachedWebfingers={}
     print('Sending '+args.skill+' skill level '+str(args.skillLevelPercent)+' for '+nickname)
 
-    sendSkillViaServer(session,nickname,args.password,
+    sendSkillViaServer(baseDir,session, \
+                       nickname,args.password, \
                        domain,port, \
                        httpPrefix, \
                        args.skill,args.skillLevelPercent, \
@@ -1010,7 +1016,7 @@ if args.availability:
     cachedWebfingers={}
     print('Sending availability status of '+nickname+' as '+args.availability)
 
-    sendAvailabilityViaServer(session,nickname,args.password,
+    sendAvailabilityViaServer(baseDir,session,nickname,args.password,
                               domain,port, \
                               httpPrefix, \
                               args.availability, \
@@ -1055,7 +1061,7 @@ if args.block:
     cachedWebfingers={}
     print('Sending block of '+args.block)
 
-    sendBlockViaServer(session,nickname,args.password,
+    sendBlockViaServer(baseDir,session,nickname,args.password,
                        domain,port, \
                        httpPrefix,args.block, \
                        cachedWebfingers,personCache, \
@@ -1091,7 +1097,8 @@ if args.delegate:
     cachedWebfingers={}
     print('Sending delegation for '+args.delegate+' with role '+args.role+' in project '+args.project)
 
-    sendRoleViaServer(session,nickname,args.password,
+    sendRoleViaServer(baseDir,session, \
+                      nickname,args.password, \
                       domain,port, \
                       httpPrefix,args.delegate, \
                       args.project,args.role, \
@@ -1124,7 +1131,8 @@ if args.undelegate:
     cachedWebfingers={}
     print('Sending delegation removal for '+args.undelegate+' from role '+args.role+' in project '+args.project)
 
-    sendRoleViaServer(session,nickname,args.password,
+    sendRoleViaServer(baseDir,session, \
+                      nickname,args.password, \
                       domain,port, \
                       httpPrefix,args.delegate, \
                       args.project,None, \
@@ -1159,7 +1167,7 @@ if args.unblock:
     cachedWebfingers={}
     print('Sending undo block of '+args.unblock)
 
-    sendUndoBlockViaServer(session,nickname,args.password,
+    sendUndoBlockViaServer(baseDir,session,nickname,args.password,
                            domain,port, \
                            httpPrefix,args.unblock, \
                            cachedWebfingers,personCache, \

@@ -85,7 +85,8 @@ def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
                 return False
     return True    
 
-def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool, \
+def getPersonPubKey(baseDir: str,session,personUrl: str, \
+                    personCache: {},debug: bool, \
                     projectVersion: str,httpPrefix: str,domain: str) -> str:
     if not personUrl:
         return None
@@ -114,7 +115,7 @@ def getPersonPubKey(session,personUrl: str,personCache: {},debug: bool, \
         if debug:
             print('DEBUG: Public key not found for '+personUrl)
 
-    storePersonInCache(personUrl,personJson,personCache)
+    storePersonInCache(baseDir,personUrl,personJson,personCache)
     return pubKey
 
 def inboxMessageHasParams(messageJson: {}) -> bool:
@@ -1168,7 +1169,8 @@ def runInboxQueue(projectVersion: str, \
                     continue
 
                 pubKey= \
-                    getPersonPubKey(session,keyId,personCache,debug, \
+                    getPersonPubKey(baseDir,session,keyId, \
+                                    personCache,debug, \
                                     projectVersion,httpPrefix,domain)
                 if pubKey:
                     print('DEBUG: public key: '+str(pubKey))

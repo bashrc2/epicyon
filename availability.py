@@ -68,7 +68,8 @@ def outboxAvailability(baseDir: str,nickname: str,messageJson: {},debug: bool) -
 
     return setAvailability(baseDir,nickname,domain,status)
 
-def sendAvailabilityViaServer(session,nickname: str,password: str,
+def sendAvailabilityViaServer(baseDir: str,session, \
+                              nickname: str,password: str, \
                               domain: str,port: int, \
                               httpPrefix: str, \
                               status: str, \
@@ -111,7 +112,7 @@ def sendAvailabilityViaServer(session,nickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,postToBox)
                      
     if not inboxUrl:

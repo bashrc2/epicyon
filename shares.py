@@ -267,7 +267,8 @@ def getSharesFeedForPerson(baseDir: str, \
         shares['next']=httpPrefix+'://'+domain+'/users/'+nickname+'/shares?page='+str(lastPage)
     return shares
 
-def sendShareViaServer(session,fromNickname: str,password: str,
+def sendShareViaServer(baseDir,session, \
+                       fromNickname: str,password: str, \
                        fromDomain: str,fromPort: int, \
                        httpPrefix: str, \
                        displayName: str, \
@@ -329,7 +330,7 @@ def sendShareViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
@@ -364,7 +365,8 @@ def sendShareViaServer(session,fromNickname: str,password: str,
 
     return newShareJson
 
-def sendUndoShareViaServer(session,fromNickname: str,password: str,
+def sendUndoShareViaServer(baseDir: str,session, \
+                           fromNickname: str,password: str, \
                            fromDomain: str,fromPort: int, \
                            httpPrefix: str, \
                            displayName: str, \
@@ -414,7 +416,7 @@ def sendUndoShareViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:

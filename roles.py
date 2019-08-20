@@ -203,7 +203,8 @@ def outboxDelegate(baseDir: str,authenticatedNickname: str,messageJson: {},debug
         print(nickname+'@'+domain+' assigned to the role '+role+' within the project '+project)
     return True
 
-def sendRoleViaServer(session,delegatorNickname: str,password: str,
+def sendRoleViaServer(baseDir: str,session, \
+                      delegatorNickname: str,password: str, \
                       delegatorDomain: str,delegatorPort: int, \
                       httpPrefix: str,nickname: str, \
                       project: str,role: str, \
@@ -257,7 +258,7 @@ def sendRoleViaServer(session,delegatorNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,delegatorDomain,postToBox)
                      
     if not inboxUrl:

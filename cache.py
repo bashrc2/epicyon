@@ -6,9 +6,11 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import datetime
+import commentjson
 
-def storePersonInCache(personUrl: str,personJson: {},personCache: {}) -> None:
+def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {}) -> None:
     """Store an actor in the cache
     """
     currTime=datetime.datetime.utcnow()
@@ -16,6 +18,18 @@ def storePersonInCache(personUrl: str,personJson: {},personCache: {}) -> None:
         "actor": personJson,
         "timestamp": currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     }
+    if not baseDir:
+        return
+
+    # store to file
+    if not os.path.isdir(baseDir+'/cache'):
+        os.mkdir(baseDir+'/cache')
+    if not os.path.isdir(baseDir+'/cache/actors'):
+        os.mkdir(baseDir+'/cache/actors')
+    cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
+    if not os.path.isfile(cacheFilename):
+        with open(cacheFilename, 'w') as fp:
+            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
 
 def storeWebfingerInCache(handle: str,wf,cachedWebfingers: {}) -> None:
     """Store a webfinger endpoint in the cache

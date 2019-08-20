@@ -738,7 +738,8 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
     profileStr=''
     for item in followingJson['orderedItems']:
         profileStr+= \
-            individualFollowAsHtml(session,wfRequest,personCache, \
+            individualFollowAsHtml(baseDir,session, \
+                                   wfRequest,personCache, \
                                    domain,item,authorized,nickname, \
                                    httpPrefix,projectVersion, \
                                    buttons)
@@ -935,7 +936,7 @@ def htmlProfile(projectVersion: str, \
         profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 
-def individualFollowAsHtml(session,wfRequest: {}, \
+def individualFollowAsHtml(baseDir: str,session,wfRequest: {}, \
                            personCache: {},domain: str, \
                            followUrl: str, \
                            authorized: bool, \
@@ -951,7 +952,7 @@ def individualFollowAsHtml(session,wfRequest: {}, \
         avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
-            getPersonBox(session,wfRequest,personCache, \
+            getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
@@ -1104,7 +1105,7 @@ def individualPostAsHtml(baseDir: str, \
         
     if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
-            getPersonBox(session,wfRequest,personCache, \
+            getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2

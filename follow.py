@@ -508,7 +508,8 @@ def sendFollowRequest(session,baseDir: str, \
 
     return newFollowJson
 
-def sendFollowRequestViaServer(session,fromNickname: str,password: str,
+def sendFollowRequestViaServer(baseDir: str,session, \
+                               fromNickname: str,password: str, \
                                fromDomain: str,fromPort: int, \
                                followNickname: str,followDomain: str,followPort: int, \
                                httpPrefix: str, \
@@ -558,7 +559,7 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
@@ -587,7 +588,8 @@ def sendFollowRequestViaServer(session,fromNickname: str,password: str,
 
     return newFollowJson
 
-def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
+def sendUnfollowRequestViaServer(baseDir: str,session, \
+                                 fromNickname: str,password: str, \
                                  fromDomain: str,fromPort: int, \
                                  followNickname: str,followDomain: str,followPort: int, \
                                  httpPrefix: str, \
@@ -641,7 +643,7 @@ def sendUnfollowRequestViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:

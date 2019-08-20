@@ -85,7 +85,7 @@ def outboxSkills(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool
     return setSkillLevel(baseDir,nickname,domain, \
                          skill,skillLevelPercent)
 
-def sendSkillViaServer(session,nickname: str,password: str,
+def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
                        domain: str,port: int, \
                        httpPrefix: str, \
                        skill: str,skillLevelPercent: int, \
@@ -132,7 +132,7 @@ def sendSkillViaServer(session,nickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,postToBox)
                      
     if not inboxUrl:

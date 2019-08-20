@@ -139,7 +139,7 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}, \
                                   projectVersion,httpPrefix,domain):
             yield item
     
-def getPersonBox(session,wfRequest: {},personCache: {}, \
+def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
                  projectVersion: str,httpPrefix: str,domain: str, \
                  boxName='inbox') -> (str,str,str,str,str,str,str,str):
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
@@ -191,7 +191,7 @@ def getPersonBox(session,wfRequest: {},personCache: {}, \
     if personJson.get('preferredUsername'):
         preferredName=personJson['preferredUsername']
 
-    storePersonInCache(personUrl,personJson,personCache)
+    storePersonInCache(baseDir,personUrl,personJson,personCache)
 
     return boxJson,pubKeyId,pubKey,personId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName
 
@@ -959,7 +959,7 @@ def sendPost(projectVersion: str, \
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,postToBox)
 
     # If there are more than one followers on the target domain
@@ -1022,7 +1022,7 @@ def sendPost(projectVersion: str, \
     return 0
 
 def sendPostViaServer(projectVersion: str, \
-                      baseDir,session,fromNickname: str,password: str, \
+                      baseDir: str,session,fromNickname: str,password: str, \
                       fromDomain: str, fromPort: int, \
                       toNickname: str, toDomain: str, toPort: int, cc: str, \
                       httpPrefix: str, content: str, followersOnly: bool, \
@@ -1055,7 +1055,7 @@ def sendPostViaServer(projectVersion: str, \
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
@@ -1187,7 +1187,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     
     # get the actor inbox/outbox/capabilities for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,postToBox)
 
     if nickname=='capabilities':
@@ -1769,7 +1769,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
             if noOfPosts <= maxPostsInBox:
                 break
 
-def getPublicPostsOfPerson(nickname: str,domain: str, \
+def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
                            raw: bool,simple: bool,useTor: bool, \
                            port: int,httpPrefix: str, \
                            debug: bool,projectVersion: str) -> None:
@@ -1793,7 +1793,7 @@ def getPublicPostsOfPerson(nickname: str,domain: str, \
         sys.exit()
 
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,preferredName= \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
 

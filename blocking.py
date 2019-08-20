@@ -136,7 +136,8 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
             return True
     return False
 
-def sendBlockViaServer(session,fromNickname: str,password: str,
+def sendBlockViaServer(baseDir: str,session, \
+                       fromNickname: str,password: str, \
                        fromDomain: str,fromPort: int, \
                        httpPrefix: str,blockedUrl: str, \
                        cachedWebfingers: {},personCache: {}, \
@@ -180,7 +181,7 @@ def sendBlockViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
@@ -209,7 +210,8 @@ def sendBlockViaServer(session,fromNickname: str,password: str,
 
     return newBlockJson
 
-def sendUndoBlockViaServer(session,fromNickname: str,password: str,
+def sendUndoBlockViaServer(baseDir: str,session, \
+                           fromNickname: str,password: str, \
                            fromDomain: str,fromPort: int, \
                            httpPrefix: str,blockedUrl: str, \
                            cachedWebfingers: {},personCache: {}, \
@@ -257,7 +259,7 @@ def sendUndoBlockViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:

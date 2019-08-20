@@ -146,7 +146,7 @@ def testCache():
     personUrl="cat@cardboard.box"
     personJson={ "id": 123456, "test": "This is a test" }
     personCache={}
-    storePersonInCache(personUrl,personJson,personCache)
+    storePersonInCache(None,personUrl,personJson,personCache)
     result=getPersonFromCache(personUrl,personCache)
     assert result['id']==123456
     assert result['test']=='This is a test'
@@ -1190,7 +1190,8 @@ def testClientToServer():
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     print('\n\nAlice follows Bob')
-    sendFollowRequestViaServer(sessionAlice,'alice',password, \
+    sendFollowRequestViaServer(aliceDir,sessionAlice, \
+                               'alice',password, \
                                aliceDomain,alicePort, \
                                'bob',bobDomain,bobPort, \
                                httpPrefix, \
@@ -1212,7 +1213,8 @@ def testClientToServer():
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
     print('\n\nBob follows Alice')
-    sendFollowRequestViaServer(sessionAlice,'bob','bobpass', \
+    sendFollowRequestViaServer(aliceDir,sessionAlice, \
+                               'bob','bobpass', \
                                bobDomain,bobPort, \
                                'alice',aliceDomain,alicePort, \
                                httpPrefix, \
@@ -1241,7 +1243,8 @@ def testClientToServer():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
     print(str(len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])))
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
-    sendLikeViaServer(sessionBob,'bob','bobpass', \
+    sendLikeViaServer(bobDir,sessionBob, \
+                      'bob','bobpass', \
                       bobDomain,bobPort, \
                       httpPrefix,outboxPostId, \
                       cachedWebfingers,personCache, \
@@ -1261,7 +1264,7 @@ def testClientToServer():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
     print(str(len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])))
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
-    sendAnnounceViaServer(sessionBob,'bob',password, \
+    sendAnnounceViaServer(bobDir,sessionBob,'bob',password, \
                           bobDomain,bobPort, \
                           httpPrefix,outboxPostId, \
                           cachedWebfingers, \
@@ -1283,7 +1286,7 @@ def testClientToServer():
     postsBefore = len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
     print('\n\nAlice deletes her post: '+outboxPostId+' '+str(postsBefore))
     password='alicepass'
-    sendDeleteViaServer(sessionAlice,'alice',password,
+    sendDeleteViaServer(aliceDir,sessionAlice,'alice',password,
                         aliceDomain,alicePort, \
                         httpPrefix,outboxPostId, \
                         cachedWebfingers,personCache, \
@@ -1302,7 +1305,8 @@ def testClientToServer():
     
     print('\n\nAlice unfollows Bob')
     password='alicepass'
-    sendUnfollowRequestViaServer(sessionAlice,'alice',password, \
+    sendUnfollowRequestViaServer(baseDir,sessionAlice, \
+                                 'alice',password, \
                                  aliceDomain,alicePort, \
                                  'bob',bobDomain,bobPort, \
                                  httpPrefix, \

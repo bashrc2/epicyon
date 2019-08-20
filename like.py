@@ -310,7 +310,8 @@ def undoLikePost(session,baseDir: str,federationList: [], \
                     ccList,httpPrefix,objectUrl,clientToServer, \
                     sendThreads,postLog,personCache,cachedWebfingers,debug)
 
-def sendLikeViaServer(session,fromNickname: str,password: str,
+def sendLikeViaServer(baseDir: str,session, \
+                      fromNickname: str,password: str,
                       fromDomain: str,fromPort: int, \
                       httpPrefix: str,likeUrl: str, \
                       cachedWebfingers: {},personCache: {}, \
@@ -354,7 +355,7 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
@@ -383,7 +384,8 @@ def sendLikeViaServer(session,fromNickname: str,password: str,
 
     return newLikeJson
 
-def sendUndoLikeViaServer(session,fromNickname: str,password: str,
+def sendUndoLikeViaServer(baseDir: str,session, \
+                          fromNickname: str,password: str, \
                           fromDomain: str,fromPort: int, \
                           httpPrefix: str,likeUrl: str, \
                           cachedWebfingers: {},personCache: {}, \
@@ -431,7 +433,7 @@ def sendUndoLikeViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:

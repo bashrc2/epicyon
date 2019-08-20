@@ -393,7 +393,8 @@ def undoRepeatPost(session,baseDir: str,federationList: [], \
                               personCache,cachedWebfingers, \
                               debug)
 
-def sendAnnounceViaServer(session,fromNickname: str,password: str,
+def sendAnnounceViaServer(baseDir: str,session, \
+                          fromNickname: str,password: str,
                           fromDomain: str,fromPort: int, \
                           httpPrefix: str,repeatObjectUrl: str, \
                           cachedWebfingers: {},personCache: {}, \
@@ -445,7 +446,7 @@ def sendAnnounceViaServer(session,fromNickname: str,password: str,
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
-        getPersonBox(session,wfRequest,personCache, \
+        getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
     if not inboxUrl:
