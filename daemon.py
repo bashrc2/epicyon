@@ -2961,7 +2961,7 @@ def runDaemon(projectVersion, \
                         args=(baseDir,httpd.personCache, \
                               httpd.httpPrefix, \
                               archiveDir, \
-                              httpdmaxPostsInBox),daemon=True)
+                              httpd.maxPostsInBox),daemon=True)
     httpd.thrCache.start()
 
     print('Creating inbox queue')
