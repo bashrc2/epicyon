@@ -1080,16 +1080,10 @@ def individualPostAsHtml(baseDir: str, \
         messageId=postJsonObject['id'].replace('/activity','')
 
     titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
-    if isAnnounced and postJsonObject['object'].get('actor'):
-        announceNickname=getNicknameFromActor(postJsonObject['object']['actor'])
-        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['actor'])
-        if postJsonObject['object'].get('atomUri'):
-            titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
-        else:
-            if postJsonObject['object'].get('id'):
-                titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
-            else:
-                titleStr+=' <i class="replyingto">announced</i>'
+    if isAnnounced and postJsonObject['object'].get('atomUri'):
+        announceNickname=getNicknameFromActor(postJsonObject['object']['atomUri'])
+        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['atomUri'])
+        titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
         
     if not isAnnounced and postJsonObject['object'].get('inReplyTo'):
         containerClassIcons='containericons darker'
