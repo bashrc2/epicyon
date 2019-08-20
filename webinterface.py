@@ -297,7 +297,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         if actorJson.get('preferredUsername'):
             preferredNickname=actorJson['preferredUsername']
         if actorJson.get('summary'):
-            bioStr=actorJson['summary']
+            bioStr=actorJson['summary'].replace('<p>','').replace('</p>','')
         if actorJson.get('manuallyApprovesFollowers'):
             if actorJson['manuallyApprovesFollowers']:
                 manuallyApprovesFollowers='checked'
