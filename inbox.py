@@ -569,6 +569,53 @@ def receiveUndo(session,baseDir: str,httpPrefix: str, \
                                  debug)
     return False
 
+def personReceiveUpdate(baseDir: str,nickname: str,domain: str,port: int, \
+                        personJson: {},personCache: {},debug: bool) -> bool:
+    """Changes an actor. eg: avatar or preferred name change
+    """
+    if debug:
+        print('DEBUG: receiving actor update for '+personJson['url'])
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+    actor=domainFull+'/users/'+nickname
+    if actor in personJson['id']:
+        if debug:
+            print('DEBUG: Cannot receive update activity for your own actor')
+        return False
+    if not personJson.get('publicKey'):
+        if debug:
+            print('DEBUG: actor update does not contain a public key')        
+        return False
+    if not personJson['publicKey'].get('publicKeyPem'):
+        if debug:
+            print('DEBUG: actor update does not contain a public key Pem')        
+        return False
+    actorFilename=baseDir+'/cache/actors/'+personJson['id'].replace('/','#')+'.json'
+    # check that the public keys match.
+    # If they don't then this may be a nefarious attempt to hack an account
+    if personCache.get(personJson['id']):
+        if personCache[personJson['id']]['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
+            if debug:
+                print('WARN: Public key does not match when updating actor')
+            return False
+    else:
+        if os.path.isfile(actorFilename):
+            with open(actorFilename, 'r') as fp:
+                existingPersonJson=commentjson.load(fp)
+                if existingPersonJson['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
+                    if debug:
+                        print('WARN: Public key does not match cached actor when updating')
+                    return False
+    # save to cache in memory
+    personCache[personJson['id']]=personJson
+    # save to cache on file
+    with open(actorFilename, 'w') as fp:
+        commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+        print('actor updated for '+personJson['id'])
+    return True
+
 def receiveUpdate(session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -601,7 +648,16 @@ def receiveUpdate(session,baseDir: str, \
     if messageJson['object'].get('capability') and messageJson['object'].get('scope'):
         domain,tempPort=getDomainFromActor(messageJson['object']['scope'])
         nickname=getNicknameFromActor(messageJson['object']['scope'])
-        
+
+        if messageJson['object']['type']=='Person':
+            if messageJson['object'].get('url') and messageJson['object'].get('id'):
+                if personReceiveUpdate(baseDir,nickname,domain,port, \
+                                       messageJson['object'], \
+                                       personCache,debug):
+                    if debug:
+                        print('DEBUG: An update was received for '+messageJson['object']['url'])
+                        return True      
+
         if messageJson['object']['type']=='Capability':
             if capabilitiesReceiveUpdate(baseDir,nickname,domain,port,
                                          messageJson['actor'], \
