@@ -109,6 +109,7 @@ from announce import createAnnounce
 from announce import outboxAnnounce
 from content import addHtmlTags
 from media import removeMetaData
+from cache import expireCache
 import os
 import sys
 
@@ -2939,6 +2940,12 @@ def runDaemon(projectVersion, \
     if not os.path.isdir(baseDir+'/cache/actors'):
         print('Creating actors cache')
         os.mkdir(baseDir+'/cache/actors')
+
+    print('Creating cache expiry thread')
+    httpd.thrCache= \
+        threadWithTrace(target=expireCache, \
+                        args=(baseDir,httpd.personCache),daemon=True)
+    httpd.thrCache.start()
 
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
