@@ -26,6 +26,7 @@ from posts import getUserUrl
 from posts import parseUserFeed
 from posts import populateRepliesJson
 from posts import isModerator
+from posts import outboxMessageCreateWrap
 from session import getJson
 from auth import createPassword
 from like import likedByPerson
@@ -1041,6 +1042,12 @@ def individualPostAsHtml(baseDir: str, \
                             return ''
                         if not announcedJson.get('type'):
                             return ''
+                        if announcedJson['type']=='Note':
+                            # wrap in create to be consistent with other posts
+                            announcedJson= \
+                                outboxMessageCreateWrap(httpPrefix, \
+                                                        nickname,domain,port, \
+                                                        announcedJson)
                         if announcedJson['type']!='Create':
                             return ''
                         actorNickname=getNicknameFromActor(postJsonObject['actor'])
