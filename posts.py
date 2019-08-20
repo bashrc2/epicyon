@@ -1576,7 +1576,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                 'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
                 'type': 'OrderedCollectionPage'}
 
-    # counter for posts loop
+    # counter for posts so far added to the target page
     postsOnPageCtr=0
 
     # post filenames sorted in descending order
@@ -1666,6 +1666,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
+                                
                         # remove any capability so that it's not displayed
                         if p.get('capability'):
                             del p['capability']
@@ -1681,6 +1682,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                         if postsOnPageCtr < itemsPerPage:
                             if not headerOnly:
                                 boxItems['orderedItems'].append(p)
+                                postsOnPageCtr += 1
                         elif postsOnPageCtr == itemsPerPage:
                             # if this is the last post update the next message ID
                             if '/statuses/' in p['id']:
@@ -1689,7 +1691,6 @@ def createBoxBase(baseDir: str,boxname: str, \
                                     httpPrefix+'://'+domain+'/users/'+ \
                                     nickname+'/'+boxname+'?max_id='+ \
                                     postId+'&page=true'
-                        postsOnPageCtr += 1
                 # remember the last post filename for use with prev
                 prevPostFilename = postFilename
                 if postsOnPageCtr > itemsPerPage:
