@@ -1169,8 +1169,11 @@ def individualPostAsHtml(baseDir: str, \
             '  </div>'
 
     publishedStr=postJsonObject['object']['published']
-    datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
-    publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
+    if '.' not in publishedStr:
+        datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+        publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
+    else:
+        publishedStr=publishedStr.replace('T',' ').split('.')[0]
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
     announceStr=''
