@@ -1009,21 +1009,21 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
-def addEmbeddedVideo(content: str) -> str:
+def addEmbeddedVideo(content: str,width=400,height=300) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
         url=content.split('>vimeo.com/')[1]
         if '<' in url:
             url=url.split('<')[0]
-            content=content+"<center><iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\"100%\" height=\"100%\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content=content+"<center><iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     if '"https://www.youtube.com' in content:
         url=content.split('"https://www.youtube.com')[1]
         if '"' in url:
             url=url.split('"')[0].replace('/watch?v=','/embed/')            
-            content=content+"<center><iframe src=\"https://www.youtube.com"+url+"\" width=\"300\" height=\"180\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content=content+"<center><iframe src=\"https://www.youtube.com"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     # A selection of the current larger peertube sites, mostly French and German language
@@ -1034,7 +1034,7 @@ def addEmbeddedVideo(content: str) -> str:
             url=content.split('"https://'+site)[1]
             if '"' in url:
                 url=url.split('"')[0].replace('/watch/','/embed/')            
-                content=content+"<center><iframe sandbox=\"allow-same-origin allow-scripts\" src=\"https://"+site+url+"\" width=\"300\" height=\"180\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+                content=content+"<center><iframe sandbox=\"allow-same-origin allow-scripts\" src=\"https://"+site+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
                 return content
     return content
 
