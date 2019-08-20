@@ -1015,8 +1015,8 @@ def addEmbeddedVideo(content: str,width=640,height=360) -> str:
     if '>vimeo.com/' in content:
         url=content.split('>vimeo.com/')[1]
         if '<' in url:
-            url='vimeo.com/'+url.split('<')[0]
-            content=content+"<iframe src=\"https://player."+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
+            url=url.split('<')[0]
+            content=content+"<iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
     return content
 
 def individualPostAsHtml(baseDir: str, \
