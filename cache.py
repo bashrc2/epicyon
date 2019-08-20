@@ -35,17 +35,20 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
     """Get an actor from the cache
     """
     # if the actor is not in memory then try to load it from file
+    loadedFromFile=False
     if not personCache.get(personUrl):
         cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if os.path.isfile(cacheFilename):
             with open(cacheFilename, 'r') as fp:
                 personJson=commentjson.load(fp)
                 storePersonInCache(baseDir,personUrl,personJson,personCache)
+                loadedFromFile=True
         
     if personCache.get(personUrl):
-        # update the timestamp for the last time the actor was retrieved
-        currTime=datetime.datetime.utcnow()
-        personCache[personUrl]['timestamp']=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+        if not loadedFromFile:
+            # update the timestamp for the last time the actor was retrieved
+            currTime=datetime.datetime.utcnow()
+            personCache[personUrl]['timestamp']=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
         return personCache[personUrl]['actor']
     return None
 
