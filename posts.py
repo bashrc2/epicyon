@@ -1319,20 +1319,29 @@ def sendToNamedAddresses(session,baseDir: str, \
         return
     if not postJsonObject.get('object'):
         return
-    if isinstance(postJsonObject['object'], dict): 
-        if not postJsonObject['object'].get('to'):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: no "to" field when sending to named addresses')
-            if postJsonObject['object'].get('type'):
-                if postJsonObject['object']['type']=='Follow':
-                    if isinstance(postJsonObject['object']['object'], str):
-                        if debug:
-                            print('DEBUG: "to" field assigned to Follow')
-                        postJsonObject['object']['to']=[postJsonObject['object']['object']]
+    if isinstance(postJsonObject['object'], dict):
+        isProfileUpdate=False
+        # for actor updates there is no 'to' within the object
+        if postJsonObject['object'].get('type') and postJsonObject.get('type'):
+            if postJsonObject['type']=='Update' and postJsonObject['object']['type']=='Person':
+                # use the original object, which has a 'to'
+                recipientsObject=postJsonObject
+                isProfileUpdate=True
+        
+        if not isProfileUpdate:
             if not postJsonObject['object'].get('to'):
-                return
-        recipientsObject=postJsonObject['object']
+                if debug:
+                    pprint(postJsonObject)
+                    print('DEBUG: no "to" field when sending to named addresses')
+                if postJsonObject['object'].get('type'):                    
+                    if postJsonObject['object']['type']=='Follow':
+                        if isinstance(postJsonObject['object']['object'], str):
+                            if debug:
+                                print('DEBUG: "to" field assigned to Follow')
+                            postJsonObject['object']['to']=[postJsonObject['object']['object']]
+                if not postJsonObject['object'].get('to'):
+                    return
+            recipientsObject=postJsonObject['object']
     else: 
         postJsonObject,fieldAdded=addToField('Follow',postJsonObject,debug)
         if not fieldAdded:
