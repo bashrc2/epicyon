@@ -1023,7 +1023,8 @@ def individualPostAsHtml(baseDir: str, \
         if postJsonObject.get('object'):
             if isinstance(postJsonObject['object'], str):
                 # get the announced post
-                asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+                print('Getting Announce content for '+postJsonObject['object'])
+                asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
                 announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                 if announcedJson:
                     if not announcedJson.get('type'):
