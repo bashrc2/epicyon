@@ -22,10 +22,6 @@ def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {
         return
 
     # store to file
-    if not os.path.isdir(baseDir+'/cache'):
-        os.mkdir(baseDir+'/cache')
-    if not os.path.isdir(baseDir+'/cache/actors'):
-        os.mkdir(baseDir+'/cache/actors')
     cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
     if not os.path.isfile(cacheFilename):
         with open(cacheFilename, 'w') as fp:

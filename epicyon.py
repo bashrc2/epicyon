@@ -287,6 +287,11 @@ httpPrefix='https'
 if args.http:
     httpPrefix='http'
 
+baseDir=args.baseDir
+if baseDir.endswith('/'):
+    print("--path option should not end with '/'")
+    sys.exit()
+
 if args.posts:
     if '@' not in args.posts:
         print('Syntax: --posts nickname@domain')
@@ -313,10 +318,12 @@ if args.postsraw:
                            __version__)
     sys.exit()
 
-baseDir=args.baseDir
-if baseDir.endswith('/'):
-    print("--path option should not end with '/'")
-    sys.exit()
+# create cache for actors
+if not os.path.isdir(baseDir+'/cache'):
+    os.mkdir(baseDir+'/cache')
+if not os.path.isdir(baseDir+'/cache/actors'):
+    print('Creating actors cache')
+    os.mkdir(baseDir+'/cache/actors')
 
 if args.domain:
     domain=args.domain

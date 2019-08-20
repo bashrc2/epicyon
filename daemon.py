@@ -2934,6 +2934,12 @@ def runDaemon(projectVersion, \
         print('Creating shared inbox: inbox@'+domain)
         createSharedInbox(baseDir,'inbox',domain,port,httpPrefix)
 
+    if not os.path.isdir(baseDir+'/cache'):
+        os.mkdir(baseDir+'/cache')
+    if not os.path.isdir(baseDir+'/cache/actors'):
+        print('Creating actors cache')
+        os.mkdir(baseDir+'/cache/actors')
+
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
         threadWithTrace(target=runInboxQueue, \
