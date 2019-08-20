@@ -323,6 +323,7 @@ a:link {
 }
 
 .media {
+    width: 80%;
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
