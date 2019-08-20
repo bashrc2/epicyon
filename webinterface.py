@@ -1046,6 +1046,7 @@ def individualPostAsHtml(baseDir: str, \
                         if announcedJson['type']!='Note':
                             return ''
                         # wrap in create to be consistent with other posts
+                        pprint(announcedJson)
                         actorNickname=getNicknameFromActor(announcedJson['actor'])
                         actorDomain,actorPort=getDomainFromActor(announcedJson['actor'])
                         print('>>>>>>>>>>>>>>>>>'+actorNickname+'@'+actorDomain)
