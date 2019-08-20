@@ -1047,6 +1047,7 @@ def individualPostAsHtml(baseDir: str, \
                         if not announcedJson.get('type'):
                             return ''
                         if announcedJson['type']!='Note':
+                            pprint(announcedJson)
                             return ''
                         # wrap in create to be consistent with other posts
                         announcedJson= \
