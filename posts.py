@@ -1661,8 +1661,8 @@ def createBoxBase(baseDir: str,boxname: str, \
                 boxname+'?min_id='+postId+'&page=true'
         # get the full path of the post file
         filePath = postFilename
-        #try:
-        if os.path.isfile(filePath):
+        try:
+            if os.path.isfile(filePath):
                 if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
                     # get the post as json
                     with open(filePath, 'r') as fp:
@@ -1701,8 +1701,8 @@ def createBoxBase(baseDir: str,boxname: str, \
                 if postsCtr >= itemsPerPage:
                     postsCtr = 0
                     currPage += 1
-        #except Exception as e:
-        #    print(e)
+        except Exception as e:
+            print(e)
     if headerOnly:
         return boxHeader
     return boxItems
