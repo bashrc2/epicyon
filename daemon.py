@@ -2258,6 +2258,15 @@ class PubServer(BaseHTTPRequestHandler):
                         if actorChanged:
                             with open(actorFilename, 'w') as fp:
                                 commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                        # send actor update to followers
+                        updateActorJson={
+                            'type': 'Update',
+                            'actor': actorJson['id'],
+                            'to': [actorJson['id']+'/followers'],
+                            'object': actorJson
+                        }
+                        self.postToNickname=nickname
+                        self._postToOutbox(updateActorJson)
             self._redirect_headers(actorStr,cookie)
             self.server.POSTbusy=False
             return
