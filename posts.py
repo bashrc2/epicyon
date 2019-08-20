@@ -21,6 +21,7 @@ from collections import OrderedDict
 from threads import threadWithTrace
 from cache import storePersonInCache
 from cache import getPersonFromCache
+from cache import expirePersonCache
 from pprint import pprint
 from random import randint
 from session import createSession
@@ -1705,6 +1706,15 @@ def createBoxBase(baseDir: str,boxname: str, \
     if headerOnly:
         return boxHeader
     return boxItems
+
+def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,maxPostsInBox=256):
+    """Thread used to expire actors from the cache and archive old posts
+    """
+    while True:
+        # once per day
+        time.sleep(60*60*24)
+        expirePersonCache(basedir,personCache)
+        archivePosts(baseDir,httpPrefix,archiveDir,maxPostsInBox)
 
 def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=256) -> None:
     """Archives posts for all accounts

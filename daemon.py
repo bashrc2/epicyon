@@ -43,6 +43,7 @@ from posts import createFollowersOnlyPost
 from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
+from posts import expireCache
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -109,7 +110,6 @@ from announce import createAnnounce
 from announce import outboxAnnounce
 from content import addHtmlTags
 from media import removeMetaData
-from cache import expireCache
 import os
 import sys
 
@@ -2892,6 +2892,7 @@ def runDaemon(projectVersion, \
     # max POST size of 10M
     httpd.projectVersion=projectVersion
     httpd.maxPostLength=1024*1024*10
+    httpd.maxPostsInBox=256
     httpd.domain=domain
     httpd.port=port
     httpd.domainFull=domain
@@ -2949,10 +2950,18 @@ def runDaemon(projectVersion, \
         print('Creating actors cache')
         os.mkdir(baseDir+'/cache/actors')
 
+    archiveDir=baseDir+'/archive'
+    if not os.path.isdir(archiveDir):
+        print('Creating archive')
+        os.mkdir(archiveDir)
+        
     print('Creating cache expiry thread')
     httpd.thrCache= \
         threadWithTrace(target=expireCache, \
-                        args=(baseDir,httpd.personCache),daemon=True)
+                        args=(baseDir,httpd.personCache, \
+                              httpd.httpPrefix, \
+                              archiveDir, \
+                              httpdmaxPostsInBox),daemon=True)
     httpd.thrCache.start()
 
     print('Creating inbox queue')

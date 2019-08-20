@@ -66,14 +66,6 @@ def expirePersonCache(personCache: {}):
             del personCache[personUrl]
         print(str(len(removals))+' actors were expired from the cache')
 
-def expireCache(baseDir: str,personCache: {}):
-    """Cache expiry thread
-    """
-    while True:
-        # once per day
-        time.sleep(60*60*24)
-        expirePersonCache(basedir,personCache)
-
 def storeWebfingerInCache(handle: str,wf,cachedWebfingers: {}) -> None:
     """Store a webfinger endpoint in the cache
     """
