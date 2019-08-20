@@ -481,6 +481,10 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('GET Not authorized')
 
+        if not self.server.session:
+            self.server.session= \
+                createSession(self.server.domain,self.server.port,self.server.useTor)
+
         # treat shared inbox paths consistently
         if self.path=='/sharedInbox' or self.path=='/users/inbox':
             self.path='/inbox'
@@ -1933,6 +1937,10 @@ class PubServer(BaseHTTPRequestHandler):
             return 0
         
     def do_POST(self):
+        if not self.server.session:
+            self.server.session= \
+                createSession(self.server.domain,self.server.port,self.server.useTor)
+
         if self.server.debug:
             print('DEBUG: POST to from '+self.server.baseDir+ \
                   ' path: '+self.path+' busy: '+ \
