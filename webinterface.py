@@ -1075,7 +1075,7 @@ def individualPostAsHtml(baseDir: str, \
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
     titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
-    if postJsonObject['object']['inReplyTo']:
+    if postJsonObject['object'].get('inReplyTo'):
         containerClassIcons='containericons darker'
         containerClass='container darker'
         avatarPosition=' class="right"'
