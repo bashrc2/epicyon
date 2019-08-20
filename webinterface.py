@@ -1023,7 +1023,7 @@ def addEmbeddedVideo(content: str) -> str:
         url=content.split('"https://www.youtube.com')[1]
         if '"' in url:
             url=url.split('"')[0].replace('/watch?v=','/embed/')            
-            content=content+"<iframe src=\"https://www.youtube.com"+url+"\" width=\"100%\" height=\"100%\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
+            content=content+"<iframe src=\"https://www.youtube.com"+url+"\" width=\"80%\" height=\"50%\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
             return content
         
     return content
