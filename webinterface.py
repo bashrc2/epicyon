@@ -1042,9 +1042,6 @@ def individualPostAsHtml(baseDir: str, \
                     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
                     announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                     if announcedJson:
-                        if not announcedJson.get('actor'):
-                            pprint(announcedJson)
-                            return ''
                         if not announcedJson.get('type'):
                             pprint(announcedJson)
                             return ''
