@@ -322,6 +322,12 @@ a:link {
     margin: 10px 0;
 }
 
+.media {
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
 .container p.administeredby {
     font-size: 18px;
 }

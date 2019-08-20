@@ -1107,6 +1107,7 @@ def individualPostAsHtml(baseDir: str, \
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):
             attachmentCtr=0
+            attachmentStr+='<div class="media">'
             for attach in postJsonObject['object']['attachment']:
                 if attach.get('mediaType') and attach.get('url'):
                     mediaType=attach['mediaType']
@@ -1126,8 +1127,7 @@ def individualPostAsHtml(baseDir: str, \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
-            if attachmentCtr>0:
-                attachmentStr+='<br>'
+            attachmentStr+='</div>'
 
     if not avatarUrl:
         avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
