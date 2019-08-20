@@ -1023,20 +1023,31 @@ def individualPostAsHtml(baseDir: str, \
         if postJsonObject.get('object'):
             if isinstance(postJsonObject['object'], str):
                 # get the announced post
-                print('Getting Announce content for '+postJsonObject['object'])
-                asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
-                announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
-                if announcedJson:
-                    if not announcedJson.get('type'):
-                        return ''
-                    if announcedJson['type']!='Create':
-                        return ''
-                    actorNickname=getNicknameFromActor(postJsonObject['actor'])
-                    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-                    titleStr+='@'+actorNickname+'@'+actorDomain+' announced:<br>'
-                    postJsonObject=announcedJson
+                announceCacheDir=baseDir+'/cache/announce/'+nickname
+                if not os.path.isdir(announceCacheDir):
+                    os.mkdir(announceCacheDir)
+                announceFilename=announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
+                if os.path.isfile(announceFilename):
+                    print('Reading cached Announce content for '+postJsonObject['object'])
+                    with open(announceFilename, 'r') as fp:
+                        postJsonObject=commentjson.load(fp)
                 else:
-                    return ''
+                    print('Downloading Announce content for '+postJsonObject['object'])
+                    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+                    announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
+                    if announcedJson:
+                        if not announcedJson.get('type'):
+                            return ''
+                        if announcedJson['type']!='Create':
+                            return ''
+                        actorNickname=getNicknameFromActor(postJsonObject['actor'])
+                        actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+                        titleStr+='@'+actorNickname+'@'+actorDomain+' announced:<br>'
+                        postJsonObject=announcedJson
+                        with open(announceFilename, 'w') as fp:
+                            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)                        
+                    else:
+                        return ''
             else:
                 return ''
     if not isinstance(postJsonObject['object'], dict):
