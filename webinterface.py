@@ -1036,6 +1036,9 @@ def individualPostAsHtml(baseDir: str, \
                     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
                     announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                     if announcedJson:
+                        pprint(announcedJson)
+                        if not announcedJson.get('actor'):
+                            return ''
                         if not announcedJson.get('type'):
                             return ''
                         if announcedJson['type']!='Create':
