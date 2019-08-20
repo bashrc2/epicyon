@@ -1080,9 +1080,9 @@ def individualPostAsHtml(baseDir: str, \
         messageId=postJsonObject['id'].replace('/activity','')
 
     titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
-    if isAnnounced and postJsonObject['object'].get('atomUri'):
-        announceNickname=getNicknameFromActor(postJsonObject['object']['atomUri'])
-        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['atomUri'])
+    if isAnnounced and postJsonObject['object'].get('attributedTo'):
+        announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
+        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
         titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
         
     if not isAnnounced and postJsonObject['object'].get('inReplyTo'):
