@@ -70,6 +70,9 @@ def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
         return False
     if not postJsonObject['object'].get('likes'):
         return False
+    if not postJsonObject['object']['likes'].get('items'):
+        postJsonObject['object']['likes']['items']=[]
+        postJsonObject['object']['likes']['totalItems']=0
     actorMatch=domain+'/users/'+nickname
     for item in postJsonObject['object']['likes']['items']:
         if item['actor'].endswith(actorMatch):
