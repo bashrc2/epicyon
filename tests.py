@@ -147,7 +147,7 @@ def testCache():
     personJson={ "id": 123456, "test": "This is a test" }
     personCache={}
     storePersonInCache(None,personUrl,personJson,personCache)
-    result=getPersonFromCache(personUrl,personCache)
+    result=getPersonFromCache(None,personUrl,personCache)
     assert result['id']==123456
     assert result['test']=='This is a test'
 

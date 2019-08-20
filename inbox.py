@@ -95,7 +95,7 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
         if debug:
             print('DEBUG: Obtaining public key for shared inbox')
         personUrl=personUrl.replace('/users/inbox','/inbox')        
-    personJson = getPersonFromCache(personUrl,personCache)
+    personJson = getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)

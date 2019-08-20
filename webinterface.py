@@ -36,10 +36,10 @@ from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
 
-def getPersonAvatarUrl(personUrl: str,personCache: {}) -> str:
+def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """Returns the avatar url for the person
     """
-    personJson = getPersonFromCache(personUrl,personCache)
+    personJson = getPersonFromCache(baseDir,personUrl,personCache)
     if personJson:
         if personJson.get('icon'):
             if personJson['icon'].get('url'):
@@ -947,7 +947,7 @@ def individualFollowAsHtml(baseDir: str,session,wfRequest: {}, \
     nickname=getNicknameFromActor(followUrl)
     domain,port=getDomainFromActor(followUrl)
     titleStr='@'+nickname+'@'+domain
-    avatarUrl=getPersonAvatarUrl(followUrl,personCache)
+    avatarUrl=getPersonAvatarUrl(baseDir,followUrl,personCache)
     if not avatarUrl:
         avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
@@ -1093,7 +1093,7 @@ def individualPostAsHtml(baseDir: str, \
                             attachmentCtr+=1
 
     if not avatarUrl:
-        avatarUrl=getPersonAvatarUrl(postJsonObject['actor'],personCache)
+        avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
     if not avatarUrl:
         avatarUrl=postJsonObject['actor']+'/avatar.png'
 
@@ -1321,7 +1321,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
     for item in timelineJson['orderedItems']:
         if item['type']=='Create' or item['type']=='Announce':
             itemCtr+=1
-            avatarUrl=getPersonAvatarUrl(item['actor'],personCache)
+            avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,avatarUrl,True, \
                                         allowDeletion, \
@@ -1668,7 +1668,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             if profileJson['icon'].get('url'):
                 avatarUrl=profileJson['icon']['url']
         if not avatarUrl:
-            avatarUrl=getPersonAvatarUrl(personUrl,personCache)
+            avatarUrl=getPersonAvatarUrl(baseDir,personUrl,personCache)
         preferredName=searchNickname
         if profileJson.get('preferredUsername'):
             preferredName=profileJson['preferredUsername']

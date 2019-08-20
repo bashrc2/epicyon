@@ -146,7 +146,7 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None,None,None,None,None,None,None,None
-    personJson = getPersonFromCache(personUrl,personCache)
+    personJson = getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         personJson = getJson(session,personUrl,asHeader,None, \
                              projectVersion,httpPrefix,domain)
