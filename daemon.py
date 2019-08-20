@@ -2263,7 +2263,6 @@ class PubServer(BaseHTTPRequestHandler):
                             'type': 'Update',
                             'actor': actorJson['id'],
                             'to': ['https://www.w3.org/ns/activitystreams#Public'],
-                            'cc': [actorJson['id']+'/followers'],
                             'object': actorJson
                         }
                         self.postToNickname=nickname
