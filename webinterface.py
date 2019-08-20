@@ -1009,7 +1009,7 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
-def addEmbeddedVideo(content: str,width=320) -> str:
+def addEmbeddedVideo(content: str,width=640) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
