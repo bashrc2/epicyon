@@ -1029,6 +1029,7 @@ def individualPostAsHtml(baseDir: str, \
                 if not os.path.isdir(announceCacheDir):
                     os.mkdir(announceCacheDir)
                 announceFilename=announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
+                print('announceFilename: '+announceFilename)
                 if os.path.isfile(announceFilename):
                     print('Reading cached Announce content for '+postJsonObject['object'])
                     with open(announceFilename, 'r') as fp:
