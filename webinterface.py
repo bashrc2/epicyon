@@ -1056,6 +1056,9 @@ def individualPostAsHtml(baseDir: str, \
                         if announcedJson['type']!='Create':
                             pprint(announcedJson)
                             return ''
+                        # set the id to the original status
+                        announcedJson['id']=postJsonObject['object']
+                        announcedJson['object']['id']=postJsonObject['object']
                         postJsonObject=announcedJson
                         with open(announceFilename, 'w') as fp:
                             commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
