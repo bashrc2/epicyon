@@ -1037,6 +1037,8 @@ def individualPostAsHtml(baseDir: str, \
                 else:
                     print('Downloading Announce content for '+postJsonObject['object'])
                     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+                    actorNickname=getNicknameFromActor(postJsonObject['actor'])
+                    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
                     announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                     if announcedJson:
                         if not announcedJson.get('actor'):
@@ -1046,10 +1048,6 @@ def individualPostAsHtml(baseDir: str, \
                         if announcedJson['type']!='Note':
                             return ''
                         # wrap in create to be consistent with other posts
-                        pprint(announcedJson)
-                        actorNickname=getNicknameFromActor(announcedJson['actor'])
-                        actorDomain,actorPort=getDomainFromActor(announcedJson['actor'])
-                        print('>>>>>>>>>>>>>>>>>'+actorNickname+'@'+actorDomain)
                         announcedJson= \
                             outboxMessageCreateWrap(httpPrefix, \
                                                     actorNickname,actorDomain,actorPort, \
