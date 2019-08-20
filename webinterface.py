@@ -1020,6 +1020,7 @@ def individualPostAsHtml(baseDir: str, \
     """ Shows a single post as html
     """
     titleStr=''
+    isAnnounced=False
     if postJsonObject['type']=='Announce':
         if postJsonObject.get('object'):
             if isinstance(postJsonObject['object'], str):
@@ -1032,30 +1033,31 @@ def individualPostAsHtml(baseDir: str, \
                     print('Reading cached Announce content for '+postJsonObject['object'])
                     with open(announceFilename, 'r') as fp:
                         postJsonObject=commentjson.load(fp)
+                        isAnnounced=True
                 else:
                     print('Downloading Announce content for '+postJsonObject['object'])
                     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
                     announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                     if announcedJson:
-                        pprint(announcedJson)
                         if not announcedJson.get('actor'):
                             return ''
                         if not announcedJson.get('type'):
                             return ''
-                        if announcedJson['type']=='Note':
-                            # wrap in create to be consistent with other posts
-                            announcedJson= \
-                                outboxMessageCreateWrap(httpPrefix, \
-                                                        nickname,domain,port, \
-                                                        announcedJson)
+                        if announcedJson['type']!='Note':
+                            return ''
+                        # wrap in create to be consistent with other posts
+                        actorNickname=getNicknameFromActor(announcedJson['actor'])
+                        actorDomain,actorPort=getDomainFromActor(announcedJson['actor'])
+                        announcedJson= \
+                            outboxMessageCreateWrap(httpPrefix, \
+                                                    actorNickname,actorDomain,actorPort, \
+                                                    announcedJson)
                         if announcedJson['type']!='Create':
                             return ''
-                        actorNickname=getNicknameFromActor(postJsonObject['actor'])
-                        actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-                        titleStr+='@'+actorNickname+'@'+actorDomain+' announced:<br>'
                         postJsonObject=announcedJson
                         with open(announceFilename, 'w') as fp:
-                            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)                        
+                            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                            isAnnounced=True
                     else:
                         return ''
             else:
@@ -1074,22 +1076,35 @@ def individualPostAsHtml(baseDir: str, \
     messageId=''
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
+
     titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
-    if postJsonObject['object'].get('inReplyTo'):
+    if isAnnounced and postJsonObject['object'].get('actor'):
+        announceNickname=getNicknameFromActor(postJsonObject['object']['actor'])
+        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['actor'])
+        if postJsonObject['object'].get('atomUri'):
+            titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+        else:
+            if postJsonObject['object'].get('id'):
+                titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+            else:
+                titleStr+=' <i class="replyingto">announced</i>'
+        
+    if not isAnnounced and postJsonObject['object'].get('inReplyTo'):
         containerClassIcons='containericons darker'
         containerClass='container darker'
         avatarPosition=' class="right"'
         #timeClass='time-left'
-        if '/statuses/' in postJsonObject['object']['inReplyTo']:
-            replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
-            replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
-            if replyNickname and replyDomain:
-                titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
         else:
-            postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
-            if '/' in postDomain:
-                postDomain=postDomain.split('/',1)[0]
-            titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+            if '/statuses/' in postJsonObject['object']['inReplyTo']:
+                replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+                replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+                if replyNickname and replyDomain:
+                    titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+            else:
+                postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
+                if '/' in postDomain:
+                    postDomain=postDomain.split('/',1)[0]
+                titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):
