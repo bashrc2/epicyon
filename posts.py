@@ -661,7 +661,8 @@ def postIsAddressedToFollowers(baseDir: str,
         return False
     toList=[]
     ccList=[]
-    if isinstance(postJsonObject['object'], dict):
+    if postJsonObject['type']!='Update' and \
+       isinstance(postJsonObject['object'], dict):
         if not postJsonObject['object'].get('to'):
             return False
         toList=postJsonObject['object']['to']
