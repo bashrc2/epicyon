@@ -1126,6 +1126,8 @@ def individualPostAsHtml(baseDir: str, \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1
+            if attachmentCtr>0:
+                attachmentStr+='<br>'
 
     if not avatarUrl:
         avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
