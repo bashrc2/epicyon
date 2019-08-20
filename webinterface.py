@@ -1009,6 +1009,16 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
+def addEmbeddedVideo(content: str,width=640,height=360) -> str:
+    """Adds embedded videos
+    """
+    if '>vimeo.com/' in content:
+        url=content.split('>vimeo.com/')[1]
+        if '<' in url:
+            url='vimeo.com/'+url.split('<')[0]
+            content=content+"<iframe src=\"https://player."+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
+    return content
+
 def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -1268,6 +1278,8 @@ def individualPostAsHtml(baseDir: str, \
 
     if postJsonObject['object'].get('tag'):
         contentStr=htmlRemplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
+
+    contentStr=addEmbeddedVideo(contentStr)
 
     return \
         '<div class="'+containerClass+'">\n'+ \
