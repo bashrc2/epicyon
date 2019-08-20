@@ -1424,6 +1424,7 @@ def sendToFollowers(session,baseDir: str, \
                     projectVersion: str) -> None:
     """sends a post to the followers of the given nickname
     """
+    print('sendToFollowers')
     if not session:
         print('WARN: No session for sendToFollowers')
         return
@@ -1432,12 +1433,14 @@ def sendToFollowers(session,baseDir: str, \
         if debug:
             print('Post is not addressed to followers')
         return
+    print('Post is addressed to followers')
 
     grouped=groupFollowersByDomain(baseDir,nickname,domain)
     if not grouped:
         if debug:
             print('Post to followers did not resolve any domains')
         return
+    print('Post to followers resolved domains')
 
     # this is after the message has arrived at the server
     clientToServer=False
