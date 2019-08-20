@@ -1048,6 +1048,7 @@ def individualPostAsHtml(baseDir: str, \
                         # wrap in create to be consistent with other posts
                         actorNickname=getNicknameFromActor(announcedJson['actor'])
                         actorDomain,actorPort=getDomainFromActor(announcedJson['actor'])
+                        print('>>>>>>>>>>>>>>>>>'+actorNickname+'@'+actorDomain)
                         announcedJson= \
                             outboxMessageCreateWrap(httpPrefix, \
                                                     actorNickname,actorDomain,actorPort, \
