@@ -1660,8 +1660,8 @@ def createBoxBase(baseDir: str,boxname: str, \
                 boxname+'?min_id='+postId+'&page=true'
         # get the full path of the post file
         filePath = postFilename
-        try:
-            if os.path.isfile(filePath):
+        #try:
+        if os.path.isfile(filePath):
                 if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
                     # get the post as json
                     with open(filePath, 'r') as fp:
@@ -1693,16 +1693,15 @@ def createBoxBase(baseDir: str,boxname: str, \
                                     postId+'&page=true'
                 # remember the last post filename for use with prev
                 prevPostFilename = postFilename
-                if postsOnPageCtr > itemsPerPage:
+                if postsOnPageCtr >= itemsPerPage:
                     break
                 # count the pages
-                if currPage != pageNumber:
-                    postsCtr += 1
-                    if postsCtr >= itemsPerPage:
-                        postsCtr = 0
-                        currPage += 1
-        except Exception as e:
-            print(e)
+                postsCtr += 1
+                if postsCtr >= itemsPerPage:
+                    postsCtr = 0
+                    currPage += 1
+        #except Exception as e:
+        #    print(e)
     if headerOnly:
         return boxHeader
     return boxItems
