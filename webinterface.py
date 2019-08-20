@@ -1043,8 +1043,10 @@ def individualPostAsHtml(baseDir: str, \
                     announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                     if announcedJson:
                         if not announcedJson.get('actor'):
+                            pprint(announcedJson)
                             return ''
                         if not announcedJson.get('type'):
+                            pprint(announcedJson)
                             return ''
                         if announcedJson['type']!='Note':
                             pprint(announcedJson)
@@ -1055,6 +1057,7 @@ def individualPostAsHtml(baseDir: str, \
                                                     actorNickname,actorDomain,actorPort, \
                                                     announcedJson)
                         if announcedJson['type']!='Create':
+                            pprint(announcedJson)
                             return ''
                         postJsonObject=announcedJson
                         with open(announceFilename, 'w') as fp:
