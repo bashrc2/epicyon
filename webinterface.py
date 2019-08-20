@@ -1094,17 +1094,16 @@ def individualPostAsHtml(baseDir: str, \
         containerClass='container darker'
         avatarPosition=' class="right"'
         #timeClass='time-left'
+        if '/statuses/' in postJsonObject['object']['inReplyTo']:
+            replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+            replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+            if replyNickname and replyDomain:
+                titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
         else:
-            if '/statuses/' in postJsonObject['object']['inReplyTo']:
-                replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
-                replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
-                if replyNickname and replyDomain:
-                    titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
-            else:
-                postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
-                if '/' in postDomain:
-                    postDomain=postDomain.split('/',1)[0]
-                titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+            postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
+            if '/' in postDomain:
+                postDomain=postDomain.split('/',1)[0]
+            titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):
