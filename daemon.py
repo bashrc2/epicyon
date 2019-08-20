@@ -2262,7 +2262,8 @@ class PubServer(BaseHTTPRequestHandler):
                         updateActorJson={
                             'type': 'Update',
                             'actor': actorJson['id'],
-                            'to': [actorJson['id']+'/followers'],
+                            'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                            'cc': [actorJson['id']+'/followers'],
                             'object': actorJson
                         }
                         self.postToNickname=nickname
