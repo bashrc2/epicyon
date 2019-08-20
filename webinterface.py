@@ -1009,14 +1009,14 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
-def addEmbeddedVideo(content: str,width=640) -> str:
+def addEmbeddedVideo(content: str,width=100) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
         url=content.split('>vimeo.com/')[1]
         if '<' in url:
             url=url.split('<')[0]
-            content=content+"<iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
+            content=content+"<iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"%\" height=\""+str(width)+"%\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe>"
     return content
 
 def individualPostAsHtml(baseDir: str, \
