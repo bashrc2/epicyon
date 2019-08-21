@@ -826,22 +826,21 @@ class PubServer(BaseHTTPRequestHandler):
                return
 
         # Unfollow a person from the web interface by selecting Unfollow on the dropdown
-        if htmlGET and '/users/' in self.path:
-           if '?unfollow=' in self.path:
-               followStr=self.path.split('?unfollow=')[1]
-               originPathStr=self.path.split('?unfollow=')[0]
-               if ';' in followStr:
-                   followActor=followStr.split(';')[0]
-                   followProfileUrl=followStr.split(';')[1]
-                   # show the confirm follow screen
-                   msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode()
-                   self._set_headers('text/html',len(msg),cookie)
-                   self.wfile.write(msg)
-                   self.server.GETbusy=False
-                   return
-               self._redirect_headers(originPathStr,cookie)
-               self.server.GETbusy=False
-               return
+        if '/users/' in self.path and '?unfollow=' in self.path:
+            followStr=self.path.split('?unfollow=')[1]
+            originPathStr=self.path.split('?unfollow=')[0]
+            if ';' in followStr:
+                followActor=followStr.split(';')[0]
+                followProfileUrl=followStr.split(';')[1]
+                # show the confirm follow screen
+                msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.GETbusy=False
+                return
+            self._redirect_headers(originPathStr,cookie)
+            self.server.GETbusy=False
+            return
 
         # Unblock a person from the web interface by selecting Unblock on the dropdown
         if htmlGET and '/users/' in self.path:
