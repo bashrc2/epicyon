@@ -494,7 +494,24 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Accept'):
             if 'text/html' in self.headers['Accept']:
                 htmlGET=True
-            
+
+        # Unfollow a person from the web interface by selecting Unfollow on the dropdown
+        if htmlGET and '/users/' in self.path and '?unfollow=' in self.path:
+            followStr=self.path.split('?unfollow=')[1]
+            originPathStr=self.path.split('?unfollow=')[0]
+            if ';' in followStr:
+                followActor=followStr.split(';')[0]
+                followProfileUrl=followStr.split(';')[1]
+                # show the confirm follow screen
+                msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.GETbusy=False
+                return
+            self._redirect_headers(originPathStr,cookie)
+            self.server.GETbusy=False
+            return
+
         # if not authorized then show the login screen
         if htmlGET and self.path!='/login' and self.path!='/' and self.path!='/terms':  
             if '/media/' not in self.path and \
@@ -825,23 +842,6 @@ class PubServer(BaseHTTPRequestHandler):
                self.wfile.write(msg)
                self.server.GETbusy=False
                return
-
-        # Unfollow a person from the web interface by selecting Unfollow on the dropdown
-        if '/users/' in self.path and '?unfollow=' in self.path:
-            followStr=self.path.split('?unfollow=')[1]
-            originPathStr=self.path.split('?unfollow=')[0].replace('/following','')
-            if ';' in followStr:
-                followActor=followStr.split(';')[0]
-                followProfileUrl=followStr.split(';')[1]
-                # show the confirm follow screen
-                msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode()
-                self._set_headers('text/html',len(msg),cookie)
-                self.wfile.write(msg)
-                self.server.GETbusy=False
-                return
-            self._redirect_headers(originPathStr,cookie)
-            self.server.GETbusy=False
-            return
 
         # Unblock a person from the web interface by selecting Unblock on the dropdown
         if htmlGET and '/users/' in self.path:
