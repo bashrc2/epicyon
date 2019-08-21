@@ -908,17 +908,21 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         if postResult:
             if debug:
                 print('DEBUG: json post to '+inboxUrl+' succeeded')
-            #if postJsonObject.get('published'):
-            #    postLog.append(postJsonObject['published']+' '+postResult+'\n')
+            if tries==0:
+                logStr=postJsonStr
+            else:
+                logStr='Try '+str(tries)+': '+postJsonStr
+            postLog.append(logStr)
             # keep the length of the log finite
             # Don't accumulate massive files on systems with limited resources
-            while len(postLog)>64:
+            while len(postLog)>16:
                 postlog.pop(0)
             # save the log file
-            filename=baseDir+'/post.log'
-            with open(filename, "w") as logFile:
-                for line in postLog:
-                    print(line, file=logFile)
+            postLogFilename=baseDir+'/post.log'
+            with open(postLogFilename, "a+") as logFile:
+                logFile.write(logStr+'\n')
+            #    for line in postLog:
+            #        print(line, file=logFile)
             # our work here is done
             break
         if debug:
@@ -927,6 +931,7 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
                   str(backoffTime)+' seconds.')
         time.sleep(backoffTime)
         backoffTime *= 2
+        tries+=1
 
 def sendPost(projectVersion: str, \
              session,baseDir: str,nickname: str, domain: str, port: int, \
