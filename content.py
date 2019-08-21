@@ -10,6 +10,29 @@ import os
 import commentjson
 from shutil import copyfile
 
+def addWebLinks(content: str) -> str:
+    """Adds markup for web links
+    """
+    if not ('https://' in content or 'http://' in content):
+        return content
+
+    words=content.split(' ')
+    replaceDict={}
+    for w in words:
+        if w.startswith('http://') or w.startswith('http://'):
+            if w.endswith('.') or w.endswith(';'):
+                w=w[:-1]
+            markup='<a href="'+w+'" rel="nofollow noopener" target="_blank">'
+            if w.startswith('https://'):
+                markup+='<span class="invisible">https://</span>'
+            elif w.startswith('http://'):
+                markup+='<span class="invisible">http://</span>'
+            markup+='<span class="ellipsis">'+w.replace('https://','').replace('http://','')+'</span></a>'
+            replaceDict[w]=markup
+    for url,markup in replaceDict.items():
+        content=content.replace(url,markup)
+    return content
+
 def validHashTag(hashtag: str) -> bool:
     """Returns true if the give hashtag contains valid characters
     """
@@ -221,6 +244,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=content.replace('\n','</p><p>')
+    content=addWebLinks(content)
     return '<p>'+content+'</p>'
                 
 def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
