@@ -104,6 +104,7 @@ from shares import outboxUndoShareUpload
 from shares import addShare
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import getStatusNumber
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
