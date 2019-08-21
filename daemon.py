@@ -2401,6 +2401,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
                 searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+                if self.server.debug:
+                    print('searchStr: '+searchStr)
                 if searchForEmoji:
                     searchStr=':'+searchStr+':'
                 if searchStr.startswith('#'):      
