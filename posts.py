@@ -906,23 +906,22 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
                            inboxUrl,signatureHeaderJson, \
                            "inbox:write",debug)
         if postResult:
+            logStr='Success on try '+str(tries)+': '+postJsonStr
+        else:
+            logStr='Retry '+str(tries)+': '+postJsonStr
+        postLog.append(logStr)
+        # keep the length of the log finite
+        # Don't accumulate massive files on systems with limited resources
+        while len(postLog)>16:
+            postlog.pop(0)
+        # save the log file
+        postLogFilename=baseDir+'/post.log'
+        with open(postLogFilename, "a+") as logFile:
+            logFile.write(logStr+'\n')
+
+        if postResult:
             if debug:
                 print('DEBUG: json post to '+inboxUrl+' succeeded')
-            if tries==0:
-                logStr=postJsonStr
-            else:
-                logStr='Try '+str(tries)+': '+postJsonStr
-            postLog.append(logStr)
-            # keep the length of the log finite
-            # Don't accumulate massive files on systems with limited resources
-            while len(postLog)>16:
-                postlog.pop(0)
-            # save the log file
-            postLogFilename=baseDir+'/post.log'
-            with open(postLogFilename, "a+") as logFile:
-                logFile.write(logStr+'\n')
-            #    for line in postLog:
-            #        print(line, file=logFile)
             # our work here is done
             break
         if debug:
