@@ -11,6 +11,7 @@ import time
 import os
 import commentjson
 from datetime import datetime
+from dateutil.parser import parse
 from shutil import copyfile
 from pprint import pprint
 from person import personBoxJson
@@ -1226,9 +1227,10 @@ def individualPostAsHtml(baseDir: str, \
     publishedStr=postJsonObject['object']['published']
     if '.' not in publishedStr:
         datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
-        publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     else:
         publishedStr=publishedStr.replace('T',' ').split('.')[0]
+        datetimeObject = parse(publishedStr)
+    publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
     announceStr=''
@@ -1310,7 +1312,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr=htmlRemplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
 
     contentStr=addEmbeddedVideo(contentStr)
-
+    
     return \
         '<div class="'+containerClass+'">\n'+ \
         avatarDropdown+ \
