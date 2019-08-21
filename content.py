@@ -19,7 +19,7 @@ def addWebLinks(content: str) -> str:
     words=content.split(' ')
     replaceDict={}
     for w in words:
-        if w.startswith('http://') or w.startswith('http://'):
+        if w.startswith('https://') or w.startswith('http://'):
             if w.endswith('.') or w.endswith(';'):
                 w=w[:-1]
             markup='<a href="'+w+'" rel="nofollow noopener" target="_blank">'
@@ -243,8 +243,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     for wordStr,replaceStr in replaceEmoji.items():
         content=content.replace(wordStr,replaceStr)
         
-    content=content.replace('\n','</p><p>')
     content=addWebLinks(content)
+    content=content.replace('\n','</p><p>')
     return '<p>'+content+'</p>'
                 
 def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
