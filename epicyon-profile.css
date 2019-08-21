@@ -330,8 +330,8 @@ a:link {
 }
 
 .message {
-    margin-left: 0px;
-    width: 80%;
+    margin-left: 7%;
+    width: 90%;
 }
 
 .container p.administeredby {
@@ -417,13 +417,13 @@ a:link {
 .containericons img.right {
     float: right;
     margin-left: 20px;
-    margin-right:0;
+    margin-right: 0;
 }
 
 .time-right {
     float: right;
     color: #aaa;
-    margin:10px 30px;
+    margin: 4px 20px;
 }
 
 .time-left {
