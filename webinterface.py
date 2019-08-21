@@ -1699,7 +1699,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                            debug: bool,projectVersion: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
-    if '/users/' in profileHandle:
+    if '/users/' in profileHandle or '/@' in profileHandle:
         searchNickname=getNicknameFromActor(profileHandle)
         searchDomain,searchPort=getDomainFromActor(profileHandle)
     else:
