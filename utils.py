@@ -65,6 +65,12 @@ def getNicknameFromActor(actor: str) -> str:
     """Returns the nickname from an actor url
     """
     if '/users/' not in actor:
+        # https://domain/@nick
+        if '/@' in actor:
+            nickStr=actor.split('/@')[1]
+            if '/' in nickStr:
+                nickStr=nickStr.split('/')[0]
+            return nickStr
         return None
     nickStr=actor.split('/users/')[1].replace('@','')
     if '/' not in nickStr:
@@ -78,6 +84,8 @@ def getDomainFromActor(actor: str) -> (str,int):
     port=None
     if '/users/' not in actor:
         domain = actor.replace('https://','').replace('http://','').replace('dat://','')
+        if '/' in actor:
+            domain=domain.split('/')[0]
     else:
         domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
     if ':' in domain:
