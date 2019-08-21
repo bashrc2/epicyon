@@ -519,6 +519,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: divertToLoginScreen='+str(divertToLoginScreen))
                         print('DEBUG: authorized='+str(authorized))
+                        print('DEBUG: path='+self.path)
                     self.send_response(303)
                     self.send_header('Location', '/login')
                     self.send_header('Content-Length', '0')
@@ -828,7 +829,7 @@ class PubServer(BaseHTTPRequestHandler):
         # Unfollow a person from the web interface by selecting Unfollow on the dropdown
         if '/users/' in self.path and '?unfollow=' in self.path:
             followStr=self.path.split('?unfollow=')[1]
-            originPathStr=self.path.split('?unfollow=')[0]
+            originPathStr=self.path.split('?unfollow=')[0].replace('/following','')
             if ';' in followStr:
                 followActor=followStr.split(';')[0]
                 followProfileUrl=followStr.split(';')[1]
