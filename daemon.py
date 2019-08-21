@@ -2400,7 +2400,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
-                searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+                searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').strip()
                 if self.server.debug:
                     print('searchStr: '+searchStr)
                 if searchForEmoji:
