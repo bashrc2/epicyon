@@ -1032,7 +1032,7 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
         url=content.split('"'+videoSite)[1]
         if '"' in url:
             url=url.split('"')[0]
-            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\"50%\" frameborder=\"0\" allowfullscreen></iframe></center>"
             return content
 
     # A selection of the current larger peertube sites, mostly French and German language
