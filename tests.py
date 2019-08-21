@@ -38,6 +38,8 @@ from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
 from utils import followPerson
+from utils import getNicknameFromActor
+from utils import getDomainFromActor
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
@@ -1340,8 +1342,31 @@ def testClientToServer():
     #shutil.rmtree(aliceDir)
     #shutil.rmtree(bobDir)
 
+def testActorParsing():
+    print('testActorParsing')
+    actor='https://mydomain:72/users/mynick'
+    domain,port=getDomainFromActor(actor)
+    assert domain=='mydomain'
+    assert port==72
+    nickname=getNicknameFromActor(actor)
+    assert nickname=='mynick'
+
+    actor='https://randomain/users/rando'
+    domain,port=getDomainFromActor(actor)
+    assert domain=='randomain'
+    nickname=getNicknameFromActor(actor)
+    assert nickname=='rando'
+
+    actor='https://otherdomain:49/@othernick'
+    domain,port=getDomainFromActor(actor)
+    assert domain=='otherdomain'
+    assert port==49
+    nickname=getNicknameFromActor(actor)
+    assert nickname=='othernick'
+
 def runAllTests():
     print('Running tests...')
+    testActorParsing()
     testHttpsig()
     testCache()
     testThreads()
