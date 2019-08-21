@@ -1019,11 +1019,20 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
             content=content+"<center><iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
-    if '"https://www.youtube.com' in content:
-        url=content.split('"https://www.youtube.com')[1]
+    videoSite='https://www.youtube.com'
+    if '"'+videoSite in content:
+        url=content.split('"'+videoSite)[1]
         if '"' in url:
-            url=url.split('"')[0].replace('/watch?v=','/embed/')            
-            content=content+"<center><iframe src=\"https://www.youtube.com"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            url=url.split('"')[0].replace('/watch?v=','/embed/')
+            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            return content
+
+    videoSite='https://media.ccc.de'
+    if '"'+videoSite in content:
+        url=content.split('"'+videoSite)[1]
+        if '"' in url:
+            url=url.split('"')[0]
+            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     # A selection of the current larger peertube sites, mostly French and German language
