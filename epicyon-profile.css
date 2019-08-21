@@ -318,7 +318,7 @@ a:link {
     border: 2px solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: 5px;
-    padding: 10px;
+    padding: 20px;
     margin: 10px 0;
 }
 
@@ -327,6 +327,11 @@ a:link {
     border-radius: 5px;
     padding: 10px;
     margin: 10px 0;
+}
+
+.message {
+    margin-left: 0px;
+    width: 80%;
 }
 
 .container p.administeredby {

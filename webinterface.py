@@ -1312,6 +1312,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr=htmlRemplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
 
     contentStr=addEmbeddedVideo(contentStr)
+    contentStr='<div class="message">'+contentStr+'</div>'
     
     return \
         '<div class="'+containerClass+'">\n'+ \
