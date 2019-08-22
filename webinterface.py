@@ -1136,7 +1136,6 @@ def individualPostAsHtml(baseDir: str, \
             containerClassIcons='containericons darker'
             containerClass='container darker'
             avatarPosition=' class="right"'
-            #timeClass='time-left'
             if '/statuses/' in postJsonObject['object']['inReplyTo']:
                 replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
                 replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
