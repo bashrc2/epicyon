@@ -1177,7 +1177,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     if toNickname!='inbox':
         handle=httpPrefix+'://'+toDomain+'/@'+toNickname
     else:
-        handle=httpPrefix+'://'+toDomain+'/users/'+toNickname
+        handle=httpPrefix+'://'+toDomain+'/'+toNickname
         
     if debug:
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
