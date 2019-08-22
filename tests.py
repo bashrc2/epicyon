@@ -46,7 +46,7 @@ from follow import unfollowerOfPerson
 from follow import getFollowersOfPerson
 from follow import sendFollowRequest
 from person import createPerson
-from person import setPreferredNickname
+from person import setDisplayNickname
 from person import setBio
 from skills import setSkillLevel
 from roles import setRole
@@ -967,7 +967,7 @@ def testCreatePerson():
     assert os.path.isfile(baseDir+'/accounts/passwords')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
-    setPreferredNickname(baseDir,nickname,domain,'badger')
+    setDisplayNickname(baseDir,nickname,domain,'badger')
     setBio(baseDir,nickname,domain,'Randomly roaming in your backyard')
     archivePostsForPerson(nickname,domain,baseDir,'inbox',None,4)
     archivePostsForPerson(nickname,domain,baseDir,'outbox',None,4)

@@ -2168,9 +2168,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if len(actorJson['skills'].items())!=len(newSkills.items()):
                             actorChanged=True
                         actorJson['skills']=newSkills
-                        if fields.get('preferredNickname'):
-                            if fields['preferredNickname']!=actorJson['preferredUsername']:
-                                actorJson['preferredUsername']=fields['preferredNickname']
+                        if fields.get('displayNickname'):
+                            if fields['displayNickname']!=actorJson['name']:
+                                actorJson['name']=fields['displayNickname']
                                 actorChanged=True
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:

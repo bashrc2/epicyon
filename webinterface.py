@@ -20,7 +20,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import noOfAccounts
 from utils import isPublicPost
-from utils import getPreferredName
+from utils import getDisplayName
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import getPersonBox
@@ -291,13 +291,13 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         return ''
 
     isBot=''
-    preferredNickname=nickname
+    displayNickname=nickname
     bioStr=''
     manuallyApprovesFollowers=''
     with open(actorFilename, 'r') as fp:
         actorJson=commentjson.load(fp)
-        if actorJson.get('preferredUsername'):
-            preferredNickname=actorJson['preferredUsername']
+        if actorJson.get('name'):
+            displayNickname=actorJson['name']
         if actorJson.get('summary'):
             bioStr=actorJson['summary'].replace('<p>','').replace('</p>','')
         if actorJson.get('manuallyApprovesFollowers'):
@@ -367,7 +367,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '      <a href="'+pathOriginal+'"><button class="cancelbtn">Cancel</button></a>' \
         '    </div>'+ \
         '    <div class="container">' \
-        '      <input type="text" placeholder="Preferred name" name="preferredNickname" value="'+preferredNickname+'">' \
+        '      <input type="text" placeholder="name" name="displayNickname" value="'+displayNickname+'">' \
         '      <textarea id="message" name="bio" placeholder="Your bio..." style="height:200px">'+bioStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
@@ -810,7 +810,7 @@ def htmlProfile(projectVersion: str, \
     nickname=profileJson['name']
     if not nickname:
         return ""
-    preferredName=profileJson['preferredUsername']
+    displayName=profileJson['name']
     domain,port=getDomainFromActor(profileJson['id'])
     if not domain:
         return ""
@@ -886,7 +886,7 @@ def htmlProfile(projectVersion: str, \
         ' <div class="hero-image">' \
         '  <div class="hero-text">'+ \
         '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'">' \
-        '    <h1>'+preferredName+'</h1>' \
+        '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileDescription+'</p>'+ \
         loginButton+ \
@@ -959,13 +959,13 @@ def individualFollowAsHtml(baseDir: str,session,wfRequest: {}, \
     if not avatarUrl:
         avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
             getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
-        if preferredName:
-            titleStr=preferredName+' '+titleStr
+        if displayName:
+            titleStr=displayName+' '+titleStr
 
     buttonsStr=''
     if authorized:
@@ -1129,9 +1129,9 @@ def individualPostAsHtml(baseDir: str, \
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
 
-    preferredName=getPreferredName(postJsonObject['actor'],personCache)
-    if preferredName:
-        titleStr+='<a href="'+messageId+'">'+preferredName+'</a>'
+    displayName=getDisplayName(postJsonObject['actor'],personCache)
+    if displayName:
+        titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
         
@@ -1139,9 +1139,9 @@ def individualPostAsHtml(baseDir: str, \
         if postJsonObject['object'].get('attributedTo'):
             announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
             announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-            announcePreferredName=getPreferredName(postJsonObject['object']['attributedTo'],personCache)
-            if announcePreferredName:
-                titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announcePreferredName+'</a>'
+            announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
+            if announceDisplayName:
+                titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
             else:
                 titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
         else:
@@ -1155,9 +1155,9 @@ def individualPostAsHtml(baseDir: str, \
                 replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
                 replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
                 if replyNickname and replyDomain:
-                    replyPreferredName=getPreferredName(postJsonObject['object']['inReplyTo'],personCache)
-                    if replyPreferredName:
-                        titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyPreferredName+'</a>'
+                    replyDisplayName=getDisplayName(postJsonObject['object']['inReplyTo'],personCache)
+                    if replyDisplayName:
+                        titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
                     else:
                         titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
             else:
@@ -1203,13 +1203,13 @@ def individualPostAsHtml(baseDir: str, \
                 fullDomain=domain+':'+str(port)
         
     if fullDomain not in postJsonObject['actor']:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,preferredName = \
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
             getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
-        if preferredName:
-            titleStr=preferredName+' '+titleStr
+        if displayName:
+            titleStr=displayName+' '+titleStr
 
     avatarDropdown= \
         '    <a href="'+postJsonObject['actor']+'">' \
@@ -1778,9 +1778,9 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                 avatarUrl=profileJson['icon']['url']
         if not avatarUrl:
             avatarUrl=getPersonAvatarUrl(baseDir,personUrl,personCache)
-        preferredName=searchNickname
-        if profileJson.get('preferredUsername'):
-            preferredName=profileJson['preferredUsername']
+        displayName=searchNickname
+        if profileJson.get('displayUsername'):
+            displayName=profileJson['name']
         profileDescription=''
         if profileJson.get('summary'):
             profileDescription=profileJson['summary']
@@ -1807,7 +1807,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
             '    <img src="'+avatarUrl+'" alt="'+searchNickname+'@'+searchDomainFull+'">' \
-            '    <h1>'+preferredName+'</h1>' \
+            '    <h1>'+displayName+'</h1>' \
             '    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>' \
             '    <p>'+profileDescription+'</p>'+ \
             '  </div>' \

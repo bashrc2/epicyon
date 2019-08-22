@@ -188,13 +188,13 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
     if personJson.get('icon'):
         if personJson['icon'].get('url'):
             avatarUrl=personJson['icon']['url']
-    preferredName=None
-    if personJson.get('preferredUsername'):
-        preferredName=personJson['preferredUsername']
+    displayName=None
+    if personJson.get('name'):
+        displayName=personJson['name']
 
     storePersonInCache(baseDir,personUrl,personJson,personCache)
 
-    return boxJson,pubKeyId,pubKey,personId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName
+    return boxJson,pubKeyId,pubKey,personId,sharedInbox,capabilityAcquisition,avatarUrl,displayName
 
 def getPosts(session,outboxUrl: str,maxPosts: int, \
              maxMentions: int, \
@@ -964,7 +964,7 @@ def sendPost(projectVersion: str, \
         postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,postToBox)
 
@@ -1060,7 +1060,7 @@ def sendPostViaServer(projectVersion: str, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,preferredName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromDomain,postToBox)
                      
@@ -1192,7 +1192,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         postToBox='outbox'
     
     # get the actor inbox/outbox/capabilities for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,preferredName = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,postToBox)
 
@@ -1820,7 +1820,7 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
     if not wfRequest:
         sys.exit()
 
-    personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,preferredName= \
+    personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,'outbox')
     wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)

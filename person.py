@@ -179,7 +179,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'manuallyApprovesFollowers': False,
                  'name': nickname,
                  'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
-                 'preferredUsername': ''+nickname,
+                 'preferredUsername': nickname,
                  'summary': '',
                  'publicKey': {
                      'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
@@ -443,9 +443,9 @@ def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
     return createInbox(baseDir,nickname,domain,port,httpPrefix, \
                        noOfItems,headerOnly,ocapAlways,pageNumber)
 
-def setPreferredNickname(baseDir: str,nickname: str, domain: str, \
-                         preferredName: str) -> bool:
-    if len(preferredName)>32:
+def setDisplayNickname(baseDir: str,nickname: str, domain: str, \
+                       displayName: str) -> bool:
+    if len(displayName)>32:
         return False
     handle=nickname.lower()+'@'+domain.lower()
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
@@ -456,7 +456,7 @@ def setPreferredNickname(baseDir: str,nickname: str, domain: str, \
         personJson=commentjson.load(fp)
     if not personJson:
         return False
-    personJson['preferredUsername']=preferredName
+    personJson['name']=displayName
     with open(filename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
     return True

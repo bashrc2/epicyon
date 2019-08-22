@@ -573,7 +573,7 @@ def personReceiveUpdate(baseDir: str, \
                         domain: str,port: int, \
                         updateNickname: str,updateDomain: str,updatePort: int, \
                         personJson: {},personCache: {},debug: bool) -> bool:
-    """Changes an actor. eg: avatar or preferred name change
+    """Changes an actor. eg: avatar or display name change
     """
     if debug:
         print('DEBUG: receiving actor update for '+personJson['url'])

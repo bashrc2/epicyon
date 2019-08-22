@@ -9,7 +9,7 @@ __status__ = "Production"
 from person import createPerson
 from person import createSharedInbox
 from person import createCapabilitiesInbox
-from person import setPreferredNickname
+from person import setDisplayNickname
 from person import setBio
 from person import setProfileImage
 from person import removeAccount
