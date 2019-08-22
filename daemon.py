@@ -2263,8 +2263,6 @@ class PubServer(BaseHTTPRequestHandler):
                             # also copy to the actors cache and personCache in memory
                             storePersonInCache(self.server.baseDir,actorJson['id'],actorJson,self.server.personCache)
                             actorCacheFilename=self.server.baseDir+'/cache/actors/'+actorJson['id'].replace('/','#')+'.json'
-                            pprint(actorJson)
-                            print('*************************updating actor cache: '+actorCacheFilename)
                             with open(actorCacheFilename, 'w') as fp:
                                 commentjson.dump(actorJson, fp, indent=4, sort_keys=False)                            
                             # send actor update to followers
@@ -2272,6 +2270,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 'type': 'Update',
                                 'actor': actorJson['id'],
                                 'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                                'cc': [actorJson['id']+'/followers'],
                                 'object': actorJson
                             }
                             self.postToNickname=nickname
