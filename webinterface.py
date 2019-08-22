@@ -1130,7 +1130,6 @@ def individualPostAsHtml(baseDir: str, \
         messageId=postJsonObject['id'].replace('/activity','')
 
     preferredName=getPreferredName(postJsonObject['actor'],personCache)
-    print('***************** getPreferredName: '+postJsonObject['actor']+ ' = '+preferredName)
     if preferredName:
         titleStr+='<a href="'+messageId+'">'+preferredName+'</a>'
     else:
