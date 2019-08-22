@@ -645,18 +645,19 @@ def receiveUpdate(session,baseDir: str, \
         if debug:
             print('DEBUG: "users" missing from actor in '+messageJson['type'])
         return False
+
+    if messageJson['object']['type']=='Person':
+        if messageJson['object'].get('url') and messageJson['object'].get('id'):
+            if personReceiveUpdate(baseDir,nickname,domain,port, \
+                                   messageJson['object'], \
+                                   personCache,debug):
+                if debug:
+                    print('DEBUG: Profile update was received for '+messageJson['object']['url'])
+                    return True
+
     if messageJson['object'].get('capability') and messageJson['object'].get('scope'):
         domain,tempPort=getDomainFromActor(messageJson['object']['scope'])
         nickname=getNicknameFromActor(messageJson['object']['scope'])
-
-        if messageJson['object']['type']=='Person':
-            if messageJson['object'].get('url') and messageJson['object'].get('id'):
-                if personReceiveUpdate(baseDir,nickname,domain,port, \
-                                       messageJson['object'], \
-                                       personCache,debug):
-                    if debug:
-                        print('DEBUG: An update was received for '+messageJson['object']['url'])
-                        return True      
 
         if messageJson['object']['type']=='Capability':
             if capabilitiesReceiveUpdate(baseDir,nickname,domain,port,
