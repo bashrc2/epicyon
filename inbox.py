@@ -585,7 +585,7 @@ def personReceiveUpdate(baseDir: str, \
     if updatePort:
         if updatePort!=80 and updatePort!=443:
             updateDomainFull=updateDomain+':'+str(updatePort)
-    actor=domainFull+'/users/'+updateNickname
+    actor=updateDomainFull+'/users/'+updateNickname
     if actor not in personJson['id']:
         if debug:
             print('actor: '+actor)
@@ -660,6 +660,7 @@ def receiveUpdate(session,baseDir: str, \
 
     if messageJson['object']['type']=='Person':
         if messageJson['object'].get('url') and messageJson['object'].get('id'):
+            print('Request to update actor: '+messageJson['actor'])
             updateDomain,updatePort=getDomainFromActor(messageJson['actor'])
             updateNickname=getNicknameFromActor(messageJson['actor'])            
             if personReceiveUpdate(baseDir, \
