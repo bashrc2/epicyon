@@ -658,7 +658,8 @@ def receiveUpdate(session,baseDir: str, \
             print('DEBUG: "users" missing from actor in '+messageJson['type'])
         return False
 
-    if messageJson['object']['type']=='Person':
+    if messageJson['object']['type']=='Person' or \
+       messageJson['object']['type']=='Service':
         if messageJson['object'].get('url') and messageJson['object'].get('id'):
             print('Request to update actor: '+messageJson['actor'])
             updateDomain,updatePort=getDomainFromActor(messageJson['actor'])
