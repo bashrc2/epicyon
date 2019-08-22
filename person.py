@@ -210,6 +210,15 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         with open(filename, 'w') as fp:
             commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
 
+        # save to cache
+        if not os.path.isdir(baseDir+'/cache'):
+            os.mkdir(baseDir+'/cache')
+        if not os.path.isdir(baseDir+'/cache/actors'):
+            os.mkdir(baseDir+'/cache/actors')
+        cacheFilename=baseDir+'/cache/actors/'+newPerson['id'].replace('/','#')+'.json'
+        with open(cacheFilename, 'w') as fp:
+            commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+
         # save the private key
         privateKeysSubdir='/keys/private'
         if not os.path.isdir(baseDir+'/keys'):
