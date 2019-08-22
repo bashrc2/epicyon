@@ -2,7 +2,7 @@
 
 :root {
     --main-bg-color: #282c37;
-    --main-bg-color-darker: #232c37;
+    --main-bg-color-reply: #212c37;
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
     --main-fg-color: #dddddd;
@@ -395,7 +395,7 @@ a:link {
 }
 
 .darker {
-    background-color: var(--main-bg-color-darker);
+    background-color: var(--main-bg-color-reply);
 }
 
 .report {
@@ -474,7 +474,7 @@ input[type=text], select, textarea {
     margin-bottom: 16px;
     resize: vertical;
     font-size: 18px;
-    background-color: var(--main-bg-color-darker);
+    background-color: var(--main-bg-color-reply);
     color: var(--main-fg-color);
 }
 
