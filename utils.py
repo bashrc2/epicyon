@@ -64,10 +64,10 @@ def urlPermitted(url: str, federationList: [],capability: str):
 def getPreferredName(actor: str,personCache: {}) -> str:
     """Returns the preferred name for the given actor
     """
-    if not personCache.get(actor):
-        return None
     if '/statuses/' in actor:
         actor=actor.split('/statuses/')[0]
+    if not personCache.get(actor):
+        return None
     if personCache[actor].get('actor'):
         if personCache[actor]['actor'].get('preferredUsername'):
             return personCache[actor]['actor']['preferredUsername']
