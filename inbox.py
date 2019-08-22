@@ -581,7 +581,7 @@ def personReceiveUpdate(baseDir: str, \
     if port:
         if port!=80 and port!=443:
             domainFull=domain+':'+str(port)
-    updateDomainFull=domain
+    updateDomainFull=updateDomain
     if updatePort:
         if updatePort!=80 and updatePort!=443:
             updateDomainFull=updateDomain+':'+str(updatePort)
