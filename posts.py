@@ -1466,6 +1466,17 @@ def sendToFollowers(session,baseDir: str, \
         if len(followerHandles)>1:
             nickname='inbox'
             toNickname='inbox'
+
+        # If this is a profile update then send to shared inbox
+        if postJsonObject.get('type'):
+           if postJsonObject['type']=='Update':
+               if postJsonObject.get('object'):
+                   if isinstance(postJsonObject['object'], dict):
+                       if postJsonObject['object'].get('type'):
+                           if postJsonObject['object']['type']=='Person':
+                               print('Sending profile update to shared inbox of '+toDomain)
+                               toNickname='inbox'
+
         if debug:
             print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
         sendSignedJson(postJsonObject,session,baseDir, \
