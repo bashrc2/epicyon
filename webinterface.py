@@ -1124,26 +1124,29 @@ def individualPostAsHtml(baseDir: str, \
         messageId=postJsonObject['id'].replace('/activity','')
 
     titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
-    if isAnnounced and postJsonObject['object'].get('attributedTo'):
-        announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
-        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-        titleStr+=' <i class="replyingto">announced</i> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
-        
-    if not isAnnounced and postJsonObject['object'].get('inReplyTo'):
-        containerClassIcons='containericons darker'
-        containerClass='container darker'
-        avatarPosition=' class="right"'
-        #timeClass='time-left'
-        if '/statuses/' in postJsonObject['object']['inReplyTo']:
-            replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
-            replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
-            if replyNickname and replyDomain:
-                titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+    if isAnnounced:
+        if postJsonObject['object'].get('attributedTo'):
+            announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
+            announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
+            titleStr+=' <img src="/icons/repeat_inactive.png" class="announce"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
         else:
-            postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
-            if '/' in postDomain:
-                postDomain=postDomain.split('/',1)[0]
-            titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+            titleStr+=' <img src="/icons/repeat_inactive.png" class="announce"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+    else:
+        if postJsonObject['object'].get('inReplyTo'):
+            containerClassIcons='containericons darker'
+            containerClass='container darker'
+            avatarPosition=' class="right"'
+            #timeClass='time-left'
+            if '/statuses/' in postJsonObject['object']['inReplyTo']:
+                replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+                replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+                if replyNickname and replyDomain:
+                    titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+            else:
+                postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
+                if '/' in postDomain:
+                    postDomain=postDomain.split('/',1)[0]
+                titleStr+=' <i class="replyingto">replying to</i> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object']['attachment']:
         if isinstance(postJsonObject['object']['attachment'], list):

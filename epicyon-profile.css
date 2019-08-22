@@ -394,6 +394,10 @@ a:link {
     color: var(--main-fg-color);
 }
 
+.announce {
+    width: 50px;
+}
+
 .darker {
     background-color: var(--main-bg-color-reply);
 }
