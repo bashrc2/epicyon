@@ -608,7 +608,7 @@ def personReceiveUpdate(baseDir: str, \
     # check that the public keys match.
     # If they don't then this may be a nefarious attempt to hack an account
     if personCache.get(personJson['id']):
-        if personCache[personJson['id']]['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
+        if personCache[personJson['id']]['actor']['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
             if debug:
                 print('WARN: Public key does not match when updating actor')
             return False
