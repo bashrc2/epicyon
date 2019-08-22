@@ -1174,27 +1174,43 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             if ':' not in toDomain:
                 toDomain=toDomain+':'+str(toPort)        
 
-    if toNickname!='inbox':
+    if not sharedInbox:
         handle=httpPrefix+'://'+toDomain+'/@'+toNickname
     else:
         handle=httpPrefix+'://'+toDomain+'/'+toNickname
+        sharedInboxUrl=handle
         
     if debug:
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
 
-    # lookup the inbox for the To handle
-    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                              domain,projectVersion)
-    if not wfRequest:
-        if debug:
-            print('DEBUG: webfinger for '+handle+' failed')
-        return 1
+    if not sharedInbox:        
+        # lookup the inbox for the To handle
+        wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                                  domain,projectVersion)
+        if not wfRequest:
+            if debug:
+                print('DEBUG: webfinger for '+handle+' failed')
+            return 1
+    else:
+        wfRequest={
+            "aliases": [
+                httpPrefix+'://'+toDomain+'/inbox'
+            ],
+            "links": [
+                {
+                    "href": httpPrefix+'://'+toDomain+'/inbox',
+                    "rel": "self",
+                    "type": "application/activity+json"
+                }
+            ],
+            "subject": 'acct:inbox@'+toDomain
+        }        
 
     if not clientToServer:
         postToBox='inbox'
     else:
         postToBox='outbox'
-    
+
     # get the actor inbox/outbox/capabilities for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
