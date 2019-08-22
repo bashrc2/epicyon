@@ -388,8 +388,6 @@ a:link {
     margin-right: 0px;
     padding-left: 0px 0px;
     border-radius: 0%;
-    -ms-transform: translateX(22%);
-    transform: translateX(22%);
 }
 
 .replyingto {
