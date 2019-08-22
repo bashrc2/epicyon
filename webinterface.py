@@ -678,12 +678,17 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     newPostForm+=htmlFooter()
     return newPostForm
 
-def htmlHeader(css=None,lang='en') -> str:
+def htmlHeader(css=None,refreshSec=0,lang='en') -> str:
+    if refreshSec==0:
+        meta='  <meta charset="utf-8">\n'
+    else:
+        meta='  <meta http-equiv="Refresh" content="'+str(refreshSec)+'" charset="utf-8">\n'
+
     if not css:        
         htmlStr= \
             '<!DOCTYPE html>\n' \
-            '<html lang="'+lang+'">\n' \
-            '  <meta charset="utf-8">\n' \
+            '<html lang="'+lang+'">\n'+ \
+            meta+ \
             '  <style>\n' \
             '    @import url("epicyon-profile.css");\n'+ \
             '    background-color: #282c37' \
@@ -692,8 +697,8 @@ def htmlHeader(css=None,lang='en') -> str:
     else:
         htmlStr= \
             '<!DOCTYPE html>\n' \
-            '<html lang="'+lang+'">\n' \
-            '  <meta charset="utf-8">\n' \
+            '<html lang="'+lang+'">\n'+ \
+            meta+ \
             '  <style>\n'+css+'</style>\n' \
             '  <body>\n'        
     return htmlStr
@@ -1365,8 +1370,11 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
     moderationButtonStr=''
     if moderator:
         moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Moderate </span></button></a>'
-    
+
     tlStr=htmlHeader(profileStyle)
+    if boxName=='inbox' and pageNumber==1:
+        # refresh if on the first page of the inbox
+        tlStr=htmlHeader(profileStyle,240)
 
     # banner and row of buttons
     tlStr+= \
