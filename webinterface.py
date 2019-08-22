@@ -1779,7 +1779,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
         if not avatarUrl:
             avatarUrl=getPersonAvatarUrl(baseDir,personUrl,personCache)
         displayName=searchNickname
-        if profileJson.get('displayUsername'):
+        if profileJson.get('name'):
             displayName=profileJson['name']
         profileDescription=''
         if profileJson.get('summary'):
