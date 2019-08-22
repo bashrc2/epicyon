@@ -588,6 +588,8 @@ def personReceiveUpdate(baseDir: str, \
     actor=updateDomainFull+'/users/'+updateNickname
     if actor not in personJson['id']:
         if debug:
+            print('actor: '+actor)
+            print('id: '+personJson['id'])
             print('DEBUG: Actor does not match id')
         return False
     if updateDomainFull==domainFull:
