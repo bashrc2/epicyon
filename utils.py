@@ -66,8 +66,9 @@ def getPreferredName(actor: str,personCache: {}) -> str:
     """
     if not personCache.get(actor):
         return None
-    if personCache[actor].get('preferredUsername'):
-        return personCache[actor]['preferredUsername']
+    if personCache[actor].get('actor'):
+        if personCache[actor]['actor'].get('preferredUsername'):
+            return personCache[actor]['actor']['preferredUsername']
     return None
 
 def getNicknameFromActor(actor: str) -> str:
