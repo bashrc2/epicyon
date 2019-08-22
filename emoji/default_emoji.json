@@ -523,5 +523,7 @@
     "temperature": "1F321",
     "restart": "1F504",
     "key": "1F511",
-    "security": "1F510"
+    "security": "1F510",
+    "bookchin": "1F9EC",
+    "murraybookchin": "1F9EC"
 }

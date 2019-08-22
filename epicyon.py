@@ -816,8 +816,24 @@ if args.actor:
         httpPrefix='https'
         port=443
     session = createSession(domain,port,useTor)
-    wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
-                                domain,__version__)
+    if nickname!='inbox':
+        wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
+                                    domain,__version__)
+    else:
+        wfRequest={
+            "aliases": [
+                httpPrefix+'://'+domain+'/users/inbox'
+            ],
+            "links": [
+                {
+                    "href": httpPrefix+'://'+domain+'/users/inbox',
+                    "rel": "self",
+                    "type": "application/activity+json"
+                }
+            ],
+            "subject": 'acct:inbox@'+domain
+        }        
+
     if not wfRequest:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
