@@ -2259,6 +2259,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if actorChanged:
                             with open(actorFilename, 'w') as fp:
                                 commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                            # also copy to the actors cache and personCache in memory
+                            self.server.personCache[actorJson['id']]=actorJson
+                            actorCacheFilename=self.server.baseDir+'/cache/actors/'+actorJson['id'].replace('/','#')+'.json'
+                            with open(actorCacheFilename, 'w') as fp:
+                                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)                            
                         # send actor update to followers
                         updateActorJson={
                             'type': 'Update',
