@@ -20,6 +20,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import noOfAccounts
 from utils import isPublicPost
+from utils import getPreferredName
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import getPersonBox
@@ -1128,12 +1129,21 @@ def individualPostAsHtml(baseDir: str, \
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
 
-    titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
+    preferredName=getPreferredName(postJsonObject['actor'],personCache)
+    if preferredName:
+        titleStr+='<a href="'+messageId+'">'+preferredName+'</a>'
+    else:
+        titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
+        
     if isAnnounced:
         if postJsonObject['object'].get('attributedTo'):
             announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
             announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-            titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+            announcePreferredName=getPreferredName(postJsonObject['object']['attributedTo'],personCache)
+            if announcePreferredName:
+                titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announcePreferredName+'</a>'
+            else:
+                titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
         else:
             titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
     else:
@@ -1145,7 +1155,11 @@ def individualPostAsHtml(baseDir: str, \
                 replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
                 replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
                 if replyNickname and replyDomain:
-                    titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+                    replyPreferredName=getPreferredName(postJsonObject['object']['inReplyTo'],personCache)
+                    if replyPreferredName:
+                        titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyPreferredName+'</a>'
+                    else:
+                        titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
             else:
                 postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
                 if '/' in postDomain:
