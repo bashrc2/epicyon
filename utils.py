@@ -66,6 +66,8 @@ def getPreferredName(actor: str,personCache: {}) -> str:
     """
     if not personCache.get(actor):
         return None
+    if '/statuses/' in actor:
+        actor=actor.split('/statuses/')
     if personCache[actor].get('actor'):
         if personCache[actor]['actor'].get('preferredUsername'):
             return personCache[actor]['actor']['preferredUsername']
