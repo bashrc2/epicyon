@@ -807,7 +807,7 @@ def htmlProfile(projectVersion: str, \
                 extraJson=None) -> str:
     """Show the profile page as html
     """
-    nickname=profileJson['name']
+    nickname=profileJson['preferredUsername']
     if not nickname:
         return ""
     displayName=profileJson['name']
