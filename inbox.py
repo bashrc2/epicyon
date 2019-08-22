@@ -609,7 +609,7 @@ def personReceiveUpdate(baseDir: str,nickname: str,domain: str,port: int, \
                         print('WARN: Public key does not match cached actor when updating')
                     return False
     # save to cache in memory
-    personCache[personJson['id']]=personJson
+    storePersonInCache(baseDir,personJson['id'],personJson,personCache)
     # save to cache on file
     with open(actorFilename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
@@ -648,6 +648,8 @@ def receiveUpdate(session,baseDir: str, \
 
     if messageJson['object']['type']=='Person':
         if messageJson['object'].get('url') and messageJson['object'].get('id'):
+            domain,tempPort=getDomainFromActor(messageJson['actor'])
+            nickname=getNicknameFromActor(messageJson['actor'])
             if personReceiveUpdate(baseDir,nickname,domain,port, \
                                    messageJson['object'], \
                                    personCache,debug):
