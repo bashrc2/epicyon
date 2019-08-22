@@ -585,7 +585,7 @@ def personReceiveUpdate(baseDir: str, \
     if updatePort:
         if updatePort!=80 and updatePort!=443:
             updateDomainFull=updateDomain+':'+str(updatePort)
-    actor=updateDomainFull+'/users/'+updateNickname
+    actor=domainFull+'/users/'+updateNickname
     if actor not in personJson['id']:
         if debug:
             print('actor: '+actor)
