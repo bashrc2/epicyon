@@ -569,7 +569,9 @@ def receiveUndo(session,baseDir: str,httpPrefix: str, \
                                  debug)
     return False
 
-def personReceiveUpdate(baseDir: str,nickname: str,domain: str,port: int, \
+def personReceiveUpdate(baseDir: str, \
+                        domain: str,port: int, \
+                        updateNickname: str,updateDomain: str,updatePort: int, \
                         personJson: {},personCache: {},debug: bool) -> bool:
     """Changes an actor. eg: avatar or preferred name change
     """
@@ -579,10 +581,18 @@ def personReceiveUpdate(baseDir: str,nickname: str,domain: str,port: int, \
     if port:
         if port!=80 and port!=443:
             domainFull=domain+':'+str(port)
-    actor=domainFull+'/users/'+nickname
-    if actor in personJson['id']:
+    updateDomainFull=domain
+    if updatePort:
+        if updatePort!=80 and updatePort!=443:
+            updateDomainFull=updateDomain+':'+str(updatePort)
+    actor=updateDomainFull+'/users/'+updateNickname
+    if actor not in personJson['id']:
         if debug:
-            print('DEBUG: Cannot receive update activity for your own actor')
+            print('DEBUG: Actor does not match id')
+        return False
+    if updateDomainFull==domainFull:
+        if debug:
+            print('DEBUG: You can only receive actor updates for domains other than your own')
         return False
     if not personJson.get('publicKey'):
         if debug:
@@ -648,9 +658,11 @@ def receiveUpdate(session,baseDir: str, \
 
     if messageJson['object']['type']=='Person':
         if messageJson['object'].get('url') and messageJson['object'].get('id'):
-            domain,tempPort=getDomainFromActor(messageJson['actor'])
-            nickname=getNicknameFromActor(messageJson['actor'])
-            if personReceiveUpdate(baseDir,nickname,domain,port, \
+            updateDomain,updatePort=getDomainFromActor(messageJson['actor'])
+            updateNickname=getNicknameFromActor(messageJson['actor'])            
+            if personReceiveUpdate(baseDir, \
+                                   domain,port, \
+                                   updateNickname,updateDomain,updatePort, \
                                    messageJson['object'], \
                                    personCache,debug):
                 if debug:
