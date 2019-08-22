@@ -394,8 +394,14 @@ a:link {
     color: var(--main-fg-color);
 }
 
-.announce {
-    width: 50px;
+.container img.announceOrReply {
+    float: none;
+    width: 30px;
+    margin: 0 0;
+    padding: 0 0;
+    border-radius: 0;
+    -ms-transform: translateY(25%);
+    transform: translateY(25%);
 }
 
 .darker {
