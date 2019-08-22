@@ -423,8 +423,10 @@ a:link {
 }
 .container img.right {
     float: right;
-    margin-left: 20px;
+    margin-left: 0px;
     margin-right:0;
+    padding: 0 0;
+    margin: 0 0;
 }
 .containericons img.right {
     float: right;
