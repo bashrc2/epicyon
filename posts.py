@@ -1174,7 +1174,11 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             if ':' not in toDomain:
                 toDomain=toDomain+':'+str(toPort)        
 
-    handle=httpPrefix+'://'+toDomain+'/@'+toNickname
+    if toNickname!='inbox':
+        handle=httpPrefix+'://'+toDomain+'/@'+toNickname
+    else:
+        handle=httpPrefix+'://'+toDomain+'/users/'+toNickname
+        
     if debug:
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
 
