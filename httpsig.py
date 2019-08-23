@@ -120,6 +120,9 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
     return headers
 
 def verifyRecentSignature(signedDateStr: str) -> bool:
+    """Checks whether the given time taken from the header is within
+    12 hours of the current time
+    """
     currDate=datetime.datetime.utcnow()
     signedDate=datetime.datetime.strptime(signedDateStr,"%a, %d %b %Y %H:%M:%S %Z")
     # 12 hours tollerance
