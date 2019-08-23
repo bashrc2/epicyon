@@ -488,7 +488,9 @@ class PubServer(BaseHTTPRequestHandler):
                 createSession(self.server.domain,self.server.port,self.server.useTor)
 
         # treat shared inbox paths consistently
-        if self.path=='/sharedInbox' or self.path=='/users/inbox':
+        if self.path=='/sharedInbox' or \
+           self.path=='/users/inbox' or \
+           self.path=='/users/'+self.server.domain:
             self.path='/inbox'
 
         # is this a html request?

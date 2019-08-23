@@ -207,7 +207,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
         nickname=path.replace('/@','',1).replace('/'+followFile,'')
     if not nickname:
         return None
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
         return None
 
     if port:

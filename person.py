@@ -248,7 +248,7 @@ def registerAccount(baseDir: str,httpPrefix: str,domain: str,port: int, \
     """
     if accountExists(baseDir,nickname,domain):
         return False
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
         print('REGISTER: Nickname '+nickname+' is invalid')
         return False
     if len(password)<8:
@@ -265,7 +265,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
        return None,None,None,None
 
     # If a config.json file doesn't exist then don't decrement
@@ -321,7 +321,8 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     # is this a shared inbox lookup?
     isSharedInbox=False
     if path=='/inbox' or path=='/users/inbox' or path=='/sharedInbox':
-        path='/users/inbox'
+        # shared inbox actor on @domain@domain
+        path='/users/'+domain
         isSharedInbox=True
     else:
         notPersonLookup=['/inbox','/outbox','/outboxarchive', \
@@ -337,7 +338,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         nickname=path.replace('/@','',1)
     if not nickname:
         return None
-    if not isSharedInbox and not validNickname(nickname):
+    if not isSharedInbox and not validNickname(domain,nickname):
         return None
     if ':' in domain:
         domain=domain.split(':')[0]
@@ -391,7 +392,7 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
         nickname=path.replace('/@','',1).replace('/'+boxname,'')
     if not nickname:
         return None
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
         return None
     if boxname=='inbox':
         return createInbox(baseDir,nickname,domain,port,httpPrefix, \
@@ -438,7 +439,7 @@ def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
         nickname=path.replace('/@','',1).replace('/inbox','')
     if not nickname:
         return None
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
         return None
     return createInbox(baseDir,nickname,domain,port,httpPrefix, \
                        noOfItems,headerOnly,ocapAlways,pageNumber)

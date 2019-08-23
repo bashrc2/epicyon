@@ -817,17 +817,9 @@ if args.actor:
         port=443
     session = createSession(domain,port,useTor)
     if nickname!='inbox':
-        wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
-                                    domain,__version__)
-    else:
-        wfRequest={
-            'aliases': [httpPrefix+'://'+domain+'/@inbox',
-                        httpPrefix+'://'+domain+'/users/inbox'],
-            'links': [{'href': httpPrefix+'://'+domain+'/users/inbox',
-                       'rel': 'self',
-                       'type': 'application/activity+json'}],
-            'subject': 'acct:inbox@'+domain
-        }
+        nickname=domain
+    wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
+                                domain,__version__)
 
     if not wfRequest:
         print('Unable to webfinger '+nickname+'@'+domain)
@@ -858,7 +850,7 @@ if args.addaccount:
         if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
         print(nickname+' is a reserved name. Use something different.')
         sys.exit()        
     if not args.password:

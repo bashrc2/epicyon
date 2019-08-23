@@ -792,7 +792,10 @@ def getMentionedPeople(baseDir: str,httpPrefix: str, \
                 if not ('.' in externalDomain or externalDomain=='localhost'):
                     continue
             mentionedNickname=handle.split('@')[0]
-            if not validNickname(mentionedNickname):
+            mentionedDomain=handle.split('@')[1].strip('\n')
+            if ':' in mentionedDomain:
+                mentionedDomain=mentionedDomain.split(':')[0]
+            if not validNickname(mentionedDomain,mentionedNickname):
                 continue
             actor=httpPrefix+'://'+handle.split('@')[1]+'/users/'+mentionedNickname
             mentions.append(actor)
@@ -1167,6 +1170,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
 
     sharedInbox=False
     if toNickname=='inbox':
+        # shared inbox actor on @domain@domain
+        toNickname=toDomain
         sharedInbox=True
 
     if toPort:
@@ -1174,37 +1179,18 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             if ':' not in toDomain:
                 toDomain=toDomain+':'+str(toPort)        
 
-    if not sharedInbox:
-        handle=httpPrefix+'://'+toDomain+'/@'+toNickname
-    else:
-        handle=httpPrefix+'://'+toDomain+'/'+toNickname
-        sharedInboxUrl=handle
+    handle=httpPrefix+'://'+toDomain+'/@'+toNickname
         
     if debug:
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
 
-    if not sharedInbox:        
-        # lookup the inbox for the To handle
-        wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                  domain,projectVersion)
-        if not wfRequest:
-            if debug:
-                print('DEBUG: webfinger for '+handle+' failed')
-            return 1
-    else:
-        wfRequest={
-            "aliases": [
-                httpPrefix+'://'+toDomain+'/users/inbox'
-            ],
-            "links": [
-                {
-                    "href": httpPrefix+'://'+toDomain+'/users/inbox',
-                    "rel": "self",
-                    "type": "application/activity+json"
-                }
-            ],
-            "subject": 'acct:inbox@'+toDomain
-        }        
+    # lookup the inbox for the To handle
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              domain,projectVersion)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: webfinger for '+handle+' failed')
+        return 1
 
     if not clientToServer:
         postToBox='inbox'

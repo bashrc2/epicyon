@@ -202,7 +202,7 @@ def getSharesFeedForPerson(baseDir: str, \
         nickname=path.replace('/@','',1).replace('/shares','')
     if not nickname:
         return None
-    if not validNickname(nickname):
+    if not validNickname(domain,nickname):
         return None
 
     if port:
