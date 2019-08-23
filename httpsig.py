@@ -142,8 +142,8 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
         k: v[1:-1]
         for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
     }
-    print('********************signatureHeader: '+str(signatureHeader))
-    print('********************signatureDict: '+str(signatureDict))
+    #print('********************signatureHeader: '+str(signatureHeader))
+    #print('********************signatureDict: '+str(signatureDict))
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
@@ -152,32 +152,32 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
         if signedHeader == '(request-target)':
             signedHeaderList.append(
                 f'(request-target): {method.lower()} {path}')
-            print('***************************Verify (request-target): '+method.lower()+' '+path)
+            #print('***************************Verify (request-target): '+method.lower()+' '+path)
         elif signedHeader == 'digest':
             if messageBodyDigest:
                 bodyDigest=messageBodyDigest
             else:
                 bodyDigest = messageContentDigest(messageBodyJsonStr)
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
-            print('***************************Verify digest: SHA-256='+bodyDigest)
-            print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
+            #print('***************************Verify digest: SHA-256='+bodyDigest)
+            #print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
         else:
             if headers.get(signedHeader):
-                print('***************************Verify '+signedHeader+': '+headers[signedHeader])
+                #print('***************************Verify '+signedHeader+': '+headers[signedHeader])
                 signedHeaderList.append(
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 signedHeaderCap=signedHeader.capitalize()
-                print('***************************Verify '+signedHeaderCap+': '+headers[signedHeaderCap])
+                #print('***************************Verify '+signedHeaderCap+': '+headers[signedHeaderCap])
                 if headers.get(signedHeaderCap):
                     signedHeaderList.append(
                         f'{signedHeader}: {headers[signedHeaderCap]}')
 
-    print('***********************signedHeaderList: ')
-    pprint(signedHeaderList)
+    #print('***********************signedHeaderList: ')
+    #pprint(signedHeaderList)
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
-    print('***********************Verify: signedHeaderText: '+signedHeaderText)
+    #print('***********************Verify: signedHeaderText: '+signedHeaderText)
     headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
 
     # Get the signature, verify with public key, return result

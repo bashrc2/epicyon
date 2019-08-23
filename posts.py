@@ -1194,11 +1194,11 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     else:
         wfRequest={
             "aliases": [
-                httpPrefix+'://'+toDomain+'/inbox'
+                httpPrefix+'://'+toDomain+'/users/inbox'
             ],
             "links": [
                 {
-                    "href": httpPrefix+'://'+toDomain+'/inbox',
+                    "href": httpPrefix+'://'+toDomain+'/users/inbox',
                     "rel": "self",
                     "type": "application/activity+json"
                 }

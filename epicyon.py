@@ -821,22 +821,18 @@ if args.actor:
                                     domain,__version__)
     else:
         wfRequest={
-            "aliases": [
-                httpPrefix+'://'+domain+'/users/inbox'
-            ],
-            "links": [
-                {
-                    "href": httpPrefix+'://'+domain+'/users/inbox',
-                    "rel": "self",
-                    "type": "application/activity+json"
-                }
-            ],
-            "subject": 'acct:inbox@'+domain
-        }        
+            'aliases': [httpPrefix+'://'+domain+'/@inbox',
+                        httpPrefix+'://'+domain+'/users/inbox'],
+            'links': [{'href': httpPrefix+'://'+domain+'/users/inbox',
+                       'rel': 'self',
+                       'type': 'application/activity+json'}],
+            'subject': 'acct:inbox@'+domain
+        }
 
     if not wfRequest:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
+
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,domain)
