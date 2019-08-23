@@ -490,6 +490,7 @@ class PubServer(BaseHTTPRequestHandler):
         # treat shared inbox paths consistently
         if self.path=='/sharedInbox' or \
            self.path=='/users/inbox' or \
+           self.path=='/actor/inbox' or \
            self.path=='/users/'+self.server.domain:
             self.path='/inbox'
 
