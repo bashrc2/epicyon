@@ -119,6 +119,16 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
     headers['signature'] = signatureHeader
     return headers
 
+def verifyRecentSignature(signedDateStr: str) -> bool:
+    currDate=datetime.datetime.utcnow()
+    signedDate=datetime.datetime.strptime(signedDateStr,"%a, %d %b %Y %H:%M:%S %Z")
+    # 12 hours tollerance
+    if (currDate-signedDate).seconds > 43200:
+        print('WARN: Header signed too long ago: '+signedDateStr)
+        print(str((currDate-signedDate).seconds/(60*60))+' hours')
+        return False
+    return True
+
 def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                       path: str,GETmethod: bool, \
                       messageBodyDigest: str, \
@@ -164,22 +174,18 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             #print('***************************Verify digest: SHA-256='+bodyDigest)
             #print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
         else:
-            if signedHeader=='date':
-                # mitigate replay attacks
-                currDate=datetime.datetime.utcnow()
-                signedDate=datetime.datetime.strptime(headers[signedHeader],"%a, %d %b %Y %H:%M:%S %Z")
-                # 12 hours tollerance
-                if (currDate-signedDate).seconds > 43200:
-                    print('WARN: Header signed too long ago: '+headers[signedHeader])
-                    print(str((currDate-signedDate).seconds/(60*60))+' hours')
-                    return False
-
             if headers.get(signedHeader):
+                if signedHeader=='date':
+                    if not verifyRecentSignature(headers[signedHeader]):
+                        return False
                 #print('***************************Verify '+signedHeader+': '+headers[signedHeader])
                 signedHeaderList.append(
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 signedHeaderCap=signedHeader.capitalize()
+                if signedHeaderCap=='Date':
+                    if not verifyRecentSignature(headers[signedHeaderCap]):
+                        return False
                 #print('***************************Verify '+signedHeaderCap+': '+headers[signedHeaderCap])
                 if headers.get(signedHeaderCap):
                     signedHeaderList.append(
