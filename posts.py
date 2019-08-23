@@ -982,9 +982,6 @@ def sendPost(projectVersion: str, \
         inboxUrl=capabilityAcquisition
         if not capabilityAcquisition:
             return 2
-    else:
-        if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
-            inboxUrl=sharedInbox.replace('/inbox','/actor/inbox')
                      
     if not inboxUrl:
         return 3
@@ -1216,9 +1213,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         print("inboxUrl: "+inboxUrl)
         print("toPersonId: "+toPersonId)
         print("sharedInboxUrl: "+sharedInboxUrl)
-        print("avatarUrl: "+avatarUrl)
-        if sharedInbox and sharedInboxUrl:        
-            inboxUrl=sharedInboxUrl.replace('/inbox','/actor/inbox')
+        if inboxUrl.endswith('/actor/inbox'):
+            inboxUrl=sharedInboxUrl
 
     if not inboxUrl:
         if debug:
@@ -1249,7 +1245,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         if debug:
             print('DEBUG: '+toDomain+' is not in '+inboxUrl)
         return 7
-    postPath=inboxUrl.split(toDomain)[1]
+    postPath=inboxUrl.split(toDomain,1)[1]
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
