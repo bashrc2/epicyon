@@ -815,12 +815,11 @@ if args.actor:
     else:
         httpPrefix='https'
         port=443
-    session = createSession(domain,port,useTor)
+    session=createSession(domain,port,useTor)
     if nickname!='inbox':
         nickname=domain
-    wfRequest = webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
-                                domain,__version__)
-
+    wfRequest=webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
+                              domain,__version__)
     if not wfRequest:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()

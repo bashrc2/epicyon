@@ -984,7 +984,7 @@ def sendPost(projectVersion: str, \
             return 2
     else:
         if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
-            inboxUrl=sharedInbox.replace('/inbox','/'+toDomainOriginal)
+            inboxUrl=sharedInbox.replace('/inbox','/users/'+toDomainOriginal)
                      
     if not inboxUrl:
         return 3
@@ -1214,7 +1214,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             return 2
     else:
         if sharedInbox and sharedInboxUrl:        
-            inboxUrl=sharedInboxUrl.replace('/inbox','/'+toDomainOriginal)
+            inboxUrl=sharedInboxUrl.replace('/inbox','/users/'+toDomainOriginal)
 
     if not inboxUrl:
         if debug:
