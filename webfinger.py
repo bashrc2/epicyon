@@ -146,7 +146,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                 "rel": "magic-public-key"
             }
         ],
-        "subject": "acct:"+nickname+"@"+originalDomain
+        "subject": subjectStr
     }
     return account
 
