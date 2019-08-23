@@ -126,9 +126,14 @@ def verifyRecentSignature(signedDateStr: str) -> bool:
     currDate=datetime.datetime.utcnow()
     signedDate=datetime.datetime.strptime(signedDateStr,"%a, %d %b %Y %H:%M:%S %Z")
     # 12 hours tollerance
-    if (currDate-signedDate).seconds > 43200:
+    timeDiffSec=(currDate-signedDate).seconds
+    if timeDiffSec > 43200:
         print('WARN: Header signed too long ago: '+signedDateStr)
-        print(str((currDate-signedDate).seconds/(60*60))+' hours')
+        print(str(timeDiffSec/(60*60))+' hours')
+        return False
+    if timeDiffSec < 0:
+        print('WARN: Header signed in the future! '+signedDateStr)
+        print(str(timeDiffSec/(60*60))+' hours')
         return False
     return True
 
