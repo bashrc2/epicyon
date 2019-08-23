@@ -79,6 +79,7 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
                            wfJson: {}) -> bool:
     """Stores webfinger endpoint for a user to a file
     """
+    originalDomain=domain
     if port:
         if port!=80 and port!=443:
             if ':' not in domain:
@@ -90,6 +91,11 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
     filename=baseDir+wfSubdir+'/'+handle.lower()+'.json'
     with open(filename, 'w') as fp:
         commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+    if nickname=='inbox':
+        handle=originalDomain+'@'+domain
+        filename=baseDir+wfSubdir+'/'+handle.lower()+'.json'
+        with open(filename, 'w') as fp:
+            commentjson.dump(wfJson, fp, indent=4, sort_keys=False)        
     return True
 
 def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
@@ -102,24 +108,32 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
             if ':' not in domain:
                 domain=domain+':'+str(port)
 
+    personName=nickname
+    personId=httpPrefix+"://"+domain+"/users/"+personName
+    subjectStr="acct:"+personName+"@"+originalDomain
+    if nickname=='inbox' or nickname==originalDomain:
+        personName='actor'
+        personId=httpPrefix+"://"+domain+"/"+personName
+        subjectStr="acct:"+originalDomain+"@"+originalDomain
+
     account = {
         "aliases": [
-            httpPrefix+"://"+domain+"/@"+nickname,
-            httpPrefix+"://"+domain+"/users/"+nickname
+            httpPrefix+"://"+domain+"/@"+personName,
+            personId
         ],
         "links": [
             {
-                "href": httpPrefix+"://"+domain+"/@"+nickname,
+                "href": httpPrefix+"://"+domain+"/@"+personName,
                 "rel": "http://webfinger.net/rel/profile-page",
                 "type": "text/html"
             },
             {
-                "href": httpPrefix+"://"+domain+"/users/"+nickname+".atom",
+                "href": personId+".atom",
                 "rel": "http://schemas.google.com/g/2010#updates-from",
                 "type": "application/atom+xml"
             },
             {
-                "href": httpPrefix+"://"+domain+"/users/"+nickname,
+                "href": personId,
                 "rel": "self",
                 "type": "application/activity+json"
             },
