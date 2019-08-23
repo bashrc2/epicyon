@@ -176,6 +176,11 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
         if port!=80 and port !=443:
             if ':' not in handle:
                 handle=handle+':'+str(port)
+    # convert @domain@domain to inbox@domain
+    if '@' in handle:
+        handleDomain=handle.split('@')[1]
+        if handle.startswith(domain+'@'):
+            handle='inbox@'+handleDomain
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
     if debug:
         print('DEBUG: WEBFINGER filename '+filename)
