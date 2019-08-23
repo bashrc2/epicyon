@@ -816,7 +816,7 @@ if args.actor:
         httpPrefix='https'
         port=443
     session=createSession(domain,port,useTor)
-    if nickname!='inbox':
+    if nickname=='inbox':
         nickname=domain
     wfRequest=webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
                               domain,__version__)
