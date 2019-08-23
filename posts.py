@@ -948,6 +948,11 @@ def sendPost(projectVersion: str, \
     """
     withDigest=True
 
+    if toNickname=='inbox':
+        # shared inbox actor on @domain@domain
+        toNickname=toDomain
+
+    toDomainOriginal=toDomain
     if toPort:
         if toPort!=80 and toPort!=443:
             if ':' not in toDomain:
@@ -979,7 +984,7 @@ def sendPost(projectVersion: str, \
             return 2
     else:
         if noOfFollowersOnDomain(baseDir,handle,toDomain)>1 and sharedInbox:        
-            inboxUrl=sharedInbox
+            inboxUrl=sharedInbox.replace('/inbox','/'+toDomainOriginal)
                      
     if not inboxUrl:
         return 3
@@ -1003,7 +1008,7 @@ def sendPost(projectVersion: str, \
 
     if toDomain not in inboxUrl:
         return 7
-    postPath=inboxUrl.split(toDomain)[1]
+    postPath=inboxUrl.split(toDomain,1)[1]
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
@@ -1174,6 +1179,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         toNickname=toDomain
         sharedInbox=True
 
+    toDomainOriginal=toDomain
     if toPort:
         if toPort!=80 and toPort!=443:
             if ':' not in toDomain:
@@ -1208,7 +1214,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             return 2
     else:
         if sharedInbox and sharedInboxUrl:        
-            inboxUrl=sharedInboxUrl
+            inboxUrl=sharedInboxUrl.replace('/inbox','/'+toDomainOriginal)
 
     if not inboxUrl:
         if debug:

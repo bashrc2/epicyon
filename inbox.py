@@ -239,6 +239,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
 
     sharedInboxItem=False
     if nickname=='inbox':
+        nickname=originalDomain
         sharedInboxItem=True
         
     newQueueItem = {
