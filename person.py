@@ -137,10 +137,24 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         storeWebfingerEndpoint(nickname,domain,port,baseDir,webfingerEndpoint)
 
     handle=nickname.lower()+'@'+domain.lower()
+    originalDomain=domain
     if port:
         if port!=80 and port!=443:
             if ':' not in domain:
                 domain=domain+':'+str(port)
+
+    personType='Person'
+    approveFollowers=False
+    personName=nickname
+    inboxStr=httpPrefix+'://'+domain+'/users/'+nickname+'/inbox'
+    personId=httpPrefix+'://'+domain+'/users/'+nickname
+    if nickname=='inbox':
+        # shared inbox
+        inboxStr=httpPrefix+'://'+domain+'/actor/inbox'
+        personId=httpPrefix+'://'+domain+'/actor'
+        personName=originalDomain
+        approveFollowers=True
+        personType='Application'
 
     newPerson = {'@context': ['https://www.w3.org/ns/activitystreams',
                               'https://w3id.org/security/v1',
@@ -171,15 +185,15 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
                           'url': httpPrefix+'://'+domain+'/users/'+nickname+'/avatar.png'},
-                 'id': httpPrefix+'://'+domain+'/users/'+nickname,
+                 'id': personId,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
                            'url': httpPrefix+'://'+domain+'/users/'+nickname+'/image.png'},
-                 'inbox': httpPrefix+'://'+domain+'/users/'+nickname+'/inbox',
-                 'manuallyApprovesFollowers': False,
-                 'name': nickname,
+                 'inbox': inboxStr,
+                 'manuallyApprovesFollowers': approveFollowers,
+                 'name': personName,
                  'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
-                 'preferredUsername': nickname,
+                 'preferredUsername': personName,
                  'summary': '',
                  'publicKey': {
                      'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
@@ -187,8 +201,8 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      'publicKeyPem': publicKeyPem
                  },
                  'tag': [],
-                 'type': 'Person',
-                 'url': httpPrefix+'://'+domain+'/@'+nickname
+                 'type': personType,
+                 'url': httpPrefix+'://'+domain+'/@'+personName
     }
 
     if saveToFile:

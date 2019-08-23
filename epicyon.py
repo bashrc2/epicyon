@@ -826,6 +826,9 @@ if args.actor:
 
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
+    if nickname==domain:
+        personUrl=personUrl.replace('/users/','/actor/')
+    #print('personUrl: '+personUrl)
     personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,domain)
     if personJson:
         pprint(personJson)
