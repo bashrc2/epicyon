@@ -146,8 +146,8 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
     personType='Person'
     approveFollowers=False
     personName=nickname
-    inboxStr=httpPrefix+'://'+domain+'/users/'+nickname+'/inbox'
     personId=httpPrefix+'://'+domain+'/users/'+nickname
+    inboxStr=personId+'/inbox'
     if nickname=='inbox':
         # shared inbox
         inboxStr=httpPrefix+'://'+domain+'/actor/inbox'
@@ -171,39 +171,53 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                                'value': 'schema:value'}],
                  'attachment': [],
                  'endpoints': {
-                     'id': httpPrefix+'://'+domain+'/users/'+nickname+'/endpoints',
+                     'id': personId+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
                  },
                  'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
-                 'followers': httpPrefix+'://'+domain+'/users/'+nickname+'/followers',
-                 'following': httpPrefix+'://'+domain+'/users/'+nickname+'/following',
-                 'shares': httpPrefix+'://'+domain+'/users/'+nickname+'/shares',
+                 'followers': personId+'/followers',
+                 'following': personId+'/following',
+                 'shares': personId+'/shares',
                  'orgSchema': None,
                  'skills': {},
                  'roles': {},
                  'availability': None,
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
-                          'url': httpPrefix+'://'+domain+'/users/'+nickname+'/avatar.png'},
+                          'url': personId+'/avatar.png'},
                  'id': personId,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
-                           'url': httpPrefix+'://'+domain+'/users/'+nickname+'/image.png'},
+                           'url': personId+'/image.png'},
                  'inbox': inboxStr,
                  'manuallyApprovesFollowers': approveFollowers,
                  'name': personName,
-                 'outbox': httpPrefix+'://'+domain+'/users/'+nickname+'/outbox',
+                 'outbox': personId+'/outbox',
                  'preferredUsername': personName,
                  'summary': '',
                  'publicKey': {
-                     'id': httpPrefix+'://'+domain+'/users/'+nickname+'#main-key',
-                     'owner': httpPrefix+'://'+domain+'/users/'+nickname,
+                     'id': personId+'#main-key',
+                     'owner': personId,
                      'publicKeyPem': publicKeyPem
                  },
                  'tag': [],
                  'type': personType,
                  'url': httpPrefix+'://'+domain+'/@'+personName
     }
+
+    if nickname=='inbox':
+        # fields not needed by the shared inbox
+        del newPerson['outbox']
+        del newPerson['icon']
+        del newPerson['image']
+        del newPerson['skills']
+        del newPerson['shares']
+        del newPerson['roles']
+        del newPerson['tag']
+        del newPerson['availability']
+        del newPerson['followers']
+        del newPerson['following']
+        del newPerson['attachment']
 
     if saveToFile:
         # save person to file
