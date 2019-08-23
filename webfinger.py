@@ -179,7 +179,7 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
     # convert @domain@domain to inbox@domain
     if '@' in handle:
         handleDomain=handle.split('@')[1]
-        if handle.startswith(domain+'@'):
+        if handle.startswith(handleDomain+'@'):
             handle='inbox@'+handleDomain
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
     if debug:
