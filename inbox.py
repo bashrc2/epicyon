@@ -660,6 +660,7 @@ def receiveUpdate(session,baseDir: str, \
         return False
 
     if messageJson['object']['type']=='Person' or \
+       messageJson['object']['type']=='Application' or \
        messageJson['object']['type']=='Service':
         if messageJson['object'].get('url') and messageJson['object'].get('id'):
             print('Request to update actor: '+messageJson['actor'])
