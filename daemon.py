@@ -76,6 +76,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
@@ -514,32 +515,24 @@ class PubServer(BaseHTTPRequestHandler):
            self.path=='/users/'+self.server.domain:
             self.path='/inbox'
 
-        # Unfollow a person from the web interface by selecting Unfollow on the dropdown
-        if htmlGET and '/users/' in self.path and '?unfollow=' in self.path:
-            followStr=self.path.split('?unfollow=')[1]
-            originPathStr=self.path.split('?unfollow=')[0]
-            if ';' in followStr:
-                followActor=followStr.split(';')[0]
-                followProfileUrl=followStr.split(';')[1]
-                # show the confirm follow screen
-                msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode()
-                self._set_headers('text/html',len(msg),cookie)
-                self.wfile.write(msg)
-                self.server.GETbusy=False
-                return
-            self._redirect_headers(originPathStr,cookie)
-            self.server.GETbusy=False
-            return
-
         # show the person options screen with view/follow/block/report
         if htmlGET and '/users/' in self.path:
            if '?options=' in self.path:
                optionsStr=self.path.split('?options=')[1]
                originPathStr=self.path.split('?options=')[0]
                if ';' in optionsStr:
-                   optionsActor=optionsStr.split(';')[0]
-                   optionsProfileUrl=optionsStr.split(';')[1]
-                   msg=htmlPersonOptions(self.server.baseDir,originPathStr,optionsActor,optionsProfileUrl).encode()
+                   optionsList=optionsStr.split(';')
+                   optionsActor=optionsList[0]
+                   optionsProfileUrl=optionsList[1]
+                   optionsLink=None
+                   if len(optionsList)>2:
+                       optionsLink=optionsList[2]
+                   msg=htmlPersonOptions(self.server.baseDir, \
+                                         self.server.domain, \
+                                         originPathStr, \
+                                         optionsActor, \
+                                         optionsProfileUrl,
+                                         optionsLink).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self.wfile.write(msg)
                    self.server.GETbusy=False
@@ -790,42 +783,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
-        # follow a person from the web interface by selecting Follow on the dropdown
-        if '/users/' in self.path:
-           if '?follow=' in self.path:
-               followStr=self.path.split('?follow=')[1]
-               originPathStr=self.path.split('?follow=')[0]
-               if ';' in followStr:
-                   followActor=followStr.split(';')[0]
-                   followProfileUrl=followStr.split(';')[1]
-                   # show the confirm follow screen
-                   msg=htmlFollowConfirm(self.server.baseDir,originPathStr,followActor,followProfileUrl).encode()
-                   self._set_headers('text/html',len(msg),cookie)
-                   self.wfile.write(msg)
-                   self.server.GETbusy=False
-                   return
-               self._redirect_headers(originPathStr,cookie)
-               self.server.GETbusy=False
-               return
-
-        # block a person from the web interface by selecting Block on the dropdown
-        if '/users/' in self.path:
-           if '?block=' in self.path:
-               blockStr=self.path.split('?block=')[1]
-               originPathStr=self.path.split('?block=')[0]
-               if ';' in blockStr:
-                   blockActor=blockStr.split(';')[0]
-                   blockProfileUrl=blockStr.split(';')[1]
-                   # show the confirm block screen
-                   msg=htmlBlockConfirm(self.server.baseDir,originPathStr,blockActor,blockProfileUrl).encode()
-                   self._set_headers('text/html',len(msg),cookie)
-                   self.wfile.write(msg)
-                   self.server.GETbusy=False
-                   return
-               self._redirect_headers(originPathStr,cookie)
-               self.server.GETbusy=False
-               return
-
         # hashtag search
         if self.path.startswith('/tags/'):
             pageNumber=1
@@ -876,24 +833,6 @@ class PubServer(BaseHTTPRequestHandler):
                msg=htmlSearchEmojiTextEntry(self.server.baseDir,self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
                self.wfile.write(msg)
-               self.server.GETbusy=False
-               return
-
-        # Unblock a person from the web interface by selecting Unblock on the dropdown
-        if htmlGET and '/users/' in self.path:
-           if '?unblock=' in self.path:
-               blockStr=self.path.split('?unblock=')[1]
-               originPathStr=self.path.split('?unblock=')[0]
-               if ';' in blockStr:
-                   blockActor=blockStr.split(';')[0]
-                   blockProfileUrl=blockStr.split(';')[1]
-                   # show the confirm unblock screen
-                   msg=htmlUnblockConfirm(self.server.baseDir,originPathStr,blockActor,blockProfileUrl).encode()
-                   self._set_headers('text/html',len(msg),cookie)
-                   self.wfile.write(msg)
-                   self.server.GETbusy=False
-                   return
-               self._redirect_headers(originPathStr,cookie)
                self.server.GETbusy=False
                return
 
@@ -1117,7 +1056,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newfollowers') or \
             self.path.endswith('/newdm') or \
             self.path.endswith('/newreport') or \
-            '/newreport?' in self.path or \
             self.path.endswith('/newshare')):
             msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList).encode()
             self._set_headers('text/html',len(msg),cookie)
@@ -2657,6 +2595,78 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Adding block by '+blockerNickname+' of '+blockingActor)
                     addBlock(self.server.baseDir,blockerNickname,self.server.domain, \
                              blockingNickname,blockingDomainFull)
+            self._redirect_headers(originPathStr,cookie)
+            self.server.POSTbusy=False
+            return
+
+        # an option was chosen from person options screen
+        # view/follow/block/report
+        if authorized and self.path.endswith('/personoptions'):
+            originPathStr=self.path.split('/personoptions')[0]
+            chooserNickname=getNicknameFromActor(originPathStr)
+            length = int(self.headers['Content-length'])
+            optionsConfirmParams=self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
+            optionsActor=optionsConfirmParams.split('actor=')[1]
+            optionsAvatarUrl=optionsConfirmParams.split('avatarUrl=')[1]
+            if '&' in optionsActor:
+                optionsActor=optionsActor.split('&')[0]
+            optionsNickname=getNicknameFromActor(optionsActor)
+            optionsDomain,optionsPort=getDomainFromActor(optionsActor)
+            optionsDomainFull=optionsDomain
+            if optionsPort:
+                if optionsPort!=80 and optionsPort!=443:
+                    if ':' not in optionsDomain:
+                        optionsDomainFull=optionsDomain+':'+str(optionsPort)
+            if chooserNickname==optionsNickname and \
+               optionsDomain==self.server.domain and \
+               optionsPort==self.server.port:
+                if self.server.debug:
+                    print('You cannot perform an option action on yourself')
+
+            if '&submitView=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Viewing '+optionsActor)
+                self._redirect_headers(optionsActor,cookie)
+                self.server.POSTbusy=False
+                return
+            if '&submitBlock=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Adding block by '+chooserNickname+' of '+optionsActor)
+                addBlock(self.server.baseDir,chooserNickname,self.server.domain, \
+                         optionsNickname,optionsDomainFull)
+            if '&submitUnblock=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Unblocking '+optionsActor)
+                msg=htmlUnblockConfirm(self.server.baseDir,originPathStr,optionsActor,optionsAvatarUrl).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.POSTbusy=False
+                return
+            if '&submitFollow=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Following '+optionsActor)
+                msg=htmlFollowConfirm(self.server.baseDir,originPathStr,optionsActor,optionsAvatarUrl).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.POSTbusy=False
+                return
+            if '&submitUnfollow=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Unfollowing '+optionsActor)
+                msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,optionsActor,optionsAvatarUrl).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.POSTbusy=False
+                return
+            if '&submitReport=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Reporting '+optionsActor)
+                msg=htmlNewPost(self.server.baseDir,self.path,None,[]).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.POSTbusy=False
+                return            
+
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return

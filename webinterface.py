@@ -1231,31 +1231,18 @@ def individualPostAsHtml(baseDir: str, \
         '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
 
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
-        # if not following then show "Follow" in the dropdown
-        followUnfollowStr='<a href="/users/'+nickname+'?follow='+postJsonObject['actor']+';'+avatarUrl+'">Follow</a>'
-        # if following then show "Unfollow" in the dropdown
-        if isFollowingActor(baseDir,nickname,domain,postJsonObject['actor']):
-            followUnfollowStr='<a href="/users/'+nickname+'?unfollow='+postJsonObject['actor']+';'+avatarUrl+'">Unfollow</a>'
-
-        blockUnblockStr='<a href="/users/'+nickname+'?block='+postJsonObject['actor']+';'+avatarUrl+'">Block</a>'
-        # if blocking then show "Unblock" in the dropdown
-        actorDomainFull=actorDomain
-        if actorPort:
-            if actorPort!=80 and actorPort!=443:
-                if ':' not in actorDomain:
-                    actorDomainFull=actorDomain+':'+str(actorPort)
-        if isBlocked(baseDir,nickname,domain,actorNickname,actorDomainFull):
-            blockUnblockStr='<a href="/users/'+nickname+'?unblock='+postJsonObject['actor']+';'+avatarUrl+'">Unblock</a>'
-
-        reportStr=''
         if messageId:
-            reportStr='<a href="/users/'+nickname+'/newreport?url='+messageId+';'+avatarUrl+'">Report</a>'
-
-        avatarDropdown= \
-            '  <div onclick="dropdown()" class="dropdown-timeline">' \
-            '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+'">' \
-            '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
-            '  </div>'
+            avatarDropdown= \
+                '  <div class="dropdown-timeline">' \
+                '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+';'+messageId+'">' \
+                '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
+                '  </div>'
+        else:
+            avatarDropdown= \
+                '  <div class="dropdown-timeline">' \
+                '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+'">' \
+                '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
+                '  </div>'
 
     publishedStr=postJsonObject['object']['published']
     if '.' not in publishedStr:
@@ -1605,15 +1592,38 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+=htmlFooter()
     return followStr
 
-def htmlPersonOptions(baseDir: str,originPathStr: str,optionsActor: str,optionsProfileUrl: str) -> str:
+def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: str,optionsProfileUrl: str,optionsLink: str) -> str:
     """Show options for a person: view/follow/block/report
     """
-    optionsDomain,port=getDomainFromActor(optionsActor)
+    optionsDomain,optionsPort=getDomainFromActor(optionsActor)
     
     if os.path.isfile(baseDir+'/img/options-background.png'):
         if not os.path.isfile(baseDir+'/accounts/options-background.png'):
             copyfile(baseDir+'/img/options-background.png',baseDir+'/accounts/options-background.png')
 
+    followStr='Follow'
+    blockStr='Block'
+    if originPathStr.startswith('/users/'):
+        nickname=originPathStr.split('/users/')[1]
+        if '/' in nickname:
+            nickname=nickname.split('/')[0]
+        if '?' in nickname:
+            nickname=nickname.split('?')[0]
+        followerDomain,followerPort=getDomainFromActor(optionsActor)
+        if isFollowingActor(baseDir,nickname,domain,optionsActor):
+            followStr='Unfollow'
+
+        optionsNickname=getNicknameFromActor(optionsActor)
+        optionsDomainFull=optionsDomain
+        if optionsPort:
+            if optionsPort!=80 and optionsPort!=443:
+                optionsDomainFull=optionsDomain+':'+str(optionsPort)
+        if isBlocked(baseDir,nickname,domain,optionsNickname,optionsDomainFull):
+            blockStr='Block'
+
+    optionsLinkStr=''
+    if optionsLink:
+        optionsLinkStr='    <input type="hidden" name="postUrl" value="'+optionsLink+'">'
     with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
         profileStyle = cssFile.read()
     optionsStr=htmlHeader(profileStyle)
@@ -1626,9 +1636,11 @@ def htmlPersonOptions(baseDir: str,originPathStr: str,optionsActor: str,optionsP
     optionsStr+= \
         '  <form method="POST" action="'+originPathStr+'/personoptions">' \
         '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
+        '    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'+ \
+        optionsLinkStr+ \
         '    <button type="submit" class="button" name="submitView">View</button>' \
-        '    <button type="submit" class="button" name="submitFollow">Follow</button>' \
-        '    <button type="submit" class="button" name="submitBlock">Block</button>' \
+        '    <button type="submit" class="button" name="submit'+followStr+'">'+followStr+'</button>' \
+        '    <button type="submit" class="button" name="submit'+blockStr+'">'+blockStr+'</button>' \
         '    <button type="submit" class="button" name="submitReport">Report</button>' \
         '  </form>'
     optionsStr+='</center>'
