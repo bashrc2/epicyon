@@ -1622,7 +1622,7 @@ def htmlPersonOptions(baseDir: str,originPathStr: str,optionsActor: str,optionsP
     optionsStr+='  <center>'
     optionsStr+='  <a href="'+optionsActor+'">'
     optionsStr+='  <img src="'+optionsProfileUrl+'"/></a>'
-    optionsStr+='  <p class="optionsText">Options '+getNicknameFromActor(optionsActor)+'@'+optionsDomain+' ?</p>'
+    optionsStr+='  <p class="optionsText">Options for '+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     optionsStr+= \
         '  <form method="POST" action="'+originPathStr+'/optionsconfirm">' \
         '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
