@@ -1099,13 +1099,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newfollowers') or \
             self.path.endswith('/newdm') or \
             self.path.endswith('/newreport') or \
-            '/newreport?=' in self.path or \
+            '/newreport?' in self.path or \
             self.path.endswith('/newshare')):
             msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList).encode()
             self._set_headers('text/html',len(msg),cookie)
             self.wfile.write(msg)
             self.server.GETbusy=False
-            return        
+            return
 
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
