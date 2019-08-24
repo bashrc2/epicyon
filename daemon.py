@@ -142,6 +142,13 @@ def readFollowList(filename: str):
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _requestHTTP(self) -> bool:
+        """Should a http response be given?
+        """
+        if 'json' in self.headers['Accept']:
+            return False
+        return True
+    
     def _login_headers(self,fileFormat: str,length: int) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
@@ -490,7 +497,7 @@ class PubServer(BaseHTTPRequestHandler):
         # is this a html request?
         htmlGET=False
         if self.headers.get('Accept'):
-            if 'text/html' in self.headers['Accept']:
+            if self._requestHTTP():
                 htmlGET=True
 
         # replace https://domain/@nick with https://domain/users/nick
@@ -1122,7 +1129,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if not authorized:
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={}
-                                if 'text/html' in self.headers['Accept']:
+                                if self._requestHTTP():
                                     msg= \
                                         htmlIndividualPost(self.server.session, \
                                                            self.server.cachedWebfingers,self.server.personCache, \
@@ -1168,7 +1175,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         'last': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
                                         'totalItems': 0,
                                         'type': 'OrderedCollection'}
-                                    if 'text/html' in self.headers['Accept']:
+                                    if self._requestHTTP():
                                         if not self.server.session:
                                             if self.server.debug:
                                                 print('DEBUG: creating new session')
@@ -1213,7 +1220,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                         repliesJson)
 
                                     # send the replies json
-                                    if 'text/html' in self.headers['Accept']:
+                                    if self._requestHTTP():
                                         if not self.server.session:
                                             if self.server.debug:
                                                 print('DEBUG: creating new session')
@@ -1248,7 +1255,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(actorFilename, 'r') as fp:
                         actorJson=commentjson.load(fp)
                         if actorJson.get('roles'):
-                            if 'text/html' in self.headers['Accept']:
+                            if self._requestHTTP():
                                 getPerson = \
                                     personLookup(self.server.domain,self.path.replace('/roles',''), \
                                                  self.server.baseDir)
@@ -1282,7 +1289,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(actorFilename, 'r') as fp:
                         actorJson=commentjson.load(fp)
                         if actorJson.get('skills'):
-                            if 'text/html' in self.headers['Accept']:
+                            if self._requestHTTP():
                                 getPerson = \
                                     personLookup(self.server.domain,self.path.replace('/skills',''), \
                                                  self.server.baseDir)
@@ -1327,7 +1334,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if not authorized:
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={}                                    
-                                if 'text/html' in self.headers['Accept']:
+                                if self._requestHTTP():
                                     msg=htmlIndividualPost(self.server.baseDir, \
                                                            self.server.session, \
                                                            self.server.cachedWebfingers,self.server.personCache, \
@@ -1360,7 +1367,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             maxPostsInFeed, 'inbox', \
                                             True,self.server.ocapAlways)
                     if inboxFeed:
-                        if 'text/html' in self.headers['Accept']:
+                        if self._requestHTTP():
                             nickname=self.path.replace('/users/','').replace('/inbox','')
                             pageNumber=1
                             if '?page=' in nickname:
@@ -1421,7 +1428,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  authorized, \
                                  self.server.ocapAlways)
         if outboxFeed:
-            if 'text/html' in self.headers['Accept']:
+            if self._requestHTTP():
                 nickname=self.path.replace('/users/','').replace('/outbox','')
                 pageNumber=1
                 if '?page=' in nickname:
@@ -1473,7 +1480,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       maxPostsInFeed, 'moderation', \
                                       True,self.server.ocapAlways)
                     if moderationFeed:
-                        if 'text/html' in self.headers['Accept']:
+                        if self._requestHTTP():
                             nickname=self.path.replace('/users/','').replace('/moderation','')
                             pageNumber=1
                             if '?page=' in nickname:
@@ -1531,7 +1538,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.httpPrefix, \
                                       sharesPerPage)
         if shares:
-            if 'text/html' in self.headers['Accept']:
+            if self._requestHTTP():
                 if 'page=' not in self.path:
                     # get a page of shares, not the summary
                     shares=getSharesFeedForPerson(self.server.baseDir,self.server.domain, \
@@ -1572,7 +1579,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.httpPrefix, \
                                    authorized,followsPerPage)
         if following:
-            if 'text/html' in self.headers['Accept']:
+            if self._requestHTTP():
                 if 'page=' not in self.path:
                     # get a page of following, not the summary
                     following=getFollowingFeed(self.server.baseDir,self.server.domain, \
@@ -1613,7 +1620,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.httpPrefix, \
                                    authorized,followsPerPage,'followers')
         if followers:
-            if 'text/html' in self.headers['Accept']:
+            if self._requestHTTP():
                 if 'page=' not in self.path:
                     # get a page of followers, not the summary
                     followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
@@ -1652,7 +1659,7 @@ class PubServer(BaseHTTPRequestHandler):
         getPerson = personLookup(self.server.domain,self.path, \
                                  self.server.baseDir)
         if getPerson:
-            if 'text/html' in self.headers['Accept']:
+            if self._requestHTTP():
                 if not self.server.session:
                     if self.server.debug:
                         print('DEBUG: creating new session')
