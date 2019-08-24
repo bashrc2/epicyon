@@ -531,6 +531,23 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
+        # show the person options screen with view/follow/block/report
+        if htmlGET and '/users/' in self.path:
+           if '?options=' in self.path:
+               optionsStr=self.path.split('?options=')[1]
+               originPathStr=self.path.split('?options=')[0]
+               if ';' in optionsStr:
+                   optionsActor=optionsStr.split(';')[0]
+                   optionsProfileUrl=optionsStr.split(';')[1]
+                   msg=htmlPersonOptions(self.server.baseDir,originPathStr,optionsActor,optionsProfileUrl).encode()
+                   self._set_headers('text/html',len(msg),cookie)
+                   self.wfile.write(msg)
+                   self.server.GETbusy=False
+                   return
+               self._redirect_headers(originPathStr,cookie)
+               self.server.GETbusy=False
+               return
+
         # if not authorized then show the login screen
         if htmlGET and self.path!='/login' and self.path!='/' and self.path!='/terms':  
             if '/media/' not in self.path and \
@@ -801,23 +818,6 @@ class PubServer(BaseHTTPRequestHandler):
                    blockProfileUrl=blockStr.split(';')[1]
                    # show the confirm block screen
                    msg=htmlBlockConfirm(self.server.baseDir,originPathStr,blockActor,blockProfileUrl).encode()
-                   self._set_headers('text/html',len(msg),cookie)
-                   self.wfile.write(msg)
-                   self.server.GETbusy=False
-                   return
-               self._redirect_headers(originPathStr,cookie)
-               self.server.GETbusy=False
-               return
-
-        # show the person options screen with view/follow/block/report
-        if '/users/' in self.path:
-           if '?options=' in self.path:
-               optionsStr=self.path.split('?options=')[1]
-               originPathStr=self.path.split('?options=')[0]
-               if ';' in optionsStr:
-                   optionsActor=optionsStr.split(';')[0]
-                   optionsProfileUrl=optionsStr.split(';')[1]
-                   msg=htmlPersonOptions(self.server.baseDir,originPathStr,optionsActor,optionsProfileUrl).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self.wfile.write(msg)
                    self.server.GETbusy=False
