@@ -654,8 +654,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
         '      <div class="dropdown">' \
-        '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
-        '        <div class="dropdown-content">' \
+        '        <img src="/icons/'+scopeIcon+'"/><b onclick="dropdown()" class="scope-desc">'+scopeDescription+'</b>' \
+        '        <div id="myDropdown" class="dropdown-content">' \
         '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
         '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
         '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
@@ -679,6 +679,9 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         '    </div>' \
         '  </div>' \
         '</form>'
+
+    newPostForm+='<script>'+clickToDropDownScript()+'</script>'
+
     newPostForm+=htmlFooter()
     return newPostForm
 
@@ -985,6 +988,31 @@ def individualFollowAsHtml(baseDir: str,session,wfRequest: {}, \
         titleStr+'</a>'+buttonsStr+'</p>' \
         '</div>\n'
 
+def clickToDropDownScript() -> str:
+    """Function run onclick to create a dropdown
+    """
+    script= \
+        '/* When the user clicks on the button,' \
+        'toggle between hiding and showing the dropdown content */' \
+        'function dropdown() {' \
+        '  document.getElementById("myDropdown").classList.toggle("show");' \
+        '}' \
+        '' \
+        '// Close the dropdown menu if the user clicks outside of it' \
+        'window.onclick = function(event) {' \
+        "  if (!event.target.matches('.dropdown')) {" \
+        '    var dropdowns = document.getElementsByClassName("dropdown-content");' \
+        '    var i;' \
+        '    for (i = 0; i < dropdowns.length; i++) {' \
+        '      var openDropdown = dropdowns[i];' \
+        "      if (openDropdown.classList.contains('show')) {" \
+        "        openDropdown.classList.remove('show');" \
+        '      }' \
+        '    }' \
+        '  }' \
+        '}'
+    return script
+
 def contentWarningScript() -> str:
     """Returns a script used for content warnings
     """
@@ -1216,7 +1244,7 @@ def individualPostAsHtml(baseDir: str, \
 
     avatarDropdown= \
         '    <a href="'+postJsonObject['actor']+'">' \
-        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
+        '    <img onclick="dropdown()" src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
 
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         # if not following then show "Follow" in the dropdown
@@ -1241,7 +1269,7 @@ def individualPostAsHtml(baseDir: str, \
 
         avatarDropdown= \
             '  <div class="dropdown-timeline">' \
-            '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
+            '    <img onclick="dropdown()" src="'+avatarUrl+'" '+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
             followUnfollowStr+blockUnblockStr+reportStr+ \
@@ -1422,7 +1450,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             '</div></form>'
 
     # add the javascript for content warnings
-    tlStr+='<script>'+contentWarningScript()+'</script>'
+    tlStr+='<script>'+contentWarningScript()+clickToDropDownScript()+'</script>'
 
     # page up arrow
     if pageNumber>1:

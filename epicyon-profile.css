@@ -644,7 +644,7 @@ input[type=submit]:hover {
 .dropdown-content a:hover {background-color: #111;}
 
 /* Show the dropdown menu on hover */
-.dropdown:hover .dropdown-content {display: block;}
+.show {display: block;}
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
 .dropdown:hover .dropbtn {background-color: var(--main-fg-color);}
