@@ -545,9 +545,9 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
     """New post screen
     """
     reportUrl=None
-    if '/newreport?=' in path:
-        reportUrl=path.split('/newreport?=')[1]
-        path=path.split('/newreport?=')[0]
+    if '/newreport?' in path:
+        reportUrl=path.split('/newreport?')[1]
+        path=path.split('/newreport?')[0]
     replyStr=''
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
