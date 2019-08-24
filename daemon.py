@@ -146,7 +146,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Should a http response be given?
         """
         if self.headers['Accept'].startswith('*'):
-            return True
+            return False
         if 'json' in self.headers['Accept']:
             return False
         return True
