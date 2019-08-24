@@ -494,7 +494,7 @@ class PubServer(BaseHTTPRequestHandler):
                 htmlGET=True
 
         # replace https://domain/@nick with https://domain/users/nick
-        if htmlGET and self.path.startswith('/@'):
+        if self.path.startswith('/@'):
             self.path=self.path.replace('/@','/users/')
 
         # treat shared inbox paths consistently
