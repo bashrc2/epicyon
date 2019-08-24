@@ -76,6 +76,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
 from webinterface import htmlInbox
@@ -800,6 +801,23 @@ class PubServer(BaseHTTPRequestHandler):
                    blockProfileUrl=blockStr.split(';')[1]
                    # show the confirm block screen
                    msg=htmlBlockConfirm(self.server.baseDir,originPathStr,blockActor,blockProfileUrl).encode()
+                   self._set_headers('text/html',len(msg),cookie)
+                   self.wfile.write(msg)
+                   self.server.GETbusy=False
+                   return
+               self._redirect_headers(originPathStr,cookie)
+               self.server.GETbusy=False
+               return
+
+        # show the person options screen with view/follow/block/report
+        if '/users/' in self.path:
+           if '?options=' in self.path:
+               optionsStr=self.path.split('?options=')[1]
+               originPathStr=self.path.split('?options=')[0]
+               if ';' in optionsStr:
+                   optionsActor=optionsStr.split(';')[0]
+                   optionsProfileUrl=optionsStr.split(';')[1]
+                   msg=htmlPersonOptions(self.server.baseDir,originPathStr,optionsActor,optionsProfileUrl).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self.wfile.write(msg)
                    self.server.GETbusy=False

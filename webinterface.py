@@ -1253,11 +1253,12 @@ def individualPostAsHtml(baseDir: str, \
 
         avatarDropdown= \
             '  <div onclick="dropdown()" class="dropdown-timeline">' \
-            '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
-            '    <div id="myDropdown" class="dropdown-timeline-content">' \
-            '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
-            followUnfollowStr+blockUnblockStr+reportStr+ \
-            '    </div>' \
+            '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+'">' \
+            '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
+            #'    <div id="myDropdown" class="dropdown-timeline-content">' \
+            #'      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
+            #followUnfollowStr+blockUnblockStr+reportStr+ \
+            #'    </div>' \
             '  </div>'
 
     publishedStr=postJsonObject['object']['published']
@@ -1607,6 +1608,38 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+='</div>'
     followStr+=htmlFooter()
     return followStr
+
+def htmlPersonOptions(baseDir: str,originPathStr: str,optionsActor: str,optionsProfileUrl: str) -> str:
+    """Show options for a person: view/follow/block/report
+    """
+    optionsDomain,port=getDomainFromActor(optionsActor)
+    
+    if os.path.isfile(baseDir+'/img/options-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/options-background.png'):
+            copyfile(baseDir+'/img/options-background.png',baseDir+'/accounts/options-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    optionsStr=htmlHeader(profileStyle)
+    optionsStr+='<div class="options">'
+    optionsStr+='  <div class="optionsAvatar">'
+    optionsStr+='  <center>'
+    optionsStr+='  <a href="'+optionsActor+'">'
+    optionsStr+='  <img src="'+optionsProfileUrl+'"/></a>'
+    optionsStr+='  <p class="optionsText">Options '+getNicknameFromActor(optionsActor)+'@'+optionsDomain+' ?</p>'
+    optionsStr+= \
+        '  <form method="POST" action="'+originPathStr+'/optionsconfirm">' \
+        '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
+        '    <button type="submit" class="button" name="submitView">View</button>' \
+        '    <button type="submit" class="button" name="submitFollow">Follow</button>' \
+        '    <button type="submit" class="button" name="submitBlock">Block</button>' \
+        '    <button type="submit" class="button" name="submitReport">Report</button>' \
+        '  </form>'
+    optionsStr+='</center>'
+    optionsStr+='</div>'
+    optionsStr+='</div>'
+    optionsStr+=htmlFooter()
+    return optionsStr
 
 def htmlBlockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProfileUrl: str) -> str:
     """Asks to confirm a block
