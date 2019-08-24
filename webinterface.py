@@ -653,8 +653,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
-        '      <div class="dropdown">' \
-        '        <img src="/icons/'+scopeIcon+'"/><b onclick="dropdown()" class="scope-desc">'+scopeDescription+'</b>' \
+        '      <div class="dropdown" onclick="dropdown()">' \
+        '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
         '        <div id="myDropdown" class="dropdown-content">' \
         '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
         '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
