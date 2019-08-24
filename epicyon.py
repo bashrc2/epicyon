@@ -805,7 +805,12 @@ if args.dat:
 if args.actor:
     if '@' not in args.actor:
         print('Syntax: --actor nickname@domain')
-        sys.exit()        
+        sys.exit()
+    if args.actor.startswith('@'):
+        args.actor=args.actor[1:]
+    if '@' not in args.actor:
+        print('Syntax: --actor nickname@domain')
+        sys.exit()
     nickname=args.actor.split('@')[0]
     domain=args.actor.split('@')[1].replace('\n','')
     wfCache={}
