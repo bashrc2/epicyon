@@ -1254,7 +1254,7 @@ def individualPostAsHtml(baseDir: str, \
         avatarDropdown= \
             '  <div onclick="dropdown()" class="dropdown-timeline">' \
             '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
-            '    <div class="dropdown-timeline-content">' \
+            '    <div id="myDropdown" class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
             followUnfollowStr+blockUnblockStr+reportStr+ \
             '    </div>' \
