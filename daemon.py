@@ -487,18 +487,23 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.session= \
                 createSession(self.server.domain,self.server.port,self.server.useTor)
 
+        # is this a html request?
+        htmlGET=False
+        if self.headers.get('Accept'):
+            if 'text/html' in self.headers['Accept']:
+                htmlGET=True
+
+        # replace https://domain/@nick with https://domain/users/nick
+        if htmlGET and '/@' in self.path and \
+           (self.path.startswith('http') or self.path.startswith('dat')):
+            self.path=self.path.replace('/@','/users/')
+
         # treat shared inbox paths consistently
         if self.path=='/sharedInbox' or \
            self.path=='/users/inbox' or \
            self.path=='/actor/inbox' or \
            self.path=='/users/'+self.server.domain:
             self.path='/inbox'
-
-        # is this a html request?
-        htmlGET=False
-        if self.headers.get('Accept'):
-            if 'text/html' in self.headers['Accept']:
-                htmlGET=True
 
         # Unfollow a person from the web interface by selecting Unfollow on the dropdown
         if htmlGET and '/users/' in self.path and '?unfollow=' in self.path:
