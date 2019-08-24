@@ -1228,7 +1228,7 @@ def individualPostAsHtml(baseDir: str, \
 
     avatarDropdown= \
         '    <a href="'+postJsonObject['actor']+'">' \
-        '    <img onclick="dropdown()" src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
+        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
 
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         # if not following then show "Follow" in the dropdown
@@ -1252,8 +1252,8 @@ def individualPostAsHtml(baseDir: str, \
             reportStr='<a href="/users/'+nickname+'/newreport?url='+messageId+';'+avatarUrl+'">Report</a>'
 
         avatarDropdown= \
-            '  <div class="dropdown-timeline">' \
-            '    <img onclick="dropdown()" src="'+avatarUrl+'" '+avatarPosition+'/>' \
+            '  <div onclick="dropdown()" class="dropdown-timeline">' \
+            '    <img src="'+avatarUrl+'" '+avatarPosition+'/>' \
             '    <div class="dropdown-timeline-content">' \
             '      <a href="'+postJsonObject['actor']+'">Visit</a>'+ \
             followUnfollowStr+blockUnblockStr+reportStr+ \
