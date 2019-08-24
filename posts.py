@@ -447,8 +447,6 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                     hashtagsDict)
     
     statusNumber,published = getStatusNumber()
-    conversationDate=published.split('T')[0]
-    conversationId=statusNumber
     postTo='https://www.w3.org/ns/activitystreams#Public'
     postCC=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
     if followersOnly:
@@ -524,7 +522,6 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 'sensitive': sensitive,
                 'atomUri': newPostId,
                 'inReplyToAtomUri': inReplyToAtomUri,
-                'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
                 'content': content,
                 'contentMap': {
                     'en': content
@@ -562,7 +559,6 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             'sensitive': sensitive,
             'atomUri': newPostId,
             'inReplyToAtomUri': inReplyToAtomUri,
-            'conversation': 'tag:'+domain+','+conversationDate+':objectId='+conversationId+':objectType=Conversation',
             'content': content,
             'contentMap': {
                 'en': content

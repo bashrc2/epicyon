@@ -167,7 +167,6 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                                'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
                                'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
                                'schema': 'http://schema.org#',
-                               'toot': 'http://joinmastodon.org/ns#',
                                'value': 'schema:value'}],
                  'attachment': [],
                  'endpoints': {

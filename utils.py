@@ -18,7 +18,6 @@ def getStatusNumber() -> (str,str):
     # status is the number of seconds since epoch
     statusNumber=str(((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)*1000000 + currTime.microsecond)
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    conversationDate=currTime.strftime("%Y-%m-%d")
     return statusNumber,published
 
 def createPersonDir(nickname: str,domain: str,baseDir: str,dirname: str) -> str:
