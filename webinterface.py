@@ -642,7 +642,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
 
     # For moderation reports add a link to the post reported
     if reportUrl:
-        mentionStr='Reported link: '+reportUrl+'\n\n'
+        mentionsStr='<a href="'+reportUrl+'">Reported link</a>\n\n'
         reportOptionOnDropdown='<a href="'+pathBase+'/newreport?url='+reportUrl+'"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'
         
     newPostForm+= \
