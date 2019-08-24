@@ -803,16 +803,23 @@ if args.dat:
     httpPrefix='dat'
 
 if args.actor:
-    if '@' not in args.actor:
-        print('Syntax: --actor nickname@domain')
-        sys.exit()
-    if args.actor.startswith('@'):
-        args.actor=args.actor[1:]
-    if '@' not in args.actor:
-        print('Syntax: --actor nickname@domain')
-        sys.exit()
-    nickname=args.actor.split('@')[0]
-    domain=args.actor.split('@')[1].replace('\n','')
+    if '/@' in args.actor or '/users/' in args.actor or args.actor.startswith('http') or args.actor.startswith('dat'):
+        # format: https://domain/@nick
+        args.actor=args.actor.replace('https://','').replace('http://','').replace('dat://','').replace('/@','/users/')
+        nickname=args.actor.split('/users/')[1].replace('\n','')
+        domain=args.actor.split('/users/')[0]        
+    else:
+        # format: @nick@domain
+        if '@' not in args.actor:
+            print('Syntax: --actor nickname@domain')
+            sys.exit()
+        if args.actor.startswith('@'):
+            args.actor=args.actor[1:]
+        if '@' not in args.actor:
+            print('Syntax: --actor nickname@domain')
+            sys.exit()
+        nickname=args.actor.split('@')[0]
+        domain=args.actor.split('@')[1].replace('\n','')
     wfCache={}
     if args.http or domain.endswith('.onion'):
         httpPrefix='http'
