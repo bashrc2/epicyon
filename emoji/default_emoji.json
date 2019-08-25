@@ -533,6 +533,14 @@
     "arch": "arch",
     "debian": "debian",
     "zorin": "zorin",
+    "solus": "solus",
     "fedora": "fedora",
-    "elementary": "elementary"
+    "elementary": "elementary",
+    "prideflag": "pride",
+    "biflag": "biflag",
+    "enbyflag": "enbyflag",
+    "intersex": "intersex",
+    "lesbianflag": "lesbianflag",
+    "transflag": "transflag",
+    "transfem": "transfem"
 }
