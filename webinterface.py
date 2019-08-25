@@ -1388,7 +1388,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
 
     moderationButtonStr=''
     if moderator:
-        moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Moderate </span></button></a>'
+        moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Mod </span></button></a>'
 
     tlStr=htmlHeader(profileStyle)
     if boxName=='inbox' and pageNumber==1:
@@ -1401,8 +1401,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         '<div class="timeline-banner">' \
         '</div></a>' \
         '<div class="container">\n'+ \
-        '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>Inbox </span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Sent </span></button></a>'+ \
+        '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>In </span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Out </span></button></a>'+ \
         moderationButtonStr+ \
         '    <a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'+ \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
