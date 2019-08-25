@@ -658,7 +658,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         dropDownContent+ \
         '      </div>' \
         '      <input type="submit" name="submitPost" value="Submit">' \
-        '      <a href="'+pathBase+'/outbox"><button class="cancelbtn">Cancel</button></a>' \
+        '      <a href="'+pathBase+'/inbox"><button class="cancelbtn">Cancel</button></a>' \
         '      <a href="'+pathBase+'/searchemoji"><img src="/emoji/1F601.png" title="Search for emoji" alt="Search for emoji" class="right"/></a>'+ \
         '    </div>'+ \
         replyStr+ \
