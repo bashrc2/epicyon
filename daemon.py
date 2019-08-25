@@ -2673,7 +2673,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Sending DM to '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newdm'
-                msg=htmlNewPost(self.server.baseDir,reportPath,None,[optionsActor],postUrl).encode()
+                msg=htmlNewPost(self.server.baseDir,reportPath,None,[optionsActor],None).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
