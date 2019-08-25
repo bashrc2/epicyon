@@ -2720,7 +2720,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newshare')
