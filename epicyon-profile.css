@@ -371,7 +371,6 @@ a:link {
     margin-left: 0px;
     margin-right: 0px;
     padding-right: 0px;
-    padding-left: 0px;
     border-radius: 0px;
 }
 
@@ -388,7 +387,6 @@ a:link {
     max-width: 35px;
     width: 5%;
     margin-right: 0px;
-    padding-left: 0px 0px;
     border-radius: 0%;
 }
 
@@ -531,7 +529,7 @@ input[type=submit] {
 .loginButton {
     background-color: #2965;
     color: #000;
-    float: center;
+    float: none;
     margin: 0px 10px;
     padding: 12px 40px;
     border: none;

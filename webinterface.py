@@ -993,7 +993,7 @@ def clickToDropDownScript() -> str:
         '  document.getElementById("myDropdown").classList.toggle("show");' \
         '}' \
         'window.onclick = function(event) {' \
-        "  if (!event.target.matches('.dropdown')) {" \
+        "  if (!event.target.matches('scope-desc')) {" \
         '    var dropdowns = document.getElementsByClassName("dropdown-content");' \
         '    var i;' \
         '    for (i = 0; i < dropdowns.length; i++) {' \
