@@ -646,7 +646,9 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
             '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
             '          <a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
             shareOptionOnDropdown+ \
-            '        </div>'        
+            '        </div>'
+    else:
+        mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
         
     newPostForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
