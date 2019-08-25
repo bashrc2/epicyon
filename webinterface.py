@@ -99,6 +99,11 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPer
     """
     currPage=1
     ctr=0
+    actorDomain,actorPort=getDomainFromActor(actor)
+    if actorPort:
+        if actorPort!=80 and actorPort!=443:
+            actorDomain=actorDomain+':'+str(actorPort)
+    actorHttpPrefix=actor.split('://')[0]
     sharedItemsForm=''
     searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
     searchStrLowerList=searchStrLower.split('+')
@@ -111,6 +116,7 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPer
             for handle in dirs:
                 if '@' not in handle:
                     continue
+                contactNickname=handle.split('@')[0]
                 sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'
                 if not os.path.isfile(sharesFilename):
                     continue
@@ -143,6 +149,8 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPer
                             sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
                             sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
                             sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
+                            contactActor=actorHttpPrefix+'://'+actorDomain+'/users/'+contactNickname
+                            sharedItemsForm+='<p><a href="'+actor+'?replydm='+sharedItem['displayName']+'?mention='+contactActor+'">Contact</a>'
                             sharedItemsForm+='</div>'
                             if not resultsExist and currPage>1:
                                 # previous page link, needs to be a POST
