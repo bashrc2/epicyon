@@ -94,16 +94,15 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
         emojiForm+=htmlFooter()
     return emojiForm
 
-def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPerPage: int,actor: str) -> str:
+def htmlSearchSharedItems(baseDir: str,searchStr: str, \
+                          pageNumber: int, \
+                          resultsPerPage: int, \
+                          httpPrefix: str,domainFull: str,actor: str) -> str:
     """Search results for shared items
     """
     currPage=1
     ctr=0
-    actorDomain,actorPort=getDomainFromActor(actor)
-    if actorPort:
-        if actorPort!=80 and actorPort!=443:
-            actorDomain=actorDomain+':'+str(actorPort)
-    actorHttpPrefix=actor.split('://')[0]
+    actor=httpPrefix+'://'+domainFull+actor
     sharedItemsForm=''
     searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
     searchStrLowerList=searchStrLower.split('+')
@@ -149,7 +148,7 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPer
                             sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
                             sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
                             sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
-                            contactActor=actorHttpPrefix+'://'+actorDomain+'/users/'+contactNickname
+                            contactActor=httpPrefix+'://'+domainFull+'/users/'+contactNickname
                             sharedItemsForm+='<p><a href="'+actor+'?replydm='+sharedItem['displayName']+'?mention='+contactActor+'">Contact</a>'
                             sharedItemsForm+='</div>'
                             if not resultsExist and currPage>1:

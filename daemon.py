@@ -2509,7 +2509,10 @@ class PubServer(BaseHTTPRequestHandler):
                     sharedItemsStr= \
                         htmlSearchSharedItems(self.server.baseDir, \
                                               searchStr,pageNumber, \
-                                              maxPostsInFeed,actorStr)
+                                              maxPostsInFeed, \
+                                              self.server.httpPrefix, \
+                                              self.server.domainFull, \
+                                              actorStr)
                     if sharedItemsStr:
                         msg=sharedItemsStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
