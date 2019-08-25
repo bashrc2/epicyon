@@ -674,7 +674,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         '  </div>' \
         '</form>'
 
-    newPostForm+='<script>'+clickToDropDownScript()+'</script>'
+    if not reportUrl:
+        newPostForm+='<script>'+clickToDropDownScript()+'</script>'
 
     newPostForm+=htmlFooter()
     return newPostForm
