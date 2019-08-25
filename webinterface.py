@@ -791,8 +791,9 @@ def htmlProfileShares(nickname: str,domain: str,sharesJson: {}) -> str:
     for item in sharesJson['orderedItems']:
         profileStr+='<div class="container">'
         profileStr+='<p class="share-title">'+item['displayName']+'</p>'
-        profileStr+='<a href="'+item['imageUrl']+'">'
-        profileStr+='<img src="'+item['imageUrl']+'" alt="Item image"></a>'
+        if item.get('imageUrl'):
+            profileStr+='<a href="'+item['imageUrl']+'">'
+            profileStr+='<img src="'+item['imageUrl']+'" alt="Item image"></a>'
         profileStr+='<p>'+item['summary']+'</p>'
         profileStr+='<p><b>Type:</b> '+item['itemType']+' '
         profileStr+='<b>Category:</b> '+item['category']+' '

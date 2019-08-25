@@ -1731,7 +1731,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',0,None)
 
-    def _receiveNewPost(self,authorized: bool,postType: str) -> bool:
+    def _receiveNewPost(self,authorized: bool,postType: str) -> int:
         # 0 = this is not a new post
         # 1 = new post success
         # -1 = new post failed
