@@ -1312,7 +1312,7 @@ def individualPostAsHtml(baseDir: str, \
                             break
 
         footerStr='<div class="'+containerClassIcons+'">'
-        if not isModerationPost:
+        if not isModerationPost and showRepeats:
             footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
         else:
             footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="Reply to this post">'
