@@ -1310,6 +1310,11 @@ def individualPostAsHtml(baseDir: str, \
                 '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
                 '<img src="/icons/delete.png"/></a>'
 
+    # change the background color for DMs in inbox timeline
+    if showDMicon:
+        containerClassIcons='containericons dm'
+        containerClass='container dm'
+
     if showIcons:
         replyToLink=postJsonObject['object']['id']
         if postJsonObject['object'].get('attributedTo'):
@@ -1354,7 +1359,7 @@ def individualPostAsHtml(baseDir: str, \
 
     contentStr=addEmbeddedVideo(contentStr)
     contentStr='<div class="message">'+contentStr+'</div>'
-    
+
     return \
         '<div class="'+containerClass+'">\n'+ \
         avatarDropdown+ \
