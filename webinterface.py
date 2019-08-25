@@ -592,11 +592,11 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         endpoint='newunlisted'
     if path.endswith('/newfollowers'):
         scopeIcon='scope_followers.png'
-        scopeDescription='Followers Only'
+        scopeDescription='Followers'
         endpoint='newfollowers'
     if path.endswith('/newdm'):
         scopeIcon='scope_dm.png'
-        scopeDescription='Direct Message'
+        scopeDescription='DM'
         endpoint='newdm'
     if path.endswith('/newreport'):
         scopeIcon='scope_report.png'
@@ -642,8 +642,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
             '        <div id="myDropdown" class="dropdown-content">' \
             '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
             '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
-            '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
-            '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
+            '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers</b><br>Only to followers</a>' \
+            '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>DM</b><br>Only to mentioned people</a>' \
             '          <a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
             shareOptionOnDropdown+ \
             '        </div>'
