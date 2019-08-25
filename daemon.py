@@ -76,6 +76,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlInboxDMs
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -1383,12 +1384,12 @@ class PubServer(BaseHTTPRequestHandler):
             if '/users/' in self.path:
                 if authorized:
                     inboxDMFeed=personBoxJson(self.server.baseDir, \
-                                            self.server.domain, \
-                                            self.server.port, \
-                                            self.path, \
-                                            self.server.httpPrefix, \
-                                            maxPostsInFeed, 'dm', \
-                                            True,self.server.ocapAlways)
+                                              self.server.domain, \
+                                              self.server.port, \
+                                              self.path, \
+                                              self.server.httpPrefix, \
+                                              maxPostsInFeed, 'dm', \
+                                              True,self.server.ocapAlways)
                     if inboxDMFeed:
                         if self._requestHTTP():
                             nickname=self.path.replace('/users/','').replace('/dm','')
@@ -1409,18 +1410,18 @@ class PubServer(BaseHTTPRequestHandler):
                                                         self.server.httpPrefix, \
                                                         maxPostsInFeed, 'dm', \
                                                         True,self.server.ocapAlways)
-                            msg=htmlInbox(pageNumber,maxPostsInFeed, \
-                                          self.server.session, \
-                                          self.server.baseDir, \
-                                          self.server.cachedWebfingers, \
-                                          self.server.personCache, \
-                                          nickname, \
-                                          self.server.domain, \
-                                          self.server.port, \
-                                          inboxDMFeed, \
-                                          self.server.allowDeletion, \
-                                          self.server.httpPrefix, \
-                                          self.server.projectVersion).encode('utf-8')
+                            msg=htmlInboxDMs(pageNumber,maxPostsInFeed, \
+                                             self.server.session, \
+                                             self.server.baseDir, \
+                                             self.server.cachedWebfingers, \
+                                             self.server.personCache, \
+                                             nickname, \
+                                             self.server.domain, \
+                                             self.server.port, \
+                                             inboxDMFeed, \
+                                             self.server.allowDeletion, \
+                                             self.server.httpPrefix, \
+                                             self.server.projectVersion).encode('utf-8')
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:

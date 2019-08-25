@@ -1467,6 +1467,17 @@ def htmlInbox(pageNumber: int,itemsPerPage: int, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
                         httpPrefix,projectVersion)
 
+def htmlInboxDMs(pageNumber: int,itemsPerPage: int, \
+                 session,baseDir: str,wfRequest: {},personCache: {}, \
+                 nickname: str,domain: str,port: int,inboxJson: {}, \
+                 allowDeletion: bool, \
+                 httpPrefix: str,projectVersion: str) -> str:
+    """Show the DM timeline as html
+    """
+    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'dm',allowDeletion, \
+                        httpPrefix,projectVersion)
+
 def htmlModeration(pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
