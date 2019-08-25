@@ -1030,6 +1030,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: replyto path '+self.path)
 
         # replying as a direct message, for moderation posts
+        shareDescription=None
         if htmlGET and '?replydm=' in self.path:
             inReplyToUrl=self.path.split('?replydm=')[1]
             if '?' in inReplyToUrl:
@@ -1038,6 +1039,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if m.startswith('mention='):
                         replyToList.append(m.replace('mention=',''))
                 inReplyToUrl=mentionsList[0]
+                if inReplyToUrl.startswith('share:'):
+                    shareDescription=inReplyToUrl
             self.path=self.path.split('?replydm=')[0]+'/newdm'
             if self.server.debug:
                 print('DEBUG: replydm path '+self.path)
@@ -1058,7 +1061,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newdm') or \
             self.path.endswith('/newreport') or \
             self.path.endswith('/newshare')):
-            msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,None).encode()
+            msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,shareDescription).encode()
             self._set_headers('text/html',len(msg),cookie)
             self.wfile.write(msg)
             self.server.GETbusy=False
