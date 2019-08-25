@@ -669,3 +669,8 @@ input[type=checkbox]
   background: var(--main-bg-color);
   cursor: pointer;
 }
+
+.dropbtn {
+  border: none;
+  cursor: pointer;
+}

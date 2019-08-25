@@ -655,7 +655,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
-        '      <div class="dropdown" onclick="dropdown()">' \
+        '      <div class="dropbtn" onclick="dropdown()">' \
         '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'+ \
         dropDownContent+ \
         '      </div>' \
@@ -993,7 +993,7 @@ def clickToDropDownScript() -> str:
         '  document.getElementById("myDropdown").classList.toggle("show");' \
         '}' \
         'window.onclick = function(event) {' \
-        "  if (!event.target.matches('scope-desc')) {" \
+        "  if (!event.target.matches('.dropbtn')) {" \
         '    var dropdowns = document.getElementsByClassName("dropdown-content");' \
         '    var i;' \
         '    for (i = 0; i < dropdowns.length; i++) {' \
