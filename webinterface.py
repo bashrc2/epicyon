@@ -576,6 +576,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         newPostCSS = cssFile.read()
 
+    if '?' in path:
+        path=path.split('?')[0]
     pathBase=path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
 
     scopeIcon='scope_public.png'
@@ -634,12 +636,17 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         else:
             mentionsStr+='@'+mentionNickname+'@'+mentionDomain+' '
 
-    reportOptionOnDropdown='<a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'
-
-    # For moderation reports add a link to the post reported
-    if reportUrl:
-        mentionsStr='Reported link: '+reportUrl+'\n\n'
-        reportOptionOnDropdown='<a href="'+pathBase+'/newreport?url='+reportUrl+'"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'
+    dropDownContent=''
+    if not reportUrl:
+        dropDownContent= \
+            '        <div id="myDropdown" class="dropdown-content">' \
+            '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
+            '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
+            '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
+            '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>' \
+            '          <a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
+            shareOptionOnDropdown+ \
+            '        </div>'        
         
     newPostForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
@@ -647,14 +654,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
         '      <div class="dropdown" onclick="dropdown()">' \
-        '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>' \
-        '        <div id="myDropdown" class="dropdown-content">' \
-        '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
-        '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
-        '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers Only</b><br>Only to followers</a>' \
-        '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>Direct Message</b><br>Only to mentioned people</a>'+ \
-        reportOptionOnDropdown+shareOptionOnDropdown+ \
-        '        </div>' \
+        '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'+ \
+        dropDownContent+ \
         '      </div>' \
         '      <input type="submit" name="submitPost" value="Submit">' \
         '      <a href="'+pathBase+'/outbox"><button class="cancelbtn">Cancel</button></a>' \
