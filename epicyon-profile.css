@@ -671,6 +671,19 @@ input[type=checkbox]
 }
 
 .dropbtn {
-  border: none;
-  cursor: pointer;
+    margin: 10px auto;
+    padding: 0px 14px;
+    position: relative;
+    display: inline-block;
+    border: none;
+    cursor: pointer;
+}
+
+.dropbtn img {
+    opacity: 1.0;
+    width: 32px;
+    height: 32px;
+    padding: 0px 16px;
+    -ms-transform: translateY(-10%);
+    transform: translateY(-10%);
 }
