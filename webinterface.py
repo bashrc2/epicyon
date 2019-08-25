@@ -1635,6 +1635,7 @@ def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: 
         '    <button type="submit" class="button" name="submitView">View</button>' \
         '    <button type="submit" class="button" name="submit'+followStr+'">'+followStr+'</button>' \
         '    <button type="submit" class="button" name="submit'+blockStr+'">'+blockStr+'</button>' \
+        '    <button type="submit" class="button" name="submitDM">DM</button>' \
         '    <button type="submit" class="button" name="submitReport">Report</button>' \
         '  </form>'
     optionsStr+='</center>'
