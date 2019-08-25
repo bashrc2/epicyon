@@ -1039,8 +1039,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if m.startswith('mention='):
                         replyToList.append(m.replace('mention=',''))
                 inReplyToUrl=mentionsList[0]
-                if inReplyToUrl.startswith('share:'):
-                    shareDescription=inReplyToUrl
+                if inReplyToUrl.startswith('sharedesc:'):
+                    shareDescription=inReplyToUrl.replace('sharedesc:','').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
             self.path=self.path.split('?replydm=')[0]+'/newdm'
             if self.server.debug:
                 print('DEBUG: replydm path '+self.path)

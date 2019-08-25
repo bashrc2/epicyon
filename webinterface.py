@@ -149,7 +149,7 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str, \
                             sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
                             sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
                             contactActor=httpPrefix+'://'+domainFull+'/users/'+contactNickname
-                            sharedItemsForm+='<p><a href="'+actor+'?replydm=share:'+sharedItem['displayName']+'?mention='+contactActor+'">Contact</a>'
+                            sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+sharedItem['displayName']+'?mention='+contactActor+'">Contact</a>'
                             sharedItemsForm+='</div>'
                             if not resultsExist and currPage>1:
                                 # previous page link, needs to be a POST
