@@ -2604,7 +2604,6 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and self.path.endswith('/personoptions'):
             originPathStr=self.path.split('/personoptions')[0]
             chooserNickname=getNicknameFromActor(originPathStr)
-            self.postToNickname=chooserNickname
             length = int(self.headers['Content-length'])
             optionsConfirmParams=self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
             # actor for the person
@@ -2697,7 +2696,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newfollowers')
@@ -2705,7 +2704,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newdm')
@@ -2713,7 +2712,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/outbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/outbox',cookie)
             self.server.POSTbusy=False
             return
         postState=self._receiveNewPost(authorized,'newreport')
@@ -2729,7 +2728,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+self.postToNickname+'/shares',cookie)
+            self._redirect_headers('/users/'+nickname+'/shares',cookie)
             self.server.POSTbusy=False
             return
 
