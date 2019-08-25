@@ -1230,19 +1230,16 @@ def individualPostAsHtml(baseDir: str, \
         '    <a href="'+postJsonObject['actor']+'">' \
         '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
 
+    messageIdStr=''
+    if messageId:
+        messageIdStr=';'+messageId
+    
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
-        if messageId:
-            avatarDropdown= \
-                '  <div class="dropdown-timeline">' \
-                '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+';'+messageId+'">' \
-                '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
-                '  </div>'
-        else:
-            avatarDropdown= \
-                '  <div class="dropdown-timeline">' \
-                '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+'">' \
-                '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
-                '  </div>'
+        avatarDropdown= \
+            '  <div class="dropdown-timeline">' \
+            '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+messageIdStr+'">' \
+            '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
+            '  </div>'
 
     publishedStr=postJsonObject['object']['published']
     if '.' not in publishedStr:
