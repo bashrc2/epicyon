@@ -1741,7 +1741,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                         p=commentjson.load(fp)
 
                         if boxname!='dm' or \
-                           (boxname=='dm' and isDM(p))                                
+                           (boxname=='dm' and isDM(p)):
                             # remove any capability so that it's not displayed
                             if p.get('capability'):
                                 del p['capability']
