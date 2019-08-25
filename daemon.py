@@ -1969,10 +1969,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(filename):
                             os.remove(filename)
                     self.postToNickname=nickname
-                    if self._postToOutbox(messageJson):
-                        return 1
-                    else:
-                        return -1
+                    return 1
             return -1
         else:
             return 0
