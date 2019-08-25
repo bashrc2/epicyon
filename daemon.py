@@ -1965,8 +1965,9 @@ class PubServer(BaseHTTPRequestHandler):
                              fields['location'], \
                              fields['duration'],
                              self.server.debug)
-                    if os.path.isfile(filename):
-                        os.remove(filename)
+                    if filename:
+                        if os.path.isfile(filename):
+                            os.remove(filename)
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson):
                         return 1
