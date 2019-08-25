@@ -2437,7 +2437,7 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber=int(pageNumberStr)
                 self.path=self.path.split('?page=')[0]
 
-            actorStr=self.path.replace('/searchhandle','')
+            actorStr=self.server.domainFull+self.path.replace('/searchhandle','')
             length = int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
             if 'searchtext=' in searchParams:
