@@ -541,16 +541,9 @@ def htmlSuspended(baseDir: str) -> str:
         suspendedForm+=htmlFooter()
     return suspendedForm
 
-def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: []) -> str:
+def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: str) -> str:
     """New post screen
     """
-    reportUrl=None
-    if '/newreport?' in path:
-        if '?url=' in path:
-            reportUrl=path.split('?url=')[1]
-            if ';' in reportUrl:
-                reportUrl=reportUrl.split(';')[0]
-        path=path.split('/newreport?')[0]+'/newreport'
     replyStr=''
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):

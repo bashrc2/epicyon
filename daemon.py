@@ -1057,7 +1057,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.path.endswith('/newdm') or \
             self.path.endswith('/newreport') or \
             self.path.endswith('/newshare')):
-            msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList).encode()
+            msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,None).encode()
             self._set_headers('text/html',len(msg),cookie)
             self.wfile.write(msg)
             self.server.GETbusy=False
@@ -2606,10 +2606,21 @@ class PubServer(BaseHTTPRequestHandler):
             chooserNickname=getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
             optionsConfirmParams=self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
+            # actor for the person
             optionsActor=optionsConfirmParams.split('actor=')[1]
-            optionsAvatarUrl=optionsConfirmParams.split('avatarUrl=')[1]
             if '&' in optionsActor:
                 optionsActor=optionsActor.split('&')[0]
+            # url of the avatar
+            optionsAvatarUrl=optionsConfirmParams.split('avatarUrl=')[1]
+            if '&' in optionsAvatarUrl:
+                optionsAvatarUrl=optionsAvatarUrl.split('&')[0]
+            # link to a post, which can then be included in reports
+            postUrl=None
+            if 'postUrl' in optionsConfirmParams:
+                postUrl=optionsConfirmParams.split('postUrl=')[1]
+                if '&' in postUrl:
+                    postUrl=postUrl.split('&')[0]
+                
             optionsNickname=getNicknameFromActor(optionsActor)
             optionsDomain,optionsPort=getDomainFromActor(optionsActor)
             optionsDomainFull=optionsDomain
@@ -2661,7 +2672,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitReport=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Reporting '+optionsActor)
-                msg=htmlNewPost(self.server.baseDir,self.path,None,[]).encode()
+                msg=htmlNewPost(self.server.baseDir,self.path,None,[],reportUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
