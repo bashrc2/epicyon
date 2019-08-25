@@ -266,7 +266,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False)
+                                     False,False)
         index-=1
 
     if endIndex>0:
@@ -736,7 +736,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False)
+                                     False,False)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -1088,6 +1088,7 @@ def individualPostAsHtml(baseDir: str, \
                          avatarUrl: str, showAvatarDropdown: bool,
                          allowDeletion: bool, \
                          httpPrefix: str, projectVersion: str, \
+                         showRepeats=True,
                          showIcons=False) -> str:
     """ Shows a single post as html
     """
@@ -1160,7 +1161,7 @@ def individualPostAsHtml(baseDir: str, \
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
 
-    if not isDM(postJsonObject):
+    if showRepeats:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
                 announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
@@ -1262,7 +1263,7 @@ def individualPostAsHtml(baseDir: str, \
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
     announceStr=''
-    if not isModerationPost:
+    if not isModerationPost and showRepeats:
         # don't allow announce/repeat of your own posts
         announceIcon='repeat_inactive.png'
         announceLink='repeat'
@@ -1446,6 +1447,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                                         nickname,domain,port,item,avatarUrl,True, \
                                         allowDeletion, \
                                         httpPrefix,projectVersion,
+                                        boxName!='dm',
                                         showIndividualPostIcons)
 
     # page down arrow
@@ -1496,7 +1498,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     postStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
-                             httpPrefix,projectVersion,False)
+                             httpPrefix,projectVersion,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -1511,7 +1513,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False)+postStr
+                                     False,False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -1527,7 +1529,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                 postStr+= \
                     individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
-                                         httpPrefix,projectVersion,False)
+                                         httpPrefix,projectVersion,False,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
@@ -1540,7 +1542,7 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
         for item in repliesJson['orderedItems']:
             repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
-                                             httpPrefix,projectVersion,False)    
+                                             httpPrefix,projectVersion,False,False)    
 
     return htmlHeader()+repliesStr+htmlFooter()
 
@@ -1908,7 +1910,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \
-                                     httpPrefix,projectVersion,False)
+                                     httpPrefix,projectVersion, \
+                                     False,False)
             i+=1
             if i>=20:
                 break
