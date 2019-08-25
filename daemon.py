@@ -2604,6 +2604,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and self.path.endswith('/personoptions'):
             originPathStr=self.path.split('/personoptions')[0]
             chooserNickname=getNicknameFromActor(originPathStr)
+            self.postToNickname=chooserNickname
             length = int(self.headers['Content-length'])
             optionsConfirmParams=self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
             # actor for the person
