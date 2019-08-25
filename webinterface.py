@@ -1414,8 +1414,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Mod </span></button></a>'
 
     tlStr=htmlHeader(profileStyle)
-    if boxName=='inbox' and pageNumber==1:
-        # refresh if on the first page of the inbox
+    if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
+        # refresh if on the first page of the inbox and dm timeline
         tlStr=htmlHeader(profileStyle,240)
 
     # banner and row of buttons
