@@ -1170,7 +1170,7 @@ def individualPostAsHtml(baseDir: str, \
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
-        titleStr='<img src="/icons/dm.png" class="announceOrReply"/>'+titleStr
+        titleStr='<img src="/icons/dm.png" class="DMicon"/>'+titleStr
 
     if showRepeats:
         if isAnnounced:

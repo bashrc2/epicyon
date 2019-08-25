@@ -404,6 +404,16 @@ a:link {
     transform: translateY(25%);
 }
 
+.container img.DMicon {
+    float: none;
+    width: 60px;
+    margin: 0 0;
+    padding: 0 0;
+    border-radius: 0;
+    -ms-transform: translateY(25%);
+    transform: translateY(25%);
+}
+
 .darker {
     background-color: var(--main-bg-color-reply);
 }
