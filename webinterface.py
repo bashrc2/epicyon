@@ -1093,10 +1093,11 @@ def individualPostAsHtml(baseDir: str, \
     """ Shows a single post as html
     """
     # If this is the inbox timeline then don't show the repeat icon on any DMs
+    showRepeatIcon=showRepeats
     showDMicon=False
     if showRepeats:
         if isDM(postJsonObject):
-            showRepeats=False
+            showRepeatIcon=False
             showDMicon=True
     
     titleStr=''
@@ -1172,7 +1173,7 @@ def individualPostAsHtml(baseDir: str, \
     if showDMicon:
         titleStr='<img src="/icons/dm.png" class="DMicon"/>'+titleStr
 
-    if showRepeats:
+    if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
                 announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
@@ -1274,7 +1275,7 @@ def individualPostAsHtml(baseDir: str, \
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
     announceStr=''
-    if not isModerationPost and showRepeats:
+    if not isModerationPost and showRepeatIcon:
         # don't allow announce/repeat of your own posts
         announceIcon='repeat_inactive.png'
         announceLink='repeat'
@@ -1323,7 +1324,7 @@ def individualPostAsHtml(baseDir: str, \
                             break
 
         footerStr='<div class="'+containerClassIcons+'">'
-        if not isModerationPost and showRepeats:
+        if not isModerationPost and showRepeatIcon:
             footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
         else:
             footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="Reply to this post">'
