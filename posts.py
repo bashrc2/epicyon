@@ -1508,6 +1508,11 @@ def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str
     return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
+def createDMTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                 itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxBase(baseDir,'dm',nickname,domain,port,httpPrefix, \
+                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
@@ -1581,15 +1586,41 @@ def getStatusNumberFromPostFilename(filename) -> int:
         return None
     return int(filename.split('#')[-1].replace('.json',''))
 
+def isDM(postJsonObject: {}) -> bool:
+    """Returns true if the given post is a DM
+    """
+    if postJsonObject['type']!='Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object']['type']!='Note':
+        return False
+    fields=['to','cc']
+    for f in fields:        
+        if not postJsonObject['object'].get(f):
+            continue
+        for toAddress in postJsonObject['object'][f]:
+            if toAddress.endswith('#Public'):
+                return False
+            if toAddress.endswith('followers'):
+                return False
+    return True
+
 def createBoxBase(baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,authorized :bool, \
                   ocapAlways: bool,pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
-    if boxname!='inbox' and boxname!='outbox':
+    if boxname!='inbox' and boxname!='dm' and boxname!='outbox':
         return None
-    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    if boxname!='dm':
+        boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    else:
+        # extract DMs from the inbox
+        boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     sharedBoxDir=None
     if boxname=='inbox':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
@@ -1708,31 +1739,33 @@ def createBoxBase(baseDir: str,boxname: str, \
                     # get the post as json
                     with open(filePath, 'r') as fp:
                         p=commentjson.load(fp)
-                                
-                        # remove any capability so that it's not displayed
-                        if p.get('capability'):
-                            del p['capability']
-                        # Don't show likes or replies to unauthorized viewers
-                        if not authorized:
-                            if p.get('object'):
-                                if isinstance(p['object'], dict):                                
-                                    if p['object'].get('likes'):
-                                        p['likes']={}
-                                    if p['object'].get('replies'):
-                                        p['replies']={}
-                        # insert it into the box feed
-                        if postsOnPageCtr < itemsPerPage:
-                            if not headerOnly:
-                                boxItems['orderedItems'].append(p)
-                                postsOnPageCtr += 1
-                        elif postsOnPageCtr == itemsPerPage:
-                            # if this is the last post update the next message ID
-                            if '/statuses/' in p['id']:
-                                postId = p['id'].split('/statuses/')[1].replace('/activity','')
-                                boxHeader['next']= \
-                                    httpPrefix+'://'+domain+'/users/'+ \
-                                    nickname+'/'+boxname+'?max_id='+ \
-                                    postId+'&page=true'
+
+                        if boxname!='dm' or \
+                           (boxname=='dm' and isDM(p))                                
+                            # remove any capability so that it's not displayed
+                            if p.get('capability'):
+                                del p['capability']
+                            # Don't show likes or replies to unauthorized viewers
+                            if not authorized:
+                                if p.get('object'):
+                                    if isinstance(p['object'], dict):                                
+                                        if p['object'].get('likes'):
+                                            p['likes']={}
+                                        if p['object'].get('replies'):
+                                            p['replies']={}
+                            # insert it into the box feed
+                            if postsOnPageCtr < itemsPerPage:
+                                if not headerOnly:
+                                    boxItems['orderedItems'].append(p)
+                                    postsOnPageCtr += 1
+                            elif postsOnPageCtr == itemsPerPage:
+                                # if this is the last post update the next message ID
+                                if '/statuses/' in p['id']:
+                                    postId = p['id'].split('/statuses/')[1].replace('/activity','')
+                                    boxHeader['next']= \
+                                        httpPrefix+'://'+domain+'/users/'+ \
+                                        nickname+'/'+boxname+'?max_id='+ \
+                                        postId+'&page=true'
                 # remember the last post filename for use with prev
                 prevPostFilename = postFilename
                 if postsOnPageCtr >= itemsPerPage:

@@ -1377,7 +1377,72 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.GETbusy=False
                 return
-        
+
+        # get the inbox for a given person
+        if self.path.endswith('/dm') or '/dm?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    inboxDMFeed=personBoxJson(self.server.baseDir, \
+                                            self.server.domain, \
+                                            self.server.port, \
+                                            self.path, \
+                                            self.server.httpPrefix, \
+                                            maxPostsInFeed, 'dm', \
+                                            True,self.server.ocapAlways)
+                    if inboxDMFeed:
+                        if self._requestHTTP():
+                            nickname=self.path.replace('/users/','').replace('/dm','')
+                            pageNumber=1
+                            if '?page=' in nickname:
+                                pageNumber=nickname.split('?page=')[1]
+                                nickname=nickname.split('?page=')[0]
+                                if pageNumber.isdigit():
+                                    pageNumber=int(pageNumber)
+                                else:
+                                    pageNumber=1                                
+                            if 'page=' not in self.path:
+                                # if no page was specified then show the first
+                                inboxDMFeed=personBoxJson(self.server.baseDir, \
+                                                        self.server.domain, \
+                                                        self.server.port, \
+                                                        self.path+'?page=1', \
+                                                        self.server.httpPrefix, \
+                                                        maxPostsInFeed, 'dm', \
+                                                        True,self.server.ocapAlways)
+                            msg=htmlInbox(pageNumber,maxPostsInFeed, \
+                                          self.server.session, \
+                                          self.server.baseDir, \
+                                          self.server.cachedWebfingers, \
+                                          self.server.personCache, \
+                                          nickname, \
+                                          self.server.domain, \
+                                          self.server.port, \
+                                          inboxDMFeed, \
+                                          self.server.allowDeletion, \
+                                          self.server.httpPrefix, \
+                                          self.server.projectVersion).encode('utf-8')
+                            self._set_headers('text/html',len(msg),cookie)
+                            self.wfile.write(msg)
+                        else:
+                            msg=json.dumps(inboxDMFeed).encode('utf-8')
+                            self._set_headers('application/json',len(msg),None)
+                            self.wfile.write(msg)
+                        self.server.GETbusy=False
+                        return
+                else:
+                    if self.server.debug:
+                        nickname=self.path.replace('/users/','').replace('/dm','')
+                        print('DEBUG: '+nickname+ \
+                              ' was not authorized to access '+self.path)
+            if self.path!='/dm':
+                # not the DM inbox
+                if self.server.debug:
+                    print('DEBUG: GET access to inbox is unauthorized')
+                self.send_response(405)
+                self.end_headers()
+                self.server.GETbusy=False
+                return
+
         # get outbox feed for a person
         outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
                                  self.server.port,self.path, \

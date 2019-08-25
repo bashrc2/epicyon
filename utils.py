@@ -271,7 +271,7 @@ def validNickname(domain: str,nickname: str) -> bool:
             return False
     if nickname==domain:
         return False
-    reservedNames=['inbox','outbox','following','followers','capabilities']
+    reservedNames=['inbox','dm','outbox','following','public','followers','capabilities']
     if nickname in reservedNames:
         return False
     return True
