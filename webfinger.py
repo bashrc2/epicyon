@@ -128,18 +128,9 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
                 "type": "text/html"
             },
             {
-                "href": personId+".atom",
-                "rel": "http://schemas.google.com/g/2010#updates-from",
-                "type": "application/atom+xml"
-            },
-            {
                 "href": personId,
                 "rel": "self",
                 "type": "application/activity+json"
-            },
-            {
-                "href": httpPrefix+"://"+domain+"/api/salmon/1",
-                "rel": "salmon"
             },
             {
                 "href": generateMagicKey(publicKeyPem),
