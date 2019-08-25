@@ -1233,7 +1233,7 @@ def individualPostAsHtml(baseDir: str, \
     
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         avatarDropdown= \
-            '  <div class="dropdown-timeline">' \
+            '  <div class="timeline-avatar">' \
             '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+messageIdStr+'">' \
             '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
             '  </div>'

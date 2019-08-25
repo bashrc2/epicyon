@@ -581,12 +581,12 @@ input[type=submit]:hover {
     transform: translateY(-10%);
 }
 
-.dropdown-timeline {
+.timeline-avatar {
     margin: 10px auto;
     padding: 0px 0px;
 }
 
-.dropdown-timeline img {
+.timeline-avatar img {
     opacity: 1.0;
     width: 90%;
     height: 90%;
