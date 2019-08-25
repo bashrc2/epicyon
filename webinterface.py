@@ -136,8 +136,9 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str,pageNumber: int,resultsPer
                         if currPage==pageNumber:
                             sharedItemsForm+='<div class="container">'
                             sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
-                            sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
-                            sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
+                            if sharedItem('imageUrl'):
+                                sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
+                                sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
                             sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
                             sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
                             sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
