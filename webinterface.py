@@ -1362,10 +1362,13 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
     moderator=isModerator(baseDir,nickname)
 
     inboxButton='button'
+    dmButton='button'
     sentButton='button'
     moderationButton='button'
     if boxName=='inbox':
         inboxButton='buttonselected'
+    elif boxName=='dm':
+        dmButton='buttonselected'
     elif boxName=='outbox':
         sentButton='buttonselected'
     elif boxName=='moderation':
