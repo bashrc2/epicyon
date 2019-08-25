@@ -626,13 +626,10 @@ input[type=submit]:hover {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #111;}
+.dropdown-content a:hover {background-color: var(--dropdown-bg-color-hover);}
 
 /* Show the dropdown menu on hover */
 .show {display: block;}
-
-/* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown:hover .dropbtn {background-color: var(--dropdown-bg-color-hover);}
 
 input[type=checkbox]
 {
