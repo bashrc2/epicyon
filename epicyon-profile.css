@@ -2,6 +2,8 @@
 
 :root {
     --main-bg-color: #282c37;
+    --dropdown-bg-color: #111;
+    --dropdown-bg-color-hover: #333;
     --main-bg-color-reply: #212c37;
     --main-bg-color-report: #221c27;
     --main-header-color-roles: #282237;
@@ -603,8 +605,8 @@ input[type=submit]:hover {
 .dropdown-content {
     display: none;
     position: absolute;
-    background-color: var(--main-bg-color);
-    min-width: 300px;
+    background-color: var(--dropdown-bg-color);
+    min-width: 400px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
@@ -623,23 +625,6 @@ input[type=submit]:hover {
     padding: 0px 0px;
 }
 
-.dropdown-timeline-content {
-    display: none;
-    position: absolute;
-    background-color: var(--main-bg-color);
-    min-width: 100px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-}
-
-/* Links inside the dropdown */
-.dropdown-timeline-content a {
-    color: var(--main-bg-color);
-    padding: 25px 16px;
-    text-decoration: none;
-    display: block;
-}
-
 /* Change color of dropdown links on hover */
 .dropdown-content a:hover {background-color: #111;}
 
@@ -647,12 +632,7 @@ input[type=submit]:hover {
 .show {display: block;}
 
 /* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown:hover .dropbtn {background-color: var(--main-fg-color);}
-
-.dropdown-timeline-content a:hover {color: white;}
-
-/* Change the background color of the dropdown button when the dropdown content is shown */
-.dropdown-timeline:hover .dropbtn {background-color: var(--main-fg-color);}
+.dropdown:hover .dropbtn {background-color: var(--dropdown-bg-color-hover);}
 
 input[type=checkbox]
 {
