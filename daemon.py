@@ -2672,7 +2672,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitReport=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Reporting '+optionsActor)
-                msg=htmlNewPost(self.server.baseDir,self.path,None,[],postUrl).encode()
+                reportPath=self.path.replace('/personoptions','')+'/newreport'
+                msg=htmlNewPost(self.server.baseDir,reportPath,None,[],postUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
