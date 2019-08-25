@@ -1735,10 +1735,21 @@ def createBoxBase(baseDir: str,boxname: str, \
         filePath = postFilename
         try:
             if os.path.isfile(filePath):
-                if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
-                    # get the post as json
-                    with open(filePath, 'r') as fp:
-                        p=commentjson.load(fp)
+                # is this a valid timeline post?
+                isPost=False
+                # must be a "Note" or "Announce" type
+                with open(filePath, 'r') as file:
+                    postStr = file.read()
+                if '"Note"' in postStr or '"Announce"' in postStr:
+                    isPost=True
+                    if boxname=='dm':
+                        if '#Public' in postStr or '/followers' in postStr:
+                            isPost=False
+
+                if isPost:
+                    if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
+                        # get the post as json
+                        p = json.loads(postStr)
 
                         if boxname!='dm' or \
                            (boxname=='dm' and isDM(p)):
@@ -1766,15 +1777,16 @@ def createBoxBase(baseDir: str,boxname: str, \
                                         httpPrefix+'://'+domain+'/users/'+ \
                                         nickname+'/'+boxname+'?max_id='+ \
                                         postId+'&page=true'
-                # remember the last post filename for use with prev
-                prevPostFilename = postFilename
-                if postsOnPageCtr >= itemsPerPage:
-                    break
-                # count the pages
-                postsCtr += 1
-                if postsCtr >= itemsPerPage:
-                    postsCtr = 0
-                    currPage += 1
+
+                    # remember the last post filename for use with prev
+                    prevPostFilename = postFilename
+                    if postsOnPageCtr >= itemsPerPage:
+                        break
+                    # count the pages
+                    postsCtr += 1
+                    if postsCtr >= itemsPerPage:
+                        postsCtr = 0
+                        currPage += 1
         except Exception as e:
             print(e)
     if headerOnly:
