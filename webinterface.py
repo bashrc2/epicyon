@@ -1092,6 +1092,11 @@ def individualPostAsHtml(baseDir: str, \
                          showIcons=False) -> str:
     """ Shows a single post as html
     """
+    # If this is the inbox timeline then don't show the repeat icon on any DMs
+    if showRepeats:
+        if isDM(postJsonObject):
+            showRepeats=False
+    
     titleStr=''
     isAnnounced=False
     if postJsonObject['type']=='Announce':
