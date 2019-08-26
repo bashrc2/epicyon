@@ -2558,7 +2558,7 @@ class PubServer(BaseHTTPRequestHandler):
                 shareNickname=getNicknameFromActor(shareActor)
                 shareDomain,sharePort=getDomainFromActor(shareActor)
                 removeShare(self.server.baseDir,shareNickname,shareDomain,shareName)
-            self._redirect_headers(originPathStr,cookie)
+            self._redirect_headers(originPathStr+'/inbox',cookie)
             self.server.POSTbusy=False
             return
 
