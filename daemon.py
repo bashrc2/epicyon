@@ -2130,7 +2130,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy=False
                     return
                 length = int(self.headers['Content-length'])
-                if length>self.server.maxProfileDataLength:
+                if length>self.server.maxPostLength:
                     print('Maximum profile data length exceeded '+str(length))
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
@@ -3128,7 +3128,6 @@ def runDaemon(projectVersion, \
     httpd.maxQueueLength=16
     httpd.ocapAlways=ocapAlways
     httpd.maxMessageLength=5000
-    httpd.maxProfileDataLength=10*1024*1024
     httpd.maxImageSize=10*1024*1024
     httpd.allowDeletion=allowDeletion
     httpd.lastLoginTime=0
