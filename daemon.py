@@ -147,6 +147,7 @@ def readFollowList(filename: str):
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
+    blockSize = 3 * 1024 * 1024
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
