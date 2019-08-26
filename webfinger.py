@@ -111,11 +111,13 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
     personName=nickname
     personId=httpPrefix+"://"+domain+"/users/"+personName
     subjectStr="acct:"+personName+"@"+originalDomain
+    profilePageHref=httpPrefix+"://"+domain+"/@"+nickname
     if nickname=='inbox' or nickname==originalDomain:
         personName='actor'
         personId=httpPrefix+"://"+domain+"/"+personName
         subjectStr="acct:"+originalDomain+"@"+originalDomain
-
+        profilePageHref=httpPrefix+'://'+domain+'/about/more?instance_actor=true'
+    
     account = {
         "aliases": [
             httpPrefix+"://"+domain+"/@"+personName,
@@ -123,7 +125,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
         ],
         "links": [
             {
-                "href": httpPrefix+"://"+domain+"/@"+nickname,
+                "href": profilePageHref,
                 "rel": "http://webfinger.net/rel/profile-page",
                 "type": "text/html"
             },

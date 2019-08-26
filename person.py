@@ -149,10 +149,12 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
     personName=nickname
     personId=httpPrefix+'://'+domain+'/users/'+nickname
     inboxStr=personId+'/inbox'
+    personUrl=httpPrefix+'://'+domain+'/@'+personName
     if nickname=='inbox':
         # shared inbox
         inboxStr=httpPrefix+'://'+domain+'/actor/inbox'
         personId=httpPrefix+'://'+domain+'/actor'
+        personUrl=httpPrefix+'://'+domain+'/about/more?instance_actor=true'
         personName=originalDomain
         approveFollowers=True
         personType='Application'
@@ -202,7 +204,7 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  },
                  'tag': [],
                  'type': personType,
-                 'url': httpPrefix+'://'+domain+'/@'+personName
+                 'url': personUrl
     }
 
     if nickname=='inbox':

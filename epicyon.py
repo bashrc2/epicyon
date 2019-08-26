@@ -833,6 +833,7 @@ if args.actor:
     session=createSession(domain,port,useTor)
     if nickname=='inbox':
         nickname=domain
+        
     wfRequest=webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
                               None,__version__)
     if not wfRequest:
