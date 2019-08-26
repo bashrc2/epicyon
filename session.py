@@ -70,7 +70,7 @@ def postJsonString(session,postJsonStr: str, \
                    inboxUrl: str, \
                    headers: {}, \
                    capability: str, \
-                   debug: bool) -> str:
+                   debug: bool) -> bool:
     """Post a json message string to the inbox of another person
     Supplying a capability, such as "inbox:write"
     NOTE: Here we post a string rather than the original json so that
@@ -88,8 +88,8 @@ def postJsonString(session,postJsonStr: str, \
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
     if postResult.status_code<200 or postResult.status_code>202:
         print('WARN: Failed to post to '+inboxUrl+' status code '+str(postResult.status_code))
-        return None
-    return postResult.text
+        return False
+    return True
 
 def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
     """Post an image to the inbox of another person or outbox via c2s

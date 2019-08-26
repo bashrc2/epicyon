@@ -920,7 +920,7 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
 
         if postResult:
             if debug:
-                print('DEBUG: successful json post to '+inboxUrl+' ('+str(postResult)+')')
+                print('DEBUG: successful json post to '+inboxUrl)
             # our work here is done
             break
         if debug:
