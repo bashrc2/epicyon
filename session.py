@@ -86,6 +86,11 @@ def postJsonString(session,postJsonStr: str, \
             return None
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
+    if postResult:
+        if 'not found' in postResult.text:
+            print('WARN: Failed to post to '+inboxUrl)
+            print(postResult.text)
+            return None
     return postResult.text
 
 def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
