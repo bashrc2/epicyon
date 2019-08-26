@@ -86,16 +86,9 @@ def postJsonString(session,postJsonStr: str, \
             return None
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
-    postResultCode=str(postResult)
-    print('http: '+postResultCode)
-    if '[' in postResultCode and ']' in postResultCode:
-        postResultCode=postResultCode.split('[')[1]
-        postResultCode=postResultCode.split(']')[0]
-        if postResultCode.isdigit():
-            postResultCode=int(postResultCode)
-            if postResultCode<200 or postResultCode>202:
-                print('WARN: Failed to post to '+inboxUrl)
-                return None
+    if postResult.status_code<200 or postResult.status_code>202:
+        print('WARN: Failed to post to '+inboxUrl)
+        return None
     return postResult.text
 
 def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
