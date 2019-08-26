@@ -106,6 +106,7 @@ from shares import getSharesFeedForPerson
 from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
 from shares import addShare
+from shares import removeShare
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getStatusNumber
@@ -2538,6 +2539,26 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         return
             self._redirect_headers(actorStr,cookie)
+            self.server.POSTbusy=False
+            return
+
+        # removes a shared item
+        if authorized and self.path.endswith('/rmshare'):
+            originPathStr=self.path.split('/rmshare')[0]
+            length = int(self.headers['Content-length'])
+            removeShareConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitYes=' in removeShareConfirmParams:
+                removeShareConfirmParams=removeShareConfirmParams.replace('%3A',':').replace('%2F','/')
+                shareActor=removeShareConfirmParams.split('actor=')[1]
+                if '&' in shareActor:
+                    shareActor=shareActor.split('&')[0]
+                shareName=removeShareConfirmParams.split('shareName=')[1]
+                if '&' in shareName:
+                    shareName=shareName.split('&')[0]
+                shareNickname=getNicknameFromActor(shareActor)
+                shareDomain,sharePort=getDomainFromActor(shareActor)
+                removeShare(self.server.baseDir,shareNickname,shareDomain,shareName)
+            self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
 
