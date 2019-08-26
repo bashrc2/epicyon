@@ -102,7 +102,6 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str, \
     """
     currPage=1
     ctr=0
-    actor=httpPrefix+'://'+actor
     sharedItemsForm=''
     searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
     searchStrLowerList=searchStrLower.split('+')
