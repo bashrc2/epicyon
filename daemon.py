@@ -2538,7 +2538,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.wfile.write(msg)
                         self.server.POSTbusy=False
                         return
-            self._redirect_headers(actorStr,cookie)
+            self._redirect_headers(actorStr+'/inbox',cookie)
             self.server.POSTbusy=False
             return
 
