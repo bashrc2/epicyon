@@ -56,6 +56,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         if debug:
             print(handle+' not in '+approveFollowsFilename)
         return
+    
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
         for handle in approvefile:
@@ -88,3 +89,14 @@ def manualApproveFollowRequest(session,baseDir: str, \
                 approvefilenew.write(handle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    # update the followers
+    followersFilename=accountsDir+'/followers.txt'
+    if os.path.isfile(followersFilename):
+        if approveHandle not in open(followersFilename).read():
+            followersFile=open(followersFilename, "a+")
+            followersFile.write(approveHandle+'\n')
+            followersFile.close()
+    else:
+        followersFile=open(followersFilename, "w+")
+        followersFile.write(approveHandle+'\n')
+        followersFile.close()
