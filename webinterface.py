@@ -470,7 +470,8 @@ def htmlLogin(baseDir: str) -> str:
                 loginText='<p class="login-text">Welcome. Please login or register a new account.</p>'
             registerButtonStr='<button type="submit" name="register">Register</button>'
 
-    TOSstr='<p class="login-text"><a href="/terms">Terms of Service</a> <a href="/about">About</a></p>'
+    TOSstr='<p class="login-text"><a href="/terms">Terms of Service</a></p>'
+    TOSstr+='<p class="login-text"><a href="/about">About this Instance</a></p>'
 
     loginButtonStr=''
     if accounts>0:
