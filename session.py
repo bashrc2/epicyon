@@ -86,8 +86,8 @@ def postJsonString(session,postJsonStr: str, \
             return None
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
+    print('>>>>>>>>>postResult: '+str(postResult))
     if postResult:
-        print(str(postResult))
         if 'not found' in postResult.text:
             print('WARN: Failed to post to '+inboxUrl)
             return None
