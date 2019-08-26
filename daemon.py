@@ -543,6 +543,20 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.GETbusy=False
                return
 
+        # remove a shared item
+        if htmlGET and '?rmshare=' in self.path:
+            shareName=self.path.split('?rmshare=')[1]
+            actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?rmshare=')[0]
+            msg=htmlRemoveSharedItem(self.server.baseDir,actor,shareName).encode()
+            if not msg:
+               self._redirect_headers(actor+'/inbox',cookie)
+               self.server.GETbusy=False
+               return                
+            self._set_headers('text/html',len(msg),cookie)
+            self.wfile.write(msg)
+            self.server.GETbusy=False
+            return
+
         # if not authorized then show the login screen
         if htmlGET and self.path!='/login' and self.path!='/' and self.path!='/terms':  
             if '/media/' not in self.path and \
@@ -978,20 +992,6 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
-            return
-
-        # remove a shared item
-        if htmlGET and '?rmshare=' in self.path:
-            shareName=self.path.split('?rmshare=')[1]
-            actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?rmshare=')[0]
-            msg=htmlRemoveSharedItem(self.server.baseDir,actor,shareName).encode()
-            if not msg:
-               self._redirect_headers(actor+'/inbox',cookie)
-               self.server.GETbusy=False
-               return                
-            self._set_headers('text/html',len(msg),cookie)
-            self.wfile.write(msg)
-            self.server.GETbusy=False
             return
 
         # delete a post from the web interface icon
