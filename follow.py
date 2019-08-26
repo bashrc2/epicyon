@@ -309,6 +309,15 @@ def storeFollowRequest(baseDir: str, \
             if ':' not in domain:
                 approveHandle=nickname+'@'+domain+':'+str(fromPort)
 
+    followersFilename=accountsDir+'/followers.txt'
+    if os.path.isfile(followersFilename):
+        if approveHandle in open(followersFilename).read():
+            if debug:
+                print('DEBUG: '+ \
+                      nicknameToFollow+'@'+domainToFollow+ \
+                      ' already following '+approveHandle)
+            return True
+
     # add to a file which contains a list of requests
     approveFollowsFilename=accountsDir+'/followrequests.txt'
     if os.path.isfile(approveFollowsFilename):
