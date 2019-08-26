@@ -87,7 +87,11 @@ def postJsonString(session,postJsonStr: str, \
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
     if postResult.status_code<200 or postResult.status_code>202:
-        print('WARN: Failed to post to '+inboxUrl+' status code '+str(postResult.status_code))
+        if postResult.status_code==401:
+            print('WARN: >>> Post to '+inboxUrl+' is unauthorized <<<')
+        else:
+            print('WARN: Failed to post to '+inboxUrl)
+            print('status code '+str(postResult.status_code))
         return False
     return True
 
