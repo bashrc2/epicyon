@@ -833,14 +833,14 @@ if args.actor:
     session=createSession(domain,port,useTor)
     if nickname=='inbox':
         nickname=domain
-        
+
     wfRequest=webfingerHandle(session,nickname+'@'+domain,httpPrefix,wfCache, \
                               None,__version__)
     if not wfRequest:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
 
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if nickname==domain:
         personUrl=personUrl.replace('/users/','/actor/')

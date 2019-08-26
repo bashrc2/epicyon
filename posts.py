@@ -1431,6 +1431,15 @@ def sendToNamedAddresses(session,baseDir: str, \
                        sendThreads,postLog,cachedWebfingers, \
                        personCache,debug,projectVersion)
 
+def hasSharedInbox(session,httpPrefix: str,domain: str) -> bool:
+    """Returns true if the given domain has a shared inbox
+    """
+    wfRequest=webfingerHandle(session,domain+'@'+domain,httpPrefix,{}, \
+                              None,__version__)
+    if wfRequest:
+        return True
+    return False
+        
 def sendToFollowers(session,baseDir: str, \
                     nickname: str, domain: str, port: int, \
                     httpPrefix: str,federationList: [], \
@@ -1450,7 +1459,7 @@ def sendToFollowers(session,baseDir: str, \
             print('Post is not addressed to followers')
         return
     print('Post is addressed to followers')
-
+    
     grouped=groupFollowersByDomain(baseDir,nickname,domain)
     if not grouped:
         if debug:
@@ -1467,39 +1476,65 @@ def sendToFollowers(session,baseDir: str, \
         if debug:
             print('DEBUG: follower handles for '+followerDomain)
             pprint(followerHandles)
+        withSharedInbox=hasSharedInbox(session,httpPrefix,followerDomain)
+        if debug:
+            if postToSharedInbox:
+                print(followerDomain+' has shared inbox')
+            else:
+                print(followerDomain+' does not have a shared inbox')
+
         toPort=port
         index=0
         toDomain=followerHandles[index].split('@')[1]
         if ':' in toDomain:
             toPort=toDomain.split(':')[1]
             toDomain=toDomain.split(':')[0]
-        toNickname=followerHandles[index].split('@')[0]
-        cc=''
-        if len(followerHandles)>1:
-            toNickname='inbox'
-            #nickname='inbox'
 
         # If this is a profile update then send to shared inbox
-        if toNickname!='inbox' and postJsonObject.get('type'):
-           if postJsonObject['type']=='Update':
-               if postJsonObject.get('object'):
-                   if isinstance(postJsonObject['object'], dict):
-                       if postJsonObject['object'].get('type'):
-                           if postJsonObject['object']['type']=='Person' or \
-                              postJsonObject['object']['type']=='Application' or \
-                              postJsonObject['object']['type']=='Service':
-                               print('Sending profile update to shared inbox of '+toDomain)
-                               toNickname='inbox'
+        cc=''
+        if withSharedInbox:
+            toNickname=followerHandles[index].split('@')[0]
 
-        if debug:
-            print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
-        sendSignedJson(postJsonObject,session,baseDir, \
-                       nickname,domain,port, \
-                       toNickname,toDomain,toPort, \
-                       cc,httpPrefix,True,clientToServer, \
-                       federationList, \
-                       sendThreads,postLog,cachedWebfingers, \
-                       personCache,debug,projectVersion)
+            # if there are more than one followers on the domain
+            # then send the post to the shared inbox
+            if len(followerHandles)>1:
+                toNickname='inbox'
+
+            if toNickname!='inbox' and postJsonObject.get('type'):
+                if postJsonObject['type']=='Update':
+                    if postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('type'):
+                                if postJsonObject['object']['type']=='Person' or \
+                                   postJsonObject['object']['type']=='Application' or \
+                                   postJsonObject['object']['type']=='Service':
+                                    print('Sending profile update to shared inbox of '+toDomain)
+                                    toNickname='inbox'
+            
+            if debug:
+                print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                sendSignedJson(postJsonObject,session,baseDir, \
+                               nickname,domain,port, \
+                               toNickname,toDomain,toPort, \
+                               cc,httpPrefix,True,clientToServer, \
+                               federationList, \
+                               sendThreads,postLog,cachedWebfingers, \
+                               personCache,debug,projectVersion)
+        else:
+            # send to individual followers without using a shared inbox
+            for handle in followerHandles:
+                toNickname=handle.split('@')[0]
+
+            if debug:
+                print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                sendSignedJson(postJsonObject,session,baseDir, \
+                               nickname,domain,port, \
+                               toNickname,toDomain,toPort, \
+                               cc,httpPrefix,True,clientToServer, \
+                               federationList, \
+                               sendThreads,postLog,cachedWebfingers, \
+                               personCache,debug,projectVersion)
+                
         if debug:
             print('DEBUG: End of sendToFollowers')
         
