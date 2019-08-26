@@ -1478,7 +1478,7 @@ def sendToFollowers(session,baseDir: str, \
             pprint(followerHandles)
         withSharedInbox=hasSharedInbox(session,httpPrefix,followerDomain)
         if debug:
-            if postToSharedInbox:
+            if withSharedInbox:
                 print(followerDomain+' has shared inbox')
             else:
                 print(followerDomain+' does not have a shared inbox')
