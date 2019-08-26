@@ -844,7 +844,7 @@ if args.actor:
     if nickname==domain:
         personUrl=personUrl.replace('/users/','/actor/')
     #print('personUrl: '+personUrl)
-    personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,domain)
+    personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
     if personJson:
         pprint(personJson)
     else:
@@ -854,7 +854,7 @@ if args.actor:
 if args.json:
     session = createSession(domain,port,True)
     asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    testJson = getJson(session,args.json,asHeader,None,__version__,httpPrefix,domain)
+    testJson = getJson(session,args.json,asHeader,None,__version__,httpPrefix,None)
     pprint(testJson)
     sys.exit()
 
