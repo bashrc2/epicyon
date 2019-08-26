@@ -87,6 +87,7 @@ def postJsonString(session,postJsonStr: str, \
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
     postResultCode=str(postResult)
+    print('http: '+postResultCode)
     if '[' in postResultCode and ']' in postResultCode:
         postResultCode=postResultCode.split('[')[1]
         postResultCode=postResultCode.split(']')[0]
@@ -94,7 +95,6 @@ def postJsonString(session,postJsonStr: str, \
             postResultCode=int(postResultCode)
             if postResultCode<200 or postResultCode>202:
                 print('WARN: Failed to post to '+inboxUrl)
-                print('http code '+str(postResultCode))
                 return None
     return postResult.text
 
