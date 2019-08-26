@@ -34,7 +34,7 @@ def getJson(session,url: str,headers: {},params: {}, \
     if params:
         sessionParams=params
     pythonVersion=str(sys.version_info[0])+'.'+str(sys.version_info[1])+'.'+str(sys.version_info[2])
-    sessionHeaders['User-Agent']='http.py/'+pythonVersion+' (Epicyon/'+version+'; +'+httpPrefix+'://'+domain+'/)'
+    sessionHeaders['User-Agent']='Epicyon/'+version+'; +'+httpPrefix+'://'+domain+'/'
     #"Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5)"
     if not session:
         print('WARN: no session specified for getJson')
