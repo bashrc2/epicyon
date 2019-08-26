@@ -76,6 +76,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlRemoveSharedItem
 from webinterface import htmlInboxDMs
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
@@ -977,6 +978,20 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
+            return
+
+        # remove a shared item
+        if htmlGET and '?rmshare=' in self.path:
+            shareName=self.path.split('?rmshare=')[1]
+            actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?rmshare=')[0]
+            msg=htmlRemoveSharedItem(self.server.baseDir,actor,shareName).encode()
+            if not msg:
+               self._redirect_headers(actor+'/inbox',cookie)
+               self.server.GETbusy=False
+               return                
+            self._set_headers('text/html',len(msg),cookie)
+            self.wfile.write(msg)
+            self.server.GETbusy=False
             return
 
         # delete a post from the web interface icon

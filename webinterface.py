@@ -149,8 +149,10 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str, \
                             sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
                             sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
                             contactActor=httpPrefix+'://'+domainFull+'/users/'+contactNickname
-                            sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+sharedItem['displayName']+'?mention='+contactActor+'">Contact</a>'
-                            sharedItemsForm+='</div>'
+                            sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+sharedItem['displayName']+'?mention='+contactActor+'"><button class="button">Contact</button></a>'
+                            if actor.endswith('/users/'+contactNickname):
+                                sharedItemsForm+=' <a href="'+actor+'?rmshare='+name+'"><button class="button">Remove</button></a>'
+                            sharedItemsForm+='</p></div>'
                             if not resultsExist and currPage>1:
                                 # previous page link, needs to be a POST
                                 sharedItemsForm+= \
@@ -1583,6 +1585,52 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
 
     return htmlHeader()+repliesStr+htmlFooter()
 
+def htmlRemoveSharedItem(baseDir: str,actor: str,shareName: str) -> str:
+    """Shows a screen asking to confirm the removal of a shared item
+    """
+    nickname=getNicknameFromActor(actor)
+    domain,port=getDomainFromActor(actor)
+    sharesFile=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
+    if not os.path.isfile(sharesFile):
+        return None
+    sharesJson=None
+    with open(sharesFile, 'r') as fp:
+        sharesJson=commentjson.load(fp)
+    if not sharesJson:
+        return None
+    if not sharesJson.get(shareName):
+        return None
+    sharedItemDisplayName=sharesJson[shareName]['displayName']
+    sharedItemImageUrl=None
+    if sharesJson[shareName].get('imageUrl'):
+        sharedItemImageUrl=sharesJson[shareName]['imageUrl']
+
+    if os.path.isfile(baseDir+'/img/shares-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/shares-background.png'):
+            copyfile(baseDir+'/img/shares-background.png',baseDir+'/accounts/shares-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    sharesStr=htmlHeader(profileStyle)
+    sharesStr+='<div class="follow">'
+    sharesStr+='  <div class="followAvatar">'
+    sharesStr+='  <center>'
+    if sharedItemImageUrl:
+        sharesStr+='  <img src="'+sharedItemImageUrl+'"/>'
+    sharesStr+='  <p class="followText">Remove '+sharedItemDisplayName+' ?</p>'
+    sharesStr+= \
+        '  <form method="POST" action="'+actor+'/rmshare">' \
+        '    <input type="hidden" name="actor" value="'+actor+'">' \
+        '    <input type="hidden" name="shareName" value="'+shareName+'">' \
+        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+        '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
+        '  </form>'
+    sharesStr+='  </center>'
+    sharesStr+='  </div>'
+    sharesStr+='</div>'
+    sharesStr+=htmlFooter()
+    return sharesStr
+    
 def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
     """Asks to confirm a follow
     """
