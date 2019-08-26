@@ -559,8 +559,26 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
+        if self.path.startswith('/terms'):
+            msg=htmlTermsOfService(self.server.baseDir, \
+                                   self.server.httpPrefix, \
+                                   self.server.domainFull).encode()
+            self._login_headers('text/html',len(msg))
+            self.wfile.write(msg)
+            self.server.GETbusy=False
+            return
+
+        if self.path.startswith('/about'):
+            msg=htmlAbout(self.server.baseDir, \
+                          self.server.httpPrefix, \
+                          self.server.domainFull).encode()
+            self._login_headers('text/html',len(msg))
+            self.wfile.write(msg)
+            self.server.GETbusy=False
+            return
+
         # if not authorized then show the login screen
-        if htmlGET and self.path!='/login' and self.path!='/' and self.path!='/terms':  
+        if htmlGET and self.path!='/login' and self.path!='/':
             if '/media/' not in self.path and \
                '/sharefiles/' not in self.path and \
                '/statuses/' not in self.path and \
@@ -781,24 +799,6 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # get webfinger endpoint for a person
         if self._webfinger():
-            self.server.GETbusy=False
-            return
-
-        if self.path.startswith('/terms'):
-            msg=htmlTermsOfService(self.server.baseDir, \
-                                   self.server.httpPrefix, \
-                                   self.server.domainFull).encode()
-            self._login_headers('text/html',len(msg))
-            self.wfile.write(msg)
-            self.server.GETbusy=False
-            return
-
-        if self.path.startswith('/about'):
-            msg=htmlAbout(self.server.baseDir, \
-                          self.server.httpPrefix, \
-                          self.server.domainFull).encode()
-            self._login_headers('text/html',len(msg))
-            self.wfile.write(msg)
             self.server.GETbusy=False
             return
 
