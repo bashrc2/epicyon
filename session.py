@@ -86,8 +86,6 @@ def postJsonString(session,postJsonStr: str, \
             return None
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
-    if not postResult:
-        return None
     postResultCode=str(postResult)
     if '[' in postResultCode and ']' in postResultCode:
         postResultCode=postResultCode.split('[')[1]
