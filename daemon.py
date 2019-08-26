@@ -2136,10 +2136,16 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy=False
                     return
 
+                if self.server.debug:
+                    print('DEBUG: reading profile data. '+str(length)+' bytes')
                 postBytes = 0
-                while read < length:
+                while postBytes < length:
                     postBytes += len(self.rfile.read(min(66556, length - read)))                
+                if self.server.debug:
+                    print('DEBUG: profile data read ended')
+
                 #postBytes=self.rfile.read(length)
+
                 msg = email.parser.BytesParser().parsebytes(postBytes)                
                 messageFields=msg.get_payload(decode=False).split(boundary)
                 fields={}
