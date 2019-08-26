@@ -147,7 +147,6 @@ def readFollowList(filename: str):
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
-    blockSize = 1024 * 1024
 
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
@@ -2136,7 +2135,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
                     return
-                postBytes=self.rfile.read(length)
+
+                postBytes = 0
+                while read < length:
+                    postBytes += len(self.rfile.read(min(66556, length - read)))                
+                #postBytes=self.rfile.read(length)
                 msg = email.parser.BytesParser().parsebytes(postBytes)                
                 messageFields=msg.get_payload(decode=False).split(boundary)
                 fields={}
@@ -3127,7 +3130,7 @@ def runDaemon(projectVersion, \
     httpd.maxQueueLength=16
     httpd.ocapAlways=ocapAlways
     httpd.maxMessageLength=5000
-    httpd.maxProfileDataLength=1*1024*1024
+    httpd.maxProfileDataLength=10*1024*1024
     httpd.maxImageSize=10*1024*1024
     httpd.allowDeletion=allowDeletion
     httpd.lastLoginTime=0
