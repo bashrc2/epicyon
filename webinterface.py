@@ -381,7 +381,7 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
         '      <textarea id="message" name="bio" placeholder="Your bio..." style="height:200px">'+bioStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
-        '      The files attached below should be no larger than 1MB in total uploaded at once.<br>' \
+        '      The files attached below should be no larger than 10MB in total uploaded at once.<br>' \
         '      Avatar image' \
         '      <input type="file" id="avatar" name="avatar"' \
         '            accept=".png">' \
