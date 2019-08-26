@@ -523,6 +523,33 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         TOSForm+=htmlFooter()
     return TOSForm
 
+def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
+    """Show the about screen
+    """
+    adminNickname = getConfigParam(baseDir,'admin')
+    if not os.path.isfile(baseDir+'/accounts/about.txt'):
+        copyfile(baseDir+'/default_about.txt',baseDir+'/accounts/about.txt')
+    if os.path.isfile(baseDir+'/img/login-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/login-background.png'):
+            copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
+
+    aboutText='Information about this instance goes here.'
+    if os.path.isfile(baseDir+'/accounts/about.txt'):
+        with open(baseDir+'/accounts/about.txt', 'r') as file:
+            aboutText = file.read()    
+
+    aboutForm=''
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        termsCSS = cssFile.read()
+            
+        aboutForm=htmlHeader(termsCSS)
+        aboutForm+='<div class="container">'+aboutText+'</div>'
+        if adminNickname:
+            adminActor=httpPrefix+'://'+domainFull+'/users/'+adminNickname
+            aboutForm+='<div class="container"><center><p class="administeredby">Administered by <a href="'+adminActor+'">'+adminNickname+'</a></p></center></div>'
+        aboutForm+=htmlFooter()
+    return aboutForm
+
 def htmlHashtagBlocked(baseDir: str) -> str:
     """Show the screen for a blocked hashtag
     """

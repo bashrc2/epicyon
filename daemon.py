@@ -76,6 +76,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlAbout
 from webinterface import htmlRemoveSharedItem
 from webinterface import htmlInboxDMs
 from webinterface import htmlUnblockConfirm
@@ -787,6 +788,15 @@ class PubServer(BaseHTTPRequestHandler):
             msg=htmlTermsOfService(self.server.baseDir, \
                                    self.server.httpPrefix, \
                                    self.server.domainFull).encode()
+            self._login_headers('text/html',len(msg))
+            self.wfile.write(msg)
+            self.server.GETbusy=False
+            return
+
+        if self.path.startswith('/about'):
+            msg=htmlAbout(self.server.baseDir, \
+                          self.server.httpPrefix, \
+                          self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
             self.wfile.write(msg)
             self.server.GETbusy=False
