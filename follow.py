@@ -380,7 +380,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     if not domainPermitted(domainToFollow,federationList):
         if debug:
             print('DEBUG: follow domain not permitted '+domainToFollow)
-        return False
+        return True
     domainToFollowFull=domainToFollow
     if tempPort:
         if tempPort!=80 and tempPort!=443:
@@ -390,14 +390,14 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     if not nicknameToFollow:
         if debug:
             print('DEBUG: follow request does not contain a nickname for the account followed')
-        return False
+        return True
     handleToFollow=nicknameToFollow+'@'+domainToFollow
     if domainToFollow==domain:
         if not os.path.isdir(baseDir+'/accounts/'+handleToFollow):
             if debug:
                 print('DEBUG: followed account not found - '+ \
                       baseDir+'/accounts/'+handleToFollow)
-            return False
+            return True
         
     if not followerOfPerson(baseDir,nicknameToFollow,domainToFollowFull, \
                             nickname,domainFull,federationList,debug):
@@ -405,7 +405,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
             print('DEBUG: '+nickname+'@'+domain+ \
                   ' is already a follower of '+ \
                   nicknameToFollow+'@'+domainToFollow)
-        return False
+        return True
     
     # what is the followers policy?
     if followApprovalRequired(baseDir,nicknameToFollow, \
