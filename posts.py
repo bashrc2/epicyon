@@ -1457,6 +1457,7 @@ def sendToFollowers(session,baseDir: str, \
             print('Post to followers did not resolve any domains')
         return
     print('Post to followers resolved domains')
+    print(str(grouped))
 
     # this is after the message has arrived at the server
     clientToServer=False
@@ -1475,11 +1476,11 @@ def sendToFollowers(session,baseDir: str, \
         toNickname=followerHandles[index].split('@')[0]
         cc=''
         if len(followerHandles)>1:
-            nickname='inbox'
             toNickname='inbox'
+            #nickname='inbox'
 
         # If this is a profile update then send to shared inbox
-        if postJsonObject.get('type'):
+        if toNickname!='inbox' and postJsonObject.get('type'):
            if postJsonObject['type']=='Update':
                if postJsonObject.get('object'):
                    if isinstance(postJsonObject['object'], dict):
