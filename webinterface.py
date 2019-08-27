@@ -1290,8 +1290,10 @@ def individualPostAsHtml(baseDir: str, \
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
+        '  <div class="timeline-avatar">' \
         '    <a href="'+postJsonObject['actor']+'">' \
-        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
+        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>' \
+        '  </div>'
 
     messageIdStr=''
     if messageId:
