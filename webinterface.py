@@ -488,7 +488,7 @@ def htmlLogin(baseDir: str) -> str:
         '' \
         '  <div class="container">' \
         '    <label for="nickname"><b>Nickname</b></label>' \
-        '    <input type="text" placeholder="Enter Nickname" name="username" required>' \
+        '    <input type="text" placeholder="Enter Nickname" name="username" required autofocus>' \
         '' \
         '    <label for="password"><b>Password</b></label>' \
         '    <input type="password" placeholder="Enter Password" name="password" required>'+ \
