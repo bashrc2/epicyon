@@ -1304,6 +1304,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.wfile.write(msg)
                             self.server.GETbusy=False
                             return
+            actor=self.path.replace('/skills','')
             self._redirect_headers(actor,cookie)
             self.server.GETbusy=False
             return
