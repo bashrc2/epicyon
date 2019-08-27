@@ -1289,7 +1289,7 @@ def individualPostAsHtml(baseDir: str, \
         if displayName:
             titleStr=displayName+' '+titleStr
 
-    avatarDropdown= \
+    avatarImageInPost= \
         '    <a href="'+postJsonObject['actor']+'">' \
         '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>'
 
@@ -1298,7 +1298,7 @@ def individualPostAsHtml(baseDir: str, \
         messageIdStr=';'+messageId
     
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
-        avatarDropdown= \
+        avatarImageInPost= \
             '  <div class="timeline-avatar">' \
             '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+messageIdStr+'">' \
             '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
@@ -1401,7 +1401,7 @@ def individualPostAsHtml(baseDir: str, \
 
     return \
         '<div class="'+containerClass+'">\n'+ \
-        avatarDropdown+ \
+        avatarImageInPost+ \
         '<p class="post-title">'+titleStr+'</p>'+ \
         contentStr+footerStr+ \
         '</div>\n'
