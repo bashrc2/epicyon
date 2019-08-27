@@ -101,6 +101,7 @@ from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
 from webinterface import htmlHashtagSearch
+from webinterface import htmlSkillsSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
@@ -2504,6 +2505,18 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion)
                     if hashtagStr:
                         msg=hashtagStr.encode('utf-8')
+                        self._login_headers('text/html',len(msg))
+                        self.wfile.write(msg)
+                        self.server.POSTbusy=False
+                        return
+                elif searchStr.startswith('*'):      
+                    # skill search
+                    searchStr=searchStr.replace('*','').strip()
+                    skillStr= \
+                        htmlSkillSearch(self.server.baseDir,searchStr, \
+                                        maxPostsInFeed)
+                    if skillStr:
+                        msg=skillStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
                         self.wfile.write(msg)
                         self.server.POSTbusy=False

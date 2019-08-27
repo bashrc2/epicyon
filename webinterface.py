@@ -284,6 +284,94 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
+def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
+    """Show a page containing search results for a skill
+    """
+    if skillsearch.startswith('*'):
+        skillsearch=skillsearch[1:].strip()
+
+    skillsearch=skillsearch.lower().strip('\n')
+
+    results=[]
+    # search instance accounts
+    for subdir, dirs, files in os.walk(baseDir+'/accounts/'):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            if '@' not in f:
+                continue
+            if f.startswith('inbox@'):
+                continue
+            actor=f.replace('.json','').replace('#','/')
+            actorFilename = os.path.join(subdir, f)
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                if actorJson.get('skills') and actorJson.get('name') and actorJson.get('icon'):
+                    for skillName,skillLevel in actorJson['skills'].items():
+                        if skillName.lower() in skillsearch:
+                            skillLevelStr=str(skillLevel)
+                            if skillLevel<100:
+                                skillLevelStr='0'+skillLevelStr
+                            if skillLevel<10:
+                                skillLevelStr='0'+skillLevelStr
+                            indexStr=skillLevelStr+';'+actor+';'+actorJson['name']+';'+actorJson['icon']['url']
+                            if indexStr not in results:
+                                results.append()
+    # search actor cache
+    for subdir, dirs, files in os.walk(baseDir+'/cache/actors/'):
+        for f in files:
+            if not f.endswith('.json'):
+                continue
+            if '@' not in f:
+                continue
+            if f.startswith('inbox@'):
+                continue
+            actor=f.replace('.json','').replace('#','/')
+            actorFilename = os.path.join(subdir, f)
+            with open(actorFilename, 'r') as fp:
+                cachedActorJson=commentjson.load(fp)
+                if cachedActorJson.get('actor'):
+                    actorJson=cachedActorJson['actor']
+                    if actorJson.get('skills') and actorJson.get('name') and actorJson.get('icon'):
+                        for skillName,skillLevel in actorJson['skills'].items():
+                            if skillName.lower() in skillsearch:
+                                skillLevelStr=str(skillLevel)
+                                if skillLevel<100:
+                                    skillLevelStr='0'+skillLevelStr
+                                if skillLevel<10:
+                                    skillLevelStr='0'+skillLevelStr                                
+                                indexStr=skillLevelStr+';'+actor+';'+actorJson['name']+';'+actorJson['icon']['url']
+                                if indexStr not in results:
+                                    results.append()
+
+    results.sort(reverse=True)
+
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+        skillSearchCSS = cssFile.read()
+        
+    skillSearchForm=htmlHeader(skillSearchCSS)
+    skillSearchForm+='<center><h1>*'+skillsearch+'</h1></center>'
+
+    if len(results)==0:
+        skillSearchForm+='<center><h5>No matches</h5></center>'
+    else:
+        skillSearchForm+='<center>'
+        ctr=0
+        for skillMatch in results:
+            skillMatchFields=skillMatch.split(';')
+            if len(skillMatchFields)==4:
+                actor=skillMatchFields[1]
+                actorName=skillMatchFields[2]
+                avatarUrl=skillMatchFields[3]
+                skillSearchForm+='<p><a href="'+actor+'/skills">'
+                skillSearchForm+='<img src="'+avatarUrl+'" class="timeline-avatar"/>'+actorName+'</a></p>'
+                ctr+=1
+                if ctr>=postsPerPage:
+                    break
+        skillSearchForm+='</center>'
+    skillSearchForm+=htmlFooter()
+    return skillSearchForm
+
 def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
     """
@@ -1308,7 +1396,10 @@ def individualPostAsHtml(baseDir: str, \
 
     publishedStr=postJsonObject['object']['published']
     if '.' not in publishedStr:
-        datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+        if '+' not in publishedStr:
+            datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+        else:
+            datetimeObject = datetime.strptime(publishedStr.split('+')[0]+' GMT',"%Y-%m-%dT%H:%M:%SZ")            
     else:
         publishedStr=publishedStr.replace('T',' ').split('.')[0]
         datetimeObject = parse(publishedStr)
@@ -1932,7 +2023,7 @@ def htmlSearch(baseDir: str,path: str) -> str:
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'    
-    followStr+='  <p class="followText">Enter an address, shared item, #hashtag or :emoji: to search for</p>'
+    followStr+='  <p class="followText">Enter an address, shared item, #hashtag, *skill or :emoji: to search for</p>'
     followStr+= \
         '  <form method="POST" action="'+actor+'/searchhandle">' \
         '    <input type="hidden" name="actor" value="'+actor+'">' \
