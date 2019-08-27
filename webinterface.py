@@ -1681,24 +1681,25 @@ def htmlDeletePost(session,baseDir: str,messageId: str, \
         if not os.path.isfile(baseDir+'/accounts/delete-background.png'):
             copyfile(baseDir+'/img/delete-background.png',baseDir+'/accounts/delete-background.png')
 
+    deletePostStr=None
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         profileStyle = cssFile.read()
-    deletePostStr=htmlHeader(profileStyle)
-    deletePostStr='<script>'+contentWarningScript()+'</script>'
-    deletePostStr+= \
-        individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject,None,True,False, \
-                             httpPrefix,projectVersion,False,False)
-    deletePostStr+='<center>'
-    deletePostStr+='  <p class="followText">Delete this post?</p>'
-    deletePostStr+= \
-        '  <form method="POST" action="'+actor+'/rmpost">' \
-        '    <input type="hidden" name="messageId" value="'+messageId+'">' \
-        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-        '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
-        '  </form>'
-    deletePostStr+='</center>'
-    deletePostStr+=htmlFooter()
+        deletePostStr=htmlHeader(profileStyle)
+        deletePostStr+='<script>'+contentWarningScript()+'</script>'
+        deletePostStr+= \
+            individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                 nickname,domain,port,postJsonObject,None,True,False, \
+                                 httpPrefix,projectVersion,False,False)
+        deletePostStr+='<center>'
+        deletePostStr+='  <p class="followText">Delete this post?</p>'
+        deletePostStr+= \
+            '  <form method="POST" action="'+actor+'/rmpost">' \
+            '    <input type="hidden" name="messageId" value="'+messageId+'">' \
+            '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+            '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
+            '  </form>'
+        deletePostStr+='</center>'
+        deletePostStr+=htmlFooter()
     return deletePostStr
 
 def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
