@@ -1681,15 +1681,14 @@ def htmlDeletePost(session,baseDir: str,messageId: str, \
         if not os.path.isfile(baseDir+'/accounts/delete-background.png'):
             copyfile(baseDir+'/img/delete-background.png',baseDir+'/accounts/delete-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         profileStyle = cssFile.read()
     deletePostStr=htmlHeader(profileStyle)
+    deletePostStr='<script>'+contentWarningScript()+'</script>'
     deletePostStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                             nickname,domain,port,postJsonObject, \
-                             None,True,False, \
-                             httpPrefix,projectVersion, \
-                             False,False)    
+                             nickname,domain,port,postJsonObject,None,True,False, \
+                             httpPrefix,projectVersion,False,False)
     deletePostStr+='<center>'
     deletePostStr+='  <p class="followText">Delete this post?</p>'
     deletePostStr+= \
