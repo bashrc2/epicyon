@@ -1399,7 +1399,7 @@ def individualPostAsHtml(baseDir: str, \
         if '+' not in publishedStr:
             datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
         else:
-            datetimeObject = datetime.strptime(publishedStr.split('+')[0]+' GMT',"%Y-%m-%dT%H:%M:%SZ")            
+            datetimeObject = datetime.strptime(publishedStr.split('+')[0]+'Z',"%Y-%m-%dT%H:%M:%SZ")
     else:
         publishedStr=publishedStr.replace('T',' ').split('.')[0]
         datetimeObject = parse(publishedStr)
