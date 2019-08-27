@@ -1270,6 +1270,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy=False
                             return
 
+        # show skills on the profile page
         if self.path.endswith('/skills') and '/users/' in self.path:
             namedStatus=self.path.split('/users/')[1]
             if '/' in namedStatus:
@@ -1303,6 +1304,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.wfile.write(msg)
                             self.server.GETbusy=False
                             return
+            self._redirect_headers(actor,cookie)
+            self.server.GETbusy=False
+            return
 
         # get an individual post from the path /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
