@@ -2592,17 +2592,18 @@ class PubServer(BaseHTTPRequestHandler):
                     removeMessageId=removeMessageId.split('&')[0]
                 if '/statuses/' in removeMessageId:
                     removePostActor=removeMessageId.split('/statuses/')[0]
-                deleteJson= {
-                    "@context": "https://www.w3.org/ns/activitystreams",
-                    'actor': removePostActor,
-                    'object': removeMessageId,
-                    'to': ['https://www.w3.org/ns/activitystreams#Public',removePostActor],
-                    'cc': [removePostActor+'/followers'],
-                    'type': 'Delete'
-                }
-                if self.server.debug:
-                    pprint(deleteJson)
-                self._postToOutbox(deleteJson)                    
+                if originPathStr in removePostActor:
+                    deleteJson= {
+                        "@context": "https://www.w3.org/ns/activitystreams",
+                        'actor': removePostActor,
+                        'object': removeMessageId,
+                        'to': ['https://www.w3.org/ns/activitystreams#Public',removePostActor],
+                        'cc': [removePostActor+'/followers'],
+                        'type': 'Delete'
+                    }
+                    if self.server.debug:
+                        pprint(deleteJson)
+                    self._postToOutbox(deleteJson)                    
             self._redirect_headers(originPathStr+'/outbox',cookie)
             self.server.POSTbusy=False
             return
