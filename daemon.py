@@ -2603,6 +2603,7 @@ class PubServer(BaseHTTPRequestHandler):
                     }
                     if self.server.debug:
                         pprint(deleteJson)
+                    self.postToNickname=getNicknameFromActor(removePostActor)
                     self._postToOutbox(deleteJson)                    
             self._redirect_headers(originPathStr+'/outbox',cookie)
             self.server.POSTbusy=False
