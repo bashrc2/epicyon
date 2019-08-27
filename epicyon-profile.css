@@ -14,7 +14,7 @@
     --border-color: #505050;
     --font-size-header: 18px;
     --font-color-header: #ccc;
-    --font-size: 22px;
+    --font-size: 30px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
 }
@@ -26,7 +26,7 @@ body, html {
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
     max-width: 80%;
-    min-width: 600px;
+    min-width: 950px;
     margin: 0 auto;
     font-size: var(--font-size);
 }
@@ -51,7 +51,7 @@ a:link {
     border: none;
     color: #FFFFFF;
     text-align: center;
-    font-size: 18px;
+    font-size: 26px;
     padding: 2px;
     cursor: pointer;
     margin: 5px;
@@ -62,7 +62,7 @@ a:link {
 }
 
 .pageicon {
-    width: 5%;
+    width: 8%;
 }
 
 .timeline-banner {
@@ -349,8 +349,8 @@ a:link {
 
 .container img {
     float: left;
-    max-width: 60px;
-    width: 10%;
+    max-width: 400px;
+    width: 5%;
     padding: 0px 7px;
     margin-right: 20px;
     border-radius: 10%;
@@ -376,18 +376,14 @@ a:link {
 }
 
 .containericons {
-    border: 0px solid #dedede;
-    background-color: #f1f1f1;
-    border-radius: 0px;
-    padding: 0px;
-    margin: 0px 0;
+    padding: 0px 0px;
+    margin: 0px 0px;
 }
 
 .containericons img {
     float: right;
-    max-width: 35px;
-    width: 5%;
-    margin-right: 0px;
+    max-width: 200px;
+    width: 6%;
     border-radius: 0%;
 }
 
@@ -599,8 +595,8 @@ input[type=submit]:hover {
 
 .timeline-avatar img {
     opacity: 1.0;
-    width: 90%;
-    height: 90%;
+    width: 8%;
+    height: 8%;
     padding: 0px 0px;
     -ms-transform: translateY(-10%);
     transform: translateY(-10%);
@@ -701,4 +697,144 @@ input[type=checkbox]
     padding: 0px 16px;
     -ms-transform: translateY(-10%);
     transform: translateY(-10%);
+}
+
+@media screen and (min-width: 400px) {
+        body, html {
+                font-size: 22px;
+        }
+        .container img {
+                float: left;
+                max-width: 400px;
+                width: 5%;
+                padding: 0px 7px;
+                margin-right: 20px;
+                border-radius: 10%;
+        }
+        .containericons img {
+                float: right;
+                max-width: 200px;
+                width: 3%;
+                margin: 0px 1%;
+                border-radius: 0%;
+        }
+        .timeline-avatar img {
+                opacity: 1.0;
+                width: 8%;
+                height: 8%;
+                padding: 0px 0px;
+                -ms-transform: translateY(-10%);
+                transform: translateY(-10%);
+        }
+        .cwButton {
+                border-radius: 4px;
+                background-color: #999;
+                border: none;
+                color: #FFFFFF;
+                text-align: center;
+                font-size: 20px;
+                padding: 2px;
+                cursor: pointer;
+                margin: 5px;
+        }
+        .button {
+                border-radius: 4px;
+                background-color: #999;
+                border: none;
+                color: #FFFFFF;
+                text-align: center;
+                font-size: 18px;
+                padding: 10px;
+                width: 10%;
+                max-width: 100px;
+                min-width: 80px;
+                transition: all 0.5s;
+                cursor: pointer;
+                margin: 5px;
+        }
+        .buttonselected {
+                border-radius: 4px;
+                background-color: #666;
+                border: none;
+                color: #FFFFFF;
+                text-align: center;
+                font-size: 18px;
+                padding: 10px;
+                width: 10%;
+                max-width: 100px;
+                min-width: 80px;
+                transition: all 0.5s;
+                cursor: pointer;
+                margin: 5px;
+        }
+}
+
+@media screen and (max-width: 1000px) {
+        body, html {
+                font-size: 30px;
+        }
+        .container img {
+                float: left;
+                max-width: 400px;
+                width: 15%;
+                padding: 0px 7px;
+                margin-right: 20px;
+                border-radius: 10%;
+        }
+        .containericons img {
+                float: right;
+                max-width: 200px;
+                width: 7%;
+                margin: 0px 1%;
+                border-radius: 0%;
+        }
+        .timeline-avatar img {
+                opacity: 1.0;
+                width: 15%;
+                height: 15%;
+                padding: 0px 0px;
+                -ms-transform: translateY(-10%);
+                transform: translateY(-10%);
+        }
+        .cwButton {
+                border-radius: 4px;
+                background-color: #999;
+                border: none;
+                color: #FFFFFF;
+                text-align: center;
+                font-size: 26px;
+                padding: 2px;
+                cursor: pointer;
+                margin: 5px;
+        }
+        .button {
+                border-radius: 4px;
+                background-color: #999;
+                border: none;
+                color: #FFFFFF;
+                text-align: center;
+                font-size: 32px;
+                padding: 10px;
+                width: 20%;
+                max-width: 400px;
+                min-width: 80px;
+                transition: all 0.5s;
+                cursor: pointer;
+                margin: 15px;
+        }
+        .buttonselected {
+                border-radius: 4px;
+                background-color: #666;
+                border: none;
+                color: #FFFFFF;
+                text-align: center;
+                font-size: 32px;
+                padding: 10px;
+                width: 20%;
+                max-width: 400px;
+                min-width: 80px;
+                transition: all 0.5s;
+                cursor: pointer;
+                margin: 15px;
+        }
 }
