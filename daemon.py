@@ -76,6 +76,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlDeletePost
 from webinterface import htmlAbout
 from webinterface import htmlRemoveSharedItem
 from webinterface import htmlInboxDMs
@@ -1022,19 +1023,19 @@ class PubServer(BaseHTTPRequestHandler):
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.server.session:
                     self.server.session= \
-                        createSession(self.server.domain,self.server.port,self.server.useTor)
-                deleteActor=self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+self.postToNickname
-                deleteJson= {
-                    "@context": "https://www.w3.org/ns/activitystreams",
-                    'actor': actor,
-                    'object': deleteUrl,
-                    'to': ['https://www.w3.org/ns/activitystreams#Public',actor],
-                    'cc': [actor+'/followers'],
-                    'type': 'Delete'
-                }
-                if self.server.debug:
-                    pprint(deleteJson)
-                self._postToOutbox(deleteJson)
+                        createSession(self.server.domain,self.server.port, \
+                                      self.server.useTor)
+
+                deleteStr= \
+                    htmlDeletePost(self.server.session,self.server.baseDir, \
+                                   deleteUrl,self.server.httpPrefix, \
+                                   __version__,self.server.cachedWebfingers, \
+                                   self.server.personCache)
+                if deleteStr:
+                    self._set_headers('text/html',len(deleteStr),cookie)
+                    self.wfile.write(deleteStr)
+                    self.server.GETbusy=False
+                    return
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
@@ -2576,6 +2577,33 @@ class PubServer(BaseHTTPRequestHandler):
                 shareDomain,sharePort=getDomainFromActor(shareActor)
                 removeShare(self.server.baseDir,shareNickname,shareDomain,shareName)
             self._redirect_headers(originPathStr+'/inbox',cookie)
+            self.server.POSTbusy=False
+            return
+
+        # removes a post
+        if authorized and self.path.endswith('/rmpost'):
+            originPathStr=self.path.split('/rmpost')[0]
+            length = int(self.headers['Content-length'])
+            removePostConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitYes=' in removePostConfirmParams:
+                removePostConfirmParams=removePostConfirmParams.replace('%3A',':').replace('%2F','/')
+                removeMessageId=removePostConfirmParams.split('messageId=')[1]
+                if '&' in removeMessageId:
+                    removeMessageId=removeMessageId.split('&')[0]
+                if '/statuses/' in removeMessageId:
+                    removePostActor=removeMessageId.split('/statuses/')[0]
+                deleteJson= {
+                    "@context": "https://www.w3.org/ns/activitystreams",
+                    'actor': removePostActor,
+                    'object': removeMessageId,
+                    'to': ['https://www.w3.org/ns/activitystreams#Public',removePostActor],
+                    'cc': [removePostActor+'/followers'],
+                    'type': 'Delete'
+                }
+                if self.server.debug:
+                    pprint(deleteJson)
+                self._postToOutbox(deleteJson)                    
+            self._redirect_headers(originPathStr+'/outbox',cookie)
             self.server.POSTbusy=False
             return
 

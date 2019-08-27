@@ -1658,7 +1658,50 @@ def htmlRemoveSharedItem(baseDir: str,actor: str,shareName: str) -> str:
     sharesStr+='</div>'
     sharesStr+=htmlFooter()
     return sharesStr
-    
+
+def htmlDeletePost(session,baseDir: str,messageId: str, \
+                   httpPrefix: str,projectVersion: str, \
+                   wfRequest: {},personCache: {}) -> str:
+    """Shows a screen asking to confirm the deletion of a post
+    """
+    if '/statuses/' not in messageId:
+        return None
+
+    actor=messageId.split('/statuses/')[0]
+    nickname=getNicknameFromActor(actor)
+    domain,port=getDomainFromActor(actor)
+
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
+    if not postFilename:
+        return None
+    with open(postFilename, 'r') as fp:
+        postJsonObject=commentjson.load(fp)
+
+    if os.path.isfile(baseDir+'/img/delete-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/delete-background.png'):
+            copyfile(baseDir+'/img/delete-background.png',baseDir+'/accounts/delete-background.png')
+
+    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+        profileStyle = cssFile.read()
+    deletePostStr=htmlHeader(profileStyle)
+    deletePostStr+= \
+        individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                             nickname,domain,port,postJsonObject, \
+                             None,True,False, \
+                             httpPrefix,projectVersion, \
+                             False,False)    
+    deletePostStr+='<center>'
+    deletePostStr+='  <p class="followText">Delete this post?</p>'
+    deletePostStr+= \
+        '  <form method="POST" action="'+actor+'/rmpost">' \
+        '    <input type="hidden" name="messageId" value="'+messageId+'">' \
+        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
+        '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
+        '  </form>'
+    deletePostStr+='</center>'
+    deletePostStr+=htmlFooter()
+    return deletePostStr
+
 def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
     """Asks to confirm a follow
     """
