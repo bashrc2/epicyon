@@ -1033,7 +1033,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.personCache)
                 if deleteStr:
                     self._set_headers('text/html',len(deleteStr),cookie)
-                    self.wfile.write(deleteStr)
+                    self.wfile.write(deleteStr.encode())
                     self.server.GETbusy=False
                     return
             self.server.GETbusy=False
