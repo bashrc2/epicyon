@@ -100,7 +100,7 @@ from webinterface import htmlUnfollowConfirm
 from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
-from webinterface import htmlSkillSearch
+from webinterface import htmlSkillsSearch
 from webinterface import htmlHashtagSearch
 from webinterface import htmlSkillsSearch
 from webinterface import htmlModerationInfo
