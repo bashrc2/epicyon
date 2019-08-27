@@ -350,7 +350,7 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
         skillSearchCSS = cssFile.read()
         
     skillSearchForm=htmlHeader(skillSearchCSS)
-    skillSearchForm+='<center><h1>*'+skillsearch+'</h1></center>'
+    skillSearchForm+='<center><h1>Skills search: '+skillsearch+'</h1></center>'
 
     if len(results)==0:
         skillSearchForm+='<center><h5>No matches</h5></center>'
