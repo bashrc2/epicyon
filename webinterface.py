@@ -308,7 +308,8 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
                 actorJson=commentjson.load(fp)
                 if actorJson.get('skills') and actorJson.get('name') and actorJson.get('icon'):
                     for skillName,skillLevel in actorJson['skills'].items():
-                        if skillName.lower() in skillsearch:
+                        skillName=skillName.lower()
+                        if skillName in skillsearch or skillsearch in skillName:
                             skillLevelStr=str(skillLevel)
                             if skillLevel<100:
                                 skillLevelStr='0'+skillLevelStr
@@ -334,7 +335,8 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
                     actorJson=cachedActorJson['actor']
                     if actorJson.get('skills') and actorJson.get('name') and actorJson.get('icon'):
                         for skillName,skillLevel in actorJson['skills'].items():
-                            if skillName.lower() in skillsearch:
+                            skillName=skillName.lower()
+                            if skillName in skillsearch or skillsearch in skillName:
                                 skillLevelStr=str(skillLevel)
                                 if skillLevel<100:
                                     skillLevelStr='0'+skillLevelStr
