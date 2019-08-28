@@ -2515,7 +2515,7 @@ class PubServer(BaseHTTPRequestHandler):
                     skillStr= \
                         htmlSkillsSearch(self.server.baseDir,searchStr, \
                                          self.server.instanceOnlySkillsSearch, \
-                                         maxPostsInFeed)
+                                         64)
                     if skillStr:
                         msg=skillStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
