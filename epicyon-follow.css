@@ -21,7 +21,7 @@ body, html {
     font-family: Arial, Helvetica, sans-serif;
     max-width: 80%;
     min-width: 600px;
-    margin: 0 auto;
+    margin: 5% auto;
 }
 
 a, u {
@@ -105,4 +105,12 @@ input[type=text] {
 
 .cwText {
     display: none;
+}
+
+.options {
+    font-size: var(--font-size);
+}
+
+.options img {
+    width: 20%;
 }
