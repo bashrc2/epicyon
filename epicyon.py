@@ -129,6 +129,9 @@ parser.add_argument('-f','--federate', nargs='+',dest='federationList', \
 parser.add_argument("--debug", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Show debug messages")
+parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Skills searches only return results from this instance")
 parser.add_argument("--http", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Use http only")
@@ -1309,4 +1312,5 @@ runDaemon(__version__, \
           args.noannounce,args.cw,ocapAlways, \
           useTor,args.maxReplies, \
           args.domainMaxPostsPerDay,args.accountMaxPostsPerDay, \
-          args.allowdeletion,debug,False)
+          args.allowdeletion,debug,False, \
+          args.instanceOnlySkillsSearch)

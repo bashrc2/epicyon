@@ -2515,7 +2515,7 @@ class PubServer(BaseHTTPRequestHandler):
                     searchStr=searchStr.replace('*','').strip()
                     skillStr= \
                         htmlSkillsSearch(self.server.baseDir,searchStr, \
-                                         self.server.domainFull, \
+                                         self.server.instanceOnlySkillsSearch, \
                                          maxPostsInFeed)
                     if skillStr:
                         msg=skillStr.encode('utf-8')
@@ -3135,7 +3135,8 @@ def runDaemon(projectVersion, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
               domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
-              allowDeletion=False,debug=False,unitTest=False) -> None:
+              allowDeletion=False,debug=False,unitTest=False, \
+              instanceOnlySkillsSearch=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -3187,6 +3188,7 @@ def runDaemon(projectVersion, \
     httpd.salts={}
     httpd.tokens={}
     httpd.tokensLookup={}
+    httpd.instanceOnlySkillsSearch=instanceOnlySkillsSearch
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
         httpd.acceptedCaps.append('inbox:noreply')
