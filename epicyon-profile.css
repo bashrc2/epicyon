@@ -776,6 +776,9 @@ input[type=checkbox]
                 cursor: pointer;
                 margin: 5px;
         }
+	.pageicon {
+	    width: 4%;
+	}
 }
 
 @media screen and (max-width: 1000px) {
@@ -846,4 +849,7 @@ input[type=checkbox]
                 cursor: pointer;
                 margin: 15px;
         }
+	.pageicon {
+	    width: 8%;
+	}
 }
