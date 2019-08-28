@@ -594,12 +594,14 @@ input[type=submit]:hover {
 }
 
 .search-result {
-    margin-left: 30px;
+    margin: 0px 0px;
+}
+.search-result-text {
+    padding: 20px 0px;
 }
 .search-result img {
-    float: left;
-    width: 4%;
-    vertical-align: baseline;
+    width: 7%;
+    padding: 0px 30px;
 }
 
 .timeline-avatar img {
