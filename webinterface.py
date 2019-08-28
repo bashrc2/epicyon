@@ -317,7 +317,7 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
                                 skillLevelStr='0'+skillLevelStr
                             indexStr=skillLevelStr+';'+actor+';'+actorJson['name']+';'+actorJson['icon']['url']
                             if indexStr not in results:
-                                results.append()
+                                results.append(indexStr)
     # search actor cache
     for subdir, dirs, files in os.walk(baseDir+'/cache/actors/'):
         for f in files:
@@ -344,7 +344,7 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
                                     skillLevelStr='0'+skillLevelStr                                
                                 indexStr=skillLevelStr+';'+actor+';'+actorJson['name']+';'+actorJson['icon']['url']
                                 if indexStr not in results:
-                                    results.append()
+                                    results.append(indexStr)
 
     results.sort(reverse=True)
 
