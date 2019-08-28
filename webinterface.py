@@ -1559,6 +1559,11 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         # refresh if on the first page of the inbox and dm timeline
         tlStr=htmlHeader(profileStyle,240)
 
+    if boxName!='dm':
+        newPostButtonStr='<a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'
+    else:
+        newPostButtonStr='<a href="'+actor+'/newdm"><img src="/icons/newpost.png" title="Create a new DM" alt="Create a new DM" class="right"/></a>'
+
     # banner and row of buttons
     tlStr+= \
         '<a href="/users/'+nickname+'" title="Switch to profile view" alt="Switch to profile view">' \
@@ -1568,8 +1573,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>Inbox</span></button></a>' \
         '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>DM</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Outbox</span></button></a>'+ \
-        moderationButtonStr+ \
-        '    <a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'+ \
+        moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
