@@ -372,8 +372,8 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,instanceOnly: bool,postsPerPa
                 actor=skillMatchFields[1]
                 actorName=skillMatchFields[2]
                 avatarUrl=skillMatchFields[3]
-                skillSearchForm+='<p><a href="'+actor+'/skills">'
-                skillSearchForm+='<img src="'+avatarUrl+'" class="timeline-avatar"/>'+actorName+'</a></p>'
+                skillSearchForm+='<div class="search-result""><a href="'+actor+'/skills">'
+                skillSearchForm+='<img src="'+avatarUrl+'"/>'+actorName+'</a></div>'
                 ctr+=1
                 if ctr>=postsPerPage:
                     break

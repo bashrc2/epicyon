@@ -593,6 +593,15 @@ input[type=submit]:hover {
     padding: 0px 0px;
 }
 
+.search-result {
+    margin-left: 30px;
+}
+.search-result img {
+    float: left;
+    width: 4%;
+    vertical-align: baseline;
+}
+
 .timeline-avatar img {
     opacity: 1.0;
     width: 8%;
