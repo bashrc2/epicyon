@@ -284,7 +284,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
-def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
+def htmlSkillsSearch(baseDir: str,skillsearch: str,domainFull: str,postsPerPage: int) -> str:
     """Show a page containing search results for a skill
     """
     if skillsearch.startswith('*'):
@@ -302,11 +302,14 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
                 continue
             if f.startswith('inbox@'):
                 continue
-            actor=f.replace('.json','').replace('#','/')
             actorFilename = os.path.join(subdir, f)
             with open(actorFilename, 'r') as fp:
                 actorJson=commentjson.load(fp)
-                if actorJson.get('skills') and actorJson.get('name') and actorJson.get('icon'):
+                if actorJson.get('id') and \
+                   actorJson.get('skills') and \
+                   actorJson.get('name') and \
+                   actorJson.get('icon'):
+                    actor=actorJson['id']
                     for skillName,skillLevel in actorJson['skills'].items():
                         skillName=skillName.lower()
                         if skillName in skillsearch or skillsearch in skillName:
@@ -327,13 +330,16 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,postsPerPage: int) -> str:
                 continue
             if f.startswith('inbox@'):
                 continue
-            actor=f.replace('.json','').replace('#','/')
             actorFilename = os.path.join(subdir, f)
             with open(actorFilename, 'r') as fp:
                 cachedActorJson=commentjson.load(fp)
                 if cachedActorJson.get('actor'):
                     actorJson=cachedActorJson['actor']
-                    if actorJson.get('skills') and actorJson.get('name') and actorJson.get('icon'):
+                    if actorJson.get('id') and \
+                       actorJson.get('skills') and \
+                       actorJson.get('name') and \
+                       actorJson.get('icon'):
+                        actor=actorJson['id']
                         for skillName,skillLevel in actorJson['skills'].items():
                             skillName=skillName.lower()
                             if skillName in skillsearch or skillsearch in skillName:

@@ -2515,6 +2515,7 @@ class PubServer(BaseHTTPRequestHandler):
                     searchStr=searchStr.replace('*','').strip()
                     skillStr= \
                         htmlSkillsSearch(self.server.baseDir,searchStr, \
+                                         self.server.domainFull, \
                                          maxPostsInFeed)
                     if skillStr:
                         msg=skillStr.encode('utf-8')
