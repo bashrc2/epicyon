@@ -593,12 +593,10 @@ input[type=submit]:hover {
     padding: 0px 0px;
 }
 
-.search-result {
-    margin: 0px 0px;
-}
 .search-result-text {
-    padding: 20px 0px;
+    font-size: var(--font-size);
 }
+
 .search-result img {
     width: 7%;
     padding: 0px 30px;
