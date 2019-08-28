@@ -102,7 +102,6 @@ from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
 from webinterface import htmlHashtagSearch
-from webinterface import htmlSkillsSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
 from webinterface import htmlHashtagBlocked
