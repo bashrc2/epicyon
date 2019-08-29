@@ -8,46 +8,7 @@ A minimal ActivityPub server.
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
 
-## Goals
-
- * A minimal ActivityPub server, comparable to an email MTA
- * AGPLv3+
- * Server-to-server and client-to-server protocols supported
- * Implemented in a common language (Python 3)
- * Keyword filtering.
- * Remove metadata from attached images, avatars and backgrounds
- * Being able to build crowdsouced organizations with roles and skills
- * Sharings collection, similar to the gnusocial sharings plugin
- * Quotas for received posts per day, per domain and per account
- * Hellthread detection and removal
- * Instance and account level federation lists
- * Support content warnings, reporting and blocking
- * http signatures and basic auth
- * Compatible with http (onion addresses), https and dat
- * Minimal dependencies.
- * Capabilities based security
- * Support image blurhashes
- * Data minimization principle. Configurable post expiry time
- * Likes and repeats only visible to authorized viewers
- * ReplyGuy mitigation - maxmimum replies per post or posts per day
- * Ability to delete or hide specific conversation threads
- * Commandline interface
- * Simple web interface
- * Designed for intermittent connectivity. Assume network disruptions
- * Limited visibility of follows/followers
- * Suitable for single board computers
-
-## Features which won't be implemented
-
-The following are considered antifeatures of other social network systems, since they encourage dysfunctional social interactions.
-
- * Trending hashtags, or trending anything
- * Ranking, rating or recommending mechanisms for posts or people (other than likes or repeats/boosts)
- * Geolocation features
- * Algorithmic timelines (i.e. non-chronological)
- * Direct payment mechanisms, although integration with other services may be possible
- * Any variety of blockchain
- * Sponsored posts
+[Project Goals](README_goals.md)
 
 ## Install
 
@@ -65,7 +26,7 @@ sudo apt-get -y install tor python3-pip python3-socks imagemagick python3-numpy 
 sudo pip3 install commentjson beautifulsoup4 pycryptodome
 ```
 
-## Running Tests
+## Running Unit Tests
 
 To run the unit tests:
 
