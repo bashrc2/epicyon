@@ -1,7 +1,7 @@
 __filename__ = "webfinger.py"
 __author__ = "Bob Mottram"
 __license__ = "AGPL3+"
-__version__ = "0.0.1"
+__version__ = "1.0.0"
 __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
