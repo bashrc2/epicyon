@@ -40,7 +40,7 @@ adduser --system --home=/etc/epicyon --group epicyon
 
 Edit */etc/systemd/system/epicyon.service* and add the following:
 
-``` bash
+``` systemd
 [Unit]
 Description=epicyon
 After=syslog.target
