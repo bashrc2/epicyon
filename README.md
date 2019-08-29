@@ -1,6 +1,4 @@
-``` quote
-**Epicyon**, meaning *"more than a dog"*. Largest of the *Borophaginae* which lived in North America 20-5 million years ago.
-```
+<blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.<blockquote>
 
 Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions and perimeter defense against adversaries.
 
