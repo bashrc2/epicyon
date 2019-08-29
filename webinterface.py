@@ -1481,6 +1481,7 @@ def individualPostAsHtml(baseDir: str, \
 
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
+        contentStr=addEmbeddedVideo(contentStr)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -1493,12 +1494,12 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
+        contentStr=addEmbeddedVideo(contentStr)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
         contentStr=htmlRemplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
 
-    contentStr=addEmbeddedVideo(contentStr)
     contentStr='<div class="message">'+contentStr+'</div>'
 
     return \
