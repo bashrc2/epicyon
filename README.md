@@ -2,15 +2,9 @@
 
 A minimal ActivityPub server.
 
-[Commandline interface](README_commandline.md).
-
-[W3C Specification](https://www.w3.org/TR/activitypub)
+[W3C Specification](https://www.w3.org/TR/activitypub) [Project Goals](README_goals.md) [Commandline interface](README_commandline.md) [Customizations](README_customizations.md)
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
-
-[Project Goals](README_goals.md)
-
-[Customizations](README_customizations.md)
 
 ## Package Dependencies
 
