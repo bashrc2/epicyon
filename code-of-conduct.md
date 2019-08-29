@@ -6,7 +6,7 @@ In any Free Software project with more than one participant inevitably there may
 
 ## Assume good faith
 
-Epicyon Contributors have many ways of reaching our common goal of providing freedom respecting and adversary resistant decentralized communications systems which may differ from your preferred ways. Assume that other people are working towards this goal.
+Epicyon contributors have many ways of reaching our common goal of providing freedom respecting and adversary resistant decentralized communications systems which may differ from your preferred ways. Assume that other people are working towards this goal.
 
 ## Be collaborative
 
