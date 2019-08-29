@@ -28,6 +28,70 @@ sudo apt-get -y install tor python3-pip python3-socks imagemagick python3-numpy 
 sudo pip3 install commentjson beautifulsoup4 pycryptodome
 ```
 
+## Running the Server
+
+In the most common case you'll be using systemd to set up a daemon to run the server.
+
+Add a dedicated user so that we don't have to run as root.
+
+``` bash
+adduser --system --home=/etc/epicyon --group epicyon
+```
+
+Edit */etc/systemd/system/epicyon.service* and add the following:
+
+``` bash
+[Unit]
+Description=epicyon
+After=syslog.target
+After=network.target
+Documentation=$EPICYON_REPO";
+
+[Service]
+Type=simple
+User=epicyon
+Group=epicyon
+WorkingDirectory=/etc/epicyon
+ExecStart=/usr/bin/python3 /etc/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug";
+Environment=USER=epicyon
+Restart=always
+StandardError=syslog
+
+[Install]
+WantedBy=multi-user.target }
+```
+
+Here the server was installed to */etc/epicyon*, but you can change that to wherever you installed it.
+
+Then run the daemon:
+
+``` bash
+systemctl enable epicyon
+chown -R epicyon:epicyon /etc/epicyon
+systemctl start epicyon
+```
+
+Check the status of the daemon with:
+
+``` bash
+systemctl status epicyon
+```
+
+If it's not running then you can also look at the log:
+
+``` bash
+journalctl -u epicyon
+```
+
+You'll also need to set up a web server configuration. An Nginx example is as follows:
+
+``` bash
+```
+
+## Object Capabilities Security
+
+A description of the proposed object capabilities model [is here](ocaps.md).
+
 ## Running Unit Tests
 
 To run the unit tests:
@@ -41,49 +105,4 @@ To run the network tests. These simulate instances exchanging messages.
 ``` bash
 python3 epicyon.py --testsnetwork
 ```
-
-
-## Running the Server
-
-To run with defaults:
-
-``` bash
-python3 epicyon.py
-```
-
-In a browser of choice (but not Tor browser) you can then navigate to:
-
-``` text
-http://localhost:8085/users/admin
-```
-
-If it's working then you should see the json actor for the default admin account.
-
-For a more realistic installation you can run on a defined domain and port:
-
-``` bash
-python3 epicyon.py --domain [name] --port 8000 --https
-```
-
-You will need to proxy port 8000 through your web server and set up CA certificates as needed.
-
-By default data will be stored in the directory in which you run the server, but you can also specify a directory:
-
-``` bash
-python3 epicyon.py --domain [name] --port 8000 --https --path [data directory]
-```
-
-
-## Culling follower numbers
-
-In this system the number of followers which an account has will only be visible to the account holder. Other viewers will see a made up number. Which accounts are followed or followed by a person will also only have limited visibility.
-
-The intention is to prevent the construction of detailed social graphs by adversaries, and to frustrate attempts to build celebrity status based on number of followers, which on sites like Twitter creates a dubious economy of fake accounts and the trading thereof.
-
-If you are the account holder though you will be able to see exactly who you're following or being followed by.
-
-
-## Object Capabilities Security
-
-A description of the proposed object capabilities model [is here](ocaps.md).
 
