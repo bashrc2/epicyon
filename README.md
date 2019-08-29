@@ -17,14 +17,18 @@ Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source
 On Arch/Parabola:
 
 ``` bash
-sudo pacman -S tor python-pip python-pysocks python-pycryptodome python-beautifulsoup4 imagemagick python-pillow python-numpy python-dateutil certbot
+sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
+               python-beautifulsoup4 imagemagick python-pillow \
+	       python-numpy python-dateutil certbot
 sudo pip install commentjson
 ```
 
 Or on Debian:
 
 ``` bash
-sudo apt-get -y install tor python3-pip python3-socks imagemagick python3-numpy python3-setuptools python3-crypto python3-dateutil python3-pil.imagetk certbot
+sudo apt-get -y install tor python3-pip python3-socks imagemagick \
+                python3-numpy python3-setuptools python3-crypto \
+		python3-dateutil python3-pil.imagetk certbot
 sudo pip3 install commentjson beautifulsoup4 pycryptodome
 ```
 
