@@ -58,7 +58,7 @@ Restart=always
 StandardError=syslog
 
 [Install]
-WantedBy=multi-user.target }
+WantedBy=multi-user.target
 ```
 
 Here the server was installed to */etc/epicyon*, but you can change that to wherever you installed it.
