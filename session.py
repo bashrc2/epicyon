@@ -26,7 +26,7 @@ def createSession(domain: str, port: int, onionRoute: bool):
     return session
 
 def getJson(session,url: str,headers: {},params: {}, \
-            version='0.0.1',httpPrefix='https',domain='testdomain') -> {}:
+            version='1.0.0',httpPrefix='https',domain='testdomain') -> {}:
     sessionParams={}
     sessionHeaders={}
     if headers:
