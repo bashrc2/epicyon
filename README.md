@@ -158,7 +158,7 @@ server {
 }
 ```
 
-Changing your domain name as appropriate. Active the configuration with:
+Changing your domain name as appropriate. Activate the configuration with:
 
 ``` bash
 ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
