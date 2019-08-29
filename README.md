@@ -1,8 +1,8 @@
 <img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/logo.png?raw=true" width=256/>
 
-A minimal ActivityPub server.
+Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant server implementing both S2S and C2S protocols and sutable for installation on single board computers. It includes features such as moderation tools, post expiry, content warnings, image descriptions and perimeter defense against adversaries.
 
-[W3C Specification](https://www.w3.org/TR/activitypub) - [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Object Capabilities](ocaps.md)
+[Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Object Capabilities](ocaps.md)
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
 
