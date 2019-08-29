@@ -2,7 +2,7 @@
 
 A minimal ActivityPub server.
 
-[W3C Specification](https://www.w3.org/TR/activitypub) - [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md)
+[W3C Specification](https://www.w3.org/TR/activitypub) - [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Object Capabilities](ocaps.md)
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
 
@@ -174,10 +174,6 @@ And restart the web server:
 ``` bash
 systemctl restart nginx
 ```
-
-## Object Capabilities Security
-
-A description of the proposed object capabilities model [is here](ocaps.md).
 
 ## Running Unit Tests
 
