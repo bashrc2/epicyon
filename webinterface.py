@@ -1202,10 +1202,10 @@ def addEmbeddedAudio(content: str) -> str:
         if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
         url=w
-        content+='<audio controls>'
+        content+='<center><audio controls>'
         content+='<source src="'+url+'" type="audio/'+extension.replace('.','')+'">'
         content+='Your browser does not support the audio element.'
-        content+='</audio>'
+        content+='</audio></center>'
     return content
 
 def addEmbeddedVideo(content: str,width=400,height=300) -> str:
@@ -1235,10 +1235,10 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
         if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
         url=w
-        content+='<video width="'+str(width)+'" height="'+str(height)+'" controls>'
+        content+='<center><video width="'+str(width)+'" height="'+str(height)+'" controls>'
         content+='<source src="'+url+'" type="video/'+extension.replace('.','')+'">'
         content+='Your browser does not support the video element.'
-        content+='</video>'
+        content+='</video></center>'
     return content
 
 def addEmbeddedVideoFromSites(content: str,width=400,height=300) -> str:
@@ -1447,10 +1447,10 @@ def individualPostAsHtml(baseDir: str, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             attachmentStr+= \
-                                ' <video width="400" height="300" controls>' \
-                                '  <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">' \
+                                '<center><video width="400" height="300" controls>' \
+                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">' \
                                 'Your browser does not support the video tag.' \
-                                '</video>'
+                                '</video></center>'
                             attachmentCtr+=1
                     elif mediaType=='audio/mp3' or \
                          mediaType=='audio/ogg':
@@ -1461,10 +1461,10 @@ def individualPostAsHtml(baseDir: str, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             attachmentStr+= \
-                                ' <audio controls>' \
-                                '  <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">' \
+                                '<center><audio controls>' \
+                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">' \
                                 'Your browser does not support the audio tag.' \
-                                '</audio>'
+                                '</audio></center>'
                             attachmentCtr+=1
             attachmentStr+='</div>'
 
