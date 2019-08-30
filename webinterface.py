@@ -1191,7 +1191,10 @@ def addEmbeddedAudio(content: str) -> str:
     for w in words:
         if extension not in w:
             continue
+        w=w.replace('href="','')
         if w.endswith('.'):
+            w=w[:-1]
+        if w.endswith('"'):
             w=w[:-1]
         if w.endswith(';'):
             w=w[:-1]
@@ -1199,6 +1202,7 @@ def addEmbeddedAudio(content: str) -> str:
             w=w[:-1]
         if not w.endswith(extension):
             continue
+            
         if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
         url=w
@@ -1224,7 +1228,10 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
     for w in words:
         if extension not in w:
             continue
+        w=w.replace('href="','')
         if w.endswith('.'):
+            w=w[:-1]
+        if w.endswith('"'):
             w=w[:-1]
         if w.endswith(';'):
             w=w[:-1]
