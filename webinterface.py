@@ -1177,6 +1177,37 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
+def addEmbeddedAudio(content: str) -> str:
+    """Adds embedded audio for mp3/ogg
+    """
+    if not ('.mp3' in content or '.ogg' in content):
+        return content
+
+    extension='.mp3'
+    if '.ogg' in content:
+        extension='.ogg'
+
+    words=content.strip('\n').split(' ')
+    for w in words:
+        if extension not in w:
+            continue
+        if w.endswith('.'):
+            w=w[:-1]
+        if w.endswith(';'):
+            w=w[:-1]
+        if w.endswith(':'):
+            w=w[:-1]
+        if not w.endswidth(extension):
+            continue
+        if not (w.startswith('http') or w.startswith('dat:')):
+            continue
+        url=w
+        content+='<audio controls>'
+        content+='<source src="'+url+'" type="audio/'+extension.replace('.','')+'">'
+        content+='Your browser does not support the audio element.'
+        content+='</audio>'
+    return content
+
 def addEmbeddedVideo(content: str,width=400,height=300) -> str:
     """Adds embedded videos
     """
@@ -1482,6 +1513,7 @@ def individualPostAsHtml(baseDir: str, \
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedVideo(contentStr)
+        contentStr=addEmbeddedAudio(contentStr)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -1495,6 +1527,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedVideo(contentStr)
+        contentStr=addEmbeddedAudio(contentStr)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
