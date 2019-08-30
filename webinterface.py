@@ -1434,6 +1434,37 @@ def individualPostAsHtml(baseDir: str, \
                             attachmentStr+= \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
+                            attachmentCtr+=1                            
+                    elif mediaType=='image/mp4' or \
+                         mediaType=='image/webm' or \
+                         mediaType=='image/ogv':
+                        extension='.mp4'
+                        if attach['url'].endswith('.webm'):
+                            extension='.webm'
+                        elif attach['url'].endswith('.ogv'):
+                            extension='.ogv'
+                        if attach['url'].endswith(extension):
+                            if attachmentCtr>0:
+                                attachmentStr+='<br>'
+                            attachmentStr+= \
+                                ' <video width="400" height="300" controls>' \
+                                '  <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">' \
+                                'Your browser does not support the video tag.' \
+                                '</video>'
+                            attachmentCtr+=1
+                    elif mediaType=='image/mp3' or \
+                         mediaType=='image/ogg':
+                        extension='.mp3'
+                        if attach['url'].endswith('.ogg'):
+                            extension='.ogg'                            
+                        if attach['url'].endswith(extension):
+                            if attachmentCtr>0:
+                                attachmentStr+='<br>'
+                            attachmentStr+= \
+                                ' <audio controls>' \
+                                '  <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">' \
+                                'Your browser does not support the audio tag.' \
+                                '</audio>'
                             attachmentCtr+=1
             attachmentStr+='</div>'
 
