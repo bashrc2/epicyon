@@ -30,11 +30,12 @@ def removeMetaData(imageFilename: str,outputFilename: str):
 def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
 
-def isImage(imageFilename: str) -> bool:
-    if imageFilename.endswith('.png') or \
-       imageFilename.endswith('.jpg') or \
-       imageFilename.endswith('.gif'):
-        return True
+def isMedia(imageFilename: str) -> bool:
+    permittedMedia=['png','jpg','gif','mp4','ogv','mp3','ogg']
+    for m in permittedMedia:        
+        if imageFilename.endswith('.'+m):
+            return True
+    print('WARN: '+imageFilename+' is not a permitted media type')
     return False
 
 def createMediaDirs(baseDir: str,mediaPath: str) -> None:    
@@ -75,15 +76,18 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
     The description can be None
     Blurhash is optional, since low power systems may take a long time to calculate it
     """
-    if not isImage(imageFilename):
+    if not isMedia(imageFilename):
         return postJson
-
+    
+    fileExtension=None
     acceptedTypes=['png','jpg','gif','mp4','webm','ogv','mp3','ogg']
     for mType in acceptedTypes:
         if imageFilename.endswith('.'+mType):
             fileExtension=mType
             if mType=='jpg':
                 mType='jpeg'
+    if not fileExtension:        
+        return postJson
     mediaType=mediaType+'/'+fileExtension
 
     if fileExtension=='jpeg':
@@ -106,7 +110,7 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
         'type': 'Document',
         'url': httpPrefix+'://'+domain+'/'+mediaPath
     }
-    if useBlurhash and fileExtension=='png':
+    if useBlurhash and mediaType=='image':
         attachmentJson['blurhash']=getImageHash(imageFilename)
     postJson['attachment']=[attachmentJson]
 
