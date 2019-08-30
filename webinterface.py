@@ -1281,6 +1281,13 @@ def addEmbeddedVideoFromSites(content: str,width=400,height=300) -> str:
                 return content
     return content
 
+def addEmbeddedElements(content: str) -> str:
+    """Adds embedded elements for various media types
+    """
+    content=addEmbeddedVideoFromSites(content)
+    content=addEmbeddedAudio(content)
+    return addEmbeddedVideo(content)
+    
 def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -1545,9 +1552,7 @@ def individualPostAsHtml(baseDir: str, \
 
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
-        contentStr=addEmbeddedVideoFromSites(contentStr)
-        contentStr=addEmbeddedAudio(contentStr)
-        contentStr=addEmbeddedVideo(contentStr)
+        contentStr=addEmbeddedElements(contentStr)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -1560,9 +1565,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
-        contentStr=addEmbeddedVideoFromSites(contentStr)
-        contentStr=addEmbeddedAudio(contentStr)
-        contentStr=addEmbeddedVideo(contentStr)
+        contentStr=addEmbeddedElements(contentStr)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
