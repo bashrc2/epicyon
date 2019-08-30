@@ -1465,7 +1465,7 @@ def individualPostAsHtml(baseDir: str, \
                                 'Your browser does not support the video tag.' \
                                 '</video></center>'
                             attachmentCtr+=1
-                    elif mediaType=='audio/mp3' or \
+                    elif mediaType=='audio/mpeg' or \
                          mediaType=='audio/ogg':
                         extension='.mp3'
                         if attach['url'].endswith('.ogg'):

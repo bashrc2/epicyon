@@ -1836,7 +1836,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     elif extension=='ogv':
                                         searchStr=b'Content-Type: video/ogv'
                                     elif extension=='mp3':
-                                        searchStr=b'Content-Type: audio/mp3'
+                                        searchStr=b'Content-Type: audio/mpeg'
                                     elif extension=='ogg':
                                         searchStr=b'Content-Type: audio/ogg'
                                     imageLocation=postBytes.find(searchStr)
@@ -1844,6 +1844,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     if imageLocation>-1:
                                         if extension=='jpeg':
                                             extension='jpg'
+                                        if extension=='mpeg':
+                                            extension='mp3'
                                         filename=filenameBase+'.'+extension
                                         attachmentMediaType=searchStr.decode().split('/')[0].replace('Content-Type: ','')
                                         break

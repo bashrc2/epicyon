@@ -85,6 +85,8 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
         if imageFilename.endswith('.'+mType):
             if mType=='jpg':
                 mType='jpeg'
+            if mType=='mp3':
+                mType='mpeg'
             fileExtension=mType
     if not fileExtension:        
         return postJson
@@ -93,6 +95,8 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
 
     if fileExtension=='jpeg':
         fileExtension='jpg'
+    if fileExtension=='mpeg':
+        fileExtension='mp3'
 
     if port:
         if port!=80 and port!=443:
