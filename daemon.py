@@ -1823,21 +1823,21 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 # directly search the binary array for the beginning
                                 # of an image
-                                searchStr=b'Content-Type: image/png'
-                                imageLocation=postBytes.find(searchStr)
-                                filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
-                                if imageLocation>-1:
-                                    filename=filenameBase+'.png'
-                                else:        
-                                    searchStr=b'Content-Type: image/jpeg'
-                                    imageLocation=postBytes.find(searchStr)
-                                    if imageLocation>-1:                                    
-                                        filename=filenameBase+'.jpg'
-                                    else:     
-                                        searchStr=b'Content-Type: image/gif'
+                                mediaExtension={
+                                    'image': ['png','jpeg','gif'],
+                                    'video': ['mp4','webm','ogv'],
+                                    'audio': ['mp3','ogg']
+                                }
+                                for mType,extensionList in mediaTypes.items():
+                                    for extension in extensionList:
+                                        searchStr=b'Content-Type: '+mType+'/'+extension
                                         imageLocation=postBytes.find(searchStr)
-                                        if imageLocation>-1:                                    
-                                            filename=filenameBase+'.gif'
+                                        filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
+                                        if imageLocation>-1:
+                                            if extension=='jpeg':
+                                                extension='jpg'
+                                            filename=filenameBase+'.'+extension
+                                            break
                                 if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
                                     # carriage returns

@@ -807,7 +807,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         '    <div class="container">' \
         '      <input type="text" placeholder="Image description" name="imageDescription">' \
         '      <input type="file" id="attachpic" name="attachpic"' \
-        '            accept=".png, .jpg, .jpeg, .gif">' \
+        '            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">' \
         '    </div>' \
         '  </div>' \
         '</form>'
