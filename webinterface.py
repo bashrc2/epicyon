@@ -1197,7 +1197,7 @@ def addEmbeddedAudio(content: str) -> str:
             w=w[:-1]
         if w.endswith(':'):
             w=w[:-1]
-        if not w.endswidth(extension):
+        if not w.endswith(extension):
             continue
         if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
@@ -1230,7 +1230,7 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
             w=w[:-1]
         if w.endswith(':'):
             w=w[:-1]
-        if not w.endswidth(extension):
+        if not w.endswith(extension):
             continue
         if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
