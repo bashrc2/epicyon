@@ -1425,7 +1425,7 @@ def individualPostAsHtml(baseDir: str, \
                         postDomain=postDomain.split('/',1)[0]
                     titleStr+=' <img src="/icons/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
-    if postJsonObject['object']['attachment']:
+    if postJsonObject['object'].get('attachment'):
         if isinstance(postJsonObject['object']['attachment'], list):
             attachmentCtr=0
             attachmentStr+='<div class="media">'
