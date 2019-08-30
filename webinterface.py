@@ -1208,6 +1208,39 @@ def addEmbeddedAudio(content: str) -> str:
         content+='</audio>'
     return content
 
+def addEmbeddedVideo(content: str,width=400,height=300) -> str:
+    """Adds embedded video for mp4/webm/ogv
+    """
+    if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
+        return content
+
+    extension='.mp4'
+    if '.webm' in content:
+        extension='.webm'
+    elif '.ogv' in content:
+        extension='.ogv'
+
+    words=content.strip('\n').split(' ')
+    for w in words:
+        if extension not in w:
+            continue
+        if w.endswith('.'):
+            w=w[:-1]
+        if w.endswith(';'):
+            w=w[:-1]
+        if w.endswith(':'):
+            w=w[:-1]
+        if not w.endswidth(extension):
+            continue
+        if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
+            continue
+        url=w
+        content+='<video width="'+str(width)+'" height="'+str(height)+'" controls>'
+        content+='<source src="'+url+'" type="video/'+extension.replace('.','')+'">'
+        content+='Your browser does not support the video element.'
+        content+='</video>'
+    return content
+
 def addEmbeddedVideoFromSites(content: str,width=400,height=300) -> str:
     """Adds embedded videos
     """
@@ -1514,6 +1547,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedVideoFromSites(contentStr)
         contentStr=addEmbeddedAudio(contentStr)
+        contentStr=addEmbeddedVideo(contentStr)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -1528,6 +1562,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedVideoFromSites(contentStr)
         contentStr=addEmbeddedAudio(contentStr)
+        contentStr=addEmbeddedVideo(contentStr)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
