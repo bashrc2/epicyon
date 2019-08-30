@@ -1183,6 +1183,9 @@ def addEmbeddedAudio(content: str) -> str:
     if not ('.mp3' in content or '.ogg' in content):
         return content
 
+    if '<audio ' in content:
+        return content
+
     extension='.mp3'
     if '.ogg' in content:
         extension='.ogg'
@@ -1206,7 +1209,7 @@ def addEmbeddedAudio(content: str) -> str:
         if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
         url=w
-        content+='<center><audio width="400" height="50" controls>'
+        content+='<center><audio controls>'
         content+='<source src="'+url+'" type="audio/'+extension.replace('.','')+'">'
         content+='Your browser does not support the audio element.'
         content+='</audio></center>'
@@ -1216,6 +1219,9 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
+        return content
+
+    if '<video ' in content:
         return content
 
     extension='.mp4'
