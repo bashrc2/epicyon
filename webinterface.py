@@ -1208,7 +1208,7 @@ def addEmbeddedAudio(content: str) -> str:
         content+='</audio>'
     return content
 
-def addEmbeddedVideo(content: str,width=400,height=300) -> str:
+def addEmbeddedVideoFromSites(content: str,width=400,height=300) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
@@ -1512,7 +1512,7 @@ def individualPostAsHtml(baseDir: str, \
 
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
-        contentStr=addEmbeddedVideo(contentStr)
+        contentStr=addEmbeddedVideoFromSites(contentStr)
         contentStr=addEmbeddedAudio(contentStr)
     else:
         postID='post'+str(createPassword(8))
@@ -1526,7 +1526,7 @@ def individualPostAsHtml(baseDir: str, \
         contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
-        contentStr=addEmbeddedVideo(contentStr)
+        contentStr=addEmbeddedVideoFromSites(contentStr)
         contentStr=addEmbeddedAudio(contentStr)
         contentStr+='</div>'
 
