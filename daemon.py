@@ -1843,7 +1843,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
                                     # carriage returns
-                                    startPos=imageLocation+len(searchStr)
+                                    startPos=imageLocation+len(searchStr.encode('utf-8'))
                                     for offset in range(1,8):
                                         if postBytes[startPos+offset]!=10:
                                             if postBytes[startPos+offset]!=13:
