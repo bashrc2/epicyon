@@ -1435,9 +1435,9 @@ def individualPostAsHtml(baseDir: str, \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1                            
-                    elif mediaType=='image/mp4' or \
-                         mediaType=='image/webm' or \
-                         mediaType=='image/ogv':
+                    elif mediaType=='video/mp4' or \
+                         mediaType=='video/webm' or \
+                         mediaType=='video/ogv':
                         extension='.mp4'
                         if attach['url'].endswith('.webm'):
                             extension='.webm'
@@ -1452,8 +1452,8 @@ def individualPostAsHtml(baseDir: str, \
                                 'Your browser does not support the video tag.' \
                                 '</video>'
                             attachmentCtr+=1
-                    elif mediaType=='image/mp3' or \
-                         mediaType=='image/ogg':
+                    elif mediaType=='audio/mp3' or \
+                         mediaType=='audio/ogg':
                         extension='.mp3'
                         if attach['url'].endswith('.ogg'):
                             extension='.ogg'                            
