@@ -68,11 +68,11 @@ def getAttachmentMediaType(filename: str) -> str:
             return 'audio'
     return mediaType
 
-def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
+def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
                 postJson: {},imageFilename: str, \
                 mediaType: str,description: str, \
                 useBlurhash: bool) -> {}:
-    """Attaches an image to a json object post
+    """Attaches media to a json object post
     The description can be None
     Blurhash is optional, since low power systems may take a long time to calculate it
     """

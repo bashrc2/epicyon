@@ -541,7 +541,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         }
         if attachImageFilename:
             newPost['object']= \
-                attachImage(baseDir,httpPrefix,domain,port, \
+                attachMedia(baseDir,httpPrefix,domain,port, \
                             newPost['object'],attachImageFilename, \
                             mediaType,imageDescription,useBlurhash)            
     else:
@@ -577,7 +577,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         }
         if attachImageFilename:
             newPost= \
-                attachImage(baseDir,httpPrefix,domain,port, \
+                attachMedia(baseDir,httpPrefix,domain,port, \
                             newPost,attachImageFilename, \
                             mediaType,imageDescription,useBlurhash)            
     if ccUrl:
