@@ -39,7 +39,7 @@ from utils import deletePost
 from utils import validNickname
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
-from media import attachImage
+from media import attachMedia
 from content import addHtmlTags
 from auth import createBasicAuthHeader
 from config import getConfigParam
