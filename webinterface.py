@@ -1199,7 +1199,7 @@ def addEmbeddedAudio(content: str) -> str:
             w=w[:-1]
         if not w.endswidth(extension):
             continue
-        if not (w.startswith('http') or w.startswith('dat:')):
+        if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
             continue
         url=w
         content+='<audio controls>'
