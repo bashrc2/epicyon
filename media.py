@@ -95,7 +95,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
 
     if fileExtension=='jpeg':
         fileExtension='jpg'
-    if mediaType=='audio' and fileExtension=='mpeg':
+    if mediaType=='audio/mpeg':
         fileExtension='mp3'
 
     if port:
