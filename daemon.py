@@ -1824,7 +1824,7 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 # directly search the binary array for the beginning
                                 # of an image
-                                mediaExtension={
+                                mediaTypes={
                                     'image': ['png','jpeg','gif'],
                                     'video': ['mp4','webm','ogv'],
                                     'audio': ['mp3','ogg']
