@@ -47,9 +47,29 @@ def getMediaPath() -> str:
     currTime=datetime.datetime.utcnow()
     weeksSinceEpoch=int((currTime - datetime.datetime(1970,1,1)).days/7)
     return 'media/'+str(weeksSinceEpoch)
-        
+
+def getAttachmentMediaType(filename: str) -> str:
+    """Returns the type of media for the given file
+    image, video or audio
+    """
+    mediaType=None
+    imageTypes=['png','jpg','jpeg','gif']
+    for mType in imageTypes:
+        if filename.endswith('.'+mType):
+            return 'image'
+    videoTypes=['mp4','webm','ogv']
+    for mType in videoTypes:
+        if filename.endswith('.'+mType):
+            return 'video'
+    audioTypes=['mp3','ogg']
+    for mType in audioTypes:
+        if filename.endswith('.'+mType):
+            return 'audio'
+    return mediaType
+
 def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
-                postJson: {},imageFilename: str,description: str, \
+                postJson: {},imageFilename: str, \
+                mediaType: str,description: str, \
                 useBlurhash: bool) -> {}:
     """Attaches an image to a json object post
     The description can be None
@@ -58,14 +78,16 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
     if not isImage(imageFilename):
         return postJson
 
-    mediaType='image/png'
-    fileExtension='png'
-    if imageFilename.endswith('.jpg'):
-        mediaType='image/jpeg'
+    acceptedTypes=['png','jpg','gif','mp4','webm','ogv','mp3','ogg']
+    for mType in acceptedTypes:
+        if imageFilename.endswith('.'+mType):
+            fileExtension=mType
+            if mType=='jpg':
+                mType='jpeg'
+    mediaType=mediaType+'/'+fileExtension
+
+    if fileExtension=='jpeg':
         fileExtension='jpg'
-    if imageFilename.endswith('.gif'):
-        mediaType='image/gif'        
-        fileExtension='gif'
 
     if port:
         if port!=80 and port!=443:
@@ -84,7 +106,7 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
         'type': 'Document',
         'url': httpPrefix+'://'+domain+'/'+mediaPath
     }
-    if useBlurhash:
+    if useBlurhash and not mediaType.startswith('video'):
         attachmentJson['blurhash']=getImageHash(imageFilename)
     postJson['attachment']=[attachmentJson]
 

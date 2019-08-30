@@ -1802,6 +1802,7 @@ class PubServer(BaseHTTPRequestHandler):
                 messageFields=msg.get_payload(decode=False).split(boundary)
                 fields={}
                 filename=None
+                attachmentMediaType=None
                 for f in messageFields:
                     if f=='--':
                         continue
@@ -1837,6 +1838,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             if extension=='jpeg':
                                                 extension='jpg'
                                             filename=filenameBase+'.'+extension
+                                            attachmentMediaType=mType
                                             break
                                 if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
@@ -1875,7 +1877,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain,self.server.port, \
                                          self.server.httpPrefix, \
                                          fields['message'],False,False,False, \
-                                         filename,fields['imageDescription'],True, \
+                                         filename,attachmentMediaType,fields['imageDescription'],True, \
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
@@ -1897,7 +1899,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain,self.server.port, \
                                            self.server.httpPrefix, \
                                            fields['message'],False,False,False, \
-                                           filename,fields['imageDescription'],True, \
+                                           filename,attachmentMediaType,fields['imageDescription'],True, \
                                            fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
@@ -1919,7 +1921,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.domain,self.server.port, \
                                                 self.server.httpPrefix, \
                                                 fields['message'],True,False,False, \
-                                                filename,fields['imageDescription'],True, \
+                                                filename,attachmentMediaType,fields['imageDescription'],True, \
                                                 fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
@@ -1943,7 +1945,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.domain,self.server.port, \
                                                     self.server.httpPrefix, \
                                                     fields['message'],True,False,False, \
-                                                    filename,fields['imageDescription'],True, \
+                                                    filename,attachmentMediaType, \
+                                                    fields['imageDescription'],True, \
                                                     fields['replyTo'],fields['replyTo'], \
                                                     fields['subject'], \
                                                     self.server.debug)
@@ -1963,6 +1966,9 @@ class PubServer(BaseHTTPRequestHandler):
                             return -1
 
                 if postType=='newreport':
+                    if attachmentMediaType:
+                        if attachmentMediaType!='image':
+                            return -1
                     # So as to be sure that this only goes to moderators
                     # and not accounts being reported we disable any
                     # included fediverse addresses by replacing '@' with '-at-'
@@ -1973,7 +1979,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.domain,self.server.port, \
                                          self.server.httpPrefix, \
                                          fields['message'],True,False,False, \
-                                         filename,fields['imageDescription'],True, \
+                                         filename,attachmentMediaType, \
+                                         fields['imageDescription'],True, \
                                          self.server.debug,fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
@@ -1984,13 +1991,16 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if postType=='newshare':
                     if not fields.get('itemType'):
-                        return False
+                        return -1
                     if not fields.get('category'):
-                        return False
+                        return -1
                     if not fields.get('location'):
-                        return False
+                        return -1
                     if not fields.get('duration'):
-                        return False
+                        return -1
+                    if attachmentMediaType:
+                        if attachmentMediaType!='image':
+                            return -1
                     addShare(self.server.baseDir, \
                              self.server.httpPrefix, \
                              nickname, \

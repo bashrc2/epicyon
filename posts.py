@@ -423,7 +423,7 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
 def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
                    followersOnly: bool, saveToFile: bool, clientToServer: bool, \
-                   attachImageFilename: str,imageDescription: str, \
+                   attachImageFilename: str,mediaType: str,imageDescription: str, \
                    useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
                    inReplyToAtomUri=None, subject=None) -> {}:
     """Creates a message
@@ -543,7 +543,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost['object']= \
                 attachImage(baseDir,httpPrefix,domain,port, \
                             newPost['object'],attachImageFilename, \
-                            imageDescription,useBlurhash)            
+                            mediaType,imageDescription,useBlurhash)            
     else:
         newPost = {
             "@context": "https://www.w3.org/ns/activitystreams",
@@ -579,7 +579,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             newPost= \
                 attachImage(baseDir,httpPrefix,domain,port, \
                             newPost,attachImageFilename, \
-                            imageDescription,useBlurhash)            
+                            mediaType,imageDescription,useBlurhash)            
     if ccUrl:
         if len(ccUrl)>0:
             newPost['cc']=[ccUrl]
@@ -707,7 +707,8 @@ def createPublicPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
                      clientToServer: bool,\
-                     attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                     attachImageFilename: str,mediaType: str, \
+                     imageDescription: str,useBlurhash: bool, \
                      inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Public post
     """
@@ -721,14 +722,16 @@ def createPublicPost(baseDir: str,
                           httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
-                          attachImageFilename,imageDescription,useBlurhash, \
+                          attachImageFilename,mediaType, \
+                          imageDescription,useBlurhash, \
                           False,inReplyTo,inReplyToAtomUri,subject)
 
 def createUnlistedPost(baseDir: str,
                        nickname: str, domain: str, port: int,httpPrefix: str, \
                        content: str, followersOnly: bool, saveToFile: bool,
                        clientToServer: bool,\
-                       attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                       attachImageFilename: str,mediaType: str, \
+                       imageDescription: str,useBlurhash: bool, \
                        inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
@@ -742,14 +745,16 @@ def createUnlistedPost(baseDir: str,
                           'https://www.w3.org/ns/activitystreams#Public', \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
-                          attachImageFilename,imageDescription,useBlurhash, \
+                          attachImageFilename,mediaType, \
+                          imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject)
 
 def createFollowersOnlyPost(baseDir: str,
                             nickname: str, domain: str, port: int,httpPrefix: str, \
                             content: str, followersOnly: bool, saveToFile: bool,
                             clientToServer: bool,\
-                            attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                            attachImageFilename: str,mediaType: str, \
+                            imageDescription: str,useBlurhash: bool, \
                             inReplyTo=None, inReplyToAtomUri=None, subject=None) -> {}:
     """Followers only post
     """
@@ -763,7 +768,8 @@ def createFollowersOnlyPost(baseDir: str,
                           None,
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
-                          attachImageFilename,imageDescription,useBlurhash, \
+                          attachImageFilename,mediaType, \
+                          imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject)
 
 def getMentionedPeople(baseDir: str,httpPrefix: str, \
@@ -801,7 +807,8 @@ def createDirectMessagePost(baseDir: str,
                             nickname: str, domain: str, port: int,httpPrefix: str, \
                             content: str, followersOnly: bool, saveToFile: bool,
                             clientToServer: bool,\
-                            attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                            attachImageFilename: str,mediaType: str, \
+                            imageDescription: str,useBlurhash: bool, \
                             inReplyTo=None, inReplyToAtomUri=None, subject=None,debug=False) -> {}:
     """Direct Message post
     """
@@ -816,14 +823,16 @@ def createDirectMessagePost(baseDir: str,
                           postTo,postCc, \
                           httpPrefix, content, followersOnly, saveToFile, \
                           clientToServer, \
-                          attachImageFilename,imageDescription,useBlurhash, \
+                          attachImageFilename,mediaType, \
+                          imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject)
 
 def createReportPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \
                      content: str, followersOnly: bool, saveToFile: bool,
                      clientToServer: bool,\
-                     attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                     attachImageFilename: str,mediaType: str, \
+                     imageDescription: str,useBlurhash: bool, \
                      debug: bool,subject=None) -> {}:
     """Send a report to moderators
     """
@@ -888,7 +897,8 @@ def createReportPost(baseDir: str,
                            toUrl,postCc, \
                            httpPrefix, content, followersOnly, saveToFile, \
                            clientToServer, \
-                           attachImageFilename,imageDescription,useBlurhash, \
+                           attachImageFilename,mediaType, \
+                           imageDescription,useBlurhash, \
                            True,None, None, subject)
     return postJsonObject
 
@@ -936,7 +946,8 @@ def sendPost(projectVersion: str, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
              httpPrefix: str, content: str, followersOnly: bool, \
              saveToFile: bool, clientToServer: bool, \
-             attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+             attachImageFilename: str,mediaType: str, \
+             imageDescription: str,useBlurhash: bool, \
              federationList: [],\
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
              debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
@@ -991,7 +1002,8 @@ def sendPost(projectVersion: str, \
             createPostBase(baseDir,nickname,domain,port, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
-                           attachImageFilename,imageDescription,useBlurhash, \
+                           attachImageFilename,mediaType, \
+                           imageDescription,useBlurhash, \
                            False,inReplyTo,inReplyToAtomUri,subject)
 
     # get the senders private key
@@ -1033,7 +1045,8 @@ def sendPostViaServer(projectVersion: str, \
                       fromDomain: str, fromPort: int, \
                       toNickname: str, toDomain: str, toPort: int, cc: str, \
                       httpPrefix: str, content: str, followersOnly: bool, \
-                      attachImageFilename: str,imageDescription: str,useBlurhash: bool, \
+                      attachImageFilename: str,mediaType: str, \
+                      imageDescription: str,useBlurhash: bool, \
                       cachedWebfingers: {},personCache: {}, \
                       debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Send a post via a proxy (c2s)
@@ -1102,7 +1115,8 @@ def sendPostViaServer(projectVersion: str, \
                            fromNickname,fromDomain,fromPort, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
-                           attachImageFilename,imageDescription,useBlurhash, \
+                           attachImageFilename,mediaType, \
+                           imageDescription,useBlurhash, \
                            False,inReplyTo,inReplyToAtomUri,subject)
     
     authHeader=createBasicAuthHeader(fromNickname,password)

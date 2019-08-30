@@ -62,6 +62,7 @@ from utils import getNicknameFromActor
 from utils import followPerson
 from utils import validNickname
 from media import archiveMedia
+from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
@@ -525,6 +526,9 @@ if args.message:
     cachedWebfingers={}
     subject=args.subject
     attach=args.attach
+    mediaType=None
+    if attach:
+        mediaType=getAttachmentMediaType(attach)
     replyTo=args.replyto
     followersOnly=False
     print('Sending post to '+args.sendto)
@@ -534,7 +538,8 @@ if args.message:
                       domain,port, \
                       toNickname,toDomain,toPort,ccUrl, \
                       httpPrefix,sendMessage,followersOnly, \
-                      attach,attachedImageDescription,useBlurhash, \
+                      attach,mediaType, \
+                      attachedImageDescription,useBlurhash, \
                       cachedWebfingers,personCache, \
                       args.debug,replyTo,replyTo,subject)
     for i in range(10):

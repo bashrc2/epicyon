@@ -60,6 +60,7 @@ from like import sendLikeViaServer
 from announce import announcePublic
 from announce import sendAnnounceViaServer
 from media import getMediaPath
+from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
@@ -368,6 +369,7 @@ def testPostMessageBetweenServers():
     alicePersonCache={}
     aliceCachedWebfingers={}
     attachedImageFilename=baseDir+'/img/logo.png'
+    mediaType=getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription='Logo'
     useBlurhash=True
     # nothing in Alice's outbox
@@ -379,7 +381,7 @@ def testPostMessageBetweenServers():
                  sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
                  'Why is a mouse when it spins? #sillyquestion', followersOnly, \
-                 saveToFile, clientToServer,attachedImageFilename, \
+                 saveToFile, clientToServer,attachedImageFilename,mediaType, \
                  attachedImageDescription,useBlurhash, federationList, \
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
                  alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
@@ -620,7 +622,7 @@ def testFollowBetweenServers():
                  sessionEve,eveDir,'eve', eveDomain, evePort, \
                  'bob', bobDomain, bobPort, ccUrl, \
                  httpPrefix, 'Eve message', followersOnly, \
-                 saveToFile, clientToServer,None,None, \
+                 saveToFile, clientToServer,None,None,None, \
                  useBlurhash, federationList, eveSendThreads, \
                  evePostLog, eveCachedWebfingers, \
                  evePersonCache,inReplyTo, inReplyToAtomUri, subject)
@@ -655,7 +657,7 @@ def testFollowBetweenServers():
                  sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, \
                  httpPrefix, 'Alice message', followersOnly, saveToFile, \
-                 clientToServer,None,None,useBlurhash, federationList, \
+                 clientToServer,None,None,None,useBlurhash, federationList, \
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
                  alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
     print('sendResult: '+str(sendResult))
@@ -1136,6 +1138,7 @@ def testClientToServer():
     sessionAlice = createSession(aliceDomain,alicePort,useTor)
     followersOnly=False
     attachedImageFilename=baseDir+'/img/logo.png'
+    mediaType=getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription='Logo'
     useBlurhash=False
     cachedWebfingers={}
@@ -1151,7 +1154,8 @@ def testClientToServer():
                           aliceDomain,alicePort, \
                           'bob',bobDomain,bobPort,None, \
                           httpPrefix,'Sent from my ActivityPub client',followersOnly, \
-                          attachedImageFilename,attachedImageDescription,useBlurhash, \
+                          attachedImageFilename,mediaType, \
+                          attachedImageDescription,useBlurhash, \
                           cachedWebfingers,personCache, \
                           True,None,None,None)
     print('sendResult: '+str(sendResult))
