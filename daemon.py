@@ -1831,8 +1831,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 }
                                 for mType,extensionList in mediaTypes.items():
                                     for extension in extensionList:
-                                        searchStr=b'Content-Type: '+mType+'/'+extension
-                                        imageLocation=postBytes.find(searchStr)
+                                        searchStr='Content-Type: '+mType+'/'+extension
+                                        imageLocation=postBytes.find(searchStr.encode('utf-8'))
                                         filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
                                         if imageLocation>-1:
                                             if extension=='jpeg':
