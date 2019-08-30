@@ -83,12 +83,13 @@ def attachImage(baseDir: str,httpPrefix: str,domain: str,port: int, \
     acceptedTypes=['png','jpg','gif','mp4','webm','ogv','mp3','ogg']
     for mType in acceptedTypes:
         if imageFilename.endswith('.'+mType):
-            fileExtension=mType
             if mType=='jpg':
                 mType='jpeg'
+            fileExtension=mType
     if not fileExtension:        
         return postJson
     mediaType=mediaType+'/'+fileExtension
+    print('Attached media type: '+mediaType)
 
     if fileExtension=='jpeg':
         fileExtension='jpg'
