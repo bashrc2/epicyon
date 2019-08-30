@@ -95,7 +95,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
 
     if fileExtension=='jpeg':
         fileExtension='jpg'
-    if fileExtension=='mpeg':
+    if mediaType=='audio' and fileExtension=='mpeg':
         fileExtension='mp3'
 
     if port:
@@ -119,9 +119,11 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
         attachmentJson['blurhash']=getImageHash(imageFilename)
     postJson['attachment']=[attachmentJson]
 
-    if baseDir and mediaType=='image':
-        removeMetaData(imageFilename,mediaFilename)
-        #copyfile(imageFilename,mediaFilename)
+    if baseDir:
+        if mediaType=='image':
+            removeMetaData(imageFilename,mediaFilename)
+        else:
+            copyfile(imageFilename,mediaFilename)
              
     return postJson
 
