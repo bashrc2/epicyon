@@ -1824,34 +1824,29 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 # directly search the binary array for the beginning
                                 # of an image
-                                mediaTypes={
-                                    'image': ['png','jpeg','gif'],
-                                    'video': ['mp4','webm','ogv'],
-                                    'audio': ['mp3','ogg']
-                                }
-                                for mType,extensionList in mediaTypes.items():
-                                    for extension in extensionList:
-                                        searchStr=b'Content-Type: image/png'
+                                extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
+                                for extension in extensionList:
+                                    searchStr=b'Content-Type: image/png'
+                                    if extension=='jpeg':
+                                        searchStr=b'Content-Type: image/jpeg'
+                                    elif extension=='gif':
+                                        searchStr=b'Content-Type: image/gif'
+                                    elif extension=='mp4':
+                                        searchStr=b'Content-Type: video/mp4'
+                                    elif extension=='ogv':
+                                        searchStr=b'Content-Type: video/ogv'
+                                    elif extension=='mp3':
+                                        searchStr=b'Content-Type: audio/mp3'
+                                    elif extension=='ogg':
+                                        searchStr=b'Content-Type: audio/ogg'
+                                    imageLocation=postBytes.find(searchStr)
+                                    filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
+                                    if imageLocation>-1:
                                         if extension=='jpeg':
-                                            searchStr=b'Content-Type: image/jpeg'
-                                        elif extension=='gif':
-                                            searchStr=b'Content-Type: image/gif'
-                                        elif extension=='mp4':
-                                            searchStr=b'Content-Type: video/mp4'
-                                        elif extension=='ogv':
-                                            searchStr=b'Content-Type: video/ogv'
-                                        elif extension=='mp3':
-                                            searchStr=b'Content-Type: audio/mp3'
-                                        elif extension=='ogg':
-                                            searchStr=b'Content-Type: audio/ogg'
-                                        imageLocation=postBytes.find(searchStr)
-                                        filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
-                                        if imageLocation>-1:
-                                            if extension=='jpeg':
-                                                extension='jpg'
-                                            filename=filenameBase+'.'+extension
-                                            attachmentMediaType=mType
-                                            break
+                                            extension='jpg'
+                                        filename=filenameBase+'.'+extension
+                                        attachmentMediaType=mType
+                                        break
                                 if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
                                     # carriage returns
@@ -1865,6 +1860,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     fd = open(filename, 'wb')
                                     fd.write(postBytes[startPos:])
                                     fd.close()
+                                else:
+                                    filename=None
 
                 # send the post
                 if not fields.get('message'):
