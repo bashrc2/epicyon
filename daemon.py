@@ -281,6 +281,16 @@ class PubServer(BaseHTTPRequestHandler):
                         fileExtension='jpg'
                     if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('gif'):
                         fileExtension='gif'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('audio/mpeg'):
+                        fileExtension='mp3'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('ogg'):
+                        fileExtension='ogg'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('mp4'):
+                        fileExtension='mp4'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('webm'):
+                        fileExtension='webm'
+                    if messageJson['object']['attachment'][attachmentIndex]['mediaType'].endswith('ogv'):
+                        fileExtension='ogv'
                     mediaDir=self.server.baseDir+'/accounts/'+self.postToNickname+'@'+self.server.domain
                     uploadMediaFilename=mediaDir+'/upload.'+fileExtension
                     if not os.path.isfile(uploadMediaFilename):
