@@ -1831,8 +1831,20 @@ class PubServer(BaseHTTPRequestHandler):
                                 }
                                 for mType,extensionList in mediaTypes.items():
                                     for extension in extensionList:
-                                        searchStr='Content-Type: '+mType+'/'+extension
-                                        imageLocation=postBytes.find(searchStr.encode('utf-8'))
+                                        searchStr=b'Content-Type: image/png'
+                                        if extension=='jpeg':
+                                            searchStr=b'Content-Type: image/jpeg'
+                                        elif extension=='gif':
+                                            searchStr=b'Content-Type: image/gif'
+                                        elif extension=='mp4':
+                                            searchStr=b'Content-Type: video/mp4'
+                                        elif extension=='ogv':
+                                            searchStr=b'Content-Type: video/ogv'
+                                        elif extension=='mp3':
+                                            searchStr=b'Content-Type: audio/mp3'
+                                        elif extension=='ogg':
+                                            searchStr=b'Content-Type: audio/ogg'
+                                        imageLocation=postBytes.find(searchStr)
                                         filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
                                         if imageLocation>-1:
                                             if extension=='jpeg':
@@ -1843,7 +1855,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
                                     # carriage returns
-                                    startPos=imageLocation+len(searchStr.encode('utf-8'))
+                                    startPos=imageLocation+len(searchStr)
                                     for offset in range(1,8):
                                         if postBytes[startPos+offset]!=10:
                                             if postBytes[startPos+offset]!=13:
