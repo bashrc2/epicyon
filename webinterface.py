@@ -33,6 +33,7 @@ from posts import outboxMessageCreateWrap
 from session import getJson
 from auth import createPassword
 from like import likedByPerson
+from like import noOfLikes
 from announce import announcedByPerson
 from blocking import isBlocked
 from content import getMentionsFromHtml
@@ -1549,7 +1550,7 @@ def individualPostAsHtml(baseDir: str, \
         likeIcon='like_inactive.png'
         likeLink='like'
         likeTitle='Like this post'
-        if likedByPerson(postJsonObject,nickname,fullDomain):
+        if noOfLikes(postJsonObject)>0:
             likeIcon='like.png'
             likeLink='unlike'
             likeTitle='Undo the like of this post'

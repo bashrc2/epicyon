@@ -64,20 +64,27 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is liked by the given person
     """
-    if not postJsonObject.get('object'):
+    if noOfLikes(postJsonObject)==0:
         return False
-    if not isinstance(postJsonObject['object'], dict):
-        return False
-    if not postJsonObject['object'].get('likes'):
-        return False
-    if not postJsonObject['object']['likes'].get('items'):
-        postJsonObject['object']['likes']['items']=[]
-        postJsonObject['object']['likes']['totalItems']=0
     actorMatch=domain+'/users/'+nickname
     for item in postJsonObject['object']['likes']['items']:
         if item['actor'].endswith(actorMatch):
             return True
     return False
+
+def noOfLikes(postJsonObject: {}) -> int:
+    """Returns the number of likes ona  given post
+    """
+    if not postJsonObject.get('object'):
+        return 0
+    if not isinstance(postJsonObject['object'], dict):
+        return 0
+    if not postJsonObject['object'].get('likes'):
+        return 0
+    if not postJsonObject['object']['likes'].get('items'):
+        postJsonObject['object']['likes']['items']=[]
+        postJsonObject['object']['likes']['totalItems']=0
+    return len(postJsonObject['object']['likes']['items'])
 
 def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
     """Updates the likes collection within a post
