@@ -92,7 +92,7 @@ server {
     root /var/www/YOUR_DOMAIN/htdocs;
     access_log /dev/null;
     error_log /dev/null;
-    client_max_body_size 20m;
+    client_max_body_size 31m;
     client_body_buffer_size 128k;
 
     limit_conn conn_limit_per_ip 10;
@@ -135,7 +135,7 @@ server {
  
     location / {
         proxy_http_version 1.1;
-        client_max_body_size 11M;
+        client_max_body_size 31M;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
         proxy_set_header Host $http_host;

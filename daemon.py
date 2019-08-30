@@ -2987,7 +2987,9 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(self.headers['Content-length'])
         if self.server.debug:
             print('DEBUG: content-length: '+str(length))
-        if not self.headers['Content-type'].startswith('image/'):
+        if not self.headers['Content-type'].startswith('image/') and \
+           not self.headers['Content-type'].startswith('video/') and \
+           not self.headers['Content-type'].startswith('audio/'):
             if length>self.server.maxMessageLength:
                 print('Maximum message length exceeded '+str(length))
                 self.send_response(400)
@@ -2995,8 +2997,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
         else:
-            if length>self.server.maxImageSize:
-                print('Maximum image size exceeded '+str(length))
+            if length>self.server.maxMediaSize:
+                print('Maximum media size exceeded '+str(length))
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -3193,7 +3195,9 @@ def runDaemon(projectVersion, \
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
     # max POST size of 10M
     httpd.projectVersion=projectVersion
-    httpd.maxPostLength=1024*1024*10
+    httpd.maxPostLength=1024*1024*30
+    httpd.maxMediaSize=httpd.maxPostLength
+    httpd.maxMessageLength=5000
     httpd.maxPostsInBox=256
     httpd.domain=domain
     httpd.port=port
@@ -3222,8 +3226,6 @@ def runDaemon(projectVersion, \
     httpd.postLog=[]
     httpd.maxQueueLength=16
     httpd.ocapAlways=ocapAlways
-    httpd.maxMessageLength=5000
-    httpd.maxImageSize=10*1024*1024
     httpd.allowDeletion=allowDeletion
     httpd.lastLoginTime=0
     httpd.maxReplies=maxReplies
