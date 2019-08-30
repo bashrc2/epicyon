@@ -700,21 +700,33 @@ class PubServer(BaseHTTPRequestHandler):
         if '/media/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
-               self.path.endswith('.gif'):
+               self.path.endswith('.gif') or \
+               self.path.endswith('.mp4') or \
+               self.path.endswith('.ogv') or \
+               self.path.endswith('.mp3') or \
+               self.path.endswith('.ogg'):
                 mediaStr=self.path.split('/media/')[1]
                 mediaFilename= \
                     self.server.baseDir+'/media/'+mediaStr
                 if os.path.isfile(mediaFilename):
-                    mediaFileType='png'
+                    mediaFileType='image/png'
                     if mediaFilename.endswith('.png'):
-                        mediaFileType='png'
+                        mediaFileType='image/png'
                     elif mediaFilename.endswith('.jpg'):
-                        mediaFileType='jepg'
-                    else:
-                        mediaFileType='gif'
+                        mediaFileType='image/jpeg'
+                    elif mediaFilename.endswith('.gif'):
+                        mediaFileType='image/gif'
+                    elif mediaFilename.endswith('.mp4'):
+                        mediaFileType='video/mp4'
+                    elif mediaFilename.endswith('.ogv'):
+                        mediaFileType='video/ogv'
+                    elif mediaFilename.endswith('.mp3'):
+                        mediaFileType='audio/mpeg'
+                    elif mediaFilename.endswith('.ogg'):
+                        mediaFileType='audio/ogg'
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
-                        self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie)
+                        self._set_headers(mediaFileType,len(mediaBinary),cookie)
                         self.wfile.write(mediaBinary)
                         self.wfile.flush() 
                     return        
