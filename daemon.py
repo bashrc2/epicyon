@@ -1845,7 +1845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         if extension=='jpeg':
                                             extension='jpg'
                                         filename=filenameBase+'.'+extension
-                                        attachmentMediaType=mType
+                                        attachmentMediaType=searchStr.decode().split('/')[0]
                                         break
                                 if filename and imageLocation>-1:
                                     # locate the beginning of the image, after any
