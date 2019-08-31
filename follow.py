@@ -33,19 +33,19 @@ def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
     handle=nickname+'@'+domain
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         return False
-    followersFile=baseDir+'/accounts/'+handle+'/followers.txt'    
-    if not os.path.isfile(followersFile):
+    followingFile=baseDir+'/accounts/'+handle+'/following.txt'    
+    if not os.path.isfile(followingFile):
         return False
-    if actor in open(followersFile).read():
+    if actor in open(followingFile).read():
         return True
-    followerNickname=getNicknameFromActor(actor)
-    followerDomain,followerPort=getDomainFromActor(actor)
-    followerHandle=followerNickname+'@'+followerDomain
-    if followerPort:
-        if followerPort!=80 and followerPort!=443:
-            if ':' not in followerHandle:
-                followerHandle+=':'+str(followerPort)
-    if followerHandle in open(followersFile).read():
+    followingNickname=getNicknameFromActor(actor)
+    followingDomain,followingPort=getDomainFromActor(actor)
+    followingHandle=followingNickname+'@'+followingDomain
+    if followingPort:
+        if followingPort!=80 and followingPort!=443:
+            if ':' not in followingHandle:
+                followingHandle+=':'+str(followingPort)
+    if followingHandle in open(followingFile).read():
         return True
     return False
 
