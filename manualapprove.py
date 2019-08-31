@@ -45,6 +45,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                projectVersion: str) -> None:
     """Manually approve a follow request
     """
+    print('Manually approving follow request from '+approveHandle)
     handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountsDir+'/followrequests.txt'
@@ -77,6 +78,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                         if ':' in approveDomain:
                             approvePort=approveDomain.split(':')[1]
                             approveDomain=approveDomain.split(':')[0]
+                        print('Sending Accept for '+handle+' follow request from '+approveHandle)
                         followedAccountAccepts(session,baseDir,httpPrefix, \
                                                nickname,domain,port, \
                                                approveNickname,approveDomain,approvePort, \
