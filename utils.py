@@ -51,8 +51,10 @@ def domainPermitted(domain: str, federationList: []):
     return False
 
 def urlPermitted(url: str, federationList: [],capability: str):
-    if url.endswith('gab.com') or url.endswith('gabfed.com'):
-        return False
+    evilDomains=['gab.com','gabfed.com','spinster.xyz']
+    for concentratedEvil in evilDomains:        
+        if url.endswith(concentratedEvil):
+            return False
     if len(federationList)==0:
         return True
     for domain in federationList:
