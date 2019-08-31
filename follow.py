@@ -421,9 +421,9 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                       baseDir+'/accounts/'+handleToFollow)
             return True
         
-    if not isFollowerOfPerson(baseDir, \
-                              nicknameToFollow,domainToFollowFull, \
-                              nickname,domainFull):
+    if isFollowerOfPerson(baseDir, \
+                          nicknameToFollow,domainToFollowFull, \
+                          nickname,domainFull):
         if debug:
             print('DEBUG: '+nickname+'@'+domain+ \
                   ' is already a follower of '+ \
