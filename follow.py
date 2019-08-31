@@ -278,6 +278,8 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
     """ Returns the policy for follower approvals
     """
     manuallyApproveFollows=False
+    if ':' in domainToFollow:
+        domainToFollow=domainToFollow.split(':')[0]
     actorFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'.json'
     if os.path.isfile(actorFilename):
         with open(actorFilename, 'r') as fp:
@@ -424,6 +426,8 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                                   nicknameToFollow,domainToFollow,port, \
                                   nickname,domain,fromPort,
                                   messageJson,debug)
+    else:
+        print('******** Follow request does not require approval')
 
     print('Beginning follow accept')
     return followedAccountAccepts(session,baseDir,httpPrefix, \
