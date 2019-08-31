@@ -432,7 +432,8 @@ class PubServer(BaseHTTPRequestHandler):
             print('Inbox queue is full. Removing oldest items.')
             while len(self.server.inboxQueue) >= self.server.maxQueueLength-4:
                 queueFilename=self.server.inboxQueue[0]
-                os.remove(queueFilename)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
                 self.server.inboxQueue.pop(0)
 
         # Convert the headers needed for signature verification to dict
