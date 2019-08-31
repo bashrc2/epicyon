@@ -153,6 +153,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
         """
+        if not self.headers.get('Accept'):
+            return False
         if 'image/' in self.headers['Accept']:
             return False
         if self.headers['Accept'].startswith('*'):
