@@ -85,7 +85,7 @@ def followerOfPerson(baseDir: str,nickname: str, domain: str, \
                         followerNickname,followerDomain, \
                         federationList,debug,'followers.txt')
 
-def isfollowerOfPerson(baseDir: str,nickname: str, domain: str, \
+def isFollowerOfPerson(baseDir: str,nickname: str, domain: str, \
                        followerNickname: str, followerDomain: str) -> bool:
     """is the given nickname a follower of followerNickname?
     """
