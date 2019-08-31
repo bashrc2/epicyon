@@ -58,6 +58,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         return
     
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
+    updateApprovedFollowers=False
     with open(approveFollowsFilename, 'r') as approvefile:
         for handle in approvefile:
             if handle.startswith(approveHandle):
@@ -85,18 +86,21 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                cachedWebfingers,personCache, \
                                                debug,projectVersion)
                         os.remove(followActivityfilename)
+                        updateApprovedFollowers=True
             else:
                 approvefilenew.write(handle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
-    # update the followers
-    followersFilename=accountsDir+'/followers.txt'
-    if os.path.isfile(followersFilename):
-        if approveHandle not in open(followersFilename).read():
-            followersFile=open(followersFilename, "a+")
+
+    if updateApprovedFollowers:
+        # update the followers
+        followersFilename=accountsDir+'/followers.txt'
+        if os.path.isfile(followersFilename):
+            if approveHandle not in open(followersFilename).read():
+                followersFile=open(followersFilename, "a+")
+                followersFile.write(approveHandle+'\n')
+                followersFile.close()
+        else:
+            followersFile=open(followersFilename, "w+")
             followersFile.write(approveHandle+'\n')
             followersFile.close()
-    else:
-        followersFile=open(followersFilename, "w+")
-        followersFile.write(approveHandle+'\n')
-        followersFile.close()
