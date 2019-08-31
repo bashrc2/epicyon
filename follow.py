@@ -85,6 +85,17 @@ def followerOfPerson(baseDir: str,nickname: str, domain: str, \
                         followerNickname,followerDomain, \
                         federationList,debug,'followers.txt')
 
+def isfollowerOfPerson(baseDir: str,nickname: str, domain: str, \
+                       followerNickname: str, followerDomain: str) -> bool:
+    """is the given nickname a follower of followerNickname?
+    """
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    followersFile=baseDir+'/accounts/'+nickname+'@'+domain+'/followers.txt'
+    if not os.path.isfile(followersFile):
+        return False
+    return followerNickname+'@'+followerDomain in open(followersFile).read()
+
 def unfollowPerson(baseDir: str,nickname: str, domain: str, \
                    followNickname: str, followDomain: str, \
                    followFile='following.txt', \
@@ -410,8 +421,9 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                       baseDir+'/accounts/'+handleToFollow)
             return True
         
-    if not followerOfPerson(baseDir,nicknameToFollow,domainToFollowFull, \
-                            nickname,domainFull,federationList,debug):
+    if not isFollowerOfPerson(baseDir, \
+                              nicknameToFollow,domainToFollowFull, \
+                              nickname,domainFull):
         if debug:
             print('DEBUG: '+nickname+'@'+domain+ \
                   ' is already a follower of '+ \

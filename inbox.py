@@ -1315,10 +1315,10 @@ def runInboxQueue(projectVersion: str, \
                                     federationList, \
                                     debug,projectVersion, \
                                     acceptedCaps=["inbox:write","objects:read"]):
-                if debug:
-                    print('DEBUG: Follow accepted from '+keyId)
                 os.remove(queueFilename)
                 queue.pop(0)
+                if debug:
+                    print('DEBUG: Follow activity for '+keyId+' removed from accepted from queue')
                 continue
             else:
                 if debug:
