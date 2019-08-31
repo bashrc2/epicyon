@@ -429,8 +429,9 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # Check if the queue is full
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
-            print('Inbox queue is full')
-            return 1
+            print('Inbox queue is full. Removing oldest items.')
+            while len(self.server.inboxQueue) >= self.server.maxQueueLength-2:
+                self.server.inboxQueue.pop(0)
 
         # Convert the headers needed for signature verification to dict
         headersDict={}
