@@ -1348,8 +1348,19 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.httpPrefix+':##'+self.server.domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
                         if os.path.isfile(postFilename):
                             postJsonObject={}
-                            with open(postFilename, 'r') as fp:
-                                postJsonObject=commentjson.load(fp)
+                            readPost=False
+                            try:
+                                with open(postFilename, 'r') as fp:
+                                    postJsonObject=commentjson.load(fp)
+                                    readPost=True
+                            except Exception as e:
+                                print(e)
+                            if not readPost:
+                                self.send_response(429)
+                                self.end_headers()
+                                self.server.GETbusy=False
+                                return
+                            else:
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
