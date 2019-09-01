@@ -2608,6 +2608,10 @@ class PubServer(BaseHTTPRequestHandler):
                         self.wfile.write(msg)
                         self.server.POSTbusy=False
                         return
+                    else:
+                        self._redirect_headers(actorStr+'/search',cookie)
+                        self.server.POSTbusy=False
+                        return                        
                 elif searchStr.startswith(':') or \
                      searchStr.lower().strip('\n').endswith(' emoji'):
                     # eg. "cat emoji"
