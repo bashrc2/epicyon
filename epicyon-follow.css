@@ -8,7 +8,7 @@
     --border-color: #505050;
     --font-size-header: 18px;
     --font-color-header: #ccc;
-    --font-size: 22px;
+    --font-size: 40px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
 }
@@ -19,7 +19,7 @@ body, html {
 
     height: 100%;
     font-family: Arial, Helvetica, sans-serif;
-    max-width: 80%;
+    max-width: 100%;
     min-width: 600px;
     margin: 5% auto;
 }
@@ -68,8 +68,8 @@ a:link {
     border: none;
     color: white;
     text-align: center;
-    font-size: var(--font-size);
     padding: 10px;
+        font-size: var(--font-size);
     width: 20%;
     max-width: 200px;
     min-width: 100px;
@@ -83,9 +83,9 @@ a:link {
 }
 
 input[type=text] {
-    width: 70%;
+    width: 90%;
     clear: both;
-    font-size: 24px;
+    font-size: var(--font-size);
     text-align: center;
     color: var(--text-entry-foreground);
     background-color: var(--text-entry-background);
@@ -97,7 +97,7 @@ input[type=text] {
     border: none;
     color: #FFFFFF;
     text-align: center;
-    font-size: 18px;
+    font-size: var(--font-size);
     padding: 2px;
     cursor: pointer;
     margin: 5px;
@@ -113,4 +113,60 @@ input[type=text] {
 
 .options img {
     width: 20%;
+}
+
+@media screen and (min-width: 400px) {
+        .followText {
+                font-size: 24px;
+        }
+        input[type=text] {
+                width: 90%;
+                clear: both;
+                font-size: 24px;
+                text-align: center;
+                color: var(--text-entry-foreground);
+                background-color: var(--text-entry-background);
+        }
+        .button {
+                border-radius: 4px;
+                background-color: #999;
+                border: none;
+                color: white;
+                text-align: center;
+                padding: 10px;
+                font-size: 24px;
+                width: 20%;
+                max-width: 200px;
+                min-width: 100px;
+                cursor: pointer;
+                margin: 30px;
+        }
+}
+
+@media screen and (max-width: 1000px) {
+        .followText {
+                font-size: 40px;
+        }
+        input[type=text] {
+                width: 90%;
+                clear: both;
+                font-size: 40px;
+                text-align: center;
+                color: var(--text-entry-foreground);
+                background-color: var(--text-entry-background);
+        }
+        .button {
+                border-radius: 4px;
+                background-color: #999;
+                border: none;
+                color: white;
+                text-align: center;
+                padding: 10px;
+                font-size: 40px;
+                width: 20%;
+                max-width: 200px;
+                min-width: 100px;
+                cursor: pointer;
+                margin: 30px;
+        }
 }
