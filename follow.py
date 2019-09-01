@@ -439,7 +439,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                                   nickname,domain,fromPort,
                                   messageJson,debug)
     else:
-        print('******** Follow request does not require approval')
+        print('Follow request does not require approval')
 
     print('Beginning follow accept')
     return followedAccountAccepts(session,baseDir,httpPrefix, \
