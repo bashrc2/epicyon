@@ -143,7 +143,7 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}, \
 def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
                  projectVersion: str,httpPrefix: str,domain: str, \
                  boxName='inbox') -> (str,str,str,str,str,str,str,str):
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if not personUrl:
         return None,None,None,None,None,None,None,None

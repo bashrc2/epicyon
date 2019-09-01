@@ -2215,7 +2215,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             if debug:
                 print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomainFull)
             return None
-        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
         personUrl = getUserUrl(wf)
         profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
