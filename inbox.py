@@ -219,8 +219,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
             if postJsonObject['object'].get('content'):
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
-                        if debug:
-                            print('DEBUG: post was filtered out due to content')
+                        print('WARN: post was filtered out due to content')
                         return None
     originalPostId=None
     if postJsonObject.get('id'):
