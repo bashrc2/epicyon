@@ -64,6 +64,7 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
+from content import addWebLinks
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1368,8 +1369,15 @@ def testActorParsing():
     nickname=getNicknameFromActor(actor)
     assert nickname=='othernick'
 
+def testWebLinks():
+    exampleText='This post has a web links https://somesite.net\n\nAnd some other text'
+    linkedText=addWebLinks(exampleText)
+    print(exampleText)
+    print(linkedText)
+    
 def runAllTests():
     print('Running tests...')
+    testWebLinks()
     testActorParsing()
     testHttpsig()
     testCache()

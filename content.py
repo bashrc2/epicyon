@@ -16,7 +16,7 @@ def addWebLinks(content: str) -> str:
     if not ('https://' in content or 'http://' in content):
         return content
 
-    words=content.split(' ')
+    words=content.replace('\n',' --linebreak--').split(' ')
     replaceDict={}
     for w in words:
         if w.startswith('https://') or w.startswith('http://'):
@@ -31,6 +31,7 @@ def addWebLinks(content: str) -> str:
             replaceDict[w]=markup
     for url,markup in replaceDict.items():
         content=content.replace(url,markup)
+    content=content.replace(' --linebreak--','<br>')
     return content
 
 def validHashTag(hashtag: str) -> bool:
