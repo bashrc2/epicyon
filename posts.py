@@ -209,7 +209,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
     if not outboxUrl:
         return personPosts
 
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
     if raw:
         result = []
         i = 0

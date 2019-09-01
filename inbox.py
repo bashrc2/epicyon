@@ -99,7 +99,7 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
-        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not personJson:
             return None
