@@ -208,6 +208,14 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
 
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('inReplyTo'):
+                if isinstance(postJsonObject['object']['inReplyTo'], str):
+                    replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+                    replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+                    if replyNickname and replyDomain:
+                        if isBlocked(baseDir,nickname,domain,postNickname,postDomain):
+                            print('WARN: post contains reply from a blocked domain: '+replyDomain)
+                            return None                        
             if postJsonObject['object'].get('content'):
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
