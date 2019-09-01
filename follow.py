@@ -440,6 +440,22 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                                   messageJson,debug)
     else:
         print('Follow request does not require approval')
+        # update the followers
+        if os.path.isdir(baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow):
+            followersFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'/followers.txt'
+            approveHandle=nickname+'@'+domain
+            if fromPort:
+                approveHandle=approveHandle+':'+str(fromPort)
+            print('Updating followers file: '+followersFilename+' adding '+approveHandle)
+            if os.path.isfile(followersFilename):
+                if approveHandle not in open(followersFilename).read():
+                    followersFile=open(followersFilename, "a+")
+                    followersFile.write(approveHandle+'\n')
+                    followersFile.close()
+            else:
+                followersFile=open(followersFilename, "w+")
+                followersFile.write(approveHandle+'\n')
+                followersFile.close()
 
     print('Beginning follow accept')
     return followedAccountAccepts(session,baseDir,httpPrefix, \
