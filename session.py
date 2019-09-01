@@ -27,6 +27,10 @@ def createSession(domain: str, port: int, onionRoute: bool):
 
 def getJson(session,url: str,headers: {},params: {}, \
             version='1.0.0',httpPrefix='https',domain='testdomain') -> {}:
+    if not isinstance(url, str):
+        print('url: '+str(url))
+        print('ERROR: getJson url should be a string')
+        return None
     sessionParams={}
     sessionHeaders={}
     if headers:
@@ -46,7 +50,7 @@ def getJson(session,url: str,headers: {},params: {}, \
         return result.json()
     except Exception as e:
         print('ERROR: getJson failed')
-        print('url: '+url)
+        print('url: '+str(url))
         print('headers: '+str(sessionHeaders))
         print('params: '+str(sessionParams))
         print(e)

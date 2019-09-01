@@ -136,9 +136,16 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}, \
         nextUrl = feedJson['next']
 
     if nextUrl:
-        for item in parseUserFeed(session,nextUrl,asHeader, \
-                                  projectVersion,httpPrefix,domain):
-            yield item
+        if isinstance(nextUrl, str):
+            userFeed=parseUserFeed(session,nextUrl,asHeader, \
+                                   projectVersion,httpPrefix,domain)
+            for item in userFeed:
+                yield item
+        elif isinstance(nextUrl, dict):
+            userFeed=nextUrl
+            if userFeed.get('orderedItems'):
+                for item in userFeed['orderedItems']:
+                    yield item        
     
 def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
                  projectVersion: str,httpPrefix: str,domain: str, \
@@ -205,16 +212,16 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
              projectVersion: str,httpPrefix: str,domain: str) -> {}:
     """Gets public posts from an outbox
     """
-    personPosts={}
+    personPosts={}    
     if not outboxUrl:
         return personPosts
-
     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
     if raw:
         result = []
         i = 0
-        for item in parseUserFeed(session,outboxUrl,asHeader, \
-                                  projectVersion,httpPrefix,domain):
+        userFeed=parseUserFeed(session,outboxUrl,asHeader, \
+                               projectVersion,httpPrefix,domain)
+        for item in userFeed:
             result.append(item)
             i += 1
             if i == maxPosts:
@@ -223,8 +230,9 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
         return None
 
     i = 0
-    for item in parseUserFeed(session,outboxUrl,asHeader, \
-                              projectVersion,httpPrefix,domain):
+    userFeed=parseUserFeed(session,outboxUrl,asHeader, \
+                           projectVersion,httpPrefix,domain)
+    for item in userFeed:
         if not item.get('id'):
             if debug:
                 print('No id')
