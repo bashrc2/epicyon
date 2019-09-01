@@ -2210,7 +2210,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
     profileStr=''
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         wf = webfingerHandle(session,searchNickname+'@'+searchDomainFull,httpPrefix,wfRequest, \
-                             domain,projectVersion)
+                             None,projectVersion)
         if not wf:
             if debug:
                 print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomainFull)
