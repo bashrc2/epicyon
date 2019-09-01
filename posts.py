@@ -922,7 +922,7 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         # keep the length of the log finite
         # Don't accumulate massive files on systems with limited resources
         while len(postLog)>16:
-            postlog.pop(0)
+            postLog.pop(0)
         # save the log file
         postLogFilename=baseDir+'/post.log'
         with open(postLogFilename, "a+") as logFile:
