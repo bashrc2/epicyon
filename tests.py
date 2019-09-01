@@ -1370,10 +1370,10 @@ def testActorParsing():
     assert nickname=='othernick'
 
 def testWebLinks():
+    print('testWebLinks')
     exampleText='This post has a web links https://somesite.net\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
-    print(exampleText)
-    print(linkedText)
+    assert '<a href="https://somesite.net" rel="nofollow noopener" target="_blank"><span class="invisible">https://</span><span class="ellipsis">somesite.net</span></a' in linkedText
     
 def runAllTests():
     print('Running tests...')
