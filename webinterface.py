@@ -861,21 +861,34 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
     These should only be public posts
     """
     profileStr=''
-    outboxFeed= \
-        personBoxJson(baseDir,domain, \
-                      port,'/users/'+nickname+'/outbox?page=1', \
-                      httpPrefix, \
-                      4, 'outbox', \
-                      authorized, \
-                      ocapAlways)
+    maxItems=4
     profileStr+='<script>'+contentWarningScript()+'</script>'
-    for item in outboxFeed['orderedItems']:
-        if item['type']=='Create' or item['type']=='Announce':
-            profileStr+= \
-                individualPostAsHtml(baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,item,None,True,False, \
-                                     httpPrefix,projectVersion, \
-                                     False,False,False,True)
+    ctr=0
+    currPage=1
+    while ctr<maxItems and currPage<4:
+        outboxFeed= \
+            personBoxJson(baseDir,domain, \
+                          port,'/users/'+nickname+'/outbox?page='+str(currPage), \
+                          httpPrefix, \
+                          10, 'outbox', \
+                          authorized, \
+                          ocapAlways)
+        if not outboxFeed:
+            break
+        if len(outboxFeed['orderedItems'])==0:
+            break
+        for item in outboxFeed['orderedItems']:
+            if item['type']=='Create' or item['type']=='Announce':
+                postStr=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                                             nickname,domain,port,item,None,True,False, \
+                                             httpPrefix,projectVersion, \
+                                             False,False,False,True)
+                if postStr:
+                    profileStr+=postStr
+                    ctr+=1
+                    if ctr>=maxItems:
+                        break
+        currPage+=1
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
