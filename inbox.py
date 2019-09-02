@@ -1135,7 +1135,19 @@ def restoreQueueItems(baseDir: str,queue: []) -> None:
                         queue.append(os.path.join(queueDir, qfile))
     if len(queue)>0:
         print('Restored '+str(len(queue))+' inbox queue items')
-        
+
+def runInboxQueueWatchdog(projectVersion: str,httpd) -> None:
+    """This tries to keep the inbox thread running even if it dies
+    """
+    print('Starting inbox queue watchdog')
+    httpd.thrInboxQueue.start()
+    while True:
+        time.sleep(20) 
+        if not httpd.thrInboxQueue.isAlive():
+            httpd.thrInboxQueue.kill()
+            httpd.thrInboxQueue.start()
+            print('Restarting inbox queue...')
+
 def runInboxQueue(projectVersion: str, \
                   baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \

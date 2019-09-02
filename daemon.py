@@ -47,6 +47,7 @@ from posts import expireCache
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
+from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
 from follow import getFollowingFeed
@@ -3264,7 +3265,7 @@ class PubServer(BaseHTTPRequestHandler):
 
 class PubServerUnitTest(PubServer):
     protocol_version = 'HTTP/1.0'
-
+        
 def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
@@ -3377,7 +3378,10 @@ def runDaemon(projectVersion, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
                               allowDeletion,debug,httpd.acceptedCaps),daemon=True)
-    httpd.thrInboxQueue.start()
+    httpd.thrWatchdog= \
+        threadWithTrace(target=runInboxQueueWatchdog, \
+                        args=(projectVersion,httpd),daemon=True)        
+    httpd.thrWatchdog.start()
     if clientToServer:
         print('Running ActivityPub client on ' + domain + ' port ' + str(proxyPort))
     else:
