@@ -276,7 +276,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False)
+                                     False,False,False)
         index-=1
 
     if endIndex>0:
@@ -874,7 +874,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False)
+                                     False,False,False)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -1303,7 +1303,19 @@ def addEmbeddedElements(content: str) -> str:
     content=addEmbeddedVideoFromSites(content)
     content=addEmbeddedAudio(content)
     return addEmbeddedVideo(content)
-    
+
+def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
+    """Returns true if the given account requires follower approval
+    """
+    manuallyApprovesFollowers=False
+    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    if os.path.isfile(actorFilename):
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+            if actorJson.get('manuallyApprovesFollowers'):
+                manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
+    return manuallyApprovesFollowers
+
 def individualPostAsHtml(baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -1311,8 +1323,9 @@ def individualPostAsHtml(baseDir: str, \
                          avatarUrl: str, showAvatarDropdown: bool,
                          allowDeletion: bool, \
                          httpPrefix: str, projectVersion: str, \
-                         showRepeats=True,
-                         showIcons=False) -> str:
+                         showRepeats=True, \
+                         showIcons=False, \
+                         manuallyApprovesFollowers=False) -> str:
     """ Shows a single post as html
     """
     # If this is the inbox timeline then don't show the repeat icon on any DMs
@@ -1593,10 +1606,13 @@ def individualPostAsHtml(baseDir: str, \
                         replyToLink+='?mention='+actorUrl
                         if len(replyToLink)>500:
                             break
-
+                        
         footerStr='<div class="'+containerClassIcons+'">'
         if not isModerationPost and showRepeatIcon:
-            footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
+            if not manuallyApprovesFollowers:
+                footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
+            else:
+                footerStr+='<a href="/users/'+nickname+'?replyfollowers='+replyToLink+'" title="Reply to this post">'
         else:
             footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="Reply to this post">'
         footerStr+='<img src="/icons/reply.png"/></a>'
@@ -1638,7 +1654,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,timelineJson: {}, \
                  boxName: str,allowDeletion: bool, \
-                 httpPrefix: str,projectVersion: str) -> str:
+                 httpPrefix: str,projectVersion: str, \
+                 manuallyApproveFollowers: bool) -> str:
     """Show the timeline as html
     """
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
@@ -1734,9 +1751,10 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,avatarUrl,True, \
                                         allowDeletion, \
-                                        httpPrefix,projectVersion,
-                                        boxName!='dm',
-                                        showIndividualPostIcons)
+                                        httpPrefix,projectVersion, \
+                                        boxName!='dm', \
+                                        showIndividualPostIcons, \
+                                        manuallyApproveFollowers)
 
     # page down arrow
     if itemCtr>=itemsPerPage:
@@ -1751,9 +1769,12 @@ def htmlInbox(pageNumber: int,itemsPerPage: int, \
               httpPrefix: str,projectVersion: str) -> str:
     """Show the inbox as html
     """
+    manuallyApproveFollowers= \
+        followerApprovalActive(baseDir,nickname,domain)
+
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
-                        httpPrefix,projectVersion)
+                        httpPrefix,projectVersion,manuallyApproveFollowers)
 
 def htmlInboxDMs(pageNumber: int,itemsPerPage: int, \
                  session,baseDir: str,wfRequest: {},personCache: {}, \
@@ -1764,7 +1785,7 @@ def htmlInboxDMs(pageNumber: int,itemsPerPage: int, \
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'dm',allowDeletion, \
-                        httpPrefix,projectVersion)
+                        httpPrefix,projectVersion,False)
 
 def htmlModeration(pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
@@ -1775,7 +1796,7 @@ def htmlModeration(pageNumber: int,itemsPerPage: int, \
     """
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'moderation',allowDeletion, \
-                        httpPrefix,projectVersion)
+                        httpPrefix,projectVersion,True)
 
 def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
@@ -1784,9 +1805,11 @@ def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                httpPrefix: str,projectVersion: str) -> str:
     """Show the Outbox as html
     """
+    manuallyApproveFollowers= \
+        followerApprovalActive(baseDir,nickname,domain)
     return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox',allowDeletion, \
-                        httpPrefix,projectVersion)
+                        httpPrefix,projectVersion,manuallyApproveFollowers)
 
 def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,authorized: bool, \
@@ -1797,7 +1820,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     postStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
-                             httpPrefix,projectVersion,False,False)
+                             httpPrefix,projectVersion,False,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -1812,7 +1835,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False)+postStr
+                                     False,False,False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -1828,7 +1851,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                 postStr+= \
                     individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
-                                         httpPrefix,projectVersion,False,False)
+                                         httpPrefix,projectVersion,False,False,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
@@ -1841,7 +1864,7 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
         for item in repliesJson['orderedItems']:
             repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
-                                             httpPrefix,projectVersion,False,False)    
+                                             httpPrefix,projectVersion,False,False,False)
 
     return htmlHeader()+repliesStr+htmlFooter()
 
@@ -1921,7 +1944,7 @@ def htmlDeletePost(session,baseDir: str,messageId: str, \
         deletePostStr+= \
             individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                  nickname,domain,port,postJsonObject,None,True,False, \
-                                 httpPrefix,projectVersion,False,False)
+                                 httpPrefix,projectVersion,False,False,False)
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">Delete this post?</p>'
         deletePostStr+= \
@@ -2299,7 +2322,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False)
+                                     False,False,False)
             i+=1
             if i>=20:
                 break

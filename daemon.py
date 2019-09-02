@@ -1100,55 +1100,70 @@ class PubServer(BaseHTTPRequestHandler):
         inReplyToUrl=None
         replyWithDM=False
         replyToList=[]
-        if htmlGET and '?replyto=' in self.path:
-            inReplyToUrl=self.path.split('?replyto=')[1]
-            if '?' in inReplyToUrl:
-                mentionsList=inReplyToUrl.split('?')
-                for m in mentionsList:
-                    if m.startswith('mention='):
-                        replyToList.append(m.replace('mention=',''))
-                inReplyToUrl=mentionsList[0]
-            self.path=self.path.split('?replyto=')[0]+'/newpost'
-            if self.server.debug:
-                print('DEBUG: replyto path '+self.path)
-
-        # replying as a direct message, for moderation posts
         shareDescription=None
-        if htmlGET and '?replydm=' in self.path:
-            inReplyToUrl=self.path.split('?replydm=')[1]
-            if '?' in inReplyToUrl:
-                mentionsList=inReplyToUrl.split('?')
-                for m in mentionsList:
-                    if m.startswith('mention='):
-                        replyToList.append(m.replace('mention=',''))
-                inReplyToUrl=mentionsList[0]
-                if inReplyToUrl.startswith('sharedesc:'):
-                    shareDescription=inReplyToUrl.replace('sharedesc:','').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
-            self.path=self.path.split('?replydm=')[0]+'/newdm'
-            if self.server.debug:
-                print('DEBUG: replydm path '+self.path)
+        if htmlGET:
+            # public reply
+            if '?replyto=' in self.path:
+                inReplyToUrl=self.path.split('?replyto=')[1]
+                if '?' in inReplyToUrl:
+                    mentionsList=inReplyToUrl.split('?')
+                    for m in mentionsList:
+                        if m.startswith('mention='):
+                            replyToList.append(m.replace('mention=',''))
+                    inReplyToUrl=mentionsList[0]
+                self.path=self.path.split('?replyto=')[0]+'/newpost'
+                if self.server.debug:
+                    print('DEBUG: replyto path '+self.path)
 
-        # edit profile in web interface
-        if htmlGET and '/users/' in self.path and self.path.endswith('/editprofile'):
-            msg=htmlEditProfile(self.server.baseDir,self.path,self.server.domain,self.server.port).encode()
-            self._set_headers('text/html',len(msg),cookie)
-            self.wfile.write(msg)
-            self.server.GETbusy=False
-            return        
+            # reply to followers
+            if '?replyfollowers=' in self.path:
+                inReplyToUrl=self.path.split('?replyfollowers=')[1]
+                if '?' in inReplyToUrl:
+                    mentionsList=inReplyToUrl.split('?')
+                    for m in mentionsList:
+                        if m.startswith('mention='):
+                            replyToList.append(m.replace('mention=',''))
+                    inReplyToUrl=mentionsList[0]
+                self.path=self.path.split('?replyfollowers=')[0]+'/newfollowers'
+                if self.server.debug:
+                    print('DEBUG: replyfollowers path '+self.path)
 
-        # Various types of new post in the web interface
-        if htmlGET and '/users/' in self.path and \
-           (self.path.endswith('/newpost') or \
-            self.path.endswith('/newunlisted') or \
-            self.path.endswith('/newfollowers') or \
-            self.path.endswith('/newdm') or \
-            self.path.endswith('/newreport') or \
-            self.path.endswith('/newshare')):
-            msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,shareDescription).encode()
-            self._set_headers('text/html',len(msg),cookie)
-            self.wfile.write(msg)
-            self.server.GETbusy=False
-            return
+            # replying as a direct message, for moderation posts or the dm timeline
+            if '?replydm=' in self.path:
+                inReplyToUrl=self.path.split('?replydm=')[1]
+                if '?' in inReplyToUrl:
+                    mentionsList=inReplyToUrl.split('?')
+                    for m in mentionsList:
+                        if m.startswith('mention='):
+                            replyToList.append(m.replace('mention=',''))
+                    inReplyToUrl=mentionsList[0]
+                    if inReplyToUrl.startswith('sharedesc:'):
+                        shareDescription=inReplyToUrl.replace('sharedesc:','').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
+                self.path=self.path.split('?replydm=')[0]+'/newdm'
+                if self.server.debug:
+                    print('DEBUG: replydm path '+self.path)
+
+            # edit profile in web interface
+            if '/users/' in self.path and self.path.endswith('/editprofile'):
+                msg=htmlEditProfile(self.server.baseDir,self.path,self.server.domain,self.server.port).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.GETbusy=False
+                return
+
+            # Various types of new post in the web interface
+            if '/users/' in self.path and \
+               (self.path.endswith('/newpost') or \
+                self.path.endswith('/newunlisted') or \
+                self.path.endswith('/newfollowers') or \
+                self.path.endswith('/newdm') or \
+                self.path.endswith('/newreport') or \
+                self.path.endswith('/newshare')):
+                msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,shareDescription).encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self.wfile.write(msg)
+                self.server.GETbusy=False
+                return
 
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
