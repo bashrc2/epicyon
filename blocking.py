@@ -333,8 +333,11 @@ def outboxBlock(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s block post not found in inbox or outbox')
             print(messageId)
-        return True
+        return
     nicknameBlocked=getNicknameFromActor(messageJson['object'])
+    if not nicknameBlocked:
+        print('WARN: unable to find nickname in '+messageJson['object'])
+        return
     domainBlocked,portBlocked=getDomainFromActor(messageJson['object'])
     domainBlockedFull=domainBlocked
     if portBlocked:
@@ -405,8 +408,11 @@ def outboxUndoBlock(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s undo block post not found in inbox or outbox')
             print(messageId)
-        return True
+        return
     nicknameBlocked=getNicknameFromActor(messageJson['object']['object'])
+    if not nicknameBlocked:
+        print('WARN: unable to find nickname in '+messageJson['object']['object'])
+        return
     domainBlocked,portBlocked=getDomainFromActor(messageJson['object']['object'])
     domainBlockedFull=domainBlocked
     if portBlocked:

@@ -1987,6 +1987,9 @@ def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
 
     clientToServer=False
     followerNickname=getNicknameFromActor(followerUrl)
+    if not followerNickname:
+        print('WARN: unable to find nickname in '+followerUrl)
+        return 1
     followerDomain,followerPort=getDomainFromActor(followerUrl)
     return sendSignedJson(updateJson,session,baseDir, \
                           nickname,domain,port, \

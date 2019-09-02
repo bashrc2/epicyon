@@ -68,7 +68,7 @@ def createDelete(session,baseDir: str,federationList: [], \
     deleteNickname=None
     deleteDomain=None
     deletePort=None
-    if '/users/' in objectUrl:
+    if '/users/' in objectUrl or '/profile/' in objectUrl:
         deleteNickname=getNicknameFromActor(objectUrl)
         deleteDomain,deletePort=getDomainFromActor(objectUrl)
 

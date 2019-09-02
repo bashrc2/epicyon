@@ -33,8 +33,11 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
         return False
     if messageJson['type']=='Announce':
         if not isinstance(messageJson['object'], str):
-            return
+            return False
         nickname=getNicknameFromActor(messageJson['actor'])
+        if not nickname:
+            print('WARN: no nickname found in '+messageJson['actor'])
+            return False
         domain,port=getDomainFromActor(messageJson['actor'])
         postFilename=locatePost(baseDir,nickname,domain,messageJson['object'])
         if postFilename:
@@ -42,13 +45,16 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
             return True
     if messageJson['type']=='Undo':
         if not isinstance(messageJson['object'], dict):
-            return    
+            return False
         if not messageJson['object'].get('type'):
             return False
         if messageJson['object']['type']=='Announce':
             if not isinstance(messageJson['object']['object'], str):
-                return
+                return False
             nickname=getNicknameFromActor(messageJson['actor'])
+            if not nickname:
+                print('WARN: no nickname found in '+messageJson['actor'])
+                return False
             domain,port=getDomainFromActor(messageJson['actor'])
             postFilename=locatePost(baseDir,nickname,domain,messageJson['object']['object'])
             if postFilename:
@@ -218,7 +224,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     announceNickname=None
     announceDomain=None
     announcePort=None
-    if '/users/' in objectUrl:
+    if '/users/' in objectUrl or '/profile/' in objectUrl:
         announceNickname=getNicknameFromActor(objectUrl)
         announceDomain,announcePort=getDomainFromActor(objectUrl)
 
@@ -329,7 +335,7 @@ def undoAnnounce(session,baseDir: str,federationList: [], \
     announceNickname=None
     announceDomain=None
     announcePort=None
-    if '/users/' in objectUrl:
+    if '/users/' in objectUrl or '/profile/' in objectUrl:
         announceNickname=getNicknameFromActor(objectUrl)
         announceDomain,announcePort=getDomainFromActor(objectUrl)
 

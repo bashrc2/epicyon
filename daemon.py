@@ -900,6 +900,11 @@ class PubServer(BaseHTTPRequestHandler):
             repeatUrl=self.path.split('?repeat=')[1]
             actor=self.path.split('?repeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in '+actor)
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/inbox',cookie)
+                return                
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)                
@@ -929,6 +934,11 @@ class PubServer(BaseHTTPRequestHandler):
             repeatUrl=self.path.split('?unrepeat=')[1]
             actor=self.path.split('?unrepeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in '+actor)
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/inbox',cookie)
+                return                
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
@@ -996,6 +1006,11 @@ class PubServer(BaseHTTPRequestHandler):
             likeUrl=self.path.split('?like=')[1]
             actor=self.path.split('?like=')[0]
             self.postToNickname=getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in '+actor)
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/inbox',cookie)
+                return                
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
@@ -1017,6 +1032,11 @@ class PubServer(BaseHTTPRequestHandler):
             likeUrl=self.path.split('?unlike=')[1]
             actor=self.path.split('?unlike=')[0]
             self.postToNickname=getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in '+actor)
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/inbox',cookie)
+                return                
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.domain,self.server.port,self.server.useTor)
@@ -1052,6 +1072,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._redirect_headers(actor+'/inbox',cookie)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
+                if not self.postToNickname:
+                    print('WARN: unable to find nickname in '+actor)
+                    self.server.GETbusy=False
+                    self._redirect_headers(actor+'/inbox',cookie)
+                    return                    
                 if not self.server.session:
                     self.server.session= \
                         createSession(self.server.domain,self.server.port, \
@@ -2195,6 +2220,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actorStr=self.path.replace('/profiledata','').replace('/editprofile','')
                 nickname=getNicknameFromActor(actorStr)
                 if not nickname:
+                    print('WARN: nickname not found in '+actorStr)
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
                     return
@@ -2659,8 +2685,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in shareName:
                     shareName=shareName.split('&')[0]
                 shareNickname=getNicknameFromActor(shareActor)
-                shareDomain,sharePort=getDomainFromActor(shareActor)
-                removeShare(self.server.baseDir,shareNickname,shareDomain,shareName)
+                if shareNickname:
+                    shareDomain,sharePort=getDomainFromActor(shareActor)
+                    removeShare(self.server.baseDir,shareNickname,shareDomain,shareName)
             self._redirect_headers(originPathStr+'/inbox',cookie)
             self.server.POSTbusy=False
             return
@@ -2689,7 +2716,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         pprint(deleteJson)
                     self.postToNickname=getNicknameFromActor(removePostActor)
-                    self._postToOutbox(deleteJson)                    
+                    if self.postToNickname:
+                        self._postToOutbox(deleteJson)                    
             self._redirect_headers(originPathStr+'/outbox',cookie)
             self.server.POSTbusy=False
             return
@@ -2779,6 +2807,11 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and self.path.endswith('/unblockconfirm'):
             originPathStr=self.path.split('/unblockconfirm')[0]
             blockerNickname=getNicknameFromActor(originPathStr)
+            if not blockerNickname:
+                print('WARN: unable to find nickname in '+originPathStr)
+                self._redirect_headers(originPathStr,cookie)
+                self.server.POSTbusy=False
+                return                
             length = int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
@@ -2786,6 +2819,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in blockingActor:
                     blockingActor=blockingActor.split('&')[0]
                 blockingNickname=getNicknameFromActor(blockingActor)
+                if not blockingNickname:
+                    print('WARN: unable to find nickname in '+blockingActor)
+                    self._redirect_headers(originPathStr,cookie)
+                    self.server.POSTbusy=False
+                    return                    
                 blockingDomain,blockingPort=getDomainFromActor(blockingActor)
                 blockingDomainFull=blockingDomain
                 if blockingPort:
@@ -2810,6 +2848,11 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and self.path.endswith('/blockconfirm'):
             originPathStr=self.path.split('/blockconfirm')[0]
             blockerNickname=getNicknameFromActor(originPathStr)
+            if not blockerNickname:
+                print('WARN: unable to find nickname in '+originPathStr)
+                self._redirect_headers(originPathStr,cookie)
+                self.server.POSTbusy=False
+                return                
             length = int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
@@ -2817,6 +2860,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in blockingActor:
                     blockingActor=blockingActor.split('&')[0]
                 blockingNickname=getNicknameFromActor(blockingActor)
+                if not blockingNickname:
+                    print('WARN: unable to find nickname in '+blockingActor)
+                    self._redirect_headers(originPathStr,cookie)
+                    self.server.POSTbusy=False
+                    return                    
                 blockingDomain,blockingPort=getDomainFromActor(blockingActor)
                 blockingDomainFull=blockingDomain
                 if blockingPort:
@@ -2842,6 +2890,11 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized and self.path.endswith('/personoptions'):
             originPathStr=self.path.split('/personoptions')[0]
             chooserNickname=getNicknameFromActor(originPathStr)
+            if not chooserNickname:
+                print('WARN: unable to find nickname in '+originPathStr)
+                self._redirect_headers(originPathStr,cookie)
+                self.server.POSTbusy=False
+                return                
             length = int(self.headers['Content-length'])
             optionsConfirmParams=self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
             # actor for the person
@@ -2860,6 +2913,11 @@ class PubServer(BaseHTTPRequestHandler):
                     postUrl=postUrl.split('&')[0]
                 
             optionsNickname=getNicknameFromActor(optionsActor)
+            if not optionsNickname:
+                print('WARN: unable to find nickname in '+optionsActor)
+                self._redirect_headers(originPathStr,cookie)
+                self.server.POSTbusy=False
+                return                
             optionsDomain,optionsPort=getDomainFromActor(optionsActor)
             optionsDomainFull=optionsDomain
             if optionsPort:

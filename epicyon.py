@@ -737,6 +737,9 @@ if args.follow:
         sys.exit()
         
     followNickname=getNicknameFromActor(args.follow)
+    if not followNickname:
+        print('Unable to find nickname in '+args.follow)
+        sys.exit()        
     followDomain,followPort=getDomainFromActor(args.follow)
 
     session = createSession(domain,port,useTor)
@@ -772,6 +775,9 @@ if args.unfollow:
         sys.exit()
         
     followNickname=getNicknameFromActor(args.unfollow)
+    if not followNickname:
+        print('WARN: unable to find nickname in '+args.unfollow)
+        sys.exit()        
     followDomain,followPort=getDomainFromActor(args.unfollow)
 
     session = createSession(domain,port,useTor)

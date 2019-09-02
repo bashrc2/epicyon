@@ -132,6 +132,9 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
     # otherwise create a new capability    
     if not ocapAccept:
         acceptedActorNickname=getNicknameFromActor(acceptedActor)
+        if not acceptedActorNickname:
+            print('WARN: unable to find nickname in '+acceptedActor)
+            return None
         acceptedActorDomain,acceptedActorPort=getDomainFromActor(acceptedActor)
         if acceptedActorPort:            
             ocapId=acceptedActorNickname+'@'+acceptedActorDomain+':'+str(acceptedActorPort)+'#'+createPassword(32)
@@ -213,6 +216,9 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
 
     # change the id, so that the old capabilities can't continue to be used
     updateActorNickname=getNicknameFromActor(updateActor)
+    if not updateActorNickname:
+        print('WARN: unable to find nickname in '+updateActor)
+        return None
     updateActorDomain,updateActorPort=getDomainFromActor(updateActor)
     if updateActorPort:
         ocapId=updateActorNickname+'@'+updateActorDomain+':'+str(updateActorPort)+'#'+createPassword(32)

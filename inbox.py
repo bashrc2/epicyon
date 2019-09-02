@@ -188,11 +188,10 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
     if postJsonObject.get('actor'):
         actor=postJsonObject['actor']
         postNickname=getNicknameFromActor(postJsonObject['actor'])
-        postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
         if not postNickname:
-            pprint(postJsonObject)
-            print('No post Nickname in actor')
+            print('No post Nickname in actor '+postJsonObject['actor'])
             return None
+        postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
         if not postDomain:
             pprint(postJsonObject)
             print('No post Domain in actor')
@@ -511,6 +510,9 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         return False
 
     nicknameFollower=getNicknameFromActor(messageJson['object']['actor'])
+    if not nicknameFollower:
+        print('WARN: unable to find nickname in '+messageJson['object']['actor'])
+        return False
     domainFollower,portFollower=getDomainFromActor(messageJson['object']['actor'])
     domainFollowerFull=domainFollower
     if portFollower:
@@ -519,6 +521,9 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
                 domainFollowerFull=domainFollower+':'+str(portFollower)
     
     nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
+    if not nicknameFollowing:
+        print('WARN: unable to find nickname in '+messageJson['object']['object'])
+        return False
     domainFollowing,portFollowing=getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull=domainFollowing
     if portFollowing:
@@ -679,30 +684,32 @@ def receiveUpdate(session,baseDir: str, \
        messageJson['object']['type']=='Service':
         if messageJson['object'].get('url') and messageJson['object'].get('id'):
             print('Request to update actor: '+messageJson['actor'])
-            updateDomain,updatePort=getDomainFromActor(messageJson['actor'])
-            updateNickname=getNicknameFromActor(messageJson['actor'])            
-            if personReceiveUpdate(baseDir, \
-                                   domain,port, \
-                                   updateNickname,updateDomain,updatePort, \
-                                   messageJson['object'], \
-                                   personCache,debug):
-                if debug:
-                    print('DEBUG: Profile update was received for '+messageJson['object']['url'])
-                    return True
+            updateNickname=getNicknameFromActor(messageJson['actor'])
+            if updateNickname:
+                updateDomain,updatePort=getDomainFromActor(messageJson['actor'])
+                if personReceiveUpdate(baseDir, \
+                                       domain,port, \
+                                       updateNickname,updateDomain,updatePort, \
+                                       messageJson['object'], \
+                                       personCache,debug):
+                    if debug:
+                        print('DEBUG: Profile update was received for '+messageJson['object']['url'])
+                        return True
 
     if messageJson['object'].get('capability') and messageJson['object'].get('scope'):
-        domain,tempPort=getDomainFromActor(messageJson['object']['scope'])
         nickname=getNicknameFromActor(messageJson['object']['scope'])
+        if nickname:
+            domain,tempPort=getDomainFromActor(messageJson['object']['scope'])
 
-        if messageJson['object']['type']=='Capability':
-            if capabilitiesReceiveUpdate(baseDir,nickname,domain,port,
-                                         messageJson['actor'], \
-                                         messageJson['object']['id'], \
-                                         messageJson['object']['capability'], \
-                                         debug):
-                if debug:
-                    print('DEBUG: An update was received')
-                return True            
+            if messageJson['object']['type']=='Capability':
+                if capabilitiesReceiveUpdate(baseDir,nickname,domain,port,
+                                             messageJson['actor'], \
+                                             messageJson['object']['id'], \
+                                             messageJson['object']['capability'], \
+                                             debug):
+                    if debug:
+                        print('DEBUG: An update was received')
+                    return True
     return False
 
 def receiveLike(session,handle: str,baseDir: str, \
@@ -994,8 +1001,7 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
         return False
     replyToNickname=getNicknameFromActor(replyTo)
     if not replyToNickname:
-        if debug:
-            print('DEBUG: no nickname found for '+replyTo)
+        print('DEBUG: no nickname found for '+replyTo)
         return False
     replyToDomain,replyToPort=getDomainFromActor(replyTo)
     if not replyToDomain:

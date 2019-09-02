@@ -39,6 +39,9 @@ def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
     if actor in open(followingFile).read():
         return True
     followingNickname=getNicknameFromActor(actor)
+    if not followingNickname:
+        print('WARN: unable to find nickname in '+actor)
+        return False
     followingDomain,followingPort=getDomainFromActor(actor)
     followingHandle=followingNickname+'@'+followingDomain
     if followingPort:
@@ -803,6 +806,9 @@ def outboxUndoFollow(baseDir: str,messageJson: {},debug: bool) -> None:
         print('DEBUG: undo follow arrived in outbox')
 
     nicknameFollower=getNicknameFromActor(messageJson['object']['actor'])
+    if not nicknameFollower:
+        print('WARN: unable to find nickname in '+messageJson['object']['actor'])
+        return
     domainFollower,portFollower=getDomainFromActor(messageJson['object']['actor'])
     domainFollowerFull=domainFollower
     if portFollower:
@@ -811,6 +817,9 @@ def outboxUndoFollow(baseDir: str,messageJson: {},debug: bool) -> None:
                 domainFollowerFull=domainFollower+':'+str(portFollower)
     
     nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
+    if not nicknameFollowing:
+        print('WARN: unable to find nickname in '+messageJson['object']['object'])
+        return
     domainFollowing,portFollowing=getDomainFromActor(messageJson['object']['object'])
     domainFollowingFull=domainFollowing
     if portFollowing:

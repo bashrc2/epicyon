@@ -180,6 +180,9 @@ def outboxDelegate(baseDir: str,authenticatedNickname: str,messageJson: {},debug
     if canDelegate==False:
         return False
     nickname=getNicknameFromActor(messageJson['object']['actor'])
+    if not nickname:
+        print('WARN: unable to find nickname in '+messageJson['object']['actor'])
+        return False
     domainFull=domain
     if port:
         if port!=80 and port!=443:

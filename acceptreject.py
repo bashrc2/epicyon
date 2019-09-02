@@ -109,6 +109,9 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         print('DEBUG: follow Accept received')
     thisActor=messageJson['object']['actor']
     nickname=getNicknameFromActor(thisActor)
+    if not nickname:
+        print('WARN: no nickname found in '+thisActor)
+        return
     acceptedDomain,acceptedPort=getDomainFromActor(thisActor)
     if not acceptedDomain:
         if debug:
