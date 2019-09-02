@@ -79,6 +79,12 @@ def getNicknameFromActor(actor: str) -> str:
     """Returns the nickname from an actor url
     """
     if '/users/' not in actor:
+        if '/profile/' in actor:
+            nickStr=actor.split('/profile/')[1].replace('@','')
+            if '/' not in nickStr:
+                return nickStr
+            else:
+                return nickStr.split('/')[0]
         # https://domain/@nick
         if '/@' in actor:
             nickStr=actor.split('/@')[1]
@@ -96,12 +102,15 @@ def getDomainFromActor(actor: str) -> (str,int):
     """Returns the domain name from an actor url
     """
     port=None
-    if '/users/' not in actor:
-        domain = actor.replace('https://','').replace('http://','').replace('dat://','')
-        if '/' in actor:
-            domain=domain.split('/')[0]
+    if '/profile/' in actor:
+        domain = actor.split('/profile/')[0].replace('https://','').replace('http://','').replace('dat://','')
     else:
-        domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
+        if '/users/' not in actor:
+            domain = actor.replace('https://','').replace('http://','').replace('dat://','')
+            if '/' in actor:
+                domain=domain.split('/')[0]
+        else:
+            domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
     if ':' in domain:
         port=int(domain.split(':')[1])
         domain=domain.split(':')[0]
