@@ -1,4 +1,4 @@
-<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/mobile.jpg?raw=true" width=5%/>
+<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/mobile.jpg?raw=true" width="5%"/>
 
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
@@ -8,7 +8,7 @@ Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant s
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
 
-<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/screenshots.jpg?raw=true" width=50%/>
+<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/screenshots.jpg?raw=true" width="50%"/>
 
 ## Package Dependencies
 
