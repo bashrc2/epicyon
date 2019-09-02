@@ -1398,12 +1398,15 @@ def individualPostAsHtml(baseDir: str, \
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
                 announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
-                announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-                announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
-                if announceDisplayName:
-                    titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                if announceNickname:
+                    announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
+                    announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
+                    if announceDisplayName:
+                        titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                    else:
+                        titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
                 else:
-                    titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                    titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
             else:
                 titleStr+=' <img src="/icons/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
         else:
