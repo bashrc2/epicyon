@@ -276,7 +276,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False,False)
+                                     False,False,False,False)
         index-=1
 
     if endIndex>0:
@@ -858,6 +858,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                      session,wfRequest: {},personCache: {}, \
                      projectVersion: str) -> str:
     """Shows posts on the profile screen
+    These should only be public posts
     """
     profileStr=''
     outboxFeed= \
@@ -874,7 +875,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
                 individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False,False)
+                                     False,False,False,True)
     return profileStr
 
 def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
@@ -1325,7 +1326,8 @@ def individualPostAsHtml(baseDir: str, \
                          httpPrefix: str, projectVersion: str, \
                          showRepeats=True, \
                          showIcons=False, \
-                         manuallyApprovesFollowers=False) -> str:
+                         manuallyApprovesFollowers=False, \
+                         showPublicOnly=False) -> str:
     """ Shows a single post as html
     """
     # If this is the inbox timeline then don't show the repeat icon on any DMs
@@ -1386,6 +1388,24 @@ def individualPostAsHtml(baseDir: str, \
                 return ''
     if not isinstance(postJsonObject['object'], dict):
         return ''
+
+    # if this post should be public then check its recipients
+    if showPublicOnly:
+        if postJsonObject['object'].get('to'):
+            containsPublic=False
+            for toAddress in postJsonObject['object']['to']:
+                if toAddress.endswith('#Public'):
+                    containsPublic=True
+                    break
+            if not containsPublic:
+                if postJsonObject['object'].get('cc'):
+                    for toAddress in postJsonObject['object']['cc']:
+                        if toAddress.endswith('#Public'):
+                            containsPublic=True
+                            break
+            if not containsPublic:
+                return ''
+        
     isModerationPost=False
     if postJsonObject['object'].get('moderationStatus'):
         isModerationPost=True
@@ -1757,7 +1777,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                                         httpPrefix,projectVersion, \
                                         boxName!='dm', \
                                         showIndividualPostIcons, \
-                                        manuallyApproveFollowers)
+                                        manuallyApproveFollowers,False)
 
     # page down arrow
     if itemCtr>=itemsPerPage:
@@ -1823,7 +1843,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     postStr+= \
         individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
-                             httpPrefix,projectVersion,False,False,False)
+                             httpPrefix,projectVersion,False,False,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -1838,7 +1858,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False,False)+postStr
+                                     False,False,False,False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -1854,7 +1874,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                 postStr+= \
                     individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
-                                         httpPrefix,projectVersion,False,False,False)
+                                         httpPrefix,projectVersion,False,False,False,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
@@ -1867,7 +1887,7 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
         for item in repliesJson['orderedItems']:
             repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
-                                             httpPrefix,projectVersion,False,False,False)
+                                             httpPrefix,projectVersion,False,False,False,False)
 
     return htmlHeader()+repliesStr+htmlFooter()
 
@@ -1947,7 +1967,7 @@ def htmlDeletePost(session,baseDir: str,messageId: str, \
         deletePostStr+= \
             individualPostAsHtml(baseDir,session,wfRequest,personCache, \
                                  nickname,domain,port,postJsonObject,None,True,False, \
-                                 httpPrefix,projectVersion,False,False,False)
+                                 httpPrefix,projectVersion,False,False,False,False)
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">Delete this post?</p>'
         deletePostStr+= \
@@ -2325,7 +2345,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False,False)
+                                     False,False,False,False)
             i+=1
             if i>=20:
                 break
