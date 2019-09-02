@@ -1703,7 +1703,10 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         tlStr=htmlHeader(profileStyle,240)
 
     if boxName!='dm':
-        newPostButtonStr='<a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'
+        if not manuallyApproveFollowers:
+            newPostButtonStr='<a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'
+        else:
+            newPostButtonStr='<a href="'+actor+'/newfollowers"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'
     else:
         newPostButtonStr='<a href="'+actor+'/newdm"><img src="/icons/newpost.png" title="Create a new DM" alt="Create a new DM" class="right"/></a>'
 
