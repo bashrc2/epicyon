@@ -170,16 +170,19 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
     # if this post in the shared inbox?
     handle='inbox@'+domain
     boxName='inbox'
-    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.'+extension
+    postUrl=postUrl.replace('/','#')
+    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
     if not os.path.isfile(postFilename):
         boxName='outbox'
-        postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.'+extension
+        postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
         if not os.path.isfile(postFilename):
             # if this post in the inbox of the person?
             boxName='inbox'
-            postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl.replace('/','#')+'.'+extension
+            postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
             if not os.path.isfile(postFilename):
-                postFilename=None
+                postFilename=baseDir+'/cache/announce/'+nickname+'/'+postUrl+'.'+extension
+                if not os.path.isfile(postFilename):
+                    postFilename=None
     return postFilename
 
 def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
