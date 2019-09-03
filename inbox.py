@@ -346,6 +346,8 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
     """
     followerRecipients=False
     for recipient in toList:
+        if not recipient:
+            continue
         # is this a to a local account?
         if domainMatch in recipient:
             # get the handle for the local account
