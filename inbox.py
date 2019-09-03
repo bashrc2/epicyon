@@ -1140,13 +1140,14 @@ def runInboxQueueWatchdog(projectVersion: str,httpd) -> None:
     """This tries to keep the inbox thread running even if it dies
     """
     print('Starting inbox queue watchdog')
-    inboxQueueOriginal=httpd.thrInboxQueue.clone()
+    inboxQueueOriginal=httpd.thrInboxQueue.clone(runInboxQueue)
+    #httpd.thrInboxQueue=inboxQueueOriginal
     httpd.thrInboxQueue.start()
     while True:
         time.sleep(20) 
         if not httpd.thrInboxQueue.isAlive():
             httpd.thrInboxQueue.kill()
-            httpd.thrInboxQueue=inboxQueueOriginal.clone()
+            httpd.thrInboxQueue=inboxQueueOriginal.clone(runInboxQueue)
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
 

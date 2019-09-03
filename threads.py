@@ -42,6 +42,7 @@ class threadWithTrace(threading.Thread):
     def kill(self): 
         self.killed = True
 
-    def clone(self):
-        return threadWithTrace(target=self, \
-                               args=(self._args),daemon=True)        
+    def clone(self,fn):
+        return threadWithTrace(target=fn, \
+                               args=self._args, \
+                               daemon=True)        
