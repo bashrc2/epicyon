@@ -1190,7 +1190,7 @@ def runInboxQueue(projectVersion: str, \
         # heartbeat to monitor whether the inbox queue is running
         heartBeatCtr+=1
         if heartBeatCtr>=10:
-            print('>>> Heartbeat '+datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+            print('>>> Heartbeat Q:'+str(len(queue))+' '+datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             heartBeatCtr=0
 
         if len(queue)>0:
