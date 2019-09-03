@@ -2000,7 +2000,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutbox(messageJson,__version__):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domainFull, \
@@ -2022,7 +2022,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutbox(messageJson,__version__):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domain, \
@@ -2044,7 +2044,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutbox(messageJson,__version__):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domain, \
@@ -2073,7 +2073,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.postToNickname=nickname
                         if self.server.debug:
                             print('DEBUG: new DM to '+str(messageJson['object']['to']))
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutbox(messageJson,__version__):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domain, \
@@ -2103,7 +2103,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.debug,fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutbox(messageJson,__version__):
                             return 1
                         else:
                             return -1
@@ -3189,7 +3189,7 @@ class PubServer(BaseHTTPRequestHandler):
             
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson):                
+            if self._postToOutbox(messageJson,__version__):                
                 if messageJson.get('id'):
                     self.headers['Location']= \
                         messageJson['id'].replace('/activity','').replace('/undo','')
