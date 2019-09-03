@@ -639,6 +639,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
+        # send robots.txt if asked
+        if self._robotsTxt():
+            self.server.GETbusy=False
+            return
+
         # if not authorized then show the login screen
         if htmlGET and self.path!='/login' and self.path!='/':
             if '/media/' not in self.path and \
@@ -874,10 +879,6 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # get webfinger endpoint for a person
         if self._webfinger():
-            self.server.GETbusy=False
-            return
-        # send robots.txt if asked
-        if self._robotsTxt():
             self.server.GETbusy=False
             return
 
