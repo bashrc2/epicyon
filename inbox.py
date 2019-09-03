@@ -1181,9 +1181,18 @@ def runInboxQueue(projectVersion: str, \
     # so that if a file is corrupt then it will eventually
     # be ignored rather than endlessly retried
     itemReadFailed=0
-    
+
+    heartBeatCtr=0
+
     while True:
-        time.sleep(1)        
+        time.sleep(1)
+
+        # heartbeat to monitor whether the inbox queue is running
+        heartBeatCtr+=1
+        if heartBeatCtr>=10:
+            print('>>> Heartbeat '+datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
+            heartBeatCtr=0
+
         if len(queue)>0:
             currTime=int(time.time())
 
@@ -1216,6 +1225,8 @@ def runInboxQueue(projectVersion: str, \
                     # is probably corrupt/unreadable
                     queue.pop(0)
                     itemReadFailed=0
+                    # delete the queue file
+                    os.remove(queueFilename)
                 continue
             itemReadFailed=0
             
