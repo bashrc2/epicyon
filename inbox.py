@@ -1183,6 +1183,7 @@ def runInboxQueue(projectVersion: str, \
     itemReadFailed=0
 
     heartBeatCtr=0
+    queueRestoreCtr=0
 
     while True:
         time.sleep(1)
@@ -1193,7 +1194,13 @@ def runInboxQueue(projectVersion: str, \
             print('>>> Heartbeat Q:'+str(len(queue))+' '+datetime.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"))
             heartBeatCtr=0
 
-        if len(queue)>0:
+        if len(queue)==0:
+            # restore any remaining queue items
+            queueRestoreCtr+=1
+            if queueRestoreCtr>=30:
+                queueRestoreCtr=0
+                restoreQueueItems(baseDir,queue)
+        else:
             currTime=int(time.time())
 
             # recreate the session periodically
