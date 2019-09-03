@@ -210,7 +210,7 @@ class PubServer(BaseHTTPRequestHandler):
             print(e)
 
     def _robotsTxt(self) -> bool:
-        if not self.path.lower().startswith('/robots.'):
+        if not self.path.lower().startswith('/robot'):
             return False
         msg='User-agent: *\nDisallow: /'
         msg=msg.encode('utf-8')
