@@ -12,8 +12,9 @@ import trace
 import time
 
 class threadWithTrace(threading.Thread): 
-    def __init__(self, *args, **keywords): 
-        threading.Thread.__init__(self, *args, **keywords) 
+    def __init__(self, *args, **keywords):
+        self._args, self._keywords = args, keywords
+        threading.Thread.__init__(self, *self._args, **self._keywords) 
         self.killed = False
   
     def start(self): 
@@ -40,3 +41,8 @@ class threadWithTrace(threading.Thread):
   
     def kill(self): 
         self.killed = True
+
+    def clone(self):
+        return threadWithTrace(target=self, \
+                               args=(self._args, self._keywords),daemon=True)        
+        #return threadWithTrace(self, *self._args, **self._keywords)
