@@ -170,6 +170,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', str(length))
         self.send_header('Host', self.server.domainFull)
         self.send_header('WWW-Authenticate', 'title="Login to Epicyon", Basic realm="epicyon"')
+        self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
     def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
@@ -180,6 +181,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookie)
         self.send_header('Host', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
@@ -191,6 +193,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
+        self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
     def _404(self) -> None:
@@ -198,12 +201,22 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_response(404)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', str(len(msg)))
+        self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
         try:
             self.wfile.write(msg)
         except Exception as e:
             print('Error when showing 404')
             print(e)
+
+    def _robotsTxt(self) -> bool:
+        if not self.path.lower().startswith('/.robots.txt'):
+            return False
+        msg='User-agent: *\nDisallow: /'
+        msg=msg.encode('utf-8')
+        self._set_headers('text/html; charset=utf-8',len(msg),None)
+        self.wfile.write(msg)
+        return True
 
     def _webfinger(self) -> bool:
         if not self.path.startswith('/.well-known'):
@@ -654,6 +667,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_response(303)
                     self.send_header('Location', '/login')
                     self.send_header('Content-Length', '0')
+                    self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
                     self.server.GETbusy=False
                     return
@@ -860,6 +874,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # get webfinger endpoint for a person
         if self._webfinger():
+            self.server.GETbusy=False
+            return
+        # send robots.txt if asked
+        if self._robotsTxt():
             self.server.GETbusy=False
             return
 
@@ -2220,6 +2238,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('Content-Length', '0')
                     self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
                     self.send_header('Location', '/login')
+                    self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()                    
                     self.server.POSTbusy=False
                     return
@@ -2246,6 +2265,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
                     self.send_header('Location', '/users/'+loginNickname+'/inbox')
                     self.send_header('Content-Length', '0')
+                    self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
                     self.server.POSTbusy=False
                     return
