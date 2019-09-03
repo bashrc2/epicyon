@@ -243,23 +243,8 @@ class PubServer(BaseHTTPRequestHandler):
            path.startswith('/accounts'):
             return False
         return True
-
-    def _postToOutboxThread(self,messageJson: {}) -> bool:
-        """Creates a thread to send a post
-        """
-        if self.server.outboxThread:
-            print('Waiting for previous outbox thread to end')
-            while self.server.outboxThread.isAlive():
-                time.sleep(1)
-
-        print('Creating outbox thread')
-        self.server.outboxThread= \
-            threadWithTrace(target=self._postToOutbox, \
-                            args=(messageJson.copy()),daemon=True)
-        print('Starting outbox thread')
-        self.server.outboxThread.start()
         
-    def _postToOutbox(self,messageJson: {}) -> bool:
+    def _postToOutbox(self,messageJson: {},version: str) -> bool:
         """post is received by the outbox
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -438,6 +423,22 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.personCache, \
                              messageJson,self.server.debug, \
                              self.server.projectVersion)
+        return True
+
+    def _postToOutboxThread(self,messageJson: {}) -> bool:
+        """Creates a thread to send a post
+        """
+        if self.server.outboxThread:
+            print('Waiting for previous outbox thread to end')
+            while self.server.outboxThread.isAlive():
+                time.sleep(1)
+
+        print('Creating outbox thread')
+        self.server.outboxThread= \
+            threadWithTrace(target=self._postToOutbox, \
+                            args=(messageJson.copy(),__version__),daemon=True)
+        print('Starting outbox thread')
+        self.server.outboxThread.start()
         return True
 
     def _inboxQueueCleardown(self):
