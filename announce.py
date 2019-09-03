@@ -137,7 +137,7 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
             postJsonObject['object']['shares']=announcementsJson
         else:
             if postJsonObject['object']['shares'].get('items'):
-                for announceItem in postJsonObject['shares']['items']:
+                for announceItem in postJsonObject['object']['shares']['items']:
                     if announceItem.get('actor'):
                         if announceItem['actor']==actor:
                             return
