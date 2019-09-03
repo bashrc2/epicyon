@@ -682,7 +682,7 @@ def htmlSuspended(baseDir: str) -> str:
 
 def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: str) -> str:
     """New post screen
-    """
+    """    
     replyStr=''
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
@@ -775,15 +775,39 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         else:
             mentionsStr+='@'+mentionNickname+'@'+mentionDomain+' '
 
+    # build suffixes so that any replies or mentions are preserved when switching between scopes
+    dropdownNewPostSuffix='/newpost'
+    dropdownUnlistedSuffix='/newunlisted'
+    dropdownFollowersSuffix='/newfollowers'
+    dropdownDMSuffix='/newdm'    
+    dropdownReportSuffix='/newreport'    
+    if inReplyTo or mentions:
+        dropdownNewPostSuffix=''
+        dropdownUnlistedSuffix=''
+        dropdownFollowersSuffix=''
+        dropdownDMSuffix=''        
+        dropdownReportSuffix=''
+    if inReplyTo:
+        dropdownNewPostSuffix+='?replyto='+inReplyTo
+        dropdownUnlistedSuffix+='?replyto='+inReplyTo
+        dropdownFollowersSuffix+='?replyfollowers='+inReplyTo
+        dropdownDMSuffix+='?replydm='+inReplyTo
+    for mentionedActor in mentions:
+        dropdownNewPostSuffix+='?mention='+mentionedActor
+        dropdownUnlistedSuffix+='?mention='+mentionedActor
+        dropdownFollowersSuffix+='?mention='+mentionedActor
+        dropdownDMSuffix+='?mention='+mentionedActor
+        dropdownReportSuffix+='?mention='+mentionedActor
+        
     dropDownContent=''
     if not reportUrl:
         dropDownContent= \
             '        <div id="myDropdown" class="dropdown-content">' \
-            '          <a href="'+pathBase+'/newpost"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
-            '          <a href="'+pathBase+'/newunlisted"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
-            '          <a href="'+pathBase+'/newfollowers"><img src="/icons/scope_followers.png"/><b>Followers</b><br>Only to followers</a>' \
-            '          <a href="'+pathBase+'/newdm"><img src="/icons/scope_dm.png"/><b>DM</b><br>Only to mentioned people</a>' \
-            '          <a href="'+pathBase+'/newreport"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
+            '          <a href="'+pathBase+dropdownNewPostSuffix+'"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
+            '          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
+            '          <a href="'+pathBase+dropdownFollowersSuffix+'"><img src="/icons/scope_followers.png"/><b>Followers</b><br>Only to followers</a>' \
+            '          <a href="'+pathBase+dropdownDMSuffix+'"><img src="/icons/scope_dm.png"/><b>DM</b><br>Only to mentioned people</a>' \
+            '          <a href="'+pathBase+dropdownReportSuffix+'"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
             shareOptionOnDropdown+ \
             '        </div>'
     else:
