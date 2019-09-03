@@ -3312,9 +3312,9 @@ def runDaemon(projectVersion, \
         httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
     else:
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
-    # max POST size of 10M
     httpd.outboxThread=None
     httpd.projectVersion=projectVersion
+    # max POST size of 30M
     httpd.maxPostLength=1024*1024*30
     httpd.maxMediaSize=httpd.maxPostLength
     httpd.maxMessageLength=5000
