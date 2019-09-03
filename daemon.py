@@ -428,21 +428,25 @@ class PubServer(BaseHTTPRequestHandler):
     def _postToOutboxThread(self,messageJson: {}) -> bool:
         """Creates a thread to send a post
         """
-        if self.server.outboxThread:
+        accountOutboxThreadName=self.postToNickname
+        if not accountOutboxThreadName:
+            accountOutboxThreadName='*'
+        
+        if self.server.outboxThread.get(accountOutboxThreadName):
             print('Waiting for previous outbox thread to end')
             waitCtr=0
-            while self.server.outboxThread.isAlive() and waitCtr<5:
+            while self.server.outboxThread[accountOutboxThreadName].isAlive() and waitCtr<8:
                 time.sleep(1)
                 waitCtr+=1
-            if waitCtr>=5:
-                self.server.outboxThread.kill()
+            if waitCtr>=8:
+                self.server.outboxThread[accountOutboxThreadName].kill()
 
         print('Creating outbox thread')
-        self.server.outboxThread= \
+        self.server.outboxThread[accountOutboxThreadName]= \
             threadWithTrace(target=self._postToOutbox, \
                             args=(messageJson.copy(),__version__),daemon=True)
         print('Starting outbox thread')
-        self.server.outboxThread.start()
+        self.server.outboxThread[accountOutboxThreadName].start()
         return True
 
     def _inboxQueueCleardown(self):
@@ -3312,7 +3316,7 @@ def runDaemon(projectVersion, \
         httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
     else:
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
-    httpd.outboxThread=None
+    httpd.outboxThread={}
     httpd.projectVersion=projectVersion
     # max POST size of 30M
     httpd.maxPostLength=1024*1024*30
