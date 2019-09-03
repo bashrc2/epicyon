@@ -430,8 +430,12 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if self.server.outboxThread:
             print('Waiting for previous outbox thread to end')
-            while self.server.outboxThread.isAlive():
+            waitCtr=0
+            while self.server.outboxThread.isAlive() and waitCtr<5:
                 time.sleep(1)
+                waitCtr+=1
+            if waitCtr>=5:
+                self.server.outboxThread.kill()
 
         print('Creating outbox thread')
         self.server.outboxThread= \
