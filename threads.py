@@ -44,5 +44,4 @@ class threadWithTrace(threading.Thread):
 
     def clone(self):
         return threadWithTrace(target=self, \
-                               args=(self._args, self._keywords),daemon=True)        
-        #return threadWithTrace(self, *self._args, **self._keywords)
+                               args=(self._args),daemon=True)        
