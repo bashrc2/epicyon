@@ -425,10 +425,9 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.projectVersion)
         return True
 
-    def _updateInboxQueue(self,nickname: str,messageJson: {},messageBytes: str) -> int:
-        """Update the inbox queue
+    def _inboxQueueCleardown(self):
+        """ Check if the queue is full and remove oldest items if it is
         """
-        # Check if the queue is full
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
             print('Inbox queue is full. Removing oldest items.')
             while len(self.server.inboxQueue) >= self.server.maxQueueLength-4:
@@ -436,6 +435,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 self.server.inboxQueue.pop(0)
+    
+    def _updateInboxQueue(self,nickname: str,messageJson: {},messageBytes: str) -> int:
+        """Update the inbox queue
+        """
+        self._inboxQueueCleardown()
 
         # Convert the headers needed for signature verification to dict
         headersDict={}
