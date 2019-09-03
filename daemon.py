@@ -244,6 +244,21 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
 
+    def _postToOutboxThread(self,messageJson: {}) -> bool:
+        """Creates a thread to send a post
+        """
+        if self.server.outboxThread:
+            print('Waiting for previous outbox thread to end')
+            while self.server.outboxThread.isAlive():
+                time.sleep(1)
+
+        print('Creating outbox thread')
+        self.server.outboxThread= \
+            threadWithTrace(target=self._postToOutbox, \
+                            args=(messageJson.copy()),daemon=True)
+        print('Starting outbox thread')
+        self.server.outboxThread.start()
+        
     def _postToOutbox(self,messageJson: {}) -> bool:
         """post is received by the outbox
         Client to server message post
@@ -929,7 +944,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.debug, \
                                self.server.projectVersion)
             if announceJson:
-                self._postToOutbox(announceJson)
+                self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
@@ -962,7 +977,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'type': 'Announce'
                 }
             }                
-            self._postToOutbox(newUndoAnnounce)
+            self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
@@ -1027,7 +1042,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'actor': likeActor,
                 'object': likeUrl
             }    
-            self._postToOutbox(likeJson)
+            self._postToOutboxThread(likeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
@@ -1057,7 +1072,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'object': likeUrl
                 }
             }
-            self._postToOutbox(undoLikeJson)
+            self._postToOutboxThread(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/inbox',cookie)
             return
@@ -1976,7 +1991,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutboxThread(messageJson):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domainFull, \
@@ -1998,7 +2013,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutboxThread(messageJson):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domain, \
@@ -2020,7 +2035,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['replyTo'], fields['replyTo'],fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutboxThread(messageJson):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domain, \
@@ -2049,7 +2064,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.postToNickname=nickname
                         if self.server.debug:
                             print('DEBUG: new DM to '+str(messageJson['object']['to']))
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutboxThread(messageJson):
                             populateReplies(self.server.baseDir, \
                                             self.server.httpPrefix, \
                                             self.server.domain, \
@@ -2079,7 +2094,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.debug,fields['subject'])
                     if messageJson:
                         self.postToNickname=nickname
-                        if self._postToOutbox(messageJson):
+                        if self._postToOutboxThread(messageJson):
                             return 1
                         else:
                             return -1
@@ -2461,7 +2476,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 'object': actorJson
                             }
                             self.postToNickname=nickname
-                            self._postToOutbox(updateActorJson)
+                            self._postToOutboxThread(updateActorJson)
             self._redirect_headers(actorStr,cookie)
             self.server.POSTbusy=False
             return
@@ -2737,7 +2752,7 @@ class PubServer(BaseHTTPRequestHandler):
                         pprint(deleteJson)
                     self.postToNickname=getNicknameFromActor(removePostActor)
                     if self.postToNickname:
-                        self._postToOutbox(deleteJson)                    
+                        self._postToOutboxThread(deleteJson)                    
             self._redirect_headers(originPathStr+'/outbox',cookie)
             self.server.POSTbusy=False
             return
@@ -2818,7 +2833,7 @@ class PubServer(BaseHTTPRequestHandler):
                     }
                     pathUsersSection=self.path.split('/users/')[1]
                     self.postToNickname=pathUsersSection.split('/')[0]
-                    self._postToOutbox(unfollowJson)
+                    self._postToOutboxThread(unfollowJson)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -3165,7 +3180,7 @@ class PubServer(BaseHTTPRequestHandler):
             
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson):                
+            if self._postToOutboxThread(messageJson):                
                 if messageJson.get('id'):
                     self.headers['Location']= \
                         messageJson['id'].replace('/activity','').replace('/undo','')
@@ -3293,6 +3308,7 @@ def runDaemon(projectVersion, \
     else:
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
     # max POST size of 10M
+    httpd.outboxThread=None
     httpd.projectVersion=projectVersion
     httpd.maxPostLength=1024*1024*30
     httpd.maxMediaSize=httpd.maxPostLength
