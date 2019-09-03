@@ -212,7 +212,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
                     replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
                     replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
                     if replyNickname and replyDomain:
-                        if isBlocked(baseDir,nickname,domain,postNickname,postDomain):
+                        if isBlocked(baseDir,nickname,domain,replyNickname,replyDomain):
                             print('WARN: post contains reply to a blocked account: '+replyNickname+'@'+replyDomain)
                             return None                        
             if postJsonObject['object'].get('content'):
