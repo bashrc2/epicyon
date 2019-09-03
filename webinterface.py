@@ -2309,6 +2309,10 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             return None
         asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
         personUrl = getUserUrl(wf)
+        if not personUrl:
+            if debug:
+                print('DEBUG: Webfinger did not return an actor url')
+            return None            
         profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
             if debug:
