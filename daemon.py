@@ -214,7 +214,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         msg='User-agent: *\nDisallow: /'
         msg=msg.encode('utf-8')
-        self._set_headers('text/html; charset=utf-8',len(msg),None)
+        self._set_headers('text/plain; charset=utf-8',len(msg),None)
         self.wfile.write(msg)
         return True
 
