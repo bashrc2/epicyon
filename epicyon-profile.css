@@ -720,6 +720,14 @@ input[type=checkbox]
         margin-right: 20px;
         border-radius: 10%;
     }
+    .container img.emojisearch {
+        float: right;
+        max-width: 400px;
+        width: 15%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: 10%;
+    }
     .containericons img {
         float: right;
         max-width: 200px;
@@ -831,6 +839,14 @@ input[type=checkbox]
         float: left;
         max-width: 400px;
         width: 15%;
+        padding: 0px 7px;
+        margin-right: 20px;
+        border-radius: 10%;
+    }
+    .container img.emojisearch {
+        float: right;
+        max-width: 400px;
+        width: 10%;
         padding: 0px 7px;
         margin-right: 20px;
         border-radius: 10%;
