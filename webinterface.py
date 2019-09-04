@@ -1188,8 +1188,13 @@ def contentWarningScript() -> str:
     """Returns a script used for content warnings
     """
     script= \
-        'function toggler(divId) {' \
-        '    $("#" + divId).toggle();' \
+        'function showContentWarning(postID) {' \
+        '  var x = document.getElementById(postID);' \
+        '  if (x.style.display !== "block") {' \
+        '    x.style.display = "block";' \
+        '  } else {' \
+        '    x.style.display = "none";' \
+        '  }' \
         '}'
     return script
 
@@ -1685,10 +1690,8 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                 containerClass='container report'
         else:
             contentStr+='<b>Sensitive</b> '
-        #contentStr+='<a href="#" onclick="toggler('+"'"+postID+"'"+');">SHOW MORE</a>'
-        #contentStr+='<button class="cwButton" onclick="toggler('+"'"+postID+"'"+')">SHOW MORE</button>'
-        contentStr+='<a href="#" onclick="javascript:toggler('+"'"+postID+"'"+');"><span>SHOW MORE</span></a>'
-        contentStr+='<div class="hidden" id="'+postID+'">'
+        contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
+        contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
         contentStr+='</div>'
