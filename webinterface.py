@@ -829,7 +829,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
-        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:200px" autofocus>'+mentionsStr+'</textarea>' \
+        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:40%" autofocus>'+mentionsStr+'</textarea>' \
         ''+extraFields+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="Image description" name="imageDescription">' \
