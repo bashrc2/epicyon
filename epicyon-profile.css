@@ -817,6 +817,17 @@ input[type=checkbox]
         font-size: var(--font-size);
         width: 20%;
     }
+    input[type=file] {
+        background-color: #555;
+        color: white;
+        padding: 20px;
+        margin: 0px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: var(--font-size);
+        width: 96%;
+    }
     .cancelbtn {
         background-color: #555;
         color: white;
@@ -939,6 +950,17 @@ input[type=checkbox]
         cursor: pointer;
         font-size: 35px;
         width: 20%;
+    }
+    input[type=file] {
+        background-color: #555;
+        color: white;
+        padding: 20px;
+        margin: 0px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 35px;
+        width: 95.4%;
     }
     .cancelbtn {
         background-color: #555;
