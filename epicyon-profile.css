@@ -797,6 +797,30 @@ input[type=checkbox]
 	background-color: var(--main-bg-color-reply);
 	color: var(--main-fg-color);
     }
+    input[type=button], input[type=submit] {
+        background-color: #555;
+        color: white;
+        float: right;
+        padding: 10px;
+        margin: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: var(--font-size);
+        width: 20%;
+    }
+    .cancelbtn {
+        background-color: #555;
+        color: white;
+        float: right;
+        padding: 10px;
+        margin: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: var(--font-size);
+        width: 20%;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -887,5 +911,29 @@ input[type=checkbox]
 	font-size: 35px;
 	background-color: var(--main-bg-color-reply);
 	color: var(--main-fg-color);
+    }
+    input[type=button], input[type=submit] {
+        background-color: #555;
+        color: white;
+        float: right;
+        padding: 10px;
+        margin: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 35px;
+        width: 20%;
+    }
+    .cancelbtn {
+        background-color: #555;
+        color: white;
+        float: right;
+        padding: 10px;
+        margin: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 35px;
+        width: 20%;
     }
 }
