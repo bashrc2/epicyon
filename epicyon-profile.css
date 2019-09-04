@@ -620,7 +620,7 @@ input[type=submit]:hover {
     display: none;
     position: absolute;
     background-color: var(--dropdown-bg-color);
-    min-width: 500px;
+    min-width: 600px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
 }
@@ -691,7 +691,7 @@ input[type=checkbox]
 }
 
 .dropbtn {
-    margin: 10px auto;
+    margin: 3%;
     padding: 0px 14px;
     position: relative;
     display: inline-block;
@@ -701,8 +701,9 @@ input[type=checkbox]
 
 .dropbtn img {
     opacity: 1.0;
-    width: 32px;
-    height: 32px;
+    width: 3%;
+    height: 3%;
+    min-width: 40px;
     padding: 0px 16px;
     -ms-transform: translateY(-10%);
     transform: translateY(-10%);
@@ -785,25 +786,25 @@ input[type=checkbox]
         margin: 5px;
     }
     .pageicon {
-	width: 4%;
+        width: 4%;
     }
     .time-right {
-	float: right;
-	color: #aaa;
-	margin: 4px 20px;
+        float: right;
+        color: #aaa;
+        margin: 4px 20px;
     }
     input[type=text], select, textarea {
-	width: 100%;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin-top: 6px;
-	margin-bottom: 16px;
-	resize: vertical;
-	font-size: 24px;
-	background-color: var(--main-bg-color-reply);
-	color: var(--main-fg-color);
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 6px;
+        margin-bottom: 16px;
+        resize: vertical;
+        font-size: 24px;
+        background-color: var(--main-bg-color-reply);
+        color: var(--main-fg-color);
     }
     input[type=button], input[type=submit] {
         background-color: #555;
@@ -841,7 +842,7 @@ input[type=checkbox]
         width: 20%;
     }
     .scope-desc {
-	font-size: 32px;
+        font-size: 32px;
     }
 }
 
@@ -922,25 +923,25 @@ input[type=checkbox]
         margin: 15px;
     }
     .pageicon {
-	width: 8%;
+        width: 8%;
     }
     .time-right {
-	float: right;
-	color: #aaa;
-	margin: 25px 20px;
+        float: right;
+        color: #aaa;
+        margin: 25px 20px;
     }
     input[type=text], select, textarea {
-	width: 100%;
-	padding: 12px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin-top: 6px;
-	margin-bottom: 16px;
-	resize: vertical;
-	font-size: 35px;
-	background-color: var(--main-bg-color-reply);
-	color: var(--main-fg-color);
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+        margin-top: 6px;
+        margin-bottom: 16px;
+        resize: vertical;
+        font-size: 30px;
+        background-color: var(--main-bg-color-reply);
+        color: var(--main-fg-color);
     }
     input[type=button], input[type=submit] {
         background-color: #555;
@@ -951,7 +952,7 @@ input[type=checkbox]
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 35px;
+        font-size: 30px;
         width: 20%;
     }
     input[type=file] {
@@ -962,7 +963,7 @@ input[type=checkbox]
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 35px;
+        font-size: 30px;
         width: 95.4%;
     }
     .cancelbtn {
@@ -974,10 +975,10 @@ input[type=checkbox]
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 35px;
+        font-size: 30px;
         width: 20%;
     }
     .scope-desc {
-	font-size: 35px;
+        font-size: 30px;
     }
 }
