@@ -1167,9 +1167,6 @@ def clickToDropDownScript() -> str:
     """Function run onclick to create a dropdown
     """
     script= \
-        'function toggler(divId) {' \
-        '    $("#" + divId).toggle();' \
-        '}' \
         'function dropdown() {' \
         '  document.getElementById("myDropdown").classList.toggle("show");' \
         '}'
@@ -1191,13 +1188,8 @@ def contentWarningScript() -> str:
     """Returns a script used for content warnings
     """
     script= \
-        'function showContentWarning(postID) {' \
-        '  var x = document.getElementById(postID);' \
-        '  if (x.style.display === "none") {' \
-        '    x.style.display = "block";' \
-        '  } else {' \
-        '    x.style.display = "none";' \
-        '  }' \
+        'function toggler(divId) {' \
+        '    $("#" + divId).toggle();' \
         '}'
     return script
 
