@@ -120,7 +120,8 @@ a:link {
 
 .hero-text img {
     border-radius: 1%;
-    width: 30%;
+    width: 40%;
+    min-width: 300px;
 }
 
 .hero-text img.emoji {
