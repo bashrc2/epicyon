@@ -2066,7 +2066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     filename=None
 
                 # send the post
-                if not fields.get('message'):
+                if not fields.get('message') and not fields.get('imageDescription'):
                     return -1,pageNumber
                 if fields.get('submitPost'):
                     if fields['submitPost']!='Submit':
