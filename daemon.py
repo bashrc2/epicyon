@@ -587,18 +587,23 @@ class PubServer(BaseHTTPRequestHandler):
                optionsStr=self.path.split('?options=')[1]
                originPathStr=self.path.split('?options=')[0]
                if ';' in optionsStr:
+                   pageNumber=1
                    optionsList=optionsStr.split(';')
                    optionsActor=optionsList[0]
-                   optionsProfileUrl=optionsList[1]
+                   optionsPageNumber=optionsList[1]
+                   optionsProfileUrl=optionsList[2]
+                   if optionsPageNumber.isdigit():
+                       pageNumber=int(optionsPageNumber)
                    optionsLink=None
-                   if len(optionsList)>2:
-                       optionsLink=optionsList[2]
+                   if len(optionsList)>3:
+                       optionsLink=optionsList[3]
                    msg=htmlPersonOptions(self.server.baseDir, \
                                          self.server.domain, \
                                          originPathStr, \
                                          optionsActor, \
-                                         optionsProfileUrl,
-                                         optionsLink).encode()
+                                         optionsProfileUrl, \
+                                         optionsLink, \
+                                         pageNumber).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self.wfile.write(msg)
                    self.server.GETbusy=False
@@ -945,13 +950,22 @@ class PubServer(BaseHTTPRequestHandler):
 
         # announce/repeat from the web interface
         if htmlGET and '?repeat=' in self.path:
+            pageNumber=1
             repeatUrl=self.path.split('?repeat=')[1]
+            if '?' in repeatUrl:
+                repeatUrl=repeatUrl.split('?')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)                
             actor=self.path.split('?repeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox',cookie)
+                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -974,18 +988,27 @@ class PubServer(BaseHTTPRequestHandler):
             if announceJson:
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox',cookie)
+            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             return
 
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
+            pageNumber=1
             repeatUrl=self.path.split('?unrepeat=')[1]
+            if '?' in repeatUrl:
+                repeatUrl=repeatUrl.split('?')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)                
             actor=self.path.split('?unrepeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox',cookie)
+                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1007,7 +1030,7 @@ class PubServer(BaseHTTPRequestHandler):
             }                
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox',cookie)
+            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             return
 
         # send a follow request approval from the web interface
@@ -1051,13 +1074,23 @@ class PubServer(BaseHTTPRequestHandler):
 
         # like from the web interface icon
         if htmlGET and '?like=' in self.path and '/statuses/' in self.path:
+            pageNumber=1
             likeUrl=self.path.split('?like=')[1]
+            if '?' in likeUrl:
+                likeUrl=likeUrl.split('?')[0]
             actor=self.path.split('?like=')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+                
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox',cookie)
+                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1072,18 +1105,27 @@ class PubServer(BaseHTTPRequestHandler):
             }    
             self._postToOutboxThread(likeJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox',cookie)
+            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             return
 
         # undo a like from the web interface icon
         if htmlGET and '?unlike=' in self.path and '/statuses/' in self.path:
+            pageNumber=1
             likeUrl=self.path.split('?unlike=')[1]
+            if '?' in likeUrl:
+                likeUrl=likeUrl.split('?')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
             actor=self.path.split('?unlike=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox',cookie)
+                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1102,12 +1144,21 @@ class PubServer(BaseHTTPRequestHandler):
             }
             self._postToOutboxThread(undoLikeJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox',cookie)
+            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             return
 
         # delete a post from the web interface icon
         if htmlGET and '?delete=' in self.path:
+            pageNumber=1
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:                
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
             deleteUrl=self.path.split('?delete=')[1]
+            if '?' in deleteUrl:                
+                deleteUrl=deleteUrl.split('?')[0]
             actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?delete=')[0]
             if self.server.allowDeletion or \
                deleteUrl.startswith(actor):
@@ -1131,7 +1182,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.useTor)
 
                 deleteStr= \
-                    htmlDeletePost(self.server.session,self.server.baseDir, \
+                    htmlDeletePost(pageNumber, \
+                                   self.server.session,self.server.baseDir, \
                                    deleteUrl,self.server.httpPrefix, \
                                    __version__,self.server.cachedWebfingers, \
                                    self.server.personCache)
@@ -1148,6 +1200,7 @@ class PubServer(BaseHTTPRequestHandler):
         inReplyToUrl=None
         replyWithDM=False
         replyToList=[]
+        replyPageNumber=1
         shareDescription=None
         if htmlGET:
             # public reply
@@ -1158,6 +1211,10 @@ class PubServer(BaseHTTPRequestHandler):
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyToList.append(m.replace('mention=',''))
+                        if m.startswith('page='):
+                            replyPageStr=m.replace('page=','')
+                            if replyPageStr.isdigit():
+                                replyPageNumber=int(replyPageStr)
                     inReplyToUrl=mentionsList[0]
                 self.path=self.path.split('?replyto=')[0]+'/newpost'
                 if self.server.debug:
@@ -1171,6 +1228,10 @@ class PubServer(BaseHTTPRequestHandler):
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyToList.append(m.replace('mention=',''))
+                        if m.startswith('page='):
+                            replyPageStr=m.replace('page=','')
+                            if replyPageStr.isdigit():
+                                replyPageNumber=int(replyPageStr)
                     inReplyToUrl=mentionsList[0]
                 self.path=self.path.split('?replyfollowers=')[0]+'/newfollowers'
                 if self.server.debug:
@@ -1184,6 +1245,10 @@ class PubServer(BaseHTTPRequestHandler):
                     for m in mentionsList:
                         if m.startswith('mention='):
                             replyToList.append(m.replace('mention=',''))
+                        if m.startswith('page='):
+                            replyPageStr=m.replace('page=','')
+                            if replyPageStr.isdigit():
+                                replyPageNumber=int(replyPageStr)
                     inReplyToUrl=mentionsList[0]
                     if inReplyToUrl.startswith('sharedesc:'):
                         shareDescription=inReplyToUrl.replace('sharedesc:','').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
@@ -1207,7 +1272,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/newdm') or \
                 self.path.endswith('/newreport') or \
                 self.path.endswith('/newshare')):
-                msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,shareDescription).encode()
+                msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,shareDescription,replyPageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.GETbusy=False
@@ -1896,11 +1961,12 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',0,None)
 
-    def _receiveNewPost(self,authorized: bool,postType: str) -> int:
+    def _receiveNewPost(self,authorized: bool,postType: str) -> (int,int):
         # 0 = this is not a new post
         # 1 = new post success
         # -1 = new post failed
         # 2 = new post canceled
+        pageNumber=1
         if authorized and '/users/' in self.path and self.path.endswith('?'+postType):            
             if ' boundary=' in self.headers['Content-type']:
                 nickname=None
@@ -1908,11 +1974,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nicknameStr:
                     nickname=nicknameStr.split('/')[0]
                 else:
-                    return -1
+                    return -1,pageNumber
                 length = int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
                     print('POST size too large')
-                    return -1
+                    return -1,pageNumber
 
                 boundary=self.headers['Content-type'].split('boundary=')[1]
                 if ';' in boundary:
@@ -1992,14 +2058,19 @@ class PubServer(BaseHTTPRequestHandler):
                                 else:
                                     filename=None
 
+                # get the page number to return to
+                if fields.get('pageNumber'):
+                    if fields['pageNumber'].isdigit():
+                        pageNumber=int(fields['pageNumber'])
+
                 # send the post
                 if not fields.get('message'):
-                    return -1
+                    return -1,pageNumber
                 if fields.get('submitPost'):
                     if fields['submitPost']!='Submit':
-                        return -1
+                        return -1,pageNumber
                 else:
-                    return 2
+                    return 2,pageNumber
 
                 if not fields.get('imageDescription'):
                     fields['imageDescription']=None
@@ -2026,9 +2097,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             messageJson, \
                                             self.server.maxReplies, \
                                             self.server.debug)
-                            return 1
+                            return 1,pageNumber
                         else:
-                            return -1
+                            return -1,pageNumber
 
                 if postType=='newunlisted':
                     messageJson= \
@@ -2048,9 +2119,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             messageJson, \
                                             self.server.maxReplies, \
                                             self.server.debug)
-                            return 1
+                            return 1,pageNumber
                         else:
-                            return -1
+                            return -1,pageNumber
 
                 if postType=='newfollowers':
                     messageJson= \
@@ -2070,9 +2141,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             messageJson, \
                                             self.server.maxReplies, \
                                             self.server.debug)
-                            return 1
+                            return 1,pageNumber
                         else:
-                            return -1
+                            return -1,pageNumber
 
                 if postType=='newdm':
                     messageJson=None
@@ -2099,14 +2170,14 @@ class PubServer(BaseHTTPRequestHandler):
                                             messageJson, \
                                             self.server.maxReplies, \
                                             self.server.debug)
-                            return 1
+                            return 1,pageNumber
                         else:
-                            return -1
+                            return -1,pageNumber
 
                 if postType=='newreport':
                     if attachmentMediaType:
                         if attachmentMediaType!='image':
-                            return -1
+                            return -1,pageNumber
                     # So as to be sure that this only goes to moderators
                     # and not accounts being reported we disable any
                     # included fediverse addresses by replacing '@' with '-at-'
@@ -2123,22 +2194,22 @@ class PubServer(BaseHTTPRequestHandler):
                     if messageJson:
                         self.postToNickname=nickname
                         if self._postToOutbox(messageJson,__version__):
-                            return 1
+                            return 1,pageNumber
                         else:
-                            return -1
+                            return -1,pageNumber
 
                 if postType=='newshare':
                     if not fields.get('itemType'):
-                        return -1
+                        return -1,pageNumber
                     if not fields.get('category'):
-                        return -1
+                        return -1,pageNumber
                     if not fields.get('location'):
-                        return -1
+                        return -1,pageNumber
                     if not fields.get('duration'):
-                        return -1
+                        return -1,pageNumber
                     if attachmentMediaType:
                         if attachmentMediaType!='image':
-                            return -1
+                            return -1,pageNumber
                     addShare(self.server.baseDir, \
                              self.server.httpPrefix, \
                              nickname, \
@@ -2155,10 +2226,10 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(filename):
                             os.remove(filename)
                     self.postToNickname=nickname
-                    return 1
-            return -1
+                    return 1,pageNumber
+            return -1,pageNumber
         else:
-            return 0
+            return 0,pageNumber
         
     def do_POST(self):
         if not self.server.session:
@@ -2759,6 +2830,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # removes a post
         if authorized and self.path.endswith('/rmpost'):
+            pageNumber=1
             originPathStr=self.path.split('/rmpost')[0]
             length = int(self.headers['Content-length'])
             removePostConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -2767,6 +2839,12 @@ class PubServer(BaseHTTPRequestHandler):
                 removeMessageId=removePostConfirmParams.split('messageId=')[1]
                 if '&' in removeMessageId:
                     removeMessageId=removeMessageId.split('&')[0]
+                if 'pageNumber=' in removePostConfirmParams:
+                    pageNumberStr=removePostConfirmParams.split('pageNumber=')[1]
+                    if '&' in pageNumberStr:
+                        pageNumberStr=pageNumberStr.split('&')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber=int(pageNumberStr)
                 if '/statuses/' in removeMessageId:
                     removePostActor=removeMessageId.split('/statuses/')[0]
                 if originPathStr in removePostActor:
@@ -2782,8 +2860,11 @@ class PubServer(BaseHTTPRequestHandler):
                         pprint(deleteJson)
                     self.postToNickname=getNicknameFromActor(removePostActor)
                     if self.postToNickname:
-                        self._postToOutboxThread(deleteJson)                    
-            self._redirect_headers(originPathStr+'/outbox',cookie)
+                        self._postToOutboxThread(deleteJson)
+            if pageNumber==1:
+                self._redirect_headers(originPathStr+'/outbox',cookie)
+            else:
+                self._redirect_headers(originPathStr+'/outbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
 
@@ -2953,6 +3034,7 @@ class PubServer(BaseHTTPRequestHandler):
         # an option was chosen from person options screen
         # view/follow/block/report
         if authorized and self.path.endswith('/personoptions'):
+            pageNumber=1
             originPathStr=self.path.split('/personoptions')[0]
             chooserNickname=getNicknameFromActor(originPathStr)
             if not chooserNickname:
@@ -2962,6 +3044,13 @@ class PubServer(BaseHTTPRequestHandler):
                 return                
             length = int(self.headers['Content-length'])
             optionsConfirmParams=self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
+            # page number to return to
+            if 'pageNumber=' in optionsConfirmParams:
+                pageNumberStr=optionsConfirmParams.split('pageNumber=')[1]
+                if '&' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('&')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
             # actor for the person
             optionsActor=optionsConfirmParams.split('actor=')[1]
             if '&' in optionsActor:
@@ -3034,7 +3123,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Sending DM to '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newdm'
-                msg=htmlNewPost(self.server.baseDir,reportPath,None,[optionsActor],None).encode()
+                msg=htmlNewPost(self.server.baseDir,reportPath,None,[optionsActor],None,pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3043,7 +3132,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Reporting '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newreport'
-                msg=htmlNewPost(self.server.baseDir,reportPath,None,[],postUrl).encode()
+                msg=htmlNewPost(self.server.baseDir,reportPath,None,[],postUrl,pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3053,52 +3142,52 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        postState=self._receiveNewPost(authorized,'newpost')
+        postState,pageNumber=self._receiveNewPost(authorized,'newpost')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/inbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState=self._receiveNewPost(authorized,'newunlisted')
+        postState,pageNumber=self._receiveNewPost(authorized,'newunlisted')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/inbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState=self._receiveNewPost(authorized,'newfollowers')
+        postState,pageNumber=self._receiveNewPost(authorized,'newfollowers')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/inbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState=self._receiveNewPost(authorized,'newdm')
+        postState,pageNumber=self._receiveNewPost(authorized,'newdm')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/inbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState=self._receiveNewPost(authorized,'newreport')
+        postState,pageNumber=self._receiveNewPost(authorized,'newreport')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/inbox',cookie)
+            self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState=self._receiveNewPost(authorized,'newshare')
+        postState,pageNumber=self._receiveNewPost(authorized,'newshare')
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+'/shares',cookie)
+            self._redirect_headers('/users/'+nickname+'/shares?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
 

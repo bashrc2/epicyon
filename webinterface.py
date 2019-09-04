@@ -272,7 +272,7 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
                 index-=1
                 continue
             hashtagSearchForm+= \
-                individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
@@ -680,7 +680,7 @@ def htmlSuspended(baseDir: str) -> str:
         suspendedForm+=htmlFooter()
     return suspendedForm
 
-def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: str) -> str:
+def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: str,pageNumber: int) -> str:
     """New post screen
     """    
     replyStr=''
@@ -814,7 +814,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
         
     newPostForm+= \
-        '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'">' \
+        '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">' \
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
@@ -903,7 +903,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
             break
         for item in outboxFeed['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
-                postStr=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                postStr=individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
                                              httpPrefix,projectVersion, \
                                              False,False,False,True)
@@ -1354,7 +1354,7 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
     return manuallyApprovesFollowers
 
-def individualPostAsHtml(baseDir: str, \
+def individualPostAsHtml(pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
@@ -1594,7 +1594,7 @@ def individualPostAsHtml(baseDir: str, \
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         avatarImageInPost= \
             '  <div class="timeline-avatar">' \
-            '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+avatarUrl+messageIdStr+'">' \
+            '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
             '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
             '  </div>'
 
@@ -1621,7 +1621,7 @@ def individualPostAsHtml(baseDir: str, \
             announceLink='unrepeat'
             announceTitle='Undo the repeat this post'
         announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+'" title="'+announceTitle+'">' \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+'?page='+str(pageNumber)+'" title="'+announceTitle+'">' \
             '<img src="/icons/'+announceIcon+'"/></a>'
 
     likeStr=''
@@ -1634,7 +1634,7 @@ def individualPostAsHtml(baseDir: str, \
             likeLink='unlike'
             likeTitle='Undo the like of this post'
         likeStr= \
-            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'" title="'+likeTitle+'">' \
+            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'?page='+str(pageNumber)+'" title="'+likeTitle+'">' \
             '<img src="/icons/'+likeIcon+'"/></a>'
 
     deleteStr=''
@@ -1643,7 +1643,7 @@ def individualPostAsHtml(baseDir: str, \
         postJsonObject['object']['id'].startswith(postJsonObject['actor'])):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr= \
-                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'" title="Delete this post">' \
+                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'?page='+str(pageNumber)+'" title="Delete this post">' \
                 '<img src="/icons/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
@@ -1663,6 +1663,7 @@ def individualPostAsHtml(baseDir: str, \
                         replyToLink+='?mention='+actorUrl
                         if len(replyToLink)>500:
                             break
+        replyToLink+='?page='+str(pageNumber)
                         
         footerStr='<div class="'+containerClassIcons+'">'
         if not isModerationPost and showRepeatIcon:
@@ -1808,7 +1809,8 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         if item['type']=='Create' or item['type']=='Announce':
             itemCtr+=1
             avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
-            tlStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+            tlStr+=individualPostAsHtml(pageNumber, \
+                                        baseDir,session,wfRequest,personCache, \
                                         nickname,domain,port,item,avatarUrl,True, \
                                         allowDeletion, \
                                         httpPrefix,projectVersion, \
@@ -1878,7 +1880,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
     """
     postStr='<script>'+contentWarningScript()+'</script>'
     postStr+= \
-        individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+        individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
                              httpPrefix,projectVersion,False,False,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
@@ -1891,7 +1893,8 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
         with open(postFilename, 'r') as fp:
             postJsonObject=commentjson.load(fp)
             postStr= \
-                individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                individualPostAsHtml(None, \
+                                     baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
@@ -1909,7 +1912,8 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr+= \
-                    individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+                    individualPostAsHtml(None, \
+                                         baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
                                          httpPrefix,projectVersion,False,False,False,False)
     return htmlHeader()+postStr+htmlFooter()
@@ -1922,7 +1926,7 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
     repliesStr=''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
-            repliesStr+=individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+            repliesStr+=individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
                                              httpPrefix,projectVersion,False,False,False,False)
 
@@ -1974,7 +1978,8 @@ def htmlRemoveSharedItem(baseDir: str,actor: str,shareName: str) -> str:
     sharesStr+=htmlFooter()
     return sharesStr
 
-def htmlDeletePost(session,baseDir: str,messageId: str, \
+def htmlDeletePost(pageNumber: int, \
+                   session,baseDir: str,messageId: str, \
                    httpPrefix: str,projectVersion: str, \
                    wfRequest: {},personCache: {}) -> str:
     """Shows a screen asking to confirm the deletion of a post
@@ -1994,7 +1999,8 @@ def htmlDeletePost(session,baseDir: str,messageId: str, \
 
     if os.path.isfile(baseDir+'/img/delete-background.png'):
         if not os.path.isfile(baseDir+'/accounts/delete-background.png'):
-            copyfile(baseDir+'/img/delete-background.png',baseDir+'/accounts/delete-background.png')
+            copyfile(baseDir+'/img/delete-background.png', \
+                     baseDir+'/accounts/delete-background.png')
 
     deletePostStr=None
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
@@ -2002,13 +2008,14 @@ def htmlDeletePost(session,baseDir: str,messageId: str, \
         deletePostStr=htmlHeader(profileStyle)
         deletePostStr+='<script>'+contentWarningScript()+'</script>'
         deletePostStr+= \
-            individualPostAsHtml(baseDir,session,wfRequest,personCache, \
+            individualPostAsHtml(pageNumber,baseDir,session,wfRequest,personCache, \
                                  nickname,domain,port,postJsonObject,None,True,False, \
                                  httpPrefix,projectVersion,False,False,False,False)
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">Delete this post?</p>'
         deletePostStr+= \
             '  <form method="POST" action="'+actor+'/rmpost">' \
+            '    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">' \
             '    <input type="hidden" name="messageId" value="'+messageId+'">' \
             '    <button type="submit" class="button" name="submitYes">Yes</button>' \
             '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
@@ -2077,7 +2084,7 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+=htmlFooter()
     return followStr
 
-def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: str,optionsProfileUrl: str,optionsLink: str) -> str:
+def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: str,optionsProfileUrl: str,optionsLink: str,pageNumber: int) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain,optionsPort=getDomainFromActor(optionsActor)
@@ -2120,6 +2127,7 @@ def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: 
     optionsStr+='  <p class="optionsText">Options for @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     optionsStr+= \
         '  <form method="POST" action="'+originPathStr+'/personoptions">' \
+        '    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">' \
         '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
         '    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'+ \
         optionsLinkStr+ \
@@ -2381,7 +2389,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             if not item.get('object'):
                 continue
             profileStr+= \
-                individualPostAsHtml(baseDir, \
+                individualPostAsHtml(None,baseDir, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \
