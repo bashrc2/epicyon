@@ -1686,7 +1686,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         else:
             contentStr+='<b>Sensitive</b> '
         contentStr+='<button class="cwButton" onclick="toggler('+"'"+postID+"'"+')">SHOW MORE</button>'
-        contentStr+='<div class="cwText" id="'+postID+'">'
+        contentStr+='<div class="hidden" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
         contentStr+='</div>'
