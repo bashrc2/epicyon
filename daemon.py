@@ -1967,7 +1967,14 @@ class PubServer(BaseHTTPRequestHandler):
         # -1 = new post failed
         # 2 = new post canceled
         pageNumber=1
-        if authorized and '/users/' in self.path and self.path.endswith('?'+postType):            
+        if authorized and '/users/' in self.path and '?'+postType+'?' in self.path:
+            if '?page=' in in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+                self.path=self.path.split('?page=')[0]
             if ' boundary=' in self.headers['Content-type']:
                 nickname=None
                 nicknameStr=self.path.split('/users/')[1]
@@ -2057,11 +2064,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     fd.close()
                                 else:
                                     filename=None
-
-                # get the page number to return to
-                if fields.get('pageNumber'):
-                    if fields['pageNumber'].isdigit():
-                        pageNumber=int(fields['pageNumber'])
 
                 # send the post
                 if not fields.get('message'):
