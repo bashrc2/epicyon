@@ -1167,6 +1167,9 @@ def clickToDropDownScript() -> str:
     """Function run onclick to create a dropdown
     """
     script= \
+        'function toggler(divId) {' \
+        '    $("#" + divId).toggle();' \
+        '}' \
         'function dropdown() {' \
         '  document.getElementById("myDropdown").classList.toggle("show");' \
         '}'
@@ -1690,7 +1693,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                 containerClass='container report'
         else:
             contentStr+='<b>Sensitive</b> '
-        contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
+        contentStr+='<a href="#" onclick="toggler('+"'"+postID+"'"+');"><span class="cwButton">SHOW MORE</span></a>'        
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
