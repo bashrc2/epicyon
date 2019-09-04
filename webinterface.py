@@ -902,7 +902,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         if len(outboxFeed['orderedItems'])==0:
             break
         for item in outboxFeed['orderedItems']:
-            if item['type']=='Create' or item['type']=='Announce':
+            if item['type']=='Create':
                 postStr=individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
                                              httpPrefix,projectVersion, \
