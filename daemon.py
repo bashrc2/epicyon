@@ -1968,7 +1968,7 @@ class PubServer(BaseHTTPRequestHandler):
         # 2 = new post canceled
         pageNumber=1
         if authorized and '/users/' in self.path and '?'+postType+'?' in self.path:
-            if '?page=' in in self.path:
+            if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
