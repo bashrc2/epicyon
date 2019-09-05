@@ -10,6 +10,23 @@ import os
 import commentjson
 from shutil import copyfile
 
+def addMusicTag(content: str,tag: str) -> str:
+    """If a music link is found then ensure that the post is tagged appropriately
+    """
+    if '#' not in tag:
+        tag='#'+tag
+    if tag in content:
+        return content
+    musicSites=['soundcloud.com','bandcamp.com']
+    musicSiteFound=False
+    for site in musicSites:
+        if site+'/' in content:
+            musicSiteFound=True
+            break
+    if not musicSiteFound:
+        return content
+    return content+' '+tag
+
 def addWebLinks(content: str) -> str:
     """Adds markup for web links
     """
@@ -192,6 +209,9 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         return content
     words=content.replace(',',' ').replace(';',' ').split(' ')
 
+    # add music tag if needed
+    content=addMusicTag(content,'nowplaying')
+    
     # remove . for words which are not mentions
     wordCtr=0
     newWords=[]
