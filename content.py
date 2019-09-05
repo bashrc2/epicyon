@@ -208,6 +208,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     if content.startswith('<p>'):
         return content
     content=content.replace('\n',' --linebreak-- ')
+    content=addMusicTag(content,'nowplaying')
     words=content.replace(',',' ').replace(';',' ').split(' ')
     
     # remove . for words which are not mentions
@@ -263,7 +264,6 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=addWebLinks(content)
-    content=addMusicTag(content,'nowplaying')
     content=content.replace(' --linebreak-- ','</p><p>')
     return '<p>'+content+'</p>'
                 
