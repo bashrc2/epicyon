@@ -207,7 +207,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     """
     if content.startswith('<p>'):
         return content
-    words=content.replace('\n',' --linebreak--').replace(',',' ').replace(';',' ').split(' ')
+    words=content.replace('\n',' --linebreak-- ').replace(',',' ').replace(';',' ').split(' ')
 
     # add music tag if needed
     content=addMusicTag(content,'nowplaying')
@@ -265,7 +265,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=addWebLinks(content)
-    content=content.replace(' --linebreak--','</p><p>')
+    content=content.replace(' --linebreak-- ','</p><p>')
     return '<p>'+content+'</p>'
                 
 def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
