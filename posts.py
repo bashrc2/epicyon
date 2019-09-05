@@ -486,6 +486,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 toRecipients.append(mention)
 
     # create a list of hashtags
+    # Only posts which are #Public are searchable by hashtag
     if hashtagsDict:
         isPublic=False
         for recipient in toRecipients:
