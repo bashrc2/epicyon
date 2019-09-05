@@ -1800,13 +1800,16 @@ class PubServer(BaseHTTPRequestHandler):
                                       sharesPerPage)
         if shares:
             if self._requestHTTP():
-                if 'page=' not in self.path:
+                if '?page=' not in self.path:
+                    searchPath=self.path
                     # get a page of shares, not the summary
                     shares=getSharesFeedForPerson(self.server.baseDir,self.server.domain, \
                                                   self.server.port,self.path+'?page=true', \
                                                   self.server.httpPrefix, \
                                                   sharesPerPage)
-                getPerson = personLookup(self.server.domain,self.path.replace('/shares',''), \
+                else:
+                    searchPath=self.path.split('?page=')[0]
+                getPerson = personLookup(self.server.domain,searchPath.replace('/shares',''), \
                                          self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
