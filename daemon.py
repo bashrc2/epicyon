@@ -3523,10 +3523,14 @@ def runDaemon(projectVersion, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
                               allowDeletion,debug,httpd.acceptedCaps),daemon=True)
-    httpd.thrWatchdog= \
-        threadWithTrace(target=runInboxQueueWatchdog, \
-                        args=(projectVersion,httpd),daemon=True)        
-    httpd.thrWatchdog.start()
+    if not unitTest: 
+        httpd.thrWatchdog= \
+            threadWithTrace(target=runInboxQueueWatchdog, \
+                            args=(projectVersion,httpd),daemon=True)        
+        httpd.thrWatchdog.start()
+    else:
+        httpd.thrInboxQueue.start()
+
     if clientToServer:
         print('Running ActivityPub client on ' + domain + ' port ' + str(proxyPort))
     else:
