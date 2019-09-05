@@ -1841,13 +1841,16 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized,followsPerPage)
         if following:
             if self._requestHTTP():
-                if 'page=' not in self.path:
+                if '?page=' not in self.path:
+                    searchPath=self.path
                     # get a page of following, not the summary
                     following=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                                self.server.port,self.path+'?page=true', \
                                                self.server.httpPrefix, \
                                                authorized,followsPerPage)
-                getPerson = personLookup(self.server.domain,self.path.replace('/following',''), \
+                else:
+                    searchPath=self.path.split('?page=')[0]
+                getPerson = personLookup(self.server.domain,searchPath.replace('/following',''), \
                                          self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
@@ -1882,13 +1885,16 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized,followsPerPage,'followers')
         if followers:
             if self._requestHTTP():
-                if 'page=' not in self.path:
+                if '?page=' not in self.path:
+                    searchPath=self.path
                     # get a page of followers, not the summary
                     followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                                self.server.port,self.path+'?page=1', \
                                                self.server.httpPrefix, \
                                                authorized,followsPerPage,'followers')
-                getPerson = personLookup(self.server.domain,self.path.replace('/followers',''), \
+                else:
+                    searchPath=self.path.split('?page=')[0]
+                getPerson = personLookup(self.server.domain,searchPath.replace('/followers',''), \
                                          self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
