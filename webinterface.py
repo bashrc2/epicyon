@@ -920,10 +920,20 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
                          nickname: str,domain: str,port: int, \
                          session,wfRequest: {},personCache: {}, \
                          followingJson: {},projectVersion: str, \
-                         buttons: []) -> str:
+                         buttons: [], \
+                         feedName: str,actor: str, \
+                         pageNumber: int, \
+                         maxItemsPerPage: int) -> str:
     """Shows following on the profile screen
     """
     profileStr=''
+
+    if authorized and pageNumber:
+        if authorized and pageNumber>1:
+            # page up arrow
+            profileStr+= \
+                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+        
     for item in followingJson['orderedItems']:
         profileStr+= \
             individualFollowAsHtml(baseDir,session, \
@@ -931,6 +941,11 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
                                    domain,item,authorized,nickname, \
                                    httpPrefix,projectVersion, \
                                    buttons)
+    if authorized and maxItemsPerPage and pageNumber:
+        if len(followingJson['orderedItems'])>=maxItemsPerPage:
+            # page down arrow
+            profileStr+= \
+                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
     return profileStr
 
 def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
@@ -985,7 +1000,8 @@ def htmlProfile(projectVersion: str, \
                 baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
-                extraJson=None) -> str:
+                extraJson=None, \
+                pageNumber=None,maxItemsPerPage=None) -> str:
     """Show the profile page as html
     """
     nickname=profileJson['preferredUsername']
@@ -1104,15 +1120,19 @@ def htmlProfile(projectVersion: str, \
                                      domain,port,session, \
                                      wfRequest,personCache,extraJson, \
                                      projectVersion, \
-                                     ["unfollow"])
+                                     ["unfollow"], \
+                                     selected,actor, \
+                                     pageNumber,maxItemsPerPage)
         if selected=='followers':
             profileStr+= \
                 htmlProfileFollowing(baseDir,httpPrefix, \
                                      authorized,ocapAlways,nickname, \
                                      domain,port,session, \
                                      wfRequest,personCache,extraJson, \
-                                     projectVersion,
-                                     ["block"])
+                                     projectVersion, \
+                                     ["block"], \
+                                     selected,actor, \
+                                     pageNumber,maxItemsPerPage)
         if selected=='roles':
             profileStr+= \
                 htmlProfileRoles(nickname,domainFull,extraJson)

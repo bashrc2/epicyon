@@ -1446,7 +1446,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.session, \
                                                     self.server.cachedWebfingers, \
                                                     self.server.personCache, \
-                                                    actorJson['roles']).encode('utf-8')
+                                                    actorJson['roles'], \
+                                                    None,None).encode('utf-8')
                                     self._set_headers('text/html',len(msg),cookie)
                                     self.wfile.write(msg)     
                             else:
@@ -1481,7 +1482,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.session, \
                                                     self.server.cachedWebfingers, \
                                                     self.server.personCache, \
-                                                    actorJson['skills']).encode('utf-8')
+                                                    actorJson['skills'], \
+                                                    None,None).encode('utf-8')
                                     self._set_headers('text/html',len(msg),cookie)
                                     self.wfile.write(msg)     
                             else:
@@ -1797,6 +1799,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       sharesPerPage)
         if shares:
             if self._requestHTTP():
+                pageNumber=1
                 if '?page=' not in self.path:
                     searchPath=self.path
                     # get a page of shares, not the summary
@@ -1805,6 +1808,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   sharesPerPage)
                 else:
+                    pageNumberStr=self.path.split('?page=')[1]
+                    if pageNumberStr.isdigit():
+                        pageNumber=int(pageNumberStr)
                     searchPath=self.path.split('?page=')[0]
                 getPerson = personLookup(self.server.domain,searchPath.replace('/shares',''), \
                                          self.server.baseDir)
@@ -1823,7 +1829,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session, \
                                     self.server.cachedWebfingers, \
                                     self.server.personCache, \
-                                    shares).encode('utf-8')
+                                    shares, \
+                                    pageNumber,sharesPerPage).encode('utf-8')
                     self._set_headers('text/html',len(msg),cookie)
                     self.wfile.write(msg)                
                     self.server.GETbusy=False
@@ -1841,6 +1848,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized,followsPerPage)
         if following:
             if self._requestHTTP():
+                pageNumber=1
                 if '?page=' not in self.path:
                     searchPath=self.path
                     # get a page of following, not the summary
@@ -1849,6 +1857,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.httpPrefix, \
                                                authorized,followsPerPage)
                 else:
+                    pageNumberStr==self.path.split('?page=')[1]
+                    if pageNumberStr.isdigit():
+                        pageNumber=int(pageNumberStr)
                     searchPath=self.path.split('?page=')[0]
                 getPerson = personLookup(self.server.domain,searchPath.replace('/following',''), \
                                          self.server.baseDir)
@@ -1868,7 +1879,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session, \
                                     self.server.cachedWebfingers, \
                                     self.server.personCache, \
-                                    following).encode('utf-8')
+                                    following, \
+                                    pageNumber,followsPerPage).encode('utf-8')
                     self._set_headers('text/html',len(msg),cookie)
                     self.wfile.write(msg)                
                     self.server.GETbusy=False
@@ -1885,6 +1897,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    authorized,followsPerPage,'followers')
         if followers:
             if self._requestHTTP():
+                pageNumber=1
                 if '?page=' not in self.path:
                     searchPath=self.path
                     # get a page of followers, not the summary
@@ -1893,6 +1906,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.httpPrefix, \
                                                authorized,followsPerPage,'followers')
                 else:
+                    pageNumberStr=self.path.split('?page=')[1]
+                    if pageNumberStr.isdigit():
+                        pageNumber=int(pageNumberStr)
                     searchPath=self.path.split('?page=')[0]
                 getPerson = personLookup(self.server.domain,searchPath.replace('/followers',''), \
                                          self.server.baseDir)
@@ -1911,7 +1927,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session, \
                                     self.server.cachedWebfingers, \
                                     self.server.personCache, \
-                                    followers).encode('utf-8')
+                                    followers, \
+                                    pageNumber,followsPerPage).encode('utf-8')
                     self._set_headers('text/html',len(msg),cookie)
                     self.wfile.write(msg)                
                     self.server.GETbusy=False
@@ -1940,7 +1957,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 getPerson,'posts',
                                 self.server.session, \
                                 self.server.cachedWebfingers, \
-                                self.server.personCache).encode('utf-8')
+                                self.server.personCache, \
+                                None,None).encode('utf-8')
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
             else:
