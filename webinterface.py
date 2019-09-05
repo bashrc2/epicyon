@@ -1756,9 +1756,9 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Mod </span></button></a>'
 
     tlStr=htmlHeader(profileStyle)
-    if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
+    #if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
         # refresh if on the first page of the inbox and dm timeline
-        tlStr=htmlHeader(profileStyle,240)
+        #tlStr=htmlHeader(profileStyle,240)
 
     if boxName!='dm':
         if not manuallyApproveFollowers:
@@ -1779,6 +1779,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Outbox</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
+        '    <a href="'+actor+'/inbox"><img src="/icons/refresh.png" title="Refresh" alt="Refresh" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
 
