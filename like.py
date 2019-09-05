@@ -37,6 +37,8 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
             return
         if not postJsonObject['object'].get('likes'):
             return
+        if not isinstance(postJsonObject['object']['likes'], dict):
+            return
         if not postJsonObject['object']['likes'].get('items'):
             return
         totalItems=0
@@ -80,6 +82,8 @@ def noOfLikes(postJsonObject: {}) -> int:
     if not isinstance(postJsonObject['object'], dict):
         return 0
     if not postJsonObject['object'].get('likes'):
+        return 0
+    if not isinstance(postJsonObject['object']['likes'], dict):
         return 0
     if not postJsonObject['object']['likes'].get('items'):
         postJsonObject['object']['likes']['items']=[]
