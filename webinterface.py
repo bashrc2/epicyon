@@ -1779,7 +1779,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Outbox</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
-        '    <a href="'+actor+'/inbox"><img src="/icons/refresh.png" title="Refresh" alt="Refresh" class="right"/></a>'+ \
+        '    <a href="'+actor+'/'+boxName+'"><img src="/icons/refresh.png" title="Refresh" alt="Refresh" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
 
