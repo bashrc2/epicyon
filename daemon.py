@@ -538,7 +538,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
     
-    def do_GET(self):        
+    def do_GET(self):
+        # redirect music to #nowplaying list
+        if self.path=='/music' or self.path=='/nowplaying':
+            self.path='/tags/nowplaying'
+
         if self.server.debug:
             print('DEBUG: GET from '+self.server.baseDir+ \
                   ' path: '+self.path+' busy: '+ \
