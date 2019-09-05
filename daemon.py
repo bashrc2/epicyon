@@ -1857,7 +1857,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.httpPrefix, \
                                                authorized,followsPerPage)
                 else:
-                    pageNumberStr==self.path.split('?page=')[1]
+                    pageNumberStr=self.path.split('?page=')[1]
                     if pageNumberStr.isdigit():
                         pageNumber=int(pageNumberStr)
                     searchPath=self.path.split('?page=')[0]
