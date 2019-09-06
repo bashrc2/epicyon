@@ -1374,15 +1374,18 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
     return manuallyApprovesFollowers
 
-def insertQuestion(nickname: str,content: str,postJsonObject: {}) -> str:
+def insertQuestion(nickname: str,content: str,postJsonObject: {},pageNumber: int) -> str:
     """ Inserts question selection into a post
     """
     if not isQuestion(postJsonObject):
         return content
     if len(postJsonObject['object']['oneOf'])==0:
         return content
+    pageNumberStr=''
+    if pageNumber:
+        pageNumberStr='?page='+str(pageNumber)
     content+='<div class="question">'
-    content+='<form method="POST" action="/users/'+nickname+'/question">'
+    content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
     content+='<input type="hidden" name="messageId" value="'+postJsonObject['id']+'">'
     for choice in postJsonObject['object']['oneOf']:
         if not choice.get('type'):
@@ -1725,7 +1728,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
-        contentStr=insertQuestion(nickname,contentStr,postJsonObject)
+        contentStr=insertQuestion(nickname,contentStr,postJsonObject,pageNumber)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
