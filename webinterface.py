@@ -1919,7 +1919,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
-                                     False,False,False,False)+postStr
+                                     False,authorized,False,False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -1936,7 +1936,8 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                     individualPostAsHtml(None, \
                                          baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
-                                         httpPrefix,projectVersion,False,False,False,False)
+                                         httpPrefix,projectVersion, \
+                                         False,authorized,False,False)
     return htmlHeader()+postStr+htmlFooter()
 
 def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
