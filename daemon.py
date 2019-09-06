@@ -525,6 +525,9 @@ class PubServer(BaseHTTPRequestHandler):
                 tokenStr=self.headers['Cookie'].split('=',1)[1]
                 if self.server.tokensLookup.get(tokenStr):
                     nickname=self.server.tokensLookup[tokenStr]
+                    # check that the path contains the same nickname as the cookie
+                    # otherwise it would be possible to be authorized to use
+                    # an account you don't own
                     if '/'+nickname+'/' in self.path:
                         return True
                     if self.path.endswith('/'+nickname):
@@ -652,11 +655,6 @@ class PubServer(BaseHTTPRequestHandler):
         if self._robotsTxt():
             self.server.GETbusy=False
             return
-
-        if htmlGET and authorized and self.path=='/':
-            self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox',cookie)
-            return                
             
         # if not authorized then show the login screen
         if htmlGET and self.path!='/login' and self.path!='/':
