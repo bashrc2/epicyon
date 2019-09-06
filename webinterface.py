@@ -1630,6 +1630,10 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
     publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
+    pageNumberParam=''
+    if pageNumber:
+        pageNumberParam='?page='+str(pageNumber)
+
     announceStr=''
     if not isModerationPost and showRepeatIcon:
         # don't allow announce/repeat of your own posts
@@ -1641,7 +1645,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
             announceLink='unrepeat'
             announceTitle='Undo the repeat this post'
         announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+'?page='+str(pageNumber)+'" title="'+announceTitle+'">' \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+announceTitle+'">' \
             '<img src="/icons/'+announceIcon+'"/></a>'
 
     likeStr=''
@@ -1654,7 +1658,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
             likeLink='unlike'
             likeTitle='Undo the like of this post'
         likeStr= \
-            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+'?page='+str(pageNumber)+'" title="'+likeTitle+'">' \
+            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+likeTitle+'">' \
             '<img src="/icons/'+likeIcon+'"/></a>'
 
     deleteStr=''
@@ -1663,7 +1667,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         postJsonObject['object']['id'].startswith(postJsonObject['actor'])):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr= \
-                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+'?page='+str(pageNumber)+'" title="Delete this post">' \
+                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="Delete this post">' \
                 '<img src="/icons/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
@@ -1683,8 +1687,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                         replyToLink+='?mention='+actorUrl
                         if len(replyToLink)>500:
                             break
-        if pageNumber:
-            replyToLink+='?page='+str(pageNumber)
+        replyToLink+=pageNumberParam
                         
         footerStr='<div class="'+containerClassIcons+'">'
         if not isModerationPost and showRepeatIcon:
