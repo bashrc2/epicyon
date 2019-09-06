@@ -1899,11 +1899,11 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
                        postJsonObject: {},httpPrefix: str,projectVersion: str) -> str:
     """Show an individual post as html
     """
-    postStr='<script>'+contentWarningScript()+'</script>'
+    postStr='<script>'+contentWarningScript()+'</script>'    
     postStr+= \
         individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
-                             httpPrefix,projectVersion,False,False,False,False)
+                             httpPrefix,projectVersion,False,authorized,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
