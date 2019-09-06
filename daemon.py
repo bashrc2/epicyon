@@ -1305,7 +1305,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
                                     if postJsonObject.get('likes'):
-                                        postJsonObject['likes']={}
+                                        postJsonObject['likes']={'items': []}
                                 if self._requestHTTP():
                                     msg= \
                                         htmlIndividualPost(self.server.session, \
@@ -1528,7 +1528,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
                                     if postJsonObject.get('likes'):
-                                        postJsonObject['likes']={}                                    
+                                        postJsonObject['likes']={'items': []}                                    
                                 if self._requestHTTP():
                                     msg=htmlIndividualPost(self.server.baseDir, \
                                                            self.server.session, \
