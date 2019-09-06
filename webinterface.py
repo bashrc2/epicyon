@@ -1683,7 +1683,8 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                         replyToLink+='?mention='+actorUrl
                         if len(replyToLink)>500:
                             break
-        replyToLink+='?page='+str(pageNumber)
+        if pageNumber:
+            replyToLink+='?page='+str(pageNumber)
                         
         footerStr='<div class="'+containerClassIcons+'">'
         if not isModerationPost and showRepeatIcon:
