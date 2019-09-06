@@ -653,6 +653,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
+        if htmlGET and authorized and self.path=='/':
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/inbox',cookie)
+            return                
+            
         # if not authorized then show the login screen
         if htmlGET and self.path!='/login' and self.path!='/':
             if '/media/' not in self.path and \
