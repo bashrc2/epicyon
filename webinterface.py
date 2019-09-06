@@ -1742,7 +1742,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
-        contentStr=insertQuestion(nickname,contentStr,postJsonObject)
+        contentStr=insertQuestion(nickname,contentStr,postJsonObject,pageNumber)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
