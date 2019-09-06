@@ -1374,6 +1374,26 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
     return manuallyApprovesFollowers
 
+def insertQuestion(nickname: str,content: str,postJsonObject: {}) -> str:
+    """ Inserts question selection into a post
+    """
+    if not isQuestion(postJsonObject):
+        return content
+    if len(postJsonObject['object']['oneOf'])==0:
+        return content
+    content+='<div class="question">'
+    content+='<form method="POST" action="/users/'+nickname+'/question">'
+    content+='<input type="hidden" name="messageId" value="'+postJsonObject['id']+'">'
+    for choice in postJsonObject['object']['oneOf']:
+        if not choice.get('type'):
+            continue
+        if not choice.get('name'):
+            continue
+        content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br>'
+    content+='<input type="submit" value="Submit">'
+    content+='</form></div>'
+    return content
+
 def individualPostAsHtml(pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -1705,6 +1725,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
+        contentStr=insertQuestion(nickname,contentStr,postJsonObject)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -1718,6 +1739,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(contentStr)
+        contentStr=insertQuestion(nickname,contentStr,postJsonObject)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
@@ -1731,6 +1753,18 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         '<p class="post-title">'+titleStr+'</p>'+ \
         contentStr+footerStr+ \
         '</div>\n'
+
+def isQuestion(postObjectJson: {}) -> bool:
+    """ is the given post a question?
+    """
+    if postObjectJson['type']=='Create':
+        if isinstance(postObjectJson['object'], dict):
+            if postObjectJson['object'].get('type'):
+                if postObjectJson['object']['type']=='Question':
+                    if postObjectJson['object'].get('oneOf'):
+                        if isinstance(postObjectJson['object']['oneOf'], list):
+                            return True
+    return False 
 
 def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
@@ -1834,14 +1868,15 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         if item['type']=='Create' or item['type']=='Announce':
             itemCtr+=1
             avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
-            tlStr+=individualPostAsHtml(pageNumber, \
-                                        baseDir,session,wfRequest,personCache, \
-                                        nickname,domain,port,item,avatarUrl,True, \
-                                        allowDeletion, \
-                                        httpPrefix,projectVersion, \
-                                        boxName!='dm', \
-                                        showIndividualPostIcons, \
-                                        manuallyApproveFollowers,False)
+            tlStr+= \
+                individualPostAsHtml(pageNumber, \
+                                     baseDir,session,wfRequest,personCache, \
+                                     nickname,domain,port,item,avatarUrl,True, \
+                                     allowDeletion, \
+                                     httpPrefix,projectVersion, \
+                                     boxName!='dm', \
+                                     showIndividualPostIcons, \
+                                     manuallyApproveFollowers,False)
 
     # page down arrow
     if itemCtr>=itemsPerPage:

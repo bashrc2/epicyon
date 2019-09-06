@@ -1803,7 +1803,8 @@ def createBoxBase(baseDir: str,boxname: str, \
                 # must be a "Note" or "Announce" type
                 with open(filePath, 'r') as file:
                     postStr = file.read()
-                if '"Note"' in postStr or '"Announce"' in postStr:
+                if '"Note"' in postStr or '"Announce"' in postStr or \
+                   ('"Question"' in postStr and '"Create"' in postStr):
                     isPost=True
                     if boxname=='dm':
                         if '#Public' in postStr or '/followers' in postStr:
