@@ -118,7 +118,7 @@
     "One per line": "Eine pro Zeile",
     "Blocked accounts": "Gesperrte Konten",
     "Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain": "Gesperrte Konten, eine pro Zeile, in der Form Kurzname@Domäne oder *@gesperrte Domäne",
-    "Federation list": "Federation list",
+    "Federation list": "Föderationsliste",
     "Federate only with a defined set of instances. One domain name per line.": "Nur mit einer definierten Menge von Instanzen verbinden. Ein Domainname pro Zeile.",
     "If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.": "Wenn Sie sich an Organisationen beteiligen möchten, können Sie einige Ihrer Fähigkeiten und ungefähre Befähigungsniveaus angeben. Dies hilft den Organisatoren, Teams mit einer geeigneten Kombination von Fähigkeiten zusammenzustellen.",
     "A list of moderator nicknames. One per line.": "Eine Liste der Moderator-Kurznamen. Eine pro Zeile.",
