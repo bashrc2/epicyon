@@ -444,7 +444,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     skillCtr=1
     if skills:
         for skillDesc,skillValue in skills.items():
-            skillsStr+='<p><input type="text" placeholder="Skill '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="'+skillDesc+'" style="width:40%">'
+            skillsStr+='<p><input type="text" placeholder="'+translate['Skill']+' '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="'+skillDesc+'" style="width:40%">'
             skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="'+str(skillValue)+'"></p>'
             skillCtr+=1
 
