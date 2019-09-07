@@ -162,7 +162,7 @@ def htmlSearchSharedItems(translate: {}, \
                                     '  <input type="hidden" name="actor" value="'+actor+'">' \
                                     '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
                                     '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
-                                    '    <img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"/></a>' \
+                                    '    <img class="pageicon" src="/icons/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"/></a>' \
                                     '  </center>' \
                                     '</form>'
                             resultsExist=True
@@ -176,7 +176,7 @@ def htmlSearchSharedItems(translate: {}, \
                                     '  <input type="hidden" name="actor" value="'+actor+'">' \
                                     '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
                                     '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
-                                    '    <img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"/></a>' \
+                                    '    <img class="pageicon" src="/icons/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"/></a>' \
                                     '  </center>' \
                                     '</form>'
                                 break
@@ -253,7 +253,7 @@ def htmlHashtagSearch(translate: {}, \
     hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
     if startIndex!=len(lines)-1:
         # previous page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
     index=startIndex
     while index>=endIndex:
         postId=lines[index].strip('\n')
@@ -285,7 +285,7 @@ def htmlHashtagSearch(translate: {}, \
 
     if endIndex>0:
         # next page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
@@ -944,7 +944,7 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         if authorized and pageNumber>1:
             # page up arrow
             profileStr+= \
-                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
         
     for item in followingJson['orderedItems']:
         profileStr+= \
@@ -957,7 +957,7 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         if len(followingJson['orderedItems'])>=maxItemsPerPage:
             # page down arrow
             profileStr+= \
-                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
+                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     return profileStr
 
 def htmlProfileRoles(translate: {},nickname: str,domain: str,rolesJson: {}) -> str:
@@ -1823,12 +1823,12 @@ def htmlTimeline(translate: {},pageNumber: int, \
             for line in f:
                 if len(line)>0:
                     # show follow approvals icon
-                    followApprovals='<a href="'+actor+'/followers"><img class="right" alt="Approve follow requests" title="Approve follow requests" src="/icons/person.png"/></a>'
+                    followApprovals='<a href="'+actor+'/followers"><img class="right" alt="'+translate['Approve follow requests']+'" title="'+translate['Approve follow requests']+'" src="/icons/person.png"/></a>'
                     break
 
     moderationButtonStr=''
     if moderator:
-        moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>Mod </span></button></a>'
+        moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>'+translate['Mod']+' </span></button></a>'
 
     tlStr=htmlHeader(profileStyle)
     #if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
@@ -1877,7 +1877,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     # page up arrow
     if pageNumber>1:
-        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="Page up" alt="Page up"></a></center>'
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/icons/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
 
     # show the posts
     itemCtr=0
@@ -1897,7 +1897,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     # page down arrow
     if itemCtr>=itemsPerPage:
-        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
 
