@@ -898,7 +898,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.startswith('/login') or self.path=='/':
             # request basic auth
-            msg=htmlLogin(self.server.baseDir).encode('utf-8')
+            msg=htmlLogin(self.server.translate,self.server.baseDir).encode('utf-8')
             self._login_headers('text/html',len(msg))
             self.wfile.write(msg)
             self.server.GETbusy=False
@@ -1601,7 +1601,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                         self.server.httpPrefix, \
                                                         maxPostsInFeed, 'inbox', \
                                                         True,self.server.ocapAlways)
-                            msg=htmlInbox(pageNumber,maxPostsInFeed, \
+                            msg=htmlInbox(self.server.translate, \
+                                          pageNumber,maxPostsInFeed, \
                                           self.server.session, \
                                           self.server.baseDir, \
                                           self.server.cachedWebfingers, \
@@ -1666,7 +1667,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                         self.server.httpPrefix, \
                                                         maxPostsInFeed, 'dm', \
                                                         True,self.server.ocapAlways)
-                            msg=htmlInboxDMs(pageNumber,maxPostsInFeed, \
+                            msg=htmlInboxDMs(self.server.translate, \
+                                             pageNumber,maxPostsInFeed, \
                                              self.server.session, \
                                              self.server.baseDir, \
                                              self.server.cachedWebfingers, \
@@ -1726,7 +1728,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              maxPostsInFeed, 'outbox', \
                                              authorized, \
                                              self.server.ocapAlways)
-                msg=htmlOutbox(pageNumber,maxPostsInFeed, \
+                msg=htmlOutbox(self.server.translate, \
+                               pageNumber,maxPostsInFeed, \
                                self.server.session, \
                                self.server.baseDir, \
                                self.server.cachedWebfingers, \
@@ -1780,7 +1783,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'moderation', \
                                                   True,self.server.ocapAlways)
-                            msg=htmlModeration(pageNumber,maxPostsInFeed, \
+                            msg=htmlModeration(self.server.translate, \
+                                               pageNumber,maxPostsInFeed, \
                                                self.server.session, \
                                                self.server.baseDir, \
                                                self.server.cachedWebfingers, \
@@ -2656,7 +2660,8 @@ class PubServer(BaseHTTPRequestHandler):
                             moderationText=moderationStr.split('=')[1].strip()
                             moderationText=moderationText.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
                     elif moderationStr.startswith('submitInfo'):
-                        msg=htmlModerationInfo(self.server.baseDir).encode('utf-8')
+                        msg=htmlModerationInfo(self.server.translate, \
+                                               self.server.baseDir).encode('utf-8')
                         self._login_headers('text/html',len(msg))
                         self.wfile.write(msg)
                         self.server.POSTbusy=False

@@ -90,5 +90,21 @@
     "Stop blocking": "Stop blocking",
     "Enter an emoji name to search for": "Enter an emoji name to search for",
     "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "Enter an address, shared item, #hashtag, *skill or :emoji: to search for",
-    "Go Back": "Go Back"
+    "Go Back": "Go Back",
+    "Moderation Information": "Moderation Information",
+    "Suspended accounts": "Suspended accounts",
+    "These are currently suspended": "These are currently suspended",
+    "Blocked accounts and hashtags": "Blocked accounts and hashtags",
+    "These are globally blocked for all accounts on this instance": "These are globally blocked for all accounts on this instance",
+    "Any blocks or suspensions made by moderators will be shown here.": "Any blocks or suspensions made by moderators will be shown here.",
+    "Welcome. Please enter your login details below.": "Welcome. Please enter your login details below.",
+    "Welcome. Please login or register a new account.": "Welcome. Please login or register a new account.",
+    "Please enter some credentials": "Please enter some credentials",
+    "You will become the admin of this site.": "You will become the admin of this site.",
+    "Terms of Service": "Terms of Service",
+    "About this Instance": "About this Instance",
+    "Nickname": "Nickname",
+    "Enter Nickname": "Enter Nickname",
+    "Password": "Password",
+    "Enter Password": "Enter Password"
 }

@@ -90,5 +90,21 @@
     "Stop blocking": "Arrêtez le blocage",
     "Enter an emoji name to search for": "Entrez un nom emoji à rechercher",
     "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "Entrez une adresse, un objet partagé, #hashtag, * skill ou: emoji: à rechercher",
-    "Go Back": "Retourner"
+    "Go Back": "Retourner",
+    "Moderation Information": "Informations de modération",
+    "Suspended accounts": "Comptes suspendus",
+    "These are currently suspended": "Ceux-ci sont actuellement suspendus",
+    "Blocked accounts and hashtags": "Comptes bloqués et hashtags",
+    "These are globally blocked for all accounts on this instance": "Ceux-ci sont globalement bloqués pour tous les comptes sur cette instance.",
+    "Any blocks or suspensions made by moderators will be shown here.": "Tous les blocages ou suspensions réalisés par les modérateurs seront affichés ici.",
+    "Welcome. Please enter your login details below.": "Bienvenue. S'il vous plaît entrer vos informations de connexion ci-dessous.",
+    "Welcome. Please login or register a new account.": "Bienvenue. Veuillez vous connecter ou créer un nouveau compte.",
+    "Please enter some credentials": "S'il vous plaît entrer des informations d'identification",
+    "You will become the admin of this site.": "Vous allez devenir l'administrateur de ce site.",
+    "Terms of Service": "Conditions d'utilisation",
+    "About this Instance": "A propos de cette instance",
+    "Nickname": "Pseudo",
+    "Enter Nickname": "Entrez le pseudo",
+    "Password": "Mot de passe",
+    "Enter Password": "Entrer le mot de passe"
 }

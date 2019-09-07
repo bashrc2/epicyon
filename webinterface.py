@@ -184,13 +184,13 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str, \
         sharedItemsForm+=htmlFooter()
     return sharedItemsForm    
 
-def htmlModerationInfo(baseDir: str) -> str:
+def htmlModerationInfo(translate: {},baseDir: str) -> str:
     infoForm=''
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         infoCSS=cssFile.read()
         infoForm=htmlHeader(infoCSS)
 
-        infoForm+='<center><h1>Moderation Information</h1></center>'
+        infoForm+='<center><h1>'+translate['Moderation Information']+'</h1></center>'
 
         infoShown=False        
         suspendedFilename=baseDir+'/accounts/suspended.txt'
@@ -199,8 +199,8 @@ def htmlModerationInfo(baseDir: str) -> str:
                 suspendedStr = f.read()
                 infoForm+= \
                     '<div class="container">' \
-                    '  <br><b>Suspended accounts</b>' \
-                    '  <br>These are currently suspended' \
+                    '  <br><b>'+translate['Suspended accounts']+'</b>' \
+                    '  <br>'+translate['These are currently suspended']+ \
                     '  <textarea id="message" name="suspended" style="height:200px">'+suspendedStr+'</textarea>' \
                     '</div>'
                 infoShown=True
@@ -211,13 +211,13 @@ def htmlModerationInfo(baseDir: str) -> str:
                 blockedStr = f.read()
                 infoForm+= \
                     '<div class="container">' \
-                    '  <br><b>Blocked accounts and hashtags</b>' \
-                    '  <br>These are globally blocked for all accounts on this instance' \
+                    '  <br><b>'+translate['Blocked accounts and hashtags']+'</b>' \
+                    '  <br>'+translate['These are globally blocked for all accounts on this instance']+ \
                     '  <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>' \
                     '</div>'        
                 infoShown=True
         if not infoShown:
-            infoForm+='<center><p>Any blocks or suspensions made by moderators will be shown here.</p></center>'
+            infoForm+='<center><p>'+translate['Any blocks or suspensions made by moderators will be shown here.']+'</p></center>'
         infoForm+=htmlFooter()
     return infoForm    
 
@@ -542,7 +542,7 @@ def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str,boo
                 register=True
     return nickname,password,register
 
-def htmlLogin(baseDir: str) -> str:
+def htmlLogin(translate: {},baseDir: str) -> str:
     """Shows the login screen
     """
     accounts=noOfAccounts(baseDir)
@@ -554,9 +554,10 @@ def htmlLogin(baseDir: str) -> str:
             copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
 
     if accounts>0:
-        loginText='<p class="login-text">Welcome. Please enter your login details below.</p>'
+        loginText='<p class="login-text">'+translate['Welcome. Please enter your login details below.']+'</p>'
     else:
-        loginText='<p class="login-text">Please enter some credentials</p><p>You will become the admin of this site.</p>'
+        loginText='<p class="login-text">'+translate['Please enter some credentials']+'</p>'
+        loginText+='<p class="login-text">'+translate['You will become the admin of this site.']+'</p>'
     if os.path.isfile(baseDir+'/accounts/login.txt'):
         # custom login message
         with open(baseDir+'/accounts/login.txt', 'r') as file:
@@ -570,15 +571,15 @@ def htmlLogin(baseDir: str) -> str:
     if getConfigParam(baseDir,'registration')=='open':
         if int(getConfigParam(baseDir,'registrationsRemaining'))>0:
             if accounts>0:
-                loginText='<p class="login-text">Welcome. Please login or register a new account.</p>'
+                loginText='<p class="login-text">'+translate['Welcome. Please login or register a new account.']+'</p>'
             registerButtonStr='<button type="submit" name="register">Register</button>'
 
-    TOSstr='<p class="login-text"><a href="/terms">Terms of Service</a></p>'
-    TOSstr+='<p class="login-text"><a href="/about">About this Instance</a></p>'
+    TOSstr='<p class="login-text"><a href="/terms">'+translate['Terms of Service']+'</a></p>'
+    TOSstr+='<p class="login-text"><a href="/about">'+translate['About this Instance']+'</a></p>'
 
     loginButtonStr=''
     if accounts>0:
-        loginButtonStr='<button type="submit" name="submit">Login</button>'
+        loginButtonStr='<button type="submit" name="submit">'+translate['Login']+'</button>'
             
     loginForm=htmlHeader(loginCSS)
     loginForm+= \
@@ -589,11 +590,11 @@ def htmlLogin(baseDir: str) -> str:
         '  </div>' \
         '' \
         '  <div class="container">' \
-        '    <label for="nickname"><b>Nickname</b></label>' \
-        '    <input type="text" placeholder="Enter Nickname" name="username" required autofocus>' \
+        '    <label for="nickname"><b>'+translate['Nickname']+'</b></label>' \
+        '    <input type="text" placeholder="'+translate['Enter Nickname']+'" name="username" required autofocus>' \
         '' \
-        '    <label for="password"><b>Password</b></label>' \
-        '    <input type="password" placeholder="Enter Password" name="password" required>'+ \
+        '    <label for="password"><b>'+translate['Password']+'</b></label>' \
+        '    <input type="password" placeholder="'+translate['Enter Password']+'" name="password" required>'+ \
         registerButtonStr+loginButtonStr+ \
         '  </div>' \
         '</form>'
@@ -1895,7 +1896,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlInbox(pageNumber: int,itemsPerPage: int, \
+def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}, \
               allowDeletion: bool, \
@@ -1905,33 +1906,36 @@ def htmlInbox(pageNumber: int,itemsPerPage: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInboxDMs(pageNumber: int,itemsPerPage: int, \
+def htmlInboxDMs(translate: {},pageNumber: int,itemsPerPage: int, \
                  session,baseDir: str,wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,inboxJson: {}, \
                  allowDeletion: bool, \
                  httpPrefix: str,projectVersion: str) -> str:
     """Show the DM timeline as html
     """
-    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'dm',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlModeration(pageNumber: int,itemsPerPage: int, \
+def htmlModeration(translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
                    allowDeletion: bool, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the moderation feed as html
     """
-    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'moderation',allowDeletion, \
                         httpPrefix,projectVersion,True)
 
-def htmlOutbox(pageNumber: int,itemsPerPage: int, \
+def htmlOutbox(translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int,outboxJson: {}, \
                allowDeletion: bool,
@@ -1940,7 +1944,8 @@ def htmlOutbox(pageNumber: int,itemsPerPage: int, \
     """
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
-    return htmlTimeline(pageNumber,itemsPerPage,session,baseDir,wfRequest,personCache, \
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
