@@ -730,30 +730,30 @@ def htmlNewPost(translate: {},baseDir: str, \
     pathBase=path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
 
     scopeIcon='scope_public.png'
-    scopeDescription='Public'
+    scopeDescription=translate['Public']
     placeholderSubject=translate['Subject or Content Warning (optional)']+'...'
     placeholderMessage=translate['Write something']+'...'
     extraFields=''
     endpoint='newpost'
     if path.endswith('/newunlisted'):
         scopeIcon='scope_unlisted.png'
-        scopeDescription='Unlisted'
+        scopeDescription=translate['Unlisted']
         endpoint='newunlisted'
     if path.endswith('/newfollowers'):
         scopeIcon='scope_followers.png'
-        scopeDescription='Followers'
+        scopeDescription=translate['Followers']
         endpoint='newfollowers'
     if path.endswith('/newdm'):
         scopeIcon='scope_dm.png'
-        scopeDescription='DM'
+        scopeDescription=translate['DM']
         endpoint='newdm'
     if path.endswith('/newreport'):
         scopeIcon='scope_report.png'
-        scopeDescription='Report'
+        scopeDescription=translate['Report']
         endpoint='newreport'
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
-        scopeDescription='Shared Item'
+        scopeDescription=translate['Shared Item']
         placeholderSubject=translate['Name of the shared item']+'...'
         placeholderMessage=translate['Description of the item being shared']+'...'
         endpoint='newshare'
