@@ -147,13 +147,13 @@ def htmlSearchSharedItems(translate: {}, \
                                 sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
                                 sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
                             sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
-                            sharedItemsForm+='<p><b>Type:</b> '+sharedItem['itemType']+' '
-                            sharedItemsForm+='<b>Category:</b> '+sharedItem['category']+' '
-                            sharedItemsForm+='<b>Location:</b> '+sharedItem['location']+'</p>'
+                            sharedItemsForm+='<p><b>'+translate['Type']+':</b> '+sharedItem['itemType']+' '
+                            sharedItemsForm+='<b>'+translate['Category']+':</b> '+sharedItem['category']+' '
+                            sharedItemsForm+='<b>'+translate['Location']+':</b> '+sharedItem['location']+'</p>'
                             contactActor=httpPrefix+'://'+domainFull+'/users/'+contactNickname
-                            sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+sharedItem['displayName']+'?mention='+contactActor+'"><button class="button">Contact</button></a>'
+                            sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+sharedItem['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
                             if actor.endswith('/users/'+contactNickname):
-                                sharedItemsForm+=' <a href="'+actor+'?rmshare='+name+'"><button class="button">Remove</button></a>'
+                                sharedItemsForm+=' <a href="'+actor+'?rmshare='+name+'"><button class="button">'+translate['Remove']+'</button></a>'
                             sharedItemsForm+='</p></div>'
                             if not resultsExist and currPage>1:
                                 # previous page link, needs to be a POST
