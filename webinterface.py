@@ -944,7 +944,7 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         
     for item in followingJson['orderedItems']:
         profileStr+= \
-            individualFollowAsHtml(baseDir,session, \
+            individualFollowAsHtml(translate,baseDir,session, \
                                    wfRequest,personCache, \
                                    domain,item,authorized,nickname, \
                                    httpPrefix,projectVersion, \
@@ -1150,7 +1150,8 @@ def htmlProfile(translate: {},projectVersion: str, \
         profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 
-def individualFollowAsHtml(baseDir: str,session,wfRequest: {}, \
+def individualFollowAsHtml(translate: {}, \
+                           baseDir: str,session,wfRequest: {}, \
                            personCache: {},domain: str, \
                            followUrl: str, \
                            authorized: bool, \
