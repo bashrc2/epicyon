@@ -2848,7 +2848,7 @@ class PubServer(BaseHTTPRequestHandler):
                         searchStr=searchStr.lower().strip('\n').replace(' emoji','')
                     # emoji search
                     emojiStr= \
-                        htmlSearchEmoji(self.server.baseDir,searchStr)
+                        htmlSearchEmoji(self.server.translate,self.server.baseDir,searchStr)
                     if emojiStr:
                         msg=emojiStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))

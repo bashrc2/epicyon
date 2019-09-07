@@ -51,7 +51,7 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
                 return personJson['icon']['url']
     return None
 
-def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
+def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
     """Search results for emoji
     """
 
@@ -65,11 +65,11 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
 
         # create header
         emojiForm=htmlHeader(emojiCSS)
-        emojiForm+='<center><h1>Emoji Search</h1></center>'
+        emojiForm+='<center><h1>'+translate['Emoji Search']+'</h1></center>'
 
         # does the lookup file exist?
         if not os.path.isfile(emojiLookupFilename):
-            emojiForm+='<center><h5>No results</h5></center>'
+            emojiForm+='<center><h5>'+translate['No results']+'</h5></center>'
             emojiForm+=htmlFooter()
             return emojiForm
         
@@ -87,7 +87,7 @@ def htmlSearchEmoji(baseDir: str,searchStr: str) -> str:
             for emojiName,filename in results.items():
                 if os.path.isfile(baseDir+'/emoji/'+filename):
                     if not headingShown:
-                        emojiForm+='<center><h5>Copy the text then paste it into your post</h5></center>'
+                        emojiForm+='<center><h5>'+translate['Copy the text then paste it into your post']+'</h5></center>'
                         headingShown=True
                     emojiForm+='<h3>:'+emojiName+':<img class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
             emojiForm+='</center>'
