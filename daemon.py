@@ -1271,7 +1271,10 @@ class PubServer(BaseHTTPRequestHandler):
 
             # edit profile in web interface
             if '/users/' in self.path and self.path.endswith('/editprofile'):
-                msg=htmlEditProfile(self.server.baseDir,self.path,self.server.domain,self.server.port).encode()
+                msg=htmlEditProfile(self.server.translate, \
+                                    self.server.baseDir, \
+                                    self.path,self.server.domain, \
+                                    self.server.port).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.GETbusy=False

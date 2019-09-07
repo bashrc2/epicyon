@@ -384,7 +384,7 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,instanceOnly: bool,postsPerPa
     skillSearchForm+=htmlFooter()
     return skillSearchForm
 
-def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
+def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
     """
     pathOriginal=path
@@ -464,52 +464,52 @@ def htmlEditProfile(baseDir: str,path: str,domain: str,port: int) -> str:
                 moderators = f.read()
         moderatorsStr= \
             '<div class="container">' \
-            '  <b>Moderators</b><br>' \
-            '  A list of moderator nicknames. One per line.' \
-            '  <textarea id="message" name="moderators" placeholder="List of moderator nicknames..." style="height:200px">'+moderators+'</textarea>' \
+            '  <b>'+translate['Moderators']+'</b><br>' \
+            '  '+translate['A list of moderator nicknames. One per line.']+ \
+            '  <textarea id="message" name="moderators" placeholder="'+translate['List of moderator nicknames']+'..." style="height:200px">'+moderators+'</textarea>' \
             '</div>'
         
     editProfileForm=htmlHeader(editProfileCSS)
     editProfileForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
         '  <div class="vertical-center">' \
-        '    <p class="new-post-text">Profile for '+nickname+'@'+domainFull+'</p>' \
+        '    <p class="new-post-text">'+translate['Profile for']+' '+nickname+'@'+domainFull+'</p>' \
         '    <div class="container">' \
-        '      <input type="submit" name="submitProfile" value="Submit">' \
-        '      <a href="'+pathOriginal+'"><button class="cancelbtn">Cancel</button></a>' \
+        '      <input type="submit" name="submitProfile" value="'+translate['Submit']+'">' \
+        '      <a href="'+pathOriginal+'"><button class="cancelbtn">'+translate['Cancel']+'</button></a>' \
         '    </div>'+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="name" name="displayNickname" value="'+displayNickname+'">' \
-        '      <textarea id="message" name="bio" placeholder="Your bio..." style="height:200px">'+bioStr+'</textarea>' \
+        '      <textarea id="message" name="bio" placeholder="'+translate['Your bio']+'..." style="height:200px">'+bioStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
-        '      The files attached below should be no larger than 10MB in total uploaded at once.<br>' \
-        '      Avatar image' \
+        '      '+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'<br>' \
+        '      '+translate['Avatar image']+ \
         '      <input type="file" id="avatar" name="avatar"' \
         '            accept=".png">' \
-        '      <br>Background image' \
+        '      <br>'+translate['Background image']+ \
         '      <input type="file" id="image" name="image"' \
         '            accept=".png">' \
-        '      <br>Timeline banner image' \
+        '      <br>'+translate['Timeline banner image']+ \
         '      <input type="file" id="banner" name="banner"' \
         '            accept=".png">' \
         '    </div>' \
         '    <div class="container">' \
-        '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>Approve follower requests<br>' \
-        '      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>This is a bot account<br>' \
-        '      <br><b>Filtered words</b>' \
-        '      <br>One per line' \
+        '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>'+translate['Approve follower requests']+'<br>' \
+        '      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>' \
+        '      <br><b>'+translate['Filtered words']+'</b>' \
+        '      <br>'+translate['One per line']+ \
         '      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>' \
-        '      <br><b>Blocked accounts</b>' \
-        '      <br>Blocked accounts, one per line, in the form <i>nickname@domain</i> or <i>*@blockeddomain</i>' \
+        '      <br><b>'+translate['Blocked accounts']+'</b>' \
+        '      <br>'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']+ \
         '      <textarea id="message" name="blocked" placeholder="" style="height:200px">'+blockedStr+'</textarea>' \
-        '      <br><b>Federation list</b>' \
-        '      <br>Federate only with a defined set of instances. One domain name per line.' \
+        '      <br><b>'+translate['Federation list']+'</b>' \
+        '      <br>'+translate['Federate only with a defined set of instances. One domain name per line.']+ \
         '      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>' \
         '    </div>' \
         '    <div class="container">' \
-        '      <b>Skills</b><br>' \
-        '      If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.'+ \
+        '      <b>'+translate['Skills']+'</b><br>' \
+        '      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']+ \
         skillsStr+moderatorsStr+ \
         '    </div>' \
         '  </div>' \
