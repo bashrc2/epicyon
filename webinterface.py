@@ -287,7 +287,9 @@ def htmlHashtagSearch(translate: {}, \
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
-def htmlSkillsSearch(baseDir: str,skillsearch: str,instanceOnly: bool,postsPerPage: int) -> str:
+def htmlSkillsSearch(translate: {},baseDir: str, \
+                     skillsearch: str,instanceOnly: bool, \
+                     postsPerPage: int) -> str:
     """Show a page containing search results for a skill
     """
     if skillsearch.startswith('*'):
@@ -362,10 +364,10 @@ def htmlSkillsSearch(baseDir: str,skillsearch: str,instanceOnly: bool,postsPerPa
         skillSearchCSS = cssFile.read()
         
     skillSearchForm=htmlHeader(skillSearchCSS)
-    skillSearchForm+='<center><h1>Skills search: '+skillsearch+'</h1></center>'
+    skillSearchForm+='<center><h1>'+translate['Skills search']+': '+skillsearch+'</h1></center>'
 
     if len(results)==0:
-        skillSearchForm+='<center><h5>No matches</h5></center>'
+        skillSearchForm+='<center><h5>'+translate['No results']+'</h5></center>'
     else:
         skillSearchForm+='<center>'
         ctr=0

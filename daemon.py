@@ -2801,7 +2801,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # skill search
                     searchStr=searchStr.replace('*','').strip()
                     skillStr= \
-                        htmlSkillsSearch(self.server.baseDir,searchStr, \
+                        htmlSkillsSearch(self.server.translate, \
+                                         self.server.baseDir,searchStr, \
                                          self.server.instanceOnlySkillsSearch, \
                                          64)
                     if skillStr:
