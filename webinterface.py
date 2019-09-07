@@ -95,10 +95,12 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
         emojiForm+=htmlFooter()
     return emojiForm
 
-def htmlSearchSharedItems(baseDir: str,searchStr: str, \
+def htmlSearchSharedItems(translate: {}, \
+                          baseDir: str,searchStr: str, \
                           pageNumber: int, \
                           resultsPerPage: int, \
-                          httpPrefix: str,domainFull: str,actor: str) -> str:
+                          httpPrefix: str, \
+                          domainFull: str,actor: str) -> str:
     """Search results for shared items
     """
     currPage=1
@@ -109,7 +111,7 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str, \
     with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
         sharedItemsCSS=cssFile.read()
         sharedItemsForm=htmlHeader(sharedItemsCSS)
-        sharedItemsForm+='<center><h1>Shared Items Search</h1></center>'
+        sharedItemsForm+='<center><h1>'+translate['Shared Items Search']+'</h1></center>'
         resultsExist=False
         for subdir, dirs, files in os.walk(baseDir+'/accounts'):
             for handle in dirs:
@@ -180,7 +182,7 @@ def htmlSearchSharedItems(baseDir: str,searchStr: str, \
                                 break
                             ctr=0
         if not resultsExist:
-            sharedItemsForm+='<center><h5>No results</h5></center>'
+            sharedItemsForm+='<center><h5>'+translate['No results']+'</h5></center>'
         sharedItemsForm+=htmlFooter()
     return sharedItemsForm    
 

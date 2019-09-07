@@ -2859,7 +2859,8 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     # shared items search
                     sharedItemsStr= \
-                        htmlSearchSharedItems(self.server.baseDir, \
+                        htmlSearchSharedItems(self.server.translate, \
+                                              self.server.baseDir, \
                                               searchStr,pageNumber, \
                                               maxPostsInFeed, \
                                               self.server.httpPrefix, \
