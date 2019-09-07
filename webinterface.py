@@ -221,7 +221,8 @@ def htmlModerationInfo(baseDir: str) -> str:
         infoForm+=htmlFooter()
     return infoForm    
 
-def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int,
+def htmlHashtagSearch(translate: {}, \
+                      baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int, \
                       session,wfRequest: {},personCache: {}, \
                       httpPrefix: str,projectVersion: str) -> str:
     """Show a page containing search results for a hashtag
@@ -272,7 +273,8 @@ def htmlHashtagSearch(baseDir: str,hashtag: str,pageNumber: int,postsPerPage: in
                 index-=1
                 continue
             hashtagSearchForm+= \
-                individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
+                individualPostAsHtml(translate,None, \
+                                     baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion, \
@@ -680,20 +682,23 @@ def htmlSuspended(baseDir: str) -> str:
         suspendedForm+=htmlFooter()
     return suspendedForm
 
-def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: str,pageNumber: int) -> str:
+def htmlNewPost(translate: {},baseDir: str, \
+                path: str,inReplyTo: str, \
+                mentions: [], \
+                reportUrl: str,pageNumber: int) -> str:
     """New post screen
     """    
     replyStr=''
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
             if not inReplyTo:
-                newPostText='<p class="new-post-text">Enter your post text below.</p>'
+                newPostText='<p class="new-post-text">'+translate['Write your post text below.']+'</p>'
             else:
-                newPostText='<p class="new-post-text">Enter your reply to <a href="'+inReplyTo+'">this post</a> below.</p>'
+                newPostText='<p class="new-post-text">'+translate['Write your reply to']+' <a href="'+inReplyTo+'">'+translate['this post']+'</a></p>'
                 replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
         else:
             newPostText= \
-                '<p class="new-post-text">Enter your report below.</p>'
+                '<p class="new-post-text">'+translate['Write your report below.']+'</p>'
 
             # custom report header with any additional instructions
             if os.path.isfile(baseDir+'/accounts/report.txt'):
@@ -704,9 +709,9 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
                         customReportText=customReportText.replace('<p>','<p class="login-subtext">')
                         newPostText+=customReportText
 
-            newPostText+='<p class="new-post-subtext">This message <i>only goes to moderators</i>, even if it mentions other fediverse addresses.</p><p class="new-post-subtext">You can also refer to points within the <a href="/terms">Terms of Service</a> if necessary.</p>'
+            newPostText+='<p class="new-post-subtext">'+translate['This message only goes to moderators, even if it mentions other fediverse addresses.']+'</p><p class="new-post-subtext">'+translate['Also see']+' <a href="/terms">'+translate['Terms of Service']+'</a></p>'
     else:
-        newPostText='<p class="new-post-text">Enter the details for your shared item below.</p>'
+        newPostText='<p class="new-post-text">'+translate['Enter the details for your shared item below.']+'</p>'
         
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
@@ -721,8 +726,8 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
 
     scopeIcon='scope_public.png'
     scopeDescription='Public'
-    placeholderSubject='Subject or Content Warning (optional)...'
-    placeholderMessage='Write something...'
+    placeholderSubject=translate['Subject or Content Warning (optional)']+'...'
+    placeholderMessage=translate['Write something']+'...'
     extraFields=''
     endpoint='newpost'
     if path.endswith('/newunlisted'):
@@ -744,23 +749,23 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
         scopeDescription='Shared Item'
-        placeholderSubject='Name of the shared item...'
-        placeholderMessage='Description of the item being shared...'
+        placeholderSubject=translate['Name of the shared item']+'...'
+        placeholderMessage=translate['Description of the item being shared']+'...'
         endpoint='newshare'
         extraFields= \
             '<div class="container">' \
-            '  <input type="text" class="itemType" placeholder="Type of shared item. eg. hat" name="itemType">' \
-            '  <input type="text" class="category" placeholder="Category of shared item. eg. clothing" name="category">' \
-            '  <label class="labels">Duration of listing in days:</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">' \
+            '  <input type="text" class="itemType" placeholder="'+translate['Type of shared item. eg. hat']+'" name="itemType">' \
+            '  <input type="text" class="category" placeholder="'+translate['Category of shared item. eg. clothing']+'" name="category">' \
+            '  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">' \
             '</div>' \
-            '<input type="text" placeholder="City or location of the shared item" name="location">'
+            '<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
 
     newPostForm=htmlHeader(newPostCSS)
 
     # only show the share option if this is not a reply
     shareOptionOnDropdown=''
     if not replyStr:
-        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>Describe a shared item</a>'
+        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img src="/icons/scope_share.png"/><b>Share</b><br>'+translate['Describe a shared item']+'</a>'
 
     mentionsStr=''
     for m in mentions:
@@ -803,11 +808,11 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
     if not reportUrl:
         dropDownContent= \
             '        <div id="myDropdown" class="dropdown-content">' \
-            '          <a href="'+pathBase+dropdownNewPostSuffix+'"><img src="/icons/scope_public.png"/><b>Public</b><br>Visible to anyone</a>' \
-            '          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img src="/icons/scope_unlisted.png"/><b>Unlisted</b><br>Not on public timeline</a>' \
-            '          <a href="'+pathBase+dropdownFollowersSuffix+'"><img src="/icons/scope_followers.png"/><b>Followers</b><br>Only to followers</a>' \
-            '          <a href="'+pathBase+dropdownDMSuffix+'"><img src="/icons/scope_dm.png"/><b>DM</b><br>Only to mentioned people</a>' \
-            '          <a href="'+pathBase+dropdownReportSuffix+'"><img src="/icons/scope_report.png"/><b>Report</b><br>Send to moderators</a>'+ \
+            '          <a href="'+pathBase+dropdownNewPostSuffix+'"><img src="/icons/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>' \
+            '          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img src="/icons/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>' \
+            '          <a href="'+pathBase+dropdownFollowersSuffix+'"><img src="/icons/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>' \
+            '          <a href="'+pathBase+dropdownDMSuffix+'"><img src="/icons/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>' \
+            '          <a href="'+pathBase+dropdownReportSuffix+'"><img src="/icons/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'+ \
             shareOptionOnDropdown+ \
             '        </div>'
     else:
@@ -822,9 +827,9 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         '        <img src="/icons/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'+ \
         dropDownContent+ \
         '      </div>' \
-        '      <input type="submit" name="submitPost" value="Submit">' \
-        '      <a href="'+pathBase+'/inbox"><button class="cancelbtn">Cancel</button></a>' \
-        '      <a href="'+pathBase+'/searchemoji"><img class="emojisearch" src="/emoji/1F601.png" title="Search for emoji" alt="Search for emoji"/></a>'+ \
+        '      <input type="submit" name="submitPost" value="'+translate['Submit']+'">' \
+        '      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a>' \
+        '      <a href="'+pathBase+'/searchemoji"><img class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'+ \
         '    </div>'+ \
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
@@ -832,7 +837,7 @@ def htmlNewPost(baseDir: str,path: str,inReplyTo: str,mentions: [],reportUrl: st
         '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px" autofocus>'+mentionsStr+'</textarea>' \
         ''+extraFields+ \
         '    <div class="container">' \
-        '      <input type="text" placeholder="Image description" name="imageDescription">' \
+        '      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">' \
         '      <input type="file" id="attachpic" name="attachpic"' \
         '            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">' \
         '    </div>' \
@@ -876,7 +881,8 @@ def htmlFooter() -> str:
         '</html>\n'
     return htmlStr
 
-def htmlProfilePosts(baseDir: str,httpPrefix: str, \
+def htmlProfilePosts(translate: {}, \
+                     baseDir: str,httpPrefix: str, \
                      authorized: bool,ocapAlways: bool, \
                      nickname: str,domain: str,port: int, \
                      session,wfRequest: {},personCache: {}, \
@@ -903,7 +909,8 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
             break
         for item in outboxFeed['orderedItems']:
             if item['type']=='Create':
-                postStr=individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
+                postStr=individualPostAsHtml(translate,None, \
+                                             baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
                                              httpPrefix,projectVersion, \
                                              False,False,False,True)
@@ -915,7 +922,7 @@ def htmlProfilePosts(baseDir: str,httpPrefix: str, \
         currPage+=1
     return profileStr
 
-def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
+def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
                          authorized: bool,ocapAlways: bool, \
                          nickname: str,domain: str,port: int, \
                          session,wfRequest: {},personCache: {}, \
@@ -948,7 +955,7 @@ def htmlProfileFollowing(baseDir: str,httpPrefix: str, \
                 '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/icons/pagedown.png" title="Page down" alt="Page down"></a></center>'
     return profileStr
 
-def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
+def htmlProfileRoles(translate: {},nickname: str,domain: str,rolesJson: {}) -> str:
     """Shows roles on the profile screen
     """
     profileStr=''
@@ -963,19 +970,17 @@ def htmlProfileRoles(nickname: str,domain: str,rolesJson: {}) -> str:
         profileStr='<div>'+profileStr+'</div>'
     return profileStr
 
-def htmlProfileSkills(nickname: str,domain: str,skillsJson: {}) -> str:
+def htmlProfileSkills(translate: {},nickname: str,domain: str,skillsJson: {}) -> str:
     """Shows skills on the profile screen
     """
     profileStr=''
     for skill,level in skillsJson.items():
         profileStr+='<div>'+skill+'<br><div id="myProgress"><div id="myBar" style="width:'+str(level)+'%"></div></div></div><br>'
-    if len(profileStr)==0:
-        profileStr+='<p>@'+nickname+'@'+domain+' has no skills assigned</p>'
-    else:
+    if len(profileStr)>0:
         profileStr='<center><div class="skill-title">'+profileStr+'</div></center>'
     return profileStr
 
-def htmlProfileShares(nickname: str,domain: str,sharesJson: {}) -> str:
+def htmlProfileShares(translate: {},nickname: str,domain: str,sharesJson: {}) -> str:
     """Shows shares on the profile screen
     """
     profileStr=''
@@ -984,19 +989,17 @@ def htmlProfileShares(nickname: str,domain: str,sharesJson: {}) -> str:
         profileStr+='<p class="share-title">'+item['displayName']+'</p>'
         if item.get('imageUrl'):
             profileStr+='<a href="'+item['imageUrl']+'">'
-            profileStr+='<img src="'+item['imageUrl']+'" alt="Item image"></a>'
+            profileStr+='<img src="'+item['imageUrl']+'" alt="'+translate['Item image']+'"></a>'
         profileStr+='<p>'+item['summary']+'</p>'
-        profileStr+='<p><b>Type:</b> '+item['itemType']+' '
-        profileStr+='<b>Category:</b> '+item['category']+' '
-        profileStr+='<b>Location:</b> '+item['location']+'</p>'
+        profileStr+='<p><b>'+translate['Type']+':</b> '+item['itemType']+' '
+        profileStr+='<b>'+translate['Category']+':</b> '+item['category']+' '
+        profileStr+='<b>'+translate['Location']+':</b> '+item['location']+'</p>'
         profileStr+='</div>'
-    if len(profileStr)==0:
-        profileStr+='<p>@'+nickname+'@'+domain+' is not sharing any items</p>'
-    else:
+    if len(profileStr)>0:
         profileStr='<div class="share-title">'+profileStr+'</div>'
     return profileStr
 
-def htmlProfile(projectVersion: str, \
+def htmlProfile(translate: {},projectVersion: str, \
                 baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
@@ -1043,10 +1046,10 @@ def htmlProfile(projectVersion: str, \
     actor=profileJson['id']
 
     if not authorized:
-        loginButton='<br><a href="/login"><button class="loginButton">Login</button></a>'
+        loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
     else:
-        editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>Edit </span></button></a>'
-        linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="Switch to timeline view" alt="Switch to timeline view">'
+        editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>'+translate['Edit']+' </span></button></a>'
+        linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="'+translate['Switch to timeline view']+'" alt="'+translate['Switch to timeline view']+'">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
         followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
@@ -1073,9 +1076,9 @@ def htmlProfile(projectVersion: str, \
                             followApprovalsSection+='<a href="'+followerActor+'">'
                             followApprovalsSection+='<span class="followRequestHandle">'+followerHandle+'</span></a>'
                             followApprovalsSection+='<a href="'+basePath+'/followapprove='+followerHandle+'">'
-                            followApprovalsSection+='<button class="followApprove">Approve</button></a>'
+                            followApprovalsSection+='<button class="followApprove">'+translate['Approve']+'</button></a>'
                             followApprovalsSection+='<a href="'+basePath+'/followdeny='+followerHandle+'">'
-                            followApprovalsSection+='<button class="followDeny">Deny</button></a>'
+                            followApprovalsSection+='<button class="followDeny">'+translate['Deny']+'</button></a>'
                             followApprovalsSection+='</div>'
 
     profileStr= \
@@ -1092,12 +1095,12 @@ def htmlProfile(projectVersion: str, \
         linkToTimelineEnd+ \
         '<div class="container">\n' \
         '  <center>' \
-        '    <a href="'+actor+'"><button class="'+postsButton+'"><span>Posts </span></button></a>' \
-        '    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>Following </span></button></a>' \
-        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>Followers </span></button></a>' \
-        '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>Roles </span></button></a>' \
-        '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>Skills </span></button></a>' \
-        '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>Shares </span></button></a>'+ \
+        '    <a href="'+actor+'"><button class="'+postsButton+'"><span>'+translate['Posts']+' </span></button></a>' \
+        '    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>'+translate['Following']+' </span></button></a>' \
+        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>'+translate['Followers']+' </span></button></a>' \
+        '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>'+translate['Roles']+' </span></button></a>' \
+        '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>'+translate['Skills']+' </span></button></a>' \
+        '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'+ \
         editProfileStr+ \
         '  </center>' \
         '</div>'
@@ -1109,13 +1112,14 @@ def htmlProfile(projectVersion: str, \
 
         if selected=='posts':
             profileStr+= \
-                htmlProfilePosts(baseDir,httpPrefix,authorized, \
+                htmlProfilePosts(translate, \
+                                 baseDir,httpPrefix,authorized, \
                                  ocapAlways,nickname,domain,port, \
                                  session,wfRequest,personCache, \
                                  projectVersion)
         if selected=='following':
             profileStr+= \
-                htmlProfileFollowing(baseDir,httpPrefix, \
+                htmlProfileFollowing(translate,baseDir,httpPrefix, \
                                      authorized,ocapAlways,nickname, \
                                      domain,port,session, \
                                      wfRequest,personCache,extraJson, \
@@ -1125,7 +1129,7 @@ def htmlProfile(projectVersion: str, \
                                      pageNumber,maxItemsPerPage)
         if selected=='followers':
             profileStr+= \
-                htmlProfileFollowing(baseDir,httpPrefix, \
+                htmlProfileFollowing(translate,baseDir,httpPrefix, \
                                      authorized,ocapAlways,nickname, \
                                      domain,port,session, \
                                      wfRequest,personCache,extraJson, \
@@ -1135,13 +1139,13 @@ def htmlProfile(projectVersion: str, \
                                      pageNumber,maxItemsPerPage)
         if selected=='roles':
             profileStr+= \
-                htmlProfileRoles(nickname,domainFull,extraJson)
+                htmlProfileRoles(translate,nickname,domainFull,extraJson)
         if selected=='skills':
             profileStr+= \
-                htmlProfileSkills(nickname,domainFull,extraJson)
+                htmlProfileSkills(translate,nickname,domainFull,extraJson)
         if selected=='shares':
             profileStr+= \
-                htmlProfileShares(nickname,domainFull,extraJson)
+                htmlProfileShares(translate,nickname,domainFull,extraJson)
         profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
     return profileStr
 
@@ -1172,9 +1176,9 @@ def individualFollowAsHtml(baseDir: str,session,wfRequest: {}, \
     if authorized:
         for b in buttons:
             if b=='block':
-                buttonsStr+='<a href="/users/'+actorNickname+'?block='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">Block</button></a>'
+                buttonsStr+='<a href="/users/'+actorNickname+'?block='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Block']+'</button></a>'
             if b=='unfollow':
-                buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">Unfollow</button></a>'
+                buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
 
     return \
         '<div class="container">\n' \
@@ -1238,7 +1242,7 @@ def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
-def addEmbeddedAudio(content: str) -> str:
+def addEmbeddedAudio(translate: {},content: str) -> str:
     """Adds embedded audio for mp3/ogg
     """
     if not ('.mp3' in content or '.ogg' in content):
@@ -1272,11 +1276,11 @@ def addEmbeddedAudio(content: str) -> str:
         url=w
         content+='<center><audio controls>'
         content+='<source src="'+url+'" type="audio/'+extension.replace('.','')+'">'
-        content+='Your browser does not support the audio element.'
+        content+=translate['Your browser does not support the audio element.']
         content+='</audio></center>'
     return content
 
-def addEmbeddedVideo(content: str,width=400,height=300) -> str:
+def addEmbeddedVideo(translate: {},content: str,width=400,height=300) -> str:
     """Adds embedded video for mp4/webm/ogv
     """
     if not ('.mp4' in content or '.webm' in content or '.ogv' in content):
@@ -1311,11 +1315,11 @@ def addEmbeddedVideo(content: str,width=400,height=300) -> str:
         url=w
         content+='<center><video width="'+str(width)+'" height="'+str(height)+'" controls>'
         content+='<source src="'+url+'" type="video/'+extension.replace('.','')+'">'
-        content+='Your browser does not support the video element.'
+        content+=translate['Your browser does not support the video element.']
         content+='</video></center>'
     return content
 
-def addEmbeddedVideoFromSites(content: str,width=400,height=300) -> str:
+def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -> str:
     """Adds embedded videos
     """
     if '>vimeo.com/' in content:
@@ -1355,12 +1359,12 @@ def addEmbeddedVideoFromSites(content: str,width=400,height=300) -> str:
                 return content
     return content
 
-def addEmbeddedElements(content: str) -> str:
+def addEmbeddedElements(translate: {},content: str) -> str:
     """Adds embedded elements for various media types
     """
-    content=addEmbeddedVideoFromSites(content)
-    content=addEmbeddedAudio(content)
-    return addEmbeddedVideo(content)
+    content=addEmbeddedVideoFromSites(translate,content)
+    content=addEmbeddedAudio(translate,content)
+    return addEmbeddedVideo(translate,content)
 
 def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
     """Returns true if the given account requires follower approval
@@ -1374,7 +1378,9 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
     return manuallyApprovesFollowers
 
-def insertQuestion(nickname: str,content: str,postJsonObject: {},pageNumber: int) -> str:
+def insertQuestion(translate: {}, \
+                   nickname: str,content: str, \
+                   postJsonObject: {},pageNumber: int) -> str:
     """ Inserts question selection into a post
     """
     if not isQuestion(postJsonObject):
@@ -1393,11 +1399,12 @@ def insertQuestion(nickname: str,content: str,postJsonObject: {},pageNumber: int
         if not choice.get('name'):
             continue
         content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br>'
-    content+='<input type="submit" value="Submit">'
+    content+='<input type="submit" value="'+translate['Submit']+'">'
     content+='</form></div>'
     return content
 
-def individualPostAsHtml(pageNumber: int,baseDir: str, \
+def individualPostAsHtml(translate: {}, \
+                         pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
@@ -1584,8 +1591,8 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                                 attachmentStr+='<br>'
                             attachmentStr+= \
                                 '<center><video width="400" height="300" controls>' \
-                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">' \
-                                'Your browser does not support the video tag.' \
+                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'+ \
+                                translate['Your browser does not support the video tag.']+ \
                                 '</video></center>'
                             attachmentCtr+=1
                     elif mediaType=='audio/mpeg' or \
@@ -1598,8 +1605,8 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                                 attachmentStr+='<br>'
                             attachmentStr+= \
                                 '<center><audio controls>' \
-                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">' \
-                                'Your browser does not support the audio tag.' \
+                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'+ \
+                                translate['Your browser does not support the audio tag.']+ \
                                 '</audio></center>'
                             attachmentCtr+=1
             attachmentStr+='</div>'
@@ -1627,7 +1634,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
     avatarImageInPost= \
         '  <div class="timeline-avatar">' \
         '    <a href="'+postJsonObject['actor']+'">' \
-        '    <img src="'+avatarUrl+'" title="Show profile" alt="Avatar"'+avatarPosition+'/></a>' \
+        '    <img src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
         '  </div>'
 
     messageIdStr=''
@@ -1638,7 +1645,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         avatarImageInPost= \
             '  <div class="timeline-avatar">' \
             '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
-            '    <img title="Show options for this person" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
+            '    <img title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
             '  </div>'
 
     publishedStr=postJsonObject['object']['published']
@@ -1662,11 +1669,11 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         # don't allow announce/repeat of your own posts
         announceIcon='repeat_inactive.png'
         announceLink='repeat'
-        announceTitle='Repeat this post'
+        announceTitle=translate['Repeat this post']
         if announcedByPerson(postJsonObject,nickname,fullDomain):
             announceIcon='repeat.png'
             announceLink='unrepeat'
-            announceTitle='Undo the repeat this post'
+            announceTitle=translate['Undo the repeat']
         announceStr= \
             '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+announceTitle+'">' \
             '<img src="/icons/'+announceIcon+'"/></a>'
@@ -1675,11 +1682,11 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
     if not isModerationPost:
         likeIcon='like_inactive.png'
         likeLink='like'
-        likeTitle='Like this post'
+        likeTitle=translate['Like this post']
         if noOfLikes(postJsonObject)>0:
             likeIcon='like.png'
             likeLink='unlike'
-            likeTitle='Undo the like of this post'
+            likeTitle=translate['Undo the like']
         likeStr= \
             '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+likeTitle+'">' \
             '<img src="/icons/'+likeIcon+'"/></a>'
@@ -1690,7 +1697,7 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         postJsonObject['object']['id'].startswith(postJsonObject['actor'])):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr= \
-                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="Delete this post">' \
+                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">' \
                 '<img src="/icons/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
@@ -1715,11 +1722,11 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
         footerStr='<div class="'+containerClassIcons+'">'
         if not isModerationPost and showRepeatIcon:
             if not manuallyApprovesFollowers:
-                footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="Reply to this post">'
+                footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="'+translate['Reply to this post']+'">'
             else:
-                footerStr+='<a href="/users/'+nickname+'?replyfollowers='+replyToLink+'" title="Reply to this post">'
+                footerStr+='<a href="/users/'+nickname+'?replyfollowers='+replyToLink+'" title="'+translate['Reply to this post']+'">'
         else:
-            footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="Reply to this post">'
+            footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="'+translate['Reply to this post']+'">'
         footerStr+='<img src="/icons/reply.png"/></a>'
         footerStr+=announceStr+likeStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
@@ -1727,8 +1734,8 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
 
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
-        contentStr=addEmbeddedElements(contentStr)
-        contentStr=insertQuestion(nickname,contentStr,postJsonObject,pageNumber)
+        contentStr=addEmbeddedElements(translate,contentStr)
+        contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -1738,11 +1745,11 @@ def individualPostAsHtml(pageNumber: int,baseDir: str, \
                 containerClass='container report'
         else:
             contentStr+='<b>Sensitive</b> '
-        contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">SHOW MORE</button>'
+        contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">'+translate['SHOW MORE']+'</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
-        contentStr=addEmbeddedElements(contentStr)
-        contentStr=insertQuestion(nickname,contentStr,postJsonObject,pageNumber)
+        contentStr=addEmbeddedElements(translate,contentStr)
+        contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
@@ -1769,7 +1776,8 @@ def isQuestion(postObjectJson: {}) -> bool:
                             return True
     return False 
 
-def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
+def htmlTimeline(translate: {},pageNumber: int, \
+                 itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,timelineJson: {}, \
                  boxName: str,allowDeletion: bool, \
@@ -1823,24 +1831,24 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
 
     if boxName!='dm':
         if not manuallyApproveFollowers:
-            newPostButtonStr='<a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'
+            newPostButtonStr='<a href="'+actor+'/newpost"><img src="/icons/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="right"/></a>'
         else:
-            newPostButtonStr='<a href="'+actor+'/newfollowers"><img src="/icons/newpost.png" title="Create a new post" alt="Create a new post" class="right"/></a>'
+            newPostButtonStr='<a href="'+actor+'/newfollowers"><img src="/icons/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="right"/></a>'
     else:
-        newPostButtonStr='<a href="'+actor+'/newdm"><img src="/icons/newpost.png" title="Create a new DM" alt="Create a new DM" class="right"/></a>'
+        newPostButtonStr='<a href="'+actor+'/newdm"><img src="/icons/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="right"/></a>'
 
     # banner and row of buttons
     tlStr+= \
-        '<a href="/users/'+nickname+'" title="Switch to profile view" alt="Switch to profile view">' \
+        '<a href="/users/'+nickname+'" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'">' \
         '<div class="timeline-banner">' \
         '</div></a>' \
         '<div class="container">\n'+ \
-        '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>Inbox</span></button></a>' \
-        '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>DM</span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>Outbox</span></button></a>'+ \
+        '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>' \
+        '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>' \
+        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
-        '    <a href="'+actor+'/search"><img src="/icons/search.png" title="Search and follow" alt="Search and follow" class="right"/></a>'+ \
-        '    <a href="'+actor+'/'+boxName+'"><img src="/icons/refresh.png" title="Refresh" alt="Refresh" class="right"/></a>'+ \
+        '    <a href="'+actor+'/search"><img src="/icons/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="right"/></a>'+ \
+        '    <a href="'+actor+'/'+boxName+'"><img src="/icons/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="right"/></a>'+ \
         followApprovals+ \
         '</div>'
 
@@ -1849,13 +1857,13 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
         tlStr+= \
             '<form method="POST" action="/users/'+nickname+'/moderationaction">' \
             '<div class="container">\n'+ \
-            '    <input type="text" placeholder="Nickname or URL. Block using *@domain or nickname@domain" name="moderationAction" value="">' \
-            '    <input type="submit" title="Remove the above item" name="submitRemove" value="Remove">' \
-            '    <input type="submit" title="Suspend the above account nickname" name="submitSuspend" value="Suspend">' \
-            '    <input type="submit" title="Remove a suspension for an account nickname" name="submitUnsuspend" value="Unsuspend">' \
-            '    <input type="submit" title="Block an account on another instance" name="submitBlock" value="Block">' \
-            '    <input type="submit" title="Unblock an account on another instance" name="submitUnblock" value="Unblock">' \
-            '    <input type="submit" title="Information about current blocks/suspensions" name="submitInfo" value="Info">' \
+            '    <input type="text" placeholder="'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'" name="moderationAction" value="">' \
+            '    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">' \
+            '    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">' \
+            '    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">' \
+            '    <input type="submit" title="'+translate['Block an account on another instance']+'" name="submitBlock" value="'+translate['Block']+'">' \
+            '    <input type="submit" title="'+translate['Unblock an account on another instance']+'" name="submitUnblock" value="'+translate['Unblock']+'">' \
+            '    <input type="submit" title="'+translate['Information about current blocks/suspensions']+'" name="submitInfo" value="'+translate['Info']+'">' \
             '</div></form>'
 
     # add the javascript for content warnings
@@ -1872,7 +1880,7 @@ def htmlTimeline(pageNumber: int,itemsPerPage: int,session,baseDir: str, \
             itemCtr+=1
             avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
             tlStr+= \
-                individualPostAsHtml(pageNumber, \
+                individualPostAsHtml(translate,pageNumber, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,avatarUrl,True, \
                                      allowDeletion, \
@@ -1936,14 +1944,15 @@ def htmlOutbox(pageNumber: int,itemsPerPage: int, \
                         nickname,domain,port,outboxJson,'outbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
+def htmlIndividualPost(translate: {}, \
+                       baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,authorized: bool, \
                        postJsonObject: {},httpPrefix: str,projectVersion: str) -> str:
     """Show an individual post as html
     """
     postStr='<script>'+contentWarningScript()+'</script>'    
     postStr+= \
-        individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
+        individualPostAsHtml(translate,None,baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
                              httpPrefix,projectVersion,False,authorized,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
@@ -1956,7 +1965,7 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
         with open(postFilename, 'r') as fp:
             postJsonObject=commentjson.load(fp)
             postStr= \
-                individualPostAsHtml(None, \
+                individualPostAsHtml(translate,None, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
@@ -1975,14 +1984,15 @@ def htmlIndividualPost(baseDir: str,session,wfRequest: {},personCache: {}, \
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr+= \
-                    individualPostAsHtml(None, \
+                    individualPostAsHtml(translate,None, \
                                          baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
                                          httpPrefix,projectVersion, \
                                          False,authorized,False,False)
     return htmlHeader()+postStr+htmlFooter()
 
-def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
+def htmlPostReplies(translate: {},baseDir: str, \
+                    session,wfRequest: {},personCache: {}, \
                     nickname: str,domain: str,port: int,repliesJson: {}, \
                     httpPrefix: str,projectVersion: str) -> str:
     """Show the replies to an individual post as html
@@ -1990,13 +2000,16 @@ def htmlPostReplies(baseDir: str,session,wfRequest: {},personCache: {}, \
     repliesStr=''
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
-            repliesStr+=individualPostAsHtml(None,baseDir,session,wfRequest,personCache, \
-                                             nickname,domain,port,item,None,True,False, \
-                                             httpPrefix,projectVersion,False,False,False,False)
+            repliesStr+= \
+                individualPostAsHtml(translate,None, \
+                                     baseDir,session,wfRequest,personCache, \
+                                     nickname,domain,port,item,None,True,False, \
+                                     httpPrefix,projectVersion, \
+                                     False,False,False,False)
 
     return htmlHeader()+repliesStr+htmlFooter()
 
-def htmlRemoveSharedItem(baseDir: str,actor: str,shareName: str) -> str:
+def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
     nickname=getNicknameFromActor(actor)
@@ -2028,13 +2041,13 @@ def htmlRemoveSharedItem(baseDir: str,actor: str,shareName: str) -> str:
     sharesStr+='  <center>'
     if sharedItemImageUrl:
         sharesStr+='  <img src="'+sharedItemImageUrl+'"/>'
-    sharesStr+='  <p class="followText">Remove '+sharedItemDisplayName+' ?</p>'
+    sharesStr+='  <p class="followText">'+translate['Remove']+' '+sharedItemDisplayName+' ?</p>'
     sharesStr+= \
         '  <form method="POST" action="'+actor+'/rmshare">' \
         '    <input type="hidden" name="actor" value="'+actor+'">' \
         '    <input type="hidden" name="shareName" value="'+shareName+'">' \
-        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-        '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
+        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
+        '    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>' \
         '  </form>'
     sharesStr+='  </center>'
     sharesStr+='  </div>'
@@ -2042,7 +2055,7 @@ def htmlRemoveSharedItem(baseDir: str,actor: str,shareName: str) -> str:
     sharesStr+=htmlFooter()
     return sharesStr
 
-def htmlDeletePost(pageNumber: int, \
+def htmlDeletePost(translate,pageNumber: int, \
                    session,baseDir: str,messageId: str, \
                    httpPrefix: str,projectVersion: str, \
                    wfRequest: {},personCache: {}) -> str:
@@ -2072,23 +2085,29 @@ def htmlDeletePost(pageNumber: int, \
         deletePostStr=htmlHeader(profileStyle)
         deletePostStr+='<script>'+contentWarningScript()+'</script>'
         deletePostStr+= \
-            individualPostAsHtml(pageNumber,baseDir,session,wfRequest,personCache, \
-                                 nickname,domain,port,postJsonObject,None,True,False, \
-                                 httpPrefix,projectVersion,False,False,False,False)
+            individualPostAsHtml(translate,pageNumber, \
+                                 baseDir,session,wfRequest,personCache, \
+                                 nickname,domain,port,postJsonObject, \
+                                 None,True,False, \
+                                 httpPrefix,projectVersion, \
+                                 False,False,False,False)
         deletePostStr+='<center>'
-        deletePostStr+='  <p class="followText">Delete this post?</p>'
+        deletePostStr+='  <p class="followText">'+translate['Delete this post?']+'</p>'
         deletePostStr+= \
             '  <form method="POST" action="'+actor+'/rmpost">' \
             '    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">' \
             '    <input type="hidden" name="messageId" value="'+messageId+'">' \
-            '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-            '    <a href="'+actor+'/inbox'+'"><button class="button">No</button></a>' \
+            '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
+            '    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>' \
             '  </form>'
         deletePostStr+='</center>'
         deletePostStr+=htmlFooter()
     return deletePostStr
 
-def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
+def htmlFollowConfirm(translate: {},baseDir: str, \
+                      originPathStr: str, \
+                      followActor: str, \
+                      followProfileUrl: str) -> str:
     """Asks to confirm a follow
     """
     followDomain,port=getDomainFromActor(followActor)
@@ -2105,12 +2124,12 @@ def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followPro
     followStr+='  <center>'
     followStr+='  <a href="'+followActor+'">'
     followStr+='  <img src="'+followProfileUrl+'"/></a>'
-    followStr+='  <p class="followText">Follow '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
+    followStr+='  <p class="followText">'+translate['Follow']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+= \
         '  <form method="POST" action="'+originPathStr+'/followconfirm">' \
         '    <input type="hidden" name="actor" value="'+followActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
         '  </form>'
     followStr+='</center>'
     followStr+='</div>'
@@ -2118,7 +2137,10 @@ def htmlFollowConfirm(baseDir: str,originPathStr: str,followActor: str,followPro
     followStr+=htmlFooter()
     return followStr
 
-def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followProfileUrl: str) -> str:
+def htmlUnfollowConfirm(translate: {},baseDir: str, \
+                        originPathStr: str, \
+                        followActor: str, \
+                        followProfileUrl: str) -> str:
     """Asks to confirm unfollowing an actor
     """
     followDomain,port=getDomainFromActor(followActor)
@@ -2135,12 +2157,12 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+='  <center>'
     followStr+='  <a href="'+followActor+'">'
     followStr+='  <img src="'+followProfileUrl+'"/></a>'
-    followStr+='  <p class="followText">Stop following '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
+    followStr+='  <p class="followText">'+translate['Stop following']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+= \
         '  <form method="POST" action="'+originPathStr+'/unfollowconfirm">' \
         '    <input type="hidden" name="actor" value="'+followActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
         '  </form>'
     followStr+='</center>'
     followStr+='</div>'
@@ -2148,7 +2170,12 @@ def htmlUnfollowConfirm(baseDir: str,originPathStr: str,followActor: str,followP
     followStr+=htmlFooter()
     return followStr
 
-def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: str,optionsProfileUrl: str,optionsLink: str,pageNumber: int) -> str:
+def htmlPersonOptions(translate: {},baseDir: str, \
+                      domain: str,originPathStr: str, \
+                      optionsActor: str, \
+                      optionsProfileUrl: str, \
+                      optionsLink: str, \
+                      pageNumber: int) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain,optionsPort=getDomainFromActor(optionsActor)
@@ -2188,18 +2215,18 @@ def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: 
     optionsStr+='  <center>'
     optionsStr+='  <a href="'+optionsActor+'">'
     optionsStr+='  <img src="'+optionsProfileUrl+'"/></a>'
-    optionsStr+='  <p class="optionsText">Options for @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
+    optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     optionsStr+= \
         '  <form method="POST" action="'+originPathStr+'/personoptions">' \
         '    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">' \
         '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
         '    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'+ \
         optionsLinkStr+ \
-        '    <button type="submit" class="button" name="submitView">View</button>' \
-        '    <button type="submit" class="button" name="submit'+followStr+'">'+followStr+'</button>' \
-        '    <button type="submit" class="button" name="submit'+blockStr+'">'+blockStr+'</button>' \
-        '    <button type="submit" class="button" name="submitDM">DM</button>' \
-        '    <button type="submit" class="button" name="submitReport">Report</button>' \
+        '    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>' \
+        '    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>' \
+        '    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>' \
+        '    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>' \
+        '    <button type="submit" class="button" name="submitReport">'+translate['Report']+'</button>' \
         '  </form>'
     optionsStr+='</center>'
     optionsStr+='</div>'
@@ -2207,37 +2234,43 @@ def htmlPersonOptions(baseDir: str,domain: str,originPathStr: str,optionsActor: 
     optionsStr+=htmlFooter()
     return optionsStr
 
-def htmlBlockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProfileUrl: str) -> str:
-    """Asks to confirm a block
-    """
-    blockDomain,port=getDomainFromActor(blockActor)
-    
-    if os.path.isfile(baseDir+'/img/block-background.png'):
-        if not os.path.isfile(baseDir+'/accounts/block-background.png'):
-            copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
+#def htmlBlockConfirm(translate: {},baseDir: str, \
+#                     originPathStr: str, \
+#                     blockActor: str, \
+#                     blockProfileUrl: str) -> str:
+#    """Asks to confirm a block
+#    """
+#    blockDomain,port=getDomainFromActor(blockActor)
+#    
+#    if os.path.isfile(baseDir+'/img/block-background.png'):
+#        if not os.path.isfile(baseDir+'/accounts/block-background.png'):
+#            copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
+#
+#    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+#        profileStyle = cssFile.read()
+#    blockStr=htmlHeader(profileStyle)
+#    blockStr+='<div class="block">'
+#    blockStr+='  <div class="blockAvatar">'
+#    blockStr+='  <center>'
+#    blockStr+='  <a href="'+blockActor+'">'
+#    blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
+#    blockStr+='  <p class="blockText">'+translate['Block']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
+#    blockStr+= \
+#        '  <form method="POST" action="'+originPathStr+'/blockconfirm">' \
+#        '    <input type="hidden" name="actor" value="'+blockActor+'">' \
+#        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
+#        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
+#        '  </form>'
+#    blockStr+='</center>'
+#    blockStr+='</div>'
+#    blockStr+='</div>'
+#    blockStr+=htmlFooter()
+#    return blockStr
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
-        profileStyle = cssFile.read()
-    blockStr=htmlHeader(profileStyle)
-    blockStr+='<div class="block">'
-    blockStr+='  <div class="blockAvatar">'
-    blockStr+='  <center>'
-    blockStr+='  <a href="'+blockActor+'">'
-    blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
-    blockStr+='  <p class="blockText">Block '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
-    blockStr+= \
-        '  <form method="POST" action="'+originPathStr+'/blockconfirm">' \
-        '    <input type="hidden" name="actor" value="'+blockActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
-        '  </form>'
-    blockStr+='</center>'
-    blockStr+='</div>'
-    blockStr+='</div>'
-    blockStr+=htmlFooter()
-    return blockStr
-
-def htmlUnblockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProfileUrl: str) -> str:
+def htmlUnblockConfirm(translate: {},baseDir: str, \
+                       originPathStr: str, \
+                       blockActor: str, \
+                       blockProfileUrl: str) -> str:
     """Asks to confirm unblocking an actor
     """
     blockDomain,port=getDomainFromActor(blockActor)
@@ -2254,12 +2287,12 @@ def htmlUnblockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProf
     blockStr+='  <center>'
     blockStr+='  <a href="'+blockActor+'">'
     blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
-    blockStr+='  <p class="blockText">Stop blocking '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
+    blockStr+='  <p class="blockText">'+translate['Stop blocking']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
     blockStr+= \
         '  <form method="POST" action="'+originPathStr+'/unblockconfirm">' \
         '    <input type="hidden" name="actor" value="'+blockActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">Yes</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">No</button></a>' \
+        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
+        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
         '  </form>'
     blockStr+='</center>'
     blockStr+='</div>'
@@ -2267,7 +2300,8 @@ def htmlUnblockConfirm(baseDir: str,originPathStr: str,blockActor: str,blockProf
     blockStr+=htmlFooter()
     return blockStr
 
-def htmlSearchEmojiTextEntry(baseDir: str,path: str) -> str:
+def htmlSearchEmojiTextEntry(translate: {}, \
+                             baseDir: str,path: str) -> str:
     """Search for an emoji by name
     """
     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
@@ -2287,12 +2321,12 @@ def htmlSearchEmojiTextEntry(baseDir: str,path: str) -> str:
     emojiStr+='<div class="follow">'
     emojiStr+='  <div class="followAvatar">'
     emojiStr+='  <center>'    
-    emojiStr+='  <p class="followText">Enter an emoji name to search for</p>'
+    emojiStr+='  <p class="followText">'+translate['Enter an emoji name to search for']+'</p>'
     emojiStr+= \
         '  <form method="POST" action="'+actor+'/searchhandleemoji">' \
         '    <input type="hidden" name="actor" value="'+actor+'">' \
         '    <input type="text" name="searchtext" autofocus><br>' \
-        '    <button type="submit" class="button" name="submitSearch">Submit</button>' \
+        '    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>' \
         '  </form>'
     emojiStr+='  </center>'
     emojiStr+='  </div>'
@@ -2300,7 +2334,8 @@ def htmlSearchEmojiTextEntry(baseDir: str,path: str) -> str:
     emojiStr+=htmlFooter()
     return emojiStr
 
-def htmlSearch(baseDir: str,path: str) -> str:
+def htmlSearch(translate: {}, \
+               baseDir: str,path: str) -> str:
     """Search called from the timeline icon
     """
     actor=path.replace('/search','')
@@ -2317,12 +2352,12 @@ def htmlSearch(baseDir: str,path: str) -> str:
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'    
-    followStr+='  <p class="followText">Enter an address, shared item, #hashtag, *skill or :emoji: to search for</p>'
+    followStr+='  <p class="followText">'+translate['Enter an address, shared item, #hashtag, *skill or :emoji: to search for']+'</p>'
     followStr+= \
         '  <form method="POST" action="'+actor+'/searchhandle">' \
         '    <input type="hidden" name="actor" value="'+actor+'">' \
         '    <input type="text" name="searchtext" autofocus><br>' \
-        '    <button type="submit" class="button" name="submitSearch">Submit</button>' \
+        '    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>' \
         '  </form>'
     followStr+='  </center>'
     followStr+='  </div>'
@@ -2330,7 +2365,8 @@ def htmlSearch(baseDir: str,path: str) -> str:
     followStr+=htmlFooter()
     return followStr
 
-def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
+def htmlProfileAfterSearch(translate: {}, \
+                           baseDir: str,path: str,httpPrefix: str, \
                            nickname: str,domain: str,port: int, \
                            profileHandle: str, \
                            session,wfRequest: {},personCache: {},
@@ -2434,8 +2470,8 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             '  <form method="POST" action="'+backUrl+'/followconfirm">' \
             '    <center>' \
             '      <input type="hidden" name="actor" value="'+personUrl+'">' \
-            '      <button type="submit" class="button" name="submitYes">Follow</button>' \
-            '      <a href="'+backUrl+'"><button class="button">Go Back</button></a>' \
+            '      <button type="submit" class="button" name="submitYes">'+translate['Follow']+'</button>' \
+            '      <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>' \
             '    </center>' \
             '  </form>' \
             '</div>'
@@ -2453,7 +2489,7 @@ def htmlProfileAfterSearch(baseDir: str,path: str,httpPrefix: str, \
             if not item.get('object'):
                 continue
             profileStr+= \
-                individualPostAsHtml(None,baseDir, \
+                individualPostAsHtml(translate,None,baseDir, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \

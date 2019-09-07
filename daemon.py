@@ -12,6 +12,7 @@ import commentjson
 import json
 import time
 import base64
+import locale
 # used for mime decoding of message POST
 import email.parser
 # for saving images
@@ -604,7 +605,8 @@ class PubServer(BaseHTTPRequestHandler):
                    optionsLink=None
                    if len(optionsList)>3:
                        optionsLink=optionsList[3]
-                   msg=htmlPersonOptions(self.server.baseDir, \
+                   msg=htmlPersonOptions(self.server.translate, \
+                                         self.server.baseDir, \
                                          self.server.domain, \
                                          originPathStr, \
                                          optionsActor, \
@@ -623,7 +625,7 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '?rmshare=' in self.path:
             shareName=self.path.split('?rmshare=')[1]
             actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?rmshare=')[0]
-            msg=htmlRemoveSharedItem(self.server.baseDir,actor,shareName).encode()
+            msg=htmlRemoveSharedItem(self.server.translate,self.server.baseDir,actor,shareName).encode()
             if not msg:
                self._redirect_headers(actor+'/inbox',cookie)
                self.server.GETbusy=False
@@ -919,7 +921,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 return
             hashtagStr= \
-                htmlHashtagSearch(self.server.baseDir,hashtag,pageNumber, \
+                htmlHashtagSearch(self.server.translate, \
+                                  self.server.baseDir,hashtag,pageNumber, \
                                   maxPostsInFeed,self.server.session, \
                                   self.server.cachedWebfingers, \
                                   self.server.personCache, \
@@ -939,7 +942,8 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
            if self.path.endswith('/search'):
                # show the search screen
-               msg=htmlSearch(self.server.baseDir,self.path).encode()
+               msg=htmlSearch(self.server.translate, \
+                              self.server.baseDir,self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
                self.wfile.write(msg)
                self.server.GETbusy=False
@@ -949,7 +953,9 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
            if self.path.endswith('/searchemoji'):
                # show the search screen
-               msg=htmlSearchEmojiTextEntry(self.server.baseDir,self.path).encode()
+               msg=htmlSearchEmojiTextEntry(self.server.translate, \
+                                            self.server.baseDir, \
+                                            self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
                self.wfile.write(msg)
                self.server.GETbusy=False
@@ -1189,7 +1195,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.useTor)
 
                 deleteStr= \
-                    htmlDeletePost(pageNumber, \
+                    htmlDeletePost(self.server.translate,pageNumber, \
                                    self.server.session,self.server.baseDir, \
                                    deleteUrl,self.server.httpPrefix, \
                                    __version__,self.server.cachedWebfingers, \
@@ -1279,7 +1285,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/newdm') or \
                 self.path.endswith('/newreport') or \
                 self.path.endswith('/newshare')):
-                msg=htmlNewPost(self.server.baseDir,self.path,inReplyToUrl,replyToList,shareDescription,replyPageNumber).encode()
+                msg=htmlNewPost(self.server.translate, \
+                                self.server.baseDir, \
+                                self.path,inReplyToUrl, \
+                                replyToList, \
+                                shareDescription, \
+                                replyPageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.GETbusy=False
@@ -1311,7 +1322,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         postJsonObject['likes']={'items': []}
                                 if self._requestHTTP():
                                     msg= \
-                                        htmlIndividualPost(self.server.session, \
+                                        htmlIndividualPost(self.server.translate, \
+                                                           self.server.session, \
                                                            self.server.cachedWebfingers,self.server.personCache, \
                                                            nickname,self.server.domain,self.server.port, \
                                                            authorized,postJsonObject, \
@@ -1361,7 +1373,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 print('DEBUG: creating new session')
                                             self.server.session= \
                                                 createSession(self.server.domain,self.server.port,self.server.useTor)
-                                        msg=htmlPostReplies(self.server.baseDir, \
+                                        msg=htmlPostReplies(self.server.translate, \
+                                                            self.server.baseDir, \
                                                             self.server.session, \
                                                             self.server.cachedWebfingers, \
                                                             self.server.personCache, \
@@ -1406,7 +1419,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 print('DEBUG: creating new session')
                                             self.server.session= \
                                                 createSession(self.server.domain,self.server.port,self.server.useTor)
-                                        msg=htmlPostReplies(self.server.baseDir, \
+                                        msg=htmlPostReplies(self.server.translate, \
+                                                            self.server.baseDir, \
                                                             self.server.session, \
                                                             self.server.cachedWebfingers, \
                                                             self.server.personCache, \
@@ -1440,7 +1454,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     personLookup(self.server.domain,self.path.replace('/roles',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    msg=htmlProfile(self.server.projectVersion, \
+                                    msg=htmlProfile(self.server.translate, \
+                                                    self.server.projectVersion, \
                                                     self.server.baseDir, \
                                                     self.server.httpPrefix, \
                                                     True, \
@@ -1476,7 +1491,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     personLookup(self.server.domain,self.path.replace('/skills',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    msg=htmlProfile(self.server.projectVersion, \
+                                    msg=htmlProfile(self.server.translate, \
+                                                    self.server.projectVersion, \
                                                     self.server.baseDir, \
                                                     self.server.httpPrefix, \
                                                     True, \
@@ -1533,7 +1549,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={'items': []}                                    
                                 if self._requestHTTP():
-                                    msg=htmlIndividualPost(self.server.baseDir, \
+                                    msg=htmlIndividualPost(self.server.translate, \
+                                                           self.server.baseDir, \
                                                            self.server.session, \
                                                            self.server.cachedWebfingers,self.server.personCache, \
                                                            nickname,self.server.domain,self.server.port, \
@@ -1823,7 +1840,8 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
-                    msg=htmlProfile(self.server.projectVersion, \
+                    msg=htmlProfile(self.server.translate, \
+                                    self.server.projectVersion, \
                                     self.server.baseDir, \
                                     self.server.httpPrefix, \
                                     authorized, \
@@ -1873,7 +1891,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
 
-                    msg=htmlProfile(self.server.projectVersion, \
+                    msg=htmlProfile(self.server.translate, \
+                                    self.server.projectVersion, \
                                     self.server.baseDir, \
                                     self.server.httpPrefix, \
                                     authorized, \
@@ -1921,7 +1940,8 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.domain,self.server.port,self.server.useTor)
-                    msg=htmlProfile(self.server.projectVersion, \
+                    msg=htmlProfile(self.server.translate, \
+                                    self.server.projectVersion, \
                                     self.server.baseDir, \
                                     self.server.httpPrefix, \
                                     authorized, \
@@ -1952,7 +1972,8 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: creating new session')
                     self.server.session= \
                         createSession(self.server.domain,self.server.port,self.server.useTor)
-                msg=htmlProfile(self.server.projectVersion, \
+                msg=htmlProfile(self.server.translate, \
+                                self.server.projectVersion, \
                                 self.server.baseDir, \
                                 self.server.httpPrefix, \
                                 authorized, \
@@ -2755,7 +2776,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.startswith('#'):      
                     # hashtag search
                     hashtagStr= \
-                        htmlHashtagSearch(self.server.baseDir,searchStr[1:],1, \
+                        htmlHashtagSearch(self.server.translate, \
+                                          self.server.baseDir,searchStr[1:],1, \
                                           maxPostsInFeed,self.server.session, \
                                           self.server.cachedWebfingers, \
                                           self.server.personCache, \
@@ -2789,7 +2811,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.port, \
                                           self.server.useTor)
                     profileStr= \
-                        htmlProfileAfterSearch(self.server.baseDir, \
+                        htmlProfileAfterSearch(self.server.translate, \
+                                               self.server.baseDir, \
                                                self.path.replace('/searchhandle',''), \
                                                self.server.httpPrefix, \
                                                nickname, \
@@ -3134,7 +3157,11 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitUnblock=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Unblocking '+optionsActor)
-                msg=htmlUnblockConfirm(self.server.baseDir,originPathStr,optionsActor,optionsAvatarUrl).encode()
+                msg=htmlUnblockConfirm(self.server.translate, \
+                                       self.server.baseDir, \
+                                       originPathStr, \
+                                       optionsActor, \
+                                       optionsAvatarUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3142,7 +3169,11 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitFollow=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Following '+optionsActor)
-                msg=htmlFollowConfirm(self.server.baseDir,originPathStr,optionsActor,optionsAvatarUrl).encode()
+                msg=htmlFollowConfirm(self.server.translate, \
+                                      self.server.baseDir, \
+                                      originPathStr, \
+                                      optionsActor, \
+                                      optionsAvatarUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3150,7 +3181,11 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitUnfollow=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Unfollowing '+optionsActor)
-                msg=htmlUnfollowConfirm(self.server.baseDir,originPathStr,optionsActor,optionsAvatarUrl).encode()
+                msg=htmlUnfollowConfirm(self.server.translate, \
+                                        self.server.baseDir, \
+                                        originPathStr, \
+                                        optionsActor, \
+                                        optionsAvatarUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3159,7 +3194,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Sending DM to '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newdm'
-                msg=htmlNewPost(self.server.baseDir,reportPath,None,[optionsActor],None,pageNumber).encode()
+                msg=htmlNewPost(self.server.translate, \
+                                self.server.baseDir, \
+                                reportPath,None, \
+                                [optionsActor],None, \
+                                pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3168,7 +3207,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Reporting '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newreport'
-                msg=htmlNewPost(self.server.baseDir,reportPath,None,[],postUrl,pageNumber).encode()
+                msg=htmlNewPost(self.server.translate, \
+                                self.server.baseDir, \
+                                reportPath,None,[], \
+                                postUrl,pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
                 self.server.POSTbusy=False
@@ -3462,6 +3504,26 @@ def runDaemon(projectVersion, \
         httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
     else:
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
+
+    # load translations dictionary
+    httpd.translate={}
+    if not unitTest:
+        if not os.path.isdir(baseDir+'/translations'):
+            print('ERROR: translations directory not found')
+            return
+        systemLanguage=locale.getdefaultlocale()[0]
+        if '_' in systemLanguage:
+            systemLanguage=systemLanguage.split('_')[0]
+        if '.' in systemLanguage:
+            systemLanguage=systemLanguage.split('.')[0]
+        translationsFile=baseDir+'/translations/'+systemLanguage+'.json'
+        if not os.path.isfile(translationsFile):
+            systemLanguage='en'
+            translationsFile=baseDir+'/translations/'+systemLanguage+'.json'
+        print('System language: '+systemLanguage)
+        with open(translationsFile, 'r') as fp:
+            httpd.translate=commentjson.load(fp)
+
     httpd.outboxThread={}
     httpd.projectVersion=projectVersion
     # max POST size of 30M
