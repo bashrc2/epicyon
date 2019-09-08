@@ -1404,7 +1404,7 @@ def insertQuestion(translate: {}, \
             continue
         if not choice.get('name'):
             continue
-        content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br>'
+        content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br><br>'
     content+='<input type="submit" value="'+translate['Submit']+'">'
     content+='</form></div>'
     return content

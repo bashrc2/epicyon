@@ -488,9 +488,6 @@ a:link {
 
 input[type=radio] {
     width: 32px;
-    margin  : 0;
-    padding : 0;
-    opacity : 0;
 }
 
 input[type=text], select, textarea {
