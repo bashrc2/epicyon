@@ -1570,7 +1570,7 @@ def individualPostAsHtml(translate: {}, \
                     mediaType=attach['mediaType']
                     imageDescription=''
                     if attach.get('name'):
-                        imageDescription=attach['name']
+                        imageDescription=attach['name'].replace('\"','"')
                     if mediaType=='image/png' or \
                        mediaType=='image/jpeg' or \
                        mediaType=='image/gif':
