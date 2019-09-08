@@ -533,6 +533,19 @@ input[type=submit] {
     width: 120px;
 }
 
+input.vote[type=submit] {
+    background-color: #555;
+    color: white;
+    float: left;
+    margin: 10px 10px;
+    padding: 12px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    width: 120px;
+}
+
 .cancelbtn {
     background-color: #555;
     color: white;
@@ -827,6 +840,18 @@ input[type=checkbox]
         font-size: var(--font-size);
         width: 20%;
     }
+    input.vote[type=submit] {
+        background-color: #555;
+        color: white;
+        float: left;
+        padding: 10px;
+        margin: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: var(--font-size);
+        width: 20%;
+    }
     input[type=file] {
         background-color: #555;
         color: white;
@@ -972,6 +997,18 @@ input[type=checkbox]
         background-color: #555;
         color: white;
         float: right;
+        padding: 10px;
+        margin: 15px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 30px;
+        width: 20%;
+    }
+    input.vote[type=submit] {
+        background-color: #555;
+        color: white;
+        float: left;
         padding: 10px;
         margin: 15px;
         border: none;
