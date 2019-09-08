@@ -1398,7 +1398,7 @@ def insertQuestion(translate: {}, \
         pageNumberStr='?page='+str(pageNumber)
     content+='<div class="question">'
     content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
-    content+='<input type="hidden" name="messageId" value="'+postJsonObject['id']+'">'
+    content+='<input type="hidden" name="messageId" value="'+postJsonObject['id']+'"><br>'
     for choice in postJsonObject['object']['oneOf']:
         if not choice.get('type'):
             continue
