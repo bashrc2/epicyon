@@ -1454,6 +1454,13 @@ def individualPostAsHtml(translate: {}, \
                     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
                     announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                     if announcedJson:
+                        if not announcedJson.get('id'):
+                            pprint(announcedJson)
+                            return ''
+                        if '/statuses/' not in announcedJson['id']:
+                            return ''
+                        if '/users/' not in announcedJson['id'] and '/profile/' not in announcedJson['id']:
+                            return ''
                         if not announcedJson.get('type'):
                             pprint(announcedJson)
                             return ''
