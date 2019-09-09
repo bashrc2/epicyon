@@ -1501,6 +1501,7 @@ def individualPostAsHtml(translate: {}, \
                                     if attributedPort!=80 and attributedPort!=443:
                                         attributedDomain=attributedDomain+':'+str(attributedPort)
                                 if isBlocked(baseDir,nickname,domain,attributedNickname,attributedDomain):
+                                    rejectAnnounce(announceFilename)
                                     return ''                                        
                             postJsonObject=announcedJson
                             with open(announceFilename, 'w') as fp:
