@@ -42,6 +42,7 @@ from blocking import isBlocked
 from filters import isFiltered
 from announce import updateAnnounceCollection
 from httpsig import messageContentDigest
+from blocking import isBlockedDomain
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -917,6 +918,13 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
     if '/statuses/' not in messageJson['object']:
         if debug:
             print('DEBUG: "statuses" missing from object in '+messageJson['type'])
+        return False
+    objectDomain=messageJson['object'].replace('https://','').replace('http://','').replace('dat://','')
+    if '/' in objectDomain:
+        objectDomain=objectDomain.split('/')[0]
+    if isBlockedDomain(baseDir,objectDomain):
+        if debug:
+            print('DEBUG: announced domain is blocked')
         return False
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of announce - '+handle)

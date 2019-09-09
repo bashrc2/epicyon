@@ -113,6 +113,17 @@ def isBlockedHashtag(baseDir: str,hashtag: str) -> bool:
             return True
     return False
 
+def isBlockedDomain(baseDir: str,domain: str) -> bool:
+    """Is the given domain blocked?
+    """
+    if isEvil(domain):
+        return True
+    globalBlockingFilename=baseDir+'/accounts/blocking.txt'
+    if os.path.isfile(globalBlockingFilename):
+        if '*@'+domain in open(globalBlockingFilename).read():
+            return True
+    return False
+
 def isBlocked(baseDir: str,nickname: str,domain: str, \
               blockNickname: str,blockDomain: str) -> bool:
     """Is the given nickname blocked?
