@@ -11,8 +11,17 @@ import json
 import commentjson
 
 from follow import followedAccountAccepts
+from follow import followedAccountRejects
 
-def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: str) -> None:
+def manualDenyFollowRequest(session,baseDir: str, \
+                            httpPrefix: str,
+                            nickname: str,domain: str,port: int, \
+                            denyHandle: str, \
+                            federationList: [], \
+                            sendThreads: [],postLog: [], \
+                            cachedWebfingers: {},personCache: {}, \
+                            debug: bool, \
+                            projectVersion: str) -> None:
     """Manually deny a follow request
     """
     handle=nickname+'@'+domain
@@ -44,6 +53,21 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     rejectsFile=open(rejectedFollowsFilename, "a+")
     rejectsFile.write(denyHandle+'\n')
     rejectsFile.close()
+    
+    denyNickname=denyHandle.split('@')[0]
+    approveDomain=denyHandle.split('@')[1].replace('\n','')
+    approvePort=port
+    if ':' in denyDomain:
+        denyPort=denyDomain.split(':')[1]
+        denyDomain=denyDomain.split(':')[0]
+    followedAccountRejects(session,baseDir,httpPrefix, \
+                           nickname,domain,port, \
+                           denyNickname,denyDomain,denyPort, \
+                           followJson['actor'],federationList, \
+                           followJson, \
+                           sendThreads,postLog, \
+                           cachedWebfingers,personCache, \
+                           debug,projectVersion)
 
     print('Follow request from '+denyHandle+' was denied.')
     

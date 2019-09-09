@@ -432,6 +432,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
+    session = createSession(domain,port,useTor)        
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -455,7 +456,19 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    manualDenyFollowRequest(baseDir,args.nickname,domain,args.deny)
+    session = createSession(domain,port,useTor)        
+    sendThreads=[]
+    postLog=[]
+    cachedWebfingers={}
+    personCache={}
+    manualDenyFollowRequest(session,baseDir, \
+                            httpPrefix,
+                            args.nickname,domain,port, \
+                            args.deny, \
+                            federationList, \
+                            sendThreads,postLog, \
+                            cachedWebfingers,personCache, \
+                            debug,__version__)
     sys.exit()
 
 if args.followerspending:

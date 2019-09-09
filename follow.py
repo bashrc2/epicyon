@@ -20,6 +20,7 @@ from utils import followPerson
 from posts import sendSignedJson
 from posts import getPersonBox
 from acceptreject import createAccept
+from acceptreject import createReject
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from auth import createPassword
@@ -503,6 +504,39 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
               nickname+'@'+domain+' port '+ str(fromPort))
     clientToServer=False
     return sendSignedJson(acceptJson,session,baseDir, \
+                          nicknameToFollow,domainToFollow,port, \
+                          nickname,domain,fromPort, '', \
+                          httpPrefix,True,clientToServer, \
+                          federationList, \
+                          sendThreads,postLog,cachedWebfingers, \
+                          personCache,debug,projectVersion)
+
+def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
+                           nicknameToFollow: str,domainToFollow: str,port: int, \
+                           nickname: str,domain: str,fromPort: int, \
+                           personUrl: str,federationList: [], \
+                           followJson: {}, \
+                           sendThreads: [],postLog: [], \
+                           cachedWebfingers: {},personCache: {}, \
+                           debug: bool,projectVersion: str):
+    """The person receiving a follow request rejects the new follower
+    and sends back a Reject activity
+    """
+    # send reject back
+    if debug:
+        print('DEBUG: sending Reject activity for follow request which arrived at '+ \
+              nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
+    rejectJson=createReject(baseDir,federationList, \
+                            nicknameToFollow,domainToFollow,port, \
+                            personUrl,'',httpPrefix,followJson)
+    if debug:
+        pprint(rejectJson)
+        print('DEBUG: sending follow Reject from '+ \
+              nicknameToFollow+'@'+domainToFollow+ \
+              ' port '+str(port)+' to '+ \
+              nickname+'@'+domain+' port '+ str(fromPort))
+    clientToServer=False
+    return sendSignedJson(rejectJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
                           httpPrefix,True,clientToServer, \

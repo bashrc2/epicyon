@@ -1078,9 +1078,18 @@ class PubServer(BaseHTTPRequestHandler):
             followerNickname=originPathStr.replace('/users/','')
             followingHandle=self.path.split('/followdeny=')[1]
             if '@' in followingHandle:
-                manualDenyFollowRequest(self.server.baseDir, \
-                                        followerNickname,self.server.domain, \
-                                        followingHandle)
+                manualDenyFollowRequest(self.server.session, \
+                                        self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        followerNickname,self.server.domain,self.server.port, \
+                                        followingHandle, \
+                                        self.server.federationList, \
+                                        self.server.sendThreads, \
+                                        self.server.postLog, \
+                                        self.server.cachedWebfingers, \
+                                        self.server.personCache, \
+                                        self.server.debug, \
+                                        self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.GETbusy=False
             return
