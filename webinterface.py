@@ -1499,8 +1499,8 @@ def individualPostAsHtml(translate: {}, \
                                 isAnnounced=True
                         else:
                             return ''
-                    else:
-                        return ''
+                else:
+                    return ''
             else:
                 return ''
     if not isinstance(postJsonObject['object'], dict):
