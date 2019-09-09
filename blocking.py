@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from utils import isEvil
 
 def addGlobalBlock(baseDir: str, \
                    blockNickname: str,blockDomain: str) -> bool:
@@ -116,11 +117,8 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
               blockNickname: str,blockDomain: str) -> bool:
     """Is the given nickname blocked?
     """
-    # https://www.youtube.com/watch?v=5qw1hcevmdU
-    evilDomains=['gab.com','gabfed.com','spinster.xyz']
-    for concentratedEvil in evilDomains:
-        if blockDomain.endswith(concentratedEvil):
-            return True
+    if isEvil(blockDomain):
+        return True
     globalBlockingFilename=baseDir+'/accounts/blocking.txt'
     if os.path.isfile(globalBlockingFilename):
         if '*@'+blockDomain in open(globalBlockingFilename).read():

@@ -20,6 +20,14 @@ def getStatusNumber() -> (str,str):
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     return statusNumber,published
 
+def isEvil(domain: str) -> bool:
+    # https://www.youtube.com/watch?v=5qw1hcevmdU
+    evilDomains=['gab.com','gabfed.com','spinster.xyz']
+    for concentratedEvil in evilDomains:
+        if domain.endswith(concentratedEvil):
+            return True
+    return False
+
 def createPersonDir(nickname: str,domain: str,baseDir: str,dirname: str) -> str:
     """Create a directory for a person
     """
@@ -51,11 +59,8 @@ def domainPermitted(domain: str, federationList: []):
     return False
 
 def urlPermitted(url: str, federationList: [],capability: str):
-    # https://www.youtube.com/watch?v=5qw1hcevmdU
-    evilDomains=['gab.com','gabfed.com','spinster.xyz']
-    for concentratedEvil in evilDomains:        
-        if url.endswith(concentratedEvil):
-            return False
+    if isEvil(url):
+        return False
     if len(federationList)==0:
         return True
     for domain in federationList:
