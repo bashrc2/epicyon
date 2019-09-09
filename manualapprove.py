@@ -17,6 +17,14 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
     """
     handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
+
+    # has this handle already been rejected?
+    rejectedFollowsFilename=accountsDir+'/followrejects.txt'
+    if os.path.isfile(rejectedFollowsFilename):
+        if denyHandle in open(rejectedFollowsFilename).read():
+            print(denyHandle+' has already been rejected as a follower of '+nickname)
+            return
+
     approveFollowsFilename=accountsDir+'/followrequests.txt'
     if not os.path.isfile(approveFollowsFilename):
         if debug:
@@ -31,6 +39,12 @@ def manualDenyFollowRequest(baseDir: str,nickname: str,domain: str,denyHandle: s
                 approvefilenew.write(approveHandle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+
+    # Store rejected follows
+    rejectsFile=open(rejectedFollowsFilename, "a+")
+    rejectsFile.write(denyHandle+'\n')
+    rejectsFile.close()
+
     print('Follow request from '+denyHandle+' was denied.')
     
 def manualApproveFollowRequest(session,baseDir: str, \

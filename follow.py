@@ -436,6 +436,13 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     # what is the followers policy?
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug):
+        rejectedFollowsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrejects.txt'
+        if os.path.isfile(rejectedFollowsFilename):
+            denyHandle=nicknameToFollow+'@'+domainToFollowFull
+            if denyHandle in open(rejectedFollowsFilename).read():
+                print(denyHandle+' was already denied as a follower of '+nickname)
+                return True
+
         print('Storing follow request for approval')
         return storeFollowRequest(baseDir, \
                                   nicknameToFollow,domainToFollow,port, \
