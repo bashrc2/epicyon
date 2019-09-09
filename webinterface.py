@@ -1458,10 +1458,10 @@ def individualPostAsHtml(translate: {}, \
                             isAnnounced=True
                     else:
                         print('Downloading Announce content for '+postJsonObject['object'])
-                        asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+                        asHeader={'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
                         actorNickname=getNicknameFromActor(postJsonObject['actor'])
                         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-                        announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
+                        announcedJson=getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
                         if announcedJson:
                             if not announcedJson.get('id'):
                                 rejectAnnounce(announceFilename)
