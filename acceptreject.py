@@ -185,9 +185,9 @@ def receiveAcceptReject(session,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' has no actor')
         return False
-    if '/users/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" missing from actor in '+messageJson['type'])
+            print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
         return False
     domain,tempPort=getDomainFromActor(messageJson['actor'])
     if not domainPermitted(domain,federationList):

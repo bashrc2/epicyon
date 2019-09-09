@@ -505,7 +505,7 @@ def outboxLike(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s like object is not a status')
         return
-    if '/users/' not in messageId:
+    if '/users/' not in messageId and '/profile/' not in messageId:
         if debug:
             print('DEBUG: c2s like object has no nickname')
         return
@@ -560,7 +560,7 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s undo like object is not a status')
         return
-    if '/users/' not in messageId:
+    if '/users/' not in messageId and '/profile/' not in messageId:
         if debug:
             print('DEBUG: c2s undo like object has no nickname')
         return

@@ -46,7 +46,7 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
         if debug:
             print('DEBUG: Authorixation header does not contain a space character')
         return False
-    if '/users/' not in path:
+    if '/users/' not in path and '/profile/' not in path:
         if debug:
             print('DEBUG: Path for Authorization does not contain a user')
         return False

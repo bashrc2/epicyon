@@ -820,11 +820,15 @@ if args.actor:
     if '/@' in args.actor or '/users/' in args.actor or args.actor.startswith('http') or args.actor.startswith('dat'):
         # format: https://domain/@nick
         args.actor=args.actor.replace('https://','').replace('http://','').replace('dat://','').replace('/@','/users/')
-        if '/users/' not in args.actor:
+        if '/users/' not in args.actor and '/profile/' not in args.actor:
             print('Expected actor format: https://domain/@nick or https://domain/users/nick')
             sys.exit()
-        nickname=args.actor.split('/users/')[1].replace('\n','')
-        domain=args.actor.split('/users/')[0]        
+        if '/users/' in args.actor:
+            nickname=args.actor.split('/users/')[1].replace('\n','')
+            domain=args.actor.split('/users/')[0]
+        else:
+            nickname=args.actor.split('/profile/')[1].replace('\n','')
+            domain=args.actor.split('/profile/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.actor:

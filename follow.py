@@ -373,9 +373,9 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: follow request has no actor')
         return False
-    if '/users/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" missing from actor')            
+            print('DEBUG: "users" or "profile" missing from actor')            
         return False
     domain,tempPort=getDomainFromActor(messageJson['actor'])
     fromPort=port
@@ -397,9 +397,9 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     if not messageJson.get('to'):
         messageJson['to']=messageJson['object']
     handle=nickname.lower()+'@'+domain.lower()
-    if '/users/' not in messageJson['object']:
+    if '/users/' not in messageJson['object'] and '/profile/' not in messageJson['object']:
         if debug:
-            print('DEBUG: "users" not found within object')
+            print('DEBUG: "users" or "profile" not found within object')
         return False
     domainToFollow,tempPort=getDomainFromActor(messageJson['object'])
     if not domainPermitted(domainToFollow,federationList):
