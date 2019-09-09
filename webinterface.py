@@ -1493,6 +1493,15 @@ def individualPostAsHtml(translate: {}, \
                             # set the id to the original status
                             announcedJson['id']=postJsonObject['object']
                             announcedJson['object']['id']=postJsonObject['object']
+                            # check that the repeat isn't for a blocked account
+                            attributedNickname=getNicknameFromActor(announcedJson['object']['id'])
+                            attributedDomain,attributedPort=getDomainFromActor(announcedJson['object']['id'])
+                            if attributedNickname and attributedDomain:
+                                if attributedPort:
+                                    if attributedPort!=80 and attributedPort!=443:
+                                        attributedDomain=attributedDomain+':'+str(attributedPort)
+                                if isBlocked(baseDir,nickname,domain,attributedNickname,attributedDomain):
+                                    return ''                                        
                             postJsonObject=announcedJson
                             with open(announceFilename, 'w') as fp:
                                 commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
