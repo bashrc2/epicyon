@@ -1409,6 +1409,14 @@ def insertQuestion(translate: {}, \
     content+='</form></div>'
     return content
 
+def rejectAnnounce(announceFilename: str):
+    """Marks an announce as rejected
+    """
+    if not os.path.isfile(announceFilename+'.reject'):
+        rejectAnnounceFile=open(announceFilename+'.reject', "w+")
+        rejectAnnounceFile.write('\n')
+        rejectAnnounceFile.close()
+
 def individualPostAsHtml(translate: {}, \
                          pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
@@ -1442,46 +1450,55 @@ def individualPostAsHtml(translate: {}, \
                     os.mkdir(announceCacheDir)
                 announceFilename=announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
                 print('announceFilename: '+announceFilename)
-                if os.path.isfile(announceFilename):
-                    print('Reading cached Announce content for '+postJsonObject['object'])
-                    with open(announceFilename, 'r') as fp:
-                        postJsonObject=commentjson.load(fp)
-                        isAnnounced=True
-                else:
-                    print('Downloading Announce content for '+postJsonObject['object'])
-                    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
-                    actorNickname=getNicknameFromActor(postJsonObject['actor'])
-                    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-                    announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
-                    if announcedJson:
-                        if not announcedJson.get('id'):
-                            pprint(announcedJson)
-                            return ''
-                        if '/statuses/' not in announcedJson['id']:
-                            return ''
-                        if '/users/' not in announcedJson['id'] and '/profile/' not in announcedJson['id']:
-                            return ''
-                        if not announcedJson.get('type'):
-                            pprint(announcedJson)
-                            return ''
-                        if announcedJson['type']!='Note':
-                            pprint(announcedJson)
-                            return ''
-                        # wrap in create to be consistent with other posts
-                        announcedJson= \
-                            outboxMessageCreateWrap(httpPrefix, \
-                                                    actorNickname,actorDomain,actorPort, \
-                                                    announcedJson)
-                        if announcedJson['type']!='Create':
-                            pprint(announcedJson)
-                            return ''
-                        # set the id to the original status
-                        announcedJson['id']=postJsonObject['object']
-                        announcedJson['object']['id']=postJsonObject['object']
-                        postJsonObject=announcedJson
-                        with open(announceFilename, 'w') as fp:
-                            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                if not os.path.isfile(announceFilename+'.reject'):
+                    if os.path.isfile(announceFilename):
+                        print('Reading cached Announce content for '+postJsonObject['object'])
+                        with open(announceFilename, 'r') as fp:
+                            postJsonObject=commentjson.load(fp)
                             isAnnounced=True
+                    else:
+                        print('Downloading Announce content for '+postJsonObject['object'])
+                        asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+                        actorNickname=getNicknameFromActor(postJsonObject['actor'])
+                        actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+                        announcedJson = getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
+                        if announcedJson:
+                            if not announcedJson.get('id'):
+                                rejectAnnounce(announceFilename)
+                                pprint(announcedJson)
+                                return ''
+                            if '/statuses/' not in announcedJson['id']:
+                                rejectAnnounce(announceFilename)
+                                return ''
+                            if '/users/' not in announcedJson['id'] and '/profile/' not in announcedJson['id']:
+                                rejectAnnounce(announceFilename)
+                                return ''
+                            if not announcedJson.get('type'):
+                                rejectAnnounce(announceFilename)
+                                pprint(announcedJson)
+                            return ''
+                            if announcedJson['type']!='Note':
+                                rejectAnnounce(announceFilename)
+                                pprint(announcedJson)
+                                return ''
+                            # wrap in create to be consistent with other posts
+                            announcedJson= \
+                                outboxMessageCreateWrap(httpPrefix, \
+                                                        actorNickname,actorDomain,actorPort, \
+                                                        announcedJson)
+                            if announcedJson['type']!='Create':
+                                rejectAnnounce(announceFilename)
+                                pprint(announcedJson)
+                                return ''
+                            # set the id to the original status
+                            announcedJson['id']=postJsonObject['object']
+                            announcedJson['object']['id']=postJsonObject['object']
+                            postJsonObject=announcedJson
+                            with open(announceFilename, 'w') as fp:
+                                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                                isAnnounced=True
+                        else:
+                            return ''
                     else:
                         return ''
             else:
