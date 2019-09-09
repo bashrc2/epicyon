@@ -71,6 +71,7 @@ from blocking import removeBlock
 from blocking import addGlobalBlock
 from blocking import removeGlobalBlock
 from blocking import isBlockedHashtag
+from blocking import isBlockedDomain
 from config import setConfigParam
 from config import getConfigParam
 from roles import outboxDelegate
@@ -287,6 +288,14 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     pprint(messageJson)
                     print('DEBUG: POST to outbox - Create does not have the required parameters')
+                return False
+            testDomain,testPort=getDomainFromActor(messageJson['actor'])
+            if testPort:
+                if testPort!=80 and testPort!=443:
+                    testDomain=testDomain+':'+str(testPort)
+            if isBlockedDomain(self.server.baseDir,testDomain):
+                if self.server.debug:
+                    print('DEBUG: domain is blocked: '+messageJson['actor'])
                 return False
             # https://www.w3.org/TR/activitypub/#create-activity-outbox
             messageJson['object']['attributedTo']=messageJson['actor']
