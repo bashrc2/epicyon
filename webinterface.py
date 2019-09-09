@@ -1476,7 +1476,7 @@ def individualPostAsHtml(translate: {}, \
                             if not announcedJson.get('type'):
                                 rejectAnnounce(announceFilename)
                                 pprint(announcedJson)
-                            return ''
+                                return ''
                             if announcedJson['type']!='Note':
                                 rejectAnnounce(announceFilename)
                                 pprint(announcedJson)
