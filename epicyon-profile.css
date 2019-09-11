@@ -17,6 +17,7 @@
     --font-size: 30px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
+    --time-color: #aaa;
 }
 
 body, html {
@@ -446,7 +447,7 @@ a:link {
 
 .time-right {
     float: right;
-    color: #aaa;
+    color: var(--time-color);
     margin: 4px 20px;
 }
 
@@ -812,7 +813,7 @@ input[type=checkbox]
     }
     .time-right {
         float: right;
-        color: #aaa;
+        color: var(--time-color);
         margin: 4px 20px;
     }
     input[type=text], select, textarea {
@@ -977,7 +978,7 @@ input[type=checkbox]
     }
     .time-right {
         float: right;
-        color: #aaa;
+        color: var(--time-color);
         margin: 25px 20px;
     }
     input[type=text], select, textarea {
