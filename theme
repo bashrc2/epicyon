@@ -8,6 +8,11 @@ if [ ! -f epicyon-profile.css ]; then
 fi
 
 if [[ "$themeName" == 'default' ]]; then
+    if [ -f config.json ]; then
+	if grep -q '"theme"' config.json; then
+	    sed -i '/"theme"/d' config.json
+	fi
+    fi
     if [ -f epicyon.css ]; then
 	rm epicyon.css
     fi
@@ -23,6 +28,11 @@ if [[ "$themeName" == 'default' ]]; then
 fi
 
 if [[ "$themeName" == 'purple'* ]]; then
+    if [ -f config.json ]; then
+	if grep -q '"theme"' config.json; then
+	    sed -i '/"theme"/d' config.json
+	fi
+    fi
     cp epicyon-profile.css epicyon.css
     filename=epicyon.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: #1f152d;|g" "$filename"
@@ -66,6 +76,14 @@ if [[ "$themeName" == 'purple'* ]]; then
 fi
 
 if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
+    if [ -f config.json ]; then
+	if grep -q '"theme"' config.json; then
+	    sed -i 's|"theme".*|"theme": "hacker";|g' config.json
+	else
+	    sed -i '/"admin"/i "theme": "hacker";' config.json
+	    sed -i 's|"theme"|    "theme"|g' config.json
+	fi	
+    fi
     cp epicyon-profile.css epicyon.css
     filename=epicyon.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
@@ -121,6 +139,11 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
 fi
 
 if [[ "$themeName" == 'light'* ]]; then
+    if [ -f config.json ]; then
+	if grep -q '"theme"' config.json; then
+	    sed -i '/"theme"/d' config.json
+	fi
+    fi
     cp epicyon-profile.css epicyon.css
     filename=epicyon.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
