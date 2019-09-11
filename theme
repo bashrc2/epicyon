@@ -30,8 +30,11 @@ fi
 if [[ "$themeName" == 'purple'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then
-	    sed -i '/"theme"/d' config.json
-	fi
+	    sed -i 's|"theme".*|"theme": "purple",|g' config.json
+	else
+	    sed -i '/"admin"/a "theme": "purple",' config.json
+	    sed -i 's|"theme"|    "theme"|g' config.json
+	fi	
     fi
     cp epicyon-profile.css epicyon.css
     filename=epicyon.css
