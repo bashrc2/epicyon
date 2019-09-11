@@ -44,3 +44,28 @@ if [[ "$themeName" == 'purple'* ]]; then
     sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
 fi
+
+if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
+    cp epicyon-profile.css epicyon.css
+    filename=epicyon.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #030202;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #050202;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #1f192d;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: green;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: darkgreen;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #266020;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #3c8234;|g" "$filename"
+    sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
+    cp epicyon-login.css login.css
+    filename=login.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #030202;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #050202;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #1f192d;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: green;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: darkgreen;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #266020;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #3c8234;|g" "$filename"
+    sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
+fi
