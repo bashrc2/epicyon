@@ -47,9 +47,9 @@ a:link {
 
 .cwButton {
     border-radius: 4px;
-    background-color: #999;
+    background-color: #554;
     border: none;
-    color: #FFFFFF;
+    color: #FFFFFE;
     text-align: center;
     font-size: 26px;
     padding: 2px;
@@ -768,9 +768,9 @@ input[type=checkbox]
     }
     .cwButton {
         border-radius: 4px;
-        background-color: #555;
+        background-color: #554;
         border: none;
-        color: #FFFFFF;
+        color: #FFFFFE;
         text-align: center;
         font-size: 20px;
         padding: 2px;
@@ -933,9 +933,9 @@ input[type=checkbox]
     }
     .cwButton {
         border-radius: 4px;
-        background-color: #555;
+        background-color: #554;
         border: none;
-        color: #FFFFFF;
+        color: #FFFFFE;
         text-align: center;
         font-size: 32px;
         padding: 2px;

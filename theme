@@ -77,6 +77,8 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|--main-link-color:.*|--main-link-color: #266020;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #3c8234;|g" "$filename"
     sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: darkgreen;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: green;|g" "$filename"
     cp epicyon-login.css login.css
     filename=login.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
@@ -88,6 +90,8 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|--main-link-color:.*|--main-link-color: #266020;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #3c8234;|g" "$filename"
     sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: darkgreen;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: green;|g" "$filename"
     cp epicyon-follow.css follow.css
     filename=follow.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
@@ -99,6 +103,8 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|--main-link-color:.*|--main-link-color: #266020;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #3c8234;|g" "$filename"
     sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: darkgreen;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: green;|g" "$filename"
     cp epicyon-suspended.css suspended.css
     filename=suspended.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
@@ -110,4 +116,6 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|--main-link-color:.*|--main-link-color: #266020;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #3c8234;|g" "$filename"
     sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: darkgreen;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: green;|g" "$filename"
 fi
