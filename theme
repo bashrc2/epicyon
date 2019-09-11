@@ -119,3 +119,54 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|background-color: #554;|background-color: #062200;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: green;|g" "$filename"
 fi
+
+if [[ "$themeName" == 'light'* ]]; then
+    cp epicyon-profile.css epicyon.css
+    filename=epicyon.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #ebebf0;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: #2d2c37;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #e4ebf0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
+    cp epicyon-login.css login.css
+    filename=login.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #ebebf0;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: #2d2c37;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #e4ebf0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
+    cp epicyon-follow.css follow.css
+    filename=follow.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #ebebf0;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: #2d2c37;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #e4ebf0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
+    cp epicyon-suspended.css suspended.css
+    filename=suspended.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #ebebf0;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: #2d2c37;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #e4ebf0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
+fi
