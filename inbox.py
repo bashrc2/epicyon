@@ -1127,6 +1127,9 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         print('DEBUG: object capabilities passed')
         print('copy queue file from '+queueFilename+' to '+destinationFilename)
 
+    if os.path.isfile(destinationFilename):
+        return True
+
     if messageJson.get('postNickname'):
         with open(destinationFilename, 'w+') as fp:
             commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
@@ -1473,10 +1476,12 @@ def runInboxQueue(projectVersion: str, \
             # any checking will needs to be handled at the time when inbox
             # GET happens on individual accounts.
             # See posts.py/createBoxBase
-            if len(recipientsDictFollowers)>0:                
-                with open(queueJson['destination'].replace(inboxHandle,inboxHandle), 'w') as fp:
-                    commentjson.dump(queueJson['post'],fp,indent=4, \
-                                     sort_keys=False)
+            if len(recipientsDictFollowers)>0:
+                sharedInboxPostFilename=queueJson['destination'].replace(inboxHandle,inboxHandle)
+                if not os.path.isfile(sharedInboxPostFilename):
+                    with open(sharedInboxPostFilename, 'w') as fp:
+                        commentjson.dump(queueJson['post'],fp,indent=4, \
+                                         sort_keys=False)
 
             # for posts addressed to specific accounts
             for handle,capsId in recipientsDict.items():              
