@@ -14,6 +14,10 @@
     --font-size: 22px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
+    --time-color: #aaa;
+    --button-text: #FFFFFF;
+    --button-background: #999;
+    --button-selected: #666;
 }
 
 body, html {

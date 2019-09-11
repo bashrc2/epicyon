@@ -11,6 +11,10 @@
     --font-size: 40px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
+    --time-color: #aaa;
+    --button-text: #FFFFFF;
+    --button-background: #999;
+    --button-selected: #666;
 }
 
 body, html {
@@ -64,9 +68,9 @@ a:link {
 
 .button {
     border-radius: 4px;
-    background-color: #999;
+    background-color: var(--button-background);
     border: none;
-    color: white;
+    color: var(--button-text);
     text-align: center;
     padding: 10px;
         font-size: var(--font-size);
@@ -95,7 +99,7 @@ input[type=text] {
     border-radius: 4px;
     background-color: #999;
     border: none;
-    color: #FFFFFF;
+    color: var(--button-text);
     text-align: center;
     font-size: var(--font-size);
     padding: 2px;
@@ -129,9 +133,9 @@ input[type=text] {
         }
         .button {
                 border-radius: 4px;
-                background-color: #999;
+                background-color: var(--button-background);
                 border: none;
-                color: white;
+                color: var(--button-text);
                 text-align: center;
                 padding: 10px;
                 font-size: 24px;
@@ -157,9 +161,9 @@ input[type=text] {
         }
         .button {
                 border-radius: 4px;
-                background-color: #999;
+                background-color: var(--button-background);
                 border: none;
-                color: white;
+                color: var(--button-text);
                 text-align: center;
                 padding: 10px;
                 font-size: 40px;

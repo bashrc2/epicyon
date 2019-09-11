@@ -12,6 +12,10 @@
     --font-size-mobile: 40px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
+    --time-color: #aaa;
+    --button-text: #FFFFFF;
+    --button-background: #999;
+    --button-selected: #666;
 }
 
 body, html {
@@ -56,8 +60,8 @@ input[type=text], input[type=password] {
 }
 
 button {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background);
+    color: var(--button-text);
     padding: 14px 20px;
     margin: 8px 0;
     border: none;
@@ -121,8 +125,8 @@ span.psw {
                 font-size: var(--font-size);
         }
         button {
-                background-color: #555;
-                color: white;
+                background-color: var(--button-background);
+                color: var(--button-text);
                 padding: 14px 20px;
                 margin: 8px 0;
                 border: none;
@@ -160,8 +164,8 @@ span.psw {
                 font-size: var(--font-size-mobile);
         }
         button {
-                background-color: #555;
-                color: white;
+                background-color: var(--button-background);
+                color: var(--button-text);
                 padding: 14px 20px;
                 margin: 8px 0;
                 border: none;
