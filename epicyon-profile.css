@@ -18,6 +18,9 @@
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
+    --button-text: #FFFFFF;
+    --button-background: #999;
+    --button-selected: #666;
 }
 
 body, html {
@@ -150,9 +153,9 @@ a:link {
 
 .button {
     border-radius: 4px;
-    background-color: #999;
+    background-color: var(--button-background);
     border: none;
-    color: #FFFFFF;
+    color: var(--button-text);
     text-align: center;
     font-size: 18px;
     padding: 10px;
@@ -166,9 +169,9 @@ a:link {
 
 .buttonunfollow {
     border-radius: 4px;
-    background-color: #999;
+    background-color: var(--button-background);
     border: none;
-    color: #FFFFFF;
+    color: var(--button-text);
     text-align: center;
     font-size: 18px;
     padding: 10px;
@@ -185,7 +188,7 @@ a:link {
     border-radius: 4px;
     background-color: green;
     border: none;
-    color: white;
+    color: var(--button-text);
     text-align: center;
     font-size: 18px;
     padding: 10px;
@@ -264,9 +267,9 @@ a:link {
 
 .buttonselected {
     border-radius: 4px;
-    background-color: #666;
+    background-color: var(--button-selected);
     border: none;
-    color: #FFFFFF;
+    color: var(--button-text);
     text-align: center;
     font-size: 18px;
     padding: 10px;
@@ -466,7 +469,7 @@ a:link {
     text-align: left;
     font-size: 24px;
     font-weight: bold;
-    color: #666;
+    color: var(--button-selected);
     line-height: 40px;
 }
 
@@ -480,7 +483,7 @@ a:link {
     float: left;
     width: 10%;
     height: 30px;
-    background-color: #999;
+    background-color: var(--button-background);
 }
 
 .question {
@@ -780,9 +783,9 @@ input[type=checkbox]
     }
     .button {
         border-radius: 4px;
-        background-color: #999;
+        background-color: var(--button-background);
         border: none;
-        color: #FFFFFF;
+        color: var(--button-text);
         text-align: center;
         font-size: 18px;
         padding: 10px;
@@ -795,9 +798,9 @@ input[type=checkbox]
     }
     .buttonselected {
         border-radius: 4px;
-        background-color: #666;
+        background-color: var(--button-selected);
         border: none;
-        color: #FFFFFF;
+        color: var(--button-text);
         text-align: center;
         font-size: 18px;
         padding: 10px;
@@ -881,9 +884,9 @@ input[type=checkbox]
     }
     .buttonunfollow {
 	border-radius: 4px;
-	background-color: #999;
+	background-color: var(--button-background);
 	border: none;
-	color: #FFFFFF;
+	color: var(--button-text);
 	text-align: center;
 	font-size: 18px;
 	padding: 10px;
@@ -945,9 +948,9 @@ input[type=checkbox]
     }
     .button {
         border-radius: 4px;
-        background-color: #999;
+        background-color: var(--button-background);
         border: none;
-        color: #FFFFFF;
+        color: var(--button-text);
         text-align: center;
         font-size: 32px;
         padding: 10px;
@@ -960,9 +963,9 @@ input[type=checkbox]
     }
     .buttonselected {
         border-radius: 4px;
-        background-color: #666;
+        background-color: var(--button-selected);
         border: none;
-        color: #FFFFFF;
+        color: var(--button-text);
         text-align: center;
         font-size: 32px;
         padding: 10px;
@@ -1046,9 +1049,9 @@ input[type=checkbox]
     }
     .buttonunfollow {
 	border-radius: 4px;
-	background-color: #999;
+	background-color: var(--button-background);
 	border: none;
-	color: #FFFFFF;
+	color: var(--button-text);
 	text-align: center;
 	font-size: 30px;
 	padding: 10px;
