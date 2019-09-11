@@ -147,8 +147,8 @@ a:link {
 }
 
 .hero-text button:hover {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background);
+    color: var(--button-text);
 }
 
 .button {
@@ -285,7 +285,7 @@ a:link {
     border-radius: 4px;
     background-color: darkgreen;
     border: none;
-    color: white;
+    color: var(--button-text);
     text-align: center;
     font-size: 18px;
     padding: 10px;
@@ -551,8 +551,8 @@ input.vote[type=submit] {
 }
 
 .cancelbtn {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background);
+    color: var(--button-text);
     float: right;
     margin: 10px 10px;
     padding: 12px 10px;
@@ -577,8 +577,8 @@ input.vote[type=submit] {
 }
 
 input[type=file] {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background);
+    color: var(--button-text);
     padding: 12px 20px;
     border: none;
     border-radius: 4px;
@@ -857,8 +857,8 @@ input[type=checkbox]
         width: 20%;
     }
     input[type=file] {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         padding: 20px;
         margin: 0px;
         border: none;
@@ -868,8 +868,8 @@ input[type=checkbox]
         width: 96%;
     }
     .cancelbtn {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         float: right;
         padding: 10px;
         margin: 15px;
@@ -1022,8 +1022,8 @@ input[type=checkbox]
         width: 20%;
     }
     input[type=file] {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         padding: 20px;
         margin: 0px;
         border: none;
@@ -1033,8 +1033,8 @@ input[type=checkbox]
         width: 95.4%;
     }
     .cancelbtn {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         float: right;
         padding: 10px;
         margin: 15px;
