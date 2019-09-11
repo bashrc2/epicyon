@@ -525,8 +525,8 @@ input[type=number] {
 }
 
 input[type=submit] {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background);
+    color: var(--button-text);
     float: right;
     margin: 10px 10px;
     padding: 12px 10px;
@@ -538,8 +538,8 @@ input[type=submit] {
 }
 
 input.vote[type=submit] {
-    background-color: #555;
-    color: white;
+    background-color: var(--button-background);
+    color: var(--button-text);
     float: left;
     margin: 10px 10px;
     padding: 12px 10px;
@@ -587,7 +587,7 @@ input[type=file] {
 }
 
 input[type=submit]:hover {
-    background-color: #555;
+    background-color: var(--button-background);
 }
 
 .vertical-center {
@@ -833,8 +833,8 @@ input[type=checkbox]
         color: var(--main-fg-color);
     }
     input[type=button], input[type=submit] {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         float: right;
         padding: 10px;
         margin: 15px;
@@ -845,8 +845,8 @@ input[type=checkbox]
         width: 20%;
     }
     input.vote[type=submit] {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         float: left;
         padding: 10px;
         margin: 15px;
@@ -998,8 +998,8 @@ input[type=checkbox]
         color: var(--main-fg-color);
     }
     input[type=button], input[type=submit] {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         float: right;
         padding: 10px;
         margin: 15px;
@@ -1010,8 +1010,8 @@ input[type=checkbox]
         width: 20%;
     }
     input.vote[type=submit] {
-        background-color: #555;
-        color: white;
+        background-color: var(--button-background);
+        color: var(--button-text);
         float: left;
         padding: 10px;
         margin: 15px;
