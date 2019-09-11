@@ -104,7 +104,7 @@ def getIconsDir(baseDir: str) -> str:
     iconsDir='icons'
     theme=getConfigParam(baseDir,'theme')
     if theme:
-        if os.path.isdir(baseDir+'img/icons/'+theme):
+        if os.path.isdir(baseDir+'/img/icons/'+theme):
             iconsDir='icons/'+theme
     return iconsDir
 
