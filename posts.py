@@ -1956,7 +1956,7 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,domain,'outbox')
-    wfResult = json.dumps(wfRequest, indent=4, sort_keys=True)
+    wfResult = json.dumps(wfRequest, indent=4, sort_keys=False)
 
     maxMentions=10
     maxEmoji=10

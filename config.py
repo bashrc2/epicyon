@@ -19,7 +19,7 @@ def createConfig(baseDir: str) -> None:
     configJson = {
     }
     with open(configFilename, 'w') as fp:
-        commentjson.dump(configJson, fp, indent=4, sort_keys=True)
+        commentjson.dump(configJson, fp, indent=4, sort_keys=False)
 
 def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
@@ -30,7 +30,7 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
         configJson=commentjson.load(fp)
     configJson[variableName]=variableValue
     with open(configFilename, 'w') as fp:
-        commentjson.dump(configJson, fp, indent=4, sort_keys=True)
+        commentjson.dump(configJson, fp, indent=4, sort_keys=False)
 
 def getConfigParam(baseDir: str, variableName: str):
     """Gets a configuration value

@@ -104,7 +104,7 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
             else:
                 postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
             with open(postFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
 
 def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     """Updates the announcements collection within a post
@@ -155,7 +155,7 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
             print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
         with open(postFilename, 'w') as fp:
-            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)
+            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
 
 def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is announced by the given person

@@ -43,7 +43,7 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
         # remove the item itself
         del sharesJson[itemID]
         with open(sharesFilename, 'w') as fp:
-            commentjson.dump(sharesJson, fp, indent=4, sort_keys=True)
+            commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
 
 def addShare(baseDir: str, \
              httpPrefix: str,nickname: str,domain: str,port: int, \
@@ -138,7 +138,7 @@ def addShare(baseDir: str, \
     }
 
     with open(sharesFilename, 'w') as fp:
-        commentjson.dump(sharesJson, fp, indent=4, sort_keys=True)
+        commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
 
 def expireShares(baseDir: str,nickname: str,domain: str) -> None:
     """Removes expired items from shares
@@ -168,7 +168,7 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
                     if os.path.isfile(itemIDfile+'.gif'):
                         os.remove(itemIDfile+'.gif')
                 with open(sharesFilename, 'w') as fp:
-                    commentjson.dump(sharesJson, fp, indent=4, sort_keys=True)
+                    commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
         
 def getSharesFeedForPerson(baseDir: str, \
                            domain: str,port: int, \

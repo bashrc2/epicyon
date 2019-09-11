@@ -61,7 +61,7 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
             else:
                 postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
             with open(postFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is liked by the given person
@@ -134,7 +134,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
             print('DEBUG: saving post with likes added')
             pprint(postJsonObject)
         with open(postFilename, 'w') as fp:
-            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)
+            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
 
 def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
