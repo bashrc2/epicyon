@@ -1765,8 +1765,9 @@ def individualPostAsHtml(translate: {}, \
         likeTitle=translate['Like this post']
         if noOfLikes(postJsonObject)>0:
             likeIcon='like.png'
-            likeLink='unlike'
-            likeTitle=translate['Undo the like']
+            if likedByPerson(postJsonObject,nickname,fullDomain):
+                likeLink='unlike'
+                likeTitle=translate['Undo the like']
         likeStr= \
             '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+likeTitle+'">' \
             '<img src="/icons/'+likeIcon+'"/></a>'
