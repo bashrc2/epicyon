@@ -1,0 +1,46 @@
+#!/bin/bash
+
+themeName="$1"
+
+if [ ! -f epicyon-profile.css ]; then
+    echo 'Run this in your Epicyon install directory'
+    exit 0
+fi
+
+if [[ "$themeName" == 'default' ]]; then
+    if [ -f epicyon.css ]; then
+	rm epicyon.css
+    fi
+    if [ -f login.css ]; then
+	rm login.css
+    fi
+    if [ -f follow.css ]; then
+	rm follow.css
+    fi
+    if [ -f suspended.css ]; then
+	rm suspended.css
+    fi
+fi
+
+if [[ "$themeName" == 'purple'* ]]; then
+    cp epicyon-profile.css epicyon.css
+    filename=epicyon.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #1f152d;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #1a142d;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #12152d;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #1f192d;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: #f98bb0;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: #3f2145;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
+    cp epicyon-login.css login.css
+    filename=login.css
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #1f152d;|g" "$filename"
+    sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #1a142d;|g" "$filename"
+    sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #12152d;|g" "$filename"
+    sed -i "s|--main-header-color-roles:.*|--main-header-color-roles: #1f192d;|g" "$filename"
+    sed -i "s|--main-fg-color:.*|--main-fg-color: #f98bb0;|g" "$filename"
+    sed -i "s|--border-color:.*|--border-color: #3f2145;|g" "$filename"
+    sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
+    sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
+fi
