@@ -59,12 +59,15 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
         copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
 
     searchStr=searchStr.lower().replace(':','').strip('\n')
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         emojiCSS=cssFile.read()
         emojiLookupFilename=baseDir+'/emoji/emoji.json'
 
         # create header
-        emojiForm=htmlHeader(emojiCSS)
+        emojiForm=htmlHeader(cssFilename,emojiCSS)
         emojiForm+='<center><h1>'+translate['Emoji Search']+'</h1></center>'
 
         # does the lookup file exist?
@@ -108,9 +111,12 @@ def htmlSearchSharedItems(translate: {}, \
     sharedItemsForm=''
     searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
     searchStrLowerList=searchStrLower.split('+')
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         sharedItemsCSS=cssFile.read()
-        sharedItemsForm=htmlHeader(sharedItemsCSS)
+        sharedItemsForm=htmlHeader(cssFilename,sharedItemsCSS)
         sharedItemsForm+='<center><h1>'+translate['Shared Items Search']+'</h1></center>'
         resultsExist=False
         for subdir, dirs, files in os.walk(baseDir+'/accounts'):
@@ -188,9 +194,12 @@ def htmlSearchSharedItems(translate: {}, \
 
 def htmlModerationInfo(translate: {},baseDir: str) -> str:
     infoForm=''
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         infoCSS=cssFile.read()
-        infoForm=htmlHeader(infoCSS)
+        infoForm=htmlHeader(cssFilename,infoCSS)
 
         infoForm+='<center><h1>'+translate['Moderation Information']+'</h1></center>'
 
@@ -238,8 +247,10 @@ def htmlHashtagSearch(translate: {}, \
     # read the index
     with open(hashtagIndexFile, "r") as f:
         lines = f.readlines()
-
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         hashtagSearchCSS = cssFile.read()
 
     startIndex=len(lines)-1-int(pageNumber*postsPerPage)
@@ -249,7 +260,7 @@ def htmlHashtagSearch(translate: {}, \
     if endIndex<0:
         endIndex=0
         
-    hashtagSearchForm=htmlHeader(hashtagSearchCSS)
+    hashtagSearchForm=htmlHeader(cssFilename,hashtagSearchCSS)
     hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
     if startIndex!=len(lines)-1:
         # previous page link
@@ -362,10 +373,13 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
 
     results.sort(reverse=True)
 
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         skillSearchCSS = cssFile.read()
         
-    skillSearchForm=htmlHeader(skillSearchCSS)
+    skillSearchForm=htmlHeader(cssFilename,skillSearchCSS)
     skillSearchForm+='<center><h1>'+translate['Skills search']+': '+skillsearch+'</h1></center>'
 
     if len(results)==0:
@@ -454,8 +468,11 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
 
     skillsStr+='<p><input type="text" placeholder="Skill '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="" style="width:40%">'
     skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="50"></p>' \
-            
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         editProfileCSS = cssFile.read()
 
     moderatorsStr=''
@@ -473,7 +490,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
             '  <textarea id="message" name="moderators" placeholder="'+translate['List of moderator nicknames']+'..." style="height:200px">'+moderators+'</textarea>' \
             '</div>'
         
-    editProfileForm=htmlHeader(editProfileCSS)
+    editProfileForm=htmlHeader(cssFilename,editProfileCSS)
     editProfileForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
         '  <div class="vertical-center">' \
@@ -567,7 +584,10 @@ def htmlLogin(translate: {},baseDir: str) -> str:
         with open(baseDir+'/accounts/login.txt', 'r') as file:
             loginText = '<p class="login-text">'+file.read()+'</p>'    
 
-    with open(baseDir+'/epicyon-login.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-login.css'
+    if os.path.isfile(baseDir+'/login.css'):
+        cssFilename=baseDir+'/login.css'
+    with open(cssFilename, 'r') as cssFile:
         loginCSS = cssFile.read()
 
     # show the register button
@@ -585,7 +605,7 @@ def htmlLogin(translate: {},baseDir: str) -> str:
     if accounts>0:
         loginButtonStr='<button type="submit" name="submit">'+translate['Login']+'</button>'
             
-    loginForm=htmlHeader(loginCSS)
+    loginForm=htmlHeader(cssFilename,loginCSS)
     loginForm+= \
         '<form method="POST" action="/login">' \
         '  <div class="imgcontainer">' \
@@ -621,10 +641,13 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
             TOSText = file.read()    
 
     TOSForm=''
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         termsCSS = cssFile.read()
             
-        TOSForm=htmlHeader(termsCSS)
+        TOSForm=htmlHeader(cssFilename,termsCSS)
         TOSForm+='<div class="container">'+TOSText+'</div>'
         if adminNickname:
             adminActor=httpPrefix+'://'+domainFull+'/users/'+adminNickname
@@ -648,10 +671,13 @@ def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
             aboutText = file.read()    
 
     aboutForm=''
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         termsCSS = cssFile.read()
             
-        aboutForm=htmlHeader(termsCSS)
+        aboutForm=htmlHeader(cssFilename,termsCSS)
         aboutForm+='<div class="container">'+aboutText+'</div>'
         if adminNickname:
             adminActor=httpPrefix+'://'+domainFull+'/users/'+adminNickname
@@ -663,9 +689,12 @@ def htmlHashtagBlocked(baseDir: str) -> str:
     """Show the screen for a blocked hashtag
     """
     blockedHashtagForm=''
-    with open(baseDir+'/epicyon-suspended.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-suspended.css'
+    if os.path.isfile(baseDir+'/suspended.css'):
+        cssFilename=baseDir+'/suspended.css'
+    with open(cssFilename, 'r') as cssFile:
         blockedHashtagCSS=cssFile.read()            
-        blockedHashtagForm=htmlHeader(blockedHashtagCSS)
+        blockedHashtagForm=htmlHeader(cssFilename,blockedHashtagCSS)
         blockedHashtagForm+='<div><center>'
         blockedHashtagForm+='  <p class="screentitle">Hashtag Blocked</p>'
         blockedHashtagForm+='  <p>See <a href="/terms">Terms of Service</a></p>'
@@ -677,9 +706,12 @@ def htmlSuspended(baseDir: str) -> str:
     """Show the screen for suspended accounts
     """
     suspendedForm=''
-    with open(baseDir+'/epicyon-suspended.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-suspended.css'
+    if os.path.isfile(baseDir+'/suspended.css'):
+        cssFilename=baseDir+'/suspended.css'
+    with open(cssFilename, 'r') as cssFile:
         suspendedCSS=cssFile.read()            
-        suspendedForm=htmlHeader(suspendedCSS)
+        suspendedForm=htmlHeader(cssFilename,suspendedCSS)
         suspendedForm+='<div><center>'
         suspendedForm+='  <p class="screentitle">Account Suspended</p>'
         suspendedForm+='  <p>See <a href="/terms">Terms of Service</a></p>'
@@ -722,7 +754,10 @@ def htmlNewPost(translate: {},baseDir: str, \
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
             newPostText = '<p class="new-post-text">'+file.read()+'</p>'    
 
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         newPostCSS = cssFile.read()
 
     if '?' in path:
@@ -765,7 +800,7 @@ def htmlNewPost(translate: {},baseDir: str, \
             '</div>' \
             '<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
 
-    newPostForm=htmlHeader(newPostCSS)
+    newPostForm=htmlHeader(cssFilename,newPostCSS)
 
     # only show the share option if this is not a reply
     shareOptionOnDropdown=''
@@ -855,19 +890,21 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+=htmlFooter()
     return newPostForm
 
-def htmlHeader(css=None,refreshSec=0,lang='en') -> str:
+def htmlHeader(cssFilename: str,css=None,refreshSec=0,lang='en') -> str:
     if refreshSec==0:
         meta='  <meta charset="utf-8">\n'
     else:
         meta='  <meta http-equiv="Refresh" content="'+str(refreshSec)+'" charset="utf-8">\n'
 
-    if not css:        
+    if not css:
+        if '/' in cssFilename:
+            cssFilename=cssFilename.split('/')[-1]
         htmlStr= \
             '<!DOCTYPE html>\n' \
             '<html lang="'+lang+'">\n'+ \
             meta+ \
             '  <style>\n' \
-            '    @import url("epicyon-profile.css");\n'+ \
+            '    @import url("'+cssFilename+'");\n'+ \
             '    background-color: #282c37' \
             '  </style>\n' \
             '  <body>\n'
@@ -1112,7 +1149,10 @@ def htmlProfile(translate: {},projectVersion: str, \
 
     profileStr+=followApprovalsSection
     
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read().replace('image.png',actor+'/image.png')
 
         if selected=='posts':
@@ -1151,7 +1191,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         if selected=='shares':
             profileStr+= \
                 htmlProfileShares(translate,nickname,domainFull,extraJson)
-        profileStr=htmlHeader(profileStyle)+profileStr+htmlFooter()
+        profileStr=htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
     return profileStr
 
 def individualFollowAsHtml(translate: {}, \
@@ -1825,7 +1865,10 @@ def htmlTimeline(translate: {},pageNumber: int, \
                  manuallyApproveFollowers: bool) -> str:
     """Show the timeline as html
     """
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = \
             cssFile.read().replace('banner.png', \
                                    '/users/'+nickname+'/banner.png')
@@ -1864,10 +1907,10 @@ def htmlTimeline(translate: {},pageNumber: int, \
     if moderator:
         moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>'+translate['Mod']+' </span></button></a>'
 
-    tlStr=htmlHeader(profileStyle)
+    tlStr=htmlHeader(cssFilename,profileStyle)
     #if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
         # refresh if on the first page of the inbox and dm timeline
-        #tlStr=htmlHeader(profileStyle,240)
+        #tlStr=htmlHeader(cssFilename,profileStyle,240)
 
     if boxName!='dm':
         if not manuallyApproveFollowers:
@@ -2033,7 +2076,8 @@ def htmlIndividualPost(translate: {}, \
                                          nickname,domain,port,item,None,True,False, \
                                          httpPrefix,projectVersion, \
                                          False,authorized,False,False)
-    return htmlHeader()+postStr+htmlFooter()
+    cssFilename=baseDir+'/epicyon-profile.css'
+    return htmlHeader(cssFilename)+postStr+htmlFooter()
 
 def htmlPostReplies(translate: {},baseDir: str, \
                     session,wfRequest: {},personCache: {}, \
@@ -2051,7 +2095,8 @@ def htmlPostReplies(translate: {},baseDir: str, \
                                      httpPrefix,projectVersion, \
                                      False,False,False,False)
 
-    return htmlHeader()+repliesStr+htmlFooter()
+    cssFilename=baseDir+'/epicyon-profile.css'
+    return htmlHeader(cssFilename)+repliesStr+htmlFooter()
 
 def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
@@ -2077,9 +2122,12 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
         if not os.path.isfile(baseDir+'/accounts/shares-background.png'):
             copyfile(baseDir+'/img/shares-background.png',baseDir+'/accounts/shares-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    sharesStr=htmlHeader(profileStyle)
+    sharesStr=htmlHeader(cssFilename,profileStyle)
     sharesStr+='<div class="follow">'
     sharesStr+='  <div class="followAvatar">'
     sharesStr+='  <center>'
@@ -2124,9 +2172,12 @@ def htmlDeletePost(translate,pageNumber: int, \
                      baseDir+'/accounts/delete-background.png')
 
     deletePostStr=None
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-        deletePostStr=htmlHeader(profileStyle)
+        deletePostStr=htmlHeader(cssFilename,profileStyle)
         deletePostStr+='<script>'+contentWarningScript()+'</script>'
         deletePostStr+= \
             individualPostAsHtml(translate,pageNumber, \
@@ -2160,9 +2211,12 @@ def htmlFollowConfirm(translate: {},baseDir: str, \
         if not os.path.isfile(baseDir+'/accounts/follow-background.png'):
             copyfile(baseDir+'/img/follow-background.png',baseDir+'/accounts/follow-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    followStr=htmlHeader(profileStyle)
+    followStr=htmlHeader(cssFilename,profileStyle)
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'
@@ -2193,9 +2247,12 @@ def htmlUnfollowConfirm(translate: {},baseDir: str, \
         if not os.path.isfile(baseDir+'/accounts/follow-background.png'):
             copyfile(baseDir+'/img/follow-background.png',baseDir+'/accounts/follow-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    followStr=htmlHeader(profileStyle)
+    followStr=htmlHeader(cssFilename,profileStyle)
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'
@@ -2251,9 +2308,12 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsLinkStr=''
     if optionsLink:
         optionsLinkStr='    <input type="hidden" name="postUrl" value="'+optionsLink+'">'
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    optionsStr=htmlHeader(profileStyle)
+    optionsStr=htmlHeader(cssFilename,profileStyle)
     optionsStr+='<div class="options">'
     optionsStr+='  <div class="optionsAvatar">'
     optionsStr+='  <center>'
@@ -2292,7 +2352,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
 #
 #    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
 #        profileStyle = cssFile.read()
-#    blockStr=htmlHeader(profileStyle)
+#    blockStr=htmlHeader(cssFilename,profileStyle)
 #    blockStr+='<div class="block">'
 #    blockStr+='  <div class="blockAvatar">'
 #    blockStr+='  <center>'
@@ -2323,9 +2383,12 @@ def htmlUnblockConfirm(translate: {},baseDir: str, \
         if not os.path.isfile(baseDir+'/accounts/block-background.png'):
             copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    blockStr=htmlHeader(profileStyle)
+    blockStr=htmlHeader(cssFilename,profileStyle)
     blockStr+='<div class="block">'
     blockStr+='  <div class="blockAvatar">'
     blockStr+='  <center>'
@@ -2359,9 +2422,12 @@ def htmlSearchEmojiTextEntry(translate: {}, \
         if not os.path.isfile(baseDir+'/accounts/search-background.png'):
             copyfile(baseDir+'/img/search-background.png',baseDir+'/accounts/search-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    emojiStr=htmlHeader(profileStyle)
+    emojiStr=htmlHeader(cssFilename,profileStyle)
     emojiStr+='<div class="follow">'
     emojiStr+='  <div class="followAvatar">'
     emojiStr+='  <center>'    
@@ -2390,9 +2456,12 @@ def htmlSearch(translate: {}, \
         if not os.path.isfile(baseDir+'/accounts/search-background.png'):
             copyfile(baseDir+'/img/search-background.png',baseDir+'/accounts/search-background.png')
 
-    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-follow.css'
+    if os.path.isfile(baseDir+'/follow.css'):
+        cssFilename=baseDir+'/follow.css'        
+    with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
-    followStr=htmlHeader(profileStyle)
+    followStr=htmlHeader(cssFilename,profileStyle)
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'    
@@ -2452,7 +2521,10 @@ def htmlProfileAfterSearch(translate: {}, \
                 searchDomainFull=searchDomain+':'+str(searchPort)
     
     profileStr=''
-    with open(baseDir+'/epicyon-profile.css', 'r') as cssFile:
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
         wf = webfingerHandle(session,searchNickname+'@'+searchDomainFull,httpPrefix,wfRequest, \
                              domain,projectVersion)
         if not wf:
@@ -2543,4 +2615,4 @@ def htmlProfileAfterSearch(translate: {}, \
             if i>=20:
                 break
 
-    return htmlHeader(profileStyle)+profileStr+htmlFooter()
+    return htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
