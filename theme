@@ -43,6 +43,12 @@ if [[ "$themeName" == 'purple'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #3f2145;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #f98bb0;|g" "$filename"
+    sed -i "s|--button-selected:.*|--button-selected: #fe42a0;|g" "$filename"
+    sed -i "s|--button-background:.*|--button-background: #ff42a0;|g" "$filename"
+    sed -i "s|--button-text:.*|--button-text: white;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #ff42a0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: #1f152d;|g" "$filename"
     cp epicyon-login.css login.css
     filename=login.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: #1f152d;|g" "$filename"
@@ -53,6 +59,12 @@ if [[ "$themeName" == 'purple'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #3f2145;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #f98bb0;|g" "$filename"
+    sed -i "s|--button-selected:.*|--button-selected: #fe42a0;|g" "$filename"
+    sed -i "s|--button-background:.*|--button-background: #ff42a0;|g" "$filename"
+    sed -i "s|--button-text:.*|--button-text: white;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #ff42a0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: #1f152d;|g" "$filename"
     cp epicyon-follow.css follow.css
     filename=follow.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: #1f152d;|g" "$filename"
@@ -63,6 +75,12 @@ if [[ "$themeName" == 'purple'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #3f2145;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #f98bb0;|g" "$filename"
+    sed -i "s|--button-selected:.*|--button-selected: #fe42a0;|g" "$filename"
+    sed -i "s|--button-background:.*|--button-background: #ff42a0;|g" "$filename"
+    sed -i "s|--button-text:.*|--button-text: white;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #ff42a0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: #1f152d;|g" "$filename"
     cp epicyon-suspended.css suspended.css
     filename=suspended.css
     sed -i "s|--main-bg-color:.*|--main-bg-color: #1f152d;|g" "$filename"
@@ -73,6 +91,12 @@ if [[ "$themeName" == 'purple'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #3f2145;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #ff42a0;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #f93bb0;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #f98bb0;|g" "$filename"
+    sed -i "s|--button-selected:.*|--button-selected: #fe42a0;|g" "$filename"
+    sed -i "s|--button-background:.*|--button-background: #ff42a0;|g" "$filename"
+    sed -i "s|--button-text:.*|--button-text: white;|g" "$filename"
+    sed -i "s|background-color: #554;|background-color: #ff42a0;|g" "$filename"
+    sed -i "s|color: #FFFFFE;|color: #1f152d;|g" "$filename"
 fi
 
 if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
