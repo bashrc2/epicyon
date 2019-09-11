@@ -78,9 +78,9 @@ fi
 if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then
-	    sed -i 's|"theme".*|"theme": "hacker";|g' config.json
+	    sed -i 's|"theme".*|"theme": "hacker",|g' config.json
 	else
-	    sed -i '/"admin"/i "theme": "hacker";' config.json
+	    sed -i '/"admin"/a "theme": "hacker",' config.json
 	    sed -i 's|"theme"|    "theme"|g' config.json
 	fi	
     fi
