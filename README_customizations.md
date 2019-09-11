@@ -28,7 +28,18 @@ Extra emoji can be added to the *emoji* directory and you should then update the
 
 ## Style / Colors
 
-The overall style, including background colors or sizes of things can be changed by making customized css files.
+There are a few predefined themes which you can change to. Move to the directory where Epicyon is installed, then you can use:
+
+``` bash
+theme default
+theme light
+theme hacker
+theme purple
+```
+
+Alternatively if you want to create a much more customized theme then you can manually edit css files.
+
+Create copies of the default files:
 
 ``` bash
 cp epicyon-profile.css epicyon.css
