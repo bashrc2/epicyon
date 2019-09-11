@@ -26,3 +26,23 @@ When a moderator report is created the message at the top of the screen can be c
 
 Extra emoji can be added to the *emoji* directory and you should then update the **emoji/emoji.json** file, which maps the name to the filename (without the .png extension).
 
+## Style / Colors
+
+The overall style, including background colors or sizes of things can be changed by making customized css files.
+
+``` bash
+cp epicyon-profile.css epicyon.css
+cp epicyon-follow.css follow.css
+cp epicyon-login.css login.css
+cp epicyon-suspended.css suspended.css
+```
+
+You can then edit *epicyon.css*, *follow.css*, *login.css* and *follow.css* as needed and those files won't be overwritten if you upgrade.
+
+*epicyon.css* is the main style for displaying profiles and timelines.
+
+*follow.css* is used for displaying options when you select an avatar.
+
+*login.css* defines the style of the login screen.
+
+*suspended.css* is the style for the screen which shows that an account has been suspended.
