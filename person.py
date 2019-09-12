@@ -322,10 +322,19 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
     
     if os.path.isfile(baseDir+'/img/default-avatar.png'):
         copyfile(baseDir+'/img/default-avatar.png',baseDir+'/accounts/'+nickname+'@'+domain+'/avatar.png')
-    if os.path.isfile(baseDir+'/img/image.png'):
-        copyfile(baseDir+'/img/image.png',baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
-    if os.path.isfile(baseDir+'/img/banner.png'):
-        copyfile(baseDir+'/img/banner.png',baseDir+'/accounts/'+nickname+'@'+domain+'/banner.png')
+    theme=getConfigParam(baseDir,'theme')
+    defaultProfileImageFilename=baseDir+'/img/image.png'
+    if theme:
+        if os.path.isfile(baseDir+'/img/image_'+theme+'.png'):
+            defaultBannerFilename=baseDir+'/img/image_'+theme+'.png'        
+    if os.path.isfile(defaultProfileImageFilename):
+        copyfile(defaultProfileImageFilename,baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
+    defaultBannerFilename=baseDir+'/img/banner.png'
+    if theme:
+        if os.path.isfile(baseDir+'/img/banner_'+theme+'.png'):
+            defaultBannerFilename=baseDir+'/img/banner_'+theme+'.png'        
+    if os.path.isfile(defaultBannerFilename):
+        copyfile(defaultBannerFilename,baseDir+'/accounts/'+nickname+'@'+domain+'/banner.png')
     if remainingConfigExists:
         registrationsRemaining-=1
         setConfigParam(baseDir,'registrationsRemaining',str(registrationsRemaining))
