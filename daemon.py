@@ -2776,6 +2776,60 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: searching for emoji')
                 print('authorized: '+str(authorized))
 
+        # a vote/question/poll is posted
+        if authorized and \
+           (self.path.endswith('/question') or '/question?page=' in self.path):
+            pageNumber=1
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+                self.path=self.path.split('?page=')[0]
+            # the actor who votes
+            actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.replace('/question','')
+            nickname=getNicknameFromActor(actor)
+            if not nickname:
+                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+                self.server.POSTbusy=False
+                return
+            # get the parameters
+            length = int(self.headers['Content-length'])
+            questionParams=self.rfile.read(length).decode('utf-8')
+            questionParams=questionParams.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
+            # post being voted on
+            messageId=None
+            if 'messageId=' in questionParams:
+                messageId=searchParams.split('messageId=')[1]
+                if '&' in messageId:
+                    messageId=messageId.split('&')[0]
+            answer=None
+            if 'answer=' in questionParams:
+                answer=searchParams.split('answer=')[1]
+                if '&' in answer:
+                    answer=answer.split('&')[0]
+            print('Voting on message '+messageId)
+            print('Vote for: '+answer)
+            messageJson= \
+                createPublicPost(self.server.baseDir, \
+                                 nickname, \
+                                 self.server.domain,self.server.port, \
+                                 self.server.httpPrefix, \
+                                 answer,False,False,False, \
+                                 filename,attachmentMediaType,None,True, \
+                                 messageId,messageId,None)
+            if messageJson:
+                self.postToNickname=nickname
+                if self._postToOutbox(messageJson,__version__):
+                    populateReplies(self.server.baseDir, \
+                                    self.server.httpPrefix, \
+                                    self.server.domainFull, \
+                                    messageJson, \
+                                    self.server.maxReplies, \
+                                    self.server.debug)
+            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+            self.server.POSTbusy=False
+            return                
+
         # a search was made
         if (authorized or searchForEmoji) and \
            (self.path.endswith('/searchhandle') or '/searchhandle?page=' in self.path):
