@@ -65,7 +65,7 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
                 result.raw.decode_content = True
                 copyfileobj(result.raw, f)
                 print('avatar image downloaded for '+actor)
-                return avatarUrl
+                return avatarImageFilename.replace(baseDir+'/cache','')
         except Exception as e:            
             print('Failed to download avatar image: '+str(avatarUrl))
             print(e)
