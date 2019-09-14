@@ -3671,6 +3671,9 @@ def runDaemon(projectVersion, \
     if not os.path.isdir(baseDir+'/cache/announce'):
         print('Creating announce cache')
         os.mkdir(baseDir+'/cache/announce')
+    if not os.path.isdir(baseDir+'/cache/avatars'):
+        print('Creating avatars cache')
+        os.mkdir(baseDir+'/cache/avatars')
 
     archiveDir=baseDir+'/archive'
     if not os.path.isdir(archiveDir):

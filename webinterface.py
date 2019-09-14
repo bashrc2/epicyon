@@ -13,6 +13,7 @@ import commentjson
 from datetime import datetime
 from dateutil.parser import parse
 from shutil import copyfile
+from shutil import copyfileobj
 from pprint import pprint
 from person import personBoxJson
 from utils import getNicknameFromActor
@@ -40,6 +41,38 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
+
+def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avatarUrl: str,personCache: {},force=False) -> str:
+    """Updates the cached avatar for the given actor
+    """
+    if not avatarUrl:
+        return None
+    avatarImageFilename=baseDir+'/cache/avatars/'+avatarUrl.replace('/','#')    
+    if not os.path.isfile(avatarImageFilename) or force:
+        if avatarUrl.endswith('.png'):
+            sessionHeaders = {'Accept': 'image/png'}
+        elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg'):
+            sessionHeaders = {'Accept': 'image/jpeg'}
+        elif avatarUrl.endswith('.gif'):
+            sessionHeaders = {'Accept': 'image/gif'}
+        else:
+            return None
+        try:
+            result=session.get(avatarUrl, headers=sessionHeaders, params=None)
+            with open(avatarImageFilename, 'wb') as f:
+                result.raw.decode_content = True
+                copyfileobj(result.raw, f)
+                print('avatar image downloaded for '+actor)
+                return avatarUrl
+        except Exception as e:            
+            print('Failed to download avatar image: '+str(avatarUrl))
+            print(e)
+        sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+        personJson = getJson(session,actor,sessionHeaders,None,__version__,httpPrefix,None)
+        if personJson:
+            storePersonInCache(baseDir,actor,personJson,personCache)
+            return getPersonAvatarUrl(baseDir,actor,personCache)
+    return None
 
 def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """Returns the avatar url for the person
@@ -1708,6 +1741,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     if not avatarUrl:
         avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
+    avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
     if not avatarUrl:
         avatarUrl=postJsonObject['actor']+'/avatar.png'
 

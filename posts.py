@@ -1931,7 +1931,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         return
     # sort the list in ascending order of date
     postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
-    
+
     for statusNumber,postFilename in postsInBox.items():
         filePath = os.path.join(boxDir, postFilename)        
         if os.path.isfile(filePath):

@@ -37,7 +37,6 @@ def getJson(session,url: str,headers: {},params: {}, \
         sessionHeaders=headers
     if params:
         sessionParams=params
-    pythonVersion=str(sys.version_info[0])+'.'+str(sys.version_info[1])+'.'+str(sys.version_info[2])
     sessionHeaders['User-Agent']='Epicyon/'+version
     if domain:
         sessionHeaders['User-Agent']+='; +'+httpPrefix+'://'+domain+'/'
