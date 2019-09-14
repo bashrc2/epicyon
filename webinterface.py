@@ -48,13 +48,14 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
     """
     if not avatarUrl:
         return None
-    if avatarUrl.endswith('.png'):
+    if avatarUrl.endswith('.png') or '.png?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/png'}
         avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.png'
-    elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg'):
+    elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg') or \
+          or '.jpg?' in avatarUrl or '.jpeg?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/jpeg'}
         avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.jpg'
-    elif avatarUrl.endswith('.gif'):
+    elif avatarUrl.endswith('.gif') or '.gif?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/gif'}
         avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.gif'
     else:
