@@ -674,6 +674,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/statuses/' not in self.path and \
                '/emoji/' not in self.path and \
                '/tags/' not in self.path and \
+               '/avatars/' not in self.path and \
                '/icons/' not in self.path:
                 divertToLoginScreen=True
                 if self.path.startswith('/users/'):
@@ -849,6 +850,28 @@ class PubServer(BaseHTTPRequestHandler):
                             self.wfile.write(mediaBinary)
                             self.wfile.flush() 
                         return        
+            self._404()
+            return
+        # cached avatar images
+        # Note that this comes before the busy flag to avoid conflicts
+        if self.path.startswith('/avatars/'):
+            mediaFilename= \
+                self.server.baseDir+'/cache/'+self.path
+            if os.path.isfile(mediaFilename):
+                with open(mediaFilename, 'rb') as avFile:
+                    mediaBinary = avFile.read()
+                    if mediaFilename.endswith('.png'):
+                        self._set_headers('image/png',len(mediaBinary),cookie)
+                    elif mediaFilename.endswith('.jpg'):
+                        self._set_headers('image/jpeg',len(mediaBinary),cookie)
+                    elif mediaFilename.endswith('.gof'):
+                        self._set_headers('image/gif',len(mediaBinary),cookie)
+                    else:
+                        self._404()
+                        return
+                    self.wfile.write(mediaBinary)
+                    self.wfile.flush() 
+                    return        
             self._404()
             return
         # show avatar or background image

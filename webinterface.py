@@ -79,8 +79,19 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
 def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """Returns the avatar url for the person
     """
-    personJson = getPersonFromCache(baseDir,personUrl,personCache)
+    personJson = getPersonFromCache(baseDir,personUrl,personCache)    
     if personJson:
+        actorStr=personJson['actor'].replace('/','#')
+        avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.png'
+        if os.path.isfile(avatarImageFilename):
+            return '/avatars/'+actorStr+'.png'
+        avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.jpg'
+        if os.path.isfile(avatarImageFilename):
+            return '/avatars/'+actorStr+'.jpg'
+        avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.gif'
+        if os.path.isfile(avatarImageFilename):
+            return '/avatars/'+actorStr+'.gif'
+        
         if personJson.get('icon'):
             if personJson['icon'].get('url'):
                 return personJson['icon']['url']
