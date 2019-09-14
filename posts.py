@@ -1857,7 +1857,7 @@ def createBoxBase(baseDir: str,boxname: str, \
         return boxHeader
     return boxItems
 
-def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,maxPostsInBox=256):
+def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,maxPostsInBox=1024):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
@@ -1866,7 +1866,7 @@ def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,max
         expirePersonCache(basedir,personCache)
         archivePosts(baseDir,httpPrefix,archiveDir,maxPostsInBox)
 
-def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=256) -> None:
+def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=1024) -> None:
     """Archives posts for all accounts
     """
     if archiveDir:
@@ -1900,7 +1900,7 @@ def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=256)
                                       maxPostsInBox)
 
 def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str, \
-                          boxname: str,archiveDir: str,maxPostsInBox=256) -> None:
+                          boxname: str,archiveDir: str,maxPostsInBox=1024) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
     """

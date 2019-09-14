@@ -3635,7 +3635,7 @@ def runDaemon(projectVersion, \
     httpd.maxPostLength=1024*1024*30
     httpd.maxMediaSize=httpd.maxPostLength
     httpd.maxMessageLength=5000
-    httpd.maxPostsInBox=256
+    httpd.maxPostsInBox=1024
     httpd.domain=domain
     httpd.port=port
     httpd.domainFull=domain
