@@ -864,7 +864,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('image/png',len(mediaBinary),cookie)
                     elif mediaFilename.endswith('.jpg'):
                         self._set_headers('image/jpeg',len(mediaBinary),cookie)
-                    elif mediaFilename.endswith('.gof'):
+                    elif mediaFilename.endswith('.gif'):
                         self._set_headers('image/gif',len(mediaBinary),cookie)
                     else:
                         self._404()
