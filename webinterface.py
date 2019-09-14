@@ -81,7 +81,7 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """
     personJson = getPersonFromCache(baseDir,personUrl,personCache)    
     if personJson:
-        actorStr=personJson['actor'].replace('/','#')
+        actorStr=personJson['id'].replace('/','#')
         avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.png'
         if os.path.isfile(avatarImageFilename):
             return '/avatars/'+actorStr+'.png'
