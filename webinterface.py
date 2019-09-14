@@ -61,11 +61,10 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
         return None
     if not os.path.isfile(avatarImageFilename) or force:
         try:
+            print('avatar image url: '+avatarUrl)
             result=session.get(avatarUrl, headers=sessionHeaders, params=None)
             with open(avatarImageFilename, 'wb') as f:
-                f.write(result.raw)
-                #result.raw.decode_content = True
-                #copyfileobj(result.raw, f)
+                f.write(result.content)
                 print('avatar image downloaded for '+actor)
                 return avatarImageFilename.replace(baseDir+'/cache','')
         except Exception as e:            
