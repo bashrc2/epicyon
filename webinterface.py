@@ -47,16 +47,18 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
     """
     if not avatarUrl:
         return None
-    avatarImageFilename=baseDir+'/cache/avatars/'+avatarUrl.replace('/','#')    
+    if avatarUrl.endswith('.png'):
+        sessionHeaders = {'Accept': 'image/png'}
+        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','#')+'.png'
+    elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg'):
+        sessionHeaders = {'Accept': 'image/jpeg'}
+        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','#')+'.jpg'
+    elif avatarUrl.endswith('.gif'):
+        sessionHeaders = {'Accept': 'image/gif'}
+        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','#')+'.gif'
+    else:
+        return None
     if not os.path.isfile(avatarImageFilename) or force:
-        if avatarUrl.endswith('.png'):
-            sessionHeaders = {'Accept': 'image/png'}
-        elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg'):
-            sessionHeaders = {'Accept': 'image/jpeg'}
-        elif avatarUrl.endswith('.gif'):
-            sessionHeaders = {'Accept': 'image/gif'}
-        else:
-            return None
         try:
             result=session.get(avatarUrl, headers=sessionHeaders, params=None)
             with open(avatarImageFilename, 'wb') as f:
