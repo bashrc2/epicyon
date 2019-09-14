@@ -41,6 +41,7 @@ from content import getMentionsFromHtml
 from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
+from cache import storePersonInCache
 
 def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avatarUrl: str,personCache: {},force=False) -> str:
     """Updates the cached avatar for the given actor
@@ -62,8 +63,9 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
         try:
             result=session.get(avatarUrl, headers=sessionHeaders, params=None)
             with open(avatarImageFilename, 'wb') as f:
-                result.raw.decode_content = True
-                copyfileobj(result.raw, f)
+                f.write(result.raw)
+                #result.raw.decode_content = True
+                #copyfileobj(result.raw, f)
                 print('avatar image downloaded for '+actor)
                 return avatarImageFilename.replace(baseDir+'/cache','')
         except Exception as e:            
