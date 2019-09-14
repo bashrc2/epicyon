@@ -614,11 +614,13 @@ def personReceiveUpdate(baseDir: str, \
             updateDomainFull=updateDomain+':'+str(updatePort)
     actor=updateDomainFull+'/users/'+updateNickname
     if actor not in personJson['id']:
-        if debug:
-            print('actor: '+actor)
-            print('id: '+personJson['id'])
-            print('DEBUG: Actor does not match id')
-        return False
+        actor=updateDomainFull+'/profile/'+updateNickname
+        if actor not in personJson['id']:
+            if debug:
+                print('actor: '+actor)
+                print('id: '+personJson['id'])
+                print('DEBUG: Actor does not match id')
+            return False
     if updateDomainFull==domainFull:
         if debug:
             print('DEBUG: You can only receive actor updates for domains other than your own')
@@ -653,6 +655,21 @@ def personReceiveUpdate(baseDir: str, \
     with open(actorFilename, 'w') as fp:
         commentjson.dump(personJson, fp, indent=4, sort_keys=False)
         print('actor updated for '+personJson['id'])
+
+    # remove avatar if it exists so that it will be refreshed later
+    # when a timeline is constructed
+    actorStr=personJson['id'].replace('/','-')
+    avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.png'
+    if os.path.isfile(avatarFilename):
+        os.remove(avatarFilename)
+    else:
+        avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.jpg'
+        if os.path.isfile(avatarFilename):
+            os.remove(avatarFilename)
+        else:
+            avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.gif'
+            if os.path.isfile(avatarFilename):
+                os.remove(avatarFilename)
     return True
 
 def receiveUpdate(session,baseDir: str, \
