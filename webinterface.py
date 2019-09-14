@@ -74,6 +74,19 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
         sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,actor,sessionHeaders,None,__version__,httpPrefix,None)
         if personJson:
+            if not personJson.get('id'):
+                return None
+            if not personJson.get('publicKey'):
+                return None
+            if not personJson['publicKey'].get('publicKeyPem'):
+                return None
+            if personJson['id']!=actor:
+                return None
+            if not personCache.get(actor):
+                return None
+            if personCache[actor]['actor']['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
+                print("ERROR: public keys don't match when downloading actor for "+actor)
+                return None
             storePersonInCache(baseDir,actor,personJson,personCache)
             return getPersonAvatarUrl(baseDir,actor,personCache)
         return None
