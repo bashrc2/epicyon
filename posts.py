@@ -1910,10 +1910,27 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         if not os.path.isdir(archiveDir):
             os.mkdir(archiveDir)    
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
-    postsInBox=sorted(os.listdir(boxDir), reverse=False)
+    postsInBox=os.listdir(boxDir)
     noOfPosts=len(postsInBox)
     if noOfPosts<=maxPostsInBox:
         return
+
+    postsInBoxDict={}
+    postsCtr=0
+    for postFilename in postsInBox:
+        if not postFilename.endswith('.json'):
+            continue
+        # extract the status number
+        statusNumber=getStatusNumberFromPostFilename(postFilename)
+        if statusNumber:
+            postsInBoxDict[statusNumber]=os.path.join(boxDir, postFilename)
+            postsCtr+=1
+
+    noOfPosts=postsCtr
+    if noOfPosts<=maxPostsInBox:
+        return
+    # sort the list in ascending order of date
+    postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
     
     for postFilename in postsInBox:
         filePath = os.path.join(boxDir, postFilename)        
