@@ -49,13 +49,13 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
         return None
     if avatarUrl.endswith('.png'):
         sessionHeaders = {'Accept': 'image/png'}
-        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','#')+'.png'
+        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.png'
     elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg'):
         sessionHeaders = {'Accept': 'image/jpeg'}
-        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','#')+'.jpg'
+        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.jpg'
     elif avatarUrl.endswith('.gif'):
         sessionHeaders = {'Accept': 'image/gif'}
-        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','#')+'.gif'
+        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.gif'
     else:
         return None
     if not os.path.isfile(avatarImageFilename) or force:
@@ -82,7 +82,7 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """
     personJson = getPersonFromCache(baseDir,personUrl,personCache)    
     if personJson:
-        actorStr=personJson['id'].replace('/','#')
+        actorStr=personJson['id'].replace('/','-')
         avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.png'
         if os.path.isfile(avatarImageFilename):
             return '/avatars/'+actorStr+'.png'
