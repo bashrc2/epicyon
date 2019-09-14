@@ -71,6 +71,9 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
         except Exception as e:            
             print('Failed to download avatar image: '+str(avatarUrl))
             print(e)
+        # remove partial download
+        if os.path.isfile(avatarImageFilename):
+            os.remove(avatarImageFilename)
         sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,actor,sessionHeaders,None,__version__,httpPrefix,None)
         if personJson:
