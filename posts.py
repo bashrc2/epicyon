@@ -1233,9 +1233,9 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         if not capabilityAcquisition:
             return 2
     else:
-        print("inboxUrl: "+inboxUrl)
-        print("toPersonId: "+toPersonId)
-        print("sharedInboxUrl: "+sharedInboxUrl)
+        print("inboxUrl: "+str(inboxUrl))
+        print("toPersonId: "+str(toPersonId))
+        print("sharedInboxUrl: "+str(sharedInboxUrl))
         if inboxUrl.endswith('/actor/inbox'):
             inboxUrl=sharedInboxUrl
 
