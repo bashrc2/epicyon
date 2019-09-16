@@ -1774,8 +1774,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             attachmentCtr+=1
             attachmentStr+='</div>'
 
-    if not avatarUrl:
-        avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
+    #if not avatarUrl:
+    avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
     avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
     if not avatarUrl:
         avatarUrl=postJsonObject['actor']+'/avatar.png'
