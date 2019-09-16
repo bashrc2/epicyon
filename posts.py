@@ -1236,8 +1236,9 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         print("inboxUrl: "+str(inboxUrl))
         print("toPersonId: "+str(toPersonId))
         print("sharedInboxUrl: "+str(sharedInboxUrl))
-        if inboxUrl.endswith('/actor/inbox'):
-            inboxUrl=sharedInboxUrl
+        if inboxUrl:
+            if inboxUrl.endswith('/actor/inbox'):
+                inboxUrl=sharedInboxUrl
 
     if not inboxUrl:
         if debug:
