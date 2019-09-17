@@ -2137,8 +2137,14 @@ def htmlIndividualPost(translate: {}, \
         postFilename=locatePost(baseDir,nickname,domain,postJsonObject['object']['inReplyTo'])
         if not postFilename:
             break
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
+        loadedPost=False
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                loadedPost=True
+        except Exception as e:
+            print(e)
+        if loadedPost:
             postStr= \
                 individualPostAsHtml(iconsDir,translate,None, \
                                      baseDir,session,wfRequest,personCache, \
