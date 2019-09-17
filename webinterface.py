@@ -144,8 +144,14 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
             emojiForm+=htmlFooter()
             return emojiForm
         
-        with open(emojiLookupFilename, 'r') as fp:
-            emojiJson=commentjson.load(fp)
+        loadedEmoji=False
+        try:
+            with open(emojiLookupFilename, 'r') as fp:
+                emojiJson=commentjson.load(fp)
+                loadedEmoji=True
+        except Exception as e:
+            print(e)
+        if loadedEmoji:
             results={}
             for emojiName,filename in emojiJson.items():
                 if searchStr in emojiName:
@@ -206,8 +212,16 @@ def htmlSearchSharedItems(translate: {}, \
                 sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'
                 if not os.path.isfile(sharesFilename):
                     continue
-                with open(sharesFilename, 'r') as fp:
-                    sharesJson=commentjson.load(fp)
+
+                sharesJson=None
+                try:
+                    with open(sharesFilename, 'r') as fp:
+                        sharesJson=commentjson.load(fp)
+                except Exception as e:
+                    print(e)
+                if not sharesJson:
+                    continue
+                
                 for name,sharedItem in sharesJson.items():
                     matched=True
                     for searchSubstr in searchStrLowerList:
@@ -360,8 +374,14 @@ def htmlHashtagSearch(translate: {}, \
         if not postFilename:
             index-=1
             continue
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
+        loadedPost=False
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                loadedPost=True
+        except Exception as e:
+            print(e)
+        if loadedPost:
             if not isPublicPost(postJsonObject):
                 index-=1
                 continue
@@ -401,8 +421,14 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
             if f.startswith('inbox@'):
                 continue
             actorFilename = os.path.join(subdir, f)
-            with open(actorFilename, 'r') as fp:
-                actorJson=commentjson.load(fp)
+            loadedActor=False
+            try:
+                with open(actorFilename, 'r') as fp:
+                    actorJson=commentjson.load(fp)
+                    loadedActor=True
+            except Exception as e:
+                print(e)
+            if loadedActor:
                 if actorJson.get('id') and \
                    actorJson.get('skills') and \
                    actorJson.get('name') and \
@@ -430,8 +456,14 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                 if f.startswith('inbox@'):
                     continue
                 actorFilename = os.path.join(subdir, f)
-                with open(actorFilename, 'r') as fp:
-                    cachedActorJson=commentjson.load(fp)
+                loadedActor=False
+                try:
+                    with open(actorFilename, 'r') as fp:
+                        cachedActorJson=commentjson.load(fp)
+                        loadedActor=True
+                except Exception as e:
+                    print(e)
+                if loadedActor:
                     if cachedActorJson.get('actor'):
                         actorJson=cachedActorJson['actor']
                         if actorJson.get('id') and \
@@ -504,8 +536,14 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     displayNickname=nickname
     bioStr=''
     manuallyApprovesFollowers=''
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+    loadedActor=False
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+            loadedActor=True
+    except Exception as e:
+        print(e)
+    if loadedActor:
         if actorJson.get('name'):
             displayNickname=actorJson['name']
         if actorJson.get('summary'):
@@ -1501,8 +1539,14 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
     manuallyApprovesFollowers=False
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if os.path.isfile(actorFilename):
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
+        loadedActor=False
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                loadedActor=True
+        except Exception as e:
+            print(e)
+        if loadedActor:
             if actorJson.get('manuallyApprovesFollowers'):
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
     return manuallyApprovesFollowers
@@ -1576,9 +1620,12 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 if not os.path.isfile(announceFilename+'.reject'):
                     if os.path.isfile(announceFilename):
                         print('Reading cached Announce content for '+postJsonObject['object'])
-                        with open(announceFilename, 'r') as fp:
-                            postJsonObject=commentjson.load(fp)
-                            isAnnounced=True
+                        try:
+                            with open(announceFilename, 'r') as fp:
+                                postJsonObject=commentjson.load(fp)
+                                isAnnounced=True
+                        except Exception as e:
+                            print(e)
                     else:
                         print('Downloading Announce content for '+postJsonObject['object'])
                         asHeader={'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
@@ -2202,8 +2249,13 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     if not os.path.isfile(sharesFile):
         return None
     sharesJson=None
-    with open(sharesFile, 'r') as fp:
-        sharesJson=commentjson.load(fp)
+
+    try:
+        with open(sharesFile, 'r') as fp:
+            sharesJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+    
     if not sharesJson:
         return None
     if not sharesJson.get(shareName):
@@ -2258,8 +2310,15 @@ def htmlDeletePost(translate,pageNumber: int, \
     postFilename=locatePost(baseDir,nickname,domain,messageId)
     if not postFilename:
         return None
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+
+    postJsonObject=None
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+    if not postJsonObject:
+        return None
 
     if os.path.isfile(baseDir+'/img/delete-background.png'):
         if not os.path.isfile(baseDir+'/accounts/delete-background.png'):

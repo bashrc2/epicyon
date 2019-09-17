@@ -1357,8 +1357,14 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.httpPrefix+':##'+self.server.domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
                         if os.path.isfile(postFilename):
                             postJsonObject={}
-                            with open(postFilename, 'r') as fp:
-                                postJsonObject=commentjson.load(fp)
+                            loadedPost=False
+                            try:
+                                with open(postFilename, 'r') as fp:
+                                    postJsonObject=commentjson.load(fp)
+                                    loadedPost=True
+                            except Exception as e:
+                                print(e)
+                            if loadedPost:                            
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
@@ -1490,8 +1496,14 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=postSections[0]
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
-                    with open(actorFilename, 'r') as fp:
-                        actorJson=commentjson.load(fp)
+                    loadedActor=False
+                    try:
+                        with open(actorFilename, 'r') as fp:
+                            actorJson=commentjson.load(fp)
+                            loadedActor=True
+                    except Exception as e:
+                        print(e)
+                    if loadedActor:                    
                         if actorJson.get('roles'):
                             if self._requestHTTP():
                                 getPerson = \
@@ -1527,8 +1539,14 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=postSections[0]
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
-                    with open(actorFilename, 'r') as fp:
-                        actorJson=commentjson.load(fp)
+                    loadedActor=False
+                    try:
+                        with open(actorFilename, 'r') as fp:
+                            actorJson=commentjson.load(fp)
+                            loadedActor=True
+                    except Exception as e:
+                        print(e)
+                    if loadedActor:                    
                         if actorJson.get('skills'):
                             if self._requestHTTP():
                                 getPerson = \
@@ -2552,8 +2570,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
-                    with open(actorFilename, 'r') as fp:
-                        actorJson=commentjson.load(fp)
+                    loadedActor=False
+                    try:
+                        with open(actorFilename, 'r') as fp:
+                            actorJson=commentjson.load(fp)
+                            loadedActor=True
+                    except Exception as e:
+                        print(e)
+                    if loadedActor:                    
                         actorChanged=False
                         skillCtr=1
                         newSkills={}
@@ -3626,8 +3650,13 @@ def runDaemon(projectVersion, \
             systemLanguage='en'
             translationsFile=baseDir+'/translations/'+systemLanguage+'.json'
         print('System language: '+systemLanguage)
-        with open(translationsFile, 'r') as fp:
-            httpd.translate=commentjson.load(fp)
+
+        try:
+            with open(translationsFile, 'r') as fp:
+                httpd.translate=commentjson.load(fp)
+        except Exception as e:
+            print('ERROR while loading translations '+translationsFile)
+            print(e)
 
     httpd.outboxThread={}
     httpd.projectVersion=projectVersion

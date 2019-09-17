@@ -306,8 +306,12 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
             queue.pop(0)
             return False
 
-    with open(ocapFilename, 'r') as fp:
-        oc=commentjson.load(fp)
+    try:
+        with open(ocapFilename, 'r') as fp:
+            oc=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+        return False
 
     if not oc.get('id'):
         if debug:
@@ -363,8 +367,14 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
                 ocapFilename=baseDir+'/accounts/'+handle+'/ocap/accept/'+actor.replace('/','#')+'.json'
                 if os.path.isfile(ocapFilename):
                     # read the granted capabilities and obtain the id
-                    with open(ocapFilename, 'r') as fp:
-                        ocapJson=commentjson.load(fp)
+                    loadedOcap=False
+                    try:
+                        with open(ocapFilename, 'r') as fp:
+                            ocapJson=commentjson.load(fp)
+                            loadedOcap=True
+                    except Exception as e:
+                        print(e)
+                    if loadedOcap:
                         if ocapJson.get('id'):
                             # append with the capabilities id
                             recipientsDict[handle]=ocapJson['id']
@@ -643,8 +653,14 @@ def personReceiveUpdate(baseDir: str, \
             return False
     else:
         if os.path.isfile(actorFilename):
-            with open(actorFilename, 'r') as fp:
-                existingPersonJson=commentjson.load(fp)
+            loadedActor=False
+            try:
+                with open(actorFilename, 'r') as fp:
+                    existingPersonJson=commentjson.load(fp)
+                    loadedActor=True
+            except Exception as e:
+                print(e)
+            if loadedActor:
                 if existingPersonJson['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
                     if debug:
                         print('WARN: Public key does not match cached actor when updating')
@@ -997,8 +1013,15 @@ def receiveUndoAnnounce(session,handle: str,baseDir: str, \
         return True
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+
+    loadedPost=False
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+            loadedPost=True
+    except Exception as e:
+        print(e)
+    if loadedPost:
         if not postJsonObject.get('type'):
             if postJsonObject['type']!='Announce':
                 if debug:

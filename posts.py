@@ -508,11 +508,13 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         ocapFilename=getOcapFilename(baseDir,nickname,domain,toUrl,'granted')
         if ocapFilename:
             if os.path.isfile(ocapFilename):
-                with open(ocapFilename, 'r') as fp:
-                    oc=commentjson.load(fp)
-                    if oc.get('id'):
-                        capabilityIdList=[oc['id']]
-
+                try:
+                    with open(ocapFilename, 'r') as fp:
+                        oc=commentjson.load(fp)
+                        if oc.get('id'):
+                            capabilityIdList=[oc['id']]
+                except Exception as e:
+                    print(e)
         newPost = {
             "@context": "https://www.w3.org/ns/activitystreams",
             'id': newPostId+'/activity',
@@ -1634,9 +1636,13 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
             for postUrl in pageLines:
                 postFilename=boxDir+'/'+postUrl.replace('/','#')+'.json'
                 if os.path.isfile(postFilename):
-                    with open(postFilename, 'r') as fp:
-                        postJsonObject=commentjson.load(fp)
-                        boxItems['orderedItems'].append(postJsonObject)
+                    try:
+                        with open(postFilename, 'r') as fp:
+                            postJsonObject=commentjson.load(fp)
+                            boxItems['orderedItems'].append(postJsonObject)
+                    except Exception as e:
+                        print(e)
+
     if headerOnly:
         return boxHeader
     return boxItems
@@ -1739,8 +1745,14 @@ def createBoxBase(baseDir: str,boxname: str, \
             if statusNumber:                
                 sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
                 # get the actor from the shared post
-                with open(sharedInboxFilename, 'r') as fp:
-                    postJsonObject=commentjson.load(fp)
+                loadedPost=False
+                try:
+                    with open(sharedInboxFilename, 'r') as fp:
+                        postJsonObject=commentjson.load(fp)
+                        loadedPost=True
+                except Exception as e:
+                    print(e)
+                if loadedPost:                
                     actorNickname=getNicknameFromActor(postJsonObject['actor'])
                     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
                     if actorNickname and actorDomain:
@@ -1756,8 +1768,14 @@ def createBoxBase(baseDir: str,boxname: str, \
                                 ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJsonObject['actor'].replace('/','#')+'.json'
                                 if os.path.isfile(ocapFilename):
                                     # read the capabilities id
-                                    with open(ocapFilename, 'r') as fp:
-                                        ocapJson=commentjson.load(fp)
+                                    loadedOcap=False
+                                    try:
+                                        with open(ocapFilename, 'r') as fp:
+                                            ocapJson=commentjson.load(fp)
+                                            loadedOcap=True
+                                    except Exception as e:
+                                        print(e)
+                                    if loadedOcap:
                                         if ocapJson.get('id'):
                                             if ocapJson['id'] in capsList:                                    
                                                 postsInBoxDict[statusNumber]=sharedInboxFilename
@@ -2040,8 +2058,14 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str,postRepliesFilena
                 if os.path.isfile(searchFilename):
                     if authorized or \
                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
-                        with open(searchFilename, 'r') as fp:
-                            postJsonObject=commentjson.load(fp)
+                        loadedPost=False
+                        try:
+                            with open(searchFilename, 'r') as fp:
+                                postJsonObject=commentjson.load(fp)
+                                loadedPost=True
+                        except Exception as e:
+                            print(e)
+                        if loadedPost:
                             if postJsonObject['object'].get('cc'):                                                            
                                 if authorized or \
                                    ('https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to'] or \
@@ -2065,8 +2089,14 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str,postRepliesFilena
                     if authorized or \
                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
                         # get the json of the reply and append it to the collection
-                        with open(searchFilename, 'r') as fp:
-                            postJsonObject=commentjson.load(fp)
+                        loadedPost=False
+                        try:
+                            with open(searchFilename, 'r') as fp:
+                                postJsonObject=commentjson.load(fp)
+                                loadedPost=True
+                        except Exception as e:
+                            print(e)
+                        if loadedPost:
                             if postJsonObject['object'].get('cc'):                                                            
                                 if authorized or \
                                    ('https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to'] or \
