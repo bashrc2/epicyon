@@ -199,7 +199,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
     sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|--text-entry-foreground:.*|--text-entry-foreground: #111;|g" "$filename"
-    sed -i "s|--text-entry-background:.*|--text-entry-background: #999;|g" "$filename"
+    sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-login.css login.css
@@ -214,7 +214,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
     sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|--text-entry-foreground:.*|--text-entry-foreground: #111;|g" "$filename"
-    sed -i "s|--text-entry-background:.*|--text-entry-background: #999;|g" "$filename"
+    sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-follow.css follow.css
@@ -229,7 +229,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
     sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|--text-entry-foreground:.*|--text-entry-foreground: #111;|g" "$filename"
-    sed -i "s|--text-entry-background:.*|--text-entry-background: #999;|g" "$filename"
+    sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-suspended.css suspended.css
@@ -244,7 +244,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
     sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|--text-entry-foreground:.*|--text-entry-foreground: #111;|g" "$filename"
-    sed -i "s|--text-entry-background:.*|--text-entry-background: #999;|g" "$filename"
+    sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
 fi
