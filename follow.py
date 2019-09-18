@@ -559,6 +559,11 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
               ' port '+str(port)+' to '+ \
               nickname+'@'+domain+' port '+ str(fromPort))
     clientToServer=False
+    denyHandle=nickname+'@'+domain
+    if fromPort:
+        if fromPort!=80 and fromPort!=443:e
+            denyHandle=denyHandle+':'+str(fromPort)
+    removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,denyHandle)
     return sendSignedJson(rejectJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
