@@ -360,7 +360,7 @@ def storeFollowRequest(baseDir: str, \
     # should this follow be denied?
     denyFollowsFilename=accountsDir+'/followrejects.txt'
     if os.path.isfile(denyFollowsFilename):
-        if approveHandle not in open(denyFollowsFilename).read():
+        if approveHandle in open(denyFollowsFilename).read():
             return True
 
     # add to a file which contains a list of requests
