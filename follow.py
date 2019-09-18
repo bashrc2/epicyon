@@ -361,6 +361,8 @@ def storeFollowRequest(baseDir: str, \
     denyFollowsFilename=accountsDir+'/followrejects.txt'
     if os.path.isfile(denyFollowsFilename):
         if approveHandle in open(denyFollowsFilename).read():
+            removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,approveHandle)
+            print(approveHandle+' was already denied as a follower of '+nicknameToFollow)
             return True
 
     # add to a file which contains a list of requests
@@ -465,14 +467,6 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     # what is the followers policy?
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug):
-        rejectedFollowsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrejects.txt'
-        if os.path.isfile(rejectedFollowsFilename):
-            denyHandle=nicknameToFollow+'@'+domainToFollowFull
-            if denyHandle in open(rejectedFollowsFilename).read():
-                print(denyHandle+' was already denied as a follower of '+nickname)
-                removeFromFollowRequests(baseDir,nickname,domain,denyHandle)
-                return True
-
         print('Storing follow request for approval')
         return storeFollowRequest(baseDir, \
                                   nicknameToFollow,domainToFollow,port, \
