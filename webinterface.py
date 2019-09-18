@@ -2218,6 +2218,8 @@ def htmlIndividualPost(translate: {}, \
                                          httpPrefix,projectVersion, \
                                          False,authorized,False,False)
     cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
     return htmlHeader(cssFilename)+postStr+htmlFooter()
 
 def htmlPostReplies(translate: {},baseDir: str, \
@@ -2238,6 +2240,8 @@ def htmlPostReplies(translate: {},baseDir: str, \
                                      False,False,False,False)
 
     cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
     return htmlHeader(cssFilename)+repliesStr+htmlFooter()
 
 def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -> str:
