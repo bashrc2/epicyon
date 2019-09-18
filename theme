@@ -189,6 +189,7 @@ if [[ "$themeName" == 'light'* ]]; then
     fi
     cp epicyon-profile.css epicyon.css
     filename=epicyon.css
+    sed -i 's|rgba(0, 0, 0, 0.5)|rgba(0, 0, 0, 0.0)|g' "$filename"
     sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
     sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
     sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
@@ -204,6 +205,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-login.css login.css
     filename=login.css
+    sed -i 's|rgba(0, 0, 0, 0.5)|rgba(0, 0, 0, 0.0)|g' "$filename"
     sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
     sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
     sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
@@ -219,6 +221,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-follow.css follow.css
     filename=follow.css
+    sed -i 's|rgba(0, 0, 0, 0.5)|rgba(0, 0, 0, 0.0)|g' "$filename"
     sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
     sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
     sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
@@ -234,6 +237,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-suspended.css suspended.css
     filename=suspended.css
+    sed -i 's|rgba(0, 0, 0, 0.5)|rgba(0, 0, 0, 0.0)|g' "$filename"
     sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
     sed -i "s|--main-bg-color-reply:.*|--main-bg-color-reply: #e0dbf0;|g" "$filename"
     sed -i "s|--main-bg-color-report:.*|--main-bg-color-report: #e3dbf0;|g" "$filename"
