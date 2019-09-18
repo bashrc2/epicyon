@@ -26,6 +26,28 @@ from auth import createBasicAuthHeader
 from auth import createPassword
 from session import postJson
 
+def removeFromFollowRequests(baseDir: str, \
+                             nickname: str,domain: str, \
+                             denyHandle: str):
+    """Removes a handle from follow requests
+    """
+    handle=nickname+'@'+domain
+    accountsDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
+    if not os.path.isfile(approveFollowsFilename):
+        if debug:
+            print('WARN: Follow requests file '+approveFollowsFilename+' not found')
+        return
+    if denyHandle not in open(approveFollowsFilename).read():
+        return
+    approvefilenew = open(approveFollowsFilename+'.new', 'w+')
+    with open(approveFollowsFilename, 'r') as approvefile:
+        for approveHandle in approvefile:
+            if not approveHandle.startswith(denyHandle):
+                approvefilenew.write(approveHandle)
+    approvefilenew.close()
+    os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+
 def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
     """Is the given actor a follower of the given nickname?
     """
@@ -442,6 +464,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
             denyHandle=nicknameToFollow+'@'+domainToFollowFull
             if denyHandle in open(rejectedFollowsFilename).read():
                 print(denyHandle+' was already denied as a follower of '+nickname)
+                removeFromFollowRequests(baseDir,nickname,domain,denyHandle)
                 return True
 
         print('Storing follow request for approval')

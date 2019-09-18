@@ -12,6 +12,7 @@ import commentjson
 
 from follow import followedAccountAccepts
 from follow import followedAccountRejects
+from follow import removeFromFollowRequests
 
 def manualDenyFollowRequest(session,baseDir: str, \
                             httpPrefix: str,
@@ -34,20 +35,7 @@ def manualDenyFollowRequest(session,baseDir: str, \
             print(denyHandle+' has already been rejected as a follower of '+nickname)
             return
 
-    approveFollowsFilename=accountsDir+'/followrequests.txt'
-    if not os.path.isfile(approveFollowsFilename):
-        if debug:
-            print('WARN: Follow requests file '+approveFollowsFilename+' not found')
-        return
-    if denyHandle not in open(approveFollowsFilename).read():
-        return
-    approvefilenew = open(approveFollowsFilename+'.new', 'w+')
-    with open(approveFollowsFilename, 'r') as approvefile:
-        for approveHandle in approvefile:
-            if not approveHandle.startswith(denyHandle):
-                approvefilenew.write(approveHandle)
-    approvefilenew.close()
-    os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    removeFromFollowRequests(baseDir,nickname,domain,denyHandle)        
 
     # Store rejected follows
     rejectsFile=open(rejectedFollowsFilename, "a+")
