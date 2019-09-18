@@ -203,6 +203,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|--font-color-header:.*|--font-color-header: black;|g" "$filename"
     sed -i "s|--dropdown-bg-color:.*|--dropdown-bg-color: white;|g" "$filename"    
+    sed -i "s|--dropdown-bg-color-hover:.*|--dropdown-bg-color-hover: lightgrey;|g" "$filename"    
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-login.css login.css
@@ -221,6 +222,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|--font-color-header:.*|--font-color-header: black;|g" "$filename"
     sed -i "s|--dropdown-bg-color:.*|--dropdown-bg-color: white;|g" "$filename"    
+    sed -i "s|--dropdown-bg-color-hover:.*|--dropdown-bg-color-hover: lightgrey;|g" "$filename"    
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-follow.css follow.css
@@ -239,6 +241,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|--font-color-header:.*|--font-color-header: black;|g" "$filename"
     sed -i "s|--dropdown-bg-color:.*|--dropdown-bg-color: white;|g" "$filename"    
+    sed -i "s|--dropdown-bg-color-hover:.*|--dropdown-bg-color-hover: lightgrey;|g" "$filename"    
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-suspended.css suspended.css
@@ -257,6 +260,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--text-entry-background:.*|--text-entry-background: white;|g" "$filename"
     sed -i "s|--font-color-header:.*|--font-color-header: black;|g" "$filename"
     sed -i "s|--dropdown-bg-color:.*|--dropdown-bg-color: white;|g" "$filename"    
+    sed -i "s|--dropdown-bg-color-hover:.*|--dropdown-bg-color-hover: lightgrey;|g" "$filename"    
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
 fi
