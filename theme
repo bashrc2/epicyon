@@ -194,6 +194,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-login.css login.css
@@ -206,6 +207,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-follow.css follow.css
@@ -218,6 +220,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     cp epicyon-suspended.css suspended.css
@@ -230,6 +233,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--border-color:.*|--border-color: #c0cdd9;|g" "$filename"
     sed -i "s|--main-link-color:.*|--main-link-color: #2a2c37;|g" "$filename"
     sed -i "s|--main-visited-color:.*|--main-visited-color: #232c37;|g" "$filename"
+    sed -i "s|--time-color:.*|--time-color: #555;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: white;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
 fi
