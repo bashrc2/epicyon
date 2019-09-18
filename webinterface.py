@@ -2220,7 +2220,9 @@ def htmlIndividualPost(translate: {}, \
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
-    return htmlHeader(cssFilename)+postStr+htmlFooter()
+    with open(cssFilename, 'r') as cssFile:
+        postsCSS=cssFile.read()
+    return htmlHeader(cssFilename,postsCSS)+postStr+htmlFooter()
 
 def htmlPostReplies(translate: {},baseDir: str, \
                     session,wfRequest: {},personCache: {}, \
@@ -2242,7 +2244,9 @@ def htmlPostReplies(translate: {},baseDir: str, \
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
-    return htmlHeader(cssFilename)+repliesStr+htmlFooter()
+    with open(cssFilename, 'r') as cssFile:
+        postsCSS=cssFile.read()
+    return htmlHeader(cssFilename,postsCSS)+repliesStr+htmlFooter()
 
 def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
