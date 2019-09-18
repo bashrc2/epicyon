@@ -44,7 +44,11 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">https://</span>'
             elif w.startswith('http://'):
                 markup+='<span class="invisible">http://</span>'
-            markup+='<span class="ellipsis">'+w.replace('https://','').replace('http://','')+'</span></a>'
+            linkText=w.replace('https://','').replace('http://','')
+            # prevent links from becoming too long
+            if len(linkText)>50:
+                linkText=linkText[:50]
+            markup+='<span class="ellipsis">'+linkText+'</span></a>'
             replaceDict[w]=markup
     for url,markup in replaceDict.items():
         content=content.replace(url,markup)
