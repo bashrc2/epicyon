@@ -1385,7 +1385,9 @@ def cursorToEndOfMessageScript() -> str:
         '  var theVal = replyTextArea.value;' \
         '  replyTextArea.value = theVal;' \
         '}' \
-        'replyTextArea.focus();'
+        'window.onload = function() {' \
+        "  document.getElementById('message').focus();" \
+        '};'
     return script
 
 def contentWarningScript() -> str:
