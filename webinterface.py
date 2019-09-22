@@ -934,10 +934,12 @@ def htmlNewPost(translate: {},baseDir: str, \
         mentionDomain,mentionPort=getDomainFromActor(m)
         if not mentionDomain:
             continue
-        if mentionPort:            
-            mentionsStr+='@'+mentionNickname+'@'+mentionDomain+':'+str(mentionPort)+' '
+        if mentionPort:
+            mentionsHandle='@'+mentionNickname+'@'+mentionDomain+':'+str(mentionPort)
         else:
-            mentionsStr+='@'+mentionNickname+'@'+mentionDomain+' '
+            mentionsHandle='@'+mentionNickname+'@'+mentionDomain
+        if mentionsHandle not in mentionsStr:
+            mentionsStr+=mentionsHandle+' '
 
     # build suffixes so that any replies or mentions are preserved when switching between scopes
     dropdownNewPostSuffix='/newpost'

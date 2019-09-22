@@ -284,5 +284,6 @@ def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\
         actorStr=mentionStr.split('"')[0]
         if actorStr.startswith('http') or \
            actorStr.startswith('dat:'):
-            mentions.append(actorStr)
+            if actorStr not in mentions:
+                mentions.append(actorStr)
     return mentions
