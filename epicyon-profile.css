@@ -700,15 +700,6 @@ input[type=checkbox]
     opacity: 1;
 }
 
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 25px;
-    height: 25px;
-    background: var(--main-bg-color);
-    cursor: pointer;
-}
-
 .slider::-moz-range-thumb {
     width: 25px;
     height: 25px;
