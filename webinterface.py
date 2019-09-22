@@ -1004,7 +1004,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         '</form>'
 
     if not reportUrl:
-        newPostForm+='<script>'+clickToDropDownScript()+cursorToEndOfTextScript()+'</script>'
+        newPostForm+='<script>'+clickToDropDownScript()+cursorToEndOfMessageScript()+'</script>'
 
     newPostForm+=htmlFooter()
     return newPostForm
@@ -1375,13 +1375,12 @@ def clickToDropDownScript() -> str:
         #'}'
     return script
 
-def cursorToEndOfTextScript() -> str:
+def cursorToEndOfMessageScript() -> str:
     """Moves the cursor to the end of the text in a textarea
     This avoids the cursor being in the wrong position when replying
     """
     script = \
-        "var replyTextArea = document.getElementByName('message');" \
-        '' \
+        "var replyTextArea = document.getElementById('message');" \
         'replyTextArea.onFocus = function() {' \
         '  var theVal = replyTextArea.value;' \
         '  replyTextArea.value = theVal;' \
