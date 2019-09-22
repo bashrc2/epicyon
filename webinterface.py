@@ -993,7 +993,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
-        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px" autofocus>'+mentionsStr+'</textarea>' \
+        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>' \
         ''+extraFields+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">' \
