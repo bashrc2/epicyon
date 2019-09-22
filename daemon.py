@@ -1264,7 +1264,9 @@ class PubServer(BaseHTTPRequestHandler):
                     mentionsList=inReplyToUrl.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
-                            replyToList.append(m.replace('mention=',''))
+                            replyHandle=m.replace('mention=','')
+                            if replyHandle not in replyToList:
+                                replyToList.append(replyHandle)
                         if m.startswith('page='):
                             replyPageStr=m.replace('page=','')
                             if replyPageStr.isdigit():
@@ -1281,7 +1283,9 @@ class PubServer(BaseHTTPRequestHandler):
                     mentionsList=inReplyToUrl.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
-                            replyToList.append(m.replace('mention=',''))
+                            replyHandle=m.replace('mention=','')
+                            if m.replace('mention=','') not in replyToList:
+                                replyToList.append(replyHandle)
                         if m.startswith('page='):
                             replyPageStr=m.replace('page=','')
                             if replyPageStr.isdigit():
@@ -1298,7 +1302,9 @@ class PubServer(BaseHTTPRequestHandler):
                     mentionsList=inReplyToUrl.split('?')
                     for m in mentionsList:
                         if m.startswith('mention='):
-                            replyToList.append(m.replace('mention=',''))
+                            replyHandle=m.replace('mention=','')
+                            if m.replace('mention=','') not in replyToList:
+                                replyToList.append(m.replace('mention=',''))
                         if m.startswith('page='):
                             replyPageStr=m.replace('page=','')
                             if replyPageStr.isdigit():
