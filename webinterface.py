@@ -1005,6 +1005,7 @@ def htmlNewPost(translate: {},baseDir: str, \
 
     if not reportUrl:
         newPostForm+='<script>'+clickToDropDownScript()+cursorToEndOfMessageScript()+'</script>'
+        newPostForm=newPostForm.replace('<body>','<body onload="focusOnMessage()">')
 
     newPostForm+=htmlFooter()
     return newPostForm
@@ -1385,8 +1386,8 @@ def cursorToEndOfMessageScript() -> str:
         '  var theVal = replyTextArea.value;\n' \
         '  replyTextArea.value = theVal;\n' \
         '}\n' \
-        'window.onload = function() {\n' \
-        "  document.getElementById('message').focus();\n" \
+        'function focusOnMessage() {\n' \
+        "  document.getElementById('message').focus()\n" \
         '}\n'
     return script
 
