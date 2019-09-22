@@ -1381,13 +1381,20 @@ def cursorToEndOfMessageScript() -> str:
     This avoids the cursor being in the wrong position when replying
     """
     script = \
+        'function focusOnMessage() {\n' \
+        "  var replyTextArea = document.getElementById('message');\n" \
+        '  val = textarea.val();\n' \
+        '  if (val.charAt(val.length-1) != " ") {\n' \
+        '    val += " ";\n' \
+        '  }\n' \
+        '  replyTextArea\n' \
+        '    .focus()\n' \
+        '    .val("")\n' \
+        '    .val(val);\n' \
+        '}\n' \
         "var replyTextArea = document.getElementById('message')\n" \
         'replyTextArea.onFocus = function() {\n' \
-        '  var theVal = replyTextArea.value;\n' \
-        '  replyTextArea.value = theVal;\n' \
-        '}\n' \
-        'function focusOnMessage() {\n' \
-        "  document.getElementById('message').focus()\n" \
+        '  focusOnMessage();' \
         '}\n'
     return script
 
