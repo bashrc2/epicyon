@@ -2086,7 +2086,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         tlStr+= \
             '<form method="POST" action="/users/'+nickname+'/moderationaction">' \
             '<div class="container">\n'+ \
-            '    <input type="text" placeholder="'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'" name="moderationAction" value="">' \
+            '    <input type="text" placeholder="'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'" name="moderationAction" value="" autofocus>' \
             '    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">' \
             '    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">' \
             '    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">' \
