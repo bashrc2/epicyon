@@ -1358,9 +1358,9 @@ def clickToDropDownScript() -> str:
     """Function run onclick to create a dropdown
     """
     script= \
-        'function dropdown() {' \
-        '  document.getElementById("myDropdown").classList.toggle("show");' \
-        '}'
+        'function dropdown() {\n' \
+        '  document.getElementById("myDropdown").classList.toggle("show");\n' \
+        '}\n'
         #'window.onclick = function(event) {' \
         #"  if (!event.target.matches('.dropbtn')) {" \
         #'    var dropdowns = document.getElementsByClassName("dropdown-content");' \
@@ -1380,28 +1380,28 @@ def cursorToEndOfMessageScript() -> str:
     This avoids the cursor being in the wrong position when replying
     """
     script = \
-        "var replyTextArea = document.getElementById('message');" \
-        'replyTextArea.onFocus = function() {' \
-        '  var theVal = replyTextArea.value;' \
-        '  replyTextArea.value = theVal;' \
-        '}' \
-        'window.onload = function() {' \
-        "  document.getElementById('message').focus();" \
-        '};'
+        "var replyTextArea = document.getElementById('message')\n" \
+        'replyTextArea.onFocus = function() {\n' \
+        '  var theVal = replyTextArea.value;\n' \
+        '  replyTextArea.value = theVal;\n' \
+        '}\n' \
+        'window.onload = function() {\n' \
+        "  document.getElementById('message').focus();\n" \
+        '}\n'
     return script
 
 def contentWarningScript() -> str:
     """Returns a script used for content warnings
     """
     script= \
-        'function showContentWarning(postID) {' \
-        '  var x = document.getElementById(postID);' \
-        '  if (x.style.display !== "block") {' \
-        '    x.style.display = "block";' \
-        '  } else {' \
-        '    x.style.display = "none";' \
-        '  }' \
-        '}'
+        'function showContentWarning(postID) {\n' \
+        '  var x = document.getElementById(postID);\n' \
+        '  if (x.style.display !== "block") {\n' \
+        '    x.style.display = "block";\n' \
+        '  } else {\n' \
+        '    x.style.display = "none";\n' \
+        '  }\n' \
+        '}\n'
     return script
 
 def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
