@@ -1004,7 +1004,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         '</form>'
 
     if not reportUrl:
-        newPostForm+='<script>'+clickToDropDownScript()+'</script>'
+        newPostForm+='<script>'+clickToDropDownScript()+cursorToEndOfTextScript()+'</script>'
 
     newPostForm+=htmlFooter()
     return newPostForm
@@ -1373,6 +1373,19 @@ def clickToDropDownScript() -> str:
         #'    }' \
         #'  }' \
         #'}'
+    return script
+
+def cursorToEndOfTextScript() -> str:
+    """Moves the cursor to the end of the text in a textarea
+    This avoids the cursor being in the wrong position when replying
+    """
+    script = \
+        "var replyTextArea = document.getElementByName('message');" \
+        '' \
+        'replyTextArea.onFocus = function() {' \
+        '  var theVal = replyTextArea.value;' \
+        '  replyTextArea.value = theVal;' \
+        '}'
     return script
 
 def contentWarningScript() -> str:
@@ -2083,7 +2096,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
             '</div></form>'
 
     # add the javascript for content warnings
-    tlStr+='<script>'+contentWarningScript()+clickToDropDownScript()+'</script>'
+    tlStr+='<script>'+contentWarningScript()+'</script>'
 
     # page up arrow
     if pageNumber>1:
