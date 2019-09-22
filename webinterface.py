@@ -1384,6 +1384,10 @@ def cursorToEndOfMessageScript() -> str:
         'replyTextArea.onFocus = function() {' \
         '  var theVal = replyTextArea.value;' \
         '  replyTextArea.value = theVal;' \
+        '}' \
+        'replyTextArea.onLoad = function() {' \
+        '  var theVal = replyTextArea.value;' \
+        '  replyTextArea.value = theVal;' \
         '}'
     return script
 
