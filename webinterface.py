@@ -1383,14 +1383,13 @@ def cursorToEndOfMessageScript() -> str:
     script = \
         'function focusOnMessage() {\n' \
         "  var replyTextArea = document.getElementById('message');\n" \
-        '  val = textarea.val();\n' \
+        '  val = replyTextArea.val();\n' \
         '  if (val.charAt(val.length-1) != " ") {\n' \
         '    val += " ";\n' \
         '  }\n' \
-        '  replyTextArea\n' \
-        '    .focus()\n' \
-        '    .val("")\n' \
-        '    .val(val);\n' \
+        '  replyTextArea.focus();\n' \
+        '  replyTextArea.val("");\n' \
+        '  replyTextArea.val(val);\n' \
         '}\n' \
         "var replyTextArea = document.getElementById('message')\n" \
         'replyTextArea.onFocus = function() {\n' \
