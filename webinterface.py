@@ -1745,10 +1745,12 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if displayName:
         if ':' in displayName:
             displayName=displayName.replace('<p>','').replace('</p>','')
+            emojiTags={}
             displayName= \
                 addHtmlTags(baseDir,httpPrefix, \
-                            nickname,domain,displayName,[],{})
+                            nickname,domain,displayName,[],emojiTags)
             displayName=displayName.replace('<p>','').replace('</p>','')
+            displayName=htmlRemplaceEmojiFromTags(displayName,emojiTags)            
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
@@ -1873,10 +1875,12 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if displayName:
             if ':' in displayName:
                 displayName=displayName.replace('<p>','').replace('</p>','')
+                emojiTags={}
                 displayName= \
                     addHtmlTags(baseDir,httpPrefix, \
-                                nickname,domain,displayName,[],{})
+                                nickname,domain,displayName,[],emojiTags)
                 displayName=displayName.replace('<p>','').replace('</p>','')
+                displayName=htmlRemplaceEmojiFromTags(displayName,emojiTags)            
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
