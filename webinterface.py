@@ -1414,7 +1414,7 @@ def contentWarningScript() -> str:
         '}\n'
     return script
 
-def htmlReplaceEmojiFromTags(content: str,tag: {}) -> str:
+def htmlReplaceEmojiFromTags(content: str,tag: []) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tagItem in tag:
@@ -1616,12 +1616,16 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
     """
     if ':' in displayName:
         displayName=displayName.replace('<p>','').replace('</p>','')
-        emojiTags=[]
+        emojiTags={}
         displayName= \
             addHtmlTags(baseDir,httpPrefix, \
-                        nickname,domain,displayName,emojiTags,{})
+                        nickname,domain,displayName,[],emojiTags)
         displayName=displayName.replace('<p>','').replace('</p>','')
-        displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
+        # convert the emoji dictionary to a list
+        emojiTagsList=[]
+        for tagName,tag in emojiTags.items():
+            emojiTagsList.append(tag)
+        displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList)            
     return displayName
 
 def individualPostAsHtml(iconsDir: str,translate: {}, \
