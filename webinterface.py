@@ -1747,6 +1747,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             displayName= \
                 addHtmlTags(baseDir,httpPrefix, \
                             nickname,domain,displayName,[],{})
+            displayName=displayName.replace('<p>','').replace('</p>','')
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
@@ -1873,6 +1874,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 displayName= \
                     addHtmlTags(baseDir,httpPrefix, \
                                 nickname,domain,displayName,[],{})
+                displayName=displayName.replace('<p>','').replace('</p>','')
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
