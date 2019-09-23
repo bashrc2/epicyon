@@ -1853,7 +1853,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                         if '#Public' in postStr or '/followers' in postStr:
                             isPost=False
                     if boxname=='replies':
-                        if boxActor in postStr:
+                        if boxActor not in postStr:
                             isPost=False
 
                 if isPost:
