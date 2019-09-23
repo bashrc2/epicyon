@@ -382,13 +382,13 @@ a:link {
 
 .container img.emojiheader {
     float: none;
-    width: 20px;
+    width: 25px;
     margin-left: 0px;
     margin-right: 0px;
     padding-right: 0px;
     border-radius: 0px;
-    -ms-transform: translateY(0%);
-    transform: translateY(0%);
+    -ms-transform: translateY(-40%);
+    transform: translateY(-40%);
 }
 
 .containericons {
