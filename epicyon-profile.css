@@ -380,6 +380,17 @@ a:link {
     border-radius: 0px;
 }
 
+.container img.emojiheader {
+    float: none;
+    width: 20px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    border-radius: 0px;
+    -ms-transform: translateY(0%);
+    transform: translateY(0%);
+}
+
 .containericons {
     padding: 0px 0px;
     margin: 0px 0px;
