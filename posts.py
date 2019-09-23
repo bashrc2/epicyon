@@ -1579,6 +1579,11 @@ def createDMTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
     return createBoxBase(baseDir,'dm',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
+def createRepliesTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                          itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxBase(baseDir,'replies',nickname,domain,port,httpPrefix, \
+                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
@@ -1678,6 +1683,23 @@ def isDM(postJsonObject: {}) -> bool:
                 return False
     return True
 
+def isReply(postJsonObject: {},actor: str) -> bool:
+    """Returns true if the given post is a reply to the given actor
+    """
+    if postJsonObject['type']!='Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object']['type']!='Note':
+        return False
+    if not postJsonObject['object'].get('inReplyTo'):
+        return False
+    if not postJsonObject['object']['inReplyTo'].startswith(actor)
+        return False
+    return True
+
 def createBoxBase(baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,authorized :bool, \
@@ -1686,7 +1708,7 @@ def createBoxBase(baseDir: str,boxname: str, \
     """
     if boxname!='inbox' and boxname!='dm' and boxname!='outbox':
         return None
-    if boxname!='dm':
+    if boxname!='dm' and boxname!='replies':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
         # extract DMs from the inbox
@@ -1699,7 +1721,9 @@ def createBoxBase(baseDir: str,boxname: str, \
         if port!=80 and port!=443:
             if ':' not in domain:
                 domain=domain+':'+str(port)
-        
+
+    boxActor=httpPrefix+'://'+domain+'/users/'+nickname
+                
     pageStr='?page=true'
     if pageNumber:
         try:
@@ -1834,8 +1858,9 @@ def createBoxBase(baseDir: str,boxname: str, \
                         # get the post as json
                         p = json.loads(postStr)
 
-                        if boxname!='dm' or \
-                           (boxname=='dm' and isDM(p)):
+                        if (boxname!='dm' and boxname!='replies') or \
+                           (boxname=='dm' and isDM(p)) or \
+                           (boxname=='replies' and (isReply(p,boxActor) or isDM(p))):
                             # remove any capability so that it's not displayed
                             if p.get('capability'):
                                 del p['capability']
