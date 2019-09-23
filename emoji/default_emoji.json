@@ -545,5 +545,20 @@
     "transflag": "transflag",
     "transfem": "transfem",
     "trebuchet": "trebuchet",
-    "molotov": "molotov"
+    "molotov": "molotov",
+    "walkdog": "E182",
+    "signpost": "E094",
+    "parents": "E081",
+    "redcross": "E090",
+    "firehazard": "E089",
+    "firstaid": "E140",
+    "download": "E252",
+    "upload": "E251",
+    "wifi": "E254",
+    "lighter": "E143",
+    "power": "E097",
+    "sleep": "1F4A4",
+    "goose": "1F9A2",
+    "shower": "1F6BF",
+    "shopping": "1F6D2"
 }
