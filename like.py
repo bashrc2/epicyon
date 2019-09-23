@@ -128,7 +128,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
                 'actor': actor
             }
             postJsonObject['object']['likes']['items'].append(newLike)
-            postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
+            postJsonObject['object']['likes']['totalItems']=len(postJsonObject['object']['likes']['items'])
 
         if debug:
             print('DEBUG: saving post with likes added')
