@@ -111,7 +111,7 @@ def loadEmojiDict(emojiDataFilename: str,emojiDict: {}) -> None:
                 emojiName=emojiName.split('..')[0]
             emojiDict[emojiName.lower()]=emojiUnicode
 
-def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji: {},postTags: {},emojiDict: {},inMessageContent: bool) -> bool:
+def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji: {},postTags: {},emojiDict: {}) -> bool:
     """Detects Emoji and adds them to the replacements dict
     Also updates the tags list to be added to the post
     """
@@ -144,9 +144,6 @@ def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji:
         'name': ':'+emoji+':',
         'type': 'Emoji'
     }
-    if not inMessageContent:
-        # when altering emoji in display name
-        replaceEmoji[wordStr]='<img src="'+emojiUrl+'" title="'+emoji+'" alt="'+emoji+'"/>'
     return True
 
 def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: [],tags: {}) -> bool:
