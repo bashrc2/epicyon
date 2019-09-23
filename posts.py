@@ -1581,7 +1581,7 @@ def createDMTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
 
 def createRepliesTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                           itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(baseDir,'replies',nickname,domain,port,httpPrefix, \
+    return createBoxBase(baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
@@ -1708,10 +1708,10 @@ def createBoxBase(baseDir: str,boxname: str, \
     """
     if boxname!='inbox' and boxname!='dm' and boxname!='outbox':
         return None
-    if boxname!='dm' and boxname!='replies':
+    if boxname!='dm' and boxname!='tlreplies':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
-        # extract DMs from the inbox
+        # extract DMs or replies from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     sharedBoxDir=None
     if boxname=='inbox':
@@ -1852,7 +1852,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                     if boxname=='dm':
                         if '#Public' in postStr or '/followers' in postStr:
                             isPost=False
-                    elif boxname=='replies':
+                    elif boxname=='tlreplies':
                         if boxActor not in postStr:
                             isPost=False
 
@@ -1862,13 +1862,13 @@ def createBoxBase(baseDir: str,boxname: str, \
                         p = json.loads(postStr)
 
                         isTimelinePost=False
-                        if (boxname!='dm' and boxname!='replies'):
+                        if (boxname!='dm' and boxname!='tlreplies'):
                             isTimelinePost=True
                         else:
                             if boxname=='dm':
                                 if isDM(p):
                                     isTimelinePost=True
-                            elif boxname=='replies':
+                            elif boxname=='tlreplies':
                                 if isDM(p) or isReply(p,boxActor):
                                     isTimelinePost=True
                                         

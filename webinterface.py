@@ -2083,7 +2083,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         inboxButton='buttonselected'
     elif boxName=='dm':
         dmButton='buttonselected'
-    elif boxName=='replies':
+    elif boxName=='tlreplies':
         repliesButton='buttonselected'
     elif boxName=='outbox':
         sentButton='buttonselected'
@@ -2217,7 +2217,7 @@ def htmlInboxReplies(translate: {},pageNumber: int,itemsPerPage: int, \
     """
     return htmlTimeline(translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,inboxJson,'replies',allowDeletion, \
+                        nickname,domain,port,inboxJson,'tlreplies',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
 def htmlModeration(translate: {},pageNumber: int,itemsPerPage: int, \

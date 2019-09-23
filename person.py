@@ -401,7 +401,7 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname!='inbox' and boxname!='dm' and \
-       boxname!='replies' and \
+       boxname!='tlreplies' and \
        boxname!='outbox' and boxname!='moderation':
         return None
 
@@ -442,7 +442,7 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
     if boxname=='dm':
         return createDMTimeline(baseDir,nickname,domain,port,httpPrefix, \
                                 noOfItems,headerOnly,ocapAlways,pageNumber)
-    elif boxname=='replies':
+    elif boxname=='tlreplies':
         return createRepliesTimeline(baseDir,nickname,domain,port,httpPrefix, \
                                      noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='outbox':

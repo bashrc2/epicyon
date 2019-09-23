@@ -1772,7 +1772,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         # get the replies for a given person
-        if self.path.endswith('/replies') or '/replies?page=' in self.path:
+        if self.path.endswith('/tlreplies') or '/tlreplies?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
                     inboxRepliesFeed= \
@@ -1781,11 +1781,11 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.port, \
                                       self.path, \
                                       self.server.httpPrefix, \
-                                      maxPostsInFeed, 'replies', \
+                                      maxPostsInFeed, 'tlreplies', \
                                       True,self.server.ocapAlways)
                     if inboxRepliesFeed:
                         if self._requestHTTP():
-                            nickname=self.path.replace('/users/','').replace('/replies','')
+                            nickname=self.path.replace('/users/','').replace('/tlreplies','')
                             pageNumber=1
                             if '?page=' in nickname:
                                 pageNumber=nickname.split('?page=')[1]
@@ -1802,7 +1802,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.port, \
                                                   self.path+'?page=1', \
                                                   self.server.httpPrefix, \
-                                                  maxPostsInFeed, 'replies', \
+                                                  maxPostsInFeed, 'tlreplies', \
                                                   True,self.server.ocapAlways)
                             msg=htmlInboxReplies(self.server.translate, \
                                                  pageNumber,maxPostsInFeed, \
@@ -1827,10 +1827,10 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                 else:
                     if self.server.debug:
-                        nickname=self.path.replace('/users/','').replace('/replies','')
+                        nickname=self.path.replace('/users/','').replace('/tlreplies','')
                         print('DEBUG: '+nickname+ \
                               ' was not authorized to access '+self.path)
-            if self.path!='/replies':
+            if self.path!='/tlreplies':
                 # not the replies inbox
                 if self.server.debug:
                     print('DEBUG: GET access to inbox is unauthorized')
