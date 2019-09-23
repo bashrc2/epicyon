@@ -1744,6 +1744,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     displayName=getDisplayName(postJsonObject['actor'],personCache)
     if displayName:
         if ':' in displayName:
+            displayName=displayName.replace('<p>','').replace('</p>','')
             displayName= \
                 addHtmlTags(baseDir,httpPrefix, \
                             nickname,domain,displayName,[],{})
@@ -1871,6 +1872,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             avatarUrl=avatarUrl2
         if displayName:
             if ':' in displayName:
+                displayName=displayName.replace('<p>','').replace('</p>','')
                 displayName= \
                     addHtmlTags(baseDir,httpPrefix, \
                                 nickname,domain,displayName,[],{})
