@@ -1861,9 +1861,18 @@ def createBoxBase(baseDir: str,boxname: str, \
                         # get the post as json
                         p = json.loads(postStr)
 
-                        if (boxname!='dm' and boxname!='replies') or \
-                           (boxname=='dm' and isDM(p)) or \
-                           (boxname=='replies' and (isReply(p,boxActor) or isDM(p))):
+                        isTimelinePost=False
+                        if (boxname!='dm' and boxname!='replies'):
+                            isTimelinePost=True
+                        else:
+                            if boxname=='dm':
+                                if isDM(p):
+                                    isTimelinePost=True
+                            elif boxname=='replies':
+                                if isDM(p) or isReply(p,boxActor):
+                                    isTimelinePost=True
+                                        
+                        if isTimelinePost:
                             # remove any capability so that it's not displayed
                             if p.get('capability'):
                                 del p['capability']
