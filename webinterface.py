@@ -1414,7 +1414,7 @@ def contentWarningScript() -> str:
         '}\n'
     return script
 
-def htmlRemplaceEmojiFromTags(content: str,tag: {}) -> str:
+def htmlReplaceEmojiFromTags(content: str,tag: {}) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tagItem in tag:
@@ -1750,7 +1750,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 addHtmlTags(baseDir,httpPrefix, \
                             nickname,domain,displayName,[],emojiTags)
             displayName=displayName.replace('<p>','').replace('</p>','')
-            displayName=htmlRemplaceEmojiFromTags(displayName,emojiTags)            
+            displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
@@ -1880,7 +1880,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                     addHtmlTags(baseDir,httpPrefix, \
                                 nickname,domain,displayName,[],emojiTags)
                 displayName=displayName.replace('<p>','').replace('</p>','')
-                displayName=htmlRemplaceEmojiFromTags(displayName,emojiTags)            
+                displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
@@ -2006,7 +2006,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
-        contentStr=htmlRemplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
+        contentStr=htmlReplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'])
 
     contentStr='<div class="message">'+contentStr+'</div>'
 
