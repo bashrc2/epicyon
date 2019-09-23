@@ -1609,6 +1609,21 @@ def rejectAnnounce(announceFilename: str):
         rejectAnnounceFile.write('\n')
         rejectAnnounceFile.close()
 
+def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
+                          nickname: str,domain: str, \
+                          displayName: str) -> str:
+    """Adds emoji icons to display names on individual posts
+    """
+    if ':' in displayName:
+        displayName=displayName.replace('<p>','').replace('</p>','')
+        emojiTags=[]
+        displayName= \
+            addHtmlTags(baseDir,httpPrefix, \
+                        nickname,domain,displayName,emojiTags,{})
+        displayName=displayName.replace('<p>','').replace('</p>','')
+        displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
+    return displayName
+
 def individualPostAsHtml(iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
@@ -1743,14 +1758,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     displayName=getDisplayName(postJsonObject['actor'],personCache)
     if displayName:
-        if ':' in displayName:
-            displayName=displayName.replace('<p>','').replace('</p>','')
-            emojiTags=[]
-            displayName= \
-                addHtmlTags(baseDir,httpPrefix, \
-                            nickname,domain,displayName,emojiTags,{})
-            displayName=displayName.replace('<p>','').replace('</p>','')
-            displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
+        displayName= \
+            addEmojiToDisplayName(baseDir,httpPrefix, \
+                                  nickname,domain, \
+                                  displayName)
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
@@ -1873,14 +1884,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if displayName:
-            if ':' in displayName:
-                displayName=displayName.replace('<p>','').replace('</p>','')
-                emojiTags=[]
-                displayName= \
-                    addHtmlTags(baseDir,httpPrefix, \
-                                nickname,domain,displayName,emojiTags,{})
-                displayName=displayName.replace('<p>','').replace('</p>','')
-                displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
+            displayName= \
+                addEmojiToDisplayName(baseDir,httpPrefix, \
+                                      nickname,domain, \
+                                      displayName)
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
