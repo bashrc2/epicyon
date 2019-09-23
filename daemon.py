@@ -1006,6 +1006,11 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)                
+            timelineStr='inbox'
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
             actor=self.path.split('?repeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
@@ -1034,7 +1039,7 @@ class PubServer(BaseHTTPRequestHandler):
             if announceJson:
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+            self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
             return
 
         # undo an announce/repeat from the web interface
@@ -1049,6 +1054,11 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)                
+            timelineStr='inbox'
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
             actor=self.path.split('?unrepeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
@@ -1076,7 +1086,7 @@ class PubServer(BaseHTTPRequestHandler):
             }                
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+            self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
             return
 
         # send a follow request approval from the web interface
@@ -1140,6 +1150,11 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
+            timelineStr='inbox'
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
                 
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
@@ -1160,7 +1175,7 @@ class PubServer(BaseHTTPRequestHandler):
             }    
             self._postToOutboxThread(likeJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+            self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
             return
 
         # undo a like from the web interface icon
@@ -1175,6 +1190,11 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
+            timelineStr='inbox'
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
             actor=self.path.split('?unlike=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
@@ -1199,7 +1219,7 @@ class PubServer(BaseHTTPRequestHandler):
             }
             self._postToOutboxThread(undoLikeJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+            self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
             return
 
         # delete a post from the web interface icon

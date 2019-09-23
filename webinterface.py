@@ -391,7 +391,7 @@ def htmlHashtagSearch(translate: {}, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
-                                     httpPrefix,projectVersion, \
+                                     httpPrefix,projectVersion,'inbox', \
                                      False,False,False,False)
         index-=1
 
@@ -1078,7 +1078,7 @@ def htmlProfilePosts(translate: {}, \
                 postStr=individualPostAsHtml(iconsDir,translate,None, \
                                              baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
-                                             httpPrefix,projectVersion, \
+                                             httpPrefix,projectVersion,'inbox', \
                                              False,False,False,True)
                 if postStr:
                     profileStr+=postStr
@@ -1650,6 +1650,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          avatarUrl: str, showAvatarDropdown: bool,
                          allowDeletion: bool, \
                          httpPrefix: str, projectVersion: str, \
+                         boxName: str, \
                          showRepeats=True, \
                          showIcons=False, \
                          manuallyApprovesFollowers=False, \
@@ -1952,7 +1953,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             announceLink='unrepeat'
             announceTitle=translate['Undo the repeat']
         announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+announceTitle+'">' \
+            '<a href="/users/'+nickname+'?tl='+boxName+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+announceTitle+'">' \
             '<img src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
@@ -1966,7 +1967,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 likeLink='unlike'
                 likeTitle=translate['Undo the like']
         likeStr= \
-            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+likeTitle+'">' \
+            '<a href="/users/'+nickname+'?tl='+boxName+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+likeTitle+'">' \
             '<img src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     deleteStr=''
@@ -2171,7 +2172,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,avatarUrl,True, \
                                          allowDeletion, \
-                                         httpPrefix,projectVersion, \
+                                         httpPrefix,projectVersion,boxName, \
                                          boxName!='dm', \
                                          showIndividualPostIcons, \
                                          manuallyApproveFollowers,False)
@@ -2259,7 +2260,8 @@ def htmlIndividualPost(translate: {}, \
         individualPostAsHtml(iconsDir,translate,None, \
                              baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
-                             httpPrefix,projectVersion,False,authorized,False,False)
+                             httpPrefix,projectVersion,'inbox', \
+                             False,authorized,False,False)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -2280,7 +2282,7 @@ def htmlIndividualPost(translate: {}, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
-                                     httpPrefix,projectVersion, \
+                                     httpPrefix,projectVersion,'inbox', \
                                      False,authorized,False,False)+postStr
 
     # show the following posts
@@ -2298,7 +2300,7 @@ def htmlIndividualPost(translate: {}, \
                     individualPostAsHtml(iconsDir,translate,None, \
                                          baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
-                                         httpPrefix,projectVersion, \
+                                         httpPrefix,projectVersion,'inbox', \
                                          False,authorized,False,False)
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -2321,7 +2323,7 @@ def htmlPostReplies(translate: {},baseDir: str, \
                 individualPostAsHtml(iconsDir,translate,None, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False, \
-                                     httpPrefix,projectVersion, \
+                                     httpPrefix,projectVersion,'inbox', \
                                      False,False,False,False)
 
     cssFilename=baseDir+'/epicyon-profile.css'
@@ -2429,7 +2431,7 @@ def htmlDeletePost(translate,pageNumber: int, \
                                  baseDir,session,wfRequest,personCache, \
                                  nickname,domain,port,postJsonObject, \
                                  None,True,False, \
-                                 httpPrefix,projectVersion, \
+                                 httpPrefix,projectVersion,'outbox', \
                                  False,False,False,False)
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">'+translate['Delete this post?']+'</p>'
@@ -2855,7 +2857,7 @@ def htmlProfileAfterSearch(translate: {}, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \
-                                     httpPrefix,projectVersion, \
+                                     httpPrefix,projectVersion,'inbox', \
                                      False,False,False,False)
             i+=1
             if i>=20:
