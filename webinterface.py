@@ -2161,19 +2161,20 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     # show the posts
     itemCtr=0
-    for item in timelineJson['orderedItems']:
-        if item['type']=='Create' or item['type']=='Announce':
-            itemCtr+=1
-            avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
-            tlStr+= \
-                individualPostAsHtml(iconsDir,translate,pageNumber, \
-                                     baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,item,avatarUrl,True, \
-                                     allowDeletion, \
-                                     httpPrefix,projectVersion, \
-                                     boxName!='dm', \
-                                     showIndividualPostIcons, \
-                                     manuallyApproveFollowers,False)
+    if timelineJson:
+        for item in timelineJson['orderedItems']:
+            if item['type']=='Create' or item['type']=='Announce':
+                itemCtr+=1
+                avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
+                tlStr+= \
+                    individualPostAsHtml(iconsDir,translate,pageNumber, \
+                                         baseDir,session,wfRequest,personCache, \
+                                         nickname,domain,port,item,avatarUrl,True, \
+                                         allowDeletion, \
+                                         httpPrefix,projectVersion, \
+                                         boxName!='dm', \
+                                         showIndividualPostIcons, \
+                                         manuallyApproveFollowers,False)
 
     # page down arrow
     if itemCtr>=itemsPerPage:
