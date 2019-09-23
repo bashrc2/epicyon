@@ -123,8 +123,10 @@ def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji:
         return False
     if replaceEmoji.get(wordStr):
        return True
+    # remove leading and trailing : characters
     emoji=wordStr[1:]
     emoji=emoji[:-1]
+    # is the text of the emoji valid?
     if not validHashTag(emoji):
         return False
     if not emojiDict.get(emoji):
