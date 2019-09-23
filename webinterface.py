@@ -1745,10 +1745,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if displayName:
         if ':' in displayName:
             displayName=displayName.replace('<p>','').replace('</p>','')
-            emojiTags={}
+            emojiTags=[]
             displayName= \
                 addHtmlTags(baseDir,httpPrefix, \
-                            nickname,domain,displayName,[],emojiTags)
+                            nickname,domain,displayName,emojiTags,{})
             displayName=displayName.replace('<p>','').replace('</p>','')
             displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
@@ -1875,10 +1875,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if displayName:
             if ':' in displayName:
                 displayName=displayName.replace('<p>','').replace('</p>','')
-                emojiTags={}
+                emojiTags=[]
                 displayName= \
                     addHtmlTags(baseDir,httpPrefix, \
-                                nickname,domain,displayName,[],emojiTags)
+                                nickname,domain,displayName,emojiTags,{})
                 displayName=displayName.replace('<p>','').replace('</p>','')
                 displayName=htmlReplaceEmojiFromTags(displayName,emojiTags)            
             titleStr=displayName+' '+titleStr
