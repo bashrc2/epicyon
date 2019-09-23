@@ -1177,18 +1177,20 @@ def htmlProfile(translate: {},projectVersion: str, \
     nickname=profileJson['preferredUsername']
     if not nickname:
         return ""
-    displayName=profileJson['name']
     domain,port=getDomainFromActor(profileJson['id'])
     if not domain:
         return ""
     displayName= \
         addEmojiToDisplayName(baseDir,httpPrefix, \
                               nickname,domain, \
-                              displayName,True)    
+                              profileJson['name'],True)    
     domainFull=domain
     if port:
         domainFull=domain+':'+str(port)
-    profileDescription=profileJson['summary']
+    profileDescription= \
+        addEmojiToDisplayName(baseDir,httpPrefix, \
+                              nickname,domain, \
+                              profileJson['summary'],False)    
     postsButton='button'
     followingButton='button'
     followersButton='button'
