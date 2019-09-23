@@ -1258,7 +1258,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         linkToTimelineStart+ \
         ' <div class="hero-image">' \
         '  <div class="hero-text">'+ \
-        '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'">' \
+        '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" class="title">' \
         '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileDescription+'</p>'+ \
