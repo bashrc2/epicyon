@@ -1706,7 +1706,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                   ocapAlways: bool,pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
-    if boxname!='inbox' and boxname!='dm' and boxname!='outbox':
+    if boxname!='inbox' and boxname!='dm' and boxname!='tlreplies' and boxname!='outbox':
         return None
     if boxname!='dm' and boxname!='tlreplies':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
