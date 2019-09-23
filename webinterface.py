@@ -2130,7 +2130,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '<div class="container">\n'+ \
         '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>' \
         '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>' \
-        '    <a href="'+actor+'/replies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>' \
+        '    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="right"/></a>'+ \
