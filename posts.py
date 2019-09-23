@@ -1852,6 +1852,9 @@ def createBoxBase(baseDir: str,boxname: str, \
                     if boxname=='dm':
                         if '#Public' in postStr or '/followers' in postStr:
                             isPost=False
+                    if boxname=='replies':
+                        if boxActor in postStr:
+                            isPost=False
 
                 if isPost:
                     if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
