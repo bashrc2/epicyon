@@ -1953,7 +1953,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             announceLink='unrepeat'
             announceTitle=translate['Undo the repeat']
         announceStr= \
-            '<a href="/users/'+nickname+'?tl='+boxName+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+announceTitle+'">' \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+announceTitle+'">' \
             '<img src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
@@ -1967,7 +1967,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 likeLink='unlike'
                 likeTitle=translate['Undo the like']
         likeStr= \
-            '<a href="/users/'+nickname+'?tl='+boxName+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'" title="'+likeTitle+'">' \
+            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+likeTitle+'">' \
             '<img src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     deleteStr=''
