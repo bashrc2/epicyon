@@ -1783,48 +1783,49 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.httpPrefix, \
                                       maxPostsInFeed, 'tlreplies', \
                                       True,self.server.ocapAlways)
-                    if inboxRepliesFeed:
-                        if self._requestHTTP():
-                            nickname=self.path.replace('/users/','').replace('/tlreplies','')
-                            pageNumber=1
-                            if '?page=' in nickname:
-                                pageNumber=nickname.split('?page=')[1]
-                                nickname=nickname.split('?page=')[0]
-                                if pageNumber.isdigit():
-                                    pageNumber=int(pageNumber)
-                                else:
-                                    pageNumber=1
-                            if 'page=' not in self.path:
-                                # if no page was specified then show the first
-                                inboxRepliesFeed= \
-                                    personBoxJson(self.server.baseDir, \
-                                                  self.server.domain, \
-                                                  self.server.port, \
-                                                  self.path+'?page=1', \
-                                                  self.server.httpPrefix, \
-                                                  maxPostsInFeed, 'tlreplies', \
-                                                  True,self.server.ocapAlways)
-                            msg=htmlInboxReplies(self.server.translate, \
-                                                 pageNumber,maxPostsInFeed, \
-                                                 self.server.session, \
-                                                 self.server.baseDir, \
-                                                 self.server.cachedWebfingers, \
-                                                 self.server.personCache, \
-                                                 nickname, \
-                                                 self.server.domain, \
-                                                 self.server.port, \
-                                                 inboxRepliesFeed, \
-                                                 self.server.allowDeletion, \
-                                                 self.server.httpPrefix, \
-                                                 self.server.projectVersion).encode('utf-8')
-                            self._set_headers('text/html',len(msg),cookie)
-                            self.wfile.write(msg)
-                        else:
-                            msg=json.dumps(inboxDMFeed).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
-                            self.wfile.write(msg)
-                        self.server.GETbusy=False
-                        return
+                    if not inboxRepliesFeed:
+                        inboxRepliesFeed=[]
+                    if self._requestHTTP():
+                        nickname=self.path.replace('/users/','').replace('/tlreplies','')
+                        pageNumber=1
+                        if '?page=' in nickname:
+                            pageNumber=nickname.split('?page=')[1]
+                            nickname=nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber=int(pageNumber)
+                            else:
+                                pageNumber=1
+                        if 'page=' not in self.path:
+                            # if no page was specified then show the first
+                            inboxRepliesFeed= \
+                                personBoxJson(self.server.baseDir, \
+                                              self.server.domain, \
+                                              self.server.port, \
+                                              self.path+'?page=1', \
+                                              self.server.httpPrefix, \
+                                              maxPostsInFeed, 'tlreplies', \
+                                              True,self.server.ocapAlways)
+                        msg=htmlInboxReplies(self.server.translate, \
+                                             pageNumber,maxPostsInFeed, \
+                                             self.server.session, \
+                                             self.server.baseDir, \
+                                             self.server.cachedWebfingers, \
+                                             self.server.personCache, \
+                                             nickname, \
+                                             self.server.domain, \
+                                             self.server.port, \
+                                             inboxRepliesFeed, \
+                                             self.server.allowDeletion, \
+                                             self.server.httpPrefix, \
+                                             self.server.projectVersion).encode('utf-8')
+                        self._set_headers('text/html',len(msg),cookie)
+                        self.wfile.write(msg)
+                    else:
+                        msg=json.dumps(inboxRepliesFeed).encode('utf-8')
+                        self._set_headers('application/json',len(msg),None)
+                        self.wfile.write(msg)
+                    self.server.GETbusy=False
+                    return
                 else:
                     if self.server.debug:
                         nickname=self.path.replace('/users/','').replace('/tlreplies','')
