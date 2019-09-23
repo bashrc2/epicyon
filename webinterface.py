@@ -2076,12 +2076,15 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     inboxButton='button'
     dmButton='button'
+    repliesButton='button'
     sentButton='button'
     moderationButton='button'
     if boxName=='inbox':
         inboxButton='buttonselected'
     elif boxName=='dm':
         dmButton='buttonselected'
+    elif boxName=='replies':
+        repliesButton='buttonselected'
     elif boxName=='outbox':
         sentButton='buttonselected'
     elif boxName=='moderation':
@@ -2127,6 +2130,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '<div class="container">\n'+ \
         '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>' \
         '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>' \
+        '    <a href="'+actor+'/replies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="right"/></a>'+ \
@@ -2202,6 +2206,18 @@ def htmlInboxDMs(translate: {},pageNumber: int,itemsPerPage: int, \
     return htmlTimeline(translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'dm',allowDeletion, \
+                        httpPrefix,projectVersion,False)
+
+def htmlInboxReplies(translate: {},pageNumber: int,itemsPerPage: int, \
+                     session,baseDir: str,wfRequest: {},personCache: {}, \
+                     nickname: str,domain: str,port: int,inboxJson: {}, \
+                     allowDeletion: bool, \
+                     httpPrefix: str,projectVersion: str) -> str:
+    """Show the replies timeline as html
+    """
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'replies',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
 def htmlModeration(translate: {},pageNumber: int,itemsPerPage: int, \
