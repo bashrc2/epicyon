@@ -1696,7 +1696,7 @@ def isReply(postJsonObject: {},actor: str) -> bool:
         return False
     if not postJsonObject['object'].get('inReplyTo'):
         return False
-    if not postJsonObject['object']['inReplyTo'].startswith(actor)
+    if not postJsonObject['object']['inReplyTo'].startswith(actor):
         return False
     return True
 
