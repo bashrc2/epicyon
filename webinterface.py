@@ -1181,6 +1181,10 @@ def htmlProfile(translate: {},projectVersion: str, \
     domain,port=getDomainFromActor(profileJson['id'])
     if not domain:
         return ""
+    displayName= \
+        addEmojiToDisplayName(baseDir,httpPrefix, \
+                              nickname,domain, \
+                              displayName,True)    
     domainFull=domain
     if port:
         domainFull=domain+':'+str(port)
@@ -1414,7 +1418,7 @@ def contentWarningScript() -> str:
         '}\n'
     return script
 
-def htmlReplaceEmojiFromTags(content: str,tag: [],inMessageContent: bool) -> str:
+def htmlReplaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
     for tagItem in tag:
@@ -1431,8 +1435,10 @@ def htmlReplaceEmojiFromTags(content: str,tag: [],inMessageContent: bool) -> str
         if tagItem['name'] not in content:
             continue
         htmlClass='emoji'
-        if not inMessageContent:
+        if messageType=='post header':
             htmlClass='emojiheader'            
+        if messageType=='profile':
+            htmlClass='emojiprofile'
         emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
         content=content.replace(tagItem['name'],emojiHtml)
     return content
@@ -1614,7 +1620,7 @@ def rejectAnnounce(announceFilename: str):
 
 def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
                           nickname: str,domain: str, \
-                          displayName: str) -> str:
+                          displayName: str,inProfileName: bool) -> str:
     """Adds emoji icons to display names on individual posts
     """
     if ':' in displayName:
@@ -1628,7 +1634,10 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
         emojiTagsList=[]
         for tagName,tag in emojiTags.items():
             emojiTagsList.append(tag)
-        displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList,False)            
+        if not inProfileName:
+            displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList,'post header')
+        else:
+            displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList,'profile')            
     return displayName
 
 def individualPostAsHtml(iconsDir: str,translate: {}, \
@@ -1768,7 +1777,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         displayName= \
             addEmojiToDisplayName(baseDir,httpPrefix, \
                                   nickname,domain, \
-                                  displayName)
+                                  displayName,False)
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
@@ -1894,7 +1903,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             displayName= \
                 addEmojiToDisplayName(baseDir,httpPrefix, \
                                       nickname,domain, \
-                                      displayName)
+                                      displayName,False)
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
@@ -2020,7 +2029,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
-        contentStr=htmlReplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],True)
+        contentStr=htmlReplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],'content')
 
     contentStr='<div class="message">'+contentStr+'</div>'
 

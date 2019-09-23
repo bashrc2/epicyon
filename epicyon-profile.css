@@ -391,6 +391,17 @@ a:link {
     transform: translateY(-40%);
 }
 
+.container img.emojiprofile {
+    float: none;
+    width: 50px;
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-right: 0px;
+    border-radius: 0px;
+    -ms-transform: translateY(-40%);
+    transform: translateY(-40%);
+}
+
 .containericons {
     padding: 0px 0px;
     margin: 0px 0px;
