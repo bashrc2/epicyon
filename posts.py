@@ -1857,11 +1857,11 @@ def createBoxBase(baseDir: str,boxname: str, \
                             isPost=False
 
                 if isPost:
+                    isTimelinePost=False
                     if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
                         # get the post as json
                         p = json.loads(postStr)
 
-                        isTimelinePost=False
                         if (boxname!='dm' and boxname!='tlreplies'):
                             isTimelinePost=True
                         else:
@@ -1903,10 +1903,11 @@ def createBoxBase(baseDir: str,boxname: str, \
                     if postsOnPageCtr >= itemsPerPage:
                         break
                     # count the pages
-                    postsCtr += 1
-                    if postsCtr >= itemsPerPage:
-                        postsCtr = 0
-                        currPage += 1
+                    if isTimelinePost:
+                        postsCtr += 1
+                        if postsCtr >= itemsPerPage:
+                            postsCtr = 0
+                            currPage += 1
         except Exception as e:
             print(e)
     if headerOnly:
