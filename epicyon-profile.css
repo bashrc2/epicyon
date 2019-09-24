@@ -21,6 +21,10 @@
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
+    --button-highlighted: green;
+    --button-selected-highlighted: darkgreen;
+    --button-approve: darkgreen;
+    --button-deny: darkred;
 }
 
 body, html {
@@ -186,7 +190,7 @@ a:link {
 
 .buttonhighlighted {
     border-radius: 4px;
-    background-color: green;
+    background-color: var(--button-highlighted);
     border: none;
     color: var(--button-text);
     text-align: center;
@@ -206,7 +210,7 @@ a:link {
 
 .followApprove {
     border-radius: 4px;
-    background-color: darkgreen;
+    background-color: var(--button-approve);
     border: none;
     color: #FFFFFF;
     text-align: center;
@@ -222,7 +226,7 @@ a:link {
 
 .followDeny {
     border-radius: 4px;
-    background-color: darkred;
+    background-color: var(--button-deny);
     border: none;
     color: #FFFFFF;
     text-align: center;
@@ -283,7 +287,7 @@ a:link {
 
 .buttonselectedhighlighted {
     border-radius: 4px;
-    background-color: darkgreen;
+    background-color: var(--button-selected-highlighted);
     border: none;
     color: var(--button-text);
     text-align: center;
@@ -811,7 +815,7 @@ input[type=checkbox]
     }
     .buttonhighlighted {
 	border-radius: 4px;
-	background-color: green;
+	background-color: var(--button-highlighted);
 	border: none;
 	color: var(--button-text);
 	text-align: center;
@@ -841,7 +845,7 @@ input[type=checkbox]
     }
     .buttonselectedhighlighted {
 	border-radius: 4px;
-	background-color: darkgreen;
+	background-color: var(--button-selected-highlighted);
 	border: none;
 	color: var(--button-text);
 	text-align: center;
@@ -856,7 +860,7 @@ input[type=checkbox]
     }
     .followApprove {
 	border-radius: 4px;
-	background-color: darkgreen;
+	background-color: var(--button-approve);
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
@@ -871,7 +875,7 @@ input[type=checkbox]
     }
     .followDeny {
 	border-radius: 4px;
-	background-color: darkred;
+	background-color: var(--button-deny);
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
@@ -1036,7 +1040,7 @@ input[type=checkbox]
     }
     .buttonhighlighted {
 	border-radius: 4px;
-	background-color: green;
+	background-color: var(--button-highlighted);
 	border: none;
 	color: var(--button-text);
 	text-align: center;
@@ -1066,7 +1070,7 @@ input[type=checkbox]
     }
     .buttonselectedhighlighted {
 	border-radius: 4px;
-	background-color: darkgreen;
+	background-color: var(--button-selected-highlighted);
 	border: none;
 	color: var(--button-text);
 	text-align: center;
@@ -1081,7 +1085,7 @@ input[type=checkbox]
     }
     .followApprove {
 	border-radius: 4px;
-	background-color: darkgreen;
+	background-color: var(--button-approve);
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
@@ -1096,7 +1100,7 @@ input[type=checkbox]
     }
     .followDeny {
 	border-radius: 4px;
-	background-color: darkred;
+	background-color: var(--button-deny);
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
