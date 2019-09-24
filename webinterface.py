@@ -1827,10 +1827,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost= \
+                                            '<div class="timeline-avatar-reply">' \
                                             '<a href="'+replyActor+'">' \
                                             '<img src="'+replyAvatarUrl+'" ' \
                                             'title="'+translate['Show profile']+ \
-                                            '" alt="Avatar"'+avatarPosition+'/></a>'
+                                            '" alt="Avatar"'+avatarPosition+'/></a></div>'
                                 else:
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:

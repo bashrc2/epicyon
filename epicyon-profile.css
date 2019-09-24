@@ -648,6 +648,12 @@ input[type=submit]:hover {
     padding: 0px 0px;
 }
 
+.timeline-avatar-reply {
+    margin: 10px auto;
+    padding: 0px 0px;
+    width: 5%;
+}
+
 .search-result-text {
     font-size: var(--font-size);
 }
