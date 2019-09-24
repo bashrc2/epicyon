@@ -6,7 +6,7 @@ Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant s
 
 [Project Goals](README_goals.md) - [Commandline interface](README_commandline.md) - [Customizations](README_customizations.md) - [Object Capabilities](ocaps.md) - [Code of Conduct](code-of-conduct.md)
 
-Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0)
+Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0). Follow request icon from [flaticon](https://www.flaticon.com/free-icon/add-user-hand-drawn-outline_35851).
 
 <img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/screenshots.jpg?raw=true" width="80%"/>
 
