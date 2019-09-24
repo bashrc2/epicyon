@@ -1789,6 +1789,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if showDMicon:
         titleStr=titleStr+' <img src="/'+iconsDir+'/dm.png" class="DMicon"/>'
 
+    replyAvatarImageInPost=''
     if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
@@ -1820,6 +1821,15 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                 replyDisplayName=getDisplayName(postJsonObject['object']['inReplyTo'],personCache)
                                 if replyDisplayName:
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
+
+                                    replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
+                                    replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
+                                    if replyAvatarUrl:
+                                        replyAvatarImageInPost= \
+                                            '  <div class="timeline-avatar">' \
+                                            '    <a href="'+replyActor+'">' \
+                                            '    <img src="'+replyAvatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
+                                            '  </div>'
                                 else:
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:
@@ -2042,7 +2052,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     return \
         '<div class="'+containerClass+'">\n'+ \
         avatarImageInPost+ \
-        '<p class="post-title">'+titleStr+'</p>'+ \
+        '<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'+ \
         contentStr+footerStr+ \
         '</div>\n'
 
