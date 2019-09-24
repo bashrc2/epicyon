@@ -809,6 +809,21 @@ input[type=checkbox]
         cursor: pointer;
         margin: 5px;
     }
+    .buttonhighlighted {
+	border-radius: 4px;
+	background-color: green;
+	border: none;
+	color: var(--button-text);
+	text-align: center;
+	font-size: 18px;
+	padding: 10px;
+	width: 10%;
+	max-width: 100px;
+	min-width: 80px;
+	transition: all 0.5s;
+	cursor: pointer;
+	margin: 5px;
+    }    
     .buttonselected {
         border-radius: 4px;
         background-color: var(--button-selected);
@@ -974,6 +989,21 @@ input[type=checkbox]
         cursor: pointer;
         margin: 15px;
     }
+    .buttonhighlighted {
+	border-radius: 4px;
+	background-color: green;
+	border: none;
+	color: var(--button-text);
+	text-align: center;
+	font-size: 32px;
+	padding: 10px;
+	width: 20%;
+	max-width: 400px;
+	min-width: 80px;
+	transition: all 0.5s;
+	cursor: pointer;
+	margin: 15px;
+    }    
     .buttonselected {
         border-radius: 4px;
         background-color: var(--button-selected);
