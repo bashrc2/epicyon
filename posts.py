@@ -1858,7 +1858,7 @@ def createBoxBase(baseDir: str,boxname: str, \
 
                 if isPost:
                     isTimelinePost=False
-                    if currPage == pageNumber and postsOnPageCtr <= itemsPerPage:
+                    if currPage <= pageNumber and postsOnPageCtr <= itemsPerPage:
                         # get the post as json
                         p = json.loads(postStr)
 
@@ -1871,8 +1871,8 @@ def createBoxBase(baseDir: str,boxname: str, \
                             elif boxname=='tlreplies':
                                 if isDM(p) or isReply(p,boxActor):
                                     isTimelinePost=True
-                                        
-                        if isTimelinePost:
+
+                        if isTimelinePost and currPage == pageNumber:
                             # remove any capability so that it's not displayed
                             if p.get('capability'):
                                 del p['capability']
@@ -1903,7 +1903,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                     if postsOnPageCtr >= itemsPerPage:
                         break
                     # count the pages
-                    if isTimelinePost or boxname=='inbox' or boxname=='outbox':
+                    if isTimelinePost:
                         postsCtr += 1
                         if postsCtr >= itemsPerPage:
                             postsCtr = 0
