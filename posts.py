@@ -1714,7 +1714,7 @@ def createBoxBase(baseDir: str,boxname: str, \
         # extract DMs or replies from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     sharedBoxDir=None
-    if boxname=='inbox':
+    if boxname=='inbox' or boxname=='tlreplies':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
 
     if port:
