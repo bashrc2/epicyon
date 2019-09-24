@@ -649,9 +649,8 @@ input[type=submit]:hover {
 }
 
 .timeline-avatar-reply {
-    margin: 10px auto;
     padding: 0px 0px;
-    width: 5%;
+    width: 80%;
 }
 
 .search-result-text {
