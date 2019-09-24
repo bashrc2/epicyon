@@ -1822,14 +1822,15 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                 if replyDisplayName:
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
 
+                                    # show avatar of person replied to
                                     replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
                                     replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost= \
-                                            '  <div class="timeline-avatar">' \
-                                            '    <a href="'+replyActor+'">' \
-                                            '    <img src="'+replyAvatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
-                                            '  </div>'
+                                            '<a href="'+replyActor+'">' \
+                                            '<img src="'+replyAvatarUrl+'" ' \
+                                            'title="'+translate['Show profile']+ \
+                                            '" alt="Avatar"'+avatarPosition+'/></a>'
                                 else:
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:
