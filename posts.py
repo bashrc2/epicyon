@@ -1990,18 +1990,19 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
 
     for statusNumber,postFilename in postsInBox.items():
         filePath = os.path.join(boxDir, postFilename)        
-        if os.path.isfile(filePath):
-            if archiveDir:
-                repliesPath=filePath.replace('.json','.replies')
-                archivePath = os.path.join(archiveDir, postFilename)
-                os.rename(filePath,archivePath)
-                if os.path.isfile(repliesPath):
-                    os.rename(repliesPath,archivePath)
-            else:
-                deletePost(baseDir,httpPrefix,nickname,domain,filePath,False)
-            noOfPosts -= 1
-            if noOfPosts <= maxPostsInBox:
-                break
+        if not os.path.isfile(filePath):
+            continue
+        if archiveDir:
+            repliesPath=filePath.replace('.json','.replies')
+            archivePath = os.path.join(archiveDir, postFilename)
+            os.rename(filePath,archivePath)
+            if os.path.isfile(repliesPath):
+                os.rename(repliesPath,archivePath)
+        else:
+            deletePost(baseDir,httpPrefix,nickname,domain,filePath,False)
+        noOfPosts -= 1
+        if noOfPosts <= maxPostsInBox:
+            break
 
 def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
                            raw: bool,simple: bool,useTor: bool, \
