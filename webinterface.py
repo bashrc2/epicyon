@@ -1809,24 +1809,27 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 containerClassIcons='containericons darker'
                 containerClass='container darker'
                 #avatarPosition=' class="right"'
-                if '/statuses/' in postJsonObject['object']['inReplyTo']:
-                    replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
-                    if replyNickname:
-                        replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
-                        if replyNickname and replyDomain:
-                            replyDisplayName=getDisplayName(postJsonObject['object']['inReplyTo'],personCache)
-                            if replyDisplayName:
-                                titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
-                            else:
-                                titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
-                    else:
-                        titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
+                if postJsonObject['object']['inReplyTo'].startswith(postJsonObject['actor']):
+                    titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
-                    postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
-                    if '/' in postDomain:
-                        postDomain=postDomain.split('/',1)[0]
-                    if postDomain:
-                        titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+                    if '/statuses/' in postJsonObject['object']['inReplyTo']:
+                        replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+                        if replyNickname:
+                            replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+                            if replyNickname and replyDomain:
+                                replyDisplayName=getDisplayName(postJsonObject['object']['inReplyTo'],personCache)
+                                if replyDisplayName:
+                                    titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
+                                else:
+                                    titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+                        else:
+                            titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
+                    else:
+                        postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
+                        if '/' in postDomain:
+                            postDomain=postDomain.split('/',1)[0]
+                        if postDomain:
+                            titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object'].get('attachment'):
         if isinstance(postJsonObject['object']['attachment'], list):
