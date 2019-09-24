@@ -1903,7 +1903,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                     if postsOnPageCtr >= itemsPerPage:
                         break
                     # count the pages
-                    if isTimelinePost:
+                    if isTimelinePost or boxname=='inbox' or boxname=='outbox':
                         postsCtr += 1
                         if postsCtr >= itemsPerPage:
                             postsCtr = 0
