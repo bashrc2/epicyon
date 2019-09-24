@@ -25,7 +25,7 @@ def addMusicTag(content: str,tag: str) -> str:
             break
     if not musicSiteFound:
         return content
-    return content+' '+tag+' '
+    return ':music: '+content+' '+tag+' '
 
 def addWebLinks(content: str) -> str:
     """Adds markup for web links
