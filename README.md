@@ -8,7 +8,7 @@ Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant s
 
 Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0). Follow request icon from [flaticon](https://www.flaticon.com/free-icon/add-user-hand-drawn-outline_35851).
 
-<img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/screenshot_purple.jpg?raw=true" width="80%"/>
+<img src="https://code.freedombone.net/bashrc/epicyon/raw/main/img/screenshot_light.jpg" width="80%"/>
 
 ## Package Dependencies
 
