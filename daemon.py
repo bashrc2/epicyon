@@ -51,6 +51,7 @@ from inbox import runInboxQueue
 from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
+from inbox import getPersonPubKey
 from follow import getFollowingFeed
 from follow import outboxUndoFollow
 from follow import sendFollowRequest
@@ -117,6 +118,7 @@ from shares import removeShare
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getStatusNumber
+from utils import urlPermitted
 from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
@@ -124,6 +126,7 @@ from announce import outboxAnnounce
 from content import addHtmlTags
 from media import removeMetaData
 from cache import storePersonInCache
+from httpsig import verifyPostHeaders
 import os
 import sys
 
@@ -172,8 +175,54 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not self.server.authenticatedFetch:
             return True
-        # TODO
-        return True
+        # check that the headers are signed
+        if not self.headers.get('signature'):
+            if self.server.debug:
+                print('WARN: authenticated fetch, GET has no signature in headers')
+            return False
+        # get the keyId
+        keyId=None
+        signatureParams=self.headers['signature'].split(',')
+        for signatureItem in signatureParams:
+            if signatureItem.startswith('keyId='):
+                if '"' in signatureItem:
+                    keyId=signatureItem.split('"')[1]
+                    break
+        if not keyId:
+            if self.server.debug:
+                print('WARN: authenticated fetch, failed to obtain keyId from signature')
+            return False
+        # is the keyId (actor) valid?
+        if not urlPermitted(keyId,self.server.federationList,"inbox:read"):
+            if self.server.debug:
+                print('Authorized fetch failed: '+keyId+' is not permitted')
+            return False
+        # make sure we have a session
+        if not self.server.session:
+            if self.server.debug:
+                print('DEBUG: creating new session during authenticated fetch')
+            self.server.session= \
+                createSession(self.server.domain,self.server.port,self.server.useTor)
+        # obtain the public key
+        pubKey= \
+            getPersonPubKey(self.server.baseDir,self.server.session,keyId, \
+                            self.server.personCache,self.server.debug, \
+                            __version__,self.server.httpPrefix,self.server.domain)
+        if not pubKey:
+            if self.server.debug:
+                print('DEBUG: Authenticated fetch failed to obtain public key for '+keyId)
+            return False
+        # it is assumed that there will be no message body on authenticated fetches
+        # and also consequently no digest
+        GETrequestBody=''
+        GETrequestDigest=None
+        # verify the GET request without any digest
+        if verifyPostHeaders(self.server.httpPrefix, \
+                             pubKey,self.headers, \
+                             self.path,True, \
+                             GETrequestDigest,GETrequestBody):
+            return True
+        return False
 
     def _login_headers(self,fileFormat: str,length: int) -> None:
         self.send_response(200)
