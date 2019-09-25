@@ -1793,26 +1793,29 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
-                announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
-                if announceNickname:
-                    announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-                    announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
-                    if announceDisplayName:
-                        titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
-                        # show avatar of person replied to
-                        announceActor=postJsonObject['object']['attributedTo']
-                        announceAvatarUrl=getPersonAvatarUrl(baseDir,announceActor,personCache)
-                        if announceAvatarUrl:
-                            replyAvatarImageInPost= \
-                                '<div class="timeline-avatar-reply">' \
-                                '<a href="'+announceActor+'">' \
-                                '<img src="'+announceAvatarUrl+'" ' \
-                                'title="'+translate['Show profile']+ \
-                                '" alt="Avatar"'+avatarPosition+'/></a></div>'
-                    else:
-                        titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                if postJsonObject['object']['attributedTo'].startswith(postJsonObject['actor']):
+                    titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
                 else:
-                    titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                    announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
+                    if announceNickname:
+                        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
+                        announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
+                        if announceDisplayName:
+                            titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                            # show avatar of person replied to
+                            announceActor=postJsonObject['object']['attributedTo']
+                            announceAvatarUrl=getPersonAvatarUrl(baseDir,announceActor,personCache)
+                            if announceAvatarUrl:
+                                replyAvatarImageInPost= \
+                                    '<div class="timeline-avatar-reply">' \
+                                    '<a href="'+announceActor+'">' \
+                                    '<img src="'+announceAvatarUrl+'" ' \
+                                    'title="'+translate['Show profile']+ \
+                                    '" alt="Avatar"'+avatarPosition+'/></a></div>'
+                        else:
+                            titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                    else:
+                        titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
             else:
                 titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
         else:
