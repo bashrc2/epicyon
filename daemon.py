@@ -1732,12 +1732,11 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:
-                            if self._fetchAuthenticated():
-                                msg=json.dumps(inboxFeed).encode('utf-8')
-                                self._set_headers('application/json',len(msg),None)
-                                self.wfile.write(msg)
-                            else:
-                                self._404()
+                            # don't need authenticated fetch here because there is
+                            # already the authorization check
+                            msg=json.dumps(inboxFeed).encode('utf-8')
+                            self._set_headers('application/json',len(msg),None)
+                            self.wfile.write(msg)
                         self.server.GETbusy=False
                         return
                 else:
@@ -1801,12 +1800,11 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:
-                            if self._fetchAuthenticated():
-                                msg=json.dumps(inboxDMFeed).encode('utf-8')
-                                self._set_headers('application/json',len(msg),None)
-                                self.wfile.write(msg)
-                            else:
-                                self._404()
+                            # don't need authenticated fetch here because there is
+                            # already the authorization check
+                            msg=json.dumps(inboxDMFeed).encode('utf-8')
+                            self._set_headers('application/json',len(msg),None)
+                            self.wfile.write(msg)
                         self.server.GETbusy=False
                         return
                 else:
@@ -1873,12 +1871,11 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/html',len(msg),cookie)
                         self.wfile.write(msg)
                     else:
-                        if self._fetchAuthenticated():
-                            msg=json.dumps(inboxRepliesFeed).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
-                            self.wfile.write(msg)
-                        else:
-                            self._404()
+                        # don't need authenticated fetch here because there is
+                        # already the authorization check
+                        msg=json.dumps(inboxRepliesFeed).encode('utf-8')
+                        self._set_headers('application/json',len(msg),None)
+                        self.wfile.write(msg)
                     self.server.GETbusy=False
                     return
                 else:
@@ -1995,12 +1992,11 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:
-                            if self._fetchAuthenticated():
-                                msg=json.dumps(moderationFeed).encode('utf-8')
-                                self._set_headers('application/json',len(msg),None)
-                                self.wfile.write(msg)
-                            else:
-                                self._404()
+                            # don't need authenticated fetch here because there is
+                            # already the authorization check
+                            msg=json.dumps(moderationFeed).encode('utf-8')
+                            self._set_headers('application/json',len(msg),None)
+                            self.wfile.write(msg)
                         self.server.GETbusy=False
                         return
                 else:
