@@ -166,7 +166,15 @@ class PubServer(BaseHTTPRequestHandler):
         if 'json' in self.headers['Accept']:
             return False
         return True
-    
+
+    def _fetchAuthenticated(self) -> bool:
+        """http authentication of GET requests for json
+        """
+        if not self.server.authenticatedFetch:
+            return True
+        # TODO
+        return True
+
     def _login_headers(self,fileFormat: str,length: int) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
@@ -1378,7 +1386,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if len(postSections)==2:
                     nickname=postSections[0]
                     statusNumber=postSections[1]
-                    if len(statusNumber)>10 and statusNumber.isdigit():
+                    if len(statusNumber)>10 and statusNumber.isdigit():                        
                         postFilename= \
                             self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/outbox/'+ \
                             self.server.httpPrefix+':##'+self.server.domainFull+'#users#'+nickname+'#statuses#'+statusNumber+'.json'
@@ -1409,9 +1417,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._set_headers('text/html',len(msg),cookie)                    
                                     self.wfile.write(msg)
                                 else:
-                                    msg=json.dumps(postJsonObject).encode('utf-8')
-                                    self._set_headers('application/json',len(msg),None)
-                                    self.wfile.write(msg)
+                                    if self._fetchAuthenticated():
+                                        msg=json.dumps(postJsonObject).encode('utf-8')
+                                        self._set_headers('application/json',len(msg),None)
+                                        self.wfile.write(msg)
+                                    else:
+                                        self._404()
                             self.server.GETbusy=False
                             return
                         else:
@@ -1466,9 +1477,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         pprint(repliesJson)
                                         self.wfile.write(msg)
                                     else:
-                                        msg=json.dumps(repliesJson).encode('utf-8')
-                                        self._set_headers('application/json',len(msg),None)
-                                        self.wfile.write(msg)
+                                        if self._fetchAuthenticated():
+                                            msg=json.dumps(repliesJson).encode('utf-8')
+                                            self._set_headers('application/json',len(msg),None)
+                                            self.wfile.write(msg)
+                                        else:
+                                            self._404()
                                     self.server.GETbusy=False
                                     return
                                 else:
@@ -1510,9 +1524,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         self._set_headers('text/html',len(msg),cookie)
                                         self.wfile.write(msg)
                                     else:
-                                        msg=json.dumps(repliesJson).encode('utf-8')
-                                        self._set_headers('application/json',len(msg),None)
-                                        self.wfile.write(msg)
+                                        if self._fetchAuthenticated():
+                                            msg=json.dumps(repliesJson).encode('utf-8')
+                                            self._set_headers('application/json',len(msg),None)
+                                            self.wfile.write(msg)
+                                        else:
+                                            self._404()
                                     self.server.GETbusy=False
                                     return
 
@@ -1552,9 +1569,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._set_headers('text/html',len(msg),cookie)
                                     self.wfile.write(msg)     
                             else:
-                                msg=json.dumps(actorJson['roles']).encode('utf-8')
-                                self._set_headers('application/json',len(msg),None)
-                                self.wfile.write(msg)
+                                if self._fetchAuthenticated():
+                                    msg=json.dumps(actorJson['roles']).encode('utf-8')
+                                    self._set_headers('application/json',len(msg),None)
+                                    self.wfile.write(msg)
+                                else:
+                                    self._404()
                             self.server.GETbusy=False
                             return
 
@@ -1595,9 +1615,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._set_headers('text/html',len(msg),cookie)
                                     self.wfile.write(msg)     
                             else:
-                                msg=json.dumps(actorJson['skills']).encode('utf-8')
-                                self._set_headers('application/json',len(msg),None)
-                                self.wfile.write(msg)
+                                if self._fetchAuthenticated():
+                                    msg=json.dumps(actorJson['skills']).encode('utf-8')
+                                    self._set_headers('application/json',len(msg),None)
+                                    self.wfile.write(msg)
+                                else:
+                                    self._404()
                             self.server.GETbusy=False
                             return
             actor=self.path.replace('/skills','')
@@ -1649,9 +1672,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._set_headers('text/html',len(msg),cookie)
                                     self.wfile.write(msg)
                                 else:
-                                    msg=json.dumps(postJsonObject).encode('utf-8')
-                                    self._set_headers('application/json',len(msg),None)
-                                    self.wfile.write(msg)
+                                    if self._fetchAuthenticated():
+                                        msg=json.dumps(postJsonObject).encode('utf-8')
+                                        self._set_headers('application/json',len(msg),None)
+                                        self.wfile.write(msg)
+                                    else:
+                                        self._404()
                             self.server.GETbusy=False
                             return
                         else:
@@ -1706,9 +1732,12 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:
-                            msg=json.dumps(inboxFeed).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
-                            self.wfile.write(msg)
+                            if self._fetchAuthenticated():
+                                msg=json.dumps(inboxFeed).encode('utf-8')
+                                self._set_headers('application/json',len(msg),None)
+                                self.wfile.write(msg)
+                            else:
+                                self._404()
                         self.server.GETbusy=False
                         return
                 else:
@@ -1772,9 +1801,12 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:
-                            msg=json.dumps(inboxDMFeed).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
-                            self.wfile.write(msg)
+                            if self._fetchAuthenticated():
+                                msg=json.dumps(inboxDMFeed).encode('utf-8')
+                                self._set_headers('application/json',len(msg),None)
+                                self.wfile.write(msg)
+                            else:
+                                self._404()
                         self.server.GETbusy=False
                         return
                 else:
@@ -1841,9 +1873,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/html',len(msg),cookie)
                         self.wfile.write(msg)
                     else:
-                        msg=json.dumps(inboxRepliesFeed).encode('utf-8')
-                        self._set_headers('application/json',len(msg),None)
-                        self.wfile.write(msg)
+                        if self._fetchAuthenticated():
+                            msg=json.dumps(inboxRepliesFeed).encode('utf-8')
+                            self._set_headers('application/json',len(msg),None)
+                            self.wfile.write(msg)
+                        else:
+                            self._404()
                     self.server.GETbusy=False
                     return
                 else:
@@ -1902,9 +1937,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
             else:
-                msg=json.dumps(outboxFeed).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
-                self.wfile.write(msg)
+                if self._fetchAuthenticated():
+                    msg=json.dumps(outboxFeed).encode('utf-8')
+                    self._set_headers('application/json',len(msg),None)
+                    self.wfile.write(msg)
+                else:
+                    self._404()
             self.server.GETbusy=False
             return
 
@@ -1957,9 +1995,12 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self.wfile.write(msg)
                         else:
-                            msg=json.dumps(moderationFeed).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
-                            self.wfile.write(msg)
+                            if self._fetchAuthenticated():
+                                msg=json.dumps(moderationFeed).encode('utf-8')
+                                self._set_headers('application/json',len(msg),None)
+                                self.wfile.write(msg)
+                            else:
+                                self._404()
                         self.server.GETbusy=False
                         return
                 else:
@@ -2019,9 +2060,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                msg=json.dumps(shares).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
-                self.wfile.write(msg)
+                if self._fetchAuthenticated():
+                    msg=json.dumps(shares).encode('utf-8')
+                    self._set_headers('application/json',len(msg),None)
+                    self.wfile.write(msg)
+                else:
+                    self._404()
                 self.server.GETbusy=False
                 return
 
@@ -2070,9 +2114,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                msg=json.dumps(following).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
-                self.wfile.write(msg)
+                if self._fetchAuthenticated():
+                    msg=json.dumps(following).encode('utf-8')
+                    self._set_headers('application/json',len(msg),None)
+                    self.wfile.write(msg)
+                else:
+                    self._404()
                 self.server.GETbusy=False
                 return
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
@@ -2119,9 +2166,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             else:
-                msg=json.dumps(followers).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
-                self.wfile.write(msg)
+                if self._fetchAuthenticated():
+                    msg=json.dumps(followers).encode('utf-8')
+                    self._set_headers('application/json',len(msg),None)
+                    self.wfile.write(msg)
+                else:
+                    self._404()
             self.server.GETbusy=False
             return
         # look up a person
@@ -2148,9 +2198,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self.wfile.write(msg)
             else:
-                msg=json.dumps(getPerson).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
-                self.wfile.write(msg)
+                if self._fetchAuthenticated():
+                    msg=json.dumps(getPerson).encode('utf-8')
+                    self._set_headers('application/json',len(msg),None)
+                    self.wfile.write(msg)
+                else:
+                    self._404()
             self.server.GETbusy=False
             return
         # check that a json file was requested
@@ -2160,6 +2213,12 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             self.server.GETbusy=False
             return
+
+        if not self._fetchAuthenticated():
+            if self.server.debug:
+                print('WARN: Unauthenticated GET')
+            self._404()
+        
         # check that the file exists
         filename=self.server.baseDir+self.path
         if os.path.isfile(filename):
@@ -3711,7 +3770,8 @@ def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
-              fedList=[],noreply=False,nolike=False,nopics=False, \
+              fedList=[],authenticatedFetch=False, \
+              noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
               domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
@@ -3756,6 +3816,7 @@ def runDaemon(projectVersion, \
 
     httpd.outboxThread={}
     httpd.projectVersion=projectVersion
+    httpd.authenticatedFetch=authenticatedFetch
     # max POST size of 30M
     httpd.maxPostLength=1024*1024*30
     httpd.maxMediaSize=httpd.maxPostLength

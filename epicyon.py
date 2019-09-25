@@ -130,6 +130,9 @@ parser.add_argument('-f','--federate', nargs='+',dest='federationList', \
 parser.add_argument("--debug", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Show debug messages")
+parser.add_argument("--authenticatedFetch", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Enable authentication on GET requests for json (authenticated fetch)")
 parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Skills searches only return results from this instance")
@@ -1335,7 +1338,7 @@ if args.testdata:
 runDaemon(__version__, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \
-          federationList, \
+          federationList,args.authenticatedFetch, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways, \
           useTor,args.maxReplies, \
