@@ -38,7 +38,7 @@ In cases where criticism of ideology or culture remains on-topic, respectfully d
 
 ## No proprietary software
 
-This is a Free Software project and there is no intention to support or endorse any software which is proprietary, including that which may be running on client devices. For example, supporting iThings or Windows users is out of scope of the project. It's possible that Epicyon may work with those systems, but if there are problems it's not within the scope of this project to resolve compatibility issues with proprietary browsers or platforms.
+This is a Free Software project and there is no intention to support or endorse any software which is proprietary, including that which may be running on client devices or corporate silo systems. For example, supporting iThings or Windows users is out of scope of the project. So too would be integration with Twitter or Google's sevices.
 
 ## Raising concerns
 
@@ -46,9 +46,7 @@ If you're raising concerns about something or someone, there must be demonstrabl
 
 This is not a big project and so there is no division of labor or special enforcement committee or bureaucratic process.
 
-If your concern is something which is suitable for public discussion then raise it in one of the chat rooms mentioned above. Be mindful to do so in a polite and considerate manner. Hostile communication towards anyone raising concerns publicly will be considered a code of conduct violation.
-
-Private complaints should be sent to bob@freedombone.net, preferably via XMPP/Conversations with OMEMO enabled but you can also use the same address for email correspondence.
+Complaints should be sent to bob@freedombone.net, preferably via XMPP/Conversations with OMEMO enabled but you can also use the same address for email correspondence.
 
 ## In case of violations
 
