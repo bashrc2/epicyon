@@ -637,7 +637,8 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
                 domainFull=domain+':'+str(port)
     matchStr=domainFull+'/users/'+nickname+'/'
     directory = os.fsencode(baseDir+'/tags/')
-    for f in os.listdir(directory):
+    for f in os.scandir(directory):
+        f=f.name
         filename = os.fsdecode(f)
         if not filename.endswith(".txt"):
             continue

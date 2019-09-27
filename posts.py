@@ -378,7 +378,8 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None
     if boxname!='inbox' and boxname!='outbox':
         return
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
-    for deleteFilename in os.listdir(boxDir):
+    for deleteFilename in os.scandir(boxDir):
+        deleteFilename=deleteFilename.name
         filePath = os.path.join(boxDir, deleteFilename)
         try:
             if os.path.isfile(filePath):
@@ -1749,8 +1750,9 @@ def createBoxBase(baseDir: str,boxname: str, \
     # post filenames sorted in descending order
     postsInBoxDict={}
     postsCtr=0
-    postsInPersonInbox=os.listdir(boxDir)
+    postsInPersonInbox=os.scandir(boxDir)
     for postFilename in postsInPersonInbox:
+        postFilename=postFilename.name
         if not postFilename.endswith('.json'):
             continue
         # extract the status number
@@ -1763,8 +1765,9 @@ def createBoxBase(baseDir: str,boxname: str, \
     if sharedBoxDir:
         handle=nickname+'@'+domain
         followingFilename=baseDir+'/accounts/'+handle+'/following.txt'
-        postsInSharedInbox=os.listdir(sharedBoxDir)
+        postsInSharedInbox=os.scandir(sharedBoxDir)
         for postFilename in postsInSharedInbox:
+            postFilename=postFilename.name
             statusNumber=getStatusNumberFromPostFilename(postFilename)
             if statusNumber:                
                 sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
@@ -1967,7 +1970,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         if not os.path.isdir(archiveDir):
             os.mkdir(archiveDir)    
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
-    postsInBox=os.listdir(boxDir)
+    postsInBox=os.scandir(boxDir)
     noOfPosts=len(postsInBox)
     if noOfPosts<=maxPostsInBox:
         return
@@ -1975,6 +1978,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     postsInBoxDict={}
     postsCtr=0
     for postFilename in postsInBox:
+        postFilename=postFilename.name
         if not postFilename.endswith('.json'):
             continue
         # extract the status number

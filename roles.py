@@ -22,7 +22,8 @@ def clearModeratorStatus(baseDir: str) -> None:
     rarely when moderators are appointed or removed
     """
     directory = os.fsencode(baseDir+'/accounts/')
-    for f in os.listdir(directory):
+    for f in os.scandir(directory):
+        f=f.name
         filename = os.fsdecode(f)
         if filename.endswith(".json") and '@' in filename: 
             filename=os.path.join(baseDir+'/accounts/', filename)
