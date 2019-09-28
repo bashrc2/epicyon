@@ -2071,7 +2071,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
             for line in f:
                 if len(line)>0:
                     # show follow approvals icon
-                    followApprovals='<a href="'+actor+'/followers"><img class="right" alt="'+translate['Approve follow requests']+'" title="'+translate['Approve follow requests']+'" src="/'+iconsDir+'/person.png"/></a>'
+                    followApprovals='<a href="'+actor+'/followers"><img class="timelineicon" alt="'+translate['Approve follow requests']+'" title="'+translate['Approve follow requests']+'" src="/'+iconsDir+'/person.png"/></a>'
                     break
 
     moderationButtonStr=''
@@ -2085,11 +2085,11 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     if boxName!='dm':
         if not manuallyApproveFollowers:
-            newPostButtonStr='<a href="'+actor+'/newpost"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="right"/></a>'
+            newPostButtonStr='<a href="'+actor+'/newpost"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
         else:
-            newPostButtonStr='<a href="'+actor+'/newfollowers"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="right"/></a>'
+            newPostButtonStr='<a href="'+actor+'/newfollowers"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
     else:
-        newPostButtonStr='<a href="'+actor+'/newdm"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="right"/></a>'
+        newPostButtonStr='<a href="'+actor+'/newdm"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
 
     # banner and row of buttons
     tlStr+= \
@@ -2103,8 +2103,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
-        '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="right"/></a>'+ \
-        '    <a href="'+actor+'/'+boxName+'"><img src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="right"/></a>'+ \
+        '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
+        '    <a href="'+actor+'/'+boxName+'"><img src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
         followApprovals+ \
         '</div>'
 

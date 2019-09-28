@@ -473,6 +473,13 @@ a:link {
     padding: 0 0;
     margin: 0 0;
 }
+.container img.timelineicon {
+    float: right;
+    margin-left: 0px;
+    margin-right:0;
+    padding: 0 0;
+    margin: 0 0;
+}
 .containericons img.right {
     float: right;
     margin-left: 20px;
@@ -817,6 +824,13 @@ div.imagedesc {
         margin-right: 20px;
         border-radius: 10%;
     }
+    .container img.timelineicon {
+	float: right;
+	margin-left: 0px;
+	margin-right:0;
+	padding: 0 0;
+	margin: 0 0;
+    }
     .containericons img {
         float: right;
         max-width: 200px;
@@ -1043,6 +1057,13 @@ div.imagedesc {
         padding: 0px 7px;
         margin-right: 20px;
         border-radius: 10%;
+    }
+    .container img.timelineicon {
+	float: right;
+	margin-left: 0px;
+	margin-right:0;
+	padding: 0 0;
+	margin: 0 0;
     }
     .container img.emojisearch {
         float: right;
