@@ -830,6 +830,7 @@ div.imagedesc {
 	margin-right:0;
 	padding: 0 0;
 	margin: 0 0;
+	width: 50px;
     }
     .containericons img {
         float: right;
@@ -1058,13 +1059,6 @@ div.imagedesc {
         margin-right: 20px;
         border-radius: 10%;
     }
-    .container img.timelineicon {
-	float: right;
-	margin-left: 0px;
-	margin-right:0;
-	padding: 0 0;
-	margin: 0 0;
-    }
     .container img.emojisearch {
         float: right;
         max-width: 400px;
@@ -1072,6 +1066,14 @@ div.imagedesc {
         padding: 0px 7px;
         margin-right: 20px;
         border-radius: 10%;
+    }
+    .container img.timelineicon {
+	float: right;
+	margin-left: 0px;
+	margin-right:0;
+	padding: 0 0;
+	margin: 0 0;
+	width: 100px;
     }
     .containericons img {
         float: right;
