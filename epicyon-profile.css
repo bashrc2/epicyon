@@ -791,6 +791,12 @@ div.imagedesc {
     body, html {
         font-size: 22px;
     }
+    div.gallery {
+	margin: 5px;
+	border: 1px solid var(--gallery-border);
+	float: left;
+	width: 32%;
+    }
     div.imagedesc {
 	padding: 22px;
 	text-align: center;
@@ -1019,6 +1025,12 @@ div.imagedesc {
 @media screen and (max-width: 1000px) {
     body, html {
         font-size: 35px;
+    }
+    div.gallery {
+	margin: 5px;
+	border: 1px solid var(--gallery-border);
+	float: left;
+	width: 100%;
     }
     div.imagedesc {
 	padding: 35px;
