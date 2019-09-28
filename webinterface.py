@@ -2228,7 +2228,9 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          showIndividualPostIcons, \
                                          manuallyApproveFollowers,False)
         if boxName=='tlmedia':
-            tlStr+='</div><hr>\n'
+            for paddingImage in range(itemCtr % 3):
+                tlStr+='<div class="gallery"></div>\n'
+            tlStr+='</div>\n'
 
     # page down arrow
     if itemCtr>=itemsPerPage:
