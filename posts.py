@@ -1931,7 +1931,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                                 if not headerOnly:
                                     boxItems['orderedItems'].append(p)
                                     postsOnPageCtr += 1
-                            elif postsOnPageCtr == itemsPerPage:
+                            if postsOnPageCtr >= itemsPerPage:
                                 # if this is the last post update the next message ID
                                 if '/statuses/' in p['id']:
                                     postId = p['id'].split('/statuses/')[1].replace('/activity','')
