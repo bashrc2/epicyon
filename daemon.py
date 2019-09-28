@@ -85,6 +85,7 @@ from webinterface import htmlAbout
 from webinterface import htmlRemoveSharedItem
 from webinterface import htmlInboxDMs
 from webinterface import htmlInboxReplies
+from webinterface import htmlInboxMedia
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -1478,6 +1479,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._404()
                             self.server.GETbusy=False
                             return
+
         # get replies to a post /users/nickname/statuses/number/replies
         if self.path.endswith('/replies') or '/replies?page=' in self.path:
             if '/statuses/' in self.path and '/users/' in self.path:
@@ -1934,6 +1936,77 @@ class PubServer(BaseHTTPRequestHandler):
                               ' was not authorized to access '+self.path)
             if self.path!='/tlreplies':
                 # not the replies inbox
+                if self.server.debug:
+                    print('DEBUG: GET access to inbox is unauthorized')
+                self.send_response(405)
+                self.end_headers()
+                self.server.GETbusy=False
+                return
+
+        # get the media for a given person
+        if self.path.endswith('/tlmedia') or '/tlmedia?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    inboxMediaFeed= \
+                        personBoxJson(self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path, \
+                                      self.server.httpPrefix, \
+                                      maxPostsInFeed, 'tlmedia', \
+                                      True,self.server.ocapAlways)
+                    if not inboxMediaFeed:
+                        inboxMediaFeed=[]
+                    if self._requestHTTP():
+                        nickname=self.path.replace('/users/','').replace('/tlmedia','')
+                        pageNumber=1
+                        if '?page=' in nickname:
+                            pageNumber=nickname.split('?page=')[1]
+                            nickname=nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber=int(pageNumber)
+                            else:
+                                pageNumber=1
+                        if 'page=' not in self.path:
+                            # if no page was specified then show the first
+                            inboxMediaFeed= \
+                                personBoxJson(self.server.baseDir, \
+                                              self.server.domain, \
+                                              self.server.port, \
+                                              self.path+'?page=1', \
+                                              self.server.httpPrefix, \
+                                              maxPostsInFeed, 'tlmedia', \
+                                              True,self.server.ocapAlways)
+                        msg=htmlInboxMedia(self.server.translate, \
+                                           pageNumber,maxPostsInFeed, \
+                                           self.server.session, \
+                                           self.server.baseDir, \
+                                           self.server.cachedWebfingers, \
+                                           self.server.personCache, \
+                                           nickname, \
+                                           self.server.domain, \
+                                           self.server.port, \
+                                           inboxMediaFeed, \
+                                           self.server.allowDeletion, \
+                                           self.server.httpPrefix, \
+                                           self.server.projectVersion).encode('utf-8')
+                        self._set_headers('text/html',len(msg),cookie)
+                        self.wfile.write(msg)
+                    else:
+                        # don't need authenticated fetch here because there is
+                        # already the authorization check
+                        msg=json.dumps(inboxMediaFeed).encode('utf-8')
+                        self._set_headers('application/json',len(msg),None)
+                        self.wfile.write(msg)
+                    self.server.GETbusy=False
+                    return
+                else:
+                    if self.server.debug:
+                        nickname=self.path.replace('/users/','').replace('/tlmedia','')
+                        print('DEBUG: '+nickname+ \
+                              ' was not authorized to access '+self.path)
+            if self.path!='/tlmedia':
+                # not the media inbox
                 if self.server.debug:
                     print('DEBUG: GET access to inbox is unauthorized')
                 self.send_response(405)

@@ -1585,6 +1585,11 @@ def createRepliesTimeline(baseDir: str,nickname: str,domain: str,port: int,httpP
     return createBoxBase(baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
+def createMediaTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                        itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxBase(baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
+                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
 def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
@@ -1684,6 +1689,30 @@ def isDM(postJsonObject: {}) -> bool:
                 return False
     return True
 
+def isImageMedia(postJsonObject: {}) -> bool:
+    """Returns true if the given post has attached image media
+    """
+    if postJsonObject['type']!='Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object']['type']!='Note':
+        return False
+    if not postJsonObject['object'].get('attachment'):
+        return False
+    if not isinstance(postJsonObject['object']['attachment'], list):
+        return False
+    if len(postJsonObject['object']['attachment'])==0:
+        return False
+    for attach in postJsonObject['object']['attachment']:
+        if attach.get('mediaType') and attach.get('url'):
+            mediaType=attach['mediaType']
+            if mediaType.startswith('image/'):
+                return True
+    return False
+
 def isReply(postJsonObject: {},actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
@@ -1707,15 +1736,16 @@ def createBoxBase(baseDir: str,boxname: str, \
                   ocapAlways: bool,pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
-    if boxname!='inbox' and boxname!='dm' and boxname!='tlreplies' and boxname!='outbox':
+    if boxname!='inbox' and boxname!='dm' and \
+       boxname!='tlreplies' and boxname!='tlmedia' and boxname!='outbox':
         return None
-    if boxname!='dm' and boxname!='tlreplies':
+    if boxname!='dm' and boxname!='tlreplies' and boxname!='tlmedia':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
         # extract DMs or replies from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     sharedBoxDir=None
-    if boxname=='inbox' or boxname=='tlreplies':
+    if boxname=='inbox' or boxname=='tlreplies' or boxname=='tlmedia':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
 
     if port:
@@ -1865,7 +1895,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                         # get the post as json
                         p = json.loads(postStr)
 
-                        if (boxname!='dm' and boxname!='tlreplies'):
+                        if (boxname!='dm' and boxname!='tlreplies' and boxname!='tlmedia'):
                             isTimelinePost=True
                         else:
                             if boxname=='dm':
@@ -1873,6 +1903,9 @@ def createBoxBase(baseDir: str,boxname: str, \
                                     isTimelinePost=True
                             elif boxname=='tlreplies':
                                 if isDM(p) or isReply(p,boxActor):
+                                    isTimelinePost=True
+                            elif boxname=='tlmedia':
+                                if isImageMedia(p):
                                     isTimelinePost=True
 
                         if isTimelinePost and currPage == pageNumber:
@@ -2084,7 +2117,9 @@ def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
                           sendThreads,postLog,cachedWebfingers, \
                           personCache,debug,projectVersion)
 
-def populateRepliesJson(baseDir: str,nickname: str,domain: str,postRepliesFilename: str,authorized: bool,repliesJson: {}) -> None:
+def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
+                        postRepliesFilename: str,authorized: bool, \
+                        repliesJson: {}) -> None:
     # populate the items list with replies
     repliesBoxes=['outbox','inbox']
     with open(postRepliesFilename,'r') as repliesFile: 

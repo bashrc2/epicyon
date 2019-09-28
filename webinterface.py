@@ -1666,6 +1666,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             showDMicon=True
     
     titleStr=''
+    galleryStr=''
     isAnnounced=False
     if postJsonObject['type']=='Announce':
         if postJsonObject.get('object'):
@@ -1875,6 +1876,17 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                            attach['url'].endswith('.gif'):
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
+                            if boxName=='tlmedia':
+                                galleryStr+= \
+                                    '<div class="gallery">\n' \
+                                    '  <a target="_blank" href="'+attach['url']+'">\n' \
+                                    '    <img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
+                                    '  </a>\n'
+                                if postJsonObject['object'].get('content'):
+                                    galleryStr+= \
+                                        '  <div class="imagedesc">'+postJsonObject['object']['content']+'</div>\n'
+                                    galleryStr+= \
+                                        '</div>\n' \
                             attachmentStr+= \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
@@ -2064,12 +2076,15 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     contentStr='<div class="message">'+contentStr+'</div>'
 
-    return \
-        '<div class="'+containerClass+'">\n'+ \
-        avatarImageInPost+ \
-        '<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'+ \
-        contentStr+footerStr+ \
-        '</div>\n'
+    if boxName!='tlmedia':
+        return \
+            '<div class="'+containerClass+'">\n'+ \
+            avatarImageInPost+ \
+            '<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'+ \
+            contentStr+footerStr+ \
+            '</div>\n'
+    else:
+        return galleryStr
 
 def isQuestion(postObjectJson: {}) -> bool:
     """ is the given post a question?
@@ -2106,6 +2121,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
     inboxButton='button'
     dmButton='button'
     repliesButton='button'
+    mediaButton='button'
     sentButton='button'
     moderationButton='button'
     if boxName=='inbox':
@@ -2114,6 +2130,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
         dmButton='buttonselected'
     elif boxName=='tlreplies':
         repliesButton='buttonselected'
+    elif boxName=='tlmedia':
+        mediaButton='buttonselected'
     elif boxName=='outbox':
         sentButton='buttonselected'
     elif boxName=='moderation':
@@ -2125,7 +2143,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
         showIndividualPostIcons=True
     
     followApprovals=''
-    followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
+    followRequestsFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
     if os.path.isfile(followRequestsFilename):
         with open(followRequestsFilename,'r') as f:
             for line in f:
@@ -2160,6 +2179,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>' \
         '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>' \
         '    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>' \
+        '    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="right"/></a>'+ \
@@ -2248,6 +2268,18 @@ def htmlInboxReplies(translate: {},pageNumber: int,itemsPerPage: int, \
     return htmlTimeline(translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlreplies',allowDeletion, \
+                        httpPrefix,projectVersion,False)
+
+def htmlInboxMedia(translate: {},pageNumber: int,itemsPerPage: int, \
+                   session,baseDir: str,wfRequest: {},personCache: {}, \
+                   nickname: str,domain: str,port: int,inboxJson: {}, \
+                   allowDeletion: bool, \
+                   httpPrefix: str,projectVersion: str) -> str:
+    """Show the media timeline as html
+    """
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'tlmedia',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
 def htmlModeration(translate: {},pageNumber: int,itemsPerPage: int, \

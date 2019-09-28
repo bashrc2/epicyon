@@ -28,6 +28,8 @@
     --button-height: 10px;
     --button-height-padding-mobile: 20px;
     --button-height-padding: 10px;
+    --gallery-border: #ccc;
+    --gallery-hover: #777;
 }
 
 body, html {
@@ -760,9 +762,34 @@ input[type=checkbox]
     transform: translateY(-10%);
 }
 
+div.gallery {
+  margin: 5px;
+  border: 1px solid var(--gallery-border);
+  float: left;
+  width: 180px;
+}
+
+div.gallery:hover {
+  border: 1px solid var(--gallery-hover);
+}
+
+div.gallery img {
+  width: 100%;
+  height: auto;
+}
+
+div.imagedesc {
+    padding: 22px;
+    text-align: center;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         font-size: 22px;
+    }
+    div.imagedesc {
+	padding: 22px;
+	text-align: center;
     }
     .container img {
         float: left;
@@ -988,6 +1015,10 @@ input[type=checkbox]
 @media screen and (max-width: 1000px) {
     body, html {
         font-size: 35px;
+    }
+    div.imagedesc {
+	padding: 35px;
+	text-align: center;
     }
     .container img {
         float: left;
