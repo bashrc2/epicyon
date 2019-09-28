@@ -762,13 +762,6 @@ input[type=checkbox]
     transform: translateY(-10%);
 }
 
-.galleryIcon {
-    position: absolute;
-    top: 15px;
-    right: 30px;
-    width: 50px;
-}
-
 .galleryContainer {
     background-color: var(--main-bg-color);
 }
@@ -787,6 +780,13 @@ div.gallery:hover {
 div.gallery img {
     width: 100%;
     height: auto;
+}
+
+div.gallery img.galleryIcon {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    width: 50px;
 }
 
 div.imagedesc {
