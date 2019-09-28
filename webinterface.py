@@ -1886,7 +1886,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     galleryStr+= \
                                         '  <div class="imagedesc">'+postJsonObject['object']['content']+'</div>\n'
                                     galleryStr+= \
-                                        '</div>\n' \
+                                        '</div>\n'
                             attachmentStr+= \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
