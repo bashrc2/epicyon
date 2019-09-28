@@ -1888,8 +1888,9 @@ def createBoxBase(baseDir: str,boxname: str, \
                         if boxActor not in postStr:
                             isPost=False
                     elif boxname=='tlmedia':
-                        if 'mediaType' not in postStr or 'image/' not in postStr:
-                            isPost=False
+                        if '"Create"' in postStr:
+                            if 'mediaType' not in postStr or 'image/' not in postStr:
+                                isPost=False
 
                 if isPost:
                     isTimelinePost=False
