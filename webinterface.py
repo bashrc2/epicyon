@@ -2229,7 +2229,12 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          manuallyApproveFollowers,False)
         if boxName=='tlmedia':
             for paddingImage in range(itemCtr % 3):
-                tlStr+='<div class="gallery"></div>\n'
+                tlStr+= \
+                    '<div class="gallery">' \
+                    '  <a target="_blank" href="">\n' \
+                    '    <img src="" width="600" height="400">\n' \
+                    '  </a>\n' \
+                    '</div>\n'
             tlStr+='</div>\n'
 
     # page down arrow
