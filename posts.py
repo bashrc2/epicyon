@@ -2187,3 +2187,87 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
                                 if authorized or \
                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
                                     repliesJson['orderedItems'].append(postJsonObject)
+
+def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,postJsonObject: {},projectVersion: str) -> {}:
+    """Download the post referenced by an announce
+    """
+    if not postJsonObject.get('object'):
+        return None
+    if not isinstance(postJsonObject['object'], str):
+        return None
+
+    # get the announced post
+    announceCacheDir=baseDir+'/cache/announce/'+nickname
+    if not os.path.isdir(announceCacheDir):
+        os.mkdir(announceCacheDir)
+    announceFilename=announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
+    print('announceFilename: '+announceFilename)
+
+    if os.path.isfile(announceFilename+'.reject'):
+        return None
+
+    if os.path.isfile(announceFilename):
+        print('Reading cached Announce content for '+postJsonObject['object'])
+        try:
+            with open(announceFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                return postJsonObject
+        except Exception as e:
+            print(e)
+    else:
+        print('Downloading Announce content for '+postJsonObject['object'])
+        asHeader={'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+        actorNickname=getNicknameFromActor(postJsonObject['actor'])
+        actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+        announcedJson=getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
+                        
+        if not announcedJson:
+            return None
+        
+        if not announcedJson.get('id'):
+            rejectAnnounce(announceFilename)
+            pprint(announcedJson)
+            return None
+        if '/statuses/' not in announcedJson['id']:
+            rejectAnnounce(announceFilename)
+            return None
+        if '/users/' not in announcedJson['id'] and '/profile/' not in announcedJson['id']:
+            rejectAnnounce(announceFilename)
+            return None
+        if not announcedJson.get('type'):
+            rejectAnnounce(announceFilename)
+            pprint(announcedJson)
+            return None
+        if announcedJson['type']!='Note':
+            rejectAnnounce(announceFilename)
+            pprint(announcedJson)
+            return None
+                            
+        # wrap in create to be consistent with other posts
+        announcedJson= \
+            outboxMessageCreateWrap(httpPrefix, \
+                                    actorNickname,actorDomain,actorPort, \
+                                    announcedJson)
+        if announcedJson['type']!='Create':
+            rejectAnnounce(announceFilename)
+            pprint(announcedJson)
+            return None
+
+        # set the id to the original status
+        announcedJson['id']=postJsonObject['object']
+        announcedJson['object']['id']=postJsonObject['object']
+        # check that the repeat isn't for a blocked account
+        attributedNickname=getNicknameFromActor(announcedJson['object']['id'])
+        attributedDomain,attributedPort=getDomainFromActor(announcedJson['object']['id'])
+        if attributedNickname and attributedDomain:
+            if attributedPort:
+                if attributedPort!=80 and attributedPort!=443:
+                    attributedDomain=attributedDomain+':'+str(attributedPort)
+            if isBlocked(baseDir,nickname,domain,attributedNickname,attributedDomain):
+                rejectAnnounce(announceFilename)
+                return None
+        postJsonObject=announcedJson
+        with open(announceFilename, 'w') as fp:
+            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+            return postJsonObject
+    return None
