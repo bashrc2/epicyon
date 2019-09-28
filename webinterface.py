@@ -1881,7 +1881,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     '<div class="gallery">\n' \
                                     '  <a target="_blank" href="'+attach['url']+'">\n' \
                                     '    <img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
-                                    '    <a href="'+messageId+'"><img class="galleryicon" src="icons/gallery.png" alt="'+translate['Show original post']+'" title="'+translate['Show original post']+'"></a>\n' \
+                                    '    <a href="'+messageId+'"><img class="galleryicon" src="/'+iconsDir+'/gallery.png" alt="'+translate['Show original post']+'" title="'+translate['Show original post']+'"/></a>\n' \
                                     '  </a>\n'
                                 #if postJsonObject['object'].get('content'):
                                 #    galleryStr+= \
