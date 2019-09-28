@@ -396,7 +396,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         return None
     return personJson
 
-def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
+def personBoxJson(session,baseDir: str,domain: str,port: int,path: str, \
                   httpPrefix: str,noOfItems: int,boxname: str, \
                   authorized: bool,ocapAlways: bool) -> []:
     """Obtain the inbox/outbox/moderation feed for the given person
@@ -438,19 +438,19 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
     if not validNickname(domain,nickname):
         return None
     if boxname=='inbox':
-        return createInbox(baseDir,nickname,domain,port,httpPrefix, \
+        return createInbox(session,baseDir,nickname,domain,port,httpPrefix, \
                            noOfItems,headerOnly,ocapAlways,pageNumber)
     if boxname=='dm':
-        return createDMTimeline(baseDir,nickname,domain,port,httpPrefix, \
+        return createDMTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
                                 noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='tlreplies':
-        return createRepliesTimeline(baseDir,nickname,domain,port,httpPrefix, \
+        return createRepliesTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
                                      noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='tlmedia':
-        return createMediaTimeline(baseDir,nickname,domain,port,httpPrefix, \
+        return createMediaTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
                                    noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='outbox':
-        return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
+        return createOutbox(session,baseDir,nickname,domain,port,httpPrefix, \
                             noOfItems,headerOnly,authorized,pageNumber)
     elif boxname=='moderation':
         return createModeration(baseDir,nickname,domain,port,httpPrefix, \

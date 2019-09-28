@@ -1570,29 +1570,29 @@ def sendToFollowers(session,baseDir: str, \
             print('DEBUG: End of sendToFollowers')
         
 
-def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def createInbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
+    return createBoxBase(session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createDMTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def createDMTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(baseDir,'dm',nickname,domain,port,httpPrefix, \
+    return createBoxBase(session,baseDir,'dm',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createRepliesTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def createRepliesTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                           itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
+    return createBoxBase(session,baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createMediaTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def createMediaTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                         itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
+    return createBoxBase(session,baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+def createOutbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
-    return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
+    return createBoxBase(session,baseDir,'outbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,authorized,False,pageNumber)
 
 def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
@@ -1689,11 +1689,13 @@ def isDM(postJsonObject: {}) -> bool:
                 return False
     return True
 
-def isImageMedia(postJsonObject: {}) -> bool:
+def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,postJsonObject: {}) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type']=='Announce':
-        return True
+        postJsonAnnounce=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject,__version__):
+        if postJsonAnnounce:
+            postJsonObject=postJsonAnnounce
     if postJsonObject['type']!='Create':
         return False
     if not postJsonObject.get('object'):
@@ -1729,7 +1731,7 @@ def isReply(postJsonObject: {},actor: str) -> bool:
         return False
     return True
 
-def createBoxBase(baseDir: str,boxname: str, \
+def createBoxBase(session,baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,authorized :bool, \
                   ocapAlways: bool,pageNumber=None) -> {}:
@@ -1908,7 +1910,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                                 if isDM(p) or isReply(p,boxActor):
                                     isTimelinePost=True
                             elif boxname=='tlmedia':
-                                if isImageMedia(p):
+                                if isImageMedia(session,baseDir,httpPrefix,nickname,domain,p):
                                     isTimelinePost=True
 
                         if isTimelinePost and currPage == pageNumber:

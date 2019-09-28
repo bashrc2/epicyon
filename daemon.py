@@ -1740,7 +1740,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
-                    inboxFeed=personBoxJson(self.server.baseDir, \
+                    inboxFeed=personBoxJson(self.server.session, \
+                                            self.server.baseDir, \
                                             self.server.domain, \
                                             self.server.port, \
                                             self.path, \
@@ -1760,7 +1761,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber=1                                
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
-                                inboxFeed=personBoxJson(self.server.baseDir, \
+                                inboxFeed=personBoxJson(self.server.session, \
+                                                        self.server.baseDir, \
                                                         self.server.domain, \
                                                         self.server.port, \
                                                         self.path+'?page=1', \
@@ -1808,7 +1810,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
-                    inboxDMFeed=personBoxJson(self.server.baseDir, \
+                    inboxDMFeed=personBoxJson(self.server.session, \
+                                              self.server.baseDir, \
                                               self.server.domain, \
                                               self.server.port, \
                                               self.path, \
@@ -1828,13 +1831,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber=1                                
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
-                                inboxDMFeed=personBoxJson(self.server.baseDir, \
-                                                        self.server.domain, \
-                                                        self.server.port, \
-                                                        self.path+'?page=1', \
-                                                        self.server.httpPrefix, \
-                                                        maxPostsInFeed, 'dm', \
-                                                        True,self.server.ocapAlways)
+                                inboxDMFeed=personBoxJson(self.server.session, \
+                                                          self.server.baseDir, \
+                                                          self.server.domain, \
+                                                          self.server.port, \
+                                                          self.path+'?page=1', \
+                                                          self.server.httpPrefix, \
+                                                          maxPostsInFeed, 'dm', \
+                                                          True,self.server.ocapAlways)
                             msg=htmlInboxDMs(self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
                                              self.server.session, \
@@ -1877,7 +1881,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '/users/' in self.path:
                 if authorized:
                     inboxRepliesFeed= \
-                        personBoxJson(self.server.baseDir, \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
                                       self.server.domain, \
                                       self.server.port, \
                                       self.path, \
@@ -1899,7 +1904,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in self.path:
                             # if no page was specified then show the first
                             inboxRepliesFeed= \
-                                personBoxJson(self.server.baseDir, \
+                                personBoxJson(self.server.session, \
+                                              self.server.baseDir, \
                                               self.server.domain, \
                                               self.server.port, \
                                               self.path+'?page=1', \
@@ -1948,7 +1954,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '/users/' in self.path:
                 if authorized:
                     inboxMediaFeed= \
-                        personBoxJson(self.server.baseDir, \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
                                       self.server.domain, \
                                       self.server.port, \
                                       self.path, \
@@ -1970,7 +1977,8 @@ class PubServer(BaseHTTPRequestHandler):
                         if 'page=' not in self.path:
                             # if no page was specified then show the first
                             inboxMediaFeed= \
-                                personBoxJson(self.server.baseDir, \
+                                personBoxJson(self.server.session, \
+                                              self.server.baseDir, \
                                               self.server.domain, \
                                               self.server.port, \
                                               self.path+'?page=1', \
@@ -2015,7 +2023,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         # get outbox feed for a person
-        outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
+        outboxFeed=personBoxJson(self.server.session, \
+                                 self.server.baseDir,self.server.domain, \
                                  self.server.port,self.path, \
                                  self.server.httpPrefix, \
                                  maxPostsInFeed, 'outbox', \
@@ -2034,7 +2043,8 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumber=1
                 if 'page=' not in self.path:
                     # if a page wasn't specified then show the first one
-                    outboxFeed=personBoxJson(self.server.baseDir,self.server.domain, \
+                    outboxFeed=personBoxJson(self.server.session, \
+                                             self.server.baseDir,self.server.domain, \
                                              self.server.port,self.path+'?page=1', \
                                              self.server.httpPrefix, \
                                              maxPostsInFeed, 'outbox', \
@@ -2070,7 +2080,8 @@ class PubServer(BaseHTTPRequestHandler):
             if '/users/' in self.path:
                 if authorized:
                     moderationFeed= \
-                        personBoxJson(self.server.baseDir, \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
                                       self.server.domain, \
                                       self.server.port, \
                                       self.path, \
@@ -2091,7 +2102,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 moderationFeed= \
-                                    personBoxJson(self.server.baseDir, \
+                                    personBoxJson(self.server.session, \
+                                                  self.server.baseDir, \
                                                   self.server.domain, \
                                                   self.server.port, \
                                                   self.path+'?page=1', \

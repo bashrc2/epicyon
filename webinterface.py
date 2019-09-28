@@ -1064,7 +1064,7 @@ def htmlProfilePosts(translate: {}, \
     currPage=1
     while ctr<maxItems and currPage<4:
         outboxFeed= \
-            personBoxJson(baseDir,domain, \
+            personBoxJson(session,baseDir,domain, \
                           port,'/users/'+nickname+'/outbox?page='+str(currPage), \
                           httpPrefix, \
                           10, 'outbox', \
