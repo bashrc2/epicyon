@@ -1692,6 +1692,8 @@ def isDM(postJsonObject: {}) -> bool:
 def isImageMedia(postJsonObject: {}) -> bool:
     """Returns true if the given post has attached image media
     """
+    if postJsonObject['type']=='Announce':
+        return True
     if postJsonObject['type']!='Create':
         return False
     if not postJsonObject.get('object'):
