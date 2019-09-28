@@ -1704,12 +1704,9 @@ def isImageMedia(postJsonObject: {}) -> bool:
         return False
     if not isinstance(postJsonObject['object']['attachment'], list):
         return False
-    if len(postJsonObject['object']['attachment'])==0:
-        return False
     for attach in postJsonObject['object']['attachment']:
         if attach.get('mediaType') and attach.get('url'):
-            mediaType=attach['mediaType']
-            if mediaType.startswith('image/'):
+            if attach['mediaType'].startswith('image/'):
                 return True
     return False
 
@@ -1742,7 +1739,7 @@ def createBoxBase(baseDir: str,boxname: str, \
     if boxname!='dm' and boxname!='tlreplies' and boxname!='tlmedia':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
-        # extract DMs or replies from the inbox
+        # extract DMs or replies or media from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     sharedBoxDir=None
     if boxname=='inbox' or boxname=='tlreplies' or boxname=='tlmedia':
@@ -1889,7 +1886,7 @@ def createBoxBase(baseDir: str,boxname: str, \
                         if boxActor not in postStr:
                             isPost=False
                     elif boxname=='tlmedia':
-                        if 'image/' not in postStr:
+                        if 'mediaType' not in postStr or 'image/' not in postStr:
                             isPost=False
 
                 if isPost:
