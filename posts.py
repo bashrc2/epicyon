@@ -2191,6 +2191,14 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
                                    'https://www.w3.org/ns/activitystreams#Public' in postJsonObject['object']['to']:
                                     repliesJson['orderedItems'].append(postJsonObject)
 
+def rejectAnnounce(announceFilename: str):
+    """Marks an announce as rejected
+    """
+    if not os.path.isfile(announceFilename+'.reject'):
+        rejectAnnounceFile=open(announceFilename+'.reject', "w+")
+        rejectAnnounceFile.write('\n')
+        rejectAnnounceFile.close()
+
 def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,postJsonObject: {},projectVersion: str) -> {}:
     """Download the post referenced by an announce
     """

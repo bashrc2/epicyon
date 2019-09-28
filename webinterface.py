@@ -1613,14 +1613,6 @@ def insertQuestion(translate: {}, \
     content+='</form></div>'
     return content
 
-def rejectAnnounce(announceFilename: str):
-    """Marks an announce as rejected
-    """
-    if not os.path.isfile(announceFilename+'.reject'):
-        rejectAnnounceFile=open(announceFilename+'.reject', "w+")
-        rejectAnnounceFile.write('\n')
-        rejectAnnounceFile.close()
-
 def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
                           nickname: str,domain: str, \
                           displayName: str,inProfileName: bool) -> str:
