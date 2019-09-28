@@ -762,39 +762,36 @@ input[type=checkbox]
     transform: translateY(-10%);
 }
 
+.galleryIcon {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    width: 50px;
+}
+
 .galleryContainer {
     background-color: var(--main-bg-color);
 }
 
 div.gallery {
-  margin: 5px;
-  border: 1px solid var(--gallery-border);
-  float: left;
-  width: 32%;
+    margin: 5px;
+    border: 1px solid var(--gallery-border);
+    float: left;
+    width: 32%;
 }
 
 div.gallery:hover {
-  border: 1px solid var(--gallery-hover);
+    border: 1px solid var(--gallery-hover);
 }
 
 div.gallery img {
-  width: 100%;
-  height: auto;
+    width: 100%;
+    height: auto;
 }
 
 div.imagedesc {
     padding: 22px;
     text-align: center;
-}
-
-hr {
-  display: block;
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  margin-left: auto;
-  margin-right: auto;
-  border-style: inset;
-  border-width: 1px;
 }
 
 @media screen and (min-width: 400px) {
