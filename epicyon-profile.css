@@ -763,7 +763,6 @@ input[type=checkbox]
 }
 
 .galleryContainer {
-    border: 2px solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: 5px;
     padding: 20px;
@@ -774,7 +773,7 @@ div.gallery {
   margin: 5px;
   border: 1px solid var(--gallery-border);
   float: left;
-  width: 180px;
+  width: 33%;
 }
 
 div.gallery:hover {
