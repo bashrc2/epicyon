@@ -782,13 +782,6 @@ div.gallery img {
     height: auto;
 }
 
-div.gallery img.galleryIcon {
-    position: relative;
-    top: 0%;
-    right: 0%;
-    width: 10%;
-}
-
 div.imagedesc {
     padding: 22px;
     text-align: center;

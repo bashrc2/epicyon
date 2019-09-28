@@ -1879,10 +1879,9 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if boxName=='tlmedia':
                                 galleryStr+= \
                                     '<div class="gallery">\n' \
-                                    '  <a href="'+attach['url']+'">\n' \
+                                    '  <a href="'+messageId+'">\n' \
                                     '    <img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
                                     '  </a>\n' \
-                                    '  <center><a href="'+messageId+'"><img src="/'+iconsDir+'/gallery.png" class="galleryIcon" alt="'+translate['Show original post']+'" title="'+translate['Show original post']+'"/></a></center>\n'
                                 #if postJsonObject['object'].get('content'):
                                 #    galleryStr+= \
                                 #        '  <div class="imagedesc">'+postJsonObject['object']['content']+'</div>\n'
