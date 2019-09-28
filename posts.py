@@ -1693,7 +1693,7 @@ def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type']=='Announce':
-        postJsonAnnounce=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject,__version__):
+        postJsonAnnounce=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject,__version__)
         if postJsonAnnounce:
             postJsonObject=postJsonAnnounce
     if postJsonObject['type']!='Create':
