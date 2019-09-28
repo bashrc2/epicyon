@@ -2228,11 +2228,11 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          showIndividualPostIcons, \
                                          manuallyApproveFollowers,False)
         if boxName=='tlmedia':
-            tlStr+='</div>\n'
+            tlStr+='</div><hr>\n'
 
     # page down arrow
     if itemCtr>=itemsPerPage:
-        tlStr+='<div><center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center></div>'
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
 
