@@ -2229,7 +2229,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          showIndividualPostIcons, \
                                          manuallyApproveFollowers,False)
         if boxName=='tlmedia':
-            tlStr+='</div><br>\n'
+            tlStr+='</div><hr>\n'
 
     # page down arrow
     if itemCtr>=itemsPerPage:
