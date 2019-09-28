@@ -134,6 +134,9 @@ import sys
 # maximum number of posts to list in outbox feed
 maxPostsInFeed=12
 
+# reduced posts for media feed because it can take a while
+maxPostsInMediaFeed=6
+
 # number of follows/followers per page
 followsPerPage=12
 
@@ -1960,7 +1963,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.port, \
                                       self.path, \
                                       self.server.httpPrefix, \
-                                      maxPostsInFeed, 'tlmedia', \
+                                      maxPostsInMediaFeed, 'tlmedia', \
                                       True,self.server.ocapAlways)
                     if not inboxMediaFeed:
                         inboxMediaFeed=[]
@@ -1983,10 +1986,10 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.port, \
                                               self.path+'?page=1', \
                                               self.server.httpPrefix, \
-                                              maxPostsInFeed, 'tlmedia', \
+                                              maxPostsInMediaFeed, 'tlmedia', \
                                               True,self.server.ocapAlways)
                         msg=htmlInboxMedia(self.server.translate, \
-                                           pageNumber,maxPostsInFeed, \
+                                           pageNumber,maxPostsInMediaFeed, \
                                            self.server.session, \
                                            self.server.baseDir, \
                                            self.server.cachedWebfingers, \
