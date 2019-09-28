@@ -2211,6 +2211,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
     # show the posts
     itemCtr=0
     if timelineJson:
+        if boxName=='tlmedia':
+            tlStr+='<div class="galleryContainer">\n'
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
                 itemCtr+=1
@@ -2224,6 +2226,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          boxName!='dm', \
                                          showIndividualPostIcons, \
                                          manuallyApproveFollowers,False)
+        if boxName=='tlmedia':
+            tlStr+='</div>\n'
 
     # page down arrow
     if itemCtr>=itemsPerPage:
