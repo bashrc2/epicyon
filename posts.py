@@ -43,6 +43,7 @@ from media import attachMedia
 from content import addHtmlTags
 from auth import createBasicAuthHeader
 from config import getConfigParam
+from blocking import isBlocked
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
