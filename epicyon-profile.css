@@ -783,10 +783,10 @@ div.gallery img {
 }
 
 div.gallery img.galleryIcon {
-    position: absolute;
-    top: 15px;
-    right: 30px;
-    width: 50px;
+    position: relative;
+    top: 0%;
+    right: 0%;
+    width: 10%;
 }
 
 div.imagedesc {
