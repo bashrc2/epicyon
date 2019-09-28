@@ -1888,6 +1888,9 @@ def createBoxBase(baseDir: str,boxname: str, \
                     elif boxname=='tlreplies':
                         if boxActor not in postStr:
                             isPost=False
+                    elif boxname=='tlmedia':
+                        if 'image/' not in postStr:
+                            isPost=False
 
                 if isPost:
                     isTimelinePost=False

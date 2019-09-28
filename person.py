@@ -20,6 +20,7 @@ from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
 from posts import createDMTimeline
 from posts import createRepliesTimeline
+from posts import createMediaTimeline
 from posts import createInbox
 from posts import createOutbox
 from posts import createModeration
@@ -401,7 +402,7 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname!='inbox' and boxname!='dm' and \
-       boxname!='tlreplies' and \
+       boxname!='tlreplies' and boxname!='tlmedia' and \
        boxname!='outbox' and boxname!='moderation':
         return None
 
@@ -445,6 +446,9 @@ def personBoxJson(baseDir: str,domain: str,port: int,path: str, \
     elif boxname=='tlreplies':
         return createRepliesTimeline(baseDir,nickname,domain,port,httpPrefix, \
                                      noOfItems,headerOnly,ocapAlways,pageNumber)
+    elif boxname=='tlmedia':
+        return createMediaTimeline(baseDir,nickname,domain,port,httpPrefix, \
+                                   noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='outbox':
         return createOutbox(baseDir,nickname,domain,port,httpPrefix, \
                             noOfItems,headerOnly,authorized,pageNumber)
