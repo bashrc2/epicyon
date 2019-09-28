@@ -770,7 +770,7 @@ div.gallery {
     margin: 5px;
     border: 1px solid var(--gallery-border);
     float: left;
-    width: 32%;
+    width: 49%;
 }
 
 div.gallery:hover {
@@ -795,7 +795,7 @@ div.imagedesc {
 	margin: 5px;
 	border: 1px solid var(--gallery-border);
 	float: left;
-	width: 32%;
+	width: 49%;
     }
     div.imagedesc {
 	padding: 22px;
