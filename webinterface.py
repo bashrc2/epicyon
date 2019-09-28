@@ -1642,7 +1642,7 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
             displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList,'profile')            
     return displayName
 
-def downloadAnnounce(baseDir: str,httpPrefix: str,nickname: str,postJsonObject: {}) -> {}:
+def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,postJsonObject: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -1753,7 +1753,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     galleryStr=''
     isAnnounced=False
     if postJsonObject['type']=='Announce':
-        postJsonAnnounce=downloadAnnounce(baseDir,httpPrefix,nickname,postJsonObject)
+        postJsonAnnounce=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject)
         if not postJsonAnnounce:
             return ''
         postJsonObject=postJsonAnnounce
