@@ -40,6 +40,7 @@ from follow import sendUnfollowRequestViaServer
 from utils import followPerson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import copytree
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
@@ -65,6 +66,8 @@ from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
 from content import addWebLinks
+from content import replaceEmojiFromTags
+from content import addHtmlTags
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1374,9 +1377,51 @@ def testWebLinks():
     exampleText='This post has a web links https://somesite.net\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
     assert '<a href="https://somesite.net" rel="nofollow noopener" target="_blank"><span class="invisible">https://</span><span class="ellipsis">somesite.net</span></a' in linkedText
-    
+
+def testAddEmoji():
+    print('testAddEmoji')
+    content='Emoji :lemon: :strawberry: :banana:'
+    httpPrefix='http'
+    nickname='testuser'
+    domain='testdomain.net'
+    port=3682
+    recipients=[]
+    hashtags={}
+    baseDir=os.getcwd()
+    baseDirOriginal=os.getcwd()
+    path=baseDir+'/.tests'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    path=baseDir+'/.tests/emoji'
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)    
+    baseDir=path
+    path=baseDir+'/emoji'
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)    
+    copytree(baseDirOriginal+'/emoji',baseDir+'/emoji')
+    os.chdir(baseDir)
+    privateKeyPem,publicKeyPem,person,wfEndpoint= \
+        createPerson(baseDir,nickname,domain,port,httpPrefix,True,'password')
+    contentModified= \
+        addHtmlTags(baseDir,httpPrefix, \
+                    nickname,domain,content, \
+                    recipients,hashtags)
+    tags=[]
+    for tagName,tag in hashtags.items():
+        tags.append(tag)
+    content=contentModified
+    contentModified=replaceEmojiFromTags(content,tags,'content')
+    assert 'img src' in contentModified
+
+    os.chdir(baseDirOriginal)
+    shutil.rmtree(baseDirOriginal+'/.tests')
+
 def runAllTests():
     print('Running tests...')
+    testAddEmoji()
     testWebLinks()
     testActorParsing()
     testHttpsig()

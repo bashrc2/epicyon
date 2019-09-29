@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import shutil
 import datetime
 import commentjson
 
@@ -324,3 +325,14 @@ def isPublicPost(postJsonObject: {}) -> bool:
         if recipient.endswith('#Public'):
             return True
     return False
+
+def copytree(src: str, dst: str, symlinks=False, ignore=None):
+    """Copy a directory
+    """
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
