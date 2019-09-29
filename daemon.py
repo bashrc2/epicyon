@@ -2375,19 +2375,19 @@ class PubServer(BaseHTTPRequestHandler):
         # 1 = new post success
         # -1 = new post failed
         # 2 = new post canceled
-        if ' boundary=' in headers['Content-type']:
+        if ' boundary=' in headers['Content-Type']:
             nickname=None
             nicknameStr=path.split('/users/')[1]
             if '/' in nicknameStr:
                 nickname=nicknameStr.split('/')[0]
             else:
                 return -1
-            length = int(headers['Content-length'])
+            length = int(headers['Content-Length'])
             if length>self.server.maxPostLength:
                 print('POST size too large')
                 return -1
 
-            boundary=headers['Content-type'].split('boundary=')[1]
+            boundary=headers['Content-Type'].split('boundary=')[1]
             if ';' in boundary:
                 boundary=boundary.split(';')[0]
 
@@ -2669,7 +2669,7 @@ class PubServer(BaseHTTPRequestHandler):
             headers[dictEntryName]=headerLine
         print('New post headers: '+str(headers))
 
-        print('Creating new post thread')
+        print('Creating new post thread: '+newPostThreadName)
         self.server.newPostThread[newPostThreadName]= \
             threadWithTrace(target=self._receiveNewPostThread, \
                             args=(authorized,postType,path,headers),daemon=True)
