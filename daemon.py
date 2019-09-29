@@ -2370,7 +2370,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',0,None)
 
-    def _receiveNewPostThread(self,authorized: bool,postType: str,path: str,headers: []) -> int:
+    def _receiveNewPostThread(self,authorized: bool,postType: str,path: str,headers: {}) -> int:
         # 0 = this is not a new post
         # 1 = new post success
         # -1 = new post failed
@@ -2658,10 +2658,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if waitCtr>=8:
                     self.server.newPostThread[newPostThreadName].kill()
 
+            # make a copy of self.headers
+            headers={}
+            for dictEntryName,headerLine in self.headers.items():
+                headers[dictEntryName]=headerLine
+
             print('Creating new post thread')
             self.server.newPostThread[newPostThreadName]= \
                 threadWithTrace(target=self._receiveNewPostThread, \
-                                args=(authorized,postType,path,self.headers.copy()),daemon=True)
+                                args=(authorized,postType,path,headers),daemon=True)
+
             print('Starting new post thread')
             self.server.newPostThread[newPostThreadName].start()
             return True
