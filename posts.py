@@ -459,6 +459,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                     nickname,domain,content, \
                     mentionedRecipients, \
                     hashtagsDict)
+    content= \
+        replaceEmojiFromTags(content,hashtagsDict,'content')
     
     statusNumber,published = getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'

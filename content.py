@@ -11,6 +11,31 @@ import time
 import commentjson
 from shutil import copyfile
 
+def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
+    """Uses the tags to replace :emoji: with html image markup
+    """
+    for tagItem in tag:
+        if not tagItem.get('type'):
+            continue
+        if tagItem['type']!='Emoji':
+            continue
+        if not tagItem.get('name'):
+            continue
+        if not tagItem.get('icon'):
+            continue
+        if not tagItem['icon'].get('url'):
+            continue
+        if tagItem['name'] not in content:
+            continue
+        htmlClass='emoji'
+        if messageType=='post header':
+            htmlClass='emojiheader'            
+        if messageType=='profile':
+            htmlClass='emojiprofile'
+        emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
+        content=content.replace(tagItem['name'],emojiHtml)
+    return content
+
 def addMusicTag(content: str,tag: str) -> str:
     """If a music link is found then ensure that the post is tagged appropriately
     """

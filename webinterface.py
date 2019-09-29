@@ -40,6 +40,7 @@ from announce import announcedByPerson
 from blocking import isBlocked
 from content import getMentionsFromHtml
 from content import addHtmlTags
+from content import replaceEmojiFromTags
 from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
@@ -1423,31 +1424,6 @@ def contentWarningScript() -> str:
         '}\n'
     return script
 
-def htmlReplaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
-    """Uses the tags to replace :emoji: with html image markup
-    """
-    for tagItem in tag:
-        if not tagItem.get('type'):
-            continue
-        if tagItem['type']!='Emoji':
-            continue
-        if not tagItem.get('name'):
-            continue
-        if not tagItem.get('icon'):
-            continue
-        if not tagItem['icon'].get('url'):
-            continue
-        if tagItem['name'] not in content:
-            continue
-        htmlClass='emoji'
-        if messageType=='post header':
-            htmlClass='emojiheader'            
-        if messageType=='profile':
-            htmlClass='emojiprofile'
-        emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
-        content=content.replace(tagItem['name'],emojiHtml)
-    return content
-
 def addEmbeddedAudio(translate: {},content: str) -> str:
     """Adds embedded audio for mp3/ogg
     """
@@ -1632,9 +1608,9 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
         for tagName,tag in emojiTags.items():
             emojiTagsList.append(tag)
         if not inProfileName:
-            displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList,'post header')
+            displayName=replaceEmojiFromTags(displayName,emojiTagsList,'post header')
         else:
-            displayName=htmlReplaceEmojiFromTags(displayName,emojiTagsList,'profile')            
+            displayName=replaceEmojiFromTags(displayName,emojiTagsList,'profile')            
     return displayName
 
 def individualPostAsHtml(iconsDir: str,translate: {}, \
@@ -1995,7 +1971,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
-        contentStr=htmlReplaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],'content')
+        contentStr=replaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],'content')
 
     contentStr='<div class="message">'+contentStr+'</div>'
 
