@@ -967,14 +967,14 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of announce - '+handle)
     # is this post in the outbox of the person?
-    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
+    nickname=handle.split('@')[0]
+    postFilename=locatePost(baseDir,nickname,handle.split('@')[1],messageJson['object'])
     if not postFilename:
         if debug:
             print('DEBUG: announce post not found in inbox or outbox')
             print(messageJson['object'])
         return True
     updateAnnounceCollection(postFilename,messageJson['actor'],debug)
-    nickname=handle.split('@')[0]
     downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
     if debug:
         print('DEBUG: announced/repeated post found in inbox')
