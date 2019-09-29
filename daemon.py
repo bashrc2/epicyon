@@ -2370,23 +2370,23 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',0,None)
 
-    def _receiveNewPost(self,authorized: bool,postType: str) -> (int,int):
+    def _receiveNewPost(self,authorized: bool,postType: str,path: str) -> (int,int):
         # 0 = this is not a new post
         # 1 = new post success
         # -1 = new post failed
         # 2 = new post canceled
         pageNumber=1
-        if authorized and '/users/' in self.path and '?'+postType+'?' in self.path:
-            if '?page=' in self.path:
-                pageNumberStr=self.path.split('?page=')[1]
+        if authorized and '/users/' in path and '?'+postType+'?' in path:
+            if '?page=' in path:
+                pageNumberStr=path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
-                self.path=self.path.split('?page=')[0]
+                path=path.split('?page=')[0]
             if ' boundary=' in self.headers['Content-type']:
                 nickname=None
-                nicknameStr=self.path.split('/users/')[1]
+                nicknameStr=path.split('/users/')[1]
                 if '/' in nicknameStr:
                     nickname=nicknameStr.split('/')[0]
                 else:
@@ -3637,7 +3637,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        postState,pageNumber=self._receiveNewPost(authorized,'newpost')
+        postState,pageNumber=self._receiveNewPost(authorized,'newpost',self.path)
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
@@ -3645,7 +3645,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newunlisted')
+        postState,pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path)
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
@@ -3653,7 +3653,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newfollowers')
+        postState,pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path)
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
@@ -3661,7 +3661,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newdm')
+        postState,pageNumber=self._receiveNewPost(authorized,'newdm',self.path)
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
@@ -3669,7 +3669,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newreport')
+        postState,pageNumber=self._receiveNewPost(authorized,'newreport',self.path)
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
@@ -3677,7 +3677,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newshare')
+        postState,pageNumber=self._receiveNewPost(authorized,'newshare',self.path)
         if postState!=0:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
