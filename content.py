@@ -285,18 +285,18 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                         print('Loading emoji lookup')
                         if not os.path.isfile(baseDir+'/emoji/emoji.json'):
                             copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
-                            emojiDictCtr=0
-                            while not emojiDict and emojiDictCtr<4:
-                                if emojiDictCtr>0:
-                                    print('Retry emoji load '+baseDir+'/emoji/emoji.json')
-                                try:
-                                    with open(baseDir+'/emoji/emoji.json', 'r') as fp:
-                                        emojiDict=commentjson.load(fp)
-                                    break
-                                except Exception as e:
-                                    print('Failed to load emoji: '+baseDir+'/emoji/emoji.json '+e)
-                                    time.sleep(1)
-                                    emojiDictCtr+=1
+                    emojiDictCtr=0
+                    while not emojiDict and emojiDictCtr<4:
+                        if emojiDictCtr>0:
+                            print('Retry emoji load '+baseDir+'/emoji/emoji.json')
+                        try:
+                            with open(baseDir+'/emoji/emoji.json', 'r') as fp:
+                                emojiDict=commentjson.load(fp)
+                            break
+                        except Exception as e:
+                            print('Failed to load emoji: '+baseDir+'/emoji/emoji.json '+e)
+                            time.sleep(1)
+                            emojiDictCtr+=1
 
                     addEmoji(baseDir,wordStr,httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
