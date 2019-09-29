@@ -1354,9 +1354,11 @@ def individualFollowAsHtml(translate: {}, \
     if authorized:
         for b in buttons:
             if b=='block':
-                buttonsStr+='<a href="/users/'+actorNickname+'?block='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Block']+'</button></a>'
+                buttonsStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'"><button class="buttonunfollow">'+translate['Block']+'</button></a>'
+                #buttonsStr+='<a href="/users/'+actorNickname+'?block='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Block']+'</button></a>'
             if b=='unfollow':
-                buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
+                buttonsStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
+                #buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
 
     return \
         '<div class="container">\n' \
