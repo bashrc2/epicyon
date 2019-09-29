@@ -294,7 +294,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                                 emojiDict=commentjson.load(fp)
                             break
                         except Exception as e:
-                            print('Failed to load emoji: '+baseDir+'/emoji/emoji.json '+e)
+                            print('Failed to load emoji: '+baseDir+'/emoji/emoji.json '+str(e))
                             time.sleep(1)
                             emojiDictCtr+=1
 
