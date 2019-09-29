@@ -975,9 +975,11 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
             print(messageJson['object'])
         return True
     updateAnnounceCollection(postFilename,messageJson['actor'],debug)
+    if debug:
+        print('DEBUG: Downloading announce post '+messageJson['object'])
     downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
     if debug:
-        print('DEBUG: announced/repeated post found in inbox')
+        print('DEBUG: announced/repeated post arrived in inbox')
     return True
 
 def receiveUndoAnnounce(session,handle: str,baseDir: str, \
