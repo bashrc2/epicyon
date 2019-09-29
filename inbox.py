@@ -1106,6 +1106,10 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            maxReplies: int,allowDeletion: bool) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
+    actor=keyId
+    if '#' in actor:
+        actor=keyId.split('#')[0]
+
     if receiveLike(session,handle, \
                    baseDir,httpPrefix, \
                    domain,port, \
@@ -1116,7 +1120,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                    federationList, \
                    debug):
         if debug:
-            print('DEBUG: Like accepted from '+keyId)
+            print('DEBUG: Like accepted from '+actor)
         return False
 
     if receiveUndoLike(session,handle, \
@@ -1129,7 +1133,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                        federationList, \
                        debug):
         if debug:
-            print('DEBUG: Undo like accepted from '+keyId)
+            print('DEBUG: Undo like accepted from '+actor)
         return False
 
     if receiveAnnounce(session,handle, \
@@ -1142,7 +1146,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                        federationList, \
                        debug):
         if debug:
-            print('DEBUG: Announce accepted from '+keyId)
+            print('DEBUG: Announce accepted from '+actor)
 
     if receiveUndoAnnounce(session,handle, \
                            baseDir,httpPrefix, \
@@ -1154,7 +1158,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            federationList, \
                            debug):
         if debug:
-            print('DEBUG: Undo announce accepted from '+keyId)
+            print('DEBUG: Undo announce accepted from '+actor)
         return False
 
     if receiveDelete(session,handle, \
@@ -1167,7 +1171,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                      federationList, \
                      debug,allowDeletion):
         if debug:
-            print('DEBUG: Delete accepted from '+keyId)
+            print('DEBUG: Delete accepted from '+actor)
         return False
 
     populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
