@@ -2635,6 +2635,7 @@ class PubServer(BaseHTTPRequestHandler):
         """A new post has been created
         This creates a thread to send the new post
         """
+        print('_receiveNewPost '+postType+' '+path)
         pageNumber=1
         if not (authorized and '/users/' in path and '?'+postType+'?' in path):
             print('Not receiving new post for '+path)
