@@ -2370,11 +2370,271 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',0,None)
 
-    def _receiveNewPost(self,authorized: bool,postType: str,path: str) -> (int,int):
+    def _receiveNewPostThread(self,authorized: bool,postType: str,path: str,headers: []) -> int:
         # 0 = this is not a new post
         # 1 = new post success
         # -1 = new post failed
         # 2 = new post canceled
+        if ' boundary=' in headers['Content-type']:
+            nickname=None
+            nicknameStr=path.split('/users/')[1]
+            if '/' in nicknameStr:
+                nickname=nicknameStr.split('/')[0]
+            else:
+                return -1
+            length = int(headers['Content-length'])
+            if length>self.server.maxPostLength:
+                print('POST size too large')
+                return -1
+
+            boundary=headers['Content-type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary=boundary.split(';')[0]
+
+            # Note: we don't use cgi here because it's due to be deprecated
+            # in Python 3.8/3.10
+            # Instead we use the multipart mime parser from the email module
+            postBytes=self.rfile.read(length)
+            msg = email.parser.BytesParser().parsebytes(postBytes)
+            # why don't we just use msg.is_multipart(), rather than splitting?
+            # TL;DR it doesn't work for this use case because we're not using
+            # email style encoding message/rfc822
+            messageFields=msg.get_payload(decode=False).split(boundary)
+            fields={}
+            filename=None
+            attachmentMediaType=None
+            for f in messageFields:
+                if f=='--':
+                    continue
+                if ' name="' in f:
+                    postStr=f.split(' name="',1)[1]
+                    if '"' in postStr:
+                        postKey=postStr.split('"',1)[0]
+                        postValueStr=postStr.split('"',1)[1]
+                        if ';' not in postValueStr:
+                            if '\r\n' in postValueStr:
+                                postLines=postValueStr.split('\r\n')                                    
+                                postValue=''
+                                if len(postLines)>2:
+                                    for line in range(2,len(postLines)-1):
+                                        if line>2:
+                                            postValue+='\n'
+                                        postValue+=postLines[line]
+                                fields[postKey]=postValue
+                        else:
+                            # directly search the binary array for the beginning
+                            # of an image
+                            extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
+                            for extension in extensionList:
+                                searchStr=b'Content-Type: image/png'
+                                if extension=='jpeg':
+                                    searchStr=b'Content-Type: image/jpeg'
+                                elif extension=='gif':
+                                    searchStr=b'Content-Type: image/gif'
+                                elif extension=='mp4':
+                                    searchStr=b'Content-Type: video/mp4'
+                                elif extension=='ogv':
+                                    searchStr=b'Content-Type: video/ogv'
+                                elif extension=='mp3':
+                                    searchStr=b'Content-Type: audio/mpeg'
+                                elif extension=='ogg':
+                                    searchStr=b'Content-Type: audio/ogg'
+                                imageLocation=postBytes.find(searchStr)
+                                filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
+                                if imageLocation>-1:
+                                    if extension=='jpeg':
+                                        extension='jpg'
+                                    if extension=='mpeg':
+                                        extension='mp3'
+                                    filename=filenameBase+'.'+extension
+                                    attachmentMediaType=searchStr.decode().split('/')[0].replace('Content-Type: ','')
+                                    break
+                            if filename and imageLocation>-1:
+                                # locate the beginning of the image, after any
+                                # carriage returns
+                                startPos=imageLocation+len(searchStr)
+                                for offset in range(1,8):
+                                    if postBytes[startPos+offset]!=10:
+                                        if postBytes[startPos+offset]!=13:
+                                            startPos+=offset
+                                            break
+
+                                fd = open(filename, 'wb')
+                                fd.write(postBytes[startPos:])
+                                fd.close()
+                            else:
+                                filename=None
+
+            # send the post
+            if not fields.get('message') and not fields.get('imageDescription'):
+                return -1
+            if fields.get('submitPost'):
+                if fields['submitPost']!='Submit':
+                    return -1
+            else:
+                return 2
+
+            if not fields.get('imageDescription'):
+                fields['imageDescription']=None
+            if not fields.get('subject'):
+                fields['subject']=None
+            if not fields.get('replyTo'):
+                fields['replyTo']=None
+
+            if postType=='newpost':
+                messageJson= \
+                    createPublicPost(self.server.baseDir, \
+                                     nickname, \
+                                     self.server.domain,self.server.port, \
+                                     self.server.httpPrefix, \
+                                     fields['message'],False,False,False, \
+                                     filename,attachmentMediaType,fields['imageDescription'],True, \
+                                     fields['replyTo'], fields['replyTo'],fields['subject'])
+                if messageJson:
+                    self.postToNickname=nickname
+                    if self._postToOutbox(messageJson,__version__):
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domainFull, \
+                                        messageJson, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        return 1
+                    else:
+                        return -1
+
+            if postType=='newunlisted':
+                messageJson= \
+                    createUnlistedPost(self.server.baseDir, \
+                                       nickname, \
+                                       self.server.domain,self.server.port, \
+                                       self.server.httpPrefix, \
+                                       fields['message'],False,False,False, \
+                                       filename,attachmentMediaType,fields['imageDescription'],True, \
+                                       fields['replyTo'], fields['replyTo'],fields['subject'])
+                if messageJson:
+                    self.postToNickname=nickname
+                    if self._postToOutbox(messageJson,__version__):
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domain, \
+                                        messageJson, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        return 1
+                    else:
+                        return -1
+
+            if postType=='newfollowers':
+                messageJson= \
+                    createFollowersOnlyPost(self.server.baseDir, \
+                                            nickname, \
+                                            self.server.domain,self.server.port, \
+                                            self.server.httpPrefix, \
+                                            fields['message'],True,False,False, \
+                                            filename,attachmentMediaType,fields['imageDescription'],True, \
+                                            fields['replyTo'], fields['replyTo'],fields['subject'])
+                if messageJson:
+                    self.postToNickname=nickname
+                    if self._postToOutbox(messageJson,__version__):
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domain, \
+                                        messageJson, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        return 1
+                    else:
+                        return -1
+
+            if postType=='newdm':
+                messageJson=None
+                if '@' in fields['message']:
+                    messageJson= \
+                        createDirectMessagePost(self.server.baseDir, \
+                                                nickname, \
+                                                self.server.domain,self.server.port, \
+                                                self.server.httpPrefix, \
+                                                fields['message'],True,False,False, \
+                                                filename,attachmentMediaType, \
+                                                fields['imageDescription'],True, \
+                                                fields['replyTo'],fields['replyTo'], \
+                                                fields['subject'], \
+                                                self.server.debug)
+                if messageJson:
+                    self.postToNickname=nickname
+                    if self.server.debug:
+                        print('DEBUG: new DM to '+str(messageJson['object']['to']))
+                    if self._postToOutbox(messageJson,__version__):
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domain, \
+                                        messageJson, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        return 1
+                    else:
+                        return -1
+
+            if postType=='newreport':
+                if attachmentMediaType:
+                    if attachmentMediaType!='image':
+                        return -1
+                # So as to be sure that this only goes to moderators
+                # and not accounts being reported we disable any
+                # included fediverse addresses by replacing '@' with '-at-'
+                fields['message']=fields['message'].replace('@','-at-')
+                messageJson= \
+                    createReportPost(self.server.baseDir, \
+                                     nickname, \
+                                     self.server.domain,self.server.port, \
+                                     self.server.httpPrefix, \
+                                     fields['message'],True,False,False, \
+                                     filename,attachmentMediaType, \
+                                     fields['imageDescription'],True, \
+                                     self.server.debug,fields['subject'])
+                if messageJson:
+                    self.postToNickname=nickname
+                    if self._postToOutbox(messageJson,__version__):
+                        return 1
+                    else:
+                        return -1
+
+            if postType=='newshare':
+                if not fields.get('itemType'):
+                    return -1
+                if not fields.get('category'):
+                    return -1
+                if not fields.get('location'):
+                    return -1
+                if not fields.get('duration'):
+                    return -1
+                if attachmentMediaType:
+                    if attachmentMediaType!='image':
+                        return -1
+                addShare(self.server.baseDir, \
+                         self.server.httpPrefix, \
+                         nickname, \
+                         self.server.domain,self.server.port, \
+                         fields['subject'], \
+                         fields['message'], \
+                         filename, \
+                         fields['itemType'], \
+                         fields['category'], \
+                         fields['location'], \
+                         fields['duration'],
+                         self.server.debug)
+                if filename:
+                    if os.path.isfile(filename):
+                        os.remove(filename)
+                self.postToNickname=nickname
+                return 1
+        return -1
+
+    def _receiveNewPost(self,authorized: bool,postType: str,path: str) -> bool:
+        """A new post has been created
+        This creates a thread to send the new post
+        """
         pageNumber=1
         if authorized and '/users/' in path and '?'+postType+'?' in path:
             if '?page=' in path:
@@ -2383,264 +2643,29 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
-                path=path.split('?page=')[0]
-            if ' boundary=' in self.headers['Content-type']:
-                nickname=None
-                nicknameStr=path.split('/users/')[1]
-                if '/' in nicknameStr:
-                    nickname=nicknameStr.split('/')[0]
-                else:
-                    return -1,pageNumber
-                length = int(self.headers['Content-length'])
-                if length>self.server.maxPostLength:
-                    print('POST size too large')
-                    return -1,pageNumber
+                    path=path.split('?page=')[0]
 
-                boundary=self.headers['Content-type'].split('boundary=')[1]
-                if ';' in boundary:
-                    boundary=boundary.split(';')[0]
+            newPostThreadName=self.postToNickname
+            if not newPostThreadName:
+                newPostThreadName='*'
+        
+            if self.server.newPostThread.get(newPostThreadName):
+                print('Waiting for previous new post thread to end')
+                waitCtr=0
+                while self.server.newPostThread[newPostThreadName].isAlive() and waitCtr<8:
+                    time.sleep(1)
+                    waitCtr+=1
+                if waitCtr>=8:
+                    self.server.newPostThread[newPostThreadName].kill()
 
-                # Note: we don't use cgi here because it's due to be deprecated
-                # in Python 3.8/3.10
-                # Instead we use the multipart mime parser from the email module
-                postBytes=self.rfile.read(length)
-                msg = email.parser.BytesParser().parsebytes(postBytes)
-                # why don't we just use msg.is_multipart(), rather than splitting?
-                # TL;DR it doesn't work for this use case because we're not using
-                # email style encoding message/rfc822
-                messageFields=msg.get_payload(decode=False).split(boundary)
-                fields={}
-                filename=None
-                attachmentMediaType=None
-                for f in messageFields:
-                    if f=='--':
-                        continue
-                    if ' name="' in f:
-                        postStr=f.split(' name="',1)[1]
-                        if '"' in postStr:
-                            postKey=postStr.split('"',1)[0]
-                            postValueStr=postStr.split('"',1)[1]
-                            if ';' not in postValueStr:
-                                if '\r\n' in postValueStr:
-                                    postLines=postValueStr.split('\r\n')                                    
-                                    postValue=''
-                                    if len(postLines)>2:
-                                        for line in range(2,len(postLines)-1):
-                                            if line>2:
-                                                postValue+='\n'
-                                            postValue+=postLines[line]
-                                    fields[postKey]=postValue
-                            else:
-                                # directly search the binary array for the beginning
-                                # of an image
-                                extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
-                                for extension in extensionList:
-                                    searchStr=b'Content-Type: image/png'
-                                    if extension=='jpeg':
-                                        searchStr=b'Content-Type: image/jpeg'
-                                    elif extension=='gif':
-                                        searchStr=b'Content-Type: image/gif'
-                                    elif extension=='mp4':
-                                        searchStr=b'Content-Type: video/mp4'
-                                    elif extension=='ogv':
-                                        searchStr=b'Content-Type: video/ogv'
-                                    elif extension=='mp3':
-                                        searchStr=b'Content-Type: audio/mpeg'
-                                    elif extension=='ogg':
-                                        searchStr=b'Content-Type: audio/ogg'
-                                    imageLocation=postBytes.find(searchStr)
-                                    filenameBase=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/upload'
-                                    if imageLocation>-1:
-                                        if extension=='jpeg':
-                                            extension='jpg'
-                                        if extension=='mpeg':
-                                            extension='mp3'
-                                        filename=filenameBase+'.'+extension
-                                        attachmentMediaType=searchStr.decode().split('/')[0].replace('Content-Type: ','')
-                                        break
-                                if filename and imageLocation>-1:
-                                    # locate the beginning of the image, after any
-                                    # carriage returns
-                                    startPos=imageLocation+len(searchStr)
-                                    for offset in range(1,8):
-                                        if postBytes[startPos+offset]!=10:
-                                            if postBytes[startPos+offset]!=13:
-                                                startPos+=offset
-                                                break
-
-                                    fd = open(filename, 'wb')
-                                    fd.write(postBytes[startPos:])
-                                    fd.close()
-                                else:
-                                    filename=None
-
-                # send the post
-                if not fields.get('message') and not fields.get('imageDescription'):
-                    return -1,pageNumber
-                if fields.get('submitPost'):
-                    if fields['submitPost']!='Submit':
-                        return -1,pageNumber
-                else:
-                    return 2,pageNumber
-
-                if not fields.get('imageDescription'):
-                    fields['imageDescription']=None
-                if not fields.get('subject'):
-                    fields['subject']=None
-                if not fields.get('replyTo'):
-                    fields['replyTo']=None
-
-                if postType=='newpost':
-                    messageJson= \
-                        createPublicPost(self.server.baseDir, \
-                                         nickname, \
-                                         self.server.domain,self.server.port, \
-                                         self.server.httpPrefix, \
-                                         fields['message'],False,False,False, \
-                                         filename,attachmentMediaType,fields['imageDescription'],True, \
-                                         fields['replyTo'], fields['replyTo'],fields['subject'])
-                    if messageJson:
-                        self.postToNickname=nickname
-                        if self._postToOutbox(messageJson,__version__):
-                            populateReplies(self.server.baseDir, \
-                                            self.server.httpPrefix, \
-                                            self.server.domainFull, \
-                                            messageJson, \
-                                            self.server.maxReplies, \
-                                            self.server.debug)
-                            return 1,pageNumber
-                        else:
-                            return -1,pageNumber
-
-                if postType=='newunlisted':
-                    messageJson= \
-                        createUnlistedPost(self.server.baseDir, \
-                                           nickname, \
-                                           self.server.domain,self.server.port, \
-                                           self.server.httpPrefix, \
-                                           fields['message'],False,False,False, \
-                                           filename,attachmentMediaType,fields['imageDescription'],True, \
-                                           fields['replyTo'], fields['replyTo'],fields['subject'])
-                    if messageJson:
-                        self.postToNickname=nickname
-                        if self._postToOutbox(messageJson,__version__):
-                            populateReplies(self.server.baseDir, \
-                                            self.server.httpPrefix, \
-                                            self.server.domain, \
-                                            messageJson, \
-                                            self.server.maxReplies, \
-                                            self.server.debug)
-                            return 1,pageNumber
-                        else:
-                            return -1,pageNumber
-
-                if postType=='newfollowers':
-                    messageJson= \
-                        createFollowersOnlyPost(self.server.baseDir, \
-                                                nickname, \
-                                                self.server.domain,self.server.port, \
-                                                self.server.httpPrefix, \
-                                                fields['message'],True,False,False, \
-                                                filename,attachmentMediaType,fields['imageDescription'],True, \
-                                                fields['replyTo'], fields['replyTo'],fields['subject'])
-                    if messageJson:
-                        self.postToNickname=nickname
-                        if self._postToOutbox(messageJson,__version__):
-                            populateReplies(self.server.baseDir, \
-                                            self.server.httpPrefix, \
-                                            self.server.domain, \
-                                            messageJson, \
-                                            self.server.maxReplies, \
-                                            self.server.debug)
-                            return 1,pageNumber
-                        else:
-                            return -1,pageNumber
-
-                if postType=='newdm':
-                    messageJson=None
-                    if '@' in fields['message']:
-                        messageJson= \
-                            createDirectMessagePost(self.server.baseDir, \
-                                                    nickname, \
-                                                    self.server.domain,self.server.port, \
-                                                    self.server.httpPrefix, \
-                                                    fields['message'],True,False,False, \
-                                                    filename,attachmentMediaType, \
-                                                    fields['imageDescription'],True, \
-                                                    fields['replyTo'],fields['replyTo'], \
-                                                    fields['subject'], \
-                                                    self.server.debug)
-                    if messageJson:
-                        self.postToNickname=nickname
-                        if self.server.debug:
-                            print('DEBUG: new DM to '+str(messageJson['object']['to']))
-                        if self._postToOutbox(messageJson,__version__):
-                            populateReplies(self.server.baseDir, \
-                                            self.server.httpPrefix, \
-                                            self.server.domain, \
-                                            messageJson, \
-                                            self.server.maxReplies, \
-                                            self.server.debug)
-                            return 1,pageNumber
-                        else:
-                            return -1,pageNumber
-
-                if postType=='newreport':
-                    if attachmentMediaType:
-                        if attachmentMediaType!='image':
-                            return -1,pageNumber
-                    # So as to be sure that this only goes to moderators
-                    # and not accounts being reported we disable any
-                    # included fediverse addresses by replacing '@' with '-at-'
-                    fields['message']=fields['message'].replace('@','-at-')
-                    messageJson= \
-                        createReportPost(self.server.baseDir, \
-                                         nickname, \
-                                         self.server.domain,self.server.port, \
-                                         self.server.httpPrefix, \
-                                         fields['message'],True,False,False, \
-                                         filename,attachmentMediaType, \
-                                         fields['imageDescription'],True, \
-                                         self.server.debug,fields['subject'])
-                    if messageJson:
-                        self.postToNickname=nickname
-                        if self._postToOutbox(messageJson,__version__):
-                            return 1,pageNumber
-                        else:
-                            return -1,pageNumber
-
-                if postType=='newshare':
-                    if not fields.get('itemType'):
-                        return -1,pageNumber
-                    if not fields.get('category'):
-                        return -1,pageNumber
-                    if not fields.get('location'):
-                        return -1,pageNumber
-                    if not fields.get('duration'):
-                        return -1,pageNumber
-                    if attachmentMediaType:
-                        if attachmentMediaType!='image':
-                            return -1,pageNumber
-                    addShare(self.server.baseDir, \
-                             self.server.httpPrefix, \
-                             nickname, \
-                             self.server.domain,self.server.port, \
-                             fields['subject'], \
-                             fields['message'], \
-                             filename, \
-                             fields['itemType'], \
-                             fields['category'], \
-                             fields['location'], \
-                             fields['duration'],
-                             self.server.debug)
-                    if filename:
-                        if os.path.isfile(filename):
-                            os.remove(filename)
-                    self.postToNickname=nickname
-                    return 1,pageNumber
-            return -1,pageNumber
-        else:
-            return 0,pageNumber
+            print('Creating new post thread')
+            self.server.newPostThread[newPostThreadName]= \
+                threadWithTrace(target=self._receiveNewPostThread, \
+                                args=(authorized,postType,path,self.headers.copy()),daemon=True)
+            print('Starting new post thread')
+            self.server.newPostThread[newPostThreadName].start()
+            return True
+        return False
         
     def do_POST(self):
         if not self.server.session:
@@ -3637,48 +3662,42 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        postState,pageNumber=self._receiveNewPost(authorized,'newpost',self.path)
-        if postState!=0:
+        if self._receiveNewPost(authorized,'newpost',self.path):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path)
-        if postState!=0:
+        if self._receiveNewPost(authorized,'newunlisted',self.path):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path)
-        if postState!=0:
+        if self._receiveNewPost(authorized,'newfollowers',self.path):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newdm',self.path)
-        if postState!=0:
+        if self._receiveNewPost(authorized,'newdm',self.path):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newreport',self.path)
-        if postState!=0:
+        if self._receiveNewPost(authorized,'newreport',self.path):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        postState,pageNumber=self._receiveNewPost(authorized,'newshare',self.path)
-        if postState!=0:
+        if self._receiveNewPost(authorized,'newshare',self.path):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
@@ -3948,6 +3967,7 @@ def runDaemon(projectVersion, \
             print(e)
 
     httpd.outboxThread={}
+    httpd.newPostThread={}
     httpd.projectVersion=projectVersion
     httpd.authenticatedFetch=authenticatedFetch
     # max POST size of 30M
