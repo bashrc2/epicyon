@@ -41,6 +41,7 @@ from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
 from content import addHtmlTags
+from content import replaceEmojiFromTags
 from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
