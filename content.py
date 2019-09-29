@@ -11,14 +11,35 @@ import time
 import commentjson
 from shutil import copyfile
 
-def replaceEmojiFromTags(content: str,tag,messageType: str) -> str:
+def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
-    tagList=tag
-    if isinstance(tag, dict):
-        tagList=tag.items()
-        
-    for tagItem in tagList:
+    for tagItem in tag:
+        if not tagItem.get('type'):
+            continue
+        if tagItem['type']!='Emoji':
+            continue
+        if not tagItem.get('name'):
+            continue
+        if not tagItem.get('icon'):
+            continue
+        if not tagItem['icon'].get('url'):
+            continue
+        if tagItem['name'] not in content:
+            continue
+        htmlClass='emoji'
+        if messageType=='post header':
+            htmlClass='emojiheader'            
+        if messageType=='profile':
+            htmlClass='emojiprofile'
+        emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
+        content=content.replace(tagItem['name'],emojiHtml)
+    return content
+
+def replaceEmojiFromTagsDict(content: str,tag: {},messageType: str) -> str:
+    """Uses the tags dictionary to replace :emoji: with html image markup
+    """
+    for tagName,tagItem in tag.items():
         if not tagItem.get('type'):
             continue
         if tagItem['type']!='Emoji':
