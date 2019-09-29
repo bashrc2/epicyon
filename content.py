@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import time
 import commentjson
 from shutil import copyfile
 
@@ -259,8 +260,18 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                         print('Loading emoji lookup')
                         if not os.path.isfile(baseDir+'/emoji/emoji.json'):
                             copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
-                        with open(baseDir+'/emoji/emoji.json', 'r') as fp:
-                            emojiDict=commentjson.load(fp)
+                            emojiDictCtr=0
+                            while not emojiDict and emojiDictCtr<4:
+                                if emojiDictCtr>0:
+                                    print('Retry emoji load '+baseDir+'/emoji/emoji.json')
+                                try:
+                                    with open(baseDir+'/emoji/emoji.json', 'r') as fp:
+                                        emojiDict=commentjson.load(fp)
+                                    break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    emojiDictCtr+=1
 
         addEmoji(baseDir,wordStr,httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
