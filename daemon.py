@@ -2631,7 +2631,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return 1
         return -1
 
-    def _receiveNewPost(self,authorized: bool,postType: str,path: str) -> bool:
+    def _receiveNewPost(self,authorized: bool,postType: str,path: str) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
@@ -2670,8 +2670,8 @@ class PubServer(BaseHTTPRequestHandler):
 
             print('Starting new post thread')
             self.server.newPostThread[newPostThreadName].start()
-            return True
-        return False
+            return pageNumber
+        return None
         
     def do_POST(self):
         if not self.server.session:
@@ -3668,42 +3668,48 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
-        if self._receiveNewPost(authorized,'newpost',self.path):
+        pageNumber=self._receiveNewPost(authorized,'newpost',self.path):
+        if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        if self._receiveNewPost(authorized,'newunlisted',self.path):
+        pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path):
+        if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        if self._receiveNewPost(authorized,'newfollowers',self.path):
+        pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path):
+        if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        if self._receiveNewPost(authorized,'newdm',self.path):
+        pageNumber=self._receiveNewPost(authorized,'newdm',self.path):
+        if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        if self._receiveNewPost(authorized,'newreport',self.path):
+        pageNumber=self._receiveNewPost(authorized,'newreport',self.path):
+        if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
             self._redirect_headers('/users/'+nickname+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
-        if self._receiveNewPost(authorized,'newshare',self.path):
+        pageNumber=self._receiveNewPost(authorized,'newshare',self.path):
+        if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
