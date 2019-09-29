@@ -2636,42 +2636,45 @@ class PubServer(BaseHTTPRequestHandler):
         This creates a thread to send the new post
         """
         pageNumber=1
-        if authorized and '/users/' in path and '?'+postType+'?' in path:
-            if '?page=' in path:
-                pageNumberStr=path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr=pageNumberStr.split('?')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber=int(pageNumberStr)
-                    path=path.split('?page=')[0]
+        if not (authorized and '/users/' in path and '?'+postType+'?' in path):
+            print('Not receiving new post for '+path)
+            return None
 
-            newPostThreadName=self.postToNickname
-            if not newPostThreadName:
-                newPostThreadName='*'
+        if '?page=' in path:
+            pageNumberStr=path.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr=pageNumberStr.split('?')[0]
+            if pageNumberStr.isdigit():
+                pageNumber=int(pageNumberStr)
+                path=path.split('?page=')[0]
+
+        newPostThreadName=self.postToNickname
+        if not newPostThreadName:
+            newPostThreadName='*'
         
-            if self.server.newPostThread.get(newPostThreadName):
-                print('Waiting for previous new post thread to end')
-                waitCtr=0
-                while self.server.newPostThread[newPostThreadName].isAlive() and waitCtr<8:
-                    time.sleep(1)
-                    waitCtr+=1
-                if waitCtr>=8:
-                    self.server.newPostThread[newPostThreadName].kill()
+        if self.server.newPostThread.get(newPostThreadName):
+            print('Waiting for previous new post thread to end')
+            waitCtr=0
+            while self.server.newPostThread[newPostThreadName].isAlive() and waitCtr<8:
+                time.sleep(1)
+                waitCtr+=1
+            if waitCtr>=8:
+                self.server.newPostThread[newPostThreadName].kill()
 
-            # make a copy of self.headers
-            headers={}
-            for dictEntryName,headerLine in self.headers.items():
-                headers[dictEntryName]=headerLine
+        # make a copy of self.headers
+        headers={}
+        for dictEntryName,headerLine in self.headers.items():
+            headers[dictEntryName]=headerLine
+        print('New post headers: '+str(headers))
 
-            print('Creating new post thread')
-            self.server.newPostThread[newPostThreadName]= \
-                threadWithTrace(target=self._receiveNewPostThread, \
-                                args=(authorized,postType,path,headers),daemon=True)
+        print('Creating new post thread')
+        self.server.newPostThread[newPostThreadName]= \
+            threadWithTrace(target=self._receiveNewPostThread, \
+                            args=(authorized,postType,path,headers),daemon=True)
 
-            print('Starting new post thread')
-            self.server.newPostThread[newPostThreadName].start()
-            return pageNumber
-        return None
+        print('Starting new post thread')
+        self.server.newPostThread[newPostThreadName].start()
+        return pageNumber
         
     def do_POST(self):
         if not self.server.session:
