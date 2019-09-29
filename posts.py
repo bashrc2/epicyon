@@ -461,6 +461,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                     nickname,domain,content, \
                     mentionedRecipients, \
                     hashtagsDict)
+    print('Content tagging stage 1: '+content)
     
     statusNumber,published = getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'
@@ -501,7 +502,9 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             tags.append(tag)
             if isPublic:
                 updateHashtagsIndex(baseDir,tag,newPostId)
+        print('Content tags: '+str(tags))
         content=replaceEmojiFromTags(content,tags,'content')
+        print('Content tagging stage 2: '+content)
                 
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname

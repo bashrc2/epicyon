@@ -1599,18 +1599,22 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
     if ':' in displayName:
         displayName=displayName.replace('<p>','').replace('</p>','')
         emojiTags={}
+        print('TAG: displayName before tags: '+displayName)
         displayName= \
             addHtmlTags(baseDir,httpPrefix, \
                         nickname,domain,displayName,[],emojiTags)
         displayName=displayName.replace('<p>','').replace('</p>','')
+        print('TAG: displayName after tags: '+displayName)
         # convert the emoji dictionary to a list
         emojiTagsList=[]
         for tagName,tag in emojiTags.items():
             emojiTagsList.append(tag)
+        print('TAG: emoji tags list: '+str(emojiTagsList))
         if not inProfileName:
             displayName=replaceEmojiFromTags(displayName,emojiTagsList,'post header')
         else:
             displayName=replaceEmojiFromTags(displayName,emojiTagsList,'profile')            
+        print('TAG: displayName after tag replacements: '+displayName)
     return displayName
 
 def individualPostAsHtml(iconsDir: str,translate: {}, \
