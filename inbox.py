@@ -43,6 +43,7 @@ from filters import isFiltered
 from announce import updateAnnounceCollection
 from httpsig import messageContentDigest
 from blocking import isBlockedDomain
+from posts import downloadAnnounce
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -922,6 +923,10 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
     """
     if messageJson['type']!='Announce':
         return False
+    if '@' not in handle:
+        if debug:
+            print('DEBUG: bad handle '+handle)
+        return False        
     if not messageJson.get('actor'):
         if debug:
             print('DEBUG: '+messageJson['type']+' has no actor')
@@ -969,6 +974,8 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
             print(messageJson['object'])
         return True
     updateAnnounceCollection(postFilename,messageJson['actor'],debug)
+    nickname=handle.split('@')[0]
+    downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
     if debug:
         print('DEBUG: announced/repeated post found in inbox')
     return True
