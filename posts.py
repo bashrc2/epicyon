@@ -41,7 +41,7 @@ from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
 from content import addHtmlTags
-from content import replaceEmojiFromTagsDict
+from content import replaceEmojiFromTags
 from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
@@ -455,12 +455,12 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 domain=domain+':'+str(port)
 
     # convert content to html
+    emojisDict={}
     content= \
         addHtmlTags(baseDir,httpPrefix, \
                     nickname,domain,content, \
                     mentionedRecipients, \
                     hashtagsDict)
-    content=replaceEmojiFromTagsDict(content,hashtagsDict,'content')
     
     statusNumber,published = getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'
@@ -501,7 +501,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             tags.append(tag)
             if isPublic:
                 updateHashtagsIndex(baseDir,tag,newPostId)
-
+        content=replaceEmojiFromTags(content,tags,'content')
+                
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
 
