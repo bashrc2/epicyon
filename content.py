@@ -11,10 +11,14 @@ import time
 import commentjson
 from shutil import copyfile
 
-def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
+def replaceEmojiFromTags(content: str,tag,messageType: str) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
-    for tagItem in tag:
+    tagList=tag
+    if isinstance(tag, dict):
+        tagList=tag.items()
+        
+    for tagItem in tagList:
         if not tagItem.get('type'):
             continue
         if tagItem['type']!='Emoji':
