@@ -1155,6 +1155,18 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
     print('ACCEPT: post content is valid')
     return True
 
+def obtainReplyToAvatar(baseDir: str,personCache: {},postJsonObject: {}) -> None:
+    """Tries to obtain the actor for the person being replied to
+    so that their avatar can later be shown
+    """
+    lookupActor=None
+    if postJsonObject.get('object'):
+        if isinstance(postJsonObject['object'], dict):
+            if postJsonObject['object'].get('inReplyTo'):
+                    lookupActor=postJsonObject['object']['inReplyTo']
+        if lookupActor:
+            getPersonFromCache(baseDir,lookupActor,personCache)
+
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1245,10 +1257,12 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     
     if messageJson.get('postNickname'):
         if validPostContent(messageJson['post'],maxMentions):
+            obtainReplyToAvatar(baseDir,personCache,messageJson['post'])
             with open(destinationFilename, 'w+') as fp:
                 commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
     else:
         if validPostContent(messageJson,maxMentions):
+            obtainReplyToAvatar(baseDir,personCache,messageJson)
             with open(destinationFilename, 'w+') as fp:
                 commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
 
