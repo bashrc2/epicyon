@@ -1128,12 +1128,16 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
             return False
     # check (rough) number of mentions
     if estimateNumberOfMentions(messageJson['object']['content'])>maxMentions:
+        if messageJson['object'].get('id'):
+            print('REJECT: '+messageJson['object']['id'])
         print('REJECT: Too many mentions in post - '+messageJson['object']['content'])
         return False
     # check number of tags
     if messageJson['object'].get('tag'):
         if isinstance(messageJson['object']['tag'], list):
             if len(messageJson['object']['tag'])>maxMentions*2:
+                if messageJson['object'].get('id'):
+                    print('REJECT: '+messageJson['object']['id'])
                 print('REJECT: Too many tags in post - '+messageJson['object']['tag'])
                 return False
     print('ACCEPT: post content is valid')
