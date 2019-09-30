@@ -2129,6 +2129,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
                 avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
+                itemCtr+=1
                 currTlStr= \
                     individualPostAsHtml(iconsDir,translate,pageNumber, \
                                          baseDir,session,wfRequest,personCache, \
@@ -2141,7 +2142,6 @@ def htmlTimeline(translate: {},pageNumber: int, \
                     
                 if currTlStr:
                     tlStr+=currTlStr
-                    itemCtr+=1
         if boxName=='tlmedia':
             tlStr+='</div>\n'
 
