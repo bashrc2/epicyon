@@ -1644,7 +1644,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     galleryStr=''
     isAnnounced=False
     if postJsonObject['type']=='Announce':
-        postJsonAnnounce=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject,projectVersion)
+        postJsonAnnounce= \
+            downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject,projectVersion)
         if not postJsonAnnounce:
             return ''
         postJsonObject=postJsonAnnounce
@@ -1796,8 +1797,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     '<div class="gallery">\n' \
                                     '  <a href="'+messageId+'">\n' \
                                     '    <img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
-                                    '  </a>\n'
-                                galleryStr+='</div>\n'
+                                    '  </a>\n</div>\n'
                             attachmentStr+= \
                                 '<a href="'+attach['url']+'">' \
                                 '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
@@ -2126,19 +2126,24 @@ def htmlTimeline(translate: {},pageNumber: int, \
             if pageNumber>1:
                 tlStr+='<br>'
             tlStr+='<div class="galleryContainer">\n'
+        prevStr=''
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
                 itemCtr+=1
                 avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
-                tlStr+= \
-                    individualPostAsHtml(iconsDir,translate,pageNumber, \
-                                         baseDir,session,wfRequest,personCache, \
-                                         nickname,domain,port,item,avatarUrl,True, \
-                                         allowDeletion, \
-                                         httpPrefix,projectVersion,boxName, \
-                                         boxName!='dm', \
-                                         showIndividualPostIcons, \
-                                         manuallyApproveFollowers,False)
+                currTlStr= \
+                        individualPostAsHtml(iconsDir,translate,pageNumber, \
+                                             baseDir,session,wfRequest,personCache, \
+                                             nickname,domain,port,item,avatarUrl,True, \
+                                             allowDeletion, \
+                                             httpPrefix,projectVersion,boxName, \
+                                             boxName!='dm', \
+                                             showIndividualPostIcons, \
+                                             manuallyApproveFollowers,False)
+                # avoid repeated posts
+                if currTlStr!=prevStr:
+                    tlStr+=currTlStr
+                    prevStr=currTlStr
         if boxName=='tlmedia':
             tlStr+='</div>\n'
 
