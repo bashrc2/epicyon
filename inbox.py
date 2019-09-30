@@ -1134,8 +1134,10 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
         return False
     # check number of tags
     if messageJson['object'].get('tag'):
-        if isinstance(messageJson['object']['tag'], list):
-            if len(messageJson['object']['tag'])>maxMentions*2:
+        if not isinstance(messageJson['object']['tag'], list):
+            messageJson['object']['tag']=[]
+        else:
+            if len(messageJson['object']['tag']) > maxMentions*2:
                 if messageJson['object'].get('id'):
                     print('REJECT: '+messageJson['object']['id'])
                 print('REJECT: Too many tags in post - '+messageJson['object']['tag'])
