@@ -29,8 +29,11 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """
     createConfig(baseDir)
     configFilename=baseDir+'/config.json'
-    with open(configFilename, 'r') as fp:
-        configJson=commentjson.load(fp)
+    try:
+        with open(configFilename, 'r') as fp:
+            configJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
     configJson[variableName]=variableValue
     try:
         with open(configFilename, 'w') as fp:

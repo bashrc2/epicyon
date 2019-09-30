@@ -452,6 +452,7 @@ def testPostMessageBetweenServers():
     with open(outboxPostFilename, 'r') as fp:
         alicePostJson=commentjson.load(fp)
         pprint(alicePostJson)
+            
     assert 'likes' in open(outboxPostFilename).read()
 
     print('\n\n*******************************************************')

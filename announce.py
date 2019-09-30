@@ -67,8 +67,14 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
     collection within a post. Note that the "shares" collection has no relation
     to shared items in shares.py. It's shares of posts, not shares of physical objects.
     """
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+    postJsonObject=None
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if postJsonObject:
         if not postJsonObject.get('type'):
             return
         if postJsonObject['type']!='Create':
@@ -103,16 +109,24 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
                 del postJsonObject['object']['shares']
             else:
                 postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
-            with open(postFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
+            try:
+                with open(postFilename, 'w') as fp:
+                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
+            except Exception as e:
+                print(e)
 
 def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+    postJsonObject=None
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+    if postJsonObject:
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
@@ -154,8 +168,11 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
         if debug:
             print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
-        with open(postFilename, 'w') as fp:
-            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+        try:
+            with open(postFilename, 'w') as fp:
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
 def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is announced by the given person
@@ -218,8 +235,11 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     if saveToFile:
         outboxDir = createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newAnnounceId.replace('/','#')+'.json'
-        with open(filename, 'w') as fp:
-            commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
     announceNickname=None
     announceDomain=None

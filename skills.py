@@ -26,27 +26,47 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+
+    actorJson=None
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if actorJson:
         if not actorJson.get('skills'):
             actorJson['skills']={}
         if skillLevelPercent>0:
             actorJson['skills'][skill]=skillLevelPercent
         else:
             del actorJson['skills'][skill]
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+        try:
+            with open(actorFilename, 'w') as fp:
+                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+        except Exception as e:
+            print(e)
     return True
 
 def setSkills(baseDir: str,nickname: str,domain: str,skills: {}) -> None:
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+
+    actorJson=None
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if actorJson:
         actorJson['skills']=skills
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+        try:
+            with open(actorFilename, 'w') as fp:
+                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)    
 
 def getSkills(baseDir: str,nickname: str,domain: str) -> []:
     """Returns the skills for a given person
@@ -54,8 +74,15 @@ def getSkills(baseDir: str,nickname: str,domain: str) -> []:
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+
+    actorJson=None
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if actorJson:
         if not actorJson.get('skills'):
             return None
         return actorJson['skills']

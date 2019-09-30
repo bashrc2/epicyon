@@ -26,8 +26,11 @@ def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {
     if os.path.isdir(baseDir+'/cache/actors'):
         cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if not os.path.isfile(cacheFilename):
-            with open(cacheFilename, 'w') as fp:
-                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+            try:
+                with open(cacheFilename, 'w') as fp:
+                    commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+            except Exception as e:
+                print(e)
 
 def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
     """Get an actor from the cache

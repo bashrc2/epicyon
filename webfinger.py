@@ -91,13 +91,19 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
     if not os.path.isdir(baseDir+wfSubdir):
         os.mkdir(baseDir+wfSubdir)
     filename=baseDir+wfSubdir+'/'+handle.lower()+'.json'
-    with open(filename, 'w') as fp:
-        commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+    try:
+        with open(filename, 'w') as fp:
+            commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
     if nickname=='inbox':
         handle=originalDomain+'@'+domain
         filename=baseDir+wfSubdir+'/'+handle.lower()+'.json'
-        with open(filename, 'w') as fp:
-            commentjson.dump(wfJson, fp, indent=4, sort_keys=False)        
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(wfJson, fp, indent=4, sort_keys=False)        
+        except Exception as e:
+            print(e)
     return True
 
 def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
@@ -216,6 +222,9 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
             print('DEBUG: WEBFINGER filename not found '+filename)
         return None
     wfJson={"nickname": "unknown"}
-    with open(filename, 'r') as fp:
-        wfJson=commentjson.load(fp)
+    try:
+        with open(filename, 'r') as fp:
+            wfJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
     return wfJson

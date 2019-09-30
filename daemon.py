@@ -3014,13 +3014,19 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(allowedInstancesFilename)
                         # save actor json file within accounts
                         if actorChanged:
-                            with open(actorFilename, 'w') as fp:
-                                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                            try:
+                                with open(actorFilename, 'w') as fp:
+                                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                            except Exception as e:
+                                print(e)
                             # also copy to the actors cache and personCache in memory
                             storePersonInCache(self.server.baseDir,actorJson['id'],actorJson,self.server.personCache)
                             actorCacheFilename=self.server.baseDir+'/cache/actors/'+actorJson['id'].replace('/','#')+'.json'
-                            with open(actorCacheFilename, 'w') as fp:
-                                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)                            
+                            try:
+                                with open(actorCacheFilename, 'w') as fp:
+                                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)                            
+                            except Exception as e:
+                                print(e)
                             # send actor update to followers
                             updateActorJson={
                                 'type': 'Update',

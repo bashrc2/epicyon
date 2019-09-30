@@ -319,8 +319,13 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
         domainToFollow=domainToFollow.split(':')[0]
     actorFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'.json'
     if os.path.isfile(actorFilename):
-        with open(actorFilename, 'r') as fp:
-            actor=commentjson.load(fp)
+        actor=None
+        try:
+            with open(actorFilename, 'r') as fp:
+                actor=commentjson.load(fp)
+        except Exception as e:
+            print(e)
+        if actor:
             if actor.get('manuallyApprovesFollowers'):
                 manuallyApproveFollows=actor['manuallyApprovesFollowers']
             else:
@@ -384,9 +389,12 @@ def storeFollowRequest(baseDir: str, \
     if not os.path.isdir(requestsDir):
         os.mkdir(requestsDir)
     followActivityfilename=requestsDir+'/'+approveHandle+'.follow'
-    with open(followActivityfilename, 'w') as fp:
-        commentjson.dump(followJson, fp, indent=4, sort_keys=False)
-        return True
+    try:
+        with open(followActivityfilename, 'w') as fp:
+            commentjson.dump(followJson, fp, indent=4, sort_keys=False)
+            return True
+    except Exception as e:
+        print(e)
     return False
 
 def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
@@ -828,9 +836,14 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
                         ocapFilename=baseDir+'/accounts/'+account+'/ocap/accept/'+httpPrefix+':##'+domain+':'+str(port)+'#users#'+nickname+'.json'
                         if debug:
                             print('DEBUG: checking capabilities of'+account)
-                        if os.path.isfile(ocapFilename):                        
-                            with open(ocapFilename, 'r') as fp:
-                                ocapJson=commentjson.load(fp)
+                        if os.path.isfile(ocapFilename):
+                            ocapJson=None
+                            try:
+                                with open(ocapFilename, 'r') as fp:
+                                    ocapJson=commentjson.load(fp)
+                            except Exception as e:
+                                print(e)
+                            if ocapJson:
                                 if ocapJson.get('id'):
                                     if debug:
                                         print('DEBUG: capabilities id found for '+account)

@@ -127,8 +127,11 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
 
     # if the capability already exists then load it from file
     if os.path.isfile(ocapFilename):
-        with open(ocapFilename, 'r') as fp:
-            ocapAccept=commentjson.load(fp)
+        try:
+            with open(ocapFilename, 'r') as fp:
+                ocapAccept=commentjson.load(fp)
+        except Exception as e:
+            print(e)
     # otherwise create a new capability    
     if not ocapAccept:
         acceptedActorNickname=getNicknameFromActor(acceptedActor)
@@ -152,8 +155,11 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             ocapAccept['actor']=httpPrefix+"://"+fullDomain+'/users/'+nickname
 
     if saveToFile:
-        with open(ocapFilename, 'w') as fp:
-            commentjson.dump(ocapAccept, fp, indent=4, sort_keys=False)
+        try:
+            with open(ocapFilename, 'w') as fp:
+                commentjson.dump(ocapAccept, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
     return ocapAccept
 
 def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> bool:
@@ -165,8 +171,11 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     ocapFilename=getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
     if not ocapFilename:
         return False
-    with open(ocapFilename, 'w') as fp:
-        commentjson.dump(ocap, fp, indent=4, sort_keys=False)
+    try:
+        with open(ocapFilename, 'w') as fp:
+            commentjson.dump(ocap, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
     return True
 
 def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
@@ -208,8 +217,11 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
     }
 
     # read the existing capability
-    with open(ocapFilename, 'r') as fp:
-        ocapJson=commentjson.load(fp)
+    try:
+        with open(ocapFilename, 'r') as fp:
+            ocapJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
 
     # set the new capabilities list. eg. ["inbox:write","objects:read"]
     ocapJson['capability']=updateCaps
@@ -228,9 +240,12 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
     ocapUpdate['object']=ocapJson
 
     # save it again
-    with open(ocapFilename, 'w') as fp:
-        commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
-    
+    try:
+        with open(ocapFilename, 'w') as fp:
+            commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
+
     return ocapUpdate
 
 def capabilitiesReceiveUpdate(baseDir :str, \
@@ -251,12 +266,21 @@ def capabilitiesReceiveUpdate(baseDir :str, \
             print(ocapFilename)
         return False
 
-    with open(ocapFilename, 'r') as fp:
-        ocapJson=commentjson.load(fp)
+    ocapJson=None
+    try:
+        with open(ocapFilename, 'r') as fp:
+            ocapJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if ocapJson:
         ocapJson['id']=newCapabilitiesId
         ocapJson['capability']=capabilityList
-    
-        with open(ocapFilename, 'w') as fp:
-            commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
-            return True
+
+        try:
+            with open(ocapFilename, 'w') as fp:
+                commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
+                return True
+        except Exception as e:
+            print(e)
     return False

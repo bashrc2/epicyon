@@ -229,9 +229,14 @@ def removeModerationPostFromIndex(baseDir: str,postUrl: str,debug: bool) -> None
 def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool):
     """Recursively deletes a post and its replies and attachments
     """
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+    postJsonObject=None
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+    except Exception as e:
+        print(e)
 
+    if postJsonObject:
         # remove any attachment
         removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
         

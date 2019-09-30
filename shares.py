@@ -25,9 +25,12 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
     """Removes a share for a person
     """
     sharesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
-    if os.path.isfile(sharesFilename):    
-        with open(sharesFilename, 'r') as fp:
-            sharesJson=commentjson.load(fp)
+    if os.path.isfile(sharesFilename):
+        try:
+            with open(sharesFilename, 'r') as fp:
+                sharesJson=commentjson.load(fp)
+        except Exception as e:
+            print(e)
 
     itemID=displayName.replace(' ','')
     if sharesJson.get(itemID):
@@ -42,8 +45,11 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
                 os.remove(itemIDfile+'.gif')
         # remove the item itself
         del sharesJson[itemID]
-        with open(sharesFilename, 'w') as fp:
-            commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
+        try:
+            with open(sharesFilename, 'w') as fp:
+                commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
 def addShare(baseDir: str, \
              httpPrefix: str,nickname: str,domain: str,port: int, \
@@ -59,9 +65,12 @@ def addShare(baseDir: str, \
     """
     sharesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
     sharesJson={}
-    if os.path.isfile(sharesFilename):    
-        with open(sharesFilename, 'r') as fp:
-            sharesJson=commentjson.load(fp)
+    if os.path.isfile(sharesFilename):
+        try:
+            with open(sharesFilename, 'r') as fp:
+                sharesJson=commentjson.load(fp)
+        except Exception as e:
+            print(e)
 
     duration=duration.lower()
     durationSec=0
@@ -137,8 +146,11 @@ def addShare(baseDir: str, \
         "expire": durationSec
     }
 
-    with open(sharesFilename, 'w') as fp:
-        commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
+    try:
+        with open(sharesFilename, 'w') as fp:
+            commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
 
 def expireShares(baseDir: str,nickname: str,domain: str) -> None:
     """Removes expired items from shares
@@ -149,8 +161,13 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
     handle=nickname+'@'+handleDomain
     sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'    
     if os.path.isfile(sharesFilename):
-        with open(sharesFilename, 'r') as fp:
-            sharesJson=commentjson.load(fp)
+        sharesJson=None
+        try:
+            with open(sharesFilename, 'r') as fp:
+                sharesJson=commentjson.load(fp)
+        except Exception as e:
+            print(e)
+        if sharesJson:
             currTime=int(time.time())
             deleteItemID=[]
             for itemID,item in sharesJson.items():
@@ -167,9 +184,12 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
                         os.remove(itemIDfile+'.jpg')
                     if os.path.isfile(itemIDfile+'.gif'):
                         os.remove(itemIDfile+'.gif')
-                with open(sharesFilename, 'w') as fp:
-                    commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
-        
+                try:
+                    with open(sharesFilename, 'w') as fp:
+                        commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
+                except Exception as e:
+                    print(e)
+
 def getSharesFeedForPerson(baseDir: str, \
                            domain: str,port: int, \
                            path: str,httpPrefix: str, \
@@ -219,9 +239,12 @@ def getSharesFeedForPerson(baseDir: str, \
     if headerOnly:
         noOfShares=0
         if os.path.isfile(sharesFilename):
-            with open(sharesFilename, 'r') as fp:
-                sharesJson=commentjson.load(fp)
-                noOfShares=len(sharesJson.items())
+            try:
+                with open(sharesFilename, 'r') as fp:
+                    sharesJson=commentjson.load(fp)
+                    noOfShares=len(sharesJson.items())
+            except Exception as e:
+                print(e)
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': httpPrefix+'://'+domain+'/users/'+nickname+'/shares?page=1',
@@ -249,8 +272,14 @@ def getSharesFeedForPerson(baseDir: str, \
     pageCtr=0
     totalCtr=0
 
-    with open(sharesFilename, 'r') as fp:
-        sharesJson=commentjson.load(fp)
+    sharesJson=None
+    try:
+        with open(sharesFilename, 'r') as fp:
+            sharesJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if sharesJson:
         for itemID,item in sharesJson.items():
             pageCtr += 1
             totalCtr += 1

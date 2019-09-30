@@ -90,12 +90,21 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         iconFilename=iconFilenameBase+'.gif'
     profileFilename=baseDir+'/accounts/'+handle+'/'+iconFilename
 
-    with open(personFilename, 'r') as fp:
-        personJson=commentjson.load(fp)
+    personJson=None
+    try:
+        with open(personFilename, 'r') as fp:
+            personJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if personJson:
         personJson[iconFilenameBase]['mediaType']=mediaType
         personJson[iconFilenameBase]['url']=httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
-        with open(personFilename, 'w') as fp:
-            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+        try:
+            with open(personFilename, 'w') as fp:
+                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
             
         cmd = '/usr/bin/convert '+imageFilename+' -size '+resolution+' -quality 50 '+profileFilename
         subprocess.call(cmd, shell=True)
@@ -115,11 +124,21 @@ def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+
+    actorJson=None
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if actorJson:
         actorJson['orgSchema']=schema
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+        try:
+            with open(actorFilename, 'w') as fp:
+                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
     return True
 
 def accountExists(baseDir: str,nickname: str,domain: str) -> bool:
@@ -239,8 +258,11 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         if not os.path.isdir(baseDir+peopleSubdir+'/'+handle+'/queue'):
             os.mkdir(baseDir+peopleSubdir+'/'+handle+'/queue')
         filename=baseDir+peopleSubdir+'/'+handle+'.json'
-        with open(filename, 'w') as fp:
-            commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
         # save to cache
         if not os.path.isdir(baseDir+'/cache'):
@@ -248,8 +270,11 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         if not os.path.isdir(baseDir+'/cache/actors'):
             os.mkdir(baseDir+'/cache/actors')
         cacheFilename=baseDir+'/cache/actors/'+newPerson['id'].replace('/','#')+'.json'
-        with open(cacheFilename, 'w') as fp:
-            commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+        try:
+            with open(cacheFilename, 'w') as fp:
+                commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
         # save the private key
         privateKeysSubdir='/keys/private'
@@ -504,14 +529,22 @@ def setDisplayNickname(baseDir: str,nickname: str, domain: str, \
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return False
+
     personJson=None
-    with open(filename, 'r') as fp:
-        personJson=commentjson.load(fp)
+    try:
+        with open(filename, 'r') as fp:
+            personJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+            
     if not personJson:
         return False
     personJson['name']=displayName
-    with open(filename, 'w') as fp:
-        commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+    try:
+        with open(filename, 'w') as fp:
+            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
     return True
 
 def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
@@ -521,16 +554,26 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
     filename=baseDir+'/accounts/'+handle.lower()+'.json'
     if not os.path.isfile(filename):
         return False
+
     personJson=None
-    with open(filename, 'r') as fp:
-        personJson=commentjson.load(fp)
+    try:
+        with open(filename, 'r') as fp:
+            personJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
     if not personJson:
         return False
     if not personJson.get('summary'):
         return False
     personJson['summary']=bio
-    with open(filename, 'w') as fp:
-        commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+
+    try:
+        with open(filename, 'w') as fp:
+            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
+        
     return True
 
 def isSuspended(baseDir: str,nickname: str) -> bool:

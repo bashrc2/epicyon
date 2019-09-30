@@ -21,9 +21,15 @@ from posts import getPersonBox
 
 def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: bool) -> None:
     """Undoes a like for a particular actor
-    """    
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+    """
+    postJsonObject=None
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if postJsonObject:
         if not postJsonObject.get('type'):
             return
         if postJsonObject['type']!='Create':
@@ -60,8 +66,11 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
                 del postJsonObject['object']['likes']
             else:
                 postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
-            with open(postFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
+            try:
+                with open(postFilename, 'w') as fp:
+                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
+            except Exception as e:
+                print(e)
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is liked by the given person
@@ -93,8 +102,14 @@ def noOfLikes(postJsonObject: {}) -> int:
 def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """
-    with open(postFilename, 'r') as fp:
-        postJsonObject=commentjson.load(fp)
+    postJsonObject=None
+    try:
+        with open(postFilename, 'r') as fp:
+            postJsonObject=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if postJsonObject:
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
@@ -133,8 +148,11 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
         if debug:
             print('DEBUG: saving post with likes added')
             pprint(postJsonObject)
-        with open(postFilename, 'w') as fp:
-            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+        try:
+            with open(postFilename, 'w') as fp:
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
 def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \

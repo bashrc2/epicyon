@@ -28,13 +28,22 @@ def clearModeratorStatus(baseDir: str) -> None:
         if filename.endswith(".json") and '@' in filename: 
             filename=os.path.join(baseDir+'/accounts/', filename)
             if '"moderator"' in open(filename).read():
-                with open(filename, 'r') as fp:
-                    actorJson=commentjson.load(fp)
+                actorJson=None
+                try:
+                    with open(filename, 'r') as fp:
+                        actorJson=commentjson.load(fp)
+                except Exception as e:
+                    print(e)
+
+                if actorJson:
                     if actorJson['roles'].get('instance'):
                         if 'moderator' in actorJson['roles']['instance']:
                             actorJson['roles']['instance'].remove('moderator')
-                            with open(filename, 'w') as fp:
-                                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                            try:
+                                with open(filename, 'w') as fp:
+                                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                            except Exception as e:
+                                print(e)
 
 def addModerator(baseDir: str,nickname: str,domain: str) -> None:
     """Adds a moderator nickname to the file
@@ -87,8 +96,15 @@ def setRole(baseDir: str,nickname: str,domain: str, \
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+
+    actorJson=None
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if actorJson:        
         if role:
             # add the role
             if project=='instance' and 'role'=='moderator':
@@ -107,8 +123,11 @@ def setRole(baseDir: str,nickname: str,domain: str, \
                 # if the project contains no roles then remove it
                 if len(actorJson['roles'][project])==0:
                     del actorJson['roles'][project]
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+        try:
+            with open(actorFilename, 'w') as fp:
+                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
+        except Exception as e:
+            print(e)
     return True
 
 def getRoles(baseDir: str,nickname: str,domain: str, \
@@ -118,8 +137,15 @@ def getRoles(baseDir: str,nickname: str,domain: str, \
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    with open(actorFilename, 'r') as fp:
-        actorJson=commentjson.load(fp)
+
+    actorJson=None
+    try:
+        with open(actorFilename, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+
+    if actorJson:
         if not actorJson.get('roles'):
             return None
         if not actorJson['roles'].get(project):
