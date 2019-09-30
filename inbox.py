@@ -1163,7 +1163,7 @@ def obtainReplyToAvatar(baseDir: str,personCache: {},postJsonObject: {}) -> None
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
             if postJsonObject['object'].get('inReplyTo'):
-                    lookupActor=postJsonObject['object']['inReplyTo']
+                lookupActor=postJsonObject['object']['inReplyTo']
         if lookupActor:
             getPersonFromCache(baseDir,lookupActor,personCache)
 
