@@ -1709,6 +1709,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                         announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
                         announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
                         if announceDisplayName:
+                            announceDisplayName= \
+                                addEmojiToDisplayName(baseDir,httpPrefix, \
+                                                      nickname,domain, \
+                                                      announceDisplayName,False)
                             titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
                             # show avatar of person replied to
                             announceActor=postJsonObject['object']['attributedTo']
@@ -1741,6 +1745,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if replyNickname and replyDomain:
                                 replyDisplayName=getDisplayName(postJsonObject['object']['inReplyTo'],personCache)
                                 if replyDisplayName:
+                                    replyDisplayName= \
+                                        addEmojiToDisplayName(baseDir,httpPrefix, \
+                                                              nickname,domain, \
+                                                              replyDisplayName,False)
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
 
                                     # show avatar of person replied to
