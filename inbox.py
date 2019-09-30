@@ -1110,7 +1110,7 @@ def validPostContent(messageJson: {}) -> bool:
         if badStr in messageJson['object']['content']:
             if messageJson['object'].get('id'):
                 print('REJECT: '+messageJson['object']['id'])
-            print('REJECT: bad string in post - '+badStr)
+            print('REJECT: bad string in post - '+messageJson['object']['content'])
             return False
     print('ACCEPT: post content is valid')
     return True
