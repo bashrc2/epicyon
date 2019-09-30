@@ -18,8 +18,11 @@ def createConfig(baseDir: str) -> None:
         return
     configJson = {
     }
-    with open(configFilename, 'w') as fp:
-        commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+    try:
+        with open(configFilename, 'w') as fp:
+            commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
 
 def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
@@ -29,16 +32,22 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     with open(configFilename, 'r') as fp:
         configJson=commentjson.load(fp)
     configJson[variableName]=variableValue
-    with open(configFilename, 'w') as fp:
-        commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+    try:
+        with open(configFilename, 'w') as fp:
+            commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+    except Exception as e:
+        print(e)
 
 def getConfigParam(baseDir: str, variableName: str):
     """Gets a configuration value
     """
     createConfig(baseDir)
     configFilename=baseDir+'/config.json'
-    with open(configFilename, 'r') as fp:
-        configJson=commentjson.load(fp)
-    if configJson.get(variableName):
-        return configJson[variableName]
+    try:
+        with open(configFilename, 'r') as fp:
+            configJson=commentjson.load(fp)
+            if configJson.get(variableName):
+                return configJson[variableName]
+    except Exception as e:
+        print(e)
     return None
