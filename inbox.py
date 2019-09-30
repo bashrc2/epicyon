@@ -1096,8 +1096,20 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
         repliesFile.close()
     return True
 
-def validPostContent(messageJson: {}) -> bool:
+def estimateNumberOfMentions(content: str) -> int:
+    """Returns a rough estimate of the number of mentions
+    """
+    words=content.split(' ')
+    ctr=0
+    for word in words:
+        if word.startswith('@') or '>@' in word:
+            ctr+=1
+    return ctr
+
+def validPostContent(messageJson: {},maxMentions: int) -> bool:
     """Is the content of a received post valid?
+    Check for bad html
+    Check for hellthreads
     """
     if not messageJson.get('object'):
         return True
@@ -1112,6 +1124,9 @@ def validPostContent(messageJson: {}) -> bool:
                 print('REJECT: '+messageJson['object']['id'])
             print('REJECT: bad string in post - '+messageJson['object']['content'])
             return False
+    if estimateNumberOfMentions(messageJson['object']['content'])>maxMentions:
+        print('REJECT: Too many mentions in post - '+messageJson['object']['content'])
+        return False
     print('ACCEPT: post content is valid')
     return True
 
@@ -1120,9 +1135,10 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
                            queue: [],domain: str,port: int,useTor: bool, \
                            federationList: [],ocapAlways: bool,debug: bool, \
-                           acceptedCaps: [],
-                           queueFilename :str,destinationFilename :str,
-                           maxReplies: int,allowDeletion: bool) -> bool:
+                           acceptedCaps: [], \
+                           queueFilename :str,destinationFilename :str, \
+                           maxReplies: int,allowDeletion: bool, \
+                           maxMentions: int) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
     actor=keyId
@@ -1203,11 +1219,11 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         return True
     
     if messageJson.get('postNickname'):
-        if validPostContent(messageJson['post']):
+        if validPostContent(messageJson['post'],maxMentions):
             with open(destinationFilename, 'w+') as fp:
                 commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
     else:
-        if validPostContent(messageJson):
+        if validPostContent(messageJson,maxMentions):
             with open(destinationFilename, 'w+') as fp:
                 commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
 
@@ -1251,7 +1267,7 @@ def runInboxQueue(projectVersion: str, \
                   domain: str,port: int,useTor: bool,federationList: [], \
                   ocapAlways: bool,maxReplies: int, \
                   domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
-                  allowDeletion: bool,debug: bool, \
+                  allowDeletion: bool,debug: bool,maxMentions: int, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -1578,7 +1594,8 @@ def runInboxQueue(projectVersion: str, \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
-                                               maxReplies,allowDeletion)
+                                               maxReplies,allowDeletion, \
+                                               maxMentions)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check has failed')
@@ -1595,7 +1612,8 @@ def runInboxQueue(projectVersion: str, \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
-                                               maxReplies,allowDeletion)
+                                               maxReplies,allowDeletion, \
+                                               maxMentions)
                     if debug:
                         pprint(queueJson['post'])
                         print('No capability list within post')

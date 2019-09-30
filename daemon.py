@@ -3939,7 +3939,8 @@ def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
-              fedList=[],authenticatedFetch=False, \
+              fedList=[],maxMentions=10, \
+              authenticatedFetch=False, \
               noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
@@ -4078,7 +4079,8 @@ def runDaemon(projectVersion, \
                               domain,port,useTor,httpd.federationList, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-                              allowDeletion,debug,httpd.acceptedCaps),daemon=True)
+                              allowDeletion,debug,maxMentions, \
+                              httpd.acceptedCaps),daemon=True)
     if not unitTest: 
         httpd.thrWatchdog= \
             threadWithTrace(target=runInboxQueueWatchdog, \
