@@ -977,7 +977,17 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
     updateAnnounceCollection(postFilename,messageJson['actor'],debug)
     if debug:
         print('DEBUG: Downloading announce post '+messageJson['object'])
-    downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
+    postJsonObject=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
+    if postJsonObject:
+        # Try to obtain the actor for this person
+        # so that their avatar can be shown
+        lookupActor=None
+        if postJsonObject.get('object'):
+            if isinstance(postJsonObject['object'], dict):
+                if postJsonObject['object'].get('attributedTo'):
+                    lookupActor=postJsonObject['object']['attributedTo']
+        if lookupActor:
+            getPersonFromCache(baseDir,lookupActor,personCache)            
     if debug:
         print('DEBUG: announced/repeated post arrived in inbox')
     return True
