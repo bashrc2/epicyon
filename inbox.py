@@ -1159,13 +1159,18 @@ def obtainReplyToAvatar(baseDir: str,personCache: {},postJsonObject: {}) -> None
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
-    lookupActor=None
-    if postJsonObject.get('object'):
-        if isinstance(postJsonObject['object'], dict):
-            if postJsonObject['object'].get('inReplyTo'):
-                lookupActor=postJsonObject['object']['inReplyTo']
-        if lookupActor:
-            getPersonFromCache(baseDir,lookupActor,personCache)
+    if not postJsonObject.get('object'):
+        return
+    
+    if not isinstance(postJsonObject['object'], dict):
+        return
+
+    if not postJsonObject['object'].get('inReplyTo'):
+        return
+
+    lookupActor=postJsonObject['object']['inReplyTo']
+    if lookupActor:
+        getPersonFromCache(baseDir,lookupActor,personCache)
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
