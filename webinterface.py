@@ -2129,7 +2129,6 @@ def htmlTimeline(translate: {},pageNumber: int, \
         prevStr=''
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
-                itemCtr+=1
                 avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
                 currTlStr= \
                         individualPostAsHtml(iconsDir,translate,pageNumber, \
@@ -2140,10 +2139,20 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                              boxName!='dm', \
                                              showIndividualPostIcons, \
                                              manuallyApproveFollowers,False)
-                # avoid repeated posts
-                if currTlStr!=prevStr:
+
+                if '<img src="' in currTlStr and boxName=='tlmedia':
+                    # extract the image url from the post
+                    imageUrl=currTlStr.split('<img src="')[1]
+                    imageUrl=imageUrl.split('"')[0]
+                    currValue=imaegUrl
+                else:
+                    currValue=currTlStr
+                    
+                # avoid repeated posts of the same image
+                if currValue!=prevStr:
                     tlStr+=currTlStr
-                    prevStr=currTlStr
+                    prevStr=currValue
+                    itemCtr+=1
         if boxName=='tlmedia':
             tlStr+='</div>\n'
 
