@@ -1077,7 +1077,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+                self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1125,7 +1125,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+                self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1221,7 +1221,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+                self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1261,7 +1261,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+                self._redirect_headers(actor+'/'+timelineStr+'?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
