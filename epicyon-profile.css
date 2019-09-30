@@ -832,6 +832,16 @@ div.imagedesc {
 	margin: 0 0;
 	width: 50px;
     }
+    .container img.emojiheader {
+	float: none;
+	width: 25px;
+	margin-left: 0px;
+	margin-right: 0px;
+	padding-right: 0px;
+	border-radius: 0px;
+	-ms-transform: translateY(-30%);
+	transform: translateY(-30%);
+    }
     .containericons img {
         float: right;
         max-width: 200px;
@@ -1074,6 +1084,16 @@ div.imagedesc {
 	padding: 0 0;
 	margin: 0 0;
 	width: 100px;
+    }
+    .container img.emojiheader {
+	float: none;
+	width: 35px;
+	margin-left: 0px;
+	margin-right: 0px;
+	padding-right: 0px;
+	border-radius: 0px;
+	-ms-transform: translateY(-30%);
+	transform: translateY(-30%);
     }
     .containericons img {
         float: right;
