@@ -1119,7 +1119,7 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
     if not messageJson['object'].get('content'):
         return True
     # check for bad html
-    invalidStrings=['<script>','<style>','</html>','</body>','<br>','<hr>']    
+    invalidStrings=['<script>','<canvas>','<style>','</html>','</body>','<br>','<hr>']    
     for badStr in invalidStrings:
         if badStr in messageJson['object']['content']:
             if messageJson['object'].get('id'):
