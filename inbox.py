@@ -1110,6 +1110,7 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
+    Check number of tags is reasonable
     """
     if not messageJson.get('object'):
         return True
@@ -1117,16 +1118,24 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
         return True
     if not messageJson['object'].get('content'):
         return True
-    invalidStrings=['<script>','<style>','</html>','</body>','<br>','<hr>']
+    # check for bad html
+    invalidStrings=['<script>','<style>','</html>','</body>','<br>','<hr>']    
     for badStr in invalidStrings:
         if badStr in messageJson['object']['content']:
             if messageJson['object'].get('id'):
                 print('REJECT: '+messageJson['object']['id'])
             print('REJECT: bad string in post - '+messageJson['object']['content'])
             return False
+    # check (rough) number of mentions
     if estimateNumberOfMentions(messageJson['object']['content'])>maxMentions:
         print('REJECT: Too many mentions in post - '+messageJson['object']['content'])
         return False
+    # check number of tags
+    if messageJson['object'].get('tag'):
+        if isinstance(messageJson['object']['tag'], list):
+            if len(messageJson['object']['tag'])>maxMentions*2:
+                print('REJECT: Too many tags in post - '+messageJson['object']['tag'])
+                return False
     print('ACCEPT: post content is valid')
     return True
 
