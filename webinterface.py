@@ -2126,32 +2126,21 @@ def htmlTimeline(translate: {},pageNumber: int, \
             if pageNumber>1:
                 tlStr+='<br>'
             tlStr+='<div class="galleryContainer">\n'
-        prevStr=''
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
                 avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
                 currTlStr= \
-                        individualPostAsHtml(iconsDir,translate,pageNumber, \
-                                             baseDir,session,wfRequest,personCache, \
-                                             nickname,domain,port,item,avatarUrl,True, \
-                                             allowDeletion, \
-                                             httpPrefix,projectVersion,boxName, \
-                                             boxName!='dm', \
-                                             showIndividualPostIcons, \
-                                             manuallyApproveFollowers,False)
-
-                if '<img src="' in currTlStr and boxName=='tlmedia':
-                    # extract the image url from the post
-                    imageUrl=currTlStr.split('<img src="')[1]
-                    imageUrl=imageUrl.split('"')[0]
-                    currValue=imageUrl
-                else:
-                    currValue=currTlStr
+                    individualPostAsHtml(iconsDir,translate,pageNumber, \
+                                         baseDir,session,wfRequest,personCache, \
+                                         nickname,domain,port,item,avatarUrl,True, \
+                                         allowDeletion, \
+                                         httpPrefix,projectVersion,boxName, \
+                                         boxName!='dm', \
+                                         showIndividualPostIcons, \
+                                         manuallyApproveFollowers,False)
                     
-                # avoid repeated posts of the same image
-                if currValue!=prevStr:
+                if currTlStr:
                     tlStr+=currTlStr
-                    prevStr=currValue
                     itemCtr+=1
         if boxName=='tlmedia':
             tlStr+='</div>\n'
