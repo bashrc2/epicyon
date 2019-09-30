@@ -2144,7 +2144,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
                     # extract the image url from the post
                     imageUrl=currTlStr.split('<img src="')[1]
                     imageUrl=imageUrl.split('"')[0]
-                    currValue=imaegUrl
+                    currValue=imageUrl
                 else:
                     currValue=currTlStr
                     
