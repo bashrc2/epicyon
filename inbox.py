@@ -1095,7 +1095,26 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
         repliesFile.write(messageId+'\n')
         repliesFile.close()
     return True
-                
+
+def validPostContent(messageJson: {}) -> bool:
+    """Is the content of a received post valid?
+    """
+    if not messageJson.get('object'):
+        return True
+    if not isinstance(messageJson['object'], dict):
+        return True
+    if not messageJson['object'].get('content'):
+        return True
+    invalidStrings=['<script>','<style>','</html>','</body>','<br>','<hr>']
+    for badStr in invalidStrings:
+        if badStr in messageJson['object']['content']:
+            if messageJson['object'].get('id'):
+                print('REJECT: '+messageJson['object']['id'])
+            print('REJECT: bad string in post - '+badStr)
+            return False
+    print('ACCEPT: post content is valid')
+    return True
+
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1182,13 +1201,15 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
     if os.path.isfile(destinationFilename):
         return True
-
+    
     if messageJson.get('postNickname'):
-        with open(destinationFilename, 'w+') as fp:
-            commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
+        if validPostContent(messageJson['post']):
+            with open(destinationFilename, 'w+') as fp:
+                commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
     else:
-        with open(destinationFilename, 'w+') as fp:
-            commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
+        if validPostContent(messageJson):
+            with open(destinationFilename, 'w+') as fp:
+                commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
 
     if not os.path.isfile(destinationFilename):
         return False
