@@ -992,6 +992,8 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
                 if postJsonObject['object'].get('attributedTo'):
                     lookupActor=postJsonObject['object']['attributedTo']
         if lookupActor:
+            if debug:
+                print('DEBUG: Obtaining actor for announce post '+lookupActor)
             getPersonFromCache(baseDir,lookupActor,personCache)            
     if debug:
         print('DEBUG: announced/repeated post arrived in inbox')
