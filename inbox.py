@@ -1160,7 +1160,7 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
     print('ACCEPT: post content is valid')
     return True
 
-def obtainAvatarForReplyPost(baseDir: str,personCache: {},postJsonObject: {}) -> None:
+def obtainAvatarForReplyPost(baseDir: str,personCache: {},postJsonObject: {},debug: bool) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
@@ -1175,6 +1175,8 @@ def obtainAvatarForReplyPost(baseDir: str,personCache: {},postJsonObject: {}) ->
 
     lookupActor=postJsonObject['object']['inReplyTo']
     if lookupActor:
+        if debug:
+            print('DEBUG: Obtaining actor for reply post '+lookupActor)
         getPersonFromCache(baseDir,lookupActor,personCache)
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
@@ -1267,7 +1269,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     
     if messageJson.get('postNickname'):
         if validPostContent(messageJson['post'],maxMentions):
-            obtainAvatarForReplyPost(baseDir,personCache,messageJson['post'])
+            obtainAvatarForReplyPost(baseDir,personCache,messageJson['post'],debug)
             try:
                 with open(destinationFilename, 'w+') as fp:
                     commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
@@ -1275,7 +1277,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                 print(e)
     else:
         if validPostContent(messageJson,maxMentions):
-            obtainAvatarForReplyPost(baseDir,personCache,messageJson)
+            obtainAvatarForReplyPost(baseDir,personCache,messageJson,debug)
             try:
                 with open(destinationFilename, 'w+') as fp:
                     commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
