@@ -794,6 +794,11 @@ div.imagedesc {
     text-align: center;
 }
 
+.invisible {
+    color: transparent;
+    font-size: 0;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         font-size: 22px;
