@@ -981,11 +981,11 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
         return True
     updateAnnounceCollection(postFilename,messageJson['actor'],debug)
     if debug:
-        print('DEBUG: Downloading announce post '+messageJson['object'])
+        print('DEBUG: Downloading announce post '+messageJson['actor']+' -> '+messageJson['object'])
     postJsonObject=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
     if postJsonObject:
         if debug:
-            print('DEBUG: Announce post downloaded for '+messageJson['object'])
+            print('DEBUG: Announce post downloaded for '+messageJson['actor']+' -> '+messageJson['object'])
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookupActor=None
