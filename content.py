@@ -62,7 +62,9 @@ def addWebLinks(content: str) -> str:
     words=content.replace('\n',' --linebreak--').split(' ')
     replaceDict={}
     for w in words:
-        if w.startswith('https://') or w.startswith('http://'):
+        if w.startswith('https://') or \
+           w.startswith('http://') or \
+           w.startswith('dat://'):
             if w.endswith('.') or w.endswith(';'):
                 w=w[:-1]
             markup='<a href="'+w+'" rel="nofollow noopener" target="_blank">'
@@ -70,7 +72,9 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">https://</span>'
             elif w.startswith('http://'):
                 markup+='<span class="invisible">http://</span>'
-            linkText=w.replace('https://','').replace('http://','')
+            elif w.startswith('dat://'):
+                markup+='<span class="invisible">dat://</span>'
+            linkText=w.replace('https://','').replace('http://','').replace('dat://','')
             # prevent links from becoming too long
             if len(linkText)>50:
                 linkText=linkText[:50]
