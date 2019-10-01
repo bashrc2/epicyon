@@ -60,7 +60,6 @@ def addWebLinks(content: str) -> str:
         return content
 
     words=content.replace('\n',' --linebreak-- ').split(' ')
-    print(str(words))
     replaceDict={}
     for w in words:
         if w.startswith('https://') or \
@@ -78,8 +77,10 @@ def addWebLinks(content: str) -> str:
             linkText=w.replace('https://','').replace('http://','').replace('dat://','')
             # prevent links from becoming too long
             if len(linkText)>40:
-                linkText=linkText[:40]
-            markup+='<span class="ellipsis">'+linkText+'</span></a>'
+                markup+='<span class="ellipsis">'+linkText[:40]+'</span>'
+                markup+='<span class="invisible">'+linkText[40:]+'</span></a>'
+            else:
+                markup+='<span class="ellipsis">'+linkText+'</span></a>'
             replaceDict[w]=markup
     for url,markup in replaceDict.items():
         content=content.replace(url,markup)
