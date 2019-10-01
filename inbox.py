@@ -1000,7 +1000,7 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
                                     personCache,debug, \
                                     __version__,httpPrefix,domain)                
                 if pubKey:
-                    print('DEBUG: public key obtained for announce: '+str(pubKey))
+                    print('DEBUG: public key obtained for announce: '+lookupActor)
                     break
 
                 if debug:
@@ -1197,7 +1197,7 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
                                 personCache,debug, \
                                 __version__,httpPrefix,domain)                
             if pubKey:
-                print('DEBUG: public key obtained for reply: '+str(pubKey))
+                print('DEBUG: public key obtained for reply: '+lookupActor)
                 break
 
             if debug:
