@@ -989,10 +989,13 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookupActor=None
-        if postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], dict):
-                if postJsonObject['object'].get('attributedTo'):
-                    lookupActor=postJsonObject['object']['attributedTo']
+        if postJsonObject.get('attributedTo'):
+            lookupActor=postJsonObject['attributedTo']
+        else:
+            if postJsonObject.get('object'):
+                if isinstance(postJsonObject['object'], dict):
+                    if postJsonObject['object'].get('attributedTo'):
+                        lookupActor=postJsonObject['object']['attributedTo']
         if lookupActor:
             if '/users/' in lookupActor:
                 if '/statuses/' in lookupActor:
