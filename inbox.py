@@ -993,22 +993,20 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
                     lookupActor=postJsonObject['object']['attributedTo']
         if lookupActor:
             if debug:
-                print('DEBUG: Obtaining actor for announce post from cache '+lookupActor)
-            if not getPersonFromCache(baseDir,lookupActor,personCache):
-                print('DEBUG: retrieve actor for announce post '+lookupActor)
-                for tries in range(3):
-                    pubKey= \
-                        getPersonPubKey(baseDir,session,lookupActor, \
-                                        personCache,debug, \
-                                        __version__,httpPrefix,domain)                
-                    if pubKey:
-                        print('DEBUG: public key: '+str(pubKey))
-                        break
+                print('DEBUG: Obtaining actor for announce post '+lookupActor)
+            for tries in range(6):
+                pubKey= \
+                    getPersonPubKey(baseDir,session,lookupActor, \
+                                    personCache,debug, \
+                                    __version__,httpPrefix,domain)                
+                if pubKey:
+                    print('DEBUG: public key obtained for announce: '+str(pubKey))
+                    break
 
-                    if debug:
-                        print('DEBUG: Retry '+str(tries+1)+ \
-                              ' obtaining actor for '+lookupActor)
-                    time.sleep(5)                
+                if debug:
+                    print('DEBUG: Retry '+str(tries+1)+ \
+                          ' obtaining actor for '+lookupActor)
+                time.sleep(5)                
     if debug:
         print('DEBUG: announced/repeated post arrived in inbox')
     return True
@@ -1193,21 +1191,19 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
     if lookupActor:
         if debug:
             print('DEBUG: Obtaining actor for reply post '+lookupActor)
-        if not getPersonFromCache(baseDir,lookupActor,personCache):
-            print('DEBUG: retrieve actor for announce post '+lookupActor)
-            for tries in range(3):
-                pubKey= \
-                    getPersonPubKey(baseDir,session,lookupActor, \
-                                    personCache,debug, \
-                                    __version__,httpPrefix,domain)                
-                if pubKey:
-                    print('DEBUG: public key: '+str(pubKey))
-                    break
+        for tries in range(6):
+            pubKey= \
+                getPersonPubKey(baseDir,session,lookupActor, \
+                                personCache,debug, \
+                                __version__,httpPrefix,domain)                
+            if pubKey:
+                print('DEBUG: public key obtained for reply: '+str(pubKey))
+                break
 
-                if debug:
-                    print('DEBUG: Retry '+str(tries+1)+ \
-                          ' obtaining actor for '+lookupActor)
-                time.sleep(5)                
+            if debug:
+                print('DEBUG: Retry '+str(tries+1)+ \
+                      ' obtaining actor for '+lookupActor)
+            time.sleep(5)                
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
