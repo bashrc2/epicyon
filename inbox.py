@@ -997,11 +997,9 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
                     if postJsonObject['object'].get('attributedTo'):
                         lookupActor=postJsonObject['object']['attributedTo']
         if lookupActor:
-            if '/users/' in lookupActor:
+            if '/users/' in lookupActor or '/profile/' in lookupActor:
                 if '/statuses/' in lookupActor:
                     lookupActor=lookupActor.split('/statuses/')[0]
-                elif '/profile/' in lookupActor:
-                    lookupActor=lookupActor.split('/profile/')[0]
 
                 if debug:
                     print('DEBUG: Obtaining actor for announce post '+lookupActor)
@@ -1200,11 +1198,9 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
 
     lookupActor=postJsonObject['object']['inReplyTo']
     if lookupActor:
-        if '/users/' in lookupActor:
+        if '/users/' in lookupActor or '/profile/' in lookupActor:
             if '/statuses/' in lookupActor:
                 lookupActor=lookupActor.split('/statuses/')[0]
-            elif '/profile/' in lookupActor:
-                lookupActor=lookupActor.split('/profile/')[0]
             
             if debug:
                 print('DEBUG: Obtaining actor for reply post '+lookupActor)
