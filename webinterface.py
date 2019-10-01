@@ -1519,13 +1519,14 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
-    videoSite='https://invidio.us'
-    if '"'+videoSite in content:
-        url=content.split('"'+videoSite)[1]
-        if '"' in url:
-            url=url.split('"')[0].replace('/watch?v=','/embed/')
-            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
-            return content
+    invidiousSites=['https://invidio.us','axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4bzzsg2ii4fv2iid.onion']
+    for videoSite in invidiousSites:
+        if '"'+videoSite in content:
+            url=content.split('"'+videoSite)[1]
+            if '"' in url:
+                url=url.split('"')[0].replace('/watch?v=','/embed/')
+                content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+                return content
 
     videoSite='https://media.ccc.de'
     if '"'+videoSite in content:
