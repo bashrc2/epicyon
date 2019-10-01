@@ -1381,6 +1381,9 @@ def testWebLinks():
     exampleText='This post has a web links https://somesite.net\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
     assert '<a href="https://somesite.net" rel="nofollow noopener" target="_blank"><span class="invisible">https://</span><span class="ellipsis">somesite.net</span></a' in linkedText
+    exampleText='This post has a very long web link\n\nhttp://cbwebewuvfuftdiudbqd33dddbbyuef23fyug3bfhcyu2fct2cuyqbcbucuwvckiwyfgewfvqejbchevbhwevuevwbqebqekveqvuvjfkf.onion\n\nAnd some other text'
+    linkedText=addWebLinks(exampleText)
+    assert 'ellipsis' in linkedText
 
 def testAddEmoji():
     print('testAddEmoji')

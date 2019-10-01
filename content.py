@@ -59,7 +59,8 @@ def addWebLinks(content: str) -> str:
     if not ('https://' in content or 'http://' in content):
         return content
 
-    words=content.replace('\n',' --linebreak--').split(' ')
+    words=content.replace('\n',' --linebreak-- ').split(' ')
+    print(str(words))
     replaceDict={}
     for w in words:
         if w.startswith('https://') or \
@@ -76,13 +77,13 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">dat://</span>'
             linkText=w.replace('https://','').replace('http://','').replace('dat://','')
             # prevent links from becoming too long
-            if len(linkText)>50:
-                linkText=linkText[:50]
+            if len(linkText)>40:
+                linkText=linkText[:40]
             markup+='<span class="ellipsis">'+linkText+'</span></a>'
             replaceDict[w]=markup
     for url,markup in replaceDict.items():
         content=content.replace(url,markup)
-    content=content.replace(' --linebreak--','<br>')
+    content=content.replace(' --linebreak-- ','<br>')
     return content
 
 def validHashTag(hashtag: str) -> bool:
