@@ -334,9 +334,9 @@ a:link {
 .container {
     border: 2px solid var(--border-color);
     background-color: var(--main-bg-color);
-    border-radius: 5px;
+    border-radius: 30px;
     padding: 20px;
-    margin: 10px 0;
+    margin: 10px;
 }
 
 .media {
