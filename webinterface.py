@@ -1519,6 +1519,14 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
+    videoSite='https://invidio.us'
+    if '"'+videoSite in content:
+        url=content.split('"'+videoSite)[1]
+        if '"' in url:
+            url=url.split('"')[0].replace('/watch?v=','/embed/')
+            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            return content
+
     videoSite='https://media.ccc.de'
     if '"'+videoSite in content:
         url=content.split('"'+videoSite)[1]
