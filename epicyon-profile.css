@@ -30,6 +30,7 @@
     --button-height-padding: 10px;
     --gallery-border: #ccc;
     --gallery-hover: #777;
+    --button-corner-radius: 15px;
 }
 
 body, html {
@@ -59,7 +60,7 @@ a:link {
 }
 
 .cwButton {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: #554;
     border: none;
     color: #FFFFFE;
@@ -161,7 +162,7 @@ a:link {
 }
 
 .button {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-background);
     border: none;
     color: var(--button-text);
@@ -177,7 +178,7 @@ a:link {
 }
 
 .buttonunfollow {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-background);
     border: none;
     color: var(--button-text);
@@ -194,7 +195,7 @@ a:link {
 }
 
 .buttonhighlighted {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-highlighted);
     border: none;
     color: var(--button-text);
@@ -214,7 +215,7 @@ a:link {
 }
 
 .followApprove {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-approve);
     border: none;
     color: #FFFFFF;
@@ -230,7 +231,7 @@ a:link {
 }
 
 .followDeny {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-deny);
     border: none;
     color: #FFFFFF;
@@ -275,7 +276,7 @@ a:link {
 }
 
 .buttonselected {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-selected);
     border: none;
     color: var(--button-text);
@@ -291,7 +292,7 @@ a:link {
 }
 
 .buttonselectedhighlighted {
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     background-color: var(--button-selected-highlighted);
     border: none;
     color: var(--button-text);
@@ -532,7 +533,7 @@ input[type=text], select, textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     box-sizing: border-box;
     margin-top: 6px;
     margin-bottom: 16px;
@@ -546,7 +547,7 @@ input[type=number] {
     width: 10%;
     padding: 12px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     box-sizing: border-box;
     margin-top: 6px;
     margin-bottom: 16px;
@@ -565,7 +566,7 @@ input[type=submit] {
     margin: 10px 10px;
     padding: 12px 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: 18px;
     width: 120px;
@@ -578,7 +579,7 @@ input.vote[type=submit] {
     margin: 10px 10px;
     padding: 12px 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: 18px;
     width: 120px;
@@ -591,7 +592,7 @@ input.vote[type=submit] {
     margin: 10px 10px;
     padding: 12px 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: 18px;
     width: 120px;
@@ -604,7 +605,7 @@ input.vote[type=submit] {
     margin: 0px 10px;
     padding: 12px 40px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: 24px;
     opacity: 0.7;
@@ -615,7 +616,7 @@ input[type=file] {
     color: var(--button-text);
     padding: 12px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--button-corner-radius);
     cursor: pointer;
     font-size: 18px;
 }
@@ -858,7 +859,7 @@ div.imagedesc {
         transform: translateY(-10%);
     }
     .cwButton {
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         background-color: #554;
         border: none;
         color: #FFFFFE;
@@ -869,7 +870,7 @@ div.imagedesc {
         margin: 5px;
     }
     .button {
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
         border: none;
         color: var(--button-text);
@@ -884,7 +885,7 @@ div.imagedesc {
         margin: 5px;
     }
     .buttonhighlighted {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-highlighted);
 	border: none;
 	color: var(--button-text);
@@ -899,7 +900,7 @@ div.imagedesc {
 	margin: 5px;
     }    
     .buttonselected {
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         background-color: var(--button-selected);
         border: none;
         color: var(--button-text);
@@ -914,7 +915,7 @@ div.imagedesc {
         margin: 5px;
     }
     .buttonselectedhighlighted {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-selected-highlighted);
 	border: none;
 	color: var(--button-text);
@@ -929,7 +930,7 @@ div.imagedesc {
 	margin: 5px;
     }
     .followApprove {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-approve);
 	border: none;
 	color: #FFFFFF;
@@ -944,7 +945,7 @@ div.imagedesc {
 	float: right;
     }
     .followDeny {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-deny);
 	border: none;
 	color: #FFFFFF;
@@ -970,7 +971,7 @@ div.imagedesc {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         box-sizing: border-box;
         margin-top: 6px;
         margin-bottom: 16px;
@@ -986,7 +987,7 @@ div.imagedesc {
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
         width: 20%;
@@ -998,7 +999,7 @@ div.imagedesc {
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
         width: 20%;
@@ -1009,7 +1010,7 @@ div.imagedesc {
         padding: 20px;
         margin: 0px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
         width: 96%;
@@ -1021,7 +1022,7 @@ div.imagedesc {
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
         width: 20%;
@@ -1030,7 +1031,7 @@ div.imagedesc {
         font-size: 32px;
     }
     .buttonunfollow {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-background);
 	border: none;
 	color: var(--button-text);
@@ -1110,7 +1111,7 @@ div.imagedesc {
         transform: translateY(-10%);
     }
     .cwButton {
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         background-color: #554;
         border: none;
         color: #FFFFFE;
@@ -1121,7 +1122,7 @@ div.imagedesc {
         margin: 5px;
     }
     .button {
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
         border: none;
         color: var(--button-text);
@@ -1136,7 +1137,7 @@ div.imagedesc {
         margin: 15px;
     }
     .buttonhighlighted {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-highlighted);
 	border: none;
 	color: var(--button-text);
@@ -1151,7 +1152,7 @@ div.imagedesc {
 	margin: 15px;
     }    
     .buttonselected {
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         background-color: var(--button-selected);
         border: none;
         color: var(--button-text);
@@ -1166,7 +1167,7 @@ div.imagedesc {
         margin: 15px;
     }
     .buttonselectedhighlighted {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-selected-highlighted);
 	border: none;
 	color: var(--button-text);
@@ -1181,7 +1182,7 @@ div.imagedesc {
 	margin: 15px;
     }
     .followApprove {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-approve);
 	border: none;
 	color: #FFFFFF;
@@ -1196,7 +1197,7 @@ div.imagedesc {
 	float: right;
     }
     .followDeny {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-deny);
 	border: none;
 	color: #FFFFFF;
@@ -1222,7 +1223,7 @@ div.imagedesc {
         width: 100%;
         padding: 12px;
         border: 1px solid #ccc;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         box-sizing: border-box;
         margin-top: 6px;
         margin-bottom: 16px;
@@ -1238,7 +1239,7 @@ div.imagedesc {
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: 30px;
         width: 20%;
@@ -1250,7 +1251,7 @@ div.imagedesc {
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: 30px;
         width: 20%;
@@ -1261,7 +1262,7 @@ div.imagedesc {
         padding: 20px;
         margin: 0px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: 30px;
         width: 95.4%;
@@ -1273,7 +1274,7 @@ div.imagedesc {
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
-        border-radius: 4px;
+        border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: 30px;
         width: 20%;
@@ -1282,7 +1283,7 @@ div.imagedesc {
         font-size: 30px;
     }
     .buttonunfollow {
-	border-radius: 4px;
+	border-radius: var(--button-corner-radius);
 	background-color: var(--button-background);
 	border: none;
 	color: var(--button-text);
