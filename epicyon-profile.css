@@ -371,8 +371,7 @@ a:link {
 }
 
 .searchEmoji {
-    -ms-transform: translateY(30%);
-    transform: translateY(30%);
+    vertical-align: middle;
     float: none;
     width: 80px;
     margin: 0px 10px;
@@ -397,8 +396,7 @@ a:link {
     margin-right: 0px;
     padding-right: 0px;
     border-radius: 0px;
-    -ms-transform: translateY(-30%);
-    transform: translateY(-30%);
+    vertical-align: middle;
 }
 
 .hero-text img.emojiprofile {
@@ -408,8 +406,7 @@ a:link {
     margin-right: 0px;
     padding-right: 0px;
     border-radius: 0px;
-    -ms-transform: translateY(-30%);
-    transform: translateY(-30%);
+    vertical-align: middle;
 }
 
 .containericons {
@@ -434,8 +431,7 @@ a:link {
     margin: 0 0;
     padding: 0 0;
     border-radius: 0;
-    -ms-transform: translateY(25%);
-    transform: translateY(25%);
+    vertical-align: middle;
 }
 
 .container img.DMicon {
@@ -444,8 +440,7 @@ a:link {
     margin: 0 0;
     padding: 0 0;
     border-radius: 0;
-    -ms-transform: translateY(25%);
-    transform: translateY(25%);
+    vertical-align: middle;
 }
 
 .darker {
@@ -845,8 +840,7 @@ div.imagedesc {
 	margin-right: 0px;
 	padding-right: 0px;
 	border-radius: 0px;
-	-ms-transform: translateY(-30%);
-	transform: translateY(-30%);
+	vertical-align: middle;
     }
     .containericons img {
         float: right;
@@ -1098,8 +1092,7 @@ div.imagedesc {
 	margin-right: 0px;
 	padding-right: 0px;
 	border-radius: 0px;
-	-ms-transform: translateY(-30%);
-	transform: translateY(-30%);
+	vertical-align: middle;
     }
     .containericons img {
         float: right;
