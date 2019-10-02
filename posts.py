@@ -512,7 +512,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         # locate the post which this is a reply to and check if
         # it has a content warning. If it does then reproduce
         # the same warning
-        replyPostFilename=locatePost(baseDir,username,domain,inReplyTo)
+        replyPostFilename=locatePost(baseDir,nickname,domain,inReplyTo)
         if replyPostFilename:
             replyToJson=None
             try:
