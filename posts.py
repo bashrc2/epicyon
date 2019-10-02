@@ -37,6 +37,7 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import deletePost
 from utils import validNickname
+from utils import locatePost
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
@@ -506,7 +507,27 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 updateHashtagsIndex(baseDir,tag,newPostId)
         print('Content tags: '+str(tags))
         content=replaceEmojiFromTags(content,tags,'content')
-                
+
+    if inReplyTo and not sensitive:
+        # locate the post which this is a reply to and check if
+        # it has a content warning. If it does then reproduce
+        # the same warning
+        replyPostFilename=locatePost(baseDir,username,domain,inReplyTo)
+        if replyPostFilename:
+            replyToJson=None
+            try:
+                with open(replyPostFilename, 'r') as fp:
+                    replyToJson=commentjson.load(fp)
+            except Exception as e:
+                print(e)
+            if replyToJson:
+                if replyToJson.get('object'):
+                    if replyToJson['object'].get('sensitive'):
+                        if replyToJson['object']['sensitive']:
+                            sensitive=True
+                            if replyToJson['object'].get('summary'):
+                                summary=replyToJson['object']['summary']
+
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
 
