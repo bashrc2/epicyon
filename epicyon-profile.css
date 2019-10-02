@@ -31,7 +31,7 @@
     --gallery-border: #ccc;
     --gallery-hover: #777;
     --button-corner-radius: 15px;
-    --border-radius: 30px;
+    --timeline-border-radius: 30px;
 }
 
 body, html {
@@ -336,8 +336,8 @@ a:link {
 .container {
     border: 2px solid var(--border-color);
     background-color: var(--main-bg-color);
-    border-radius: 30px;
-    padding: var(--border-radius);
+    border-radius: var(--timeline-border-radius);
+    padding: 20px;
     margin: 10px;
 }
 
