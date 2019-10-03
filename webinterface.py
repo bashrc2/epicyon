@@ -1288,13 +1288,15 @@ def htmlProfile(translate: {},projectVersion: str, \
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read().replace('image.png',actor+'/image.png')
 
+        licenseStr='<centre><a href="https://gitlab.com/bashrc2/epicyon"><img class="license" src="/icons/agpl.png" /></a></centre>'
+
         if selected=='posts':
             profileStr+= \
                 htmlProfilePosts(translate, \
                                  baseDir,httpPrefix,authorized, \
                                  ocapAlways,nickname,domain,port, \
                                  session,wfRequest,personCache, \
-                                 projectVersion)
+                                 projectVersion)+licenseStr
         if selected=='following':
             profileStr+= \
                 htmlProfileFollowing(translate,baseDir,httpPrefix, \
@@ -1317,13 +1319,13 @@ def htmlProfile(translate: {},projectVersion: str, \
                                      pageNumber,maxItemsPerPage)
         if selected=='roles':
             profileStr+= \
-                htmlProfileRoles(translate,nickname,domainFull,extraJson)
+                htmlProfileRoles(translate,nickname,domainFull,extraJson)+licenseStr
         if selected=='skills':
             profileStr+= \
-                htmlProfileSkills(translate,nickname,domainFull,extraJson)
+                htmlProfileSkills(translate,nickname,domainFull,extraJson)+licenseStr
         if selected=='shares':
             profileStr+= \
-                htmlProfileShares(translate,nickname,domainFull,extraJson)
+                htmlProfileShares(translate,nickname,domainFull,extraJson)+licenseStr
         profileStr=htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
     return profileStr
 

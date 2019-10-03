@@ -60,6 +60,10 @@ a:link {
     font-weight: bold;
 }
 
+.license {
+    width: 5%;
+}
+
 .cwButton {
     border-radius: var(--button-corner-radius);
     background-color: #554;
