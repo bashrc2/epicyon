@@ -45,6 +45,7 @@ from httpsig import messageContentDigest
 from blocking import isBlockedDomain
 from posts import downloadAnnounce
 from posts import isDM
+from posts import isReply
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -1230,6 +1231,17 @@ def dmNotify(baseDir: str,handle: str) -> None:
         with open(dmFile, 'w') as fp:
             fp.write('\n')
 
+def replyNotify(baseDir: str,handle: str) -> None:
+    """Creates a notification that a new reply has arrived
+    """
+    accountDir=baseDir+'/accounts/'+handle
+    if not os.path.isdir(accountDir):
+        return
+    replyFile=accountDir+'/.newReply'
+    if not os.path.isfile(replyFile):
+        with open(replyFile, 'w') as fp:
+            fp.write('\n')
+
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1322,6 +1334,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         if validPostContent(messageJson['post'],maxMentions):
             if isDM(messageJson['post']):
                 dmNotify(baseDir,handle)
+            if isReply(messageJson['post'],actor):
+                replyNotify(baseDir,handle)
             obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,messageJson['post'],debug)
             try:
                 with open(destinationFilename, 'w+') as fp:
@@ -1332,6 +1346,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         if validPostContent(messageJson,maxMentions):
             if isDM(messageJson):
                 dmNotify(baseDir,handle)
+            if isReply(messageJson,actor):
+                replyNotify(baseDir,handle)
             obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,messageJson,debug)
             try:
                 with open(destinationFilename, 'w+') as fp:

@@ -2032,11 +2032,20 @@ def htmlTimeline(translate: {},pageNumber: int, \
     """
     # should the DM button be highlighted?
     newDM=False
-    dmFile=baseDir+'/accounts/'+nickname+'@'+domain+'/.newDM'
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    dmFile=accountDir+'/.newDM'
     if os.path.isfile(dmFile):
         newDM=True
         if boxName=='dm':
             os.remove(dmFile)
+
+    # should the Replies button be highlighted?
+    newReply=False
+    replyFile=accountDir+'/.newReply'
+    if os.path.isfile(replyFile):
+        newReply=True
+        if boxName=='tlreplies':
+            os.remove(replyFile)
 
     iconsDir=getIconsDir(baseDir)
     cssFilename=baseDir+'/epicyon-profile.css'
@@ -2054,6 +2063,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
     if newDM:
         dmButton='buttonhighlighted'
     repliesButton='button'
+    if newReply:
+        repliesButton='buttonhighlighted'
     mediaButton='button'
     sentButton='button'
     moderationButton='button'
@@ -2065,6 +2076,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
             dmButton='buttonselectedhighlighted'
     elif boxName=='tlreplies':
         repliesButton='buttonselected'
+        if newReply:
+            repliesButton='buttonselectedhighlighted'
     elif boxName=='tlmedia':
         mediaButton='buttonselected'
     elif boxName=='outbox':
