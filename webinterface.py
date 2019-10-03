@@ -1319,10 +1319,10 @@ def htmlProfile(translate: {},projectVersion: str, \
                                      pageNumber,maxItemsPerPage)
         if selected=='roles':
             profileStr+= \
-                htmlProfileRoles(translate,nickname,domainFull,extraJson)+licenseStr
+                htmlProfileRoles(translate,nickname,domainFull,extraJson)
         if selected=='skills':
             profileStr+= \
-                htmlProfileSkills(translate,nickname,domainFull,extraJson)+licenseStr
+                htmlProfileSkills(translate,nickname,domainFull,extraJson)
         if selected=='shares':
             profileStr+= \
                 htmlProfileShares(translate,nickname,domainFull,extraJson)+licenseStr
