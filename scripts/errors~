@@ -1,7 +1,0 @@
-#!/bin/bash
-journalctl -u epicyon | grep 'File "' > .errors.txt
-if [ ! -f .errors.txt ]; then
-    echo 'No errors'
-else
-    cat .errors.txt
-fi
