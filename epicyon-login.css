@@ -98,79 +98,89 @@ span.psw {
 }
 
 @media screen and (min-width: 400px) {
-        body, html {
-                background-color: var(--main-bg-color);
-                color: var(--main-fg-color);
+    body, html {
+        background-color: var(--main-bg-color);
+        color: var(--main-fg-color);
 
-                background-image: url("/login-background.png");
-                height: 100%;
-                font-family: Arial, Helvetica, sans-serif;
-                max-width: 60%;
-                min-width: 600px;
-                margin: 0 auto;
-                font-size: var(--font-size);
-                position: relative;
-                top: 3%;
-        }
-        .login-text {
-                font-size: var(--font-size);
-        }
-        input[type=text], input[type=password] {
-                width: 100%;
-                padding: 12px 20px;
-                margin: 8px 0;
-                display: inline-block;
-                border: 1px solid #ccc;
-                box-sizing: border-box;
-                font-size: var(--font-size);
-        }
-        button {
-                background-color: var(--button-background);
-                color: var(--button-text);
-                padding: 14px 20px;
-                margin: 8px 0;
-                border: none;
-                cursor: pointer;
-                width: 100%;
-                font-size: var(--font-size);
-        }
+        background-image: url("/login-background.png");
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        max-width: 60%;
+        min-width: 600px;
+        margin: 0 auto;
+        font-size: var(--font-size);
+        position: relative;
+        top: 3%;
+    }
+    .login-text {
+        font-size: var(--font-size);
+    }
+    input[type=text], input[type=password] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: var(--font-size);
+    }
+    button {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        font-size: var(--font-size);
+    }
+    .license {
+        float: right;
+        margin: 0% 1%;
+        width: 10%;
+    }
 }
 
 @media screen and (max-width: 1000px) {
-        body, html {
-                background-color: var(--main-bg-color);
-                color: var(--main-fg-color);
+    body, html {
+        background-color: var(--main-bg-color);
+        color: var(--main-fg-color);
 
-                background-image: url("/login-background.png");
-                height: 100%;
-                font-family: Arial, Helvetica, sans-serif;
-                max-width: 95%;
-                min-width: 600px;
-                margin: 0 auto;
-                font-size: var(--font-size-mobile);
-                position: relative;
-                top: 5%;
-        }
-        .login-text {
-                font-size: var(--font-size-mobile);
-        }
-        input[type=text], input[type=password] {
-                width: 100%;
-                padding: 12px 20px;
-                margin: 8px 0;
-                display: inline-block;
-                border: 1px solid #ccc;
-                box-sizing: border-box;
-                font-size: var(--font-size-mobile);
-        }
-        button {
-                background-color: var(--button-background);
-                color: var(--button-text);
-                padding: 14px 20px;
-                margin: 8px 0;
-                border: none;
-                cursor: pointer;
-                width: 100%;
-                font-size: var(--font-size-mobile);
-        }
+        background-image: url("/login-background.png");
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        max-width: 95%;
+        min-width: 600px;
+        margin: 0 auto;
+        font-size: var(--font-size-mobile);
+        position: relative;
+        top: 5%;
+    }
+    .login-text {
+        font-size: var(--font-size-mobile);
+    }
+    input[type=text], input[type=password] {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        font-size: var(--font-size-mobile);
+    }
+    button {
+        background-color: var(--button-background);
+        color: var(--button-text);
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        font-size: var(--font-size-mobile);
+    }
+    .license {
+        float: right;
+        margin: 0% 1%;
+        width: 20%;
+    }
 }

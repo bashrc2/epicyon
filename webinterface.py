@@ -743,6 +743,7 @@ def htmlLogin(translate: {},baseDir: str) -> str:
         registerButtonStr+loginButtonStr+ \
         '  </div>' \
         '</form>'
+    loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img class="license" src="/icons/agpl.png" /></a>'
     loginForm+=htmlFooter()
     return loginForm
 
