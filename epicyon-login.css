@@ -97,6 +97,12 @@ span.psw {
     padding-top: 16px;
 }
 
+.license {
+    float: right;
+    margin: 0% 0%;
+    width: 20%;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         background-color: var(--main-bg-color);
@@ -133,11 +139,6 @@ span.psw {
         cursor: pointer;
         width: 100%;
         font-size: var(--font-size);
-    }
-    .license {
-        float: right;
-        margin: 0% 1%;
-        width: 10%;
     }
 }
 
@@ -177,10 +178,5 @@ span.psw {
         cursor: pointer;
         width: 100%;
         font-size: var(--font-size-mobile);
-    }
-    .license {
-        float: right;
-        margin: 0% 1%;
-        width: 20%;
     }
 }
