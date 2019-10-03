@@ -98,6 +98,10 @@ a:link {
     position: relative;
 }
 
+.hero-image img {
+    width: 50%;
+}
+
 .hero-text {
     text-align: center;
     position: absolute;
