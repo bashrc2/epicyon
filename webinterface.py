@@ -2030,6 +2030,14 @@ def htmlTimeline(translate: {},pageNumber: int, \
                  manuallyApproveFollowers: bool) -> str:
     """Show the timeline as html
     """
+    # should the DM button be highlighted?
+    newDM=False
+    dmFile=baseDir+'/accounts/'+nickname+'@'+domain+'/.newDM'
+    if os.path.isfile(dmFile):
+        newDM=True
+        if boxName=='dm':
+            os.remove(dmFile)
+
     iconsDir=getIconsDir(baseDir)
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -2043,6 +2051,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     inboxButton='button'
     dmButton='button'
+    if newDM:
+        dmButton='buttonhighlighted'
     repliesButton='button'
     mediaButton='button'
     sentButton='button'
@@ -2051,6 +2061,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
         inboxButton='buttonselected'
     elif boxName=='dm':
         dmButton='buttonselected'
+        if newDM:
+            dmButton='buttonselectedhighlighted'
     elif boxName=='tlreplies':
         repliesButton='buttonselected'
     elif boxName=='tlmedia':

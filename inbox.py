@@ -44,6 +44,7 @@ from announce import updateAnnounceCollection
 from httpsig import messageContentDigest
 from blocking import isBlockedDomain
 from posts import downloadAnnounce
+from posts import isDM
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -1218,6 +1219,17 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
                           ' obtaining actor for '+lookupActor)
                 time.sleep(5)                
 
+def dmNotify(baseDir: str,handle: str) -> None:
+    """Creates a notification that a new DM has arrived
+    """
+    accountDir=baseDir+'/accounts/'+handle
+    if not os.path.isdir(accountDir):
+        return
+    dmFile=accountDir+'/.newDM'
+    if not os.path.isfile(dmFile):
+        with open(dmFile, 'w') as fp:
+            fp.write('\n')
+
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1308,6 +1320,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     
     if messageJson.get('postNickname'):
         if validPostContent(messageJson['post'],maxMentions):
+            if isDM(messageJson['post']):
+                dmNotify(baseDir,handle)
             obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,messageJson['post'],debug)
             try:
                 with open(destinationFilename, 'w+') as fp:
@@ -1316,6 +1330,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                 print(e)
     else:
         if validPostContent(messageJson,maxMentions):
+            if isDM(messageJson):
+                dmNotify(baseDir,handle)
             obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,messageJson,debug)
             try:
                 with open(destinationFilename, 'w+') as fp:
