@@ -1,0 +1,4 @@
+#!/bin/bash
+cd /etc/epicyon || exit 0
+git remote set-url origin https://code.freedombone.net/bashrc/epicyon.git
+git checkout main
