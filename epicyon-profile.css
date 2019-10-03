@@ -60,10 +60,6 @@ a:link {
     font-weight: bold;
 }
 
-.license {
-    width: 5%;
-}
-
 .cwButton {
     border-radius: var(--button-corner-radius);
     background-color: #554;
@@ -1051,6 +1047,11 @@ div.imagedesc {
 	margin: 5px;
 	float: right;
     }
+    .license {
+        float: right;
+        margin: 0% 1%;
+        width: 10%;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -1302,5 +1303,10 @@ div.imagedesc {
 	cursor: pointer;
 	margin: 5px;
 	float: right;
+    }
+    .license {
+        float: right;
+        margin: 0% 1%;
+        width: 20%;
     }
 }

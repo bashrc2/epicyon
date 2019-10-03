@@ -1288,7 +1288,7 @@ def htmlProfile(translate: {},projectVersion: str, \
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read().replace('image.png',actor+'/image.png')
 
-        licenseStr='<centre><a href="https://gitlab.com/bashrc2/epicyon"><img class="license" src="/icons/agpl.png" /></a></centre>'
+        licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img class="license" src="/icons/agpl.png" /></a>'
 
         if selected=='posts':
             profileStr+= \
