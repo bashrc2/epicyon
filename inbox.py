@@ -1299,7 +1299,7 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
     postJsonObject['cc']=[]
     postJsonObject['object']['to']=postJsonObject['to']
-    postJsonObject['object']['cc']=[]
+    postJsonObject['object']['cc']=postJsonObject['cc']
     if ':' in domain:
         domain=domain.split(':')[0]
     with open(followersFile, 'r') as groupMembers:
