@@ -1290,6 +1290,7 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     nickname=handle.split('@')[0]
     groupname=getGroupName(baseDir,handle)
     domain=handle.split('@')[1]
+    domainFull=domain
     if ':' not in domain:
         if port:
             if port!=80 and port !=443:
@@ -1314,10 +1315,10 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             'href': sendingActor,
             'name': senderStr,
             'type': 'Mention'
-        }
+        })
 
-    postJsonObject['actor']=httpPrefix+'://'+domain+'/users/'+nickname
-    postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
+    postJsonObject['actor']=httpPrefix+'://'+domainFull+'/users/'+nickname
+    postJsonObject['to']=[httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers']
     postJsonObject['cc']=[cc]
     postJsonObject['object']['to']=postJsonObject['to']
     postJsonObject['object']['cc']=[cc]
