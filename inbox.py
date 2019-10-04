@@ -1269,7 +1269,10 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     followersFile=baseDir+'/accounts/'+handle+'/followers.txt'
     if not os.path.isfile(followersFile):
         return
+    if not postJsonObject.get('object'):
+        return
     nickname=handle.split('@')[0]
+    groupname=nickname
     domain=handle.split('@')[1]
     if ':' in domain:
         domain=domain.split(':')[0]
@@ -1277,7 +1280,17 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
         for memberHandle in groupMembers:
             if memberHandle!=handle:
                 memberNickname=memberHandle.split('@')[0]
-                memberDomain=memberHandle.split('@')[0]
+                memberDomain=memberHandle.split('@')[1]
+                # set the recipient
+                postJsonObject['object']['to']=[httpPrefix+'://'+memberDomain+'/users/'+memberNickname]
+                postJsonObject['object']['cc']=[]
+                # set subject including group name
+                postJsonObject['object']['sensitive']=True
+                if postJsonObject['object'].get('summary'):
+                    if not postJsonObject['object']['summary'].startswith(groupname+': '):
+                        postJsonObject['object']['summary']=groupname+': '+postJsonObject['object']['summary']
+                    else:
+                        postJsonObject['object']['summary']=groupname
                 memberPort=port
                 if ':' in memberDomain:
                     memberPortStr=memberDomain.split(':')[1]
