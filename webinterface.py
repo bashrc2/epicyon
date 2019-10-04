@@ -1710,6 +1710,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if showDMicon:
         titleStr=titleStr+' <img src="/'+iconsDir+'/dm.png" class="DMicon"/>'
 
+    messageIdStr=''
+    if messageId:
+        messageIdStr=';'+messageId
+
     replyAvatarImageInPost=''
     if showRepeatIcon:
         if isAnnounced:
@@ -1733,9 +1737,9 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if announceAvatarUrl:
                                 replyAvatarImageInPost= \
                                     '<div class="timeline-avatar-reply">' \
-                                    '<a href="'+announceActor+'">' \
+                                    '<a href="/users/'+nickname+'?options='+announceActor+';'+str(pageNumber)+';'+announceAvatarUrl+messageIdStr+'">' \
                                     '<img src="'+announceAvatarUrl+'" ' \
-                                    'title="'+translate['Show profile']+ \
+                                    'title="'+translate['Show options for this person']+ \
                                     '" alt="Avatar"'+avatarPosition+'/></a></div>'
                         else:
                             titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
@@ -1770,7 +1774,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost= \
                                             '<div class="timeline-avatar-reply">' \
-                                            '<a href="'+replyActor+'">' \
+                                            '<a href="/users/'+nickname+'?options='+replyActor+';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">' \
                                             '<img src="'+replyAvatarUrl+'" ' \
                                             'title="'+translate['Show profile']+ \
                                             '" alt="Avatar"'+avatarPosition+'/></a></div>'
@@ -1877,10 +1881,6 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         '    <a href="'+postJsonObject['actor']+'">' \
         '    <img src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
         '  </div>'
-
-    messageIdStr=''
-    if messageId:
-        messageIdStr=';'+messageId
     
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         avatarImageInPost= \
