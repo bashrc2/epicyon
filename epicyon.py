@@ -115,6 +115,9 @@ parser.add_argument('-g','--addgroup', dest='addgroup', \
 parser.add_argument('-r','--rmaccount', dest='rmaccount', \
                     type=str,default=None, \
                     help='Remove an account')
+parser.add_argument('--rmgroup', dest='rmgroup', \
+                    type=str,default=None, \
+                    help='Remove a group')
 parser.add_argument('--pass','--password', dest='password', \
                     type=str,default=None, \
                     help='Set a password for an account')
@@ -955,6 +958,9 @@ if args.addgroup:
         print('Group creation failed')
     sys.exit()
 
+if args.rmgroup:
+    args.rmaccount=args.rmgroup
+
 if args.rmaccount:
     if '@' in args.rmaccount:
         nickname=args.rmaccount.split('@')[0]
@@ -965,8 +971,11 @@ if args.rmaccount:
             print('Use the --domain option to set the domain name')
             sys.exit()
     if removeAccount(baseDir,nickname,domain,port):
-        print('Account for '+handle+' was removed')
-    sys.exit()
+        if not args.rmgroup:
+            print('Account for '+handle+' was removed')
+        else:
+            print('Group '+handle+' was removed')
+        sys.exit()
 
 if args.changepassword:
     if len(args.changepassword)!=2:
