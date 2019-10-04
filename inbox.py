@@ -1308,6 +1308,8 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     if not postJsonObject['object']['content'].startswith(senderStr):
         postJsonObject['object']['content']=senderStr+' '+postJsonObject['object']['content']
         # add mention to tag list
+        if not postJsonObject['object']['tag']:
+            postJsonObject['object']['tag']=[]
         postJsonObject['object']['tag'].append({
             'href': sendingActor,
             'name': senderStr,
