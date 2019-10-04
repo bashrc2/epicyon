@@ -1330,43 +1330,29 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
     if os.path.isfile(destinationFilename):
         return True
-    
+
     if messageJson.get('postNickname'):
-        if validPostContent(messageJson['post'],maxMentions):
-            if isDM(messageJson['post']):
-                dmNotify(baseDir,handle)
-            domainFull=domain
-            if port:
-                if ':' not in domain:
-                    if port!=80 and port!=443:
-                        domainFull=domainFull+':'+str(port)
-            actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
-            if isReply(messageJson['post'],actor):
-                replyNotify(baseDir,handle)
-            obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,messageJson['post'],debug)
-            try:
-                with open(destinationFilename, 'w+') as fp:
-                    commentjson.dump(messageJson['post'], fp, indent=4, sort_keys=False)
-            except Exception as e:
-                print(e)
+        postJson=messageJson['post']
     else:
-        if validPostContent(messageJson,maxMentions):
-            if isDM(messageJson):
-                dmNotify(baseDir,handle)
-            domainFull=domain
-            if port:
-                if ':' not in domain:
-                    if port!=80 and port!=443:
-                        domainFull=domainFull+':'+str(port)
-            actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
-            if isReply(messageJson,actor):
-                replyNotify(baseDir,handle)
-            obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,messageJson,debug)
-            try:
-                with open(destinationFilename, 'w+') as fp:
-                    commentjson.dump(messageJson, fp, indent=4, sort_keys=False)
-            except Exception as e:
-                print(e)
+        postJson=messageJson
+
+    if validPostContent(postJson,maxMentions):
+        if isDM(postJson):
+            dmNotify(baseDir,handle)
+        domainFull=domain
+        if port:
+            if ':' not in domain:
+                if port!=80 and port!=443:
+                    domainFull=domainFull+':'+str(port)
+        actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
+        if isReply(postJson,actor):
+            replyNotify(baseDir,handle)
+        obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJson,debug)
+        try:
+            with open(destinationFilename, 'w+') as fp:
+                commentjson.dump(postJson, fp, indent=4, sort_keys=False)
+        except Exception as e:
+            print(e)
 
     if not os.path.isfile(destinationFilename):
         return False
