@@ -1295,7 +1295,7 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             if port!=80 and port !=443:
                 domain=domain+':'+str(port)
     # set sender
-    cc='https://www.w3.org/ns/activitystreams#Public'
+    cc=''
     postJsonObject['actor']=[httpPrefix+'://'+domain+'/users/'+nickname]
     postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
     postJsonObject['cc']=[cc]
