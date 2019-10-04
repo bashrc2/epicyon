@@ -1295,11 +1295,12 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             if port!=80 and port !=443:
                 domain=domain+':'+str(port)
     # set sender
+    cc='https://www.w3.org/ns/activitystreams#Public'
     postJsonObject['actor']=[httpPrefix+'://'+domain+'/users/'+nickname]
     postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
-    postJsonObject['cc']=[]
+    postJsonObject['cc']=[cc]
     postJsonObject['object']['to']=postJsonObject['to']
-    postJsonObject['object']['cc']=postJsonObject['cc']
+    postJsonObject['object']['cc']=[cc]
     # set subject
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary']='General Discussion'
@@ -1318,8 +1319,7 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
                     memberDomain=memberDomain.split(':')[0]
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
-                               memberNickname,memberDomain,memberPort, \
-                               'https://www.w3.org/ns/activitystreams#Public', \
+                               memberNickname,memberDomain,memberPort,cc, \
                                httpPrefix,False,False,federationList, \
                                sendThreads,postLog,cachedWebfingers, \
                                personCache,debug,projectVersion)
