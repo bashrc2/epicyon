@@ -1307,13 +1307,9 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             if memberHandle!=handle:
                 memberNickname=memberHandle.split('@')[0]
                 memberDomain=memberHandle.split('@')[1]
-                # set subject including group name
-                postJsonObject['object']['sensitive']=True
-                if postJsonObject['object'].get('summary'):
-                    if not postJsonObject['object']['summary'].startswith(groupname+': '):
-                        postJsonObject['object']['summary']=groupname+': '+postJsonObject['object']['summary']
-                    else:
-                        postJsonObject['object']['summary']=groupname
+                # set subject
+                if not postJsonObject['object'].get('summary'):
+                    postJsonObject['object']['summary']='General Discussion'
                 memberPort=port
                 if ':' in memberDomain:
                     memberPortStr=memberDomain.split(':')[1]
