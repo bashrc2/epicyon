@@ -1304,8 +1304,15 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
         if sendingActorPort:
             if sendingActorPort!=80 and sendingActorPort!=443:
                 sendingActorDomainFull=sendingActorDomain+':'+str(sendingActorPort)
-    if not postJsonObject['object']['content'].startswith('@'+sendingActorNickname+'@'+sendingActorDomainFull):
-        postJsonObject['object']['content']='@'+sendingActorNickname+'@'+sendingActorDomainFull+' '+postJsonObject['object']['content']
+    senderStr='@'+sendingActorNickname+'@'+sendingActorDomainFull
+    if not postJsonObject['object']['content'].startswith(senderStr):
+        postJsonObject['object']['content']=senderStr+' '+postJsonObject['object']['content']
+        # add mention to tag list
+        postJsonObject['object']['tag'].append({
+            'href': sendingActor,
+            'name': senderStr,
+            'type': 'Mention'
+        }
 
     postJsonObject['actor']=[httpPrefix+'://'+domain+'/users/'+nickname]
     postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
