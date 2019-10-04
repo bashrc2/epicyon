@@ -1337,23 +1337,33 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         postJson=messageJson
 
     if validPostContent(postJson,maxMentions):
+        # create a DM notification file if needed
         if isDM(postJson):
             dmNotify(baseDir,handle)
+
+        # get the actor being replied to
         domainFull=domain
         if port:
             if ':' not in domain:
                 if port!=80 and port!=443:
                     domainFull=domainFull+':'+str(port)
         actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
+
+        # create a reply notification file if needed
         if isReply(postJson,actor):
             replyNotify(baseDir,handle)
+
+        # get the avatar for a reply/announce
         obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJson,debug)
+
+        # save the post to file
         try:
             with open(destinationFilename, 'w+') as fp:
                 commentjson.dump(postJson, fp, indent=4, sort_keys=False)
         except Exception as e:
             print(e)
 
+    # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
         return False
 
