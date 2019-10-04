@@ -1260,6 +1260,22 @@ def groupHandle(baseDir: str,handle: str) -> bool:
         return False
     return actorJson['type']=='Group'
 
+def getGroupName(baseDir: str,handle: str) -> str:
+    """Returns the preferred name of a group
+    """
+    actorFile=baseDir+'/accounts/'+handle+'.json'
+    if not os.path.isfile(actorFile):
+        return False
+    actorJson=None
+    try:
+        with open(actorFile, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+    if not actorJson:
+        return 'Group'
+    return actorJson['name']
+
 def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject: {}, \
                        httpPrefix: str,federationList: [], \
                        sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -1272,7 +1288,7 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     if not postJsonObject.get('object'):
         return
     nickname=handle.split('@')[0]
-    groupname=nickname
+    groupname=getGroupName(baseDir,handle)
     domain=handle.split('@')[1]
     if ':' in domain:
         domain=domain.split(':')[0]
