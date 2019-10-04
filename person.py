@@ -318,6 +318,16 @@ def registerAccount(baseDir: str,httpPrefix: str,domain: str,port: int, \
         return True
     return False
 
+def createGroup(baseDir: str,nickname: str,domain: str,port: int, \
+                httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
+    """Returns a group
+    """
+    privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint= \
+        createPerson(baseDir,nickname,domain,port, \
+                     httpPrefix,saveToFile,password)
+    newPerson['type']='Group'
+    return privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint
+
 def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
                  httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint

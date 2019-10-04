@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 from person import createPerson
+from person import createGroup
 from person import createSharedInbox
 from person import createCapabilitiesInbox
 from person import setDisplayNickname
@@ -108,6 +109,9 @@ parser.add_argument('--path', dest='baseDir', \
 parser.add_argument('-a','--addaccount', dest='addaccount', \
                     type=str,default=None, \
                     help='Adds a new account')
+parser.add_argument('-g','--addgroup', dest='addgroup', \
+                    type=str,default=None, \
+                    help='Adds a new group')
 parser.add_argument('-r','--rmaccount', dest='rmaccount', \
                     type=str,default=None, \
                     help='Remove an account')
@@ -921,6 +925,34 @@ if args.addaccount:
         print('Account created for '+nickname+'@'+domain)
     else:
         print('Account creation failed')
+    sys.exit()
+
+if args.addgroup:
+    if '@' in args.addgroup:
+        nickname=args.addgroup.split('@')[0]
+        domain=args.addgroup.split('@')[1]
+    else:
+        nickname=args.addgroup
+        if not args.domain or not getConfigParam(baseDir,'domain'):
+            print('Use the --domain option to set the domain name')
+            sys.exit()
+    if not validNickname(domain,nickname):
+        print(nickname+' is a reserved name. Use something different.')
+        sys.exit()
+    if not args.password:
+        print('Use the --password option to set the password for '+nickname)
+        sys.exit()
+    if len(args.password.strip())<8:
+        print('Password should be at least 8 characters')
+        sys.exit()
+    if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print('Group already exists')
+        sys.exit()
+    createGroup(baseDir,nickname,domain,port,httpPrefix,True,args.password.strip())
+    if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+        print('Group created for '+nickname+'@'+domain)
+    else:
+        print('Group creation failed')
     sys.exit()
 
 if args.rmaccount:

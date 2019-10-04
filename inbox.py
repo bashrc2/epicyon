@@ -46,6 +46,7 @@ from blocking import isBlockedDomain
 from posts import downloadAnnounce
 from posts import isDM
 from posts import isReply
+from posts import sendSignedJson
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
