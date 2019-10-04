@@ -34,6 +34,24 @@ To set the background image for an account:
 python3 epicyon.py --nickname [nick] --domain [name] --background [image filename]
 ```
 
+## Groups
+
+Groups are a special type of account which relays any posts sent to it to its members (followers).
+
+To create a group:
+
+``` bash
+python3 epicyon.py --addgroup nickname@domain --password [yourpassword]
+```
+
+To remove an account (be careful!):
+
+``` bash
+python3 epicyon.py --rmgroup nickname@domain
+```
+
+Setting avatar or changing background is the same as for any other account on the system. You can also moderate a group, applying filters, blocks or a perimeter, in the same way as for other acounts.
+
 ## Defining a perimeter
 
 By default the server will federate with any others, but there may be cases where you want to limit this down to a defined set of servers within an organization.
