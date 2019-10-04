@@ -760,7 +760,7 @@ def receiveUpdate(session,baseDir: str, \
                     return True
     return False
 
-def receiveLike(session,handle: str,baseDir: str, \
+def receiveLike(session,handle: str,isGroup: bool,baseDir: str, \
                 httpPrefix: str,domain :str,port: int, \
                 sendThreads: [],postLog: [],cachedWebfingers: {}, \
                 personCache: {},messageJson: {},federationList: [], \
@@ -807,7 +807,7 @@ def receiveLike(session,handle: str,baseDir: str, \
     updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'],debug)
     return True
 
-def receiveUndoLike(session,handle: str,baseDir: str, \
+def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
                     httpPrefix: str,domain :str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
@@ -856,7 +856,7 @@ def receiveUndoLike(session,handle: str,baseDir: str, \
     undoLikesCollectionEntry(postFilename,messageJson['object'],messageJson['actor'],debug)
     return True
 
-def receiveDelete(session,handle: str,baseDir: str, \
+def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
                   personCache: {},messageJson: {},federationList: [], \
@@ -922,7 +922,7 @@ def receiveDelete(session,handle: str,baseDir: str, \
         print('DEBUG: post deleted - '+postFilename)
     return True
 
-def receiveAnnounce(session,handle: str,baseDir: str, \
+def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                     httpPrefix: str,domain :str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
@@ -1023,7 +1023,7 @@ def receiveAnnounce(session,handle: str,baseDir: str, \
         print('DEBUG: announced/repeated post arrived in inbox')
     return True
 
-def receiveUndoAnnounce(session,handle: str,baseDir: str, \
+def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                         httpPrefix: str,domain :str,port: int, \
                         sendThreads: [],postLog: [],cachedWebfingers: {}, \
                         personCache: {},messageJson: {},federationList: [], \
@@ -1243,6 +1243,53 @@ def replyNotify(baseDir: str,handle: str) -> None:
         with open(replyFile, 'w') as fp:
             fp.write('\n')
 
+def groupHandle(baseDir: str,handle: str) -> bool:
+    """Is the given account handle a group?
+    """
+    actorFile=baseDir+'/accounts/'+handle+'.json'
+    if not os.path.isfile(actorFile):
+        return False
+    actorJson=None
+    try:
+        with open(actorFile, 'r') as fp:
+            actorJson=commentjson.load(fp)
+    except Exception as e:
+        print(e)
+    if not actorJson:
+        return False
+    return actorJson['type']=='Group'
+
+def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject: {}, \
+                       httpPrefix: str,federationList: [], \
+                       sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                       personCache: {},debug: bool) -> None:
+    """When a post arrives for a group send it out to the group members
+    """
+    followersFile=baseDir+'/accounts/'+handle+'/followers.txt'
+    if not os.path.isfile(followersFile):
+        return
+    nickname=handle.split('@')[0]
+    domain=handle.split('@')[1]
+    if ':' in domain:
+        domain=domain.split(':')[0]
+    with open(followersFile, 'r') as groupMembers:
+        for memberHandle in groupMembers:
+            if memberHandle!=handle:
+                memberNickname=memberHandle.split('@')[0]
+                memberDomain=memberHandle.split('@')[0]
+                memberPort=port
+                if ':' in memberDomain:
+                    memberPortStr=memberDomain.split(':')[1]
+                    if memberPortStr.isdigit():
+                        memberPort=int(memberPortStr)
+                    memberDomain=memberDomain.split(':')[0]
+                sendSignedJson(postJsonObject,session,baseDir, \
+                               nickname,domain,port, \
+                               memberNickname,memberDomain,memberPort,None, \
+                               httpPrefix,False,False,federationList, \
+                               sendThreads,postLog,cachedWebfingers, \
+                               personCache,debug,projectVersion)
+
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1258,7 +1305,9 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     if '#' in actor:
         actor=keyId.split('#')[0]
 
-    if receiveLike(session,handle, \
+    isGroup=groupHandle(baseDir,handle)
+
+    if receiveLike(session,handle,isGroup, \
                    baseDir,httpPrefix, \
                    domain,port, \
                    sendThreads,postLog, \
@@ -1271,7 +1320,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Like accepted from '+actor)
         return False
 
-    if receiveUndoLike(session,handle, \
+    if receiveUndoLike(session,handle,isGroup, \
                        baseDir,httpPrefix, \
                        domain,port, \
                        sendThreads,postLog, \
@@ -1284,7 +1333,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Undo like accepted from '+actor)
         return False
 
-    if receiveAnnounce(session,handle, \
+    if receiveAnnounce(session,handle,isGroup, \
                        baseDir,httpPrefix, \
                        domain,port, \
                        sendThreads,postLog, \
@@ -1296,7 +1345,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         if debug:
             print('DEBUG: Announce accepted from '+actor)
 
-    if receiveUndoAnnounce(session,handle, \
+    if receiveUndoAnnounce(session,handle,isGroup, \
                            baseDir,httpPrefix, \
                            domain,port, \
                            sendThreads,postLog, \
@@ -1309,7 +1358,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Undo announce accepted from '+actor)
         return False
 
-    if receiveDelete(session,handle, \
+    if receiveDelete(session,handle,isGroup, \
                      baseDir,httpPrefix, \
                      domain,port, \
                      sendThreads,postLog, \
@@ -1332,36 +1381,43 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         return True
 
     if messageJson.get('postNickname'):
-        postJson=messageJson['post']
+        postJsonObject=messageJson['post']
     else:
-        postJson=messageJson
+        postJsonObject=messageJson
 
-    if validPostContent(postJson,maxMentions):
-        # create a DM notification file if needed
-        if isDM(postJson):
-            dmNotify(baseDir,handle)
+    if validPostContent(postJsonObject,maxMentions):
+        if not isGroup:
+            # create a DM notification file if needed
+            if isDM(postJsonObject):
+                dmNotify(baseDir,handle)
 
-        # get the actor being replied to
-        domainFull=domain
-        if port:
-            if ':' not in domain:
-                if port!=80 and port!=443:
-                    domainFull=domainFull+':'+str(port)
-        actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
+            # get the actor being replied to
+            domainFull=domain
+            if port:
+                if ':' not in domain:
+                    if port!=80 and port!=443:
+                        domainFull=domainFull+':'+str(port)
+            actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
 
-        # create a reply notification file if needed
-        if isReply(postJson,actor):
-            replyNotify(baseDir,handle)
+            # create a reply notification file if needed
+            if isReply(postJsonObject,actor):
+                replyNotify(baseDir,handle)
 
         # get the avatar for a reply/announce
-        obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJson,debug)
+        obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
 
         # save the post to file
         try:
             with open(destinationFilename, 'w+') as fp:
-                commentjson.dump(postJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
         except Exception as e:
             print(e)
+
+        # send the post out to group members
+        if isGroup:
+            sendToGroupMembers(session,baseDir,handle,port,postJsonObject, \
+                               httpPrefix,federationList,sendThreads, \
+                               postLog,cachedWebfingers,personCache,debug)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):

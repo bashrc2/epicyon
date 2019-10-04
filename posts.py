@@ -1314,9 +1314,11 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                            postPath,httpPrefix,withDigest,postJsonStr)
 
     # Keep the number of threads being used small
-    while len(sendThreads)>10:
+    while len(sendThreads)>20:
+        print('WARN: Maximum threads reached - killing send thread')
         sendThreads[0].kill()
         sendThreads.pop(0)
+        print('WARN: thread killed')
     if debug:
         print('DEBUG: starting thread to send post')
         pprint(postJsonObject)
