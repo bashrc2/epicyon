@@ -1316,7 +1316,7 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             'type': 'Mention'
         }
 
-    postJsonObject['actor']=[httpPrefix+'://'+domain+'/users/'+nickname]
+    postJsonObject['actor']=httpPrefix+'://'+domain+'/users/'+nickname
     postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
     postJsonObject['cc']=[cc]
     postJsonObject['object']['to']=postJsonObject['to']
