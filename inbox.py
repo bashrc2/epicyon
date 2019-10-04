@@ -1290,6 +1290,16 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     nickname=handle.split('@')[0]
     groupname=getGroupName(baseDir,handle)
     domain=handle.split('@')[1]
+    if ':' not in domain:
+        if port:
+            if port!=80 and port !=443:
+                domain=domain+':'+str(port)
+    # set sender
+    postJsonObject['actor']=[httpPrefix+'://'+domain+'/users/'+nickname]
+    postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
+    postJsonObject['cc']=[]
+    postJsonObject['object']['to']=postJsonObject['to']
+    postJsonObject['object']['cc']=[]
     if ':' in domain:
         domain=domain.split(':')[0]
     with open(followersFile, 'r') as groupMembers:
@@ -1297,9 +1307,6 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             if memberHandle!=handle:
                 memberNickname=memberHandle.split('@')[0]
                 memberDomain=memberHandle.split('@')[1]
-                # set the recipient
-                postJsonObject['object']['to']=[httpPrefix+'://'+memberDomain+'/users/'+memberNickname]
-                postJsonObject['object']['cc']=[]
                 # set subject including group name
                 postJsonObject['object']['sensitive']=True
                 if postJsonObject['object'].get('summary'):
@@ -1315,7 +1322,8 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
                     memberDomain=memberDomain.split(':')[0]
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
-                               memberNickname,memberDomain,memberPort,None, \
+                               memberNickname,memberDomain,memberPort, \
+                               'https://www.w3.org/ns/activitystreams#Public', \
                                httpPrefix,False,False,federationList, \
                                sendThreads,postLog,cachedWebfingers, \
                                personCache,debug,projectVersion)
