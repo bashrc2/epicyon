@@ -1311,11 +1311,20 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
         # add mention to tag list
         if not postJsonObject['object']['tag']:
             postJsonObject['object']['tag']=[]
-        postJsonObject['object']['tag'].append({
-            'href': sendingActor,
-            'name': senderStr,
-            'type': 'Mention'
-        })
+        # check if the mention already exists
+        mentionExists=False
+        for mention in postJsonObject['object']['tag']:
+            if mention['type']=='Mention':
+                if mention.get('href'):
+                    if mention['href']==sendingActor:
+                        mentionExists=True
+        if not mentionExists:
+            # add the mention of the original sender
+            postJsonObject['object']['tag'].append({
+                'href': sendingActor,
+                'name': senderStr,
+                'type': 'Mention'
+            })
 
     postJsonObject['actor']=httpPrefix+'://'+domainFull+'/users/'+nickname
     postJsonObject['to']=[httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers']
