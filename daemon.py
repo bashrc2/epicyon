@@ -2985,9 +2985,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     actorJson['type']='Service'
                                     actorChanged=True
                         else:
-                            if actorJson['type']!='Person':
-                                actorJson['type']='Person'
-                                actorChanged=True
+                            if fields.get('isGroup'):
+                                if fields['isGroup']=='on':
+                                    if actorJson['type']!='Group':
+                                        actorJson['type']='Group'
+                                        actorChanged=True
+                            else:
+                                if actorJson['type']!='Person':
+                                    actorJson['type']='Person'
+                                    actorChanged=True
                         # save filtered words list
                         filterFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/filters.txt'
                         if fields.get('filteredWords'):

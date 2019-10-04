@@ -536,6 +536,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         return ''
 
     isBot=''
+    isGroup=''
     displayNickname=nickname
     bioStr=''
     manuallyApprovesFollowers=''
@@ -559,6 +560,10 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         if actorJson.get('type'):
             if actorJson['type']=='Service':
                 isBot='checked'
+                isGroup=''
+            elif actorJson['type']=='Group':
+                isGroup='checked'
+                isBot=''
                 
     filterStr=''
     filterFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/filters.txt'
@@ -639,6 +644,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         '    <div class="container">' \
         '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>'+translate['Approve follower requests']+'<br>' \
         '      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>' \
+        '      <input type="checkbox" class=profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>' \
         '      <br><b>'+translate['Filtered words']+'</b>' \
         '      <br>'+translate['One per line']+ \
         '      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>' \

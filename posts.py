@@ -1399,6 +1399,7 @@ def sendToNamedAddresses(session,baseDir: str, \
             if postJsonObject['type']=='Update' and \
                (postJsonObject['object']['type']=='Person' or \
                 postJsonObject['object']['type']=='Application' or \
+                postJsonObject['object']['type']=='Group' or \
                 postJsonObject['object']['type']=='Service'):
                 # use the original object, which has a 'to'
                 recipientsObject=postJsonObject
@@ -1567,6 +1568,7 @@ def sendToFollowers(session,baseDir: str, \
                             if postJsonObject['object'].get('type'):
                                 if postJsonObject['object']['type']=='Person' or \
                                    postJsonObject['object']['type']=='Application' or \
+                                   postJsonObject['object']['type']=='Group' or \
                                    postJsonObject['object']['type']=='Service':
                                     print('Sending profile update to shared inbox of '+toDomain)
                                     toNickname='inbox'
