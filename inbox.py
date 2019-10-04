@@ -1296,6 +1296,17 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
                 domain=domain+':'+str(port)
     # set sender
     cc=''
+    sendingActor=postJsonObject['actor']
+    sendingActorNickname=getNicknameFromActor(sendingActor)
+    sendingActorDomain,sendingActorPort=getDomainFromActor(sendingActor)
+    sendingActorDomainFull=sendingActorDomain
+    if ':' in sendingActorDomain:
+        if sendingActorPort:
+            if sendingActorPort!=80 and sendingActorPort!=443:
+                sendingActorDomainFull=sendingActorDomain+':'+str(sendingActorPort)
+    if not postJsonObject['object']['content'].startswith('@'+sendingActorNickname+'@'+sendingActorDomainFull):
+        postJsonObject['object']['content']='@'+sendingActorNickname+'@'+sendingActorDomainFull+' '+postJsonObject['object']['content']
+
     postJsonObject['actor']=[httpPrefix+'://'+domain+'/users/'+nickname]
     postJsonObject['to']=[httpPrefix+'://'+domain+'/users/'+nickname+'/followers']
     postJsonObject['cc']=[cc]
