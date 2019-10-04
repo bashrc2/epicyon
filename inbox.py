@@ -1300,6 +1300,9 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
     postJsonObject['cc']=[]
     postJsonObject['object']['to']=postJsonObject['to']
     postJsonObject['object']['cc']=postJsonObject['cc']
+    # set subject
+    if not postJsonObject['object'].get('summary'):
+        postJsonObject['object']['summary']='General Discussion'
     if ':' in domain:
         domain=domain.split(':')[0]
     with open(followersFile, 'r') as groupMembers:
@@ -1307,9 +1310,6 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
             if memberHandle!=handle:
                 memberNickname=memberHandle.split('@')[0]
                 memberDomain=memberHandle.split('@')[1]
-                # set subject
-                if not postJsonObject['object'].get('summary'):
-                    postJsonObject['object']['summary']='General Discussion'
                 memberPort=port
                 if ':' in memberDomain:
                     memberPortStr=memberDomain.split(':')[1]
