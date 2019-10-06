@@ -538,14 +538,6 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
     """
     acceptHandle=nickname+'@'+domain
 
-    # Remove any follow requests rejected for the account being followed.
-    # It's assumed that if you are following someone then you are
-    # ok with them following back. If this isn't the case then a rejected
-    # follow request will block them again.
-    removeFromFollowRejects(baseDir, \
-                            nicknameToFollow,domainToFollow, \
-                            acceptHandle)
-
     # send accept back
     if debug:
         print('DEBUG: sending Accept activity for follow request which arrived at '+ \
@@ -644,6 +636,14 @@ def sendFollowRequest(session,baseDir: str, \
         'actor': followActor,
         'object': followedId
     }
+
+    # Remove any follow requests rejected for the account being followed.
+    # It's assumed that if you are following someone then you are
+    # ok with them following back. If this isn't the case then a rejected
+    # follow request will block them again.
+    removeFromFollowRejects(baseDir, \
+                            nickname,domain, \
+                            followNickname+'@'+requestDomain)
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
                    followNickname,followDomain,followPort, \
