@@ -26,27 +26,43 @@ from auth import createBasicAuthHeader
 from auth import createPassword
 from session import postJson
 
-def removeFromFollowRequests(baseDir: str, \
-                             nickname: str,domain: str, \
-                             denyHandle: str):
-    """Removes a handle from follow requests
+def removeFromFollowBase(baseDir: str, \
+                         nickname: str,domain: str, \
+                         acceptOrDenyHandle: str,followFile: str) -> None:
+    """Removes a handle from follow requests or rejects file
     """
     handle=nickname+'@'+domain
     accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountsDir+'/followrequests.txt'
+    approveFollowsFilename=accountsDir+'/'+followFile+'.txt'
     if not os.path.isfile(approveFollowsFilename):
         if debug:
             print('WARN: Follow requests file '+approveFollowsFilename+' not found')
         return
-    if denyHandle not in open(approveFollowsFilename).read():
+    if acceptOrDenyHandle not in open(approveFollowsFilename).read():
         return
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
         for approveHandle in approvefile:
-            if not approveHandle.startswith(denyHandle):
+            if not approveHandle.startswith(acceptOrDenyHandle):
                 approvefilenew.write(approveHandle)
     approvefilenew.close()
     os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+
+def removeFromFollowRequests(baseDir: str, \
+                             nickname: str,domain: str, \
+                             denyHandle: str) -> None:
+    """Removes a handle from follow requests
+    """
+    removeFromFollowBase(baseDir,nickname,domain, \
+                         denyHandle,'followrequests')
+
+def removeFromFollowRejects(baseDir: str, \
+                            nickname: str,domain: str, \
+                            acceptHandle: str) -> None:
+    """Removes a handle from follow rejects
+    """
+    removeFromFollowBase(baseDir,nickname,domain, \
+                         acceptHandle,'followrejects')
 
 def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
     """Is the given actor a follower of the given nickname?
