@@ -1233,7 +1233,7 @@ def dmNotify(baseDir: str,handle: str,url: str) -> None:
         with open(dmFile, 'w') as fp:
             fp.write(url)
 
-def replyNotify(baseDir: str,handle: str) -> None:
+def replyNotify(baseDir: str,handle: str,url: str) -> None:
     """Creates a notification that a new reply has arrived
     """
     accountDir=baseDir+'/accounts/'+handle
@@ -1242,7 +1242,7 @@ def replyNotify(baseDir: str,handle: str) -> None:
     replyFile=accountDir+'/.newReply'
     if not os.path.isfile(replyFile):
         with open(replyFile, 'w') as fp:
-            fp.write('\n')
+            fp.write(url)
 
 def groupHandle(baseDir: str,handle: str) -> bool:
     """Is the given account handle a group?
@@ -1454,7 +1454,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             # create a DM notification file if needed
             if isDM(postJsonObject):
                 nickname=handle.split('@')[0]
-                dmNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/dm')
+                if nickname!='inbox':
+                    dmNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/dm')
 
             # get the actor being replied to
             domainFull=domain
@@ -1466,7 +1467,9 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
             # create a reply notification file if needed
             if isReply(postJsonObject,actor):
-                replyNotify(baseDir,handle)
+                nickname=handle.split('@')[0]
+                if nickname!='inbox':
+                    replyNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/tlreplies')
 
         # get the avatar for a reply/announce
         obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
