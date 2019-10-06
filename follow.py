@@ -536,18 +536,20 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
+    acceptHandle=nickname+'@'+domain
+
     # Remove any follow requests rejected for the account being followed.
     # It's assumed that if you are following someone then you are
     # ok with them following back. If this isn't the case then a rejected
     # follow request will block them again.
     removeFromFollowRejects(baseDir, \
                             nicknameToFollow,domainToFollow, \
-                            nickname+'@'+domain)
+                            acceptHandle)
 
     # send accept back
     if debug:
         print('DEBUG: sending Accept activity for follow request which arrived at '+ \
-              nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
+              nicknameToFollow+'@'+domainToFollow+' back to '+acceptHandle)
     acceptJson=createAccept(baseDir,federationList, \
                             nicknameToFollow,domainToFollow,port, \
                             personUrl,'',httpPrefix,followJson,acceptedCaps)
@@ -556,7 +558,7 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
         print('DEBUG: sending follow Accept from '+ \
               nicknameToFollow+'@'+domainToFollow+ \
               ' port '+str(port)+' to '+ \
-              nickname+'@'+domain+' port '+ str(fromPort))
+              acceptHandle+' port '+ str(fromPort))
     clientToServer=False
     return sendSignedJson(acceptJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
