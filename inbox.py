@@ -1222,7 +1222,7 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
                           ' obtaining actor for '+lookupActor)
                 time.sleep(5)                
 
-def dmNotify(baseDir: str,handle: str) -> None:
+def dmNotify(baseDir: str,handle: str,url: str) -> None:
     """Creates a notification that a new DM has arrived
     """
     accountDir=baseDir+'/accounts/'+handle
@@ -1231,7 +1231,7 @@ def dmNotify(baseDir: str,handle: str) -> None:
     dmFile=accountDir+'/.newDM'
     if not os.path.isfile(dmFile):
         with open(dmFile, 'w') as fp:
-            fp.write('\n')
+            fp.write(url)
 
 def replyNotify(baseDir: str,handle: str) -> None:
     """Creates a notification that a new reply has arrived
@@ -1453,7 +1453,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         if not isGroup:
             # create a DM notification file if needed
             if isDM(postJsonObject):
-                dmNotify(baseDir,handle)
+                nickname=handle.split('@')[0]
+                dmNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/dm')
 
             # get the actor being replied to
             domainFull=domain
