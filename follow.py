@@ -536,6 +536,14 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
+    # Remove any follow requests rejected for the account being followed.
+    # It's assumed that if you are following someone then you are
+    # ok with them following back. If this isn't the case then a rejected
+    # follow request will block them again.
+    removeFromFollowRejects(baseDir, \
+                            nicknameToFollow,domainToFollow, \
+                            nickname+'@'+domain)
+
     # send accept back
     if debug:
         print('DEBUG: sending Accept activity for follow request which arrived at '+ \
