@@ -1632,7 +1632,15 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
         if not inProfileName:
             displayName=replaceEmojiFromTags(displayName,emojiTagsList,'post header')
         else:
-            displayName=replaceEmojiFromTags(displayName,emojiTagsList,'profile')                    
+            displayName=replaceEmojiFromTags(displayName,emojiTagsList,'profile')
+
+        # remove any stray emoji
+        while ':' in displayName:
+            nameStr=displayName.split(':')[1]
+            if ':' not in nameStr:
+                break
+            emojiStr=nameStr.split(':')[0]
+            displayName=displayName.replace(':'+emojiStr+':','').strip()
         print('TAG: displayName after tag replacements: '+displayName)
     return displayName
 
