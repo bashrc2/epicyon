@@ -329,6 +329,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                             time.sleep(1)
                             emojiDictCtr+=1
 
+                    print('TAG: looking up emoji for :'+wordStr2+':')
                     addEmoji(baseDir,':'+wordStr2+':',httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
     # replace words with their html versions
