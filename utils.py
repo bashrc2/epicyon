@@ -69,7 +69,7 @@ def urlPermitted(url: str, federationList: [],capability: str):
             return True
     return False
 
-def getDisplayName(actor: str,personCache: {}) -> str:
+def getDisplayName(baseDir: str,actor: str,personCache: {}) -> str:
     """Returns the display name for the given actor
     """
     if '/statuses/' in actor:
@@ -79,6 +79,19 @@ def getDisplayName(actor: str,personCache: {}) -> str:
     if personCache[actor].get('actor'):
         if personCache[actor]['actor'].get('name'):
             return personCache[actor]['actor']['name']
+    else:
+        # Try to obtain from the cached actors
+        cachedActorFilename=baseDir+'/cache/actors/'+actor.replace('/','#')+'.json'
+        if os.path.isfile(cachedActorFilename):
+            actorJson=None
+            try:
+                with open(cachedActorFilename, 'r') as fp:
+                    actorJson=commentjson.load(fp)
+            except Exception as e:
+                print(e)
+            if actorJson:
+                if actorJson.get('name'):
+                    return(actorJson['name'])
     return None
 
 def getNicknameFromActor(actor: str) -> str:

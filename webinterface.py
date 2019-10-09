@@ -1702,7 +1702,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
 
-    displayName=getDisplayName(postJsonObject['actor'],personCache)
+    displayName=getDisplayName(baseDir,postJsonObject['actor'],personCache)
     if displayName:
         displayName= \
             addEmojiToDisplayName(baseDir,httpPrefix, \
@@ -1730,7 +1730,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                     announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
                     if announceNickname:
                         announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-                        announceDisplayName=getDisplayName(postJsonObject['object']['attributedTo'],personCache)
+                        announceDisplayName=getDisplayName(baseDir,postJsonObject['object']['attributedTo'],personCache)
                         if announceDisplayName:
                             announceDisplayName= \
                                 addEmojiToDisplayName(baseDir,httpPrefix, \
@@ -1762,11 +1762,12 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
-                        replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
+                        replyActor=replyActor.split('/statuses/')[0]
+                        replyNickname=getNicknameFromActor(replyActor)
                         if replyNickname:
-                            replyDomain,replyPort=getDomainFromActor(postJsonObject['object']['inReplyTo'])
+                            replyDomain,replyPort=getDomainFromActor(replyActor)
                             if replyNickname and replyDomain:
-                                replyDisplayName=getDisplayName(postJsonObject['object']['inReplyTo'],personCache)
+                                replyDisplayName=getDisplayName(baseDir,replyActor,personCache)
                                 if replyDisplayName:
                                     replyDisplayName= \
                                         addEmojiToDisplayName(baseDir,httpPrefix, \
@@ -1775,7 +1776,6 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
 
                                     # show avatar of person replied to
-                                    replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
                                     replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost= \
