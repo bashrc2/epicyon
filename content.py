@@ -311,8 +311,10 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             if ':' in wordStr:
                 print('TAG: emoji located - '+wordStr)
                 wordStr2=wordStr.split(':')[1]
+                print('TAG: wordStr2a - '+wordStr2)
                 if ':' in wordStr2:
                     wordStr2=wordStr2.split(':')[0]
+                    print('TAG: wordStr2b - '+wordStr2)
                     if not emojiDict:
                         print('Loading emoji lookup')
                         if not os.path.isfile(baseDir+'/emoji/emoji.json'):
