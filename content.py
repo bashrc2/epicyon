@@ -309,6 +309,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             continue
         if len(wordStr)>2:
             if ':' in wordStr:
+                print('TAG: emoji located - '+wordStr)
                 wordStr2=wordStr.split(':')[1]
                 if ':' in wordStr2:
                     wordStr2=wordStr2.split(':')[0]
