@@ -1731,6 +1731,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                     announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
                     if announceNickname:
                         announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
+                        getPersonFromCache(baseDir,postJsonObject['object']['attributedTo'],personCache)
                         announceDisplayName=getDisplayName(baseDir,postJsonObject['object']['attributedTo'],personCache)
                         if announceDisplayName:
                             announceDisplayName= \
@@ -1768,6 +1769,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                         if replyNickname:
                             replyDomain,replyPort=getDomainFromActor(replyActor)
                             if replyNickname and replyDomain:
+                                getPersonFromCache(baseDir,replyActor,personCache)
                                 replyDisplayName=getDisplayName(baseDir,replyActor,personCache)
                                 if replyDisplayName:
                                     replyDisplayName= \
