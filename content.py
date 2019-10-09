@@ -237,6 +237,24 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         return True
     return False
 
+def removeLongWords(content: str,maxWordLength: int) -> str:
+    """Breaks up long words so that on mobile screens this doesn't disrupt the layout
+    """
+    words=content.split(' ')
+    for wordStr in words:
+        if not wordStr.startswith('<'):
+            if len(wordStr)>maxWordLength:
+                if len(wordStr[maxWordLength:])<maxWordLength:
+                    content= \
+                        content.replace(wordStr, \
+                                        wordStr[:maxWordLength]+'\n'+ \
+                                        wordStr[maxWordLength:])
+                else:
+                    content= \
+                        content.replace(wordStr, \
+                                        wordStr[:maxWordLength])
+    return content
+
 def addHtmlTags(baseDir: str,httpPrefix: str, \
                 nickname: str,domain: str,content: str, \
                 recipients: [],hashtags: {}) -> str:
@@ -245,6 +263,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     """
     if content.startswith('<p>'):
         return content
+    maxWordLength=40
     content=content.replace('\n',' --linebreak-- ')
     content=addMusicTag(content,'nowplaying')
     words=content.replace(',',' ').replace(';',' ').split(' ')
@@ -279,7 +298,10 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             following = f.readlines()
 
     # extract mentions and tags from words
+    longWordsExist=False
     for wordStr in words:
+        if len(wordStr)>maxWordLength:
+            longWordsExist=True
         if addMention(wordStr,httpPrefix,following,replaceMentions,recipients,hashtags):
             continue
         if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
@@ -315,6 +337,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=addWebLinks(content)
+    if longWordsExist:
+        content=removeLongWords(content,maxWordLength)
     content=content.replace(' --linebreak-- ','</p><p>')
     return '<p>'+content+'</p>'
                 
