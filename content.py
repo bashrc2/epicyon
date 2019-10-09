@@ -308,8 +308,10 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
             continue
         if len(wordStr)>2:
-            if wordStr.startswith(':'):
-                if wordStr.endswith(':'):
+            if ':' in wordStr:
+                wordStr2=wordStr.split(':')[1]
+                if ':' in wordStr2:
+                    wordStr2=wordStr2.split(':')[0]
                     if not emojiDict:
                         print('Loading emoji lookup')
                         if not os.path.isfile(baseDir+'/emoji/emoji.json'):
@@ -327,7 +329,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                             time.sleep(1)
                             emojiDictCtr+=1
 
-                    addEmoji(baseDir,wordStr,httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
+                    addEmoji(baseDir,':'+wordStr2+':',httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
     # replace words with their html versions
     for wordStr,replaceStr in replaceMentions.items():
