@@ -1762,7 +1762,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
-                        replyActor=replyActor.split('/statuses/')[0]
+                        replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
                         replyNickname=getNicknameFromActor(replyActor)
                         if replyNickname:
                             replyDomain,replyPort=getDomainFromActor(replyActor)
