@@ -59,6 +59,7 @@ def addWebLinks(content: str) -> str:
     if not ('https://' in content or 'http://' in content):
         return content
 
+    maxLinkLength=40
     words=content.replace('\n',' --linebreak-- ').split(' ')
     replaceDict={}
     for w in words:
@@ -76,9 +77,9 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">dat://</span>'
             linkText=w.replace('https://','').replace('http://','').replace('dat://','')
             # prevent links from becoming too long
-            if len(linkText)>40:
-                markup+='<span class="ellipsis">'+linkText[:40]+'</span>'
-                markup+='<span class="invisible">'+linkText[40:]+'</span></a>'
+            if len(linkText)>maxLinkLength:
+                markup+='<span class="ellipsis">'+linkText[:maxLinkLength]+'</span>'
+                markup+='<span class="invisible">'+linkText[maxLinkLength:]+'</span></a>'
             else:
                 markup+='<span class="ellipsis">'+linkText+'</span></a>'
             replaceDict[w]=markup
