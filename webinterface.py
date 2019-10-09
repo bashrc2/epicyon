@@ -1637,6 +1637,8 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
 
         # remove any stray emoji
         while ':' in displayName:
+            if '://' in displayName:
+                break
             emojiStr=displayName.split(':')[1]
             displayName=displayName.replace(':'+emojiStr+':','').strip()
             print('TAG: displayName after tags 3: '+displayName)
