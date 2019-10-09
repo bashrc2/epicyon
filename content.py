@@ -311,29 +311,25 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             if ':' in wordStr:
                 print('TAG: emoji located - '+wordStr)
                 wordStr2=wordStr.split(':')[1]
-                print('TAG: wordStr2a - '+wordStr2)
-                if ':' in wordStr2:
-                    wordStr2=wordStr2.split(':')[0]
-                    print('TAG: wordStr2b - '+wordStr2)
-                    if not emojiDict:
-                        print('Loading emoji lookup')
-                        if not os.path.isfile(baseDir+'/emoji/emoji.json'):
-                            copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
-                    emojiDictCtr=0
-                    while not emojiDict and emojiDictCtr<4:
-                        if emojiDictCtr>0:
-                            print('Retry emoji load '+baseDir+'/emoji/emoji.json')
-                        try:
-                            with open(baseDir+'/emoji/emoji.json', 'r') as fp:
-                                emojiDict=commentjson.load(fp)
-                            break
-                        except Exception as e:
-                            print('Failed to load emoji: '+baseDir+'/emoji/emoji.json '+str(e))
-                            time.sleep(1)
+                if not emojiDict:
+                    print('Loading emoji lookup')
+                    if not os.path.isfile(baseDir+'/emoji/emoji.json'):
+                        copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+                emojiDictCtr=0
+                while not emojiDict and emojiDictCtr<4:
+                    if emojiDictCtr>0:
+                        print('Retry emoji load '+baseDir+'/emoji/emoji.json')
+                    try:
+                        with open(baseDir+'/emoji/emoji.json', 'r') as fp:
+                            emojiDict=commentjson.load(fp)
+                        break
+                    except Exception as e:
+                        print('Failed to load emoji: '+baseDir+'/emoji/emoji.json '+str(e))
+                        time.sleep(1)
                             emojiDictCtr+=1
 
-                    print('TAG: looking up emoji for :'+wordStr2+':')
-                    addEmoji(baseDir,':'+wordStr2+':',httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
+                print('TAG: looking up emoji for :'+wordStr2+':')
+                addEmoji(baseDir,':'+wordStr2+':',httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
 
     # replace words with their html versions
     for wordStr,replaceStr in replaceMentions.items():
