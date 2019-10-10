@@ -2744,7 +2744,7 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     emojiStr+=htmlFooter()
     return emojiStr
 
-def weekDayOfMonthStart(monthNumber: int,year: int):
+def weekDayOfMonthStart(monthNumber: int,year: int) -> int:
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
@@ -2825,7 +2825,7 @@ def htmlCalendar(translate: {}, \
         calendarStr+='  <tr>\n'
         for dayNumber in range(1,7):
             if (weekOfMonth>1 and dayOfMonth<=daysInMonth) or \
-               (weekOfMonth==1 and dayNumber>=weekDayOfMonthStart(monthNumber,year)):
+               (weekOfMonth==1 and dayOfMonth>=weekDayOfMonthStart(monthNumber,year)):
                 dayOfMonth+=1
                 calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
             else:
