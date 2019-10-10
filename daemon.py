@@ -99,6 +99,7 @@ from webinterface import htmlSuspended
 from webinterface import htmlGetLoginCredentials
 from webinterface import htmlNewPost
 from webinterface import htmlFollowConfirm
+from webinterface import htmlCalendar
 from webinterface import htmlSearch
 from webinterface import htmlSearchEmoji
 from webinterface import htmlSearchEmojiTextEntry
@@ -1038,6 +1039,17 @@ class PubServer(BaseHTTPRequestHandler):
                # show the search screen
                msg=htmlSearch(self.server.translate, \
                               self.server.baseDir,self.path).encode()
+               self._set_headers('text/html',len(msg),cookie)
+               self.wfile.write(msg)
+               self.server.GETbusy=False
+               return
+
+        # Show the calendar for a user
+        if htmlGET and '/users/' in self.path:
+           if self.path.endswith('/calendar'):
+               # show the calendar screen
+               msg=htmlCalendar(self.server.translate, \
+                                self.server.baseDir,self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
                self.wfile.write(msg)
                self.server.GETbusy=False

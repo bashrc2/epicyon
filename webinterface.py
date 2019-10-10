@@ -2743,6 +2743,30 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     emojiStr+=htmlFooter()
     return emojiStr
 
+def htmlCalendar(translate: {}, \
+                 baseDir: str,path: str) -> str:
+    """Show the calendar for a person
+    """
+    actor=path.replace('/calendar','')
+    nickname=getNicknameFromActor(actor)
+    domain,port=getDomainFromActor(actor)
+
+    if os.path.isfile(baseDir+'/img/calendar-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/calendar-background.png'):
+            copyfile(baseDir+'/img/calendar-background.png',baseDir+'/accounts/calendar-background.png')
+
+    cssFilename=baseDir+'/epicyon-calendar.css'
+    if os.path.isfile(baseDir+'/calendar.css'):
+        cssFilename=baseDir+'/calendar.css'        
+    with open(cssFilename, 'r') as cssFile:
+        calendarStyle = cssFile.read()
+
+    calendarStr=htmlHeader(cssFilename,calendarStyle)
+    #TODO
+    calendarStr+=htmlFooter()
+
+    return calendarStr
+
 def htmlSearch(translate: {}, \
                baseDir: str,path: str) -> str:
     """Search called from the timeline icon
