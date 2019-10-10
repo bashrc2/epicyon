@@ -2774,10 +2774,10 @@ def htmlCalendar(translate: {}, \
             first=False
         actor=actor.split('?')[0]
 
-    if year==1970 and monthNumber==1:
-        now=datetime.datetime.now()
-        year=now.year
-        monthNumber=now.month
+    if year==1970 and monthNumber==0:
+        currDate=datetime.datetime.now()
+        year=currDate.year
+        monthNumber=currDate.month
 
     print('Calendar year='+str(year)+' month='+str(monthNumber))
 
