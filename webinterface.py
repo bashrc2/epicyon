@@ -2749,7 +2749,6 @@ def weekDayOfMonthStart(monthNumber: int,year: int) -> int:
     1=sun, 7=sat
     """
     firstDayOfMonth=datetime(year, monthNumber, 1, 0, 0)
-    print('weekDayOfMonthStart: '+str(int(firstDayOfMonth.strftime("%w"))+1))
     return int(firstDayOfMonth.strftime("%w"))+1
 
 def htmlCalendar(translate: {}, \
@@ -2822,11 +2821,12 @@ def htmlCalendar(translate: {}, \
     calendarStr+='<tbody>\n'
 
     dayOfMonth=0
+    dow=weekDayOfMonthStart(monthNumber,year)
     for weekOfMonth in range(1,5):
         calendarStr+='  <tr>\n'
         for dayNumber in range(1,7):
             if (weekOfMonth>1 and dayOfMonth<=daysInMonth) or \
-               (weekOfMonth==1 and dayOfMonth>=weekDayOfMonthStart(monthNumber,year)):
+               (weekOfMonth==1 and dayNumber>=dow):
                 dayOfMonth+=1
                 calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
             else:
