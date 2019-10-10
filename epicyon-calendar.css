@@ -1,117 +1,123 @@
+:root {
+    --main-bg-color: #282c37;
+    --lines-color: darkgray;
+    --day-number: lightgray;
+}
+
 body {
-  background-color: #e66053;
-  color: #4E4F4A;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-  font-family: 'Montserrat';
-  font-weight: 700;
-  min-height: 100vh;
+    background-color: var(--main-bg-color);
+    color: gray;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-family: 'Montserrat';
+    font-weight: 700;
+    min-height: 100vh;
 }
 
 main {
-  background-color: #F6E9DC;
-  -ms-flex-preferred-size: 980px;
-      flex-basis: 980px;
+    background-color: #F6E9DC;
+    -ms-flex-preferred-size: 980px;
+    flex-basis: 980px;
 }
 
 .calendar {
-  table-display: fixed;
-  width: 100%;
+    table-display: fixed;
+    width: 100%;
 }
 
 .calendar__day__header,
 .calendar__day__cell {
-  border: 2px solid #e66053;
-  text-align: center;
-  width: 100% / 7;
-  vertical-align: middle;
+    border: 2px solid var(--lines-color);
+    text-align: center;
+    width: 100% / 7;
+    vertical-align: middle;
 }
 .calendar__day__header:first-child,
 .calendar__day__cell:first-child {
-  border-left: none;
+    border-left: none;
 }
 .calendar__day__header:last-child,
 .calendar__day__cell:last-child {
-  border-right: none;
+    border-right: none;
 }
 
 .calendar__day__header,
 .calendar__day__cell {
-  padding: .75rem 0 1.5rem;
+    padding: .75rem 0 1.5rem;
 }
 
 .calendar__banner--month {
-  text-align: center;
-  padding: .75rem;
+    text-align: center;
+    padding: .75rem;
 }
 .calendar__banner--month h1 {
-  background-color: #4E4F4A;
-  color: #F6E9DC;
-  display: inline-block;
-  font-size: 3rem;
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  padding: .5rem 2rem;
-  text-transform: uppercase;
+    background-color: #4E4F4A;
+    color: #F6E9DC;
+    display: inline-block;
+    font-size: 3rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    padding: .5rem 2rem;
+    text-transform: uppercase;
 }
 
 .calendar__day__header {
-  font-size: 1rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .calendar__day__cell {
-  font-size: 4rem;
-  position: relative;
+    font-size: 4rem;
+    position: relative;
 }
 
 tr:nth-child(odd) > .calendar__day__cell:nth-child(odd) {
-  color: #e66053;
+    color: var(--day-number);
 }
 
 tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
-  color: #e66053;
+    color: var(--day-number);
 }
 
 .calendar__day__cell[data-event] {
-  background-color: #e66053;
-  color: #4E4F4A;
+    background-color: blue;
+    color: blue;
 }
 .calendar__day__cell[data-event]:after {
-  content: attr(data-event);
-  color: #F6E9DC;
-  display: block;
-  font-weight: 400;
-  font-size: .75rem;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 1rem;
-  text-transform: uppercase;
+    content: attr(data-event);
+    color: #F6E9DC;
+    display: block;
+    font-weight: 400;
+    font-size: .75rem;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1rem;
+    text-transform: uppercase;
 }
 
 .calendar__day__cell[data-today] {
-  background-color: #4E4F4A;
-  border-color: #4E4F4A;
-  color: #F6E9DC;
+    background-color: #4E4F4A;
+    border-color: #4E4F4A;
+    color: #F6E9DC;
 }
 .calendar__day__cell[data-today]:after {
-  content: attr(data-today);
-  color: #F6E9DC;
-  display: block;
-  font-size: .75rem;
-  font-weight: 400;
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: 1rem;
-  text-transform: uppercase;
+    content: attr(data-today);
+    color: #F6E9DC;
+    display: block;
+    font-size: .75rem;
+    font-weight: 400;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1rem;
+    text-transform: uppercase;
 }
