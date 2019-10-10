@@ -11,6 +11,7 @@ import time
 import os
 import commentjson
 from datetime import datetime
+from datetime import date
 from dateutil.parser import parse
 from shutil import copyfile
 from shutil import copyfileobj
@@ -2743,13 +2744,51 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     emojiStr+=htmlFooter()
     return emojiStr
 
+def weekDayOfMonthStart(monthNumber: int,year: int):
+    """Gets the day number of the first day of the month
+    1=sun, 7=sat
+    """
+    firstDayOfMonth=datetime.datetime(year, monthNumber, 1, 0, 0)
+    return int(firstDayOfMonth.strftime("%w"))
+
 def htmlCalendar(translate: {}, \
                  baseDir: str,path: str) -> str:
     """Show the calendar for a person
     """
+    monthNumber=0
+    year=1970
     actor=path.replace('/calendar','')
+    if '?' in actor:
+        first=True
+        for p in actor.split('?'):
+            if not first:
+                if '=' in p:
+                    if p.split('=')[0]=='year':
+                        numStr=p.split('=')[1]
+                        if numStr.isdigit():
+                            year=int(numStr)
+                    elif p.split('=')[0]=='month':
+                        numStr=p.split('=')[1]
+                        if numStr.isdigit():
+                            monthNumber=int(numStr)
+            first=False
+        actor=actor.split('?')[0]
+
+    if year==1970 and monthNumber==1:
+        now = datetime.datetime.now()
+        year=now.year
+        monthNumber=now.month
+
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
+    
+    months=['Jaruary','February','March','April','May','June','July','August','September','October','November','December']
+    monthName=translate[months[monthNumber-1]]
+
+    if monthNumber<12:
+        daysInMonth=(date(year, monthNumber+1, 1) - date(year, monthNumber, 1)).days
+    else:
+        daysInMonth=(date(year+1, 1, 1) - date(year, monthNumber, 1)).days
 
     if os.path.isfile(baseDir+'/img/calendar-background.png'):
         if not os.path.isfile(baseDir+'/accounts/calendar-background.png'):
@@ -2760,11 +2799,40 @@ def htmlCalendar(translate: {}, \
         cssFilename=baseDir+'/calendar.css'        
     with open(cssFilename, 'r') as cssFile:
         calendarStyle = cssFile.read()
-
+    
     calendarStr=htmlHeader(cssFilename,calendarStyle)
-    #TODO
-    calendarStr+=htmlFooter()
+    calendarStr+='<table class="calendar">\n'
+    calendarStr+='<caption class="calendar__banner--month">\n'
+    calendarStr+='  <h1>'+monthName+'</h1>\n'
+    calendarStr+='</caption>\n'
+    calendarStr+='<thead>\n'
+    calendarStr+='<tr>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Sun']+'</th>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Mon']+'</th>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Tue']+'</th>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Wed']+'</th>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Thu']+'</th>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Fri']+'</th>\n'
+    calendarStr+='  <th class="calendar__day__header">'+translate['Sat']+'</th>\n'
+    calendarStr+='</tr>\n'
+    calendarStr+='</thead>\n'
+    calendarStr+='<tbody>\n'
 
+    dayOfMonth=0
+    for weekOfMonth in range(1,5):
+        calendarStr+='  <tr>\n'
+        for dayNumber in range(1,7):
+            if (weekOfMonth>1 and dayOfMonth<=daysInMonth) or \
+               (weekOfMonth==1 and dayNumber>=weekDayOfMonthStart(monthNumber,year)):
+                dayOfMonth+=1
+                calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
+            else:
+                calendarStr+='    <td class="calendar__day__cell"></td>\n'
+        calendarStr+='  </tr>\n'
+        
+    calendarStr+='</tbody>\n'
+    calendarStr+='</table>\n'
+    calendarStr+=htmlFooter()
     return calendarStr
 
 def htmlSearch(translate: {}, \
