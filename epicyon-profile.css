@@ -866,9 +866,9 @@ div.gallery img {
     .container img.emojisearch {
         float: right;
         max-width: 400px;
-        width: 12%;
+        width: 11%;
         padding: 0px 7px;
-        margin-right: 20px;
+        margin-right: 0px;
         border-radius: 10%;
     }
     .container img.emojicalendar {
