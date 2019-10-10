@@ -535,7 +535,10 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             eventName=content
         eventDateStr=eventDate
         if eventTime:
-            eventDateStr=eventDate+'T'+eventTime+':00Z'
+            if eventTime.endswith('Z'):
+                eventDateStr=eventDate+'T'+eventTime
+            else:
+                eventDateStr=eventDate+'T'+eventTime+':00Z'
         else:
             eventDateStr=eventDate+'T00:00:00Z'
         tags.append({
