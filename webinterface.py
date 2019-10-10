@@ -2774,8 +2774,8 @@ def htmlCalendar(translate: {}, \
             first=False
         actor=actor.split('?')[0]
 
+    currDate=datetime.now()
     if year==1970 and monthNumber==0:
-        currDate=datetime.now()
         year=currDate.year
         monthNumber=currDate.month
 
@@ -2828,7 +2828,16 @@ def htmlCalendar(translate: {}, \
             if (weekOfMonth>1 and dayOfMonth<daysInMonth) or \
                (weekOfMonth==1 and dayNumber>=dow):
                 dayOfMonth+=1
-                calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
+
+                isToday=False
+                if year==currDate.year:
+                    if currDate.month==monthNumber:
+                        if dayOfMonth==currDate.day:
+                            isToday=True
+                if not isToday:
+                    calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
+                else:
+                    calendarStr+='    <td class="calendar__day__cell" data-today="">'+str(dayOfMonth)+'</td>\n'
             else:
                 calendarStr+='    <td class="calendar__day__cell"></td>\n'
         calendarStr+='  </tr>\n'
