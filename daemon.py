@@ -1046,7 +1046,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # Show the calendar for a user
         if htmlGET and '/users/' in self.path:
-           if '/calendar?' in self.path:
+           if '/calendar' in self.path:
                # show the calendar screen
                msg=htmlCalendar(self.server.translate, \
                                 self.server.baseDir,self.path).encode()
