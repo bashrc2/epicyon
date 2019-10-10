@@ -2822,9 +2822,9 @@ def htmlCalendar(translate: {}, \
 
     dayOfMonth=0
     dow=weekDayOfMonthStart(monthNumber,year)
-    for weekOfMonth in range(1,5):
+    for weekOfMonth in range(1,6):
         calendarStr+='  <tr>\n'
-        for dayNumber in range(1,7):
+        for dayNumber in range(1,8):
             if (weekOfMonth>1 and dayOfMonth<=daysInMonth) or \
                (weekOfMonth==1 and dayNumber>=dow):
                 dayOfMonth+=1
