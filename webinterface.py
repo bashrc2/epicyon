@@ -2779,7 +2779,7 @@ def htmlCalendar(translate: {}, \
         year=currDate.year
         monthNumber=currDate.month
 
-    print('Calendar year='+str(year)+' month='+str(monthNumber))
+    print('Calendar year='+str(year)+' month='+str(monthNumber)+ ' '+str(weekDayOfMonthStart(monthNumber,year)))
 
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
