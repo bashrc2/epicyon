@@ -2480,6 +2480,12 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['subject']=None
             if not fields.get('replyTo'):
                 fields['replyTo']=None
+            if not fields.get('eventDate'):
+                fields['eventDate']=None
+            if not fields.get('eventTime'):
+                fields['eventTime']=None
+            if not fields.get('location'):
+                fields['location']=None
 
             if postType=='newpost':
                 messageJson= \
@@ -2489,7 +2495,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix, \
                                      fields['message'],False,False,False, \
                                      filename,attachmentMediaType,fields['imageDescription'],True, \
-                                     fields['replyTo'], fields['replyTo'],fields['subject'])
+                                     fields['replyTo'],fields['replyTo'],fields['subject'], \
+                                     fields['eventDate'],fields['eventTime'],fields['location'])
                 if messageJson:
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson,__version__):
@@ -2511,7 +2518,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix, \
                                        fields['message'],False,False,False, \
                                        filename,attachmentMediaType,fields['imageDescription'],True, \
-                                       fields['replyTo'], fields['replyTo'],fields['subject'])
+                                       fields['replyTo'], fields['replyTo'],fields['subject'], \
+                                       fields['eventDate'],fields['eventTime'],fields['location'])
                 if messageJson:
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson,__version__):
@@ -2533,7 +2541,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.httpPrefix, \
                                             fields['message'],True,False,False, \
                                             filename,attachmentMediaType,fields['imageDescription'],True, \
-                                            fields['replyTo'], fields['replyTo'],fields['subject'])
+                                            fields['replyTo'], fields['replyTo'],fields['subject'],
+                                            fields['eventDate'],fields['eventTime'],fields['location'])
                 if messageJson:
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson,__version__):
@@ -2550,6 +2559,10 @@ class PubServer(BaseHTTPRequestHandler):
             if postType=='newdm':
                 messageJson=None
                 if '@' in fields['message']:
+                    if self.server.debug:
+                        print('DEBUG: Event Date - '+str(fields['eventDate']))
+                        print('DEBUG: Event Time - '+str(fields['eventTime']))
+                        print('DEBUG: Event Location - '+str(fields['location']))
                     messageJson= \
                         createDirectMessagePost(self.server.baseDir, \
                                                 nickname, \
@@ -2560,7 +2573,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['imageDescription'],True, \
                                                 fields['replyTo'],fields['replyTo'], \
                                                 fields['subject'], \
-                                                self.server.debug)
+                                                self.server.debug, \
+                                                fields['eventDate'],fields['eventTime'],fields['location'])
                 if messageJson:
                     self.postToNickname=nickname
                     if self.server.debug:
@@ -3199,7 +3213,8 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.httpPrefix, \
                                  answer,False,False,False, \
                                  filename,attachmentMediaType,None,True, \
-                                 messageId,messageId,None)
+                                 messageId,messageId,None, \
+                                 None,None,None)
             if messageJson:
                 self.postToNickname=nickname
                 if self._postToOutbox(messageJson,__version__):
