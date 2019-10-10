@@ -379,7 +379,21 @@ input[type=number] {
 }
 
 .labels {
-    font-size: 18px;
+    font-size: var(--font-size);
+}
+
+input[type=date] {
+    background-color: var(--main-bg-color-reply);
+    color: var(--main-fg-color);
+    font-size: var(--font-size);
+    border: none;
+}
+
+input[type=time] {
+    background-color: var(--main-bg-color-reply);
+    color: var(--main-fg-color);
+    font-size: var(--font-size);
+    border: none;
 }
 
 input[type=submit] {
