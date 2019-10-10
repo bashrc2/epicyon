@@ -2803,7 +2803,7 @@ def htmlCalendar(translate: {}, \
         calendarStyle = cssFile.read()
     
     calendarStr=htmlHeader(cssFilename,calendarStyle)
-    calendarStr+='<table class="calendar">\n'
+    calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
     calendarStr+='  <h1>'+monthName+'</h1>\n'
     calendarStr+='</caption>\n'
@@ -2834,7 +2834,7 @@ def htmlCalendar(translate: {}, \
         calendarStr+='  </tr>\n'
         
     calendarStr+='</tbody>\n'
-    calendarStr+='</table>\n'
+    calendarStr+='</table></main>\n'
     calendarStr+=htmlFooter()
     return calendarStr
 
