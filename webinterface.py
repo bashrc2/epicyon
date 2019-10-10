@@ -2748,7 +2748,7 @@ def weekDayOfMonthStart(monthNumber: int,year: int):
     """Gets the day number of the first day of the month
     1=sun, 7=sat
     """
-    firstDayOfMonth=datetime.datetime(year, monthNumber, 1, 0, 0)
+    firstDayOfMonth=datetime(year, monthNumber, 1, 0, 0)
     return int(firstDayOfMonth.strftime("%w"))
 
 def htmlCalendar(translate: {}, \
@@ -2775,7 +2775,7 @@ def htmlCalendar(translate: {}, \
         actor=actor.split('?')[0]
 
     if year==1970 and monthNumber==0:
-        currDate=datetime.datetime.now()
+        currDate=datetime.now()
         year=currDate.year
         monthNumber=currDate.month
 
