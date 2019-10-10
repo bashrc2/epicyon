@@ -930,6 +930,18 @@ def htmlNewPost(translate: {},baseDir: str, \
             '</div>' \
             '<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
 
+    dateAndLocation=''
+    if endpoint!='newshare' and endpoint!='newreport':
+        dateAndLocation= \
+            '<div class="container">' \
+            '<label class="labels">'+translate['Date']+': </label>' \
+            '<input type="date" name="eventDate">' \
+            '<label class="labels">'+translate['Time']+': </label>' \
+            '<input type="time" name="eventTime">' \
+            '<label class="labels">'+translate['Location']+': </label>' \
+            '<input type="text" placeholder="'+translate['Location']+'" name="location">' \
+            '</div>' \
+
     newPostForm=htmlHeader(cssFilename,newPostCSS)
 
     # only show the share option if this is not a reply
@@ -989,7 +1001,7 @@ def htmlNewPost(translate: {},baseDir: str, \
             '        </div>'
     else:
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
-        
+    
     newPostForm+= \
         '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">' \
         '  <div class="vertical-center">' \
@@ -1007,7 +1019,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
         '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>' \
-        ''+extraFields+ \
+        ''+dateAndLocation+extraFields+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">' \
         '      <input type="file" id="attachpic" name="attachpic"' \
