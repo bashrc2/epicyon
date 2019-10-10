@@ -382,6 +382,11 @@ input[type=number] {
     font-size: var(--font-size);
 }
 
+.labelsright {
+    float: right;
+    font-size: var(--font-size);
+}
+
 input[type=date] {
     background-color: var(--main-bg-color-reply);
     color: var(--main-fg-color);
@@ -606,10 +611,8 @@ div.gallery img {
         float: left;
         max-width: 400px;
         width: 8%;
-        padding: 0px 7px;
-        margin-right: 20px;
-        border-radius: 10%;
-	vertical-align: middle;
+        -ms-transform: translateY(-25%);
+        transform: translateY(-25%);	
     }
     .container img.timelineicon {
 	float: right;
@@ -872,10 +875,8 @@ div.gallery img {
         float: left;
         max-width: 400px;
         width: 12%;
-        padding: 0px 7px;
-        margin-right: 20px;
-        border-radius: 10%;
-	vertical-align: middle;
+        -ms-transform: translateY(-25%);
+        transform: translateY(-25%);	
     }
     .container img.timelineicon {
 	float: right;

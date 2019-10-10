@@ -937,10 +937,10 @@ def htmlNewPost(translate: {},baseDir: str, \
             '<p><img  class="emojicalendar" src="/emoji/1F5D3.png"/>' \
             '<label class="labels">'+translate['Date']+': </label>' \
             '<input type="date" name="eventDate">' \
-            '<label class="labels">'+translate['Time']+': </label>' \
-            '<input type="time" name="eventTime"></p>' \
+            '<label class="labelsright">'+translate['Time']+':' \
+            '<input type="time" name="eventTime"></label></p>' \
             '<input type="text" placeholder="'+translate['Location']+'" name="location">' \
-            '</div>' \
+            '</div>'
 
     newPostForm=htmlHeader(cssFilename,newPostCSS)
 
