@@ -2749,7 +2749,7 @@ def weekDayOfMonthStart(monthNumber: int,year: int):
     1=sun, 7=sat
     """
     firstDayOfMonth=datetime(year, monthNumber, 1, 0, 0)
-    return int(firstDayOfMonth.strftime("%w")+1)
+    return int(firstDayOfMonth.strftime("%w"))+1
 
 def htmlCalendar(translate: {}, \
                  baseDir: str,path: str) -> str:
