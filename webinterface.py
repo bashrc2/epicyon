@@ -2775,9 +2775,11 @@ def htmlCalendar(translate: {}, \
         actor=actor.split('?')[0]
 
     if year==1970 and monthNumber==1:
-        now = datetime.datetime.now()
+        now=datetime.datetime.now()
         year=now.year
         monthNumber=now.month
+
+    print('Calendar year='+str(year)+' month='+str(monthNumber))
 
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
