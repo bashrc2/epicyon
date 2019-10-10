@@ -938,7 +938,6 @@ def htmlNewPost(translate: {},baseDir: str, \
             '<input type="date" name="eventDate">' \
             '<label class="labels">'+translate['Time']+': </label>' \
             '<input type="time" name="eventTime">' \
-            '<label class="labels">'+translate['Location']+': </label>' \
             '<input type="text" placeholder="'+translate['Location']+'" name="location">' \
             '</div>' \
 
@@ -1019,12 +1018,13 @@ def htmlNewPost(translate: {},baseDir: str, \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
         '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>' \
-        ''+dateAndLocation+extraFields+ \
+        ''+extraFields+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">' \
         '      <input type="file" id="attachpic" name="attachpic"' \
         '            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">' \
         '    </div>' \
+        ''+dateAndLocation+ \
         '  </div>' \
         '</form>'
 
