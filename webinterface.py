@@ -934,10 +934,11 @@ def htmlNewPost(translate: {},baseDir: str, \
     if endpoint!='newshare' and endpoint!='newreport':
         dateAndLocation= \
             '<div class="container">' \
+            '<p><img  class="emojisearch" src="/emoji/1F5D3.png"/>' \
             '<label class="labels">'+translate['Date']+': </label>' \
             '<input type="date" name="eventDate">' \
             '<label class="labels">'+translate['Time']+': </label>' \
-            '<input type="time" name="eventTime">' \
+            '<input type="time" name="eventTime"></p>' \
             '<input type="text" placeholder="'+translate['Location']+'" name="location">' \
             '</div>' \
 
