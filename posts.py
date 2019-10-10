@@ -445,7 +445,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                    attachImageFilename: str,mediaType: str,imageDescription: str, \
                    useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
                    inReplyToAtomUri=None, subject=None, \
-                   eventDate: str,eventTime: str,location: str) -> {}:
+                   eventDate=None,eventTime=None,location=None) -> {}:
     """Creates a message
     """
     mentionedRecipients= \
