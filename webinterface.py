@@ -934,7 +934,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     if endpoint!='newshare' and endpoint!='newreport':
         dateAndLocation= \
             '<div class="container">' \
-            '<p><img  class="emojicalendar" src="/emoji/1F5D3.png"/>' \
+            '<p><img  class="emojicalendar" src="/icons/calendar.png"/>' \
             '<label class="labels">'+translate['Date']+': </label>' \
             '<input type="date" name="eventDate">' \
             '<label class="labelsright">'+translate['Time']+':' \
@@ -2166,6 +2166,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
         '    <a href="'+actor+'/'+boxName+'"><img src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
+        '    <a href="'+actor+'/calendar"><img src="/'+iconsDir+'/calendar.png" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
         followApprovals+ \
         '</div>'
 
