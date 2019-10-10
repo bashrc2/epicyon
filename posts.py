@@ -17,6 +17,7 @@ import threading
 import sys
 import trace
 import time
+from time import gmtime, strftime
 from collections import OrderedDict
 from threads import threadWithTrace
 from cache import storePersonInCache
@@ -538,9 +539,9 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             if eventTime.endswith('Z'):
                 eventDateStr=eventDate+'T'+eventTime
             else:
-                eventDateStr=eventDate+'T'+eventTime+':00Z'
+                eventDateStr=eventDate+'T'+eventTime+':00'+strftime("%z", gmtime())
         else:
-            eventDateStr=eventDate+'T00:00:00Z'
+            eventDateStr=eventDate+'T12:00:00Z'
         tags.append({
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "type": "Event",
