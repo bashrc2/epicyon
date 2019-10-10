@@ -2559,10 +2559,6 @@ class PubServer(BaseHTTPRequestHandler):
             if postType=='newdm':
                 messageJson=None
                 if '@' in fields['message']:
-                    if self.server.debug:
-                        print('DEBUG: Event Date - '+str(fields['eventDate']))
-                        print('DEBUG: Event Time - '+str(fields['eventTime']))
-                        print('DEBUG: Event Location - '+str(fields['location']))
                     messageJson= \
                         createDirectMessagePost(self.server.baseDir, \
                                                 nickname, \
