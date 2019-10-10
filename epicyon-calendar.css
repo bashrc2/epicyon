@@ -1,12 +1,14 @@
 :root {
     --main-bg-color: #282c37;
+    --calendar-bg-color: #2f333e;
     --lines-color: darkgray;
-    --day-number: lightgray;
+    --day-number: #a4a2a2;
+    --day-number2: #c9c7c7;
 }
 
 body {
     background-color: var(--main-bg-color);
-    color: gray;
+    color: var(--day-number2);
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -22,7 +24,7 @@ body {
 }
 
 main {
-    background-color: #F6E9DC;
+    background-color: var(--calendar-bg-color);
     -ms-flex-preferred-size: 980px;
     flex-basis: 980px;
 }
