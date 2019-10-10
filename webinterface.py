@@ -2825,7 +2825,7 @@ def htmlCalendar(translate: {}, \
     for weekOfMonth in range(1,6):
         calendarStr+='  <tr>\n'
         for dayNumber in range(1,8):
-            if (weekOfMonth>1 and dayOfMonth<=daysInMonth) or \
+            if (weekOfMonth>1 and dayOfMonth<daysInMonth) or \
                (weekOfMonth==1 and dayNumber>=dow):
                 dayOfMonth+=1
                 calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
