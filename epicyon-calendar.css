@@ -104,7 +104,13 @@ a:link {
 }
 
 .calendar__day__event {
-    font-size: 2rem;
+    float: left;
+    font-size: 30px;
+    position: relative;
+}
+.calendar__day__time {
+    float: left;
+    font-size: 28px;
     position: relative;
 }
 
