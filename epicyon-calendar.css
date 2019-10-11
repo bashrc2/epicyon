@@ -40,6 +40,16 @@ main {
     width: 100%;
 }
 
+a:visited{
+    color: var(--day-number);
+    text-decoration: none;
+}
+
+a:link {
+    color: var(--day-number);
+    text-decoration: none;
+}
+
 .calendar__day__header,
 .calendar__day__cell {
     border: 2px solid var(--lines-color);
