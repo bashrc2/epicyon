@@ -2895,8 +2895,6 @@ def htmlCalendar(translate: {}, \
                     if currDate.month==monthNumber:
                         if dayOfMonth==currDate.day:
                             isToday=True
-                if dayOfMonth==4 or dayOfMonth==5 or dayOfMonth==12:
-                    events[str(dayOfMonth)]=[{"test": 1},{"test2": 2},{"test3": 3},{"test4": 4}]
                 if events.get(str(dayOfMonth)):
                     eventDots=''
                     if len(events[str(dayOfMonth)])>1:
