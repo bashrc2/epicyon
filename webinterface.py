@@ -2972,11 +2972,12 @@ def htmlCalendar(translate: {}, \
                             if eventDots=='...':
                                 break
                     url=actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayOfMonth)
+                    dayLink='<a href="'+url+'"> '+str(dayOfMonth)+' </a>'
                     # there are events for this day
                     if not isToday:
-                        calendarStr+='    <a href="'+url+'"><td class="calendar__day__cell" data-event="'+eventDots+'">'+str(dayOfMonth)+'</td></a>\n'
+                        calendarStr+='    <td class="calendar__day__cell" data-event="'+eventDots+'">'+dayLink+'</td>\n'
                     else:
-                        calendarStr+='    <a href="'+url+'"><td class="calendar__day__cell" data-today-event="'+eventDots+'">'+str(dayOfMonth)+'</td></a>\n'
+                        calendarStr+='    <td class="calendar__day__cell" data-today-event="'+eventDots+'">'+dayLink+'</td>\n'
                 else:
                     # No events today
                     if not isToday:
