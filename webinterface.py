@@ -2847,7 +2847,7 @@ def htmlCalendarDay(translate: {}, \
         for ev in eventPost:
             if ev['type']=='Event':
                 if ev.get('startTime'):
-                    eventDate=datetime.datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
+                    eventDate=datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
                     eventTime=eventDate.strftime("%H:%M")
                 if ev.get('name'):
                     eventDescription=ev['name']
