@@ -44,16 +44,16 @@ a:visited{
     color: var(--day-number);
     text-decoration: none;
     z-index: 1;
-    padding: 2rem;
-    margin: -2rem;
+    padding: 1rem;
+    margin: -1rem;
 }
 
 a:link {
     color: var(--day-number);
     text-decoration: none;
     z-index: 1;
-    padding: 2rem;
-    margin: -2rem;
+    padding: 1rem;
+    margin: -1rem;
 }
 
 .calendar__day__header,
@@ -116,19 +116,6 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     color: var(--event-foreground);
 }
 
-.calendar__day__cell[data-event]:after {
-    content: attr(data-event);
-    color: var(--day-number);
-    display: block;
-    font-weight: 400;
-    font-size: 5rem;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 1rem;
-    text-transform: uppercase;
-}
-
 .calendar__day__cell[data-today] {
     border-radius: 50%;
     border: 4px solid var(--today-circle);
@@ -142,18 +129,6 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     border: 4px solid var(--today-circle);
     color: var(--event-foreground);
     text-align: center;
-}
-.calendar__day__cell[data-today-event]:after {
-    content: attr(data-today-event);
-    color: var(--day-number);
-    display: block;
-    font-weight: 400;
-    font-size: 5rem;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 1rem;
-    text-transform: uppercase;
 }
 
 .buttonprev {
