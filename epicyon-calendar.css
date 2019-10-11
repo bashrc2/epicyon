@@ -8,6 +8,8 @@
     --today-circle: red;
     --event-background: orange;
     --event-foreground:white;
+    --title-text: #282c37;
+    --title-background: #222;
 }
 
 body {
@@ -120,13 +122,13 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 
 .calendar__day__cell[data-today-event] {
     border-radius: 50%;
-    background-color: var(--lines-color);
-    border: 4px solid var(--event-foreground);
+    background-color: var(--event-background);
+    border: 4px solid var(--today-circle);
     color: var(--event-foreground);
     text-align: center;
 }
 .calendar__day__cell[data-today-event]:after {
-    content: attr(data-event);
+    content: attr(data-today-event);
     color: var(--day-number);
     display: block;
     font-weight: 400;
