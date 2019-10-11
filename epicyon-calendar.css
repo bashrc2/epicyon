@@ -98,10 +98,6 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 
 .calendar__day__cell[data-today] {
     border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    padding: 8px;
-
     border: 4px solid var(--today-circle);
     color: var(--today-circle);
     text-align: center;
