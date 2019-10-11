@@ -2840,19 +2840,20 @@ def htmlCalendarDay(translate: {}, \
     calendarStr+='</caption>\n'
     calendarStr+='<tbody>\n'
 
-    eventTime=None
-    eventDescription=None
-    eventPlace=None
-    for ev in dayEvents:
-        if ev['type']=='Event':
-            if ev.get('startTime'):
-                eventDate=datetime.datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
-                eventTime=eventDate.strftime("%H:%M")
-            if ev.get('name'):
-                eventDescription=ev['name']
-        elif ev['type']=='Place':
-            if ev.get('name'):
-                eventPlace=ev['name']
+    for eventPost in dayEvents:
+        eventTime=None
+        eventDescription=None
+        eventPlace=None
+        for ev in eventPost:
+            if ev['type']=='Event':
+                if ev.get('startTime'):
+                    eventDate=datetime.datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
+                    eventTime=eventDate.strftime("%H:%M")
+                if ev.get('name'):
+                    eventDescription=ev['name']
+            elif ev['type']=='Place':
+                if ev.get('name'):
+                    eventPlace=ev['name']
         if eventTime and eventDescription and eventPlace:
             calendarStr+='<tr><td class="calendar__day__event"><b>'+eventTime+'</b></td><td class="calendar__day__event"><i>'+eventPlace+'</i>: '+eventDescription+'</td></tr>\n'
         elif eventTime and eventDescription and not eventPlace:
