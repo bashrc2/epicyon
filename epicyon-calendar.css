@@ -5,7 +5,7 @@
     --day-number: #a4a2a2;
     --day-number2: #c9c7c7;
     --today-foreground: white;
-    --today-background: darkgray;
+    --today-circle: yellow;
 }
 
 body {
@@ -95,33 +95,14 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     background-color: blue;
     color: blue;
 }
-.calendar__day__cell[data-event]:after {
-    content: attr(data-event);
-    color: #F6E9DC;
-    display: block;
-    font-weight: 400;
-    font-size: .75rem;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 1rem;
-    text-transform: uppercase;
-}
 
 .calendar__day__cell[data-today] {
-    background-color: var(--today-background);
-    border-color: var(--today-background);
-    color: var(--today-foreground);
-}
-.calendar__day__cell[data-today]:after {
-    content: attr(data-today);
-    color: var(--today-foreground);
-    display: block;
-    font-size: .75rem;
-    font-weight: 400;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 1rem;
-    text-transform: uppercase;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+
+    border: 4px solid var(--today-circle);
+    color: var(--today-circle);
+    text-align: center;
 }

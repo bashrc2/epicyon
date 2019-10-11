@@ -2751,6 +2751,51 @@ def weekDayOfMonthStart(monthNumber: int,year: int) -> int:
     firstDayOfMonth=datetime(year, monthNumber, 1, 0, 0)
     return int(firstDayOfMonth.strftime("%w"))+1
 
+def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumber: int) -> []:
+    """Retrieves calendar events
+    Returns a list of lists containing Event and Place activities
+    """
+    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    events=[]
+    if not os.path.isfile(calendarFilename):
+        return events
+    calendarPostIds=[]
+    recreateEventsFile=False
+    with open(calendarFilename,'r') as eventsFile: 
+        for postId in eventsFile:
+            postFilename=locatePost(baseDir,nickname,domain,postId)
+            if postFilename:
+                postJsonObject=None
+                try:
+                    with open(postFilename, 'r') as fp:
+                        postJsonObject=commentjson.load(fp)
+                except Exception as e:
+                    print(e)
+                if postJsonObject:
+                    if postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('tag'):
+                                postEvent=[]
+                                for tag in postJsonObject['object']['tag']:
+                                    if tag.get('type'):
+                                        if tag['type']=='Event' or tag['type']=='Place':
+                                            postEvent.append(tag)
+                                if postEvent:
+                                    calendarPostIds.append(postId)
+                                    # TODO this should be in a calendar-like format
+                                    events.append(postEvent)                    
+            else:
+                recreateEventsFile=True
+
+    # if some posts have been deleted then regenerate the calendar file
+    if recreateEventsFile:
+        calendarFile=open(calendarFilename, "w")
+        for postId in calendarPostIds:
+            calendarFile.write(postId+'\n')
+        calendarFile.close()
+    
+    return events
+
 def htmlCalendar(translate: {}, \
                  baseDir: str,path: str) -> str:
     """Show the calendar for a person
@@ -2780,10 +2825,12 @@ def htmlCalendar(translate: {}, \
         monthNumber=currDate.month
 
     print('Calendar year='+str(year)+' month='+str(monthNumber)+ ' '+str(weekDayOfMonthStart(monthNumber,year)))
-
+    
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
-    
+
+    events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
+
     months=['Jaruary','February','March','April','May','June','July','August','September','October','November','December']
     monthName=translate[months[monthNumber-1]]
 
