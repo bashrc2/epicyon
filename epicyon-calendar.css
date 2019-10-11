@@ -6,6 +6,7 @@
     --day-number2: #c9c7c7;
     --today-foreground: white;
     --today-circle: yellow;
+    --event-foreground: #111;
 }
 
 body {
@@ -93,7 +94,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 
 .calendar__day__cell[data-event] {
     background-color: var(--lines-color);
-    color: var(--main-bg-color);
+    color: var(--event-foreground);
 }
 
 .calendar__day__cell[data-today] {
@@ -106,7 +107,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 .calendar__day__cell[data-today-event] {
     border-radius: 50%;
     background-color: var(--lines-color);
-    border: 4px solid var(--main-bg-color);
-    color: var(--main-bg-color);
+    border: 4px solid var(--event-foreground);
+    color: var(--event-foreground);
     text-align: center;
 }
