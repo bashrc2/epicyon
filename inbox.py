@@ -1379,7 +1379,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
             continue
         # get the year and month from the event
         eventTime= \
-            datetime.datetime.strptime(tag['startTime'], \
+            datetime.datetime.strptime(tagDict['startTime'], \
                                        "%Y-%m-%dT%H:%M:%SZ")            
         eventYear=int(eventTime.strftime("%Y"))
         eventMonthNumber=int(eventTime.strftime("%m"))
