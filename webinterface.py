@@ -2751,12 +2751,12 @@ def weekDayOfMonthStart(monthNumber: int,year: int) -> int:
     firstDayOfMonth=datetime(year, monthNumber, 1, 0, 0)
     return int(firstDayOfMonth.strftime("%w"))+1
 
-def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumber: int) -> []:
+def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumber: int) -> {}:
     """Retrieves calendar events
-    Returns a list of lists containing Event and Place activities
+    Returns a dictionary indexed by day number of lists containing Event and Place activities
     """
     calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
-    events=[]
+    events={}
     if not os.path.isfile(calendarFilename):
         return events
     calendarPostIds=[]
@@ -2776,14 +2776,28 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                         if isinstance(postJsonObject['object'], dict):
                             if postJsonObject['object'].get('tag'):
                                 postEvent=[]
+                                dayOfMonth=None
                                 for tag in postJsonObject['object']['tag']:
                                     if tag.get('type'):
                                         if tag['type']=='Event' or tag['type']=='Place':
-                                            postEvent.append(tag)
-                                if postEvent:
+                                            if tag['type']=='Event':
+                                                # tag is an event
+                                                if tag.get('startTime'):
+                                                    eventTime= \
+                                                        datetime.strptime(tag['startTime'], \
+                                                                          "%Y-%m-%dT%H:%M:%SZ")
+                                                    if int(eventTime.strftime("%Y"))==year and \
+                                                       int(eventTime.strftime("%m"))==monthNumber:
+                                                        dayOfMonth=str(int(eventTime.strftime("%d")))
+                                                        postEvent.append(tag)
+                                            else:
+                                                # tag is a place
+                                                postEvent.append(tag)
+                                if postEvent and dayOfMonth:
                                     calendarPostIds.append(postId)
-                                    # TODO this should be in a calendar-like format
-                                    events.append(postEvent)                    
+                                    if not events.get(dayOfMonth):
+                                        events[dayOfMonth]=[]
+                                    events[dayOfMonth].append(postEvent)
             else:
                 recreateEventsFile=True
 
@@ -2881,10 +2895,25 @@ def htmlCalendar(translate: {}, \
                     if currDate.month==monthNumber:
                         if dayOfMonth==currDate.day:
                             isToday=True
-                if not isToday:
-                    calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
+                if dayOfMonth==5:
+                    events['5']=[{"test": 1},{"test2": 2},{"test3": 3},{"test4": 4}]
+                if events.get(str(dayOfMonth)):
+                    eventDots=''
+                    for i in range(1,len(events[str(dayOfMonth)])):
+                        eventDots+='.'
+                        if eventDots=='...':
+                            break
+                    # there are events for this day
+                    if not isToday:
+                        calendarStr+='    <td class="calendar__day__cell" data-event="'+eventDots+'">'+str(dayOfMonth)+'</td>\n'
+                    else:
+                        calendarStr+='    <td class="calendar__day__cell" data-today-event="'+eventDots+'">'+str(dayOfMonth)+'</td>\n'
                 else:
-                    calendarStr+='    <td class="calendar__day__cell" data-today="">'+str(dayOfMonth)+'</td>\n'
+                    # No events today
+                    if not isToday:
+                        calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
+                    else:
+                        calendarStr+='    <td class="calendar__day__cell" data-today="">'+str(dayOfMonth)+'</td>\n'
             else:
                 calendarStr+='    <td class="calendar__day__cell"></td>\n'
         calendarStr+='  </tr>\n'

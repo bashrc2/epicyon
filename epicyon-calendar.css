@@ -92,13 +92,21 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 .calendar__day__cell[data-event] {
-    background-color: blue;
-    color: blue;
+    background-color: var(--lines-color);
+    color: var(--main-bg-color);
 }
 
 .calendar__day__cell[data-today] {
     border-radius: 50%;
     border: 4px solid var(--today-circle);
     color: var(--today-circle);
+    text-align: center;
+}
+
+.calendar__day__cell[data-today-event] {
+    border-radius: 50%;
+    background-color: var(--lines-color);
+    border: 4px solid var(--main-bg-color);
+    color: var(--main-bg-color);
     text-align: center;
 }
