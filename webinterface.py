@@ -2965,20 +2965,13 @@ def htmlCalendar(translate: {}, \
                         if dayOfMonth==currDate.day:
                             isToday=True
                 if events.get(str(dayOfMonth)):
-                    eventDots=''
-                    if len(events[str(dayOfMonth)])>1:
-                        for ev in events[str(dayOfMonth)]:
-                            eventDots+='.'
-                            if eventDots=='...':
-                                break
-                    eventDots='..'
                     url=actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayOfMonth)
                     dayLink='<a href="'+url+'">'+str(dayOfMonth)+'</a>'
                     # there are events for this day
                     if not isToday:
-                        calendarStr+='    <td class="calendar__day__cell" data-event="'+eventDots+'">'+dayLink+'</td>\n'
+                        calendarStr+='    <td class="calendar__day__cell" data-event="">'+dayLink+'</td>\n'
                     else:
-                        calendarStr+='    <td class="calendar__day__cell" data-today-event="'+eventDots+'">'+dayLink+'</td>\n'
+                        calendarStr+='    <td class="calendar__day__cell" data-today-event="">'+dayLink+'</td>\n'
                 else:
                     # No events today
                     if not isToday:
