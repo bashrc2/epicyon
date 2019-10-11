@@ -1435,8 +1435,6 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Delete accepted from '+actor)
         return False
 
-    populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
-
     if debug:
         print('DEBUG: object capabilities passed')
         print('copy queue file from '+queueFilename+' to '+destinationFilename)
@@ -1450,6 +1448,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         postJsonObject=messageJson
 
     if validPostContent(postJsonObject,maxMentions):
+        populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
         if not isGroup:
             # create a DM notification file if needed
             if isDM(postJsonObject):
