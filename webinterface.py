@@ -2855,15 +2855,15 @@ def htmlCalendarDay(translate: {}, \
                 if ev.get('name'):
                     eventPlace=ev['name']
         if eventTime and eventDescription and eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventPlace+'<br>'+eventDescription+'</td></tr>\n'
+            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
         elif eventTime and eventDescription and not eventPlace:
             calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
         elif not eventTime and eventDescription and not eventPlace:
             calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
         elif not eventTime and eventDescription and eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventPlace+'<br>'+eventDescription+'</td></tr>\n'
+            calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
         elif eventTime and not eventDescription and eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventPlace+'</td></tr>\n'
+            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span></td></tr>\n'
     
     calendarStr+='</tbody>\n'
     calendarStr+='</table></main>\n'
