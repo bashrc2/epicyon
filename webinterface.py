@@ -2895,14 +2895,15 @@ def htmlCalendar(translate: {}, \
                     if currDate.month==monthNumber:
                         if dayOfMonth==currDate.day:
                             isToday=True
-                if dayOfMonth==5:
-                    events['5']=[{"test": 1},{"test2": 2},{"test3": 3},{"test4": 4}]
+                if dayOfMonth==11:
+                    events[str(dayOfMonth)]=[{"test": 1},{"test2": 2},{"test3": 3},{"test4": 4}]
                 if events.get(str(dayOfMonth)):
                     eventDots=''
-                    for i in range(1,len(events[str(dayOfMonth)])):
-                        eventDots+='.'
-                        if eventDots=='...':
-                            break
+                    if len(events[str(dayOfMonth)])>1:
+                        for ev in events[str(dayOfMonth)]:
+                            eventDots+='.'
+                            if eventDots=='...':
+                                break
                     # there are events for this day
                     if not isToday:
                         calendarStr+='    <td class="calendar__day__cell" data-event="'+eventDots+'">'+str(dayOfMonth)+'</td>\n'

@@ -1,14 +1,13 @@
 :root {
     --main-bg-color: #282c37;
-    --calendar-bg-color: #2f333e;
-    --lines-color: darkgray;
-    --day-number: #a4a2a2;
-    --day-number2: #c9c7c7;
+    --calendar-bg-color: #eee;
+    --lines-color: black;
+    --day-number: black;
+    --day-number2: red;
     --today-foreground: white;
-    --today-circle: yellow;
-    --event-foreground: #111;
-    --title-text: #F6E9DC:
-    --title-background: #4E4F4A:
+    --today-circle: red;
+    --event-background: orange;
+    --event-foreground:white;
 }
 
 body {
@@ -95,8 +94,21 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 .calendar__day__cell[data-event] {
-    background-color: var(--lines-color);
+    background-color: var(--event-background);
     color: var(--event-foreground);
+}
+
+.calendar__day__cell[data-event]:after {
+    content: attr(data-event);
+    color: var(--day-number);
+    display: block;
+    font-weight: 400;
+    font-size: 5rem;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 5rem;
+    text-transform: uppercase;
 }
 
 .calendar__day__cell[data-today] {
@@ -112,4 +124,16 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     border: 4px solid var(--event-foreground);
     color: var(--event-foreground);
     text-align: center;
+}
+.calendar__day__cell[data-today-event]:after {
+    content: attr(data-event);
+    color: var(--day-number);
+    display: block;
+    font-weight: 400;
+    font-size: 5rem;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 5rem;
+    text-transform: uppercase;
 }
