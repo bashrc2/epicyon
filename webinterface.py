@@ -2785,7 +2785,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                                                 if tag.get('startTime'):
                                                     eventTime= \
                                                         datetime.strptime(tag['startTime'], \
-                                                                          "%Y-%m-%dT%H:%M:%SZ")
+                                                                          "%Y-%m-%dT%H:%M:%S%z")
                                                     if int(eventTime.strftime("%Y"))==year and \
                                                        int(eventTime.strftime("%m"))==monthNumber:
                                                         dayOfMonth=str(int(eventTime.strftime("%d")))

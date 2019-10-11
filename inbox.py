@@ -164,7 +164,7 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
 
     return True
 
-def validPublishedDate(published) -> bool:
+def validPublishedDate(published: str) -> bool:
     currTime=datetime.datetime.utcnow()
     pubDate=datetime.datetime.strptime(published,"%Y-%m-%dT%H:%M:%SZ")
     daysSincePublished = (currTime - pubTime).days
@@ -1378,9 +1378,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
         if not tagDict.get('startTime'):
             continue
         # get the year and month from the event
-        eventTime= \
-            datetime.datetime.strptime(tagDict['startTime'], \
-                                       "%Y-%m-%dT%H:%M:%SZ")            
+        eventTime=datetime.datetime.strptime(tagDict['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
         eventYear=int(eventTime.strftime("%Y"))
         eventMonthNumber=int(eventTime.strftime("%m"))
 
