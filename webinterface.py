@@ -2876,6 +2876,7 @@ def htmlCalendar(translate: {}, \
                  httpPrefix: str,domainFull: str) -> str:
     """Show the calendar for a person
     """
+    iconsDir=getIconsDir(baseDir)
     domain=domainFull
     if ':' in domainFull:
         domain=domainFull.split(':')[0]
@@ -2957,10 +2958,10 @@ def htmlCalendar(translate: {}, \
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
     calendarStr+='  <a href="'+actor+'/calendar?year='+str(prevYear)+'?month='+str(prevMonthNumber)+'">'
-    calendarStr+='  <img src="/icons/prev.png" class="buttonprev"/></a>\n'
+    calendarStr+='  <img src="/'+iconsDir+'/prev.png" class="buttonprev"/></a>\n'
     calendarStr+='  <h1>'+monthName+'</h1>\n'
     calendarStr+='  <a href="'+actor+'/calendar?year='+str(nextYear)+'?month='+str(nextMonthNumber)+'">'
-    calendarStr+='  <img src="/icons/prev.png" class="buttonnext"/></a>\n'
+    calendarStr+='  <img src="/'+iconsDir+'/prev.png" class="buttonnext"/></a>\n'
     calendarStr+='</caption>\n'
     calendarStr+='<thead>\n'
     calendarStr+='<tr>\n'
