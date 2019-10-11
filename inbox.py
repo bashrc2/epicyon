@@ -1385,7 +1385,10 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
         if not os.path.isdir(calendarPath+'/'+str(eventYear)):
             os.mkdir(calendarPath+'/'+str(eventYear))
         calendarFilename=calendarPath+'/'+str(eventYear)+'/'+str(eventMonthNumber)+'.txt'
-        postId=postJsonObject['id'].replace('/','#')
+        postId=postJsonObject['id']
+        if '#' in postId:
+            postId=postId.split('#')[0]
+        postId=postId.replace('/','#')
         if os.path.isfile(calendarFilename):
             if postId in open(calendarFilename).read():
                 return
