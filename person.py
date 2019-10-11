@@ -423,11 +423,17 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     if not os.path.isfile(filename):
         return None
     personJson={"user": "unknown"}
-    try:
-        with open(filename, 'r') as fp:
-            personJson=commentjson.load(fp)
-    except:
-        print('WARN: Failed to load actor '+filename)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'r') as fp:
+                personJson=commentjson.load(fp)
+                break
+        except:
+            print('WARN: Failed to load actor '+filename)
+            time.sleep(2)
+            tries+=1
+    if tries>=5:
         return None
     return personJson
 
