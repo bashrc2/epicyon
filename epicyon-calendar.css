@@ -139,11 +139,17 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     height: 5rem;
     text-transform: uppercase;
 }
+
 .buttonprev {
-    width: 2%;
+    float: left;
+    width: 10%;
+    -ms-transform: translateY(30%);
+    transform: translateY(30%);
 }
+
 .buttonnext {
-    width: 2%;
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
+    float: right;
+    width: 10%;
+    -ms-transform: translateY(30%) scaleX(-1);
+    transform: translateY(30%) scaleX(-1);
 }
