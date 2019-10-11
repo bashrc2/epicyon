@@ -4,6 +4,9 @@
     --lines-color: black;
     --day-number: black;
     --day-number2: #282c37;
+    --time-color: black;
+    --place-color: black;
+    --event-color: #282c37;
     --today-foreground: white;
     --today-circle: red;
     --event-background: orange;
@@ -108,17 +111,20 @@ a:link {
 }
 
 .calendar__day__event {
+    color: var(--event-color);
     float: left;
     font-size: 28px;
     position: relative;
     padding: 20px;
 }
 .place {
+    color: var(--place-color);
     float: left;
     font-size: 38px;
     position: relative;
 }
 .calendar__day__time {
+    color: var(--time-color);
     float: left;
     font-size: 38px;
     position: relative;
