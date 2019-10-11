@@ -43,11 +43,17 @@ main {
 a:visited{
     color: var(--day-number);
     text-decoration: none;
+    z-index: 1;
+    padding: 2rem;
+    margin: -2rem;
 }
 
 a:link {
     color: var(--day-number);
     text-decoration: none;
+    z-index: 1;
+    padding: 2rem;
+    margin: -2rem;
 }
 
 .calendar__day__header,
@@ -119,7 +125,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 5rem;
+    height: 1rem;
     text-transform: uppercase;
 }
 
@@ -146,7 +152,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 5rem;
+    height: 1rem;
     text-transform: uppercase;
 }
 
