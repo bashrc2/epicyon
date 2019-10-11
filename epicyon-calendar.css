@@ -107,11 +107,13 @@ a:link {
     float: left;
     font-size: 30px;
     position: relative;
+    padding: 20px;
 }
 .calendar__day__time {
     float: left;
     font-size: 28px;
     position: relative;
+    padding: 20px;
 }
 
 tr:nth-child(odd) > .calendar__day__cell:nth-child(odd) {
