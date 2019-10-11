@@ -103,6 +103,11 @@ a:link {
     position: relative;
 }
 
+.calendar__day__event {
+    font-size: 2rem;
+    position: relative;
+}
+
 tr:nth-child(odd) > .calendar__day__cell:nth-child(odd) {
     color: var(--day-number);
 }
