@@ -2810,11 +2810,38 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
     
     return events
 
+def htmlCalendarDay(translate: {}, \
+                    baseDir: str,path: str, \
+                    year: int,monthNumber: int,dayNumber: int,
+                    nickname: str,domain: str,dayEvents: [], \
+                    monthName: str) -> str:
+    """Show a day within the calendar
+    """
+    cssFilename=baseDir+'/epicyon-calendar.css'
+    if os.path.isfile(baseDir+'/calendar.css'):
+        cssFilename=baseDir+'/calendar.css'        
+    with open(cssFilename, 'r') as cssFile:
+        calendarStyle = cssFile.read()
+    
+    calendarStr=htmlHeader(cssFilename,calendarStyle)
+    calendarStr+='<main><table class="calendar">\n'
+    calendarStr+='<caption class="calendar__banner--month">\n'
+    calendarStr+='  <h1>'+str(dayNumber)+' '+monthName+'</h1>'+str(year)+'\n'
+    calendarStr+='</caption>\n'
+    calendarStr+='<tbody>\n'
+    #TODO
+    calendarStr+='</tbody>\n'
+    calendarStr+='</table></main>\n'
+    calendarStr+=htmlFooter()
+
+    return calendarStr
+    
 def htmlCalendar(translate: {}, \
                  baseDir: str,path: str) -> str:
     """Show the calendar for a person
     """
     monthNumber=0
+    dayNumber=None
     year=1970
     actor=path.replace('/calendar','')
     if '?' in actor:
@@ -2830,6 +2857,10 @@ def htmlCalendar(translate: {}, \
                         numStr=p.split('=')[1]
                         if numStr.isdigit():
                             monthNumber=int(numStr)
+                    elif p.split('=')[0]=='day':
+                        numStr=p.split('=')[1]
+                        if numStr.isdigit():
+                            dayNumber=int(numStr)
             first=False
         actor=actor.split('?')[0]
 
@@ -2838,6 +2869,27 @@ def htmlCalendar(translate: {}, \
         year=currDate.year
         monthNumber=currDate.month
 
+    nickname=getNicknameFromActor(actor)
+    domain,port=getDomainFromActor(actor)
+
+    events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
+
+    months=['Jaruary','February','March','April','May','June','July','August','September','October','November','December']
+    monthName=translate[months[monthNumber-1]]
+
+    if os.path.isfile(baseDir+'/img/calendar-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/calendar-background.png'):
+            copyfile(baseDir+'/img/calendar-background.png',baseDir+'/accounts/calendar-background.png')
+
+    if dayNumber:
+        dayEvents=None
+        if events.get(str(dayNumber)):
+            dayEvents=events[str(dayNumber)]
+        return htmlCalendarDay(translate,baseDir,path, \
+                               year,monthNumber,dayNumber, \
+                               nickname,domain,dayEvents, \
+                               monthName)
+    
     prevYear=year
     prevMonthNumber=monthNumber-1
     if prevMonthNumber<1:
@@ -2851,23 +2903,11 @@ def htmlCalendar(translate: {}, \
         nextYear=year+1
 
     print('Calendar year='+str(year)+' month='+str(monthNumber)+ ' '+str(weekDayOfMonthStart(monthNumber,year)))
-    
-    nickname=getNicknameFromActor(actor)
-    domain,port=getDomainFromActor(actor)
-
-    events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
-
-    months=['Jaruary','February','March','April','May','June','July','August','September','October','November','December']
-    monthName=translate[months[monthNumber-1]]
 
     if monthNumber<12:
         daysInMonth=(date(year, monthNumber+1, 1) - date(year, monthNumber, 1)).days
     else:
         daysInMonth=(date(year+1, 1, 1) - date(year, monthNumber, 1)).days
-
-    if os.path.isfile(baseDir+'/img/calendar-background.png'):
-        if not os.path.isfile(baseDir+'/accounts/calendar-background.png'):
-            copyfile(baseDir+'/img/calendar-background.png',baseDir+'/accounts/calendar-background.png')
 
     cssFilename=baseDir+'/epicyon-calendar.css'
     if os.path.isfile(baseDir+'/calendar.css'):
