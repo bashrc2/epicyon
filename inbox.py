@@ -1354,6 +1354,44 @@ def sendToGroupMembers(session,baseDir: str,handle: str,port: int,postJsonObject
                                sendThreads,postLog,cachedWebfingers, \
                                personCache,debug,projectVersion)
 
+def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
+    """Detects whether the tag list on a post contains calendar events
+    and if so saves the post id to a file in the calendar directory
+    for the account
+    """
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('tag'):
+        return
+    if not isinstance(postJsonObject['object']['tag'], list):
+        return
+
+    calendarPath=os.path.isdir(baseDir+'/accounts/'+handle+'/calendar'
+    if not os.path.isdir(calendarPath):
+        os.mkdir(calendarPath)
+
+    for tagDict in postJsonObject['object']['tag']:
+        if tagDict['type']!='Event':
+            continue
+        if not tagDict['type'].get('startTime'):
+            continue
+        # get the year and month from the event
+        eventTime= \
+            datetime.datetime.strptime(tag['startTime'], \
+                                       "%Y-%m-%dT%H:%M:%SZ")            
+        eventYear=int(eventTime.strftime("%Y"))
+        eventMonthNumber=int(eventTime.strftime("%m"))
+
+        if not os.path.isdir(calendarPath+'/'+str(eventYear)):
+            os.mkdir(calendarPath+'/'+str(eventYear))
+        calendarFilename=calendarPath+'/'+str(eventYear)+'/'+str(eventMonthNumber)+'.txt'
+        calendarFile=open(calendarFilename,'a+')
+        if calendarFile:
+            calendarFile.write(postJsonObject['id'].replace('/','#')+'\n')
+            calendarFile.close()
+                 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1479,6 +1517,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                 commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
         except Exception as e:
             print(e)
+
+        inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
         # send the post out to group members
         if isGroup:
