@@ -2784,21 +2784,24 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                                 postEvent=[]
                                 dayOfMonth=None
                                 for tag in postJsonObject['object']['tag']:
-                                    if tag.get('type'):
-                                        if tag['type']=='Event' or tag['type']=='Place':
-                                            if tag['type']=='Event':
-                                                # tag is an event
-                                                if tag.get('startTime'):
-                                                    eventTime= \
-                                                        datetime.strptime(tag['startTime'], \
-                                                                          "%Y-%m-%dT%H:%M:%S%z")
-                                                    if int(eventTime.strftime("%Y"))==year and \
-                                                       int(eventTime.strftime("%m"))==monthNumber:
-                                                        dayOfMonth=str(int(eventTime.strftime("%d")))
-                                                        postEvent.append(tag)
-                                            else:
-                                                # tag is a place
-                                                postEvent.append(tag)
+                                    if not tag.get('type'):
+                                        continue
+                                    if tag['type']!='Event' and tag['type']!='Place':
+                                        continue
+                                    if tag['type']=='Event':
+                                        # tag is an event
+                                        if not tag.get('startTime'):
+                                            continue
+                                        eventTime= \
+                                            datetime.strptime(tag['startTime'], \
+                                                              "%Y-%m-%dT%H:%M:%S%z")
+                                        if int(eventTime.strftime("%Y"))==year and \
+                                           int(eventTime.strftime("%m"))==monthNumber:
+                                            dayOfMonth=str(int(eventTime.strftime("%d")))
+                                            postEvent.append(tag)
+                                    else:
+                                        # tag is a place
+                                        postEvent.append(tag)
                                 if postEvent and dayOfMonth:
                                     calendarPostIds.append(postId)
                                     if not events.get(dayOfMonth):
