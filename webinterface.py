@@ -2847,7 +2847,7 @@ def htmlCalendarDay(translate: {}, \
     return calendarStr
     
 def htmlCalendar(translate: {}, \
-                 baseDir: str,path: str) -> str:
+                 baseDir: str,path: str,domain: str) -> str:
     """Show the calendar for a person
     """
     monthNumber=0
@@ -2880,8 +2880,6 @@ def htmlCalendar(translate: {}, \
         monthNumber=currDate.month
 
     nickname=getNicknameFromActor(actor)
-    domain,port=getDomainFromActor(actor)
-
     events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
 
     months=['Jaruary','February','March','April','May','June','July','August','September','October','November','December']
@@ -2968,11 +2966,13 @@ def htmlCalendar(translate: {}, \
                             eventDots+='.'
                             if eventDots=='...':
                                 break
+                    url=actor+'?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayOfMonth)
+                    dayLink='<a href="'+url+'">'+str(dayOfMonth)+'</a>'
                     # there are events for this day
                     if not isToday:
-                        calendarStr+='    <td class="calendar__day__cell" data-event="'+eventDots+'">'+str(dayOfMonth)+'</td>\n'
+                        calendarStr+='    <td class="calendar__day__cell" data-event="'+eventDots+'">'+dayLink+'</td>\n'
                     else:
-                        calendarStr+='    <td class="calendar__day__cell" data-today-event="'+eventDots+'">'+str(dayOfMonth)+'</td>\n'
+                        calendarStr+='    <td class="calendar__day__cell" data-today-event="'+eventDots+'">'+dayLink+'</td>\n'
                 else:
                     # No events today
                     if not isToday:
