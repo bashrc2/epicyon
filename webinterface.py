@@ -2763,6 +2763,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
     recreateEventsFile=False
     with open(calendarFilename,'r') as eventsFile: 
         for postId in eventsFile:
+            postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
             if postFilename:
                 postJsonObject=None
