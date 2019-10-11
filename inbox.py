@@ -1375,7 +1375,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
     for tagDict in postJsonObject['object']['tag']:
         if tagDict['type']!='Event':
             continue
-        if not tagDict['type'].get('startTime'):
+        if not tagDict.get('startTime'):
             continue
         # get the year and month from the event
         eventTime= \

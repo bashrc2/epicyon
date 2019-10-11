@@ -717,7 +717,7 @@ def outboxMessageCreateWrap(httpPrefix: str, \
     return newPost
 
 def postIsAddressedToFollowers(baseDir: str,
-                               nickname: str, domain: str, port: int,httpPrefix: str,
+                               nickname: str,domain: str,port: int,httpPrefix: str,
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
@@ -816,10 +816,10 @@ def createUnlistedPost(baseDir: str,
         if port!=80 and port!=443:
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
-    return createPostBase(baseDir,nickname, domain, port, \
+    return createPostBase(baseDir,nickname,domain,port, \
                           httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           'https://www.w3.org/ns/activitystreams#Public', \
-                          httpPrefix, content, followersOnly, saveToFile, \
+                          httpPrefix,content,followersOnly,saveToFile, \
                           clientToServer, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
@@ -841,10 +841,10 @@ def createFollowersOnlyPost(baseDir: str,
         if port!=80 and port!=443: 
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
-    return createPostBase(baseDir,nickname, domain, port, \
+    return createPostBase(baseDir,nickname,domain,port, \
                           httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
                           None,
-                          httpPrefix, content, followersOnly, saveToFile, \
+                          httpPrefix,content,followersOnly,saveToFile, \
                           clientToServer, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
@@ -899,13 +899,13 @@ def createDirectMessagePost(baseDir: str,
         return None
     postTo=None
     postCc=None
-    return createPostBase(baseDir,nickname, domain, port, \
+    return createPostBase(baseDir,nickname,domain,port, \
                           postTo,postCc, \
-                          httpPrefix, content, followersOnly, saveToFile, \
+                          httpPrefix,content,followersOnly,saveToFile, \
                           clientToServer, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
-                          False,inReplyTo, inReplyToAtomUri, subject, \
+                          False,inReplyTo,inReplyToAtomUri,subject, \
                           eventDate,eventTime,location)
 
 def createReportPost(baseDir: str,
