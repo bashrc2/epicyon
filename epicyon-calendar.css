@@ -113,11 +113,10 @@ a:link {
     position: relative;
     padding: 20px;
 }
-.calendar__day__event place {
+.place {
     float: left;
-    font-size: 32px;
+    font-size: 38px;
     position: relative;
-    padding: 20px;
 }
 .calendar__day__time {
     float: left;
