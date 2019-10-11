@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+import time
 import commentjson
 import os
 from webfinger import webfingerHandle
@@ -27,11 +28,16 @@ def setAvailability(baseDir: str,nickname: str,domain: str, \
     if not os.path.isfile(actorFilename):
         return False
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(2)
+            tries+=1
     if actorJson:
         actorJson['availability']=status
         try:
@@ -48,11 +54,16 @@ def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
     if not os.path.isfile(actorFilename):
         return False
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(2)
+            tries+=1
     if actorJson:
         if not actorJson.get('availability'):
             return None

@@ -98,11 +98,16 @@ def manualApproveFollowRequest(session,baseDir: str, \
                 followActivityfilename=requestsDir+'/'+handle+'.follow'
                 if os.path.isfile(followActivityfilename):
                     followJson=None
-                    try:
-                        with open(followActivityfilename, 'r') as fp:
-                            followJson=commentjson.load(fp)
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(followActivityfilename, 'r') as fp:
+                                followJson=commentjson.load(fp)
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
                     if followJson:
                         approveNickname=approveHandle.split('@')[0]
                         approveDomain=approveHandle.split('@')[1].replace('\n','')

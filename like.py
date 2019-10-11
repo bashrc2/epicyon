@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+import time
 import commentjson
 from pprint import pprint
 from utils import urlPermitted
@@ -23,11 +24,16 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
     """Undoes a like for a particular actor
     """
     postJsonObject=None
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if postJsonObject:
         if not postJsonObject.get('type'):
@@ -103,11 +109,16 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
     """Updates the likes collection within a post
     """
     postJsonObject=None
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if postJsonObject:
         if not postJsonObject.get('object'):

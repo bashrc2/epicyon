@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import time
 import shutil
 import datetime
 import commentjson
@@ -84,11 +85,16 @@ def getDisplayName(baseDir: str,actor: str,personCache: {}) -> str:
         cachedActorFilename=baseDir+'/cache/actors/'+actor.replace('/','#')+'.json'
         if os.path.isfile(cachedActorFilename):
             actorJson=None
-            try:
-                with open(cachedActorFilename, 'r') as fp:
-                    actorJson=commentjson.load(fp)
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(cachedActorFilename, 'r') as fp:
+                        actorJson=commentjson.load(fp)
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
             if actorJson:
                 if actorJson.get('name'):
                     return(actorJson['name'])
@@ -243,11 +249,16 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
     """Recursively deletes a post and its replies and attachments
     """
     postJsonObject=None
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if postJsonObject:
         # remove any attachment

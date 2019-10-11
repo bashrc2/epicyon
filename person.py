@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+import time
 import commentjson
 import os
 import fileinput
@@ -91,11 +92,16 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
     profileFilename=baseDir+'/accounts/'+handle+'/'+iconFilename
 
     personJson=None
-    try:
-        with open(personFilename, 'r') as fp:
-            personJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(personFilename, 'r') as fp:
+                personJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if personJson:
         personJson[iconFilenameBase]['mediaType']=mediaType
@@ -126,11 +132,16 @@ def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
         return False
 
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if actorJson:
         actorJson['orgSchema']=schema
@@ -547,11 +558,16 @@ def setDisplayNickname(baseDir: str,nickname: str, domain: str, \
         return False
 
     personJson=None
-    try:
-        with open(filename, 'r') as fp:
-            personJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'r') as fp:
+                personJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
             
     if not personJson:
         return False
@@ -572,11 +588,16 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
         return False
 
     personJson=None
-    try:
-        with open(filename, 'r') as fp:
-            personJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'r') as fp:
+                personJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if not personJson:
         return False

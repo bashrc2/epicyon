@@ -768,8 +768,16 @@ class PubServer(BaseHTTPRequestHandler):
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
             if os.path.isfile('epicyon-profile.css'):
-                with open('epicyon-profile.css', 'r') as cssfile:
-                    css = cssfile.read()
+                tries=0
+                while tries<5:
+                    try:
+                        with open('epicyon-profile.css', 'r') as cssfile:
+                            css = cssfile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
                 msg=css.encode('utf-8')
                 self._set_headers('text/css',len(msg),cookie)
                 self.wfile.write(msg)
@@ -2917,12 +2925,17 @@ class PubServer(BaseHTTPRequestHandler):
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
                     loadedActor=False
-                    try:
-                        with open(actorFilename, 'r') as fp:
-                            actorJson=commentjson.load(fp)
-                            loadedActor=True
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(actorFilename, 'r') as fp:
+                                actorJson=commentjson.load(fp)
+                                loadedActor=True
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
                     if loadedActor:                    
                         actorChanged=False
                         skillCtr=1
@@ -4012,12 +4025,17 @@ def runDaemon(projectVersion, \
             translationsFile=baseDir+'/translations/'+systemLanguage+'.json'
         print('System language: '+systemLanguage)
 
-        try:
-            with open(translationsFile, 'r') as fp:
-                httpd.translate=commentjson.load(fp)
-        except Exception as e:
-            print('ERROR while loading translations '+translationsFile)
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(translationsFile, 'r') as fp:
+                    httpd.translate=commentjson.load(fp)
+                    break
+            except Exception as e:
+                print('ERROR while loading translations '+translationsFile)
+                print(e)
+                time.sleep(1)
+                tries+=1
 
     httpd.outboxThread={}
     httpd.newPostThread={}

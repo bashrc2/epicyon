@@ -13,6 +13,7 @@ import requests
 import json
 import commentjson
 import os
+import time
 from session import getJson
 from cache import storeWebfingerInCache
 from cache import getWebfingerFromCache
@@ -222,9 +223,14 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
             print('DEBUG: WEBFINGER filename not found '+filename)
         return None
     wfJson={"nickname": "unknown"}
-    try:
-        with open(filename, 'r') as fp:
-            wfJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'r') as fp:
+                wfJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     return wfJson

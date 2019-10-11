@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
+import time
 import commentjson
 from pprint import pprint
 import os
@@ -336,11 +337,16 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
     actorFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'.json'
     if os.path.isfile(actorFilename):
         actor=None
-        try:
-            with open(actorFilename, 'r') as fp:
-                actor=commentjson.load(fp)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'r') as fp:
+                    actor=commentjson.load(fp)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
         if actor:
             if actor.get('manuallyApprovesFollowers'):
                 manuallyApproveFollows=actor['manuallyApprovesFollowers']
@@ -864,11 +870,16 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
                             print('DEBUG: checking capabilities of'+account)
                         if os.path.isfile(ocapFilename):
                             ocapJson=None
-                            try:
-                                with open(ocapFilename, 'r') as fp:
-                                    ocapJson=commentjson.load(fp)
-                            except Exception as e:
-                                print(e)
+                            tries=0
+                            while tries<5:
+                                try:
+                                    with open(ocapFilename, 'r') as fp:
+                                        ocapJson=commentjson.load(fp)
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries+=1
                             if ocapJson:
                                 if ocapJson.get('id'):
                                     if debug:

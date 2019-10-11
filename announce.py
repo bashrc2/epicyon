@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import time
 import json
 import commentjson
 from pprint import pprint
@@ -68,12 +69,16 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
     to shared items in shares.py. It's shares of posts, not shares of physical objects.
     """
     postJsonObject=None
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-    except Exception as e:
-        print(e)
-
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(2)
+            tries+=1
     if postJsonObject:
         if not postJsonObject.get('type'):
             return
@@ -121,11 +126,16 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     It's shares of posts, not shares of physical objects.
     """
     postJsonObject=None
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(2)
+            tries+=1
     if postJsonObject:
         if not postJsonObject.get('object'):
             if debug:

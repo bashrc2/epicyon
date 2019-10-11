@@ -312,11 +312,18 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
             queue.pop(0)
             return False
 
-    try:
-        with open(ocapFilename, 'r') as fp:
-            oc=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    oc=None
+    while tries<5:
+        try:
+            with open(ocapFilename, 'r') as fp:
+                oc=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
+    if not oc: 
         return False
 
     if not oc.get('id'):
@@ -374,12 +381,17 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
                 if os.path.isfile(ocapFilename):
                     # read the granted capabilities and obtain the id
                     loadedOcap=False
-                    try:
-                        with open(ocapFilename, 'r') as fp:
-                            ocapJson=commentjson.load(fp)
-                            loadedOcap=True
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(ocapFilename, 'r') as fp:
+                                ocapJson=commentjson.load(fp)
+                                loadedOcap=True
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
                     if loadedOcap:
                         if ocapJson.get('id'):
                             # append with the capabilities id
@@ -660,12 +672,17 @@ def personReceiveUpdate(baseDir: str, \
     else:
         if os.path.isfile(actorFilename):
             loadedActor=False
-            try:
-                with open(actorFilename, 'r') as fp:
-                    existingPersonJson=commentjson.load(fp)
-                    loadedActor=True
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(actorFilename, 'r') as fp:
+                        existingPersonJson=commentjson.load(fp)
+                        loadedActor=True
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
             if loadedActor:
                 if existingPersonJson['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
                     if debug:
@@ -1066,12 +1083,17 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
         print('DEBUG: announced/repeated post to be undone found in inbox')
 
     loadedPost=False
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-            loadedPost=True
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                loadedPost=True
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     if loadedPost:
         if not postJsonObject.get('type'):
             if postJsonObject['type']!='Announce':
@@ -1251,11 +1273,16 @@ def groupHandle(baseDir: str,handle: str) -> bool:
     if not os.path.isfile(actorFile):
         return False
     actorJson=None
-    try:
-        with open(actorFile, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFile, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     if not actorJson:
         return False
     return actorJson['type']=='Group'
@@ -1267,11 +1294,16 @@ def getGroupName(baseDir: str,handle: str) -> str:
     if not os.path.isfile(actorFile):
         return False
     actorJson=None
-    try:
-        with open(actorFile, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFile, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     if not actorJson:
         return 'Group'
     return actorJson['name']

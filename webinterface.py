@@ -2766,11 +2766,17 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
             postFilename=locatePost(baseDir,nickname,domain,postId)
             if postFilename:
                 postJsonObject=None
-                try:
-                    with open(postFilename, 'r') as fp:
-                        postJsonObject=commentjson.load(fp)
-                except Exception as e:
-                    print(e)
+                tries=0
+                postJsonObject=None
+                while tries<5:
+                    try:
+                        with open(postFilename, 'r') as fp:
+                            postJsonObject=commentjson.load(fp)
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(2)
+                        tries+=1
                 if postJsonObject:
                     if postJsonObject.get('object'):
                         if isinstance(postJsonObject['object'], dict):

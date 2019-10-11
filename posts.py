@@ -517,11 +517,16 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         replyPostFilename=locatePost(baseDir,nickname,domain,inReplyTo)
         if replyPostFilename:
             replyToJson=None
-            try:
-                with open(replyPostFilename, 'r') as fp:
-                    replyToJson=commentjson.load(fp)
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(replyPostFilename, 'r') as fp:
+                        replyToJson=commentjson.load(fp)
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
             if replyToJson:
                 if replyToJson.get('object'):
                     if replyToJson['object'].get('sensitive'):
@@ -566,13 +571,18 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         ocapFilename=getOcapFilename(baseDir,nickname,domain,toUrl,'granted')
         if ocapFilename:
             if os.path.isfile(ocapFilename):
-                try:
-                    with open(ocapFilename, 'r') as fp:
-                        oc=commentjson.load(fp)
-                        if oc.get('id'):
-                            capabilityIdList=[oc['id']]
-                except Exception as e:
-                    print(e)
+                tries=0
+                while tries<5:
+                    try:
+                        with open(ocapFilename, 'r') as fp:
+                            oc=commentjson.load(fp)
+                            if oc.get('id'):
+                                capabilityIdList=[oc['id']]
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
         newPost = {
             "@context": "https://www.w3.org/ns/activitystreams",
             'id': newPostId+'/activity',
@@ -1719,12 +1729,17 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
             for postUrl in pageLines:
                 postFilename=boxDir+'/'+postUrl.replace('/','#')+'.json'
                 if os.path.isfile(postFilename):
-                    try:
-                        with open(postFilename, 'r') as fp:
-                            postJsonObject=commentjson.load(fp)
-                            boxItems['orderedItems'].append(postJsonObject)
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(postFilename, 'r') as fp:
+                                postJsonObject=commentjson.load(fp)
+                                boxItems['orderedItems'].append(postJsonObject)
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
 
     if headerOnly:
         return boxHeader
@@ -1876,12 +1891,17 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                 sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
                 # get the actor from the shared post
                 loadedPost=False
-                try:
-                    with open(sharedInboxFilename, 'r') as fp:
-                        postJsonObject=commentjson.load(fp)
-                        loadedPost=True
-                except Exception as e:
-                    print(e)
+                tries=0
+                while tries<5:
+                    try:
+                        with open(sharedInboxFilename, 'r') as fp:
+                            postJsonObject=commentjson.load(fp)
+                            loadedPost=True
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
                 if loadedPost:                
                     actorNickname=getNicknameFromActor(postJsonObject['actor'])
                     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
@@ -1899,12 +1919,17 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                                 if os.path.isfile(ocapFilename):
                                     # read the capabilities id
                                     loadedOcap=False
-                                    try:
-                                        with open(ocapFilename, 'r') as fp:
-                                            ocapJson=commentjson.load(fp)
-                                            loadedOcap=True
-                                    except Exception as e:
-                                        print(e)
+                                    tries=0
+                                    while tries<5:
+                                        try:
+                                            with open(ocapFilename, 'r') as fp:
+                                                ocapJson=commentjson.load(fp)
+                                                loadedOcap=True
+                                                break
+                                        except Exception as e:
+                                            print(e)
+                                            time.sleep(1)
+                                            tries+=1
                                     if loadedOcap:
                                         if ocapJson.get('id'):
                                             if ocapJson['id'] in capsList:                                    
@@ -2214,12 +2239,17 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
                     if authorized or \
                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
                         loadedPost=False
-                        try:
-                            with open(searchFilename, 'r') as fp:
-                                postJsonObject=commentjson.load(fp)
-                                loadedPost=True
-                        except Exception as e:
-                            print(e)
+                        tries=0
+                        while tries<5:
+                            try:
+                                with open(searchFilename, 'r') as fp:
+                                    postJsonObject=commentjson.load(fp)
+                                    loadedPost=True
+                                    break
+                            except Exception as e:
+                                print(e)
+                                time.sleep(1)
+                                tries+=1
                         if loadedPost:
                             if postJsonObject['object'].get('cc'):                                                            
                                 if authorized or \
@@ -2245,12 +2275,17 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
                        'https://www.w3.org/ns/activitystreams#Public' in open(searchFilename).read():
                         # get the json of the reply and append it to the collection
                         loadedPost=False
-                        try:
-                            with open(searchFilename, 'r') as fp:
-                                postJsonObject=commentjson.load(fp)
-                                loadedPost=True
-                        except Exception as e:
-                            print(e)
+                        tries=0
+                        while tries<5:
+                            try:
+                                with open(searchFilename, 'r') as fp:
+                                    postJsonObject=commentjson.load(fp)
+                                    loadedPost=True
+                                    break
+                            except Exception as e:
+                                print(e)
+                                time.sleep(1)
+                                tries+=1
                         if loadedPost:
                             if postJsonObject['object'].get('cc'):                                                            
                                 if authorized or \
@@ -2290,12 +2325,16 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
 
     if os.path.isfile(announceFilename):
         print('Reading cached Announce content for '+postJsonObject['object'])
-        try:
-            with open(announceFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                return postJsonObject
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(announceFilename, 'r') as fp:
+                    postJsonObject=commentjson.load(fp)
+                    return postJsonObject
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     else:
         print('Downloading Announce content for '+postJsonObject['object'])
         asHeader={'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
