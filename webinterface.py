@@ -2836,7 +2836,7 @@ def htmlCalendarDay(translate: {}, \
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
-    calendarStr+='  <h1>'+str(dayNumber)+' '+monthName+'</h1>'+str(year)+'\n'
+    calendarStr+='  <h1>'+str(dayNumber)+' '+monthName+'</h1><br>'+str(year)+'\n'
     calendarStr+='</caption>\n'
     calendarStr+='<tbody>\n'
     #TODO
