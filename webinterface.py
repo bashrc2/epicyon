@@ -2971,6 +2971,7 @@ def htmlCalendar(translate: {}, \
                             eventDots+='.'
                             if eventDots=='...':
                                 break
+                    eventDots='..'
                     url=actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayOfMonth)
                     dayLink='<a href="'+url+'">'+str(dayOfMonth)+'</a>'
                     # there are events for this day
