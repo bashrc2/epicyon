@@ -1058,7 +1058,7 @@ class PubServer(BaseHTTPRequestHandler):
                # show the calendar screen
                msg=htmlCalendar(self.server.translate, \
                                 self.server.baseDir,self.path, \
-                                self.server.domain).encode()
+                                self.server.domainFull).encode()
                self._set_headers('text/html',len(msg),cookie)
                self.wfile.write(msg)
                self.server.GETbusy=False

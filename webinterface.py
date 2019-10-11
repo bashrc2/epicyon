@@ -2847,13 +2847,18 @@ def htmlCalendarDay(translate: {}, \
     return calendarStr
     
 def htmlCalendar(translate: {}, \
-                 baseDir: str,path: str,domain: str) -> str:
+                 baseDir: str,path: str, \
+                 httpPrefix: str,domainFull: str) -> str:
     """Show the calendar for a person
     """
+    domain=domainFull
+    if ':' in domainFull:
+        domain=domainFull.split(':')[0]
+        
     monthNumber=0
     dayNumber=None
     year=1970
-    actor=path.replace('/calendar','')
+    actor=httpPrefix+'://'+domainFull+path.replace('/calendar','')
     if '?' in actor:
         first=True
         for p in actor.split('?'):
