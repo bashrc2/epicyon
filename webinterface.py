@@ -2838,6 +2838,18 @@ def htmlCalendar(translate: {}, \
         year=currDate.year
         monthNumber=currDate.month
 
+    prevYear=year
+    prevMonthNumber=monthNumber-1
+    if prevMonthNumber<1:
+        prevMonthNumber=12
+        prevYear=year-1
+
+    nextYear=year
+    nextMonthNumber=monthNumber+1
+    if nextMonthNumber>12:
+        nextMonthNumber=1
+        nextYear=year+1
+
     print('Calendar year='+str(year)+' month='+str(monthNumber)+ ' '+str(weekDayOfMonthStart(monthNumber,year)))
     
     nickname=getNicknameFromActor(actor)
@@ -2866,7 +2878,11 @@ def htmlCalendar(translate: {}, \
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
+    calendarStr+='  <a href="'+actor+'/calendar?year='+str(prevYear)+'?month='+str(prevMonthNumber)+'">'
+    calendarStr+='  <img src="/icons/prev.png" class="buttonprev"/></a>\n'
     calendarStr+='  <h1>'+monthName+'</h1>\n'
+    calendarStr+='  <a href="'+actor+'/calendar?year='+str(nextYear)+'?month='+str(nextMonthNumber)+'">'
+    calendarStr+='  <img src="/icons/prev.png" class="buttonnext"/></a>\n'
     calendarStr+='</caption>\n'
     calendarStr+='<thead>\n'
     calendarStr+='<tr>\n'
