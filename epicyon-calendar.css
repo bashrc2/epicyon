@@ -103,6 +103,10 @@ a:link {
     position: relative;
 }
 
+.year {
+    font-size: 30px;
+}
+
 .calendar__day__event {
     float: left;
     font-size: 30px;
