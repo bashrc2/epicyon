@@ -7,6 +7,8 @@
     --today-foreground: white;
     --today-circle: yellow;
     --event-foreground: #111;
+    --title-text: #F6E9DC:
+    --title-background: #4E4F4A:
 }
 
 body {
@@ -63,8 +65,8 @@ main {
     padding: .75rem;
 }
 .calendar__banner--month h1 {
-    background-color: #4E4F4A;
-    color: #F6E9DC;
+    background-color: var(--title-background);
+    color: var(--title-text);
     display: inline-block;
     font-size: 3rem;
     font-weight: 400;
