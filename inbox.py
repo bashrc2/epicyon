@@ -1368,7 +1368,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
     if not isinstance(postJsonObject['object']['tag'], list):
         return
 
-    calendarPath=os.path.isdir(baseDir+'/accounts/'+handle+'/calendar'
+    calendarPath=baseDir+'/accounts/'+handle+'/calendar'
     if not os.path.isdir(calendarPath):
         os.mkdir(calendarPath)
 
