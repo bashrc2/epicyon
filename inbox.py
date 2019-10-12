@@ -1423,6 +1423,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
         eventTime=datetime.datetime.strptime(tagDict['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
         eventYear=int(eventTime.strftime("%Y"))
         eventMonthNumber=int(eventTime.strftime("%m"))
+        eventDayOfMonth=int(eventTime.strftime("%d"))
 
         if not os.path.isdir(calendarPath+'/'+str(eventYear)):
             os.mkdir(calendarPath+'/'+str(eventYear))
@@ -1435,6 +1436,11 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
         if calendarFile:
             calendarFile.write(postId+'\n')
             calendarFile.close()
+            calendarNotificationFilename=baseDir+'/accounts/'+handle+'/.newCalendar'
+            calendarNotificationFile=open(calendarFilename,'w')
+            if calendarNotificationFile:
+                calendarNotificationFile.write('/calendar?year='+str(eventYear)+'?month='+str(eventMonthNumber)+'?day='+str(eventDayOfMonth))
+                calendarNotificationFile.close()
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \

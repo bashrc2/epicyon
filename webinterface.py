@@ -2100,9 +2100,19 @@ def htmlTimeline(translate: {},pageNumber: int, \
                  manuallyApproveFollowers: bool) -> str:
     """Show the timeline as html
     """
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+
+    # should the calendar icon be highlighted?
+    calendarImage='calendar.png'
+    calendarPath='/calendar'
+    calendarFile=accountDir+'/.newCalendar'
+    if os.path.isfile(calendarFile):
+        calendarImage='calendar_notify.png'
+        with open(calendarFile, 'r') as calfile:
+            calendarPath=calfile.read().replace('\n', '')
+
     # should the DM button be highlighted?
     newDM=False
-    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
     dmFile=accountDir+'/.newDM'
     if os.path.isfile(dmFile):
         newDM=True
@@ -2201,7 +2211,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
-        '    <a href="'+actor+'/calendar"><img src="/'+iconsDir+'/calendar.png" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
+        '    <a href="'+actor+calendarPath'"><img src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
         '    <a href="'+actor+'/'+boxName+'"><img src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
         followApprovals+ \
         '</div>'
@@ -2876,6 +2886,11 @@ def htmlCalendarDay(translate: {}, \
                     monthName: str) -> str:
     """Show a day within the calendar
     """
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    calendarFile=accountDir+'/.newCalendar'
+    if os.path.isfile(calendarFile):
+        os.remove(calendarFile)
+    
     cssFilename=baseDir+'/epicyon-calendar.css'
     if os.path.isfile(baseDir+'/calendar.css'):
         cssFilename=baseDir+'/calendar.css'        
