@@ -2109,7 +2109,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
     if os.path.isfile(calendarFile):
         calendarImage='calendar_notify.png'
         with open(calendarFile, 'r') as calfile:
-            calendarPath=calfile.read().replace('\n', '')
+            calendarPath=calfile.read().replace('##sent##','').replace('\n', '')
 
     # should the DM button be highlighted?
     newDM=False
