@@ -2883,7 +2883,7 @@ def htmlCalendarDay(translate: {}, \
                     baseDir: str,path: str, \
                     year: int,monthNumber: int,dayNumber: int,
                     nickname: str,domain: str,dayEvents: [], \
-                    monthName: str) -> str:
+                    monthName: str, actor: str) -> str:
     """Show a day within the calendar
     """
     accountDir=baseDir+'/accounts/'+nickname+'@'+domain
@@ -2900,7 +2900,8 @@ def htmlCalendarDay(translate: {}, \
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
-    calendarStr+='  <h1>'+str(dayNumber)+' '+monthName+'</h1><br><span class="year">'+str(year)+'</span>\n'
+    calendarStr+='  <a href="'+actor+'/inbox">'
+    calendarStr+='  <h1>'+str(dayNumber)+' '+monthName+'</h1></a><br><span class="year">'+str(year)+'</span>\n'
     calendarStr+='</caption>\n'
     calendarStr+='<tbody>\n'
 
@@ -2991,7 +2992,7 @@ def htmlCalendar(translate: {}, \
         return htmlCalendarDay(translate,baseDir,path, \
                                year,monthNumber,dayNumber, \
                                nickname,domain,dayEvents, \
-                               monthName)
+                               monthName,actor)
     
     prevYear=year
     prevMonthNumber=monthNumber-1
@@ -3023,7 +3024,8 @@ def htmlCalendar(translate: {}, \
     calendarStr+='<caption class="calendar__banner--month">\n'
     calendarStr+='  <a href="'+actor+'/calendar?year='+str(prevYear)+'?month='+str(prevMonthNumber)+'">'
     calendarStr+='  <img src="/'+iconsDir+'/prev.png" class="buttonprev"/></a>\n'
-    calendarStr+='  <h1>'+monthName+'</h1>\n'
+    calendarStr+='  <a href="'+actor+'/inbox">'
+    calendarStr+='  <h1>'+monthName+'</h1></a>\n'
     calendarStr+='  <a href="'+actor+'/calendar?year='+str(nextYear)+'?month='+str(nextMonthNumber)+'">'
     calendarStr+='  <img src="/'+iconsDir+'/prev.png" class="buttonnext"/></a>\n'
     calendarStr+='</caption>\n'
