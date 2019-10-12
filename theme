@@ -262,7 +262,7 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|--event-color:.*|--event-color: #282c37;|g" "$filename"
     sed -i "s|--today-foreground:.*|--today-foreground: white;|g" "$filename"
     sed -i "s|--today-circle:.*|--today-circle: red;|g" "$filename"
-    sed -i "s|--event-background:.*|--event-background: orange;|g" "$filename"
+    sed -i "s|--event-background:.*|--event-background: lightblue;|g" "$filename"
     sed -i "s|--event-foreground:.*|--event-foreground: white;|g" "$filename"
     sed -i "s|--title-text:.*|--title-text: #282c37;|g" "$filename"
     sed -i "s|--title-background:.*|--title-background: #ccc;|g" "$filename"
