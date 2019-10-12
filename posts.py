@@ -415,11 +415,16 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
          
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     filename=boxDir+'/'+postId.replace('/','#')+'.json'
-    try:
-        with open(filename, 'w') as fp:
-            commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     return filename
 
 def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
@@ -2388,10 +2393,14 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
                 rejectAnnounce(announceFilename)
                 return None
         postJsonObject=announcedJson
-        try:
-            with open(announceFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
-                return postJsonObject
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(announceFilename, 'w') as fp:
+                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    return postJsonObject
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     return None

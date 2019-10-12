@@ -411,12 +411,16 @@ def storeFollowRequest(baseDir: str, \
     if not os.path.isdir(requestsDir):
         os.mkdir(requestsDir)
     followActivityfilename=requestsDir+'/'+approveHandle+'.follow'
-    try:
-        with open(followActivityfilename, 'w') as fp:
-            commentjson.dump(followJson, fp, indent=4, sort_keys=False)
-            return True
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(followActivityfilename, 'w') as fp:
+                commentjson.dump(followJson, fp, indent=4, sort_keys=False)
+                return True
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     return False
 
 def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \

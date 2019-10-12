@@ -150,12 +150,17 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
             return emojiForm
         
         loadedEmoji=False
-        try:
-            with open(emojiLookupFilename, 'r') as fp:
-                emojiJson=commentjson.load(fp)
-                loadedEmoji=True
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(emojiLookupFilename, 'r') as fp:
+                    emojiJson=commentjson.load(fp)
+                    loadedEmoji=True
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
         if loadedEmoji:
             results={}
             for emojiName,filename in emojiJson.items():
@@ -219,11 +224,16 @@ def htmlSearchSharedItems(translate: {}, \
                     continue
 
                 sharesJson=None
-                try:
-                    with open(sharesFilename, 'r') as fp:
-                        sharesJson=commentjson.load(fp)
-                except Exception as e:
-                    print(e)
+                tries=0
+                while tries<5:
+                    try:
+                        with open(sharesFilename, 'r') as fp:
+                            sharesJson=commentjson.load(fp)
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
                 if not sharesJson:
                     continue
                 
@@ -380,12 +390,17 @@ def htmlHashtagSearch(translate: {}, \
             index-=1
             continue
         loadedPost=False
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                loadedPost=True
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(postFilename, 'r') as fp:
+                    postJsonObject=commentjson.load(fp)
+                    loadedPost=True
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
         if loadedPost:
             if not isPublicPost(postJsonObject):
                 index-=1
@@ -427,12 +442,17 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                 continue
             actorFilename = os.path.join(subdir, f)
             loadedActor=False
-            try:
-                with open(actorFilename, 'r') as fp:
-                    actorJson=commentjson.load(fp)
-                    loadedActor=True
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(actorFilename, 'r') as fp:
+                        actorJson=commentjson.load(fp)
+                        loadedActor=True
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
             if loadedActor:
                 if actorJson.get('id') and \
                    actorJson.get('skills') and \
@@ -462,12 +482,17 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                     continue
                 actorFilename = os.path.join(subdir, f)
                 loadedActor=False
-                try:
-                    with open(actorFilename, 'r') as fp:
-                        cachedActorJson=commentjson.load(fp)
-                        loadedActor=True
-                except Exception as e:
-                    print(e)
+                tries=0
+                while tries<5:
+                    try:
+                        with open(actorFilename, 'r') as fp:
+                            cachedActorJson=commentjson.load(fp)
+                            loadedActor=True
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
                 if loadedActor:
                     if cachedActorJson.get('actor'):
                         actorJson=cachedActorJson['actor']
@@ -543,12 +568,17 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     bioStr=''
     manuallyApprovesFollowers=''
     loadedActor=False
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-            loadedActor=True
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                loadedActor=True
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     if loadedActor:
         if actorJson.get('name'):
             displayNickname=actorJson['name']
@@ -1588,12 +1618,17 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if os.path.isfile(actorFilename):
         loadedActor=False
-        try:
-            with open(actorFilename, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                loadedActor=True
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'r') as fp:
+                    actorJson=commentjson.load(fp)
+                    loadedActor=True
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
         if loadedActor:
             if actorJson.get('manuallyApprovesFollowers'):
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
@@ -2323,12 +2358,17 @@ def htmlIndividualPost(translate: {}, \
         if not postFilename:
             break
         loadedPost=False
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                loadedPost=True
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(postFilename, 'r') as fp:
+                    postJsonObject=commentjson.load(fp)
+                    loadedPost=True
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
         if loadedPost:
             postStr= \
                 individualPostAsHtml(iconsDir,translate,None, \
@@ -2395,12 +2435,16 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     if not os.path.isfile(sharesFile):
         return None
     sharesJson=None
-
-    try:
-        with open(sharesFile, 'r') as fp:
-            sharesJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(sharesFile, 'r') as fp:
+                sharesJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     
     if not sharesJson:
         return None
@@ -2458,11 +2502,16 @@ def htmlDeletePost(translate,pageNumber: int, \
         return None
 
     postJsonObject=None
-    try:
-        with open(postFilename, 'r') as fp:
-            postJsonObject=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(postFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1            
     if not postJsonObject:
         return None
 
@@ -2776,7 +2825,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                             break
                     except Exception as e:
                         print(e)
-                        time.sleep(2)
+                        time.sleep(1)
                         tries+=1
                 if postJsonObject:
                     if postJsonObject.get('object'):

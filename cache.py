@@ -26,11 +26,16 @@ def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {
     if os.path.isdir(baseDir+'/cache/actors'):
         cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if not os.path.isfile(cacheFilename):
-            try:
-                with open(cacheFilename, 'w') as fp:
-                    commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(cacheFilename, 'w') as fp:
+                        commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
 
 def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
     """Get an actor from the cache
@@ -50,7 +55,7 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
                 except Exception as e:
                     print('ERROR: unable to load actor from cache '+cacheFilename)
                     print(e)
-                    time.sleep(2)
+                    time.sleep(1)
                     tries+=1
             if personJson:
                 storePersonInCache(baseDir,personUrl,personJson,personCache)

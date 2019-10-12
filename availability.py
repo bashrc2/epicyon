@@ -36,15 +36,20 @@ def setAvailability(baseDir: str,nickname: str,domain: str, \
                 break
         except Exception as e:
             print(e)
-            time.sleep(2)
+            time.sleep(1)
             tries+=1
     if actorJson:
         actorJson['availability']=status
-        try:
-            with open(actorFilename, 'w') as fp:
-                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'w') as fp:
+                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     return True
 
 def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
@@ -62,7 +67,7 @@ def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
                 break
         except Exception as e:
             print(e)
-            time.sleep(2)
+            time.sleep(1)
             tries+=1
     if actorJson:
         if not actorJson.get('availability'):

@@ -1468,12 +1468,17 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(postFilename):
                             postJsonObject={}
                             loadedPost=False
-                            try:
-                                with open(postFilename, 'r') as fp:
-                                    postJsonObject=commentjson.load(fp)
-                                    loadedPost=True
-                            except Exception as e:
-                                print(e)
+                            tries=0
+                            while tries<5:
+                                try:
+                                    with open(postFilename, 'r') as fp:
+                                        postJsonObject=commentjson.load(fp)
+                                        loadedPost=True
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries+=1
                             if loadedPost:                            
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
@@ -1617,12 +1622,17 @@ class PubServer(BaseHTTPRequestHandler):
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
                     loadedActor=False
-                    try:
-                        with open(actorFilename, 'r') as fp:
-                            actorJson=commentjson.load(fp)
-                            loadedActor=True
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(actorFilename, 'r') as fp:
+                                actorJson=commentjson.load(fp)
+                                loadedActor=True
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
                     if loadedActor:                    
                         if actorJson.get('roles'):
                             if self._requestHTTP():
@@ -1663,12 +1673,17 @@ class PubServer(BaseHTTPRequestHandler):
                 actorFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
                     loadedActor=False
-                    try:
-                        with open(actorFilename, 'r') as fp:
-                            actorJson=commentjson.load(fp)
-                            loadedActor=True
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(actorFilename, 'r') as fp:
+                                actorJson=commentjson.load(fp)
+                                loadedActor=True
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
                     if loadedActor:                    
                         if actorJson.get('skills'):
                             if self._requestHTTP():
@@ -1719,12 +1734,17 @@ class PubServer(BaseHTTPRequestHandler):
                         if os.path.isfile(postFilename):
                             postJsonObject={}
                             readPost=False
-                            try:
-                                with open(postFilename, 'r') as fp:
-                                    postJsonObject=commentjson.load(fp)
-                                    readPost=True
-                            except Exception as e:
-                                print(e)
+                            tries=0
+                            while tries<5:
+                                try:
+                                    with open(postFilename, 'r') as fp:
+                                        postJsonObject=commentjson.load(fp)
+                                        readPost=True
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries+=1
                             if not readPost:
                                 self.send_response(429)
                                 self.end_headers()
@@ -3057,19 +3077,29 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(allowedInstancesFilename)
                         # save actor json file within accounts
                         if actorChanged:
-                            try:
-                                with open(actorFilename, 'w') as fp:
-                                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
-                            except Exception as e:
-                                print(e)
+                            tries=0
+                            while tries<5:
+                                try:
+                                    with open(actorFilename, 'w') as fp:
+                                        commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries+=1
                             # also copy to the actors cache and personCache in memory
                             storePersonInCache(self.server.baseDir,actorJson['id'],actorJson,self.server.personCache)
                             actorCacheFilename=self.server.baseDir+'/cache/actors/'+actorJson['id'].replace('/','#')+'.json'
-                            try:
-                                with open(actorCacheFilename, 'w') as fp:
-                                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)                            
-                            except Exception as e:
-                                print(e)
+                            tries=0
+                            while tries<5:
+                                try:
+                                    with open(actorCacheFilename, 'w') as fp:
+                                        commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries+=1
                             # send actor update to followers
                             updateActorJson={
                                 'type': 'Update',

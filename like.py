@@ -72,11 +72,16 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
                 del postJsonObject['object']['likes']
             else:
                 postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
-            try:
-                with open(postFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(postFilename, 'w') as fp:
+                        commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is liked by the given person
@@ -159,11 +164,16 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
         if debug:
             print('DEBUG: saving post with likes added')
             pprint(postJsonObject)
-        try:
-            with open(postFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(postFilename, 'w') as fp:
+                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
 def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \

@@ -92,19 +92,29 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
     if not os.path.isdir(baseDir+wfSubdir):
         os.mkdir(baseDir+wfSubdir)
     filename=baseDir+wfSubdir+'/'+handle.lower()+'.json'
-    try:
-        with open(filename, 'w') as fp:
-            commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     if nickname=='inbox':
         handle=originalDomain+'@'+domain
         filename=baseDir+wfSubdir+'/'+handle.lower()+'.json'
-        try:
-            with open(filename, 'w') as fp:
-                commentjson.dump(wfJson, fp, indent=4, sort_keys=False)        
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(filename, 'w') as fp:
+                    commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     return True
 
 def createWebfingerEndpoint(nickname: str,domain: str,port: int, \

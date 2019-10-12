@@ -9,6 +9,7 @@ __status__ = "Production"
 import json
 import commentjson
 import os
+import time
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
@@ -29,21 +30,31 @@ def clearModeratorStatus(baseDir: str) -> None:
             filename=os.path.join(baseDir+'/accounts/', filename)
             if '"moderator"' in open(filename).read():
                 actorJson=None
-                try:
-                    with open(filename, 'r') as fp:
-                        actorJson=commentjson.load(fp)
-                except Exception as e:
-                    print(e)
+                tries=0
+                while tries<5:
+                    try:
+                        with open(filename, 'r') as fp:
+                            actorJson=commentjson.load(fp)
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
 
                 if actorJson:
                     if actorJson['roles'].get('instance'):
                         if 'moderator' in actorJson['roles']['instance']:
                             actorJson['roles']['instance'].remove('moderator')
-                            try:
-                                with open(filename, 'w') as fp:
-                                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
-                            except Exception as e:
-                                print(e)
+                            tries=0
+                            while tries<5:
+                                try:
+                                    with open(filename, 'w') as fp:
+                                        commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries+=1
 
 def addModerator(baseDir: str,nickname: str,domain: str) -> None:
     """Adds a moderator nickname to the file
@@ -98,11 +109,16 @@ def setRole(baseDir: str,nickname: str,domain: str, \
         return False
 
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if actorJson:        
         if role:
@@ -123,11 +139,16 @@ def setRole(baseDir: str,nickname: str,domain: str, \
                 # if the project contains no roles then remove it
                 if len(actorJson['roles'][project])==0:
                     del actorJson['roles'][project]
-        try:
-            with open(actorFilename, 'w') as fp:
-                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'w') as fp:
+                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     return True
 
 def getRoles(baseDir: str,nickname: str,domain: str, \
@@ -139,11 +160,16 @@ def getRoles(baseDir: str,nickname: str,domain: str, \
         return False
 
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if actorJson:
         if not actorJson.get('roles'):

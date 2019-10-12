@@ -114,11 +114,16 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
                 del postJsonObject['object']['shares']
             else:
                 postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
-            try:
-                with open(postFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)            
-            except Exception as e:
-                print(e)
+            tries=0
+            while tries<5:
+                try:
+                    with open(postFilename, 'w') as fp:
+                        commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                        break
+                except Exception as e:
+                    print(e)
+                    time.sleep(1)
+                    tries+=1
 
 def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     """Updates the announcements collection within a post
@@ -134,7 +139,7 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
                 break
         except Exception as e:
             print(e)
-            time.sleep(2)
+            time.sleep(1)
             tries+=1
     if postJsonObject:
         if not postJsonObject.get('object'):
@@ -178,11 +183,16 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
         if debug:
             print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
-        try:
-            with open(postFilename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(postFilename, 'w') as fp:
+                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
 def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is announced by the given person
@@ -245,11 +255,16 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     if saveToFile:
         outboxDir = createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newAnnounceId.replace('/','#')+'.json'
-        try:
-            with open(filename, 'w') as fp:
-                commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(filename, 'w') as fp:
+                    commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
     announceNickname=None
     announceDomain=None

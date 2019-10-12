@@ -9,6 +9,7 @@ __status__ = "Production"
 import json
 import commentjson
 import os
+import time
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
@@ -28,11 +29,16 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
         return False
 
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if actorJson:
         if not actorJson.get('skills'):
@@ -41,11 +47,16 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
             actorJson['skills'][skill]=skillLevelPercent
         else:
             del actorJson['skills'][skill]
-        try:
-            with open(actorFilename, 'w') as fp:
-                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)    
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'w') as fp:
+                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     return True
 
 def setSkills(baseDir: str,nickname: str,domain: str,skills: {}) -> None:
@@ -54,19 +65,29 @@ def setSkills(baseDir: str,nickname: str,domain: str,skills: {}) -> None:
         return False
 
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if actorJson:
         actorJson['skills']=skills
-        try:
-            with open(actorFilename, 'w') as fp:
-                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)    
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'w') as fp:
+                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
 def getSkills(baseDir: str,nickname: str,domain: str) -> []:
     """Returns the skills for a given person
@@ -76,11 +97,16 @@ def getSkills(baseDir: str,nickname: str,domain: str) -> []:
         return False
 
     actorJson=None
-    try:
-        with open(actorFilename, 'r') as fp:
-            actorJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'r') as fp:
+                actorJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     if actorJson:
         if not actorJson.get('skills'):

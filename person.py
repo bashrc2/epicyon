@@ -106,11 +106,16 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
     if personJson:
         personJson[iconFilenameBase]['mediaType']=mediaType
         personJson[iconFilenameBase]['url']=httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
-        try:
-            with open(personFilename, 'w') as fp:
-                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(personFilename, 'w') as fp:
+                    commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
             
         cmd = '/usr/bin/convert '+imageFilename+' -size '+resolution+' -quality 50 '+profileFilename
         subprocess.call(cmd, shell=True)
@@ -145,11 +150,16 @@ def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
 
     if actorJson:
         actorJson['orgSchema']=schema
-        try:
-            with open(actorFilename, 'w') as fp:
-                commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(actorFilename, 'w') as fp:
+                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
     return True
 
 def accountExists(baseDir: str,nickname: str,domain: str) -> bool:
@@ -269,11 +279,16 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         if not os.path.isdir(baseDir+peopleSubdir+'/'+handle+'/queue'):
             os.mkdir(baseDir+peopleSubdir+'/'+handle+'/queue')
         filename=baseDir+peopleSubdir+'/'+handle+'.json'
-        try:
-            with open(filename, 'w') as fp:
-                commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(filename, 'w') as fp:
+                    commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
         # save to cache
         if not os.path.isdir(baseDir+'/cache'):
@@ -281,11 +296,16 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         if not os.path.isdir(baseDir+'/cache/actors'):
             os.mkdir(baseDir+'/cache/actors')
         cacheFilename=baseDir+'/cache/actors/'+newPerson['id'].replace('/','#')+'.json'
-        try:
-            with open(cacheFilename, 'w') as fp:
-                commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(cacheFilename, 'w') as fp:
+                    commentjson.dump(newPerson, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
         # save the private key
         privateKeysSubdir='/keys/private'
@@ -442,7 +462,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
                 break
         except:
             print('WARN: Failed to load actor '+filename)
-            time.sleep(2)
+            time.sleep(1)
             tries+=1
     if tries>=5:
         return None
@@ -572,11 +592,16 @@ def setDisplayNickname(baseDir: str,nickname: str, domain: str, \
     if not personJson:
         return False
     personJson['name']=displayName
-    try:
-        with open(filename, 'w') as fp:
-            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     return True
 
 def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
@@ -605,11 +630,16 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
         return False
     personJson['summary']=bio
 
-    try:
-        with open(filename, 'w') as fp:
-            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
         
     return True
 

@@ -285,11 +285,16 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
     if debug:
         print('Inbox queue item created')
         pprint(newQueueItem)
-    try:
-        with open(filename, 'w') as fp:
-            commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     return filename
 
 def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
@@ -691,12 +696,17 @@ def personReceiveUpdate(baseDir: str, \
     # save to cache in memory
     storePersonInCache(baseDir,personJson['id'],personJson,personCache)
     # save to cache on file
-    try:
-        with open(actorFilename, 'w') as fp:
-            commentjson.dump(personJson, fp, indent=4, sort_keys=False)
-            print('actor updated for '+personJson['id'])
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(actorFilename, 'w') as fp:
+                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+                print('actor updated for '+personJson['id'])
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
@@ -1546,11 +1556,16 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
 
         # save the post to file
-        try:
-            with open(destinationFilename, 'w+') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
-        except Exception as e:
-            print(e)
+        tries=0
+        while tries<5:
+            try:
+                with open(destinationFilename, 'w+') as fp:
+                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    break
+            except Exception as e:
+                print(e)
+                time.sleep(1)
+                tries+=1
 
         inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
@@ -1903,12 +1918,17 @@ def runInboxQueue(projectVersion: str, \
             if len(recipientsDictFollowers)>0:
                 sharedInboxPostFilename=queueJson['destination'].replace(inboxHandle,inboxHandle)
                 if not os.path.isfile(sharedInboxPostFilename):
-                    try:
-                        with open(sharedInboxPostFilename, 'w') as fp:
-                            commentjson.dump(queueJson['post'],fp,indent=4, \
-                                             sort_keys=False)
-                    except Exception as e:
-                        print(e)
+                    tries=0
+                    while tries<5:
+                        try:
+                            with open(sharedInboxPostFilename, 'w') as fp:
+                                commentjson.dump(queueJson['post'],fp,indent=4, \
+                                                 sort_keys=False)
+                                break
+                        except Exception as e:
+                            print(e)
+                            time.sleep(1)
+                            tries+=1
 
             # for posts addressed to specific accounts
             for handle,capsId in recipientsDict.items():              

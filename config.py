@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import time
 import json
 import commentjson
 
@@ -18,39 +19,59 @@ def createConfig(baseDir: str) -> None:
         return
     configJson = {
     }
-    try:
-        with open(configFilename, 'w') as fp:
-            commentjson.dump(configJson, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(configFilename, 'w') as fp:
+                commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
 def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
     """
     createConfig(baseDir)
     configFilename=baseDir+'/config.json'
-    try:
-        with open(configFilename, 'r') as fp:
-            configJson=commentjson.load(fp)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(configFilename, 'r') as fp:
+                configJson=commentjson.load(fp)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     configJson[variableName]=variableValue
-    try:
-        with open(configFilename, 'w') as fp:
-            commentjson.dump(configJson, fp, indent=4, sort_keys=False)
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(configFilename, 'w') as fp:
+                commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
 
 def getConfigParam(baseDir: str, variableName: str):
     """Gets a configuration value
     """
     createConfig(baseDir)
     configFilename=baseDir+'/config.json'
-    try:
-        with open(configFilename, 'r') as fp:
-            configJson=commentjson.load(fp)
-            if configJson.get(variableName):
-                return configJson[variableName]
-    except Exception as e:
-        print(e)
+    tries=0
+    while tries<5:
+        try:
+            with open(configFilename, 'r') as fp:
+                configJson=commentjson.load(fp)
+                if configJson.get(variableName):
+                    return configJson[variableName]
+                break
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
     return None
