@@ -165,7 +165,7 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|--event-foreground:.*|--event-foreground: black;|g" "$filename"
     sed -i "s|--title-text:.*|--title-text: black;|g" "$filename"
     sed -i "s|--title-background:.*|--title-background: darkgreen;|g" "$filename"
-    sed -i "s|--font-family:.*|--font-family: 'Courier';|g" "$filename"
+    sed -i "s|font-family:.*|font-family: 'Courier';|g" "$filename"
     filename=login.css
     cp "epicyon-$filename" "$filename"
     sed -i "s|--main-bg-color:.*|--main-bg-color: black;|g" "$filename"
