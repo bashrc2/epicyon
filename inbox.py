@@ -1437,7 +1437,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
             calendarFile.write(postId+'\n')
             calendarFile.close()
             calendarNotificationFilename=baseDir+'/accounts/'+handle+'/.newCalendar'
-            calendarNotificationFile=open(calendarFilename,'w')
+            calendarNotificationFile=open(calendarNotificationFilename,'w')
             if calendarNotificationFile:
                 calendarNotificationFile.write('/calendar?year='+str(eventYear)+'?month='+str(eventMonthNumber)+'?day='+str(eventDayOfMonth))
                 calendarNotificationFile.close()
