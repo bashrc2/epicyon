@@ -41,6 +41,7 @@ from utils import followPerson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import copytree
+from utils import getStatusNumber
 from follow import followerOfPerson
 from follow import unfollowPerson
 from follow import unfollowerOfPerson
@@ -1426,8 +1427,19 @@ def testAddEmoji():
     os.chdir(baseDirOriginal)
     shutil.rmtree(baseDirOriginal+'/.tests')
 
+def testGetStatusNumber():
+    print('testGetStatusNumber')
+    prevStatusNumber=None
+    for i in range(1,20):
+        statusNumber,published = getStatusNumber()
+        if prevStatusNumber:
+            assert len(statusNumber) == 18
+            assert int(statusNumber) > prevStatusNumber
+        prevStatusNumber=int(statusNumber)
+
 def runAllTests():
     print('Running tests...')
+    testGetStatusNumber()
     testAddEmoji()
     testWebLinks()
     testActorParsing()

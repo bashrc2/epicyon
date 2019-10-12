@@ -18,7 +18,12 @@ def getStatusNumber() -> (str,str):
     currTime=datetime.datetime.utcnow()
     daysSinceEpoch=(currTime - datetime.datetime(1970,1,1)).days
     # status is the number of seconds since epoch
-    statusNumber=str(((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)*1000000 + currTime.microsecond)
+    statusNumber=str(((daysSinceEpoch*24*60*60) + (currTime.hour*60*60) + (currTime.minute*60) + currTime.second)*1000 + int(currTime.microsecond/1000))
+    # See https://github.com/tootsuite/mastodon/blob/995f8b389a66ab76ec92d9a240de376f1fc13a38/lib/mastodon/snowflake.rb
+    # use the leftover microseconds as the sequence number
+    sequenceId=currTime.microsecond % 1000
+    # shift by 16bits "sequence data"
+    statusNumber=str((int(statusNumber)<<16)+sequenceId)
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     return statusNumber,published
 
