@@ -252,8 +252,8 @@ if [[ "$themeName" == 'light'* ]]; then
     sed -i "s|color: #FFFFFE;|color: black;|g" "$filename"
     filename=calendar.css
     cp "epicyon-$filename" "$filename"
-    sed -i "s|--main-bg-color:.*|--main-bg-color: #ccc;|g" "$filename"
-    sed -i "s|--calendar-bg-color:.*|--calendar-bg-color: #eee;|g" "$filename"
+    sed -i "s|--main-bg-color:.*|--main-bg-color: #e6ebf0;|g" "$filename"
+    sed -i "s|--calendar-bg-color:.*|--calendar-bg-color: #e6ebf0;|g" "$filename"
     sed -i "s|--lines-color:.*|--lines-color: darkblue;|g" "$filename"
     sed -i "s|--day-number:.*|--day-number: black;|g" "$filename"
     sed -i "s|--day-number2:.*|--day-number2: #282c37;|g" "$filename"
