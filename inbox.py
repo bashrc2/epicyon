@@ -313,8 +313,10 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
         if debug:
             print('DEBUG: capabilities for '+ \
                   actor+' do not exist')
-            os.remove(queueFilename)
-            queue.pop(0)
+            if os.path.isfile(queueFilename):
+                os.remove(queueFilename)
+            if len(queue)>0:
+                queue.pop(0)
             return False
 
     tries=0
@@ -334,29 +336,37 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
     if not oc.get('id'):
         if debug:
             print('DEBUG: capabilities for '+actor+' do not contain an id')
-        os.remove(queueFilename)
-        queue.pop(0)
+        if os.path.isfile(queueFilename):
+            os.remove(queueFilename)
+        if len(queue)>0:
+            queue.pop(0)
         return False
 
     if oc['id']!=capabilityId:
         if debug:
             print('DEBUG: capability id mismatch')
-        os.remove(queueFilename)
-        queue.pop(0)
+        if os.path.isfile(queueFilename):
+            os.remove(queueFilename)
+        if len(queue)>0:
+            queue.pop(0)
         return False
 
     if not oc.get('capability'):
         if debug:
             print('DEBUG: missing capability list')
-        os.remove(queueFilename)
-        queue.pop(0)
+        if os.path.isfile(queueFilename):
+            os.remove(queueFilename)
+        if len(queue)>0:
+            queue.pop(0)
         return False
 
     if not CapablePost(queueJson['post'],oc['capability'],debug):
         if debug:
             print('DEBUG: insufficient capabilities to write to inbox from '+actor)
-        os.remove(queueFilename)
-        queue.pop(0)
+        if os.path.isfile(queueFilename):
+            os.remove(queueFilename)
+        if len(queue)>0:
+            queue.pop(0)
         return False
 
     if debug:
@@ -1111,7 +1121,8 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                     print("DEBUG: Attempt to undo something which isn't an announcement")
                 return False        
     undoAnnounceCollectionEntry(postFilename,messageJson['actor'],debug)
-    os.remove(postFilename)
+    if os.path.isfile(postFilename):
+        os.remove(postFilename)
     return True
 
 def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
@@ -1683,7 +1694,8 @@ def runInboxQueue(projectVersion: str, \
             if not os.path.isfile(queueFilename):
                 if debug:
                     print("DEBUG: queue item rejected because it has no file: "+queueFilename)
-                queue.pop(0)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             print('Loading queue item '+queueFilename)
@@ -1698,10 +1710,12 @@ def runInboxQueue(projectVersion: str, \
                 if itemReadFailed>4:
                     # After a few tries we can assume that the file
                     # is probably corrupt/unreadable
-                    queue.pop(0)
+                    if len(queue)>0:
+                        queue.pop(0)
                     itemReadFailed=0
                     # delete the queue file
-                    os.remove(queueFilename)
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
                 continue
             itemReadFailed=0
             
@@ -1721,7 +1735,8 @@ def runInboxQueue(projectVersion: str, \
                         if quotas['domains'][postDomain]>domainMaxPostsPerDay:
                             if debug:
                                 print('DEBUG: Maximum posts for '+postDomain+' reached')
-                            queue.pop(0)
+                            if len(queue)>0:
+                                queue.pop(0)
                             continue
                         quotas['domains'][postDomain]+=1
                     else:
@@ -1733,7 +1748,8 @@ def runInboxQueue(projectVersion: str, \
                         if quotas['accounts'][postHandle]>accountMaxPostsPerDay:
                             if debug:
                                 print('DEBUG: Maximum posts for '+postHandle+' reached')
-                            queue.pop(0)
+                            if len(queue)>0:
+                                queue.pop(0)
                             continue
                         quotas['accounts'][postHandle]+=1
                     else:
@@ -1760,8 +1776,10 @@ def runInboxQueue(projectVersion: str, \
                     if debug:
                         print('DEBUG: No keyId in signature: '+ \
                               queueJson['httpHeaders']['signature'])
-                    os.remove(queueFilename)
-                    queue.pop(0)
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
+                    if len(queue)>0:
+                        queue.pop(0)
                     continue
 
                 pubKey= \
@@ -1780,8 +1798,10 @@ def runInboxQueue(projectVersion: str, \
             if not pubKey:
                 if debug:
                     print('DEBUG: public key could not be obtained from '+keyId)
-                    os.remove(queueFilename)
-                    queue.pop(0)
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
+                    if len(queue)>0:
+                        queue.pop(0)
                 continue
 
             # check the signature
@@ -1796,8 +1816,10 @@ def runInboxQueue(projectVersion: str, \
                                      json.dumps(queueJson['post'])):
                 if debug:
                     print('DEBUG: Header signature check failed')
-                    os.remove(queueFilename)
-                    queue.pop(0)
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
+                    if len(queue)>0:
+                        queue.pop(0)
                 continue
 
             if debug:
@@ -1819,8 +1841,10 @@ def runInboxQueue(projectVersion: str, \
                            acceptedCaps=["inbox:write","objects:read"]):
                 if debug:
                     print('DEBUG: Undo accepted from '+keyId)
-                os.remove(queueFilename)
-                queue.pop(0)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             if debug:
@@ -1834,8 +1858,10 @@ def runInboxQueue(projectVersion: str, \
                                     federationList, \
                                     debug,projectVersion, \
                                     acceptedCaps=["inbox:write","objects:read"]):
-                os.remove(queueFilename)
-                queue.pop(0)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 if debug:
                     print('DEBUG: Follow activity for '+keyId+' removed from accepted from queue')
                 continue
@@ -1853,8 +1879,10 @@ def runInboxQueue(projectVersion: str, \
                                    debug):
                 if debug:
                     print('DEBUG: Accept/Reject received from '+keyId)
-                os.remove(queueFilename)
-                queue.pop(0)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             if receiveUpdate(session, \
@@ -1868,8 +1896,10 @@ def runInboxQueue(projectVersion: str, \
                              debug):
                 if debug:
                     print('DEBUG: Update accepted from '+keyId)
-                os.remove(queueFilename)
-                queue.pop(0)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             # get recipients list
@@ -1881,8 +1911,10 @@ def runInboxQueue(projectVersion: str, \
                 if debug:
                     pprint(queueJson['post'])
                     print('DEBUG: no recipients were resolved for post arriving in inbox')
-                os.remove(queueFilename)
-                queue.pop(0)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             # if there are only a small number of followers then process them as if they
@@ -1910,8 +1942,10 @@ def runInboxQueue(projectVersion: str, \
                 if not isinstance(queueJson['post']['capability'], list):
                     if debug:
                         print('DEBUG: capability on post should be a list')
-                    os.remove(queueFilename)
-                    queue.pop(0)
+                    if os.path.isfile(queueFilename):
+                        os.remove(queueFilename)
+                    if len(queue)>0:
+                        queue.pop(0)
                     continue
 
             # Copy any posts addressed to followers into the shared inbox
@@ -1985,5 +2019,7 @@ def runInboxQueue(projectVersion: str, \
             
                 if debug:
                     print('DEBUG: Queue post accepted')
-            os.remove(queueFilename)
-            queue.pop(0)
+            if os.path.isfile(queueFilename):
+                os.remove(queueFilename)
+            if len(queue)>0:
+                queue.pop(0)
