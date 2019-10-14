@@ -42,23 +42,25 @@ if [[ "$themeName" == 'highvis'* || "$themeName" == 'highviz'* ]]; then
     filename=epicyon.css
     cp epicyon-profile.css "$filename"
     sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
-    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
-    sed -i 's|--font-size2:.*|--font-size2: 30px;|g' "$filename"
-    sed -i 's|--font-size3:.*|--font-size3: 38px;|g' "$filename"
+    sed -i 's|--font-size:.*|--font-size: 45px;|g' "$filename"
+    sed -i 's|--font-size2:.*|--font-size2: 45px;|g' "$filename"
+    sed -i 's|--font-size3:.*|--font-size3: 40px;|g' "$filename"
+    sed -i 's|--font-size4:.*|--font-size4: 35px;|g' "$filename" 
+    sed -i 's|--font-size5:.*|--font-size5: 29px;|g' "$filename" 
     filename=calendar.css
     cp "epicyon-$filename" "$filename"
     filename=login.css
     cp "epicyon-$filename" "$filename"
     sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
-    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+    sed -i 's|--font-size:.*|--font-size: 45px;|g' "$filename"
     filename=follow.css
     cp "epicyon-$filename" "$filename"
     sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
-    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+    sed -i 's|--font-size:.*|--font-size: 45px;|g' "$filename"
     filename=suspended.css
     cp "epicyon-$filename" "$filename"
     sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
-    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+    sed -i 's|--font-size:.*|--font-size: 45px;|g' "$filename"
 fi
 
 if [[ "$themeName" == 'purple'* ]]; then

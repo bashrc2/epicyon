@@ -847,7 +847,7 @@ div.gallery img {
 
 @media screen and (max-width: 1000px) {
     body, html {
-        font-size: 35px;
+        font-size: var(--font-size3);
     }
     div.gallery {
 	margin: 5px;
@@ -1032,7 +1032,7 @@ div.gallery img {
         margin-top: 6px;
         margin-bottom: 16px;
         resize: vertical;
-        font-size: 30px;
+        font-size: var(--font-size3);
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
@@ -1045,7 +1045,7 @@ div.gallery img {
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
-        font-size: 30px;
+        font-size: var(--font-size3);
         width: 20%;
     }
     input.vote[type=submit] {
@@ -1057,7 +1057,7 @@ div.gallery img {
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
-        font-size: 30px;
+        font-size: var(--font-size3);
         width: 20%;
     }
     input[type=file] {
@@ -1068,7 +1068,7 @@ div.gallery img {
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
-        font-size: 30px;
+        font-size: var(--font-size3);
         width: 95.4%;
     }
     .cancelbtn {
@@ -1080,11 +1080,11 @@ div.gallery img {
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
-        font-size: 30px;
+        font-size: var(--font-size3);
         width: 20%;
     }
     .scope-desc {
-        font-size: 30px;
+        font-size: var(--font-size3);
     }
     .buttonunfollow {
 	border-radius: var(--button-corner-radius);
@@ -1092,7 +1092,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: 30px;
+	font-size: var(--font-size3);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 200px;
