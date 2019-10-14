@@ -30,6 +30,37 @@ if [[ "$themeName" == 'default' ]]; then
     fi
 fi
 
+if [[ "$themeName" == 'highvis'* || "$themeName" == 'highviz'* ]]; then
+    if [ -f config.json ]; then
+	if grep -q '"theme"' config.json; then
+	    sed -i 's|"theme".*|"theme": "highvis",|g' config.json
+	else
+	    sed -i '/"admin"/a "theme": "highvis",' config.json
+	    sed -i 's|"theme"|    "theme"|g' config.json
+	fi	
+    fi
+    filename=epicyon.css
+    cp epicyon-profile.css "$filename"
+    sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
+    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+    sed -i 's|--font-size2:.*|--font-size2: 30px;|g' "$filename"
+    sed -i 's|--font-size3:.*|--font-size3: 38px;|g' "$filename"
+    filename=calendar.css
+    cp "epicyon-$filename" "$filename"
+    filename=login.css
+    cp "epicyon-$filename" "$filename"
+    sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
+    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+    filename=follow.css
+    cp "epicyon-$filename" "$filename"
+    sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
+    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+    filename=suspended.css
+    cp "epicyon-$filename" "$filename"
+    sed -i 's|--font-size-header:.*|--font-size-header: 28px;|g' "$filename"    
+    sed -i 's|--font-size:.*|--font-size: 40px;|g' "$filename"
+fi
+
 if [[ "$themeName" == 'purple'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then

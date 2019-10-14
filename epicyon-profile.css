@@ -15,6 +15,10 @@
     --font-size-header: 18px;
     --font-color-header: #ccc;
     --font-size: 30px;
+    --font-size2: 24px;
+    --font-size3: 32px;
+    --font-size4: 22px; 
+    --font-size5: 20px; 
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -97,12 +101,12 @@ a:link {
 }
 
 .new-post-text {
-    font-size: 24px;
+    font-size: var(--font-size2);
     padding: 4px 0;
 }
 
 .new-post-subtext {
-    font-size: 18px;
+    font-size: var(--font-size-header);
     padding: 4px 0;
 }
 
@@ -229,7 +233,7 @@ a:link {
 }
 
 .container p.administeredby {
-    font-size: 18px;
+    font-size: var(--font-size-header);
 }
 
 .container::after {
@@ -339,7 +343,7 @@ a:link {
 .skill-title {
     margin-left: 25%;
     text-align: left;
-    font-size: 24px;
+    font-size: var(--font-size2);
     font-weight: bold;
     color: var(--button-selected);
     line-height: 40px;
@@ -375,7 +379,7 @@ input[type=number] {
     margin-top: 6px;
     margin-bottom: 16px;
     resize: vertical;
-    font-size: 18px;
+    font-size: var(--font-size-header);
 }
 
 .labels {
@@ -410,7 +414,7 @@ input[type=submit] {
     border: none;
     border-radius: var(--button-corner-radius);
     cursor: pointer;
-    font-size: 18px;
+    font-size: var(--font-size-header);
     width: 120px;
 }
 
@@ -423,7 +427,7 @@ input[type=submit] {
     border: none;
     border-radius: var(--button-corner-radius);
     cursor: pointer;
-    font-size: 24px;
+    font-size: var(--font-size2);
     opacity: 0.7;
 }
 
@@ -579,7 +583,7 @@ div.gallery img {
 
 @media screen and (min-width: 400px) {
     body, html {
-        font-size: 22px;
+        font-size: var(--font-size4);
     }
     div.gallery {
 	margin: 5px;
@@ -652,7 +656,7 @@ div.gallery img {
         border: none;
         color: #FFFFFE;
         text-align: center;
-        font-size: 20px;
+        font-size: var(--font-size5);
         padding: 2px;
         cursor: pointer;
         margin: 5px;
@@ -663,7 +667,7 @@ div.gallery img {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: 18px;
+        font-size: var(--font-size-header);
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -678,7 +682,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: 18px;
+	font-size: var(--font-size-header);
 	padding: var(--button-height-padding);
 	width: 10%;
 	max-width: 100px;
@@ -693,7 +697,7 @@ div.gallery img {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: 18px;
+        font-size: var(--font-size-header);
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -708,7 +712,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: 18px;
+	font-size: var(--font-size-header);
 	padding: var(--button-height-padding);
 	width: 10%;
 	max-width: 100px;
@@ -723,7 +727,7 @@ div.gallery img {
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
-	font-size: 18px;
+	font-size: var(--font-size-header);
 	padding: var(--button-height-padding);
 	width: 20%;
 	max-width: 200px;
@@ -738,7 +742,7 @@ div.gallery img {
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
-	font-size: 18px;
+	font-size: var(--font-size-header);
 	padding: var(--button-height-padding);
 	width: 20%;
 	max-width: 200px;
@@ -764,7 +768,7 @@ div.gallery img {
         margin-top: 6px;
         margin-bottom: 16px;
         resize: vertical;
-        font-size: 24px;
+        font-size: var(--font-size2);
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
@@ -816,7 +820,7 @@ div.gallery img {
         width: 20%;
     }
     .scope-desc {
-        font-size: 32px;
+        font-size: var(--font-size3);
     }
     .buttonunfollow {
 	border-radius: var(--button-corner-radius);
@@ -824,7 +828,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: 18px;
+	font-size: var(--font-size-header);
 	padding: var(--button-height-padding);
 	width: 20%;
 	max-width: 200px;
@@ -916,7 +920,7 @@ div.gallery img {
         border: none;
         color: #FFFFFE;
         text-align: center;
-        font-size: 32px;
+        font-size: var(--font-size3);
         padding: 2px;
         cursor: pointer;
         margin: 5px;
@@ -927,7 +931,7 @@ div.gallery img {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: 32px;
+        font-size: var(--font-size3);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -942,7 +946,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: 32px;
+	font-size: var(--font-size3);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 400px;
@@ -957,7 +961,7 @@ div.gallery img {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: 32px;
+        font-size: var(--font-size3);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -972,7 +976,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: 32px;
+	font-size: var(--font-size3);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 400px;
@@ -987,7 +991,7 @@ div.gallery img {
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
-	font-size: 32px;
+	font-size: var(--font-size3);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 400px;
@@ -1002,7 +1006,7 @@ div.gallery img {
 	border: none;
 	color: #FFFFFF;
 	text-align: center;
-	font-size: 32px;
+	font-size: var(--font-size3);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 400px;
