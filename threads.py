@@ -13,20 +13,44 @@ import time
 
 class threadWithTrace(threading.Thread): 
     def __init__(self, *args, **keywords):
-        self._args, self._keywords = args, keywords
-        threading.Thread.__init__(self, *self._args, **self._keywords) 
-        self.killed = False
+        tries=0
+        while tries<3:
+            try:
+                self._args, self._keywords = args, keywords
+                threading.Thread.__init__(self, *self._args, **self._keywords) 
+                self.killed = False
+                break
+            except Exception as e:
+                print('ERROR: threads.py/__init__ failed - '+str(e))
+                time.sleep(1)
+                tries+=1
   
     def start(self): 
-        self.__run_backup = self.run 
-        self.run = self.__run       
-        threading.Thread.start(self) 
+        tries=0
+        while tries<3:
+            try:
+                self.__run_backup = self.run 
+                self.run = self.__run       
+                threading.Thread.start(self)
+                break
+            except Exception as e:
+                print('ERROR: threads.py/start failed - '+str(e))
+                time.sleep(1)
+                tries+=1
   
-    def __run(self): 
-        sys.settrace(self.globaltrace) 
-        self.__run_backup() 
-        self.run = self.__run_backup 
-  
+    def __run(self):
+        tries=0
+        while tries<3:
+            try:
+                sys.settrace(self.globaltrace) 
+                self.__run_backup() 
+                self.run = self.__run_backup
+                break
+            except Exception as e:
+                print('ERROR: threads.py/__run failed - '+str(e))
+                time.sleep(1)
+                tries+=1
+
     def globaltrace(self, frame, event, arg): 
         if event == 'call': 
             return self.localtrace
