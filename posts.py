@@ -1007,10 +1007,15 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
     tries=0
     backoffTime=60
     for attempt in range(20):
-        postResult = \
-            postJsonString(session,postJsonStr,federationList, \
-                           inboxUrl,signatureHeaderJson, \
-                           "inbox:write",debug)
+        postResult=None
+        try:
+            postResult = \
+                postJsonString(session,postJsonStr,federationList, \
+                               inboxUrl,signatureHeaderJson, \
+                               "inbox:write",debug)
+        except Exception as e:
+            print('ERROR: postJsonString failed')
+            print(e)
         if postResult:
             logStr='Success on try '+str(tries)+': '+postJsonStr
         else:
