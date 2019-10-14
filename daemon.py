@@ -788,8 +788,18 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login.png'
             if os.path.isfile(mediaFilename):
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
+                tries=0
+                mediaBinary=None
+                while tries<5:
+                    try:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
+                if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush()
@@ -801,8 +811,18 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/login-background.png'
             if os.path.isfile(mediaFilename):
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
+                tries=0
+                mediaBinary=None
+                while tries<5:
+                    try:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
+                if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush() 
@@ -814,8 +834,18 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename= \
                 self.server.baseDir+'/accounts/follow-background.png'
             if os.path.isfile(mediaFilename):
-                with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
+                tries=0
+                mediaBinary=None
+                while tries<5:
+                    try:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries+=1
+                if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
                     self.wfile.flush()
@@ -837,7 +867,7 @@ class PubServer(BaseHTTPRequestHandler):
                     elif emojiFilename.endswith('.jpg'):
                         mediaImageType='jpeg'
                     else:
-                        mediaImageType='gif'
+                        mediaImageType='gif'                        
                     with open(emojiFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
