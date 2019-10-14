@@ -792,7 +792,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
-                    self.wfile.flush() 
+                    self.wfile.flush()
+                    return
             self._404()
             return        
         # login screen background image
@@ -817,7 +818,8 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary = avFile.read()
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self.wfile.write(mediaBinary)
-                    self.wfile.flush() 
+                    self.wfile.flush()
+                    return
             self._404()
             return
         # emoji images
