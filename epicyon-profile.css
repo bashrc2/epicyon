@@ -14,6 +14,7 @@
     --border-color: #505050;
     --font-size-header: 18px;
     --font-color-header: #ccc;
+    --font-size-button-mobile: 30px;
     --font-size: 30px;
     --font-size2: 24px;
     --font-size3: 40px;
@@ -931,7 +932,7 @@ div.gallery img {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: var(--font-size3);
+        font-size: var(--font-size-button-mobile);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -946,7 +947,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: var(--font-size3);
+	font-size: var(--font-size-button-mobile);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 400px;
@@ -961,7 +962,7 @@ div.gallery img {
         border: none;
         color: var(--button-text);
         text-align: center;
-        font-size: var(--font-size3);
+        font-size: var(--font-size-button-mobile);
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -976,7 +977,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: var(--font-size3);
+	font-size: var(--font-size-button-mobile);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 400px;
@@ -1092,7 +1093,7 @@ div.gallery img {
 	border: none;
 	color: var(--button-text);
 	text-align: center;
-	font-size: var(--font-size3);
+	font-size: var(--font-size-button-mobile);
 	padding: var(--button-height-padding-mobile);
 	width: 20%;
 	max-width: 200px;
