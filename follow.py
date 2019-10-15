@@ -29,7 +29,8 @@ from session import postJson
 
 def removeFromFollowBase(baseDir: str, \
                          nickname: str,domain: str, \
-                         acceptOrDenyHandle: str,followFile: str) -> None:
+                         acceptOrDenyHandle: str,followFile: str, \
+                         debug: bool) -> None:
     """Removes a handle from follow requests or rejects file
     """
     handle=nickname+'@'+domain
@@ -51,19 +52,19 @@ def removeFromFollowBase(baseDir: str, \
 
 def removeFromFollowRequests(baseDir: str, \
                              nickname: str,domain: str, \
-                             denyHandle: str) -> None:
+                             denyHandle: str,debug: bool) -> None:
     """Removes a handle from follow requests
     """
     removeFromFollowBase(baseDir,nickname,domain, \
-                         denyHandle,'followrequests')
+                         denyHandle,'followrequests',debug)
 
 def removeFromFollowRejects(baseDir: str, \
                             nickname: str,domain: str, \
-                            acceptHandle: str) -> None:
+                            acceptHandle: str,debug: bool) -> None:
     """Removes a handle from follow rejects
     """
     removeFromFollowBase(baseDir,nickname,domain, \
-                         acceptHandle,'followrejects')
+                         acceptHandle,'followrejects',debug)
 
 def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
     """Is the given actor a follower of the given nickname?
@@ -388,7 +389,7 @@ def storeFollowRequest(baseDir: str, \
     denyFollowsFilename=accountsDir+'/followrejects.txt'
     if os.path.isfile(denyFollowsFilename):
         if approveHandle in open(denyFollowsFilename).read():
-            removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,approveHandle)
+            removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,approveHandle,debug)
             print(approveHandle+' was already denied as a follower of '+nicknameToFollow)
             return True
 
@@ -599,7 +600,7 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
     if fromPort:
         if fromPort!=80 and fromPort!=443:
             denyHandle=denyHandle+':'+str(fromPort)
-    removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,denyHandle)
+    removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,denyHandle,debug)
     return sendSignedJson(rejectJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
@@ -653,7 +654,7 @@ def sendFollowRequest(session,baseDir: str, \
     # follow request will block them again.
     removeFromFollowRejects(baseDir, \
                             nickname,domain, \
-                            followNickname+'@'+requestDomain)
+                            followNickname+'@'+requestDomain,debug)
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
                    followNickname,followDomain,followPort, \

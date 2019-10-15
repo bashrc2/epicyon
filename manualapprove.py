@@ -32,11 +32,11 @@ def manualDenyFollowRequest(session,baseDir: str, \
     rejectedFollowsFilename=accountsDir+'/followrejects.txt'
     if os.path.isfile(rejectedFollowsFilename):
         if denyHandle in open(rejectedFollowsFilename).read():
-            removeFromFollowRequests(baseDir,nickname,domain,denyHandle)        
+            removeFromFollowRequests(baseDir,nickname,domain,denyHandle,debug)        
             print(denyHandle+' has already been rejected as a follower of '+nickname)
             return
 
-    removeFromFollowRequests(baseDir,nickname,domain,denyHandle)        
+    removeFromFollowRequests(baseDir,nickname,domain,denyHandle,debug)        
 
     # Store rejected follows
     rejectsFile=open(rejectedFollowsFilename, "a+")
