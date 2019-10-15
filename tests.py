@@ -497,7 +497,7 @@ def testPostMessageBetweenServers():
     shutil.rmtree(aliceDir)
     shutil.rmtree(bobDir)
 
-def testFollowBetweenServers():
+def testFollowBetweenServersWithCapabilities():
     print('Testing sending a follow request from one server to another')
 
     global testServerAliceRunning
@@ -771,6 +771,150 @@ def testFollowBetweenServers():
                           aliceDomain+'/ocap/granted/'+ \
                           httpPrefix+':##'+bobDomain+':'+ \
                           str(bobPort)+'#users#bob.json')
+    
+    assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
+    assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+
+    # queue item removed
+    assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
+    
+    os.chdir(baseDir)
+    shutil.rmtree(baseDir+'/.tests')
+
+def testFollowBetweenServers():
+    print('Testing sending a follow request from one server to another')
+
+    global testServerAliceRunning
+    global testServerBobRunning
+    testServerAliceRunning = False
+    testServerBobRunning = False
+
+    httpPrefix='http'
+    useTor=False
+    federationList=[]
+
+    baseDir=os.getcwd()
+    if os.path.isdir(baseDir+'/.tests'):
+        shutil.rmtree(baseDir+'/.tests')
+    os.mkdir(baseDir+'/.tests')
+
+    ocapAlways=False
+
+    # create the servers
+    aliceDir=baseDir+'/.tests/alice'
+    aliceDomain='127.0.0.42'
+    alicePort=61935
+    thrAlice = \
+        threadWithTrace(target=createServerAlice, \
+                        args=(aliceDir,aliceDomain,alicePort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
+
+    bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.0.64'
+    bobPort=61936
+    thrBob = \
+        threadWithTrace(target=createServerBob, \
+                        args=(bobDir,bobDomain,bobPort, \
+                              federationList,False,False, \
+                              ocapAlways),daemon=True)
+
+    thrAlice.start()
+    thrBob.start()
+    assert thrAlice.isAlive()==True
+    assert thrBob.isAlive()==True
+
+    # wait for all servers to be running
+    ctr=0
+    while not (testServerAliceRunning and testServerBobRunning):
+        time.sleep(1)
+        ctr+=1
+        if ctr>60:
+            break
+    print('Alice online: '+str(testServerAliceRunning))
+    print('Bob online: '+str(testServerBobRunning))
+    assert ctr<=60
+    time.sleep(1)
+
+    # In the beginning all was calm and there were no follows
+
+    print('*********************************************************')
+    print('Alice sends a follow request to Bob')
+    os.chdir(aliceDir)
+    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    inReplyTo=None
+    inReplyToAtomUri=None
+    subject=None
+    aliceSendThreads = []
+    alicePostLog = []
+    followersOnly=False
+    saveToFile=True
+    clientToServer=False
+    ccUrl=None
+    alicePersonCache={}
+    aliceCachedWebfingers={}
+    aliceSendThreads=[]
+    alicePostLog=[]
+    sendResult = \
+        sendFollowRequest(sessionAlice,aliceDir, \
+                          'alice',aliceDomain,alicePort,httpPrefix, \
+                          'bob',bobDomain,bobPort,httpPrefix, \
+                          clientToServer,federationList, \
+                          aliceSendThreads,alicePostLog, \
+                          aliceCachedWebfingers,alicePersonCache, \
+                          True,__version__)
+    print('sendResult: '+str(sendResult))
+
+    for t in range(10):
+        if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
+            if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
+                break
+        time.sleep(1)
+
+    assert validInbox(bobDir,'bob',bobDomain)
+    assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
+
+    print('\n\n*********************************************************')
+    print('Alice sends a message to Bob')
+    aliceSendThreads = []
+    alicePostLog = []
+    alicePersonCache={}
+    aliceCachedWebfingers={}
+    aliceSendThreads=[]
+    alicePostLog=[]
+    useBlurhash=False
+    sendResult = \
+        sendPost(__version__, \
+                 sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
+                 'bob', bobDomain, bobPort, ccUrl, \
+                 httpPrefix, 'Alice message', followersOnly, saveToFile, \
+                 clientToServer,None,None,None,useBlurhash, federationList, \
+                 aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
+                 alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+    print('sendResult: '+str(sendResult))
+
+    queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
+    inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
+    aliceMessageArrived=False    
+    for i in range(20):
+        time.sleep(1)
+        if os.path.isdir(inboxPath):
+            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
+                aliceMessageArrived=True
+                print('Alice message sent to Bob!')
+                break
+
+    assert aliceMessageArrived==True
+    print('Message from Alice to Bob succeeded')
+
+    # stop the servers
+    thrAlice.kill()
+    thrAlice.join()
+    assert thrAlice.isAlive()==False
+
+    thrBob.kill()
+    thrBob.join()
+    assert thrBob.isAlive()==False
     
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
