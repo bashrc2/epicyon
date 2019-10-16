@@ -1026,10 +1026,11 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         # Don't accumulate massive files on systems with limited resources
         while len(postLog)>16:
             postLog.pop(0)
-        # save the log file
-        postLogFilename=baseDir+'/post.log'
-        with open(postLogFilename, "a+") as logFile:
-            logFile.write(logStr+'\n')
+        if debug:
+            # save the log file
+            postLogFilename=baseDir+'/post.log'
+            with open(postLogFilename, "a+") as logFile:
+                logFile.write(logStr+'\n')
 
         if postResult:
             if debug:
