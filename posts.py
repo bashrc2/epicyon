@@ -1270,7 +1270,38 @@ def groupFollowersByDomain(baseDir :str,nickname :str,domain :str) -> {}:
                 else:
                     grouped[followerDomain].append(fHandle)
     return grouped
-    
+
+def addFollowersToPublicPost(postJsonObject: {}) -> None:
+    """Adds followers entry to cc if it doesn't exist
+    """
+    if not postJsonObject.get('actor'):
+        return
+
+    if isinstance(postJsonObject['object'], str):
+        if not postJsonObject.get('to'):
+            return
+        if len(postJsonObject['to'])>1:
+            return
+        if len(postJsonObject['to'])==0:
+            return
+        if not postJsonObject['to'][0].endswith('#Public'):
+            return
+        if postJsonObject.get('cc'):
+            return
+        postJsonObject['cc']=postJsonObject['actor']+'/followers'
+    elif isinstance(postJsonObject['object'], dict):
+        if not postJsonObject['object'].get('to'):
+            return
+        if len(postJsonObject['object']['to'])>1:
+            return
+        if len(postJsonObject['object']['to'])==0:
+            return
+        if not postJsonObject['object']['to'][0].endswith('#Public'):
+            return
+        if postJsonObject['object'].get('cc'):
+            return
+        postJsonObject['object']['cc']=postJsonObject['actor']+'/followers'
+
 def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                    nickname: str, domain: str, port: int, \
                    toNickname: str, toDomain: str, toPort: int, cc: str, \
@@ -1365,6 +1396,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         return 7
     postPath=inboxUrl.split(toDomain,1)[1]
 
+    addFollowersToPublicPost(postJsonObject)
+    
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
     postJsonStr=json.dumps(postJsonObject)
