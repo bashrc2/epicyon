@@ -4623,7 +4623,7 @@ def runPostsQueue(baseDir: str,sendThreads: [],debug: bool) -> None:
         time.sleep(1)
         removeDormantThreads(baseDir,sendThreads,debug)
 
-def runPostsWatchdog(httpd) -> None:
+def runPostsWatchdog(projectVersion: str,httpd) -> None:
     """This tries to keep the posts thread running even if it dies
     """
     print('Starting posts queue watchdog')
@@ -4783,7 +4783,7 @@ def runDaemon(projectVersion, \
     if not unitTest: 
         httpd.thrPostsWatchdog= \
             threadWithTrace(target=runPostsWatchdog, \
-                            args=(httpd),daemon=True)        
+                            args=(projectVersion,httpd),daemon=True)        
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
