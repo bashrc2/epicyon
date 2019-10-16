@@ -10,9 +10,11 @@ import threading
 import sys
 import trace
 import time
+import datetime
 
-class threadWithTrace(threading.Thread): 
+class threadWithTrace(threading.Thread):
     def __init__(self, *args, **keywords):
+        self.startTime=None
         tries=0
         while tries<3:
             try:
@@ -32,6 +34,7 @@ class threadWithTrace(threading.Thread):
                 self.__run_backup = self.run 
                 self.run = self.__run       
                 threading.Thread.start(self)
+                self.startTime=datetime.datetime.utcnow()
                 break
             except Exception as e:
                 print('ERROR: threads.py/start failed - '+str(e))
@@ -78,11 +81,27 @@ def removeDormantThreads(threadsList: [],debug: bool) -> None:
         return
 
     dormantThreads=[]
+    currTime=datetime.datetime.utcnow()
 
     # which threads are dormant?
     noOfActiveThreads=0
     for th in threadsList:
+        removeThread=False        
+
         if not th.is_alive():
+            if debug:
+                print('DEBUG: thread is not alive')
+            removeThread=True
+        elif not th.startTime:
+            if debug:
+                print('DEBUG: thread has no start time')
+            removeThread=True
+        elif (currTime-th.startTime).total_seconds()>200:
+            if debug:
+                print('DEBUG: thread is too old')
+            removeThread=True
+
+        if removeThread:
             dormantThreads.append(th)
         else:
             noOfActiveThreads+=1
@@ -94,5 +113,6 @@ def removeDormantThreads(threadsList: [],debug: bool) -> None:
     for th in dormantThreads:
         if debug:
             print('DEBUG: Removing dormant thread '+str(dormantCtr))
-            dormantCtr+=1
-        threadsList.remove(th)    
+            dormantCtr+=1        
+        threadsList.remove(th)
+        th.kill()
