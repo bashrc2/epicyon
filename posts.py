@@ -20,7 +20,6 @@ import time
 from time import gmtime, strftime
 from collections import OrderedDict
 from threads import threadWithTrace
-from threads import removeDormantThreads
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import expirePersonCache
@@ -1130,8 +1129,6 @@ def sendPost(projectVersion: str, \
                            toDomain,toPort, \
                            postPath,httpPrefix,withDigest,postJsonStr)
 
-    removeDormantThreads(sendThreads,debug)
-
     # Keep the number of threads being used small
     while len(sendThreads)>20:
         print('WARN: Maximum threads reached - killing send thread')
@@ -1410,15 +1407,14 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         createSignedHeader(privateKeyPem,nickname,domain,port, \
                            toDomain,toPort, \
                            postPath,httpPrefix,withDigest,postJsonStr)
-
-    removeDormantThreads(sendThreads,debug)
     
     # Keep the number of threads being used small
-    while len(sendThreads)>20:
+    while len(sendThreads)>1000:
         print('WARN: Maximum threads reached - killing send thread')
         sendThreads[0].kill()
         sendThreads.pop(0)
         print('WARN: thread killed')
+
     if debug:
         print('DEBUG: starting thread to send post')
         pprint(postJsonObject)
@@ -1431,7 +1427,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                                 postLog,
                                 debug),daemon=True)
     sendThreads.append(thr)
-    thr.start()
+    #thr.start()
     return 0
 
 def addToField(activityType: str,postJsonObject: {},debug: bool) -> ({},bool):

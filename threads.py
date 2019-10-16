@@ -15,6 +15,7 @@ import datetime
 class threadWithTrace(threading.Thread):
     def __init__(self, *args, **keywords):
         self.startTime=datetime.datetime.utcnow()
+        self.isStarted=False
         tries=0
         while tries<3:
             try:
@@ -39,19 +40,24 @@ class threadWithTrace(threading.Thread):
                 print('ERROR: threads.py/start failed - '+str(e))
                 time.sleep(1)
                 tries+=1
-  
+        # note that this is set True even if all tries failed
+        self.isStarted=True
+
     def __run(self):
-        tries=0
-        while tries<3:
-            try:
-                sys.settrace(self.globaltrace) 
-                self.__run_backup() 
-                self.run = self.__run_backup
-                break
-            except Exception as e:
-                print('ERROR: threads.py/__run failed - '+str(e))
-                time.sleep(1)
-                tries+=1
+        sys.settrace(self.globaltrace) 
+        self.__run_backup() 
+        self.run = self.__run_backup
+        #tries=0
+        #while tries<3:
+        #    try:
+        #        sys.settrace(self.globaltrace) 
+        #        self.__run_backup() 
+        #        self.run = self.__run_backup
+        #        break
+        #    except Exception as e:
+        #        print('ERROR: threads.py/__run failed - '+str(e))
+        #        time.sleep(1)
+        #        tries+=1
 
     def globaltrace(self, frame, event, arg): 
         if event == 'call': 
@@ -73,7 +79,7 @@ class threadWithTrace(threading.Thread):
                                args=self._args, \
                                daemon=True)        
 
-def removeDormantThreads(threadsList: [],debug: bool) -> None:
+def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
     """Removes threads whose execution has completed
     """
     if len(threadsList)==0:
@@ -81,24 +87,22 @@ def removeDormantThreads(threadsList: [],debug: bool) -> None:
 
     dormantThreads=[]
     currTime=datetime.datetime.utcnow()
+    changed=False
 
     # which threads are dormant?
     noOfActiveThreads=0
     for th in threadsList:
         removeThread=False        
 
-        if not th.is_alive():
-            if debug:
-                print('DEBUG: thread is not alive')
-            removeThread=True
-        elif not th.startTime:
-            if debug:
-                print('DEBUG: thread has no start time')
-            removeThread=True
-        elif (currTime-th.startTime).total_seconds()>200:
-            if debug:
-                print('DEBUG: thread is too old')
-            removeThread=True
+        if th.isStarted:
+            if not th.is_alive():
+                if debug:
+                    print('DEBUG: thread is not alive')
+                removeThread=True
+            elif (currTime-th.startTime).total_seconds()>60:
+                if debug:
+                    print('DEBUG: thread timed out')
+                removeThread=True
 
         if removeThread:
             dormantThreads.append(th)
@@ -115,3 +119,23 @@ def removeDormantThreads(threadsList: [],debug: bool) -> None:
             dormantCtr+=1        
         threadsList.remove(th)
         th.kill()
+        changed=True
+
+    # start scheduled threads
+    if len(threadsList)<10:
+        ctr=0
+        for th in threadsList:
+            if not th.isStarted:
+                print('Starting new send thread '+str(ctr))
+                th.start()
+                changed=True
+                break
+            ctr+=1
+
+    if not changed:
+        return
+
+    if debug:
+        sendLogFilename=baseDir+'/send.csv'
+        with open(sendLogFilename, "a+") as logFile:
+            logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ")+','+str(noOfActiveThreads)+','+str(len(threadsList))+'\n')

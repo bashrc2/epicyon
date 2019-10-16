@@ -174,7 +174,7 @@ def testThreads():
     assert thr.isAlive()==False
 
 def createServerAlice(path: str,domain: str,port: int,federationList: [], \
-                      hasFollows: bool,hasPosts :bool,ocapAlways: bool):
+                      hasFollows: bool,hasPosts :bool,ocapAlways: bool,sendThreads: []):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -224,10 +224,10 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-              allowDeletion,True,True,False)
+              allowDeletion,True,True,False,sendThreads)
 
 def createServerBob(path: str,domain: str,port: int,federationList: [], \
-                    hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+                    hasFollows: bool,hasPosts :bool,ocapAlways :bool,sendThreads: []):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -278,10 +278,10 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-              allowDeletion,True,True,False)
+              allowDeletion,True,True,False,sendThreads)
 
 def createServerEve(path: str,domain: str,port: int,federationList: [], \
-                    hasFollows: bool,hasPosts :bool,ocapAlways :bool):
+                    hasFollows: bool,hasPosts :bool,ocapAlways :bool,sendThreads: []):
     print('Creating test server: Eve on port '+str(port))
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -310,7 +310,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     runDaemon(__version__,"instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
-              useTor,maxReplies,allowDeletion,True,True,False)
+              useTor,maxReplies,allowDeletion,True,True,False,sendThreads)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')
@@ -338,17 +338,19 @@ def testPostMessageBetweenServers():
     bobDomain='127.0.0.100'
     bobPort=61936
     federationList=[bobDomain,aliceDomain]
+    aliceSendThreads=[]
+    bobSendThreads=[]
 
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,aliceSendThreads),daemon=True)
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,bobSendThreads),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -368,7 +370,6 @@ def testPostMessageBetweenServers():
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
-    aliceSendThreads = []
     alicePostLog = []
     followersOnly=False
     saveToFile=True
@@ -412,7 +413,9 @@ def testPostMessageBetweenServers():
     # inbox item created
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     # queue item removed
-    assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
+    testval=len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])
+    print('queuePath: '+queuePath+' '+str(testval))
+    assert testval==0
     assert validInbox(bobDir,'bob',bobDomain)
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
@@ -425,7 +428,6 @@ def testPostMessageBetweenServers():
                  bobDomain+':'+str(bobPort),federationList,False)
 
     sessionBob = createSession(bobDomain,bobPort,useTor)
-    bobSendThreads = []
     bobPostLog = []
     bobPersonCache={}
     bobCachedWebfingers={}
@@ -522,29 +524,32 @@ def testFollowBetweenServersWithCapabilities():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.42'
     alicePort=61935
+    aliceSendThreads=[]
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,aliceSendThreads),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.64'
     bobPort=61936
+    bobSendThreads=[]
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,bobSendThreads),daemon=True)
 
     eveDir=baseDir+'/.tests/eve'
     eveDomain='127.0.0.55'
     evePort=61937
+    eveSendThreads=[]
     thrEve = \
         threadWithTrace(target=createServerEve, \
                         args=(eveDir,eveDomain,evePort, \
                               federationList,False,False, \
-                              False),daemon=True)
+                              False,eveSendThreads),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -576,7 +581,6 @@ def testFollowBetweenServersWithCapabilities():
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
-    aliceSendThreads = []
     alicePostLog = []
     followersOnly=False
     saveToFile=True
@@ -584,7 +588,6 @@ def testFollowBetweenServersWithCapabilities():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    aliceSendThreads=[]
     alicePostLog=[]
     sendResult = \
         sendFollowRequest(sessionAlice,aliceDir, \
@@ -619,11 +622,9 @@ def testFollowBetweenServersWithCapabilities():
     print('\n\n*********************************************************')
     print('Eve tries to send to Bob')
     sessionEve = createSession(eveDomain,evePort,useTor)
-    eveSendThreads = []
     evePostLog = []
     evePersonCache={}
     eveCachedWebfingers={}
-    eveSendThreads=[]
     evePostLog=[]
     useBlurhash=False
     sendResult = \
@@ -654,11 +655,9 @@ def testFollowBetweenServersWithCapabilities():
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
-    aliceSendThreads = []
     alicePostLog = []
     alicePersonCache={}
     aliceCachedWebfingers={}
-    aliceSendThreads=[]
     alicePostLog=[]
     useBlurhash=False
     sendResult = \
@@ -694,7 +693,6 @@ def testFollowBetweenServersWithCapabilities():
         aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+ \
         httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'
     sessionBob = createSession(bobDomain,bobPort,useTor)
-    bobSendThreads = []
     bobPostLog = []
     bobPersonCache={}
     bobCachedWebfingers={}
@@ -804,20 +802,22 @@ def testFollowBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.42'
     alicePort=61935
+    aliceSendThreads=[]
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,aliceSendThreads),daemon=True)
 
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.64'
     bobPort=61936
+    bobSendThreads=[]
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,bobSendThreads),daemon=True)
 
     thrAlice.start()
     thrBob.start()
@@ -845,7 +845,6 @@ def testFollowBetweenServers():
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
-    aliceSendThreads = []
     alicePostLog = []
     followersOnly=False
     saveToFile=True
@@ -853,7 +852,6 @@ def testFollowBetweenServers():
     ccUrl=None
     alicePersonCache={}
     aliceCachedWebfingers={}
-    aliceSendThreads=[]
     alicePostLog=[]
     sendResult = \
         sendFollowRequest(sessionAlice,aliceDir, \
@@ -876,11 +874,9 @@ def testFollowBetweenServers():
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
-    aliceSendThreads = []
     alicePostLog = []
     alicePersonCache={}
     aliceCachedWebfingers={}
-    aliceSendThreads=[]
     alicePostLog=[]
     useBlurhash=False
     sendResult = \
@@ -1253,20 +1249,22 @@ def testClientToServer():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.42'
     alicePort=61935
+    aliceSendThreads=[]
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,aliceSendThreads),daemon=True)
     
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.64'
     bobPort=61936
+    bobSendThreads=[]
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
                               federationList,False,False, \
-                              ocapAlways),daemon=True)
+                              ocapAlways,bobSendThreads),daemon=True)
 
     thrAlice.start()
     thrBob.start()

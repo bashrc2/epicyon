@@ -60,6 +60,7 @@ from auth import createPassword
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
 from threads import threadWithTrace
+from threads import removeDormantThreads
 from media import getMediaPath
 from media import createMediaDirs
 from delete import outboxDelete
@@ -4614,7 +4615,28 @@ class PubServer(BaseHTTPRequestHandler):
 
 class PubServerUnitTest(PubServer):
     protocol_version = 'HTTP/1.0'
-        
+
+def runPostsQueue(baseDir: str,sendThreads: [],debug: bool) -> None:
+    """Manages the threads used to send posts
+    """
+    while True:
+        time.sleep(1)
+        removeDormantThreads(baseDir,sendThreads,debug)
+
+def runPostsWatchdog(httpd) -> None:
+    """This tries to keep the posts thread running even if it dies
+    """
+    print('Starting posts queue watchdog')
+    postsQueueOriginal=httpd.thrPostsQueue.clone(runPostsQueue)
+    httpd.thrPostsQueue.start()
+    while True:
+        time.sleep(20) 
+        if not httpd.thrPostsQueue.isAlive():
+            httpd.thrPostsQueue.kill()
+            httpd.thrPostsQueue=postsQueueOriginal.clone(runPostsQueue)
+            httpd.thrPostsQueue.start()
+            print('Restarting posts queue...')
+
 def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
@@ -4626,7 +4648,7 @@ def runDaemon(projectVersion, \
               useTor=False,maxReplies=64, \
               domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
               allowDeletion=False,debug=False,unitTest=False, \
-              instanceOnlySkillsSearch=False) -> None:
+              instanceOnlySkillsSearch=False,sendThreads=[]) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -4701,7 +4723,7 @@ def runDaemon(projectVersion, \
     httpd.POSTbusy=False
     httpd.receivedMessage=False
     httpd.inboxQueue=[]
-    httpd.sendThreads=[]
+    httpd.sendThreads=sendThreads
     httpd.postLog=[]
     httpd.maxQueueLength=16
     httpd.ocapAlways=ocapAlways
@@ -4753,6 +4775,18 @@ def runDaemon(projectVersion, \
                               archiveDir, \
                               httpd.maxPostsInBox),daemon=True)
     httpd.thrCache.start()
+
+    print('Creating posts queue')
+    httpd.thrPostsQueue= \
+        threadWithTrace(target=runPostsQueue, \
+                        args=(baseDir,httpd.sendThreads,debug),daemon=True)
+    if not unitTest: 
+        httpd.thrPostsWatchdog= \
+            threadWithTrace(target=runPostsWatchdog, \
+                            args=(httpd),daemon=True)        
+        httpd.thrPostsWatchdog.start()
+    else:
+        httpd.thrPostsQueue.start()
 
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
