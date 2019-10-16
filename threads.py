@@ -70,3 +70,29 @@ class threadWithTrace(threading.Thread):
         return threadWithTrace(target=fn, \
                                args=self._args, \
                                daemon=True)        
+
+def removeDormantThreads(threadsList: [],debug: bool) -> None:
+    """Removes threads whose execution has completed
+    """
+    if len(threadsList)==0:
+        return
+
+    dormantThreads=[]
+
+    # which threads are dormant?
+    noOfActiveThreads=0
+    for th in threadsList:
+        if not th.is_alive():
+            dormantThreads.append(th)
+        else:
+            noOfActiveThreads+=1
+    if debug:
+        print('DEBUG: '+str(noOfActiveThreads) + ' active threads out of '+str(len(threadsList)))
+
+    # remove the dormant threads
+    dormantCtr=0
+    for th in dormantThreads:
+        if debug:
+            print('DEBUG: Removing dormant thread '+str(dormantCtr))
+            dormantCtr+=1
+        threadsList.remove(th)    

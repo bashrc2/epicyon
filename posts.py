@@ -20,6 +20,7 @@ import time
 from time import gmtime, strftime
 from collections import OrderedDict
 from threads import threadWithTrace
+from threads import removeDormantThreads
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from cache import expirePersonCache
@@ -1042,7 +1043,7 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         time.sleep(backoffTime)
         backoffTime *= 2
         tries+=1
-
+        
 def sendPost(projectVersion: str, \
              session,baseDir: str,nickname: str, domain: str, port: int, \
              toNickname: str, toDomain: str, toPort: int, cc: str, \
@@ -1128,8 +1129,10 @@ def sendPost(projectVersion: str, \
                            toDomain,toPort, \
                            postPath,httpPrefix,withDigest,postJsonStr)
 
+    removeDormantThreads(sendThreads,debug)
+
     # Keep the number of threads being used small
-    while len(sendThreads)>10:
+    while len(sendThreads)>20:
         sendThreads[0].kill()
         sendThreads.pop(0)
     thr = threadWithTrace(target=threadSendPost,args=(session, \
