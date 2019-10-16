@@ -1134,8 +1134,10 @@ def sendPost(projectVersion: str, \
 
     # Keep the number of threads being used small
     while len(sendThreads)>20:
+        print('WARN: Maximum threads reached - killing send thread')
         sendThreads[0].kill()
         sendThreads.pop(0)
+        print('WARN: thread killed')
     thr = threadWithTrace(target=threadSendPost,args=(session, \
                                                       postJsonStr, \
                                                       federationList, \
@@ -1409,6 +1411,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
                            toDomain,toPort, \
                            postPath,httpPrefix,withDigest,postJsonStr)
 
+    removeDormantThreads(sendThreads,debug)
+    
     # Keep the number of threads being used small
     while len(sendThreads)>20:
         print('WARN: Maximum threads reached - killing send thread')
