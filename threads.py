@@ -14,7 +14,7 @@ import datetime
 
 class threadWithTrace(threading.Thread):
     def __init__(self, *args, **keywords):
-        self.startTime=None
+        self.startTime=datetime.datetime.utcnow()
         tries=0
         while tries<3:
             try:
@@ -34,7 +34,6 @@ class threadWithTrace(threading.Thread):
                 self.__run_backup = self.run 
                 self.run = self.__run       
                 threading.Thread.start(self)
-                self.startTime=datetime.datetime.utcnow()
                 break
             except Exception as e:
                 print('ERROR: threads.py/start failed - '+str(e))
