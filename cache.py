@@ -53,7 +53,7 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
                         personJson=commentjson.load(fp)
                         break
                 except Exception as e:
-                    print('ERROR: unable to load actor from cache '+cacheFilename)
+                    print('ERROR: unable to load actor from cache '+cacheFilename+' try '+str(tries))
                     print(e)
                     time.sleep(1)
                     tries+=1
