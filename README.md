@@ -55,7 +55,7 @@ Type=simple
 User=epicyon
 Group=epicyon
 WorkingDirectory=/etc/epicyon
-ExecStart=/usr/bin/python3 /etc/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug
+ExecStart=/usr/bin/python3 /etc/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open
 Environment=USER=epicyon
 Restart=always
 StandardError=syslog
