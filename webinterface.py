@@ -2044,7 +2044,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 
-    if not postJsonObject['object']['sensitive']:
+    isSensitive=False
+    if postJsonObject['object'].get('sensitive'):
+        isSensitive=postJsonObject['object']['sensitive']:
+        
+    if not isSensitive:
         contentStr=postJsonObject['object']['content']+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
         contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
