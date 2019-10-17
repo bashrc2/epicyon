@@ -842,6 +842,7 @@ if args.dat:
     httpPrefix='dat'
 
 if args.actor:
+    originalActor=args.actor
     if '/@' in args.actor or '/users/' in args.actor or args.actor.startswith('http') or args.actor.startswith('dat'):
         # format: https://domain/@nick
         args.actor=args.actor.replace('https://','').replace('http://','').replace('dat://','').replace('/@','/users/')
@@ -883,12 +884,17 @@ if args.actor:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
 
+    personUrl=None
     if wfRequest.get('errors'):
         print('wfRequest error: '+str(wfRequest['errors']))
-        sys.exit()
+        if '/users/' in args.actor:
+            personUrl=originalActor
+        else:
+            sys.exit()
         
     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
-    personUrl = getUserUrl(wfRequest)
+    if not personUrl:
+        personUrl = getUserUrl(wfRequest)
     if nickname==domain:
         personUrl=personUrl.replace('/users/','/actor/')
     #print('personUrl: '+personUrl)
