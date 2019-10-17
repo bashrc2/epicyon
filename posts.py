@@ -1351,8 +1351,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
 
     if wfRequest.get('errors'):
         if debug:
-            print('DEBUG: webfinger for '+handle+' failed with errors '+str(wfRequest['errors']))        
-        return 1
+            print('DEBUG: webfinger for '+handle+' failed with errors '+str(wfRequest['errors']))
     
     if not clientToServer:
         postToBox='inbox'
