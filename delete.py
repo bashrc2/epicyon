@@ -68,7 +68,9 @@ def createDelete(session,baseDir: str,federationList: [], \
     deleteNickname=None
     deleteDomain=None
     deletePort=None
-    if '/users/' in objectUrl or '/profile/' in objectUrl:
+    if '/users/' in objectUrl or \
+       '/channel/' in objectUrl or \
+       '/profile/' in objectUrl:
         deleteNickname=getNicknameFromActor(objectUrl)
         deleteDomain,deletePort=getDomainFromActor(objectUrl)
 
@@ -242,7 +244,9 @@ def outboxDelete(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s delete object is not a status')
         return
-    if '/users/' not in messageId and '/profile/' not in messageId:
+    if '/users/' not in messageId and \
+       '/channel/' not in messageId and \
+       '/profile/' not in messageId:
         if debug:
             print('DEBUG: c2s delete object has no nickname')
         return

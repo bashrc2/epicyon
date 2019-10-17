@@ -333,7 +333,9 @@ def outboxBlock(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s block object is not a status')
         return
-    if '/users/' not in messageId and '/profile/' not in messageId:
+    if '/users/' not in messageId and \
+       '/channel/' not in messageId and \
+       '/profile/' not in messageId:
         if debug:
             print('DEBUG: c2s block object has no nickname')
         return
@@ -408,7 +410,9 @@ def outboxUndoBlock(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: c2s undo block object is not a status')
         return
-    if '/users/' not in messageId and '/profile/' not in messageId:
+    if '/users/' not in messageId and \
+       '/channel/' not in messageId and \
+       '/profile/' not in messageId:
         if debug:
             print('DEBUG: c2s undo block object has no nickname')
         return

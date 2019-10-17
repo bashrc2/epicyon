@@ -119,7 +119,9 @@ def getUserUrl(wfRequest) -> str:
         for link in wfRequest['links']:
             if link.get('type') and link.get('href'):
                 if link['type'] == 'application/activity+json':
-                    if '/users/' in link['href'] or '/profile/' in link['href']:
+                    if '/users/' in link['href'] or \
+                       '/profile/' in link['href'] or \
+                       '/channel/' in link['href']:
                         return link['href']
                     else:
                         print('Webfinger activity+json does not contain a valid actor')
@@ -168,6 +170,8 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
         return None,None,None,None,None,None,None,None
     personJson = getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
+        if '/channel/' in personUrl:
+            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,personUrl,asHeader,None, \
                              projectVersion,httpPrefix,domain)
         if not personJson:
@@ -228,6 +232,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
     if not outboxUrl:
         return personPosts
     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+    if '/outbox/' in outboxUrl:
+        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     if raw:
         result = []
         i = 0
@@ -2410,7 +2416,9 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
         if '/statuses/' not in announcedJson['id']:
             rejectAnnounce(announceFilename)
             return None
-        if '/users/' not in announcedJson['id'] and '/profile/' not in announcedJson['id']:
+        if '/users/' not in announcedJson['id'] and \
+           '/channel/' not in announcedJson['id'] and \
+           '/profile/' not in announcedJson['id']:
             rejectAnnounce(announceFilename)
             return None
         if not announcedJson.get('type'):

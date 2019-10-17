@@ -553,7 +553,9 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: follow request has no actor within object')
         return False
-    if '/users/' not in messageJson['object']['actor'] and '/profile/' not in messageJson['object']['actor']:
+    if '/users/' not in messageJson['object']['actor'] and \
+       '/channel/' not in messageJson['object']['actor'] and \
+       '/profile/' not in messageJson['object']['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor within object')
         return False
@@ -612,7 +614,9 @@ def receiveUndo(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: follow request has no actor')
         return False
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor')            
         return False
@@ -663,11 +667,13 @@ def personReceiveUpdate(baseDir: str, \
     if actor not in personJson['id']:
         actor=updateDomainFull+'/profile/'+updateNickname
         if actor not in personJson['id']:
-            if debug:
-                print('actor: '+actor)
-                print('id: '+personJson['id'])
-                print('DEBUG: Actor does not match id')
-            return False
+            actor=updateDomainFull+'/channel/'+updateNickname
+            if actor not in personJson['id']:
+                if debug:
+                    print('actor: '+actor)
+                    print('id: '+personJson['id'])
+                    print('DEBUG: Actor does not match id')
+                return False
     if updateDomainFull==domainFull:
         if debug:
             print('DEBUG: You can only receive actor updates for domains other than your own')
@@ -763,7 +769,9 @@ def receiveUpdate(session,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' object has no type')
         return False
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
         return False
@@ -827,7 +835,9 @@ def receiveLike(session,handle: str,isGroup: bool,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' has no "to" list')
         return False
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
         return False
@@ -876,7 +886,9 @@ def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' like object is not a string')
         return False
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type']+' like')
         return False
@@ -937,7 +949,9 @@ def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' has no "to" list')
         return False
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
         return False
@@ -995,11 +1009,15 @@ def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
         if debug:
             print('DEBUG: '+messageJson['type']+' has no "to" list')
         return False
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
         return False
-    if '/users/' not in messageJson['object'] and '/profile/' not in messageJson['object']:
+    if '/users/' not in messageJson['object'] and \
+       '/channel/' not in messageJson['object'] and \
+       '/profile/' not in messageJson['object']:
         if debug:
             print('DEBUG: "users" or "profile" missing in '+messageJson['type'])
         return False
@@ -1042,7 +1060,9 @@ def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                     if postJsonObject['object'].get('attributedTo'):
                         lookupActor=postJsonObject['object']['attributedTo']
         if lookupActor:
-            if '/users/' in lookupActor or '/profile/' in lookupActor:
+            if '/users/' in lookupActor or \
+               '/channel/' in lookupActor or \
+               '/profile/' in lookupActor:
                 if '/statuses/' in lookupActor:
                     lookupActor=lookupActor.split('/statuses/')[0]
 
@@ -1086,7 +1106,9 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
         return False
     if messageJson['object']['type']!='Announce':
         return False    
-    if '/users/' not in messageJson['actor'] and '/profile/' not in messageJson['actor']:
+    if '/users/' not in messageJson['actor'] and \
+       '/channel/' not in messageJson['actor'] and \
+       '/profile/' not in messageJson['actor']:
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type']+' announce')
         return False
@@ -1249,7 +1271,9 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
 
     lookupActor=postJsonObject['object']['inReplyTo']
     if lookupActor:
-        if '/users/' in lookupActor or '/profile/' in lookupActor:
+        if '/users/' in lookupActor or \
+           '/channel/' in lookupActor or \
+           '/profile/' in lookupActor:
             if '/statuses/' in lookupActor:
                 lookupActor=lookupActor.split('/statuses/')[0]
             

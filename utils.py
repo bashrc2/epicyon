@@ -115,6 +115,12 @@ def getNicknameFromActor(actor: str) -> str:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
+        if '/channel/' in actor:
+            nickStr=actor.split('/channel/')[1].replace('@','')
+            if '/' not in nickStr:
+                return nickStr
+            else:
+                return nickStr.split('/')[0]
         # https://domain/@nick
         if '/@' in actor:
             nickStr=actor.split('/@')[1]
@@ -135,12 +141,15 @@ def getDomainFromActor(actor: str) -> (str,int):
     if '/profile/' in actor:
         domain = actor.split('/profile/')[0].replace('https://','').replace('http://','').replace('dat://','')
     else:
-        if '/users/' not in actor:
-            domain = actor.replace('https://','').replace('http://','').replace('dat://','')
-            if '/' in actor:
-                domain=domain.split('/')[0]
+        if '/channel/' in actor:
+            domain = actor.split('/channel/')[0].replace('https://','').replace('http://','').replace('dat://','')
         else:
-            domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
+            if '/users/' not in actor:
+                domain = actor.replace('https://','').replace('http://','').replace('dat://','')
+                if '/' in actor:
+                    domain=domain.split('/')[0]
+            else:
+                domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
     if ':' in domain:
         port=int(domain.split(':')[1])
         domain=domain.split(':')[0]
@@ -326,7 +335,7 @@ def validNickname(domain: str,nickname: str) -> bool:
             return False
     if nickname==domain:
         return False
-    reservedNames=['inbox','dm','outbox','following','public','followers','capabilities','calendar','tlreplies','tlmedia','moderation']
+    reservedNames=['inbox','dm','outbox','following','public','followers','profile','channel','capabilities','calendar','tlreplies','tlmedia','moderation']
     if nickname in reservedNames:
         return False
     return True

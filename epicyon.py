@@ -846,15 +846,20 @@ if args.actor:
     if '/@' in args.actor or '/users/' in args.actor or args.actor.startswith('http') or args.actor.startswith('dat'):
         # format: https://domain/@nick
         args.actor=args.actor.replace('https://','').replace('http://','').replace('dat://','').replace('/@','/users/')
-        if '/users/' not in args.actor and '/profile/' not in args.actor:
+        if '/users/' not in args.actor and \
+           '/channel/' not in args.actor and \
+           '/profile/' not in args.actor:
             print('Expected actor format: https://domain/@nick or https://domain/users/nick')
             sys.exit()
         if '/users/' in args.actor:
             nickname=args.actor.split('/users/')[1].replace('\n','')
             domain=args.actor.split('/users/')[0]
-        else:
+        elif '/profile/' in args.actor:
             nickname=args.actor.split('/profile/')[1].replace('\n','')
             domain=args.actor.split('/profile/')[0]
+        else:
+            nickname=args.actor.split('/channel/')[1].replace('\n','')
+            domain=args.actor.split('/channel/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.actor:
@@ -884,10 +889,14 @@ if args.actor:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
 
+    pprint(wfRequest)
+
     personUrl=None
     if wfRequest.get('errors'):
         print('wfRequest error: '+str(wfRequest['errors']))
-        if '/users/' in args.actor:
+        if '/users/' in args.actor or \
+           '/profile/' in args.actor or \
+           '/channel/' in args.actor:
             personUrl=originalActor
         else:
             sys.exit()
@@ -896,8 +905,10 @@ if args.actor:
     if not personUrl:
         personUrl = getUserUrl(wfRequest)
     if nickname==domain:
-        personUrl=personUrl.replace('/users/','/actor/')
+        personUrl=personUrl.replace('/users/','/actor/').replace('/channel/','/actor/').replace('/profile/','/actor/')
     #print('personUrl: '+personUrl)
+    if '/channel/' in personUrl:
+        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
     if personJson:
         pprint(personJson)
