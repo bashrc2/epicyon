@@ -3121,7 +3121,10 @@ def htmlProfileAfterSearch(translate: {}, \
                            debug: bool,projectVersion: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
-    if '/users/' in profileHandle or '/@' in profileHandle:
+    if '/users/' in profileHandle or \
+       '/channel/' in profileHandle or \
+       '/profile/' in profileHandle or \
+       '/@' in profileHandle:
         searchNickname=getNicknameFromActor(profileHandle)
         searchDomain,searchPort=getDomainFromActor(profileHandle)
     else:
@@ -3178,6 +3181,9 @@ def htmlProfileAfterSearch(translate: {}, \
                 print('DEBUG: Webfinger did not return an actor url')
             return None            
         profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
+        if not profileJson:
+            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+            profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
             if debug:
                 print('DEBUG: No actor returned from '+personUrl)
