@@ -345,7 +345,7 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
                     actor=commentjson.load(fp)
                     break
             except Exception as e:
-                print('WARN: commentjson exception followApprovalRequired - '+e)
+                print('WARN: commentjson exception followApprovalRequired - '+str(e))
                 time.sleep(1)
                 tries+=1
         if actor:
@@ -882,7 +882,7 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
                                         ocapJson=commentjson.load(fp)
                                         break
                                 except Exception as e:
-                                    print('WARN: commentjson exception getFollowersOfActor - '+e)
+                                    print('WARN: commentjson exception getFollowersOfActor - '+str(e))
                                     time.sleep(1)
                                     tries+=1
                             if ocapJson:

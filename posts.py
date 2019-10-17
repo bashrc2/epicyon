@@ -529,7 +529,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                         replyToJson=commentjson.load(fp)
                         break
                 except Exception as e:
-                    print('WARN: commentjson exception createPostBase - '+e)
+                    print('WARN: commentjson exception createPostBase - '+str(e))
                     time.sleep(1)
                     tries+=1
             if replyToJson:
@@ -585,7 +585,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                                 capabilityIdList=[oc['id']]
                             break
                     except Exception as e:
-                        print('WARN: commentjson exception createPostBase - '+e)
+                        print('WARN: commentjson exception createPostBase - '+str(e))
                         time.sleep(1)
                         tries+=1
         newPost = {
@@ -1784,7 +1784,7 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
                                 boxItems['orderedItems'].append(postJsonObject)
                                 break
                         except Exception as e:
-                            print('WARN: commentjson exception createModeration - '+e)
+                            print('WARN: commentjson exception createModeration - '+str(e))
                             time.sleep(1)
                             tries+=1
 
@@ -1946,7 +1946,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                             loadedPost=True
                             break
                     except Exception as e:
-                        print('WARN: commentjson exception createBoxBase - '+e)
+                        print('WARN: commentjson exception createBoxBase - '+str(e))
                         time.sleep(1)
                         tries+=1
                 if loadedPost:                
@@ -1974,7 +1974,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                                                 loadedOcap=True
                                                 break
                                         except Exception as e:
-                                            print('WARN: commentjson exception createBoxBase - '+e)
+                                            print('WARN: commentjson exception createBoxBase - '+str(e))
                                             time.sleep(1)
                                             tries+=1
                                     if loadedOcap:
@@ -2294,7 +2294,7 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
                                     loadedPost=True
                                     break
                             except Exception as e:
-                                print('WARN: commentjson exception populateRepliesJson - '+e)
+                                print('WARN: commentjson exception populateRepliesJson - '+str(e))
                                 time.sleep(1)
                                 tries+=1
                         if loadedPost:
@@ -2330,7 +2330,7 @@ def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
                                     loadedPost=True
                                     break
                             except Exception as e:
-                                print('WARN: commentjson exception populateRepliesJson 2 - '+e)
+                                print('WARN: commentjson exception populateRepliesJson 2 - '+str(e))
                                 time.sleep(1)
                                 tries+=1
                         if loadedPost:
@@ -2379,7 +2379,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
                     postJsonObject=commentjson.load(fp)
                     return postJsonObject
             except Exception as e:
-                print('WARN: commentjson exception downloadAnnounce - '+e)
+                print('WARN: commentjson exception downloadAnnounce - '+str(e))
                 time.sleep(1)
                 tries+=1
     else:

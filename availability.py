@@ -35,7 +35,7 @@ def setAvailability(baseDir: str,nickname: str,domain: str, \
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setAvailability - '+e)
+            print('WARN: commentjson exception setAvailability - '+str(e))
             time.sleep(1)
             tries+=1
     if actorJson:
@@ -66,7 +66,7 @@ def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception getAvailability - '+e)
+            print('WARN: commentjson exception getAvailability - '+str(e))
             time.sleep(1)
             tries+=1
     if actorJson:

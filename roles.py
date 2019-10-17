@@ -37,7 +37,7 @@ def clearModeratorStatus(baseDir: str) -> None:
                             actorJson=commentjson.load(fp)
                             break
                     except Exception as e:
-                        print('WARN: commentjson exception clearModeratorStatus - '+e)
+                        print('WARN: commentjson exception clearModeratorStatus - '+str(e))
                         time.sleep(1)
                         tries+=1
 
@@ -116,7 +116,7 @@ def setRole(baseDir: str,nickname: str,domain: str, \
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setRole - '+e)
+            print('WARN: commentjson exception setRole - '+str(e))
             time.sleep(1)
             tries+=1
 
@@ -167,7 +167,7 @@ def getRoles(baseDir: str,nickname: str,domain: str, \
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception getRoles - '+e)
+            print('WARN: commentjson exception getRoles - '+str(e))
             time.sleep(1)
             tries+=1
 

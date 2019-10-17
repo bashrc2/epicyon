@@ -36,7 +36,7 @@ def setSkillLevel(baseDir: str,nickname: str,domain: str, \
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setSkillLevel - '+e)
+            print('WARN: commentjson exception setSkillLevel - '+str(e))
             time.sleep(1)
             tries+=1
 
@@ -72,7 +72,7 @@ def setSkills(baseDir: str,nickname: str,domain: str,skills: {}) -> None:
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setSkills - '+e)
+            print('WARN: commentjson exception setSkills - '+str(e))
             time.sleep(1)
             tries+=1
 
@@ -104,7 +104,7 @@ def getSkills(baseDir: str,nickname: str,domain: str) -> []:
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception getSkills - '+e)
+            print('WARN: commentjson exception getSkills - '+str(e))
             time.sleep(1)
             tries+=1
 

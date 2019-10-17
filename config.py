@@ -42,7 +42,7 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
                 configJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setConfigParam - '+e)
+            print('WARN: commentjson exception setConfigParam - '+str(e))
             time.sleep(1)
             tries+=1
     configJson[variableName]=variableValue
@@ -71,7 +71,7 @@ def getConfigParam(baseDir: str, variableName: str):
                     return configJson[variableName]
                 break
         except Exception as e:
-            print('WARN: commentjson exception getConfigParam - '+e)
+            print('WARN: commentjson exception getConfigParam - '+str(e))
             time.sleep(1)
             tries+=1
     return None

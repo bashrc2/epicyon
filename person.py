@@ -99,7 +99,7 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
                 personJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setProfileImage - '+e)
+            print('WARN: commentjson exception setProfileImage - '+str(e))
             time.sleep(1)
             tries+=1
 
@@ -144,7 +144,7 @@ def setOrganizationScheme(baseDir: str,nickname: str,domain: str, \
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setOrganizationScheme - '+e)
+            print('WARN: commentjson exception setOrganizationScheme - '+str(e))
             time.sleep(1)
             tries+=1
 
@@ -461,7 +461,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
                 personJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception personLookup - '+e)
+            print('WARN: commentjson exception personLookup - '+str(e))
             print('WARN: Failed to load actor '+filename)
             time.sleep(1)
             tries+=1
@@ -586,7 +586,7 @@ def setDisplayNickname(baseDir: str,nickname: str, domain: str, \
                 personJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setDisplayNickname - '+e)
+            print('WARN: commentjson exception setDisplayNickname - '+str(e))
             time.sleep(1)
             tries+=1
             
@@ -621,7 +621,7 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
                 personJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception setBio - '+e)
+            print('WARN: commentjson exception setBio - '+str(e))
             time.sleep(1)
             tries+=1
 

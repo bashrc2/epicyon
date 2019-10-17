@@ -105,7 +105,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                 followJson=commentjson.load(fp)
                                 break
                         except Exception as e:
-                            print('WARN: commentjson exception manualApproveFollowRequest - '+e)
+                            print('WARN: commentjson exception manualApproveFollowRequest - '+str(e))
                             time.sleep(1)
                             tries+=1
                     if followJson:

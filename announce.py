@@ -76,7 +76,7 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
                 postJsonObject=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception undoAnnounceCollectionEntry - '+e)
+            print('WARN: commentjson exception undoAnnounceCollectionEntry - '+str(e))
             time.sleep(2)
             tries+=1
     if postJsonObject:
@@ -138,7 +138,7 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
                 postJsonObject=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception updateAnnounceCollection - '+e)
+            print('WARN: commentjson exception updateAnnounceCollection - '+str(e))
             time.sleep(1)
             tries+=1
     if postJsonObject:

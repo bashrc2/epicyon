@@ -158,7 +158,7 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
                     loadedEmoji=True
                     break
             except Exception as e:
-                print('WARN: commentjson exception htmlSearchEmoji - '+e)
+                print('WARN: commentjson exception htmlSearchEmoji - '+str(e))
                 time.sleep(1)
                 tries+=1
         if loadedEmoji:
@@ -231,7 +231,7 @@ def htmlSearchSharedItems(translate: {}, \
                             sharesJson=commentjson.load(fp)
                             break
                     except Exception as e:
-                        print('WARN: commentjson exception htmlSearchSharedItems - '+e)
+                        print('WARN: commentjson exception htmlSearchSharedItems - '+str(e))
                         time.sleep(1)
                         tries+=1
                 if not sharesJson:
@@ -398,7 +398,7 @@ def htmlHashtagSearch(translate: {}, \
                     loadedPost=True
                     break
             except Exception as e:
-                print('WARN: commentjson exception htmlHashtagSearch - '+e)
+                print('WARN: commentjson exception htmlHashtagSearch - '+str(e))
                 time.sleep(1)
                 tries+=1
         if loadedPost:
@@ -450,7 +450,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                         loadedActor=True
                         break
                 except Exception as e:
-                    print('WARN: commentjson exception htmlSkillsSearch - '+e)
+                    print('WARN: commentjson exception htmlSkillsSearch - '+str(e))
                     time.sleep(1)
                     tries+=1
             if loadedActor:
@@ -490,7 +490,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                             loadedActor=True
                             break
                     except Exception as e:
-                        print('WARN: commentjson exception htmlSkillsSearch - '+e)
+                        print('WARN: commentjson exception htmlSkillsSearch - '+str(e))
                         time.sleep(1)
                         tries+=1
                 if loadedActor:
@@ -576,7 +576,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
                 loadedActor=True
                 break
         except Exception as e:
-            print('WARN: commentjson exception htmlEditProfile - '+e)
+            print('WARN: commentjson exception htmlEditProfile - '+str(e))
             time.sleep(1)
             tries+=1
     if loadedActor:
@@ -1626,7 +1626,7 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                     loadedActor=True
                     break
             except Exception as e:
-                print('WARN: commentjson exception followerApprovalActive - '+e)
+                print('WARN: commentjson exception followerApprovalActive - '+str(e))
                 time.sleep(1)
                 tries+=1
         if loadedActor:
@@ -2376,7 +2376,7 @@ def htmlIndividualPost(translate: {}, \
                     loadedPost=True
                     break
             except Exception as e:
-                print('WARN: commentjson exception htmlIndividualPost - '+e)
+                print('WARN: commentjson exception htmlIndividualPost - '+str(e))
                 time.sleep(1)
                 tries+=1
         if loadedPost:
@@ -2452,7 +2452,7 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
                 sharesJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception htmlRemoveSharedItem - '+e)
+            print('WARN: commentjson exception htmlRemoveSharedItem - '+str(e))
             time.sleep(1)
             tries+=1
     
@@ -2519,7 +2519,7 @@ def htmlDeletePost(translate,pageNumber: int, \
                 postJsonObject=commentjson.load(fp)
                 break
         except Exception as e:
-            print('WARN: commentjson exception htmlDeletePost - '+e)
+            print('WARN: commentjson exception htmlDeletePost - '+str(e))
             time.sleep(1)
             tries+=1            
     if not postJsonObject:
@@ -2834,7 +2834,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                             postJsonObject=commentjson.load(fp)
                             break
                     except Exception as e:
-                        print('WARN: commentjson exception getCalendarEvents - '+e)
+                        print('WARN: commentjson exception getCalendarEvents - '+str(e))
                         time.sleep(1)
                         tries+=1
                 if postJsonObject:
