@@ -2045,9 +2045,9 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         footerStr+='</div>'
 
     if not postJsonObject['object'].get('sensitive'):
-        postJsonObject['object']['sensitive']=True
+        postJsonObject['object']['sensitive']=False
     if not postJsonObject['object'].get('summary'):
-        postJsonObject['object']['summary']='sensitive'
+        postJsonObject['object']['summary']=''
         
     if not postJsonObject['object']['sensitive']:
         contentStr=postJsonObject['object']['content']+attachmentStr
