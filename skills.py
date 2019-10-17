@@ -186,7 +186,7 @@ def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
-                     projectVersion,httpPrefix,domain,postToBox)
+                     projectVersion,httpPrefix,nickname,domain,postToBox)
                      
     if not inboxUrl:
         if debug:

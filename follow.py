@@ -718,7 +718,8 @@ def sendFollowRequestViaServer(baseDir: str,session, \
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
-                     projectVersion,httpPrefix,fromDomain,postToBox)
+                     projectVersion,httpPrefix,fromNickname, \
+                     fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:
@@ -802,7 +803,8 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
         getPersonBox(baseDir,session,wfRequest,personCache, \
-                     projectVersion,httpPrefix,fromDomain,postToBox)
+                     projectVersion,httpPrefix,fromNickname, \
+                     fromDomain,postToBox)
                      
     if not inboxUrl:
         if debug:

@@ -1399,7 +1399,7 @@ def individualFollowAsHtml(translate: {}, \
     if domain not in followUrl:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
             getPersonBox(baseDir,session,wfRequest,personCache, \
-                         projectVersion,httpPrefix,domain,'outbox')
+                         projectVersion,httpPrefix,nickname,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if displayName:
@@ -1936,7 +1936,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if fullDomain not in postJsonObject['actor']:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
             getPersonBox(baseDir,session,wfRequest,personCache, \
-                         projectVersion,httpPrefix,domain,'outbox')
+                         projectVersion,httpPrefix,nickname,domain,'outbox')
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if displayName:
