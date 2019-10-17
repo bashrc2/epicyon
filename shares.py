@@ -172,7 +172,18 @@ def addShare(baseDir: str, \
             time.sleep(1)
             tries+=1
 
-def expireShares(baseDir: str,nickname: str,domain: str) -> None:
+def expireShares(baseDir: str) -> None:
+    """Removes expired items from shares
+    """
+    for subdir,dirs,files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            if '@' not in account:
+                continue
+            nickname=account.split('@')[0]
+            domain=account.split('@')[1]
+            expireSharesForAccount(baseDir,nickname,domain)
+
+def expireSharesForAccount(baseDir: str,nickname: str,domain: str) -> None:
     """Removes expired items from shares
     """
     handleDomain=domain
@@ -189,7 +200,7 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
                     sharesJson=commentjson.load(fp)
                     break
             except Exception as e:
-                print('WARN: commentjson exception expireShares - '+e)
+                print('WARN: commentjson exception expireSharesForAccount - '+e)
                 time.sleep(1)
                 tries+=1
         if sharesJson:
@@ -216,7 +227,7 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
                             commentjson.dump(sharesJson, fp, indent=4, sort_keys=False)
                             break
                     except Exception as e:
-                        print(e)
+                        print('WARN: commentjson exception expireSharesForAccount 2 - '+e)
                         time.sleep(1)
                         tries+=1
 

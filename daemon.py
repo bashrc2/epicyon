@@ -118,6 +118,7 @@ from shares import outboxShareUpload
 from shares import outboxUndoShareUpload
 from shares import addShare
 from shares import removeShare
+from shares import expireShares
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getStatusNumber
@@ -4623,6 +4624,13 @@ def runPostsQueue(baseDir: str,sendThreads: [],debug: bool) -> None:
         time.sleep(1)
         removeDormantThreads(baseDir,sendThreads,debug)
 
+def runSharesExpire(baseDir: str) -> None:
+    """Expires shares as needed
+    """
+    while True:
+        time.sleep(120)
+        expireShares(baseDir)
+
 def runPostsWatchdog(projectVersion: str,httpd) -> None:
     """This tries to keep the posts thread running even if it dies
     """
@@ -4636,6 +4644,20 @@ def runPostsWatchdog(projectVersion: str,httpd) -> None:
             httpd.thrPostsQueue=postsQueueOriginal.clone(runPostsQueue)
             httpd.thrPostsQueue.start()
             print('Restarting posts queue...')
+
+def runSharesExpireWatchdog(projectVersion: str,httpd) -> None:
+    """This tries to keep the shares expiry thread running even if it dies
+    """
+    print('Starting shares expiry watchdog')
+    sharesExpireOriginal=httpd.thrSharesExpire.clone(runSharesExpire)
+    httpd.thrSharesExpire.start()
+    while True:
+        time.sleep(20) 
+        if not httpd.thrSharesExpire.isAlive():
+            httpd.thrSharesExpire.kill()
+            httpd.thrSharesExpire=sharesExpireOriginal.clone(runSharesExpire)
+            httpd.thrSharesExpire.start()
+            print('Restarting shares expiry...')
 
 def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
@@ -4788,6 +4810,18 @@ def runDaemon(projectVersion, \
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
+
+    print('Creating expire thread for shared items')
+    httpd.thrSharesExpire= \
+        threadWithTrace(target=runSharesExpire, \
+                        args=(baseDir),daemon=True)
+    if not unitTest: 
+        httpd.thrSharesExpireWatchdog= \
+            threadWithTrace(target=runSharesExpireWatchdog, \
+                            args=(projectVersion,httpd),daemon=True)        
+        httpd.thrSharesExpireWatchdog.start()
+    else:
+        httpd.thrSharesExpire.start()
 
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
