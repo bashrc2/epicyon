@@ -31,7 +31,7 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
                 postJsonObject=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception undoLikesCollectionEntry - '+e)
             time.sleep(1)
             tries+=1
 
@@ -121,7 +121,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
                 postJsonObject=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception updateLikesCollection - '+e)
             time.sleep(1)
             tries+=1
 

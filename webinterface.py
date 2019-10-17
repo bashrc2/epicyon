@@ -158,7 +158,7 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
                     loadedEmoji=True
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception htmlSearchEmoji - '+e)
                 time.sleep(1)
                 tries+=1
         if loadedEmoji:
@@ -231,7 +231,7 @@ def htmlSearchSharedItems(translate: {}, \
                             sharesJson=commentjson.load(fp)
                             break
                     except Exception as e:
-                        print(e)
+                        print('WARN: commentjson exception htmlSearchSharedItems - '+e)
                         time.sleep(1)
                         tries+=1
                 if not sharesJson:
@@ -398,7 +398,7 @@ def htmlHashtagSearch(translate: {}, \
                     loadedPost=True
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception htmlHashtagSearch - '+e)
                 time.sleep(1)
                 tries+=1
         if loadedPost:
@@ -450,7 +450,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                         loadedActor=True
                         break
                 except Exception as e:
-                    print(e)
+                    print('WARN: commentjson exception htmlSkillsSearch - '+e)
                     time.sleep(1)
                     tries+=1
             if loadedActor:
@@ -490,7 +490,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                             loadedActor=True
                             break
                     except Exception as e:
-                        print(e)
+                        print('WARN: commentjson exception htmlSkillsSearch - '+e)
                         time.sleep(1)
                         tries+=1
                 if loadedActor:
@@ -576,7 +576,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
                 loadedActor=True
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception htmlEditProfile - '+e)
             time.sleep(1)
             tries+=1
     if loadedActor:
@@ -1626,7 +1626,7 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                     loadedActor=True
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception followerApprovalActive - '+e)
                 time.sleep(1)
                 tries+=1
         if loadedActor:
@@ -2376,7 +2376,7 @@ def htmlIndividualPost(translate: {}, \
                     loadedPost=True
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception htmlIndividualPost - '+e)
                 time.sleep(1)
                 tries+=1
         if loadedPost:
@@ -2452,7 +2452,7 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
                 sharesJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception htmlRemoveSharedItem - '+e)
             time.sleep(1)
             tries+=1
     
@@ -2519,7 +2519,7 @@ def htmlDeletePost(translate,pageNumber: int, \
                 postJsonObject=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception htmlDeletePost - '+e)
             time.sleep(1)
             tries+=1            
     if not postJsonObject:
@@ -2834,7 +2834,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                             postJsonObject=commentjson.load(fp)
                             break
                     except Exception as e:
-                        print(e)
+                        print('WARN: commentjson exception getCalendarEvents - '+e)
                         time.sleep(1)
                         tries+=1
                 if postJsonObject:

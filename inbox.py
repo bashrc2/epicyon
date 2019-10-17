@@ -327,7 +327,7 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
                 oc=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception inboxCheckCapabilities - '+e)
             time.sleep(1)
             tries+=1
     if not oc: 
@@ -404,7 +404,7 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
                                 loadedOcap=True
                                 break
                         except Exception as e:
-                            print(e)
+                            print('WARN: commentjson exception inboxPostRecipientsAdd - '+e)
                             time.sleep(1)
                             tries+=1
                     if loadedOcap:
@@ -695,7 +695,7 @@ def personReceiveUpdate(baseDir: str, \
                         loadedActor=True
                         break
                 except Exception as e:
-                    print(e)
+                    print('WARN: commentjson exception personReceiveUpdate - '+e)
                     time.sleep(1)
                     tries+=1
             if loadedActor:
@@ -1111,7 +1111,7 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                 loadedPost=True
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception receiveUndoAnnounce - '+e)
             time.sleep(1)
             tries+=1
     if loadedPost:
@@ -1301,7 +1301,7 @@ def groupHandle(baseDir: str,handle: str) -> bool:
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception groupHandle - '+e)
             time.sleep(1)
             tries+=1
     if not actorJson:
@@ -1322,7 +1322,7 @@ def getGroupName(baseDir: str,handle: str) -> str:
                 actorJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception getGroupName - '+e)
             time.sleep(1)
             tries+=1
     if not actorJson:
@@ -1704,8 +1704,9 @@ def runInboxQueue(projectVersion: str, \
             try:
                 with open(queueFilename, 'r') as fp:
                     queueJson=commentjson.load(fp)
-            except:
+            except Exception as e:
                 itemReadFailed+=1
+                print('WARN: commentjson exception runInboxQueue - '+e)
                 print('WARN: Failed to load inbox queue item '+queueFilename+' (try '+str(itemReadFailed)+')')
                 if itemReadFailed>4:
                     # After a few tries we can assume that the file

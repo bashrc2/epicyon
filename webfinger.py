@@ -240,7 +240,7 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
                 wfJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception webfingerLookup - '+e)
             time.sleep(1)
             tries+=1
     return wfJson

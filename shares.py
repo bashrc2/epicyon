@@ -33,7 +33,7 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
                     sharesJson=commentjson.load(fp)
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception removeShare - '+e)
                 time.sleep(1)
                 tries+=1
 
@@ -83,7 +83,7 @@ def addShare(baseDir: str, \
                     sharesJson=commentjson.load(fp)
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception addShare - '+e)
                 time.sleep(1)
                 tries+=1
 
@@ -189,7 +189,7 @@ def expireShares(baseDir: str,nickname: str,domain: str) -> None:
                     sharesJson=commentjson.load(fp)
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception expireShares - '+e)
                 time.sleep(1)
                 tries+=1
         if sharesJson:
@@ -277,7 +277,7 @@ def getSharesFeedForPerson(baseDir: str, \
                         noOfShares=len(sharesJson.items())
                         break
                 except Exception as e:
-                    print(e)
+                    print('WARN: commentjson exception getSharesFeedForPerson - '+e)
                     time.sleep(1)
                     tries+=1
         shares = {
@@ -315,7 +315,7 @@ def getSharesFeedForPerson(baseDir: str, \
                 sharesJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception getSharesFeedForPerson 2 - '+e)
             time.sleep(1)
             tries+=1
 

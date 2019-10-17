@@ -134,7 +134,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
                     ocapAccept=commentjson.load(fp)
                     break
             except Exception as e:
-                print(e)
+                print('WARN: commentjson exception capabilitiesAccept - '+e)
                 time.sleep(1)
                 tries+=1
     # otherwise create a new capability    
@@ -239,7 +239,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
                 ocapJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception capabilitiesUpdate - '+e)
             time.sleep(1)
             tries+=1
 
@@ -299,7 +299,7 @@ def capabilitiesReceiveUpdate(baseDir :str, \
                 ocapJson=commentjson.load(fp)
                 break
         except Exception as e:
-            print(e)
+            print('WARN: commentjson exception capabilitiesReceiveUpdate - '+e)
             time.sleep(1)
             tries+=1
 

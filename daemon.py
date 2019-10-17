@@ -1717,7 +1717,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         loadedPost=True
                                         break
                                 except Exception as e:
-                                    print(e)
+                                    print('WARN: commentjson exception 1 - '+e)
                                     time.sleep(1)
                                     tries+=1
                             if loadedPost:                            
@@ -1919,7 +1919,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 loadedActor=True
                                 break
                         except Exception as e:
-                            print(e)
+                            print('WARN: commentjson exception 2 - '+e)
                             time.sleep(1)
                             tries+=1
                     if loadedActor:                    
@@ -1986,7 +1986,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 loadedActor=True
                                 break
                         except Exception as e:
-                            print(e)
+                            print('WARN: commentjson exception 3 - '+e)
                             time.sleep(1)
                             tries+=1
                     if loadedActor:                    
@@ -2063,7 +2063,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         readPost=True
                                         break
                                 except Exception as e:
-                                    print(e)
+                                    print('WARN: commentjson exception 4 - '+e)
                                     time.sleep(1)
                                     tries+=1
                             if not readPost:
@@ -3468,7 +3468,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 loadedActor=True
                                 break
                         except Exception as e:
-                            print(e)
+                            print('WARN: commentjson exception 5 - '+e)
                             time.sleep(1)
                             tries+=1
                     if loadedActor:                    
@@ -4686,6 +4686,7 @@ def runDaemon(projectVersion, \
                     httpd.translate=commentjson.load(fp)
                     break
             except Exception as e:
+                print('WARN: commentjson exception 7 - '+e)
                 print('ERROR while loading translations '+translationsFile)
                 print(e)
                 time.sleep(1)
