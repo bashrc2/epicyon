@@ -883,6 +883,10 @@ if args.actor:
         print('Unable to webfinger '+nickname+'@'+domain)
         sys.exit()
 
+    if wfRequest.get('errors'):
+        print('wfRequest error: '+str(wfRequest['errors']))
+        sys.exit()
+        
     asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
     personUrl = getUserUrl(wfRequest)
     if nickname==domain:

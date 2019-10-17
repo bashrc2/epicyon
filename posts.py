@@ -1343,6 +1343,11 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             print('DEBUG: webfinger for '+handle+' failed')
         return 1
 
+    if wfRequest.get('errors'):
+        if debug:
+            print('DEBUG: webfinger for '+handle+' failed with errors '+str(wfRequest))
+        return 1
+    
     if not clientToServer:
         postToBox='inbox'
     else:
@@ -1596,7 +1601,8 @@ def hasSharedInbox(session,httpPrefix: str,domain: str) -> bool:
     wfRequest=webfingerHandle(session,domain+'@'+domain,httpPrefix,{}, \
                               None,__version__)
     if wfRequest:
-        return True
+        if not wfRequest.get('errors'):
+            return True
     return False
         
 def sendToFollowers(session,baseDir: str, \
