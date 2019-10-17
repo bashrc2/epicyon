@@ -3166,8 +3166,13 @@ def htmlProfileAfterSearch(translate: {}, \
             if debug:
                 print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomainFull)
             return None
+        personUrl=None
+        if wf.get('errors'):
+            personUrl=httpPrefix+'://'+searchDomainFull+'/users/'+searchNickname
+            
         asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
-        personUrl = getUserUrl(wf)
+        if not personUrl:
+            personUrl = getUserUrl(wf)
         if not personUrl:
             if debug:
                 print('DEBUG: Webfinger did not return an actor url')

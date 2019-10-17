@@ -1345,7 +1345,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
 
     if wfRequest.get('errors'):
         if debug:
-            print('DEBUG: webfinger for '+handle+' failed with errors '+str(wfRequest['errors']))
+            print('DEBUG: webfinger for '+handle+' failed with errors '+str(wfRequest['errors']))        
         return 1
     
     if not clientToServer:
