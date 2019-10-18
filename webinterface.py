@@ -1568,7 +1568,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
-    invidiousSites=['https://invidio.us','axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4bzzsg2ii4fv2iid.onion']
+    invidiousSites=('https://invidio.us','axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4bzzsg2ii4fv2iid.onion')
     for videoSite in invidiousSites:
         if '"'+videoSite in content:
             url=content.split('"'+videoSite)[1]
@@ -1590,7 +1590,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
     if '"https://' in content:
         # A selection of the current larger peertube sites, mostly French and German language
         # These have been chosen based on reported numbers of users and the content of each has not been reviewed, so mileage could vary
-        peerTubeSites=['peertube.mastodon.host','open.tube','share.tube','tube.tr4sk.me','videos.elbinario.net','hkvideo.live','peertube.snargol.com','tube.22decembre.eu','tube.fabrigli.fr','libretube.net','libre.video','peertube.linuxrocks.online','spacepub.space','video.ploud.jp','video.omniatv.com','peertube.servebeer.com','tube.tchncs.de','tubee.fr','video.alternanet.fr','devtube.dev-wiki.de','video.samedi.pm','video.irem.univ-paris-diderot.fr','peertube.openstreetmap.fr','video.antopie.org','scitech.video','tube.4aem.com','video.ploud.fr','peervideo.net','video.valme.io','videos.pair2jeux.tube','vault.mle.party','hostyour.tv','diode.zone','visionon.tv','artitube.artifaille.fr','peertube.fr','peertube.live','tube.ac-lyon.fr','www.yiny.org','betamax.video','tube.piweb.be','pe.ertu.be','peertube.social','videos.lescommuns.org','peertube.nogafa.org','skeptikon.fr','video.tedomum.net','tube.p2p.legal','sikke.fi','exode.me','peertube.video']
+        peerTubeSites=('peertube.mastodon.host','open.tube','share.tube','tube.tr4sk.me','videos.elbinario.net','hkvideo.live','peertube.snargol.com','tube.22decembre.eu','tube.fabrigli.fr','libretube.net','libre.video','peertube.linuxrocks.online','spacepub.space','video.ploud.jp','video.omniatv.com','peertube.servebeer.com','tube.tchncs.de','tubee.fr','video.alternanet.fr','devtube.dev-wiki.de','video.samedi.pm','video.irem.univ-paris-diderot.fr','peertube.openstreetmap.fr','video.antopie.org','scitech.video','tube.4aem.com','video.ploud.fr','peervideo.net','video.valme.io','videos.pair2jeux.tube','vault.mle.party','hostyour.tv','diode.zone','visionon.tv','artitube.artifaille.fr','peertube.fr','peertube.live','tube.ac-lyon.fr','www.yiny.org','betamax.video','tube.piweb.be','pe.ertu.be','peertube.social','videos.lescommuns.org','peertube.nogafa.org','skeptikon.fr','video.tedomum.net','tube.p2p.legal','sikke.fi','exode.me','peertube.video')
         for site in peerTubeSites:
             if '"https://'+site in content:
                 url=content.split('"https://'+site)[1]
@@ -2997,7 +2997,7 @@ def htmlCalendar(translate: {}, \
     nickname=getNicknameFromActor(actor)
     events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
 
-    months=['Jaruary','February','March','April','May','June','July','August','September','October','November','December']
+    months=('Jaruary','February','March','April','May','June','July','August','September','October','November','December')
     monthName=translate[months[monthNumber-1]]
 
     if os.path.isfile(baseDir+'/img/calendar-background.png'):
