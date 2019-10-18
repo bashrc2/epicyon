@@ -1557,7 +1557,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
         url=content.split('>vimeo.com/')[1]
         if '<' in url:
             url=url.split('<')[0]
-            content=content+"<center><iframe src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content=content+"<center><iframe loading=\"lazy\" src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     videoSite='https://www.youtube.com'
@@ -1565,7 +1565,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
         url=content.split('"'+videoSite)[1]
         if '"' in url:
             url=url.split('"')[0].replace('/watch?v=','/embed/')
-            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     invidiousSites=('https://invidio.us','axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4bzzsg2ii4fv2iid.onion')
@@ -1574,7 +1574,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             url=content.split('"'+videoSite)[1]
             if '"' in url:
                 url=url.split('"')[0].replace('/watch?v=','/embed/')
-                content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+                content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
                 return content
 
     videoSite='https://media.ccc.de'
@@ -1584,7 +1584,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             url=url.split('"')[0]
             if not url.endswith('/oembed'):
                 url=url+'/oembed'
-            content=content+"<center><iframe src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"fullscreen\" allowfullscreen></iframe></center>"
+            content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     if '"https://' in content:
@@ -1596,7 +1596,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
                 url=content.split('"https://'+site)[1]
                 if '"' in url:
                     url=url.split('"')[0].replace('/watch/','/embed/')            
-                    content=content+"<center><iframe sandbox=\"allow-same-origin allow-scripts\" src=\"https://"+site+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+                    content=content+"<center><iframe loading=\"lazy\" sandbox=\"allow-same-origin allow-scripts\" src=\"https://"+site+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
                     return content
     return content
 
