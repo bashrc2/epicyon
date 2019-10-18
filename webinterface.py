@@ -1702,6 +1702,26 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
         print('TAG: displayName after tag replacements: '+displayName)
     return displayName
 
+def postContainsPublic(postJsonObject: {}) -> bool:
+    """Does the given post contain #Public
+    """
+    containsPublic=False
+    if not postJsonObject['object'].get('to'):
+        return containsPublic
+        
+    for toAddress in postJsonObject['object']['to']:
+        if toAddress.endswith('#Public'):
+            containsPublic=True
+            break
+        if not containsPublic:
+            if postJsonObject['object'].get('cc'):
+                for toAddress in postJsonObject['object']['cc']:
+                    if toAddress.endswith('#Public'):
+                        containsPublic=True
+                        break
+    return containsPublic
+
+
 def individualPostAsHtml(iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
@@ -1741,20 +1761,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     # if this post should be public then check its recipients
     if showPublicOnly:
-        if postJsonObject['object'].get('to'):
-            containsPublic=False
-            for toAddress in postJsonObject['object']['to']:
-                if toAddress.endswith('#Public'):
-                    containsPublic=True
-                    break
-            if not containsPublic:
-                if postJsonObject['object'].get('cc'):
-                    for toAddress in postJsonObject['object']['cc']:
-                        if toAddress.endswith('#Public'):
-                            containsPublic=True
-                            break
-            if not containsPublic:
-                return ''
+        if not postContainsPublic(postJsonObject):
+            return ''
         
     isModerationPost=False
     if postJsonObject['object'].get('moderationStatus'):
