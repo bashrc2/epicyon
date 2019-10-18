@@ -1019,7 +1019,7 @@ def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
        '/channel/' not in messageJson['object'] and \
        '/profile/' not in messageJson['object']:
         if debug:
-            print('DEBUG: "users" or "profile" missing in '+messageJson['type'])
+            print('DEBUG: "users", "channel" or "profile" missing in '+messageJson['type'])
         return False
     if '/statuses/' not in messageJson['object']:
         if debug:
