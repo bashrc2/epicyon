@@ -82,6 +82,8 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
             print('Failed to download avatar image: '+str(avatarUrl))
             print(e)
         sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+        if '/channel/' in actor:
+            sessionHeaders = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,actor,sessionHeaders,None,__version__,httpPrefix,None)
         if personJson:
             if not personJson.get('id'):
@@ -1924,9 +1926,12 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             attachmentCtr+=1
             attachmentStr+='</div>'
 
-    #if not avatarUrl:
-    avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
-    avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
+    if not avatarUrl:
+        avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
+        avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
+    else:
+        updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
+
     if not avatarUrl:
         avatarUrl=postJsonObject['actor']+'/avatar.png'
 
