@@ -52,16 +52,17 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
     """
     if not avatarUrl:
         return None
+    avatarImagePath=baseDir+'/cache/avatars/'+actor.replace('/','-')
     if avatarUrl.endswith('.png') or '.png?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/png'}
-        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.png'
+        avatarImageFilename=avatarImagePath+'.png'
     elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg') or \
          '.jpg?' in avatarUrl or '.jpeg?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/jpeg'}
-        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.jpg'
+        avatarImageFilename=avatarImagePath+'.jpg'
     elif avatarUrl.endswith('.gif') or '.gif?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/gif'}
-        avatarImageFilename=baseDir+'/cache/avatars/'+actor.replace('/','-')+'.gif'
+        avatarImageFilename=avatarImagePath+'.gif'
     else:
         return None
     if not os.path.isfile(avatarImageFilename) or force:
@@ -81,8 +82,9 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
         except Exception as e:            
             print('Failed to download avatar image: '+str(avatarUrl))
             print(e)
-        sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
-        if '/channel/' in actor:
+        if '/channel/' not in actor:
+            sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+        else:
             sessionHeaders = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         personJson = getJson(session,actor,sessionHeaders,None,__version__,httpPrefix,None)
         if personJson:
