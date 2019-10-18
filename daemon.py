@@ -842,7 +842,6 @@ class PubServer(BaseHTTPRequestHandler):
                 while tries<5:
                     try:
                         self.wfile.write(msg)
-                        self.wfile.flush() 
                         break
                     except Exception as e:
                         print(e)
@@ -871,7 +870,6 @@ class PubServer(BaseHTTPRequestHandler):
                     while tries<5:
                         try:
                             self.wfile.write(mediaBinary)
-                            self.wfile.flush()
                             break
                         except Exception as e:
                             print(e)
@@ -902,7 +900,6 @@ class PubServer(BaseHTTPRequestHandler):
                     while tries<5:
                         try:
                             self.wfile.write(mediaBinary)
-                            self.wfile.flush()
                             break
                         except Exception as e:
                             print(e)
@@ -933,7 +930,6 @@ class PubServer(BaseHTTPRequestHandler):
                     while tries<5:
                         try:
                             self.wfile.write(mediaBinary)
-                            self.wfile.flush()
                             break
                         except Exception as e:
                             print(e)
@@ -965,7 +961,6 @@ class PubServer(BaseHTTPRequestHandler):
                         while tries<5:
                             try:
                                 self.wfile.write(mediaBinary)
-                                self.wfile.flush()
                                 break
                             except Exception as e:
                                 print(e)
@@ -1010,7 +1005,6 @@ class PubServer(BaseHTTPRequestHandler):
                         while tries<5:
                             try:
                                 self.wfile.write(mediaBinary)
-                                self.wfile.flush()
                                 break
                             except Exception as e:
                                 print(e)
@@ -1043,7 +1037,6 @@ class PubServer(BaseHTTPRequestHandler):
                         while tries<5:
                             try:
                                 self.wfile.write(mediaBinary)
-                                self.wfile.flush()
                                 break
                             except Exception as e:
                                 print(e)
@@ -1068,7 +1061,6 @@ class PubServer(BaseHTTPRequestHandler):
                             while tries<5:
                                 try:
                                     self.wfile.write(mediaBinary)
-                                    self.wfile.flush()
                                     break
                                 except Exception as e:
                                     print(e)
@@ -1100,7 +1092,6 @@ class PubServer(BaseHTTPRequestHandler):
                     while tries<5:
                         try:
                             self.wfile.write(mediaBinary)
-                            self.wfile.flush()
                             break
                         except Exception as e:
                             print(e)
@@ -1138,7 +1129,6 @@ class PubServer(BaseHTTPRequestHandler):
                             while tries<5:
                                 try:
                                     self.wfile.write(mediaBinary)
-                                    self.wfile.flush()
                                     break
                                 except Exception as e:
                                     print(e)
