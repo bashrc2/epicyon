@@ -135,7 +135,7 @@ import os
 import sys
 
 # maximum number of posts to list in outbox feed
-maxPostsInFeed=12
+maxPostsInFeed=6
 
 # reduced posts for media feed because it can take a while
 maxPostsInMediaFeed=6
