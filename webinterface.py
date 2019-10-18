@@ -1813,10 +1813,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                         getPersonFromCache(baseDir,postJsonObject['object']['attributedTo'],personCache)
                         announceDisplayName=getDisplayName(baseDir,postJsonObject['object']['attributedTo'],personCache)
                         if announceDisplayName:
-                            announceDisplayName= \
-                                addEmojiToDisplayName(baseDir,httpPrefix, \
-                                                      nickname,domain, \
-                                                      announceDisplayName,False)
+                            if ':' in announceDisplayName:
+                                announceDisplayName= \
+                                    addEmojiToDisplayName(baseDir,httpPrefix, \
+                                                          nickname,domain, \
+                                                          announceDisplayName,False)
                             titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
                             # show avatar of person replied to
                             announceActor=postJsonObject['object']['attributedTo']
@@ -1851,10 +1852,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                 getPersonFromCache(baseDir,replyActor,personCache)
                                 replyDisplayName=getDisplayName(baseDir,replyActor,personCache)
                                 if replyDisplayName:
-                                    replyDisplayName= \
-                                        addEmojiToDisplayName(baseDir,httpPrefix, \
-                                                              nickname,domain, \
-                                                              replyDisplayName,False)
+                                    if ':' in replyDisplayName:
+                                        replyDisplayName= \
+                                            addEmojiToDisplayName(baseDir,httpPrefix, \
+                                                                  nickname,domain, \
+                                                                  replyDisplayName,False)
                                     titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
 
                                     # show avatar of person replied to
