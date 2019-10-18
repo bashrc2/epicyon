@@ -1599,7 +1599,7 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
 
     # A selection of the current larger peertube sites, mostly French and German language
     # These have been chosen based on reported numbers of users and the content of each has not been reviewed, so mileage could vary
-    peerTubeSites=['peertube.mastodon.host','open.tube','share.tube','tube.tr4sk.me','videos.elbinario.net','hkvideo.live','peertube.snargol.com','tube.22decembre.eu','tube.fabrigli.fr','libretube.net','libre.video','peertube.linuxrocks.online','spacepub.space','video.ploud.jp','video.omniatv.com','peertube.servebeer.com','tube.tchncs.de','tubee.fr','video.alternanet.fr','devtube.dev-wiki.de','video.samedi.pm','https://video.irem.univ-paris-diderot.fr','peertube.openstreetmap.fr','video.antopie.org','scitech.video','tube.4aem.com','video.ploud.fr','peervideo.net','video.valme.io','videos.pair2jeux.tube','vault.mle.party','hostyour.tv','diode.zone','visionon.tv','artitube.artifaille.fr','peertube.fr','peertube.live','tube.ac-lyon.fr','www.yiny.org','betamax.video','tube.piweb.be','pe.ertu.be','peertube.social','videos.lescommuns.org','peertube.nogafa.org','skeptikon.fr','video.tedomum.net','tube.p2p.legal','sikke.fi','exode.me','peertube.video']
+    peerTubeSites=['peertube.mastodon.host','open.tube','share.tube','tube.tr4sk.me','videos.elbinario.net','hkvideo.live','peertube.snargol.com','tube.22decembre.eu','tube.fabrigli.fr','libretube.net','libre.video','peertube.linuxrocks.online','spacepub.space','video.ploud.jp','video.omniatv.com','peertube.servebeer.com','tube.tchncs.de','tubee.fr','video.alternanet.fr','devtube.dev-wiki.de','video.samedi.pm','video.irem.univ-paris-diderot.fr','peertube.openstreetmap.fr','video.antopie.org','scitech.video','tube.4aem.com','video.ploud.fr','peervideo.net','video.valme.io','videos.pair2jeux.tube','vault.mle.party','hostyour.tv','diode.zone','visionon.tv','artitube.artifaille.fr','peertube.fr','peertube.live','tube.ac-lyon.fr','www.yiny.org','betamax.video','tube.piweb.be','pe.ertu.be','peertube.social','videos.lescommuns.org','peertube.nogafa.org','skeptikon.fr','video.tedomum.net','tube.p2p.legal','sikke.fi','exode.me','peertube.video']
     for site in peerTubeSites:
         if '"https://'+site in content:
             url=content.split('"https://'+site)[1]
@@ -1669,37 +1669,40 @@ def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
                           displayName: str,inProfileName: bool) -> str:
     """Adds emoji icons to display names on individual posts
     """
-    if ':' in displayName:
-        displayName=displayName.replace('<p>','').replace('</p>','')
-        emojiTags={}
-        print('TAG: displayName before tags: '+displayName)
-        displayName= \
-            addHtmlTags(baseDir,httpPrefix, \
-                        nickname,domain,displayName,[],emojiTags)
-        displayName=displayName.replace('<p>','').replace('</p>','')
-        print('TAG: displayName after tags: '+displayName)
-        # convert the emoji dictionary to a list
-        emojiTagsList=[]
-        for tagName,tag in emojiTags.items():
-            emojiTagsList.append(tag)
-        print('TAG: emoji tags list: '+str(emojiTagsList))
-        if not inProfileName:
-            displayName=replaceEmojiFromTags(displayName,emojiTagsList,'post header')
-        else:
-            displayName=replaceEmojiFromTags(displayName,emojiTagsList,'profile')
-        print('TAG: displayName after tags 2: '+displayName)
+    if ':' not in displayName:
+        return displayName
 
-        # remove any stray emoji
-        while ':' in displayName:
-            if '://' in displayName:
-                break
-            emojiStr=displayName.split(':')[1]
-            prevDisplayName=displayName
-            displayName=displayName.replace(':'+emojiStr+':','').strip()
-            if prevDisplayName==displayName:
-                break
-            print('TAG: displayName after tags 3: '+displayName)
-        print('TAG: displayName after tag replacements: '+displayName)
+    displayName=displayName.replace('<p>','').replace('</p>','')
+    emojiTags={}
+    print('TAG: displayName before tags: '+displayName)
+    displayName= \
+        addHtmlTags(baseDir,httpPrefix, \
+                    nickname,domain,displayName,[],emojiTags)
+    displayName=displayName.replace('<p>','').replace('</p>','')
+    print('TAG: displayName after tags: '+displayName)
+    # convert the emoji dictionary to a list
+    emojiTagsList=[]
+    for tagName,tag in emojiTags.items():
+        emojiTagsList.append(tag)
+    print('TAG: emoji tags list: '+str(emojiTagsList))
+    if not inProfileName:
+        displayName=replaceEmojiFromTags(displayName,emojiTagsList,'post header')
+    else:
+        displayName=replaceEmojiFromTags(displayName,emojiTagsList,'profile')
+    print('TAG: displayName after tags 2: '+displayName)
+
+    # remove any stray emoji
+    while ':' in displayName:
+        if '://' in displayName:
+            break
+        emojiStr=displayName.split(':')[1]
+        prevDisplayName=displayName
+        displayName=displayName.replace(':'+emojiStr+':','').strip()
+        if prevDisplayName==displayName:
+            break
+        print('TAG: displayName after tags 3: '+displayName)
+    print('TAG: displayName after tag replacements: '+displayName)
+
     return displayName
 
 def postContainsPublic(postJsonObject: {}) -> bool:
