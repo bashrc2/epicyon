@@ -100,10 +100,6 @@ def addHashTags(wordStr: str,httpPrefix: str,domain: str,replaceHashTags: {},pos
     """Detects hashtags and adds them to the replacements dict
     Also updates the hashtags list to be added to the post
     """
-    if not wordStr.startswith('#'):
-        return False
-    if len(wordStr)<2:
-        return False
     if replaceHashTags.get(wordStr):
        return True
     hashtag=wordStr[1:]
@@ -182,10 +178,6 @@ def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji:
 def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: [],tags: {}) -> bool:
     """Detects mentions and adds them to the replacements dict and recipients list
     """
-    if not wordStr.startswith('@'):
-        return False
-    if len(wordStr)<2:
-        return False
     possibleHandle=wordStr[1:]
     # @nick
     if following and '@' not in possibleHandle:
@@ -238,22 +230,22 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         return True
     return False
 
-def removeLongWords(content: str,maxWordLength: int) -> str:
+def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't disrupt the layout
     """
     words=content.split(' ')
-    for wordStr in words:
-        if not wordStr.startswith('<'):
-            if len(wordStr)>maxWordLength:
-                if len(wordStr[maxWordLength:])<maxWordLength:
-                    content= \
-                        content.replace(wordStr, \
-                                        wordStr[:maxWordLength]+'\n'+ \
-                                        wordStr[maxWordLength:])
-                else:
-                    content= \
-                        content.replace(wordStr, \
-                                        wordStr[:maxWordLength])
+    for wordStr in longWordsList:
+        if wordStr.startswith('<'):
+            continue
+        if len(wordStr[maxWordLength:])<maxWordLength:
+            content= \
+                content.replace(wordStr, \
+                                wordStr[:maxWordLength]+'\n'+ \
+                                wordStr[maxWordLength:])
+        else:
+            content= \
+                content.replace(wordStr, \
+                                wordStr[:maxWordLength])
     return content
 
 def addHtmlTags(baseDir: str,httpPrefix: str, \
@@ -294,21 +286,26 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
     following=None
-    if os.path.isfile(followingFilename):
-        with open(followingFilename, "r") as f:
-            following = f.readlines()
+    if '@' in words:
+        if os.path.isfile(followingFilename):
+            with open(followingFilename, "r") as f:
+                following = f.readlines()
 
     # extract mentions and tags from words
-    longWordsExist=False
+    longWordsList=[]
     for wordStr in words:
-        if len(wordStr)>maxWordLength:
-            longWordsExist=True
-        if addMention(wordStr,httpPrefix,following,replaceMentions,recipients,hashtags):
-            continue
-        if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
-            continue
-        if len(wordStr)>2:
-            if ':' in wordStr:
+        wordLen=len(wordStr)
+        if wordLen>2:
+            if wordLen>maxWordLength:
+                longWordsList.append(wordStr)
+            firstChar=wordStr[0]
+            if firstChar=='@':
+                if addMention(wordStr,httpPrefix,following,replaceMentions,recipients,hashtags):
+                    continue
+            elif firstChar=='#':
+                if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
+                    continue
+            elif ':' in wordStr:
                 #print('TAG: emoji located - '+wordStr)
                 wordStr2=wordStr.split(':')[1]
                 if not emojiDict:
@@ -343,8 +340,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
         
     content=addWebLinks(content)
-    if longWordsExist:
-        content=removeLongWords(content,maxWordLength)
+    if longWordsList:
+        content=removeLongWords(content,maxWordLength,longWordsList)
     content=content.replace(' --linebreak-- ','</p><p>')
     return '<p>'+content+'</p>'
                 
