@@ -1436,18 +1436,6 @@ def clickToDropDownScript() -> str:
         'function dropdown() {\n' \
         '  document.getElementById("myDropdown").classList.toggle("show");\n' \
         '}\n'
-        #'window.onclick = function(event) {' \
-        #"  if (!event.target.matches('.dropbtn')) {" \
-        #'    var dropdowns = document.getElementsByClassName("dropdown-content");' \
-        #'    var i;' \
-        #'    for (i = 0; i < dropdowns.length; i++) {' \
-        #'      var openDropdown = dropdowns[i];' \
-        #"      if (openDropdown.classList.contains('show')) {" \
-        #"        openDropdown.classList.remove('show');" \
-        #'      }' \
-        #'    }' \
-        #'  }' \
-        #'}'
     return script
 
 def cursorToEndOfMessageScript() -> str:
@@ -1785,10 +1773,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     displayName=getDisplayName(baseDir,postJsonObject['actor'],personCache)
     if displayName:
-        displayName= \
-            addEmojiToDisplayName(baseDir,httpPrefix, \
-                                  nickname,domain, \
-                                  displayName,False)
+        if ':' in displayName:
+            displayName= \
+                addEmojiToDisplayName(baseDir,httpPrefix, \
+                                      nickname,domain, \
+                                      displayName,False)
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
@@ -1964,10 +1953,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if avatarUrl2:
             avatarUrl=avatarUrl2
         if displayName:
-            displayName= \
-                addEmojiToDisplayName(baseDir,httpPrefix, \
-                                      nickname,domain, \
-                                      displayName,False)
+            if ':' in displayName:
+                displayName= \
+                    addEmojiToDisplayName(baseDir,httpPrefix, \
+                                          nickname,domain, \
+                                          displayName,False)
             titleStr=displayName+' '+titleStr
 
     avatarImageInPost= \
