@@ -1092,7 +1092,9 @@ class PubServer(BaseHTTPRequestHandler):
                     elif mediaFilename.endswith('.gif'):
                         self._set_headers('image/gif',len(mediaBinary),cookie)
                     else:
-                        self._404()
+                        # default to jpeg
+                        self._set_headers('image/jpeg',len(mediaBinary),cookie)
+                        #self._404()
                         return
                     tries=0
                     while tries<5:

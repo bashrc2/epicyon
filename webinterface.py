@@ -109,15 +109,18 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     if personJson:
         # get from locally stored image
         actorStr=personJson['id'].replace('/','-')
-        avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.png'
+        avatarImagePath=baseDir+'/cache/avatars/'+actorStr
+        avatarImageFilename=avatarImagePath+'.png'
         if os.path.isfile(avatarImageFilename):
             return '/avatars/'+actorStr+'.png'
-        avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.jpg'
+        avatarImageFilename=avatarImagePath+'.jpg'
         if os.path.isfile(avatarImageFilename):
             return '/avatars/'+actorStr+'.jpg'
-        avatarImageFilename=baseDir+'/cache/avatars/'+actorStr+'.gif'
+        avatarImageFilename=avatarImagePath+'.gif'
         if os.path.isfile(avatarImageFilename):
             return '/avatars/'+actorStr+'.gif'
+        if os.path.isfile(avatarImagePath):
+            return '/avatars/'+actorStr
         
         if personJson.get('icon'):
             if personJson['icon'].get('url'):
