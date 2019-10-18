@@ -96,7 +96,7 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
     while tries<5:
         try:
             with open(filename, 'w') as fp:
-                commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(wfJson, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)
@@ -109,7 +109,7 @@ def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
         while tries<5:
             try:
                 with open(filename, 'w') as fp:
-                    commentjson.dump(wfJson, fp, indent=4, sort_keys=False)
+                    commentjson.dump(wfJson, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)

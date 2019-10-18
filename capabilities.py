@@ -164,7 +164,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
         while tries<5:
             try:
                 with open(ocapFilename, 'w') as fp:
-                    commentjson.dump(ocapAccept, fp, indent=4, sort_keys=False)
+                    commentjson.dump(ocapAccept, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)
@@ -185,7 +185,7 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     while tries<5:
         try:
             with open(ocapFilename, 'w') as fp:
-                commentjson.dump(ocap, fp, indent=4, sort_keys=False)
+                commentjson.dump(ocap, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)
@@ -264,7 +264,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
     while tries<5:
         try:
             with open(ocapFilename, 'w') as fp:
-                commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(ocapJson, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)
@@ -311,7 +311,7 @@ def capabilitiesReceiveUpdate(baseDir :str, \
         while tries<5:
             try:
                 with open(ocapFilename, 'w') as fp:
-                    commentjson.dump(ocapJson, fp, indent=4, sort_keys=False)
+                    commentjson.dump(ocapJson, fp, indent=2, sort_keys=False)
                     return True
             except Exception as e:
                 print(e)

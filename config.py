@@ -23,7 +23,7 @@ def createConfig(baseDir: str) -> None:
     while tries<5:
         try:
             with open(configFilename, 'w') as fp:
-                commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(configJson, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)
@@ -50,7 +50,7 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     while tries<5:
         try:
             with open(configFilename, 'w') as fp:
-                commentjson.dump(configJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(configJson, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)

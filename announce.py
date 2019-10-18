@@ -118,7 +118,7 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
             while tries<5:
                 try:
                     with open(postFilename, 'w') as fp:
-                        commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                        commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                         break
                 except Exception as e:
                     print(e)
@@ -187,7 +187,7 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
         while tries<5:
             try:
                 with open(postFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)
@@ -259,7 +259,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
         while tries<5:
             try:
                 with open(filename, 'w') as fp:
-                    commentjson.dump(newAnnounce, fp, indent=4, sort_keys=False)
+                    commentjson.dump(newAnnounce, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)

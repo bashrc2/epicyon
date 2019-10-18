@@ -293,7 +293,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
     while tries<5:
         try:
             with open(filename, 'w') as fp:
-                commentjson.dump(newQueueItem, fp, indent=4, sort_keys=False)
+                commentjson.dump(newQueueItem, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)
@@ -720,7 +720,7 @@ def personReceiveUpdate(baseDir: str, \
     while tries<5:
         try:
             with open(actorFilename, 'w') as fp:
-                commentjson.dump(personJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(personJson, fp, indent=2, sort_keys=False)
                 print('actor updated for '+personJson['id'])
                 break
         except Exception as e:
@@ -1605,7 +1605,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         while tries<5:
             try:
                 with open(destinationFilename, 'w+') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)
@@ -1991,7 +1991,7 @@ def runInboxQueue(projectVersion: str, \
                     while tries<5:
                         try:
                             with open(sharedInboxPostFilename, 'w') as fp:
-                                commentjson.dump(queueJson['post'],fp,indent=4, \
+                                commentjson.dump(queueJson['post'],fp,indent=2, \
                                                  sort_keys=False)
                                 break
                         except Exception as e:

@@ -44,7 +44,7 @@ def setAvailability(baseDir: str,nickname: str,domain: str, \
         while tries<5:
             try:
                 with open(actorFilename, 'w') as fp:
-                    commentjson.dump(actorJson, fp, indent=4, sort_keys=False)
+                    commentjson.dump(actorJson, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)

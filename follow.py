@@ -416,7 +416,7 @@ def storeFollowRequest(baseDir: str, \
     while tries<5:
         try:
             with open(followActivityfilename, 'w') as fp:
-                commentjson.dump(followJson, fp, indent=4, sort_keys=False)
+                commentjson.dump(followJson, fp, indent=2, sort_keys=False)
                 return True
         except Exception as e:
             print(e)

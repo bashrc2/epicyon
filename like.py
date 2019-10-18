@@ -76,7 +76,7 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
             while tries<5:
                 try:
                     with open(postFilename, 'w') as fp:
-                        commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                        commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                         break
                 except Exception as e:
                     print(e)
@@ -168,7 +168,7 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
         while tries<5:
             try:
                 with open(postFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                     break
             except Exception as e:
                 print(e)

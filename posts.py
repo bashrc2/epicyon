@@ -429,7 +429,7 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
     while tries<5:
         try:
             with open(filename, 'w') as fp:
-                commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                 break
         except Exception as e:
             print(e)
@@ -2234,7 +2234,7 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,nickname,domain,'outbox')
-    wfResult = json.dumps(wfRequest, indent=4, sort_keys=False)
+    wfResult = json.dumps(wfRequest, indent=2, sort_keys=False)
 
     maxMentions=10
     maxEmoji=10
@@ -2460,7 +2460,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
         while tries<5:
             try:
                 with open(announceFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=4, sort_keys=False)
+                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
                     return postJsonObject
             except Exception as e:
                 print(e)
