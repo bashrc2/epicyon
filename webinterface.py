@@ -183,7 +183,7 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
                     if not headingShown:
                         emojiForm+='<center><h5>'+translate['Copy the text then paste it into your post']+'</h5></center>'
                         headingShown=True
-                    emojiForm+='<h3>:'+emojiName+':<img class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
+                    emojiForm+='<h3>:'+emojiName+':<img loading="lazy" class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
             emojiForm+='</center>'
 
         emojiForm+=htmlFooter()
@@ -266,7 +266,7 @@ def htmlSearchSharedItems(translate: {}, \
                             sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
                             if sharedItem.get('imageUrl'):
                                 sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
-                                sharedItemsForm+='<img src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
+                                sharedItemsForm+='<img loading="lazy" src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
                             sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
                             sharedItemsForm+='<p><b>'+translate['Type']+':</b> '+sharedItem['itemType']+' '
                             sharedItemsForm+='<b>'+translate['Category']+':</b> '+sharedItem['category']+' '
@@ -283,7 +283,7 @@ def htmlSearchSharedItems(translate: {}, \
                                     '  <input type="hidden" name="actor" value="'+actor+'">' \
                                     '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
                                     '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
-                                    '    <img class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"/></a>' \
+                                    '    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"/></a>' \
                                     '  </center>' \
                                     '</form>'
                             resultsExist=True
@@ -297,7 +297,7 @@ def htmlSearchSharedItems(translate: {}, \
                                     '  <input type="hidden" name="actor" value="'+actor+'">' \
                                     '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
                                     '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
-                                    '    <img class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"/></a>' \
+                                    '    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"/></a>' \
                                     '  </center>' \
                                     '</form>'
                                 break
@@ -380,7 +380,7 @@ def htmlHashtagSearch(translate: {}, \
     hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
     if startIndex!=len(lines)-1:
         # previous page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
     index=startIndex
     while index>=endIndex:
         postId=lines[index].strip('\n')
@@ -423,7 +423,7 @@ def htmlHashtagSearch(translate: {}, \
 
     if endIndex>0:
         # next page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
@@ -543,7 +543,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                 actorName=skillMatchFields[2]
                 avatarUrl=skillMatchFields[3]
                 skillSearchForm+='<div class="search-result""><a href="'+actor+'/skills">'
-                skillSearchForm+='<img src="'+avatarUrl+'"/><span class="search-result-text">'+actorName+'</span></a></div>'
+                skillSearchForm+='<img loading="lazy" src="'+avatarUrl+'"/><span class="search-result-text">'+actorName+'</span></a></div>'
                 ctr+=1
                 if ctr>=postsPerPage:
                     break
@@ -775,7 +775,7 @@ def htmlLogin(translate: {},baseDir: str) -> str:
     loginForm+= \
         '<form method="POST" action="/login">' \
         '  <div class="imgcontainer">' \
-        '    <img src="login.png" alt="login image" class="loginimage">'+ \
+        '    <img loading="lazy" src="login.png" alt="login image" class="loginimage">'+ \
         loginText+TOSstr+ \
         '  </div>' \
         '' \
@@ -788,7 +788,7 @@ def htmlLogin(translate: {},baseDir: str) -> str:
         registerButtonStr+loginButtonStr+ \
         '  </div>' \
         '</form>'
-    loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img class="license" src="/icons/agpl.png" /></a>'
+    loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" src="/icons/agpl.png" /></a>'
     loginForm+=htmlFooter()
     return loginForm
 
@@ -972,7 +972,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     if endpoint!='newshare' and endpoint!='newreport':
         dateAndLocation= \
             '<div class="container">' \
-            '<p><img  class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>' \
+            '<p><img loading="lazy" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>' \
             '<label class="labels">'+translate['Date']+': </label>' \
             '<input type="date" name="eventDate">' \
             '<label class="labelsright">'+translate['Time']+':' \
@@ -985,7 +985,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     # only show the share option if this is not a reply
     shareOptionOnDropdown=''
     if not replyStr:
-        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img src="/'+iconsDir+'/scope_share.png"/><b>Share</b><br>'+translate['Describe a shared item']+'</a>'
+        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img loading="lazy" src="/'+iconsDir+'/scope_share.png"/><b>Share</b><br>'+translate['Describe a shared item']+'</a>'
 
     mentionsStr=''
     for m in mentions:
@@ -1030,11 +1030,11 @@ def htmlNewPost(translate: {},baseDir: str, \
     if not reportUrl:
         dropDownContent= \
             '        <div id="myDropdown" class="dropdown-content">' \
-            '          <a href="'+pathBase+dropdownNewPostSuffix+'"><img src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>' \
-            '          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>' \
-            '          <a href="'+pathBase+dropdownFollowersSuffix+'"><img src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>' \
-            '          <a href="'+pathBase+dropdownDMSuffix+'"><img src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>' \
-            '          <a href="'+pathBase+dropdownReportSuffix+'"><img src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'+ \
+            '          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>' \
+            '          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>' \
+            '          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>' \
+            '          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>' \
+            '          <a href="'+pathBase+dropdownReportSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'+ \
             shareOptionOnDropdown+ \
             '        </div>'
     else:
@@ -1046,12 +1046,12 @@ def htmlNewPost(translate: {},baseDir: str, \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
         '      <div class="dropbtn" onclick="dropdown()">' \
-        '        <img src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'+ \
+        '        <img loading="lazy" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'+ \
         dropDownContent+ \
         '      </div>' \
         '      <input type="submit" name="submitPost" value="'+translate['Submit']+'">' \
         '      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a>' \
-        '      <a href="'+pathBase+'/searchemoji"><img class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'+ \
+        '      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'+ \
         '    </div>'+ \
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
@@ -1167,7 +1167,7 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         if authorized and pageNumber>1:
             # page up arrow
             profileStr+= \
-                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
         
     for item in followingJson['orderedItems']:
         profileStr+= \
@@ -1180,7 +1180,7 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         if len(followingJson['orderedItems'])>=maxItemsPerPage:
             # page down arrow
             profileStr+= \
-                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     return profileStr
 
 def htmlProfileRoles(translate: {},nickname: str,domain: str,rolesJson: {}) -> str:
@@ -1217,7 +1217,7 @@ def htmlProfileShares(translate: {},nickname: str,domain: str,sharesJson: {}) ->
         profileStr+='<p class="share-title">'+item['displayName']+'</p>'
         if item.get('imageUrl'):
             profileStr+='<a href="'+item['imageUrl']+'">'
-            profileStr+='<img src="'+item['imageUrl']+'" alt="'+translate['Item image']+'"></a>'
+            profileStr+='<img loading="lazy" src="'+item['imageUrl']+'" alt="'+translate['Item image']+'"></a>'
         profileStr+='<p>'+item['summary']+'</p>'
         profileStr+='<p><b>'+translate['Type']+':</b> '+item['itemType']+' '
         profileStr+='<b>'+translate['Category']+':</b> '+item['category']+' '
@@ -1319,7 +1319,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         linkToTimelineStart+ \
         ' <div class="hero-image">' \
         '  <div class="hero-text">'+ \
-        '    <img src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" class="title">' \
+        '    <img loading="lazy" src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" class="title">' \
         '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileDescription+'</p>'+ \
@@ -1347,7 +1347,7 @@ def htmlProfile(translate: {},projectVersion: str, \
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read().replace('image.png',actor+'/image.png')
 
-        licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img class="license" src="/icons/agpl.png" /></a>'
+        licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" src="/icons/agpl.png" /></a>'
 
         if selected=='posts':
             profileStr+= \
@@ -1425,7 +1425,7 @@ def individualFollowAsHtml(translate: {}, \
     return \
         '<div class="container">\n' \
         '<a href="'+followUrl+'">' \
-        '<p><img src="'+avatarUrl+'" alt="Avatar">\n'+ \
+        '<p><img loading="lazy" src="'+avatarUrl+'" alt="Avatar">\n'+ \
         titleStr+'</a>'+buttonsStr+'</p>' \
         '</div>\n'
 
@@ -1784,7 +1784,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
-        titleStr=titleStr+' <img src="/'+iconsDir+'/dm.png" class="DMicon"/>'
+        titleStr=titleStr+' <img loading="lazy" src="/'+iconsDir+'/dm.png" class="DMicon"/>'
 
     messageIdStr=''
     if messageId:
@@ -1795,7 +1795,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
                 if postJsonObject['object']['attributedTo'].startswith(postJsonObject['actor']):
-                    titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
+                    titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
                 else:
                     announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
                     if announceNickname:
@@ -1808,7 +1808,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     addEmojiToDisplayName(baseDir,httpPrefix, \
                                                           nickname,domain, \
                                                           announceDisplayName,False)
-                            titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                            titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
                             # show avatar of person replied to
                             announceActor=postJsonObject['object']['attributedTo']
                             announceAvatarUrl=getPersonAvatarUrl(baseDir,announceActor,personCache)
@@ -1816,22 +1816,22 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                 replyAvatarImageInPost= \
                                     '<div class="timeline-avatar-reply">' \
                                     '<a href="/users/'+nickname+'?options='+announceActor+';'+str(pageNumber)+';'+announceAvatarUrl+messageIdStr+'">' \
-                                    '<img src="'+announceAvatarUrl+'" ' \
+                                    '<img loading="lazy" src="'+announceAvatarUrl+'" ' \
                                     'title="'+translate['Show options for this person']+ \
                                     '" alt="Avatar"'+avatarPosition+'/></a></div>'
                         else:
-                            titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                            titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
                     else:
-                        titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                        titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
             else:
-                titleStr+=' <img src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
         else:
             if postJsonObject['object'].get('inReplyTo'):
                 containerClassIcons='containericons darker'
                 containerClass='container darker'
                 #avatarPosition=' class="right"'
                 if postJsonObject['object']['inReplyTo'].startswith(postJsonObject['actor']):
-                    titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
+                    titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
                         replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
@@ -1847,7 +1847,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                             addEmojiToDisplayName(baseDir,httpPrefix, \
                                                                   nickname,domain, \
                                                                   replyDisplayName,False)
-                                    titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
+                                    titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
 
                                     # show avatar of person replied to
                                     replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
@@ -1855,19 +1855,19 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                         replyAvatarImageInPost= \
                                             '<div class="timeline-avatar-reply">' \
                                             '<a href="/users/'+nickname+'?options='+replyActor+';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">' \
-                                            '<img src="'+replyAvatarUrl+'" ' \
+                                            '<img loading="lazy" src="'+replyAvatarUrl+'" ' \
                                             'title="'+translate['Show profile']+ \
                                             '" alt="Avatar"'+avatarPosition+'/></a></div>'
                                 else:
-                                    titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+                                    titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:
-                            titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
+                            titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
                     else:
                         postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
                         if '/' in postDomain:
                             postDomain=postDomain.split('/',1)[0]
                         if postDomain:
-                            titleStr+=' <img src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+                            titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object'].get('attachment'):
         if isinstance(postJsonObject['object']['attachment'], list):
@@ -1892,11 +1892,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                 galleryStr+= \
                                     '<div class="gallery">\n' \
                                     '  <a href="'+messageId+'">\n' \
-                                    '    <img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
+                                    '    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
                                     '  </a>\n</div>\n'
                             attachmentStr+= \
                                 '<a href="'+attach['url']+'">' \
-                                '<img src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
+                                '<img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1                            
                     elif mediaType=='video/mp4' or \
                          mediaType=='video/webm' or \
@@ -1963,14 +1963,14 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     avatarImageInPost= \
         '  <div class="timeline-avatar">' \
         '    <a href="'+postJsonObject['actor']+'">' \
-        '    <img src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
+        '    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
         '  </div>'
     
     if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         avatarImageInPost= \
             '  <div class="timeline-avatar">' \
             '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
-            '    <img title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
+            '    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
             '  </div>'
 
     publishedStr=postJsonObject['object']['published']
@@ -2001,7 +2001,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             announceTitle=translate['Undo the repeat']
         announceStr= \
             '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+announceTitle+'">' \
-            '<img src="/'+iconsDir+'/'+announceIcon+'"/></a>'
+            '<img loading="lazy" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
     if not isModerationPost:
@@ -2015,7 +2015,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 likeTitle=translate['Undo the like']
         likeStr= \
             '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+likeTitle+'">' \
-            '<img src="/'+iconsDir+'/'+likeIcon+'"/></a>'
+            '<img loading="lazy" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     deleteStr=''
     if allowDeletion or \
@@ -2024,7 +2024,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr= \
                 '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">' \
-                '<img src="/'+iconsDir+'/delete.png"/></a>'
+                '<img loading="lazy" src="/'+iconsDir+'/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
@@ -2053,7 +2053,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 footerStr+='<a href="/users/'+nickname+'?replyfollowers='+replyToLink+'" title="'+translate['Reply to this post']+'">'
         else:
             footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="'+translate['Reply to this post']+'">'
-        footerStr+='<img src="/'+iconsDir+'/reply.png"/></a>'
+        footerStr+='<img loading="lazy" src="/'+iconsDir+'/reply.png"/></a>'
         footerStr+=announceStr+likeStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
@@ -2197,7 +2197,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
             for line in f:
                 if len(line)>0:
                     # show follow approvals icon
-                    followApprovals='<a href="'+actor+'/followers"><img class="timelineicon" alt="'+translate['Approve follow requests']+'" title="'+translate['Approve follow requests']+'" src="/'+iconsDir+'/person.png"/></a>'
+                    followApprovals='<a href="'+actor+'/followers"><img loading="lazy" class="timelineicon" alt="'+translate['Approve follow requests']+'" title="'+translate['Approve follow requests']+'" src="/'+iconsDir+'/person.png"/></a>'
                     break
 
     moderationButtonStr=''
@@ -2211,11 +2211,11 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     if boxName!='dm':
         if not manuallyApproveFollowers:
-            newPostButtonStr='<a href="'+actor+'/newpost"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
+            newPostButtonStr='<a href="'+actor+'/newpost"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
         else:
-            newPostButtonStr='<a href="'+actor+'/newfollowers"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
+            newPostButtonStr='<a href="'+actor+'/newfollowers"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
     else:
-        newPostButtonStr='<a href="'+actor+'/newdm"><img src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
+        newPostButtonStr='<a href="'+actor+'/newdm"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
 
     # banner and row of buttons
     tlStr+= \
@@ -2229,9 +2229,9 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
         moderationButtonStr+newPostButtonStr+ \
-        '    <a href="'+actor+'/search"><img src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
-        '    <a href="'+actor+calendarPath+'"><img src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
-        '    <a href="'+actor+'/'+boxName+'"><img src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
+        '    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
+        '    <a href="'+actor+calendarPath+'"><img loading="lazy" src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
+        '    <a href="'+actor+'/'+boxName+'"><img loading="lazy" src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
         followApprovals+ \
         '</div>'
 
@@ -2254,7 +2254,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     # page up arrow
     if pageNumber>1:
-        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
 
     # show the posts
     itemCtr=0
@@ -2284,7 +2284,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     # page down arrow
     if itemCtr>=itemsPerPage:
-        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
 
@@ -2498,7 +2498,7 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     sharesStr+='  <div class="followAvatar">'
     sharesStr+='  <center>'
     if sharedItemImageUrl:
-        sharesStr+='  <img src="'+sharedItemImageUrl+'"/>'
+        sharesStr+='  <img loading="lazy" src="'+sharedItemImageUrl+'"/>'
     sharesStr+='  <p class="followText">'+translate['Remove']+' '+sharedItemDisplayName+' ?</p>'
     sharesStr+= \
         '  <form method="POST" action="'+actor+'/rmshare">' \
@@ -2599,7 +2599,7 @@ def htmlFollowConfirm(translate: {},baseDir: str, \
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'
     followStr+='  <a href="'+followActor+'">'
-    followStr+='  <img src="'+followProfileUrl+'"/></a>'
+    followStr+='  <img loading="lazy" src="'+followProfileUrl+'"/></a>'
     followStr+='  <p class="followText">'+translate['Follow']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+= \
         '  <form method="POST" action="'+originPathStr+'/followconfirm">' \
@@ -2635,7 +2635,7 @@ def htmlUnfollowConfirm(translate: {},baseDir: str, \
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'
     followStr+='  <a href="'+followActor+'">'
-    followStr+='  <img src="'+followProfileUrl+'"/></a>'
+    followStr+='  <img loading="lazy" src="'+followProfileUrl+'"/></a>'
     followStr+='  <p class="followText">'+translate['Stop following']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+= \
         '  <form method="POST" action="'+originPathStr+'/unfollowconfirm">' \
@@ -2696,7 +2696,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <div class="optionsAvatar">'
     optionsStr+='  <center>'
     optionsStr+='  <a href="'+optionsActor+'">'
-    optionsStr+='  <img src="'+optionsProfileUrl+'"/></a>'
+    optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     optionsStr+= \
         '  <form method="POST" action="'+originPathStr+'/personoptions">' \
@@ -2735,7 +2735,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
 #    blockStr+='  <div class="blockAvatar">'
 #    blockStr+='  <center>'
 #    blockStr+='  <a href="'+blockActor+'">'
-#    blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
+#    blockStr+='  <img loading="lazy" src="'+blockProfileUrl+'"/></a>'
 #    blockStr+='  <p class="blockText">'+translate['Block']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
 #    blockStr+= \
 #        '  <form method="POST" action="'+originPathStr+'/blockconfirm">' \
@@ -2771,7 +2771,7 @@ def htmlUnblockConfirm(translate: {},baseDir: str, \
     blockStr+='  <div class="blockAvatar">'
     blockStr+='  <center>'
     blockStr+='  <a href="'+blockActor+'">'
-    blockStr+='  <img src="'+blockProfileUrl+'"/></a>'
+    blockStr+='  <img loading="lazy" src="'+blockProfileUrl+'"/></a>'
     blockStr+='  <p class="blockText">'+translate['Stop blocking']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
     blockStr+= \
         '  <form method="POST" action="'+originPathStr+'/unblockconfirm">' \
@@ -3042,11 +3042,11 @@ def htmlCalendar(translate: {}, \
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
     calendarStr+='  <a href="'+actor+'/calendar?year='+str(prevYear)+'?month='+str(prevMonthNumber)+'">'
-    calendarStr+='  <img src="/'+iconsDir+'/prev.png" class="buttonprev"/></a>\n'
+    calendarStr+='  <img loading="lazy" src="/'+iconsDir+'/prev.png" class="buttonprev"/></a>\n'
     calendarStr+='  <a href="'+actor+'/inbox">'
     calendarStr+='  <h1>'+monthName+'</h1></a>\n'
     calendarStr+='  <a href="'+actor+'/calendar?year='+str(nextYear)+'?month='+str(nextMonthNumber)+'">'
-    calendarStr+='  <img src="/'+iconsDir+'/prev.png" class="buttonnext"/></a>\n'
+    calendarStr+='  <img loading="lazy" src="/'+iconsDir+'/prev.png" class="buttonnext"/></a>\n'
     calendarStr+='</caption>\n'
     calendarStr+='<thead>\n'
     calendarStr+='<tr>\n'
@@ -3241,7 +3241,7 @@ def htmlProfileAfterSearch(translate: {}, \
         profileStr= \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
-            '    <img src="'+avatarUrl+'" alt="'+searchNickname+'@'+searchDomainFull+'">' \
+            '    <img loading="lazy" src="'+avatarUrl+'" alt="'+searchNickname+'@'+searchDomainFull+'">' \
             '    <h1>'+displayName+'</h1>' \
             '    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>' \
             '    <p>'+profileDescription+'</p>'+ \
