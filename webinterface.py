@@ -1728,6 +1728,24 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          showPublicOnly=False) -> str:
     """ Shows a single post as html
     """
+    # if a cached version of the post already exists then fetch it
+    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
+    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/','#')+'.html'
+    if os.path.isfile(cachedPostFilename):
+        postStr=''
+        tries=0
+        while tries<3:
+            try:
+                with open(cachedPostFilename, 'r') as file:
+                    postStr = file.read()
+                    break
+            except Exception as e:
+                print(e)
+                # no sleep
+                tries+=1
+        if postStr:
+            return postStr
+    
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
     showDMicon=False
@@ -2085,15 +2103,27 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     contentStr='<div class="message">'+contentStr+'</div>'
 
+    postStr=''
     if boxName!='tlmedia':
-        return \
+        postStr= \
             '<div class="'+containerClass+'">\n'+ \
             avatarImageInPost+ \
             '<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'+ \
             contentStr+footerStr+ \
             '</div>\n'
     else:
-        return galleryStr
+        postStr=galleryStr
+
+    # save to posts cache on file
+    if not os.path.isdir(htmlPostCacheDir):
+        os.mkdir(htmlPostCacheDir)
+    try:
+        with open(cachedPostFilename, 'w') as fp:
+            fp.write(postStr)
+    except Exception as e:
+        print('ERROR: saving post to cache '+str(e))
+
+    return postStr
 
 def isQuestion(postObjectJson: {}) -> bool:
     """ is the given post a question?
