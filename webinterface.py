@@ -2115,14 +2115,16 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     else:
         postStr=galleryStr
 
-    # save to posts cache on file
-    if not os.path.isdir(htmlPostCacheDir):
-        os.mkdir(htmlPostCacheDir)
-    try:
-        with open(cachedPostFilename, 'w') as fp:
-            fp.write(postStr)
-    except Exception as e:
-        print('ERROR: saving post to cache '+str(e))
+    if not showPublicOnly:
+        # save to posts cache on file
+        if not os.path.isdir(htmlPostCacheDir):
+            os.mkdir(htmlPostCacheDir)
+
+        try:
+            with open(cachedPostFilename, 'w') as fp:
+                fp.write(postStr)
+        except Exception as e:
+            print('ERROR: saving post to cache '+str(e))
 
     return postStr
 
