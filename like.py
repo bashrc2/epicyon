@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import json
 import time
 import commentjson
@@ -14,13 +15,14 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
+from utils import getCachedPostFilename
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 
-def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: bool) -> None:
+def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str,actor: str,domain: str,debug: bool) -> None:
     """Undoes a like for a particular actor
     """
     postJsonObject=None
@@ -36,6 +38,12 @@ def undoLikesCollectionEntry(postFilename: str,objectUrl: str,actor: str,debug: 
             tries+=1
 
     if postJsonObject:
+        # remove any cached version of this post so that the like icon is changed
+        nickname=getNicknameFromActor(actor)
+        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
         if not postJsonObject.get('type'):
             return
         if postJsonObject['type']!='Create':
@@ -110,7 +118,7 @@ def noOfLikes(postJsonObject: {}) -> int:
         postJsonObject['object']['likes']['totalItems']=0
     return len(postJsonObject['object']['likes']['items'])
 
-def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bool) -> None:
+def updateLikesCollection(baseDir: str,postFilename: str,objectUrl: str, actor: str,domain: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """
     postJsonObject=None
@@ -126,6 +134,12 @@ def updateLikesCollection(postFilename: str,objectUrl: str, actor: str,debug: bo
             tries+=1
 
     if postJsonObject:
+        # remove any cached version of this post so that the like icon is changed
+        nickname=getNicknameFromActor(actor)
+        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)
@@ -226,7 +240,7 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
             print('DEBUG: like objectUrl: '+objectUrl)
             return None
         
-        updateLikesCollection(postFilename,objectUrl,newLikeJson['actor'],debug)
+        updateLikesCollection(baseDir,postFilename,objectUrl,newLikeJson['actor'],domain,debug)
         
         sendSignedJson(newLikeJson,session,baseDir, \
                        nickname,domain,port, \
@@ -321,7 +335,7 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
         if not postFilename:
             return None
 
-        undoLikesCollectionEntry(postFilename,objectUrl,newLikeJson['actor'],debug)
+        undoLikesCollectionEntry(baseDir,postFilename,objectUrl,newLikeJson['actor'],domain,debug)
         
         sendSignedJson(newUndoLikeJson,session,baseDir, \
                        nickname,domain,port, \
@@ -562,7 +576,7 @@ def outboxLike(baseDir: str,httpPrefix: str, \
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
-    updateLikesCollection(postFilename,messageId,messageJson['actor'],debug)
+    updateLikesCollection(baseDir,postFilename,messageId,messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: post liked via c2s - '+postFilename)
 
@@ -619,6 +633,6 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(postFilename,messageId,messageJson['actor'],debug)
+    undoLikesCollectionEntry(baseDir,postFilename,messageId,messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: post undo liked via c2s - '+postFilename)

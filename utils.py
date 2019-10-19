@@ -379,3 +379,18 @@ def copytree(src: str, dst: str, symlinks=False, ignore=None):
             shutil.copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
+
+def getCachedPostDirectory(baseDir: str,nickname: str,domain: str) -> str:
+    """Returns the directory where the html post cache exists
+    """
+    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
+    return htmlPostCacheDir
+
+def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
+                          postJsonObject: {}) -> str:
+    """Returns the html cache filename for the given post
+    """
+    cachedPostFilename= \
+        getCachedPostDirectory(baseDir,nickname,domain)+ \
+        '/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+    return cachedPostFilename

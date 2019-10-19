@@ -23,6 +23,8 @@ from utils import locatePost
 from utils import noOfAccounts
 from utils import isPublicPost
 from utils import getDisplayName
+from utils import getCachedPostDirectory
+from utils import getCachedPostFilename
 from follow import isFollowingActor
 from webfinger import webfingerHandle
 from posts import isDM
@@ -1711,21 +1713,6 @@ def postContainsPublic(postJsonObject: {}) -> bool:
                         containsPublic=True
                         break
     return containsPublic
-
-def getCachedPostDirectory(baseDir: str,nickname: str,domain: str) -> str:
-    """Returns the directory where the html post cache exists
-    """
-    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
-    return htmlPostCacheDir
-
-def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
-                          postJsonObject: {}) -> str:
-    """Returns the html cache filename for the given post
-    """
-    cachedPostFilename= \
-        getCachedPostDirectory(baseDir,nickname,domain)+ \
-        '/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
-    return cachedPostFilename
 
 def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
                                       postJsonObject: {}) -> str:

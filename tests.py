@@ -405,7 +405,8 @@ def testPostMessageBetweenServers():
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
                 if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1:
                     if len([name for name in os.listdir(mediaPath) if os.path.isfile(os.path.join(mediaPath, name))])>0:
-                        break
+                        if len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0:
+                            break
         time.sleep(1)
 
     # Image attachment created

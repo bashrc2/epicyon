@@ -879,7 +879,8 @@ def receiveLike(session,handle: str,isGroup: bool,baseDir: str, \
         return True
     if debug:
         print('DEBUG: liked post found in inbox')
-    updateLikesCollection(postFilename,messageJson['object'],messageJson['actor'],debug)
+
+    updateLikesCollection(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
 def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
@@ -930,7 +931,7 @@ def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
         return True
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
-    undoLikesCollectionEntry(postFilename,messageJson['object'],messageJson['actor'],debug)
+    undoLikesCollectionEntry(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
 def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
