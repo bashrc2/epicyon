@@ -575,7 +575,17 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 "type": "Place",
                 "name": location
             })
-                                
+
+    postContext=[
+        'https://www.w3.org/ns/activitystreams',
+        {
+            'Hashtag': 'as:Hashtag',
+            'sensitive': 'as:sensitive',
+            'toot': 'http://joinmastodon.org/ns#',
+            'votersCount': 'toot:votersCount'
+        }
+    ]
+            
     if not clientToServer:
         actorUrl=httpPrefix+'://'+domain+'/users/'+nickname
 
@@ -599,7 +609,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                         time.sleep(1)
                         tries+=1
         newPost = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": postContext,
             'id': newPostId+'/activity',
             'capability': capabilityIdList,
             'type': 'Create',
@@ -644,7 +654,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                             mediaType,imageDescription,useBlurhash)            
     else:
         newPost = {
-            "@context": "https://www.w3.org/ns/activitystreams",
+            "@context": postContext,
             'id': newPostId,
             'type': 'Note',
             'summary': summary,
