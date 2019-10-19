@@ -65,8 +65,8 @@ def inboxStorePostToHtmlCache(translate: {}, \
     boxName='inbox'
     individualPostAsHtml(getIconsDir(baseDir),translate,pageNumber, \
                          baseDir,session,cachedWebfingers,personCache, \
-                         nickname,domain,port,item,avatarUrl,True, \
-                         allowDeletion, \
+                         nickname,domain,port,postJsonObject, \
+                         avatarUrl,True,allowDeletion, \
                          httpPrefix,__version__,boxName, \
                          not isDM(postJsonObject), \
                          True,True,False,True)
