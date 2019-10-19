@@ -1731,6 +1731,7 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
                                       postJsonObject: {}) -> str:
     """If a cached html version of the given post exists then load it and
     return the html text
+    This is much quicker than generating the html from the json object
     """
     cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
 
