@@ -2170,7 +2170,9 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
             os.mkdir(archiveDir)    
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     postsInBox=os.scandir(boxDir)
-    noOfPosts=len(postsInBox)
+    noOfPosts=0
+    for f in postsInBox:
+        noOfPosts+=1
     if noOfPosts<=maxPostsInBox:
         return
 
