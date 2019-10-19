@@ -1623,29 +1623,31 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
 
         # save the post to file
+        postSavedToFile=False
         tries=0
         while tries<5:
             try:
                 with open(destinationFilename, 'w+') as fp:
                     commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
+                    postSavedToFile=True
                     break
             except Exception as e:
                 print(e)
                 time.sleep(1)
                 tries+=1
 
-        inboxUpdateCalendar(baseDir,handle,postJsonObject)
+        if postSavedToFile:
+            inboxUpdateCalendar(baseDir,handle,postJsonObject)
+            inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
+                                      session,cachedWebfingers,personCache, \
+                                      handle.split('@')[0],domain,port, \
+                                      postJsonObject,allowDeletion)
 
-        inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
-                                  session,cachedWebfingers,personCache, \
-                                  handle.split('@')[0],domain,port, \
-                                  postJsonObject,allowDeletion)
-
-        # send the post out to group members
-        if isGroup:
-            sendToGroupMembers(session,baseDir,handle,port,postJsonObject, \
-                               httpPrefix,federationList,sendThreads, \
-                               postLog,cachedWebfingers,personCache,debug)
+            # send the post out to group members
+            if isGroup:
+                sendToGroupMembers(session,baseDir,handle,port,postJsonObject, \
+                                   httpPrefix,federationList,sendThreads, \
+                                   postLog,cachedWebfingers,personCache,debug)
 
     # if the post wasn't saved
     if not os.path.isfile(destinationFilename):
