@@ -2192,6 +2192,9 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     # sort the list in ascending order of date
     postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
 
+    # directory containing cached html posts
+    postCacheDir=boxDir.replace('/'+boxname,'/postcache')
+
     for statusNumber,postFilename in postsInBox.items():
         filePath = os.path.join(boxDir, postFilename)        
         if not os.path.isfile(filePath):
@@ -2204,6 +2207,12 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
                 os.rename(repliesPath,archivePath)
         else:
             deletePost(baseDir,httpPrefix,nickname,domain,filePath,False)
+
+        # remove cached html posts
+        postCacheFilename=os.path.join(postCacheDir, postFilename).replace('.json','.html')
+        if os.path.isfile(postCacheFilename):
+            os.remove(postCacheFilename)
+
         noOfPosts -= 1
         if noOfPosts <= maxPostsInBox:
             break
