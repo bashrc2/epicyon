@@ -47,6 +47,28 @@ from posts import downloadAnnounce
 from posts import isDM
 from posts import isReply
 from posts import sendSignedJson
+from webinterface import individualPostAsHtml
+from webinterface import getIconsDir
+
+def inboxStorePostToHtmlCache(translate: {}, \
+                              baseDir: str,httpPrefix: str, \
+                              session,wfRequest: {},personCache: {}, \
+                              nickname: str,domain: str,port: int, \
+                              postJsonObject: {}, \
+                              allowDeletion: bool) -> None:
+    """Converts the json post into html and stores it in a cache
+    This enables the post to be quickly displayed later
+    """
+    pageNumber=1
+    showAvatarOptions=True
+    avatarUrl=None
+    individualPostAsHtml(getIconsDir(baseDir),translate,pageNumber, \
+                         baseDir,session,wfRequest,personCache, \
+                         nickname,domain,port,item,avatarUrl,True, \
+                         allowDeletion, \
+                         httpPrefix,__version__,boxName, \
+                         not isDM(postJsonObject), \
+                         True,True,False,True)
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -1489,7 +1511,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            acceptedCaps: [], \
                            queueFilename :str,destinationFilename :str, \
                            maxReplies: int,allowDeletion: bool, \
-                           maxMentions: int) -> bool:
+                           maxMentions: int,translate: {}) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
     actor=keyId
@@ -1614,6 +1636,11 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
         inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
+        inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
+                                  session,cachedWebfingers,personCache, \
+                                  handle.split('@')[0],domain,port, \
+                                  postJsonObject,allowDeletion)
+
         # send the post out to group members
         if isGroup:
             sendToGroupMembers(session,baseDir,handle,port,postJsonObject, \
@@ -1662,6 +1689,7 @@ def runInboxQueue(projectVersion: str, \
                   ocapAlways: bool,maxReplies: int, \
                   domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
                   allowDeletion: bool,debug: bool,maxMentions: int, \
+                  translate: {}, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -2021,7 +2049,7 @@ def runInboxQueue(projectVersion: str, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion, \
-                                               maxMentions)
+                                               maxMentions,translate)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check has failed')
@@ -2039,7 +2067,7 @@ def runInboxQueue(projectVersion: str, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion, \
-                                               maxMentions)
+                                               maxMentions,translate)
                     if debug:
                         pprint(queueJson['post'])
                         print('No capability list within post')

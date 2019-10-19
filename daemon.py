@@ -4825,7 +4825,7 @@ def runDaemon(projectVersion, \
                               domain,port,useTor,httpd.federationList, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-                              allowDeletion,debug,maxMentions, \
+                              allowDeletion,debug,maxMentions,httpd.translate, \
                               httpd.acceptedCaps),daemon=True)
     if not unitTest: 
         httpd.thrWatchdog= \

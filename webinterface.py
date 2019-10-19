@@ -1777,7 +1777,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
-                         avatarUrl: str, showAvatarDropdown: bool,
+                         avatarUrl: str, showAvatarOptions: bool,
                          allowDeletion: bool, \
                          httpPrefix: str, projectVersion: str, \
                          boxName: str, \
@@ -2030,7 +2030,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         '    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
         '  </div>'
     
-    if showAvatarDropdown and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+    if showAvatarOptions and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
         avatarImageInPost= \
             '  <div class="timeline-avatar">' \
             '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
