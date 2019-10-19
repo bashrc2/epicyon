@@ -16,6 +16,7 @@ from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
+from utils import getCachedPostFilename
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -42,7 +43,7 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
         domain,port=getDomainFromActor(messageJson['actor'])
         postFilename=locatePost(baseDir,nickname,domain,messageJson['object'])
         if postFilename:
-            updateAnnounceCollection(postFilename,messageJson['actor'],debug)
+            updateAnnounceCollection(baseDir,postFilename,messageJson['actor'],domain,debug)
             return True
     if messageJson['type']=='Undo':
         if not isinstance(messageJson['object'], dict):
@@ -59,11 +60,11 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
             domain,port=getDomainFromActor(messageJson['actor'])
             postFilename=locatePost(baseDir,nickname,domain,messageJson['object']['object'])
             if postFilename:
-                undoAnnounceCollectionEntry(postFilename,messageJson['actor'],debug)
+                undoAnnounceCollectionEntry(baseDir,postFilename,messageJson['actor'],domain,debug)
                 return True
     return False
 
-def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> None:
+def undoAnnounceCollectionEntry(baseDir: str,postFilename: str,actor: str,domain: str,debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from the "shares"
     collection within a post. Note that the "shares" collection has no relation
     to shared items in shares.py. It's shares of posts, not shares of physical objects.
@@ -80,6 +81,12 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
             time.sleep(2)
             tries+=1
     if postJsonObject:
+        # remove any cached version of this announce so that the like icon is changed
+        nickname=getNicknameFromActor(actor)
+        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
         if not postJsonObject.get('type'):
             return
         if postJsonObject['type']!='Create':
@@ -125,7 +132,7 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
                     time.sleep(1)
                     tries+=1
 
-def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
+def updateAnnounceCollection(baseDir: str,postFilename: str,actor: str,domain: str,debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
@@ -142,6 +149,12 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
             time.sleep(1)
             tries+=1
     if postJsonObject:
+        # remove any cached version of this announce so that the like icon is changed
+        nickname=getNicknameFromActor(actor)
+        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+
         if not postJsonObject.get('object'):
             if debug:
                 pprint(postJsonObject)

@@ -1066,7 +1066,7 @@ def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
             print('DEBUG: announce post not found in inbox or outbox')
             print(messageJson['object'])
         return True
-    updateAnnounceCollection(postFilename,messageJson['actor'],debug)
+    updateAnnounceCollection(baseDir,postFilename,messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: Downloading announce post '+messageJson['actor']+' -> '+messageJson['object'])
     postJsonObject=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
@@ -1170,7 +1170,7 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                 if debug:
                     print("DEBUG: Attempt to undo something which isn't an announcement")
                 return False        
-    undoAnnounceCollectionEntry(postFilename,messageJson['actor'],debug)
+    undoAnnounceCollectionEntry(baseDir,postFilename,messageJson['actor'],domain,debug)
     if os.path.isfile(postFilename):
         os.remove(postFilename)
     return True
