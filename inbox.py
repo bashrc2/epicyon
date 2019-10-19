@@ -1638,10 +1638,14 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
         if postSavedToFile:
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
+            if debug:
+                print('DEBUG: saving inbox post as html to cache')
             inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
                                       session,cachedWebfingers,personCache, \
                                       handle.split('@')[0],domain,port, \
                                       postJsonObject,allowDeletion)
+            if debug:
+                print('DEBUG: saved inbox post as html to cache')
 
             # send the post out to group members
             if isGroup:
