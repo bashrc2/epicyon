@@ -1712,7 +1712,50 @@ def postContainsPublic(postJsonObject: {}) -> bool:
                         break
     return containsPublic
 
+def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
+                                      postJsonObject: {}) -> str:
+    """If a cached html version of the given post exists then load it and
+    return the html text
+    """
+    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
+    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+    postHtml=''
+    if not os.path.isfile(cachedPostFilename):
+        return postHtml
+    
+    tries=0
+    while tries<3:
+        try:
+            with open(cachedPostFilename, 'r') as file:
+                postHtml = file.read()
+                break
+        except Exception as e:
+            print(e)
+            # no sleep
+            tries+=1
+    if postHtml:
+        return postHtml
 
+def saveIndividualPostAsHtmlToCache(baseDir: str,nickname: str,domain: str, \
+                                    postJsonObject: {},postHtml: str) -> bool:
+    """Saves the given html for a post to a cache file
+    This is so that it can be quickly reloaded on subsequent refresh of the timeline
+    """
+    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
+    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+
+    # create the cache directory if needed
+    if not os.path.isdir(htmlPostCacheDir):
+        os.mkdir(htmlPostCacheDir)
+
+    try:
+        with open(cachedPostFilename, 'w') as fp:
+            fp.write(postHtml)
+            return True
+    except Exception as e:
+        print('ERROR: saving post to cache '+str(e))
+    return False
+    
 def individualPostAsHtml(iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
@@ -1730,23 +1773,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     """ Shows a single post as html
     """
     if not showPublicOnly and storeToCache:
-        # if a cached version of the post already exists then fetch it
-        htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
-        cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
-        if os.path.isfile(cachedPostFilename):
-            postStr=''
-            tries=0
-            while tries<3:
-                try:
-                    with open(cachedPostFilename, 'r') as file:
-                        postStr = file.read()
-                        break
-                except Exception as e:
-                    print(e)
-                    # no sleep
-                    tries+=1
-            if postStr:
-                return postStr
+        postHtml= \
+            loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
+                                              postJsonObject)
+        if postHtml:
+            return postHtml
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
@@ -2105,29 +2136,22 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     contentStr='<div class="message">'+contentStr+'</div>'
 
-    postStr=''
+    postHtml=''
     if boxName!='tlmedia':
-        postStr= \
+        postHtml= \
             '<div class="'+containerClass+'">\n'+ \
             avatarImageInPost+ \
             '<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'+ \
             contentStr+footerStr+ \
             '</div>\n'
     else:
-        postStr=galleryStr
+        postHtml=galleryStr
 
     if not showPublicOnly and storeToCache:
-        # save to posts cache on file
-        if not os.path.isdir(htmlPostCacheDir):
-            os.mkdir(htmlPostCacheDir)
+        saveIndividualPostAsHtmlToCache(baseDir,nickname,domain, \
+                                        postJsonObject,postHtml)
 
-        try:
-            with open(cachedPostFilename, 'w') as fp:
-                fp.write(postStr)
-        except Exception as e:
-            print('ERROR: saving post to cache '+str(e))
-
-    return postStr
+    return postHtml
 
 def isQuestion(postObjectJson: {}) -> bool:
     """ is the given post a question?
