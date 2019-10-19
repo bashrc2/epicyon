@@ -1031,7 +1031,7 @@ if args.changepassword:
 archiveWeeks=4
 if args.archiveWeeks:
     archiveWeeks=args.archiveWeeks
-archiveMaxPosts=100000
+archiveMaxPosts=32000
 if args.archiveMaxPosts:
     archiveMaxPosts=args.archiveMaxPosts
 
