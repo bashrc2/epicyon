@@ -415,7 +415,7 @@ def htmlHashtagSearch(translate: {}, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion,'inbox', \
-                                     False,False,False,False)
+                                     False,False,False,False,True)
         index-=1
 
     if endIndex>0:
@@ -1137,7 +1137,7 @@ def htmlProfilePosts(translate: {}, \
                                              baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True,False, \
                                              httpPrefix,projectVersion,'inbox', \
-                                             False,False,False,True)
+                                             False,False,False,True,True)
                 if postStr:
                     profileStr+=postStr
                     ctr+=1
@@ -1725,10 +1725,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          showRepeats=True, \
                          showIcons=False, \
                          manuallyApprovesFollowers=False, \
-                         showPublicOnly=False) -> str:
+                         showPublicOnly=False,
+                         individualPost=False) -> str:
     """ Shows a single post as html
     """
-    if not showPublicOnly:
+    if not showPublicOnly and not individualPost:
         # if a cached version of the post already exists then fetch it
         htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
         cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
@@ -2115,7 +2116,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     else:
         postStr=galleryStr
 
-    if not showPublicOnly:
+    if not showPublicOnly and not individualPost:
         # save to posts cache on file
         if not os.path.isdir(htmlPostCacheDir):
             os.mkdir(htmlPostCacheDir)
@@ -2305,7 +2306,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          httpPrefix,projectVersion,boxName, \
                                          boxName!='dm', \
                                          showIndividualPostIcons, \
-                                         manuallyApproveFollowers,False)
+                                         manuallyApproveFollowers,False,False)
                     
                 if currTlStr:
                     tlStr+=currTlStr
@@ -2408,7 +2409,7 @@ def htmlIndividualPost(translate: {}, \
                              baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
                              httpPrefix,projectVersion,'inbox', \
-                             False,authorized,False,False)
+                             False,authorized,False,False,True)
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
@@ -2435,7 +2436,7 @@ def htmlIndividualPost(translate: {}, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
                                      httpPrefix,projectVersion,'inbox', \
-                                     False,authorized,False,False)+postStr
+                                     False,authorized,False,False,True)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -2453,7 +2454,7 @@ def htmlIndividualPost(translate: {}, \
                                          baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
                                          httpPrefix,projectVersion,'inbox', \
-                                         False,authorized,False,False)
+                                         False,authorized,False,False,True)
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
@@ -2476,7 +2477,7 @@ def htmlPostReplies(translate: {},baseDir: str, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False, \
                                      httpPrefix,projectVersion,'inbox', \
-                                     False,False,False,False)
+                                     False,False,False,False,True)
 
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -2593,7 +2594,7 @@ def htmlDeletePost(translate,pageNumber: int, \
                                  nickname,domain,port,postJsonObject, \
                                  None,True,False, \
                                  httpPrefix,projectVersion,'outbox', \
-                                 False,False,False,False)
+                                 False,False,False,False,True)
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">'+translate['Delete this post?']+'</p>'
         deletePostStr+= \
@@ -3306,7 +3307,7 @@ def htmlProfileAfterSearch(translate: {}, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \
                                      httpPrefix,projectVersion,'inbox', \
-                                     False,False,False,False)
+                                     False,False,False,False,True)
             i+=1
             if i>=20:
                 break
