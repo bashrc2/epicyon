@@ -1728,24 +1728,25 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          showPublicOnly=False) -> str:
     """ Shows a single post as html
     """
-    # if a cached version of the post already exists then fetch it
-    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
-    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
-    if os.path.isfile(cachedPostFilename):
-        postStr=''
-        tries=0
-        while tries<3:
-            try:
-                with open(cachedPostFilename, 'r') as file:
-                    postStr = file.read()
-                    break
-            except Exception as e:
-                print(e)
-                # no sleep
-                tries+=1
-        if postStr:
-            return postStr
-    
+    if not showPublicOnly:
+        # if a cached version of the post already exists then fetch it
+        htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
+        cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+        if os.path.isfile(cachedPostFilename):
+            postStr=''
+            tries=0
+            while tries<3:
+                try:
+                    with open(cachedPostFilename, 'r') as file:
+                        postStr = file.read()
+                        break
+                except Exception as e:
+                    print(e)
+                    # no sleep
+                    tries+=1
+            if postStr:
+                return postStr
+
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
     showDMicon=False
