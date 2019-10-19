@@ -44,17 +44,9 @@ class threadWithTrace(threading.Thread):
         self.isStarted=True
 
     def __run(self):
-        tries=0
-        while tries<3:
-            try:
-                sys.settrace(self.globaltrace) 
-                self.__run_backup() 
-                self.run = self.__run_backup
-                break
-            except Exception as e:
-                print('ERROR: threads.py/__run failed - '+str(e))
-                time.sleep(1)
-                tries+=1
+        sys.settrace(self.globaltrace)
+        self.__run_backup()
+        self.run = self.__run_backup
 
     def globaltrace(self, frame, event, arg): 
         if event == 'call': 

@@ -4826,7 +4826,7 @@ def runDaemon(projectVersion, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
                               allowDeletion,debug,maxMentions,httpd.translate, \
-                              httpd.acceptedCaps),daemon=True)
+                              unitTest,httpd.acceptedCaps),daemon=True)
     if not unitTest: 
         httpd.thrWatchdog= \
             threadWithTrace(target=runInboxQueueWatchdog, \

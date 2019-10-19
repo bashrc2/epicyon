@@ -1513,7 +1513,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            acceptedCaps: [], \
                            queueFilename :str,destinationFilename :str, \
                            maxReplies: int,allowDeletion: bool, \
-                           maxMentions: int,translate: {}) -> bool:
+                           maxMentions: int,translate: {}, \
+                           unitTest: bool) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
     actor=keyId
@@ -1640,14 +1641,16 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
         if postSavedToFile:
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
-            if debug:
-                print('DEBUG: saving inbox post as html to cache')
-            inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
-                                      session,cachedWebfingers,personCache, \
-                                      handle.split('@')[0],domain,port, \
-                                      postJsonObject,allowDeletion)
-            if debug:
-                print('DEBUG: saved inbox post as html to cache')
+
+            if not unitTest:
+                if debug:
+                    print('DEBUG: saving inbox post as html to cache')
+                inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
+                                          session,cachedWebfingers,personCache, \
+                                          handle.split('@')[0],domain,port, \
+                                          postJsonObject,allowDeletion)
+                if debug:
+                    print('DEBUG: saved inbox post as html to cache')
 
             # send the post out to group members
             if isGroup:
@@ -1697,7 +1700,7 @@ def runInboxQueue(projectVersion: str, \
                   ocapAlways: bool,maxReplies: int, \
                   domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
                   allowDeletion: bool,debug: bool,maxMentions: int, \
-                  translate: {}, \
+                  translate: {},unitTest: bool, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -2057,7 +2060,7 @@ def runInboxQueue(projectVersion: str, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion, \
-                                               maxMentions,translate)
+                                               maxMentions,translate,unitTest)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check has failed')
@@ -2075,7 +2078,7 @@ def runInboxQueue(projectVersion: str, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion, \
-                                               maxMentions,translate)
+                                               maxMentions,translate,unitTest)
                     if debug:
                         pprint(queueJson['post'])
                         print('No capability list within post')
