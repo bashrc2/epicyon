@@ -52,7 +52,7 @@ from webinterface import getIconsDir
 
 def inboxStorePostToHtmlCache(translate: {}, \
                               baseDir: str,httpPrefix: str, \
-                              session,wfRequest: {},personCache: {}, \
+                              session,cachedWebfingers: {},personCache: {}, \
                               nickname: str,domain: str,port: int, \
                               postJsonObject: {}, \
                               allowDeletion: bool) -> None:
@@ -62,8 +62,9 @@ def inboxStorePostToHtmlCache(translate: {}, \
     pageNumber=1
     showAvatarOptions=True
     avatarUrl=None
+    boxName='inbox'
     individualPostAsHtml(getIconsDir(baseDir),translate,pageNumber, \
-                         baseDir,session,wfRequest,personCache, \
+                         baseDir,session,cachedWebfingers,personCache, \
                          nickname,domain,port,item,avatarUrl,True, \
                          allowDeletion, \
                          httpPrefix,__version__,boxName, \
