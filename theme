@@ -214,6 +214,7 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     sed -i "s|--button-text:.*|--button-text: green;|g" "$filename"
     sed -i "s|--button-corner-radius:.*|--button-corner-radius: 4px;|g" "$filename"
     sed -i "s|--timeline-border-radius:.*|--timeline-border-radius: 4px;|g" "$filename"
+    sed -i "s|--form-border-radius:.*|--form-border-radius: 4px;|g" "$filename"
     sed -i "s|font-family:.*|font-family: Courier;|g" "$filename"
     sed -i "s|background-color: #554;|background-color: #062200;|g" "$filename"
     sed -i "s|color: #FFFFFE;|color: green;|g" "$filename"
