@@ -1730,7 +1730,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     """
     # if a cached version of the post already exists then fetch it
     htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
-    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/','#')+'.html'
+    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
     if os.path.isfile(cachedPostFilename):
         postStr=''
         tries=0
