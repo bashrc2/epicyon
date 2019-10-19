@@ -4616,7 +4616,7 @@ def runPostsQueue(baseDir: str,sendThreads: [],debug: bool) -> None:
         time.sleep(1)
         removeDormantThreads(baseDir,sendThreads,debug)
 
-def runSharesExpire(baseDir: str) -> None:
+def runSharesExpire(versionNumber: str,baseDir: str) -> None:
     """Expires shares as needed
     """
     while True:
@@ -4806,7 +4806,7 @@ def runDaemon(projectVersion, \
     print('Creating expire thread for shared items')
     httpd.thrSharesExpire= \
         threadWithTrace(target=runSharesExpire, \
-                        args=(baseDir),daemon=True)
+                        args=(__version__,baseDir),daemon=True)
     if not unitTest: 
         httpd.thrSharesExpireWatchdog= \
             threadWithTrace(target=runSharesExpireWatchdog, \
