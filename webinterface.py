@@ -1712,13 +1712,28 @@ def postContainsPublic(postJsonObject: {}) -> bool:
                         break
     return containsPublic
 
+def getCachedPostDirectory(baseDir: str,nickname: str,domain: str) -> str:
+    """Returns the directory where the html post cache exists
+    """
+    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
+    return htmlPostCacheDir
+
+def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
+                          postJsonObject: {}) -> str:
+    """Returns the html cache filename for the given post
+    """
+    cachedPostFilename= \
+        getCachedPostDirectory(baseDir,nickname,domain)+ \
+        '/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+    return cachedPostFilename
+
 def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
                                       postJsonObject: {}) -> str:
     """If a cached html version of the given post exists then load it and
     return the html text
     """
-    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
-    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+    cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+
     postHtml=''
     if not os.path.isfile(cachedPostFilename):
         return postHtml
@@ -1741,8 +1756,8 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,nickname: str,domain: str, \
     """Saves the given html for a post to a cache file
     This is so that it can be quickly reloaded on subsequent refresh of the timeline
     """
-    htmlPostCacheDir=baseDir+'/accounts/'+nickname+'@'+domain+'/postcache'
-    cachedPostFilename=htmlPostCacheDir+'/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+    htmlPostCacheDir=getCachedPostDirectory(baseDir,nickname,domain)
+    cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
 
     # create the cache directory if needed
     if not os.path.isdir(htmlPostCacheDir):
