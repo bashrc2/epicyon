@@ -16,6 +16,7 @@
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
+    --form-border-radius: 30px;
 }
 
 body, html {
@@ -47,6 +48,7 @@ a:link {
 
 form {
     border: 3px solid var(--border-color);
+    border-radius: var(--form-border-radius);
 }
 
 input[type=text], input[type=password] {
