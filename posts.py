@@ -1892,6 +1892,22 @@ def isReply(postJsonObject: {},actor: str) -> bool:
         return False
     return True
 
+def createBoxIndex(boxDir: str,postsInBoxDict: {}) -> int:
+    """ Creates an index for the given box
+    """
+    postsCtr=0
+    postsInPersonInbox=os.scandir(boxDir)
+    for postFilename in postsInPersonInbox:
+        postFilename=postFilename.name
+        if not postFilename.endswith('.json'):
+            continue
+        # extract the status number
+        statusNumber=getStatusNumberFromPostFilename(postFilename)
+        if statusNumber:
+            postsInBoxDict[statusNumber]=os.path.join(boxDir, postFilename)
+            postsCtr+=1
+    return postsCtr
+
 def createBoxBase(session,baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,authorized :bool, \
@@ -1941,17 +1957,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
 
     # post filenames sorted in descending order
     postsInBoxDict={}
-    postsCtr=0
-    postsInPersonInbox=os.scandir(boxDir)
-    for postFilename in postsInPersonInbox:
-        postFilename=postFilename.name
-        if not postFilename.endswith('.json'):
-            continue
-        # extract the status number
-        statusNumber=getStatusNumberFromPostFilename(postFilename)
-        if statusNumber:
-            postsInBoxDict[statusNumber]=os.path.join(boxDir, postFilename)
-            postsCtr+=1
+    postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
     # combine the inbox for the account with the shared inbox
     if sharedBoxDir:
