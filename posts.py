@@ -1928,19 +1928,11 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
                 
         sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
         # get the actor from the shared post
-        loadedPost=False
-        tries=0
-        while tries<5:
-            try:
-                with open(sharedInboxFilename, 'r') as fp:
-                    postJsonObject=commentjson.load(fp)
-                    loadedPost=True
-                    break
-            except Exception as e:
-                print('WARN: commentjson exception createBoxBase - '+str(e))
-                time.sleep(1)
-                tries+=1
-        if not loadedPost:
+        try:
+            with open(sharedInboxFilename, 'r') as fp:
+                postJsonObject=commentjson.load(fp)                
+        except Exception as e:
+            print('WARN: commentjson exception createBoxBase - '+str(e))
             continue
 
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
