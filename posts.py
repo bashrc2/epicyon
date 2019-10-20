@@ -1944,8 +1944,10 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
             continue
 
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
+        if not actorNickname:
+            continue
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-        if not (actorNickname and actorDomain):
+        if not actorDomain:
             continue
 
         # is the actor followed by this account?
