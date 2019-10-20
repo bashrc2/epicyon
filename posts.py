@@ -1960,6 +1960,8 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         postsInSharedInbox=os.scandir(sharedBoxDir)
         for postFilename in postsInSharedInbox:
             postFilename=postFilename.name
+            if not postFilename.endswith('.json'):
+                continue
             statusNumber=getStatusNumberFromPostFilename(postFilename)
             if statusNumber:                
                 sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
