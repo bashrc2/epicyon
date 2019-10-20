@@ -2211,6 +2211,26 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     if noOfPosts<=maxPostsInBox:
         return
 
+    # remove entries from the index
+    handle=nickname+'@'+domain
+    indexFilename=baseDir+'/accounts/'+handle+'/'+boxname+'.index'
+    if os.path.isfile(indexFilename):
+        indexCtr=0
+        # get the existing index entries as a string
+        newIndex=''
+        with open(indexFilename, 'r') as indexFile:
+            for postId in indexFile:
+                newIndex+=postId
+                indexCtr+=1
+                if indexCtr>=maxPostsInBox:
+                    break
+        # save the new index file
+        if len(newIndex)>0:
+            indexFile=open(indexFilename,'w+')
+            if indexFile:
+                indexFile.write(newIndex)
+                indexFile.close()
+
     postsInBoxDict={}
     postsCtr=0
     for postFilename in postsInBox:
