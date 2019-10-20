@@ -1516,16 +1516,22 @@ def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bo
     if '/'+boxname+'/' in destinationFilename:
         destinationFilename=destinationFilename.split('/'+boxname+'/')[1]
     if os.path.isfile(indexFilename):
-        with open(indexFilename, 'r+') as indexFile:
-            content = indexFile.read()
-            indexFile.seek(0, 0)
-            indexFile.write(destinationFilename+'\n'+content)
-            return True
+        try:
+            with open(indexFilename, 'r+') as indexFile:
+                content = indexFile.read()
+                indexFile.seek(0, 0)
+                indexFile.write(destinationFilename+'\n'+content)
+                return True
+        except Exception as e:
+            print('Failed to write entry to index '+str(e))
     else:
-        indexFile=open(indexFilename,'w+')
-        if indexFile:
-            indexFile.write(destinationFilename+'\n')
-            indexFile.close()
+        try:
+            indexFile=open(indexFilename,'w+')
+            if indexFile:
+                indexFile.write(destinationFilename+'\n')
+                indexFile.close()
+        except Exception as e:
+            print('Failed to write initial entry to index '+str(e))
 
     return False
 
