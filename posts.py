@@ -2037,12 +2037,10 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         postsCtr=0
         maxPostCtr=None
         if not pageNumber:
-            maxPostCtr=itemsPerPage*3
+            minPageNumber=4
         else:
-            minPageNumber=pageNumber
-            if minPageNumber<3:
-                minPageNumber=3
-            maxPostCtr=itemsPerPage*minPageNumber
+            minPageNumber=pageNumber+4
+        maxPostCtr=itemsPerPage*minPageNumber
         with open(indexFilename, 'r') as indexFile:
             for postFilename in indexFile:
                 postsInBox[postsCtr]=os.path.join(boxDir, postFilename.replace('\n',''))
