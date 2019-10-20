@@ -2036,7 +2036,9 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         print('DEBUG: using index file to construct timeline')
         postsCtr=0
         maxPostCtr=None
-        if pageNumber:
+        if not pageNumber:
+            maxPostCtr=itemsPerPage*3
+        else:
             minPageNumber=pageNumber
             if minPageNumber<3:
                 minPageNumber=3
@@ -2045,9 +2047,8 @@ def createBoxBase(session,baseDir: str,boxname: str, \
             for postFilename in indexFile:
                 postsInBox[postsCtr]=os.path.join(boxDir, postFilename.replace('\n',''))
                 postsCtr+=1
-                if maxPostCtr:
-                    if postsCtr>=maxPostCtr:
-                        break
+                if postsCtr>=maxPostCtr:
+                    break
     else:
         postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
