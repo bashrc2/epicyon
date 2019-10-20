@@ -59,7 +59,7 @@ def inboxStorePostToHtmlCache(translate: {}, \
     """Converts the json post into html and stores it in a cache
     This enables the post to be quickly displayed later
     """
-    pageNumber=1
+    pageNumber=-999
     showAvatarOptions=True
     avatarUrl=None
     boxName='inbox'
