@@ -1512,11 +1512,18 @@ def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bo
     indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
     if debug:
         print('DEBUG: Updating index '+indexFilename)
-    with open(indexFilename, 'r+') as indexFile:
-        content = indexFile.read()
-        indexFile.seek(0, 0)
-        indexFile.write(destinationFilename+'\n'+content)
-        return True
+    if os.path.isfile(indexFilename):
+        with open(indexFilename, 'r+') as indexFile:
+            content = indexFile.read()
+            indexFile.seek(0, 0)
+            indexFile.write(destinationFilename+'\n'+content)
+            return True
+    else:
+        indexFile=open(indexFilename,'w+')
+        if indexFile:
+            indexFile.write(destinationFilename+'\n')
+            indexFile.close()
+
     return False
 
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
