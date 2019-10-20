@@ -1505,6 +1505,16 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
                 calendarNotificationFile.write('/calendar?year='+str(eventYear)+'?month='+str(eventMonthNumber)+'?day='+str(eventDayOfMonth))
                 calendarNotificationFile.close()
 
+def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str) -> None:
+    """Updates the index of received posts
+    The new entry is added to the top of the file
+    """
+    indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
+    with open(indexFilename, 'r+') as indexFile:
+        content = indexFile.read()
+        indexFile.seek(0, 0)
+        indexFile.write(destinationFilename+'\n'+content)
+
 def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
@@ -1640,6 +1650,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                 tries+=1
 
         if postSavedToFile:
+            inboxUpdateIndex(baseDir,handle,destinationFilename)            
+
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
             if not unitTest:
