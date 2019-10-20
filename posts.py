@@ -1914,7 +1914,8 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str,postsInBoxDict: {},pos
     handle=nickname+'@'+domain
     followingFilename=baseDir+'/accounts/'+handle+'/following.txt'
     postsInSharedInbox=os.scandir(sharedBoxDir)
-    for postFilename in postsInSharedInbox:
+    followingHandles=None
+    for postFilename in postsInSharedInbox:        
         postFilename=postFilename.name
         if not postFilename.endswith('.json'):
             continue
@@ -1943,9 +1944,12 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str,postsInBoxDict: {},pos
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
         if not (actorNickname and actorDomain):
             continue
-                        
+
         # is the actor followed by this account?
-        if not (actorNickname+'@'+actorDomain in open(followingFilename).read()):
+        if not followingHandles:
+            with open(followingFilename, 'r') as followingFile:
+                followingHandles = followingFile.read()
+        if actorNickname+'@'+actorDomain not in followingHandles:
             continue
 
         if ocapAlways:
