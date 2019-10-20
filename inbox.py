@@ -1505,11 +1505,13 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
                 calendarNotificationFile.write('/calendar?year='+str(eventYear)+'?month='+str(eventMonthNumber)+'?day='+str(eventDayOfMonth))
                 calendarNotificationFile.close()
 
-def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str) -> bool:
+def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bool) -> bool:
     """Updates the index of received posts
     The new entry is added to the top of the file
     """
     indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
+    if debug:
+        print('DEBUG: Updating index '+indexFilename)
     with open(indexFilename, 'r+') as indexFile:
         content = indexFile.read()
         indexFile.seek(0, 0)
@@ -1652,7 +1654,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                 tries+=1
 
         if postSavedToFile:
-            if not inboxUpdateIndex(baseDir,handle,destinationFilename):
+            if not inboxUpdateIndex(baseDir,handle,destinationFilename,debug):
                 print('ERROR: unable to update inbox index')
 
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
