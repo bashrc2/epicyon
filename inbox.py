@@ -1523,7 +1523,7 @@ def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bo
                 indexFile.write(destinationFilename+'\n'+content)
                 return True
         except Exception as e:
-            print('Failed to write entry to index '+str(e))
+            print('WARN: Failed to write entry to index '+str(e))
     else:
         try:
             indexFile=open(indexFilename,'w+')
@@ -1531,7 +1531,7 @@ def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bo
                 indexFile.write(destinationFilename+'\n')
                 indexFile.close()
         except Exception as e:
-            print('Failed to write initial entry to index '+str(e))
+            print('WARN: Failed to write initial entry to index '+str(e))
 
     return False
 
