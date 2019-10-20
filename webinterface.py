@@ -1780,7 +1780,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
                                               postJsonObject)
         if postHtml:
-            return postHtml.replace(';-999;',';'+str(pageNumber)+';')
+            return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
