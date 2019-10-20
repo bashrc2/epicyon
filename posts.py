@@ -1908,6 +1908,77 @@ def createBoxIndex(boxDir: str,postsInBoxDict: {}) -> int:
             postsCtr+=1
     return postsCtr
 
+def createSharedInboxIndex(sharedBoxDir: str,postsInBoxDict: {},postsCtr: int) -> int:
+    """ Creates an index for the given shared inbox
+    """
+    handle=nickname+'@'+domain
+    followingFilename=baseDir+'/accounts/'+handle+'/following.txt'
+    postsInSharedInbox=os.scandir(sharedBoxDir)
+    for postFilename in postsInSharedInbox:
+        postFilename=postFilename.name
+        if not postFilename.endswith('.json'):
+            continue
+        statusNumber=getStatusNumberFromPostFilename(postFilename)
+        if not statusNumber:
+            continue
+                
+        sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
+        # get the actor from the shared post
+        loadedPost=False
+        tries=0
+        while tries<5:
+            try:
+                with open(sharedInboxFilename, 'r') as fp:
+                    postJsonObject=commentjson.load(fp)
+                    loadedPost=True
+                    break
+            except Exception as e:
+                print('WARN: commentjson exception createBoxBase - '+str(e))
+                time.sleep(1)
+                tries+=1
+        if not loadedPost:
+            continue
+
+        actorNickname=getNicknameFromActor(postJsonObject['actor'])
+        actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+        if not (actorNickname and actorDomain):
+            continue
+                        
+        # is the actor followed by this account?
+        if not (actorNickname+'@'+actorDomain in open(followingFilename).read()):
+            continue
+
+        if ocapAlways:
+            capsList=None
+            # Note: should this be in the Create or the object of a post?
+            if postJsonObject.get('capability'):
+                if isinstance(postJsonObject['capability'], list):                                
+                    capsList=postJsonObject['capability']
+
+            # Have capabilities been granted for the sender?
+            ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJsonObject['actor'].replace('/','#')+'.json'
+            if not os.path.isfile(ocapFilename):
+                continue
+
+            # read the capabilities id
+            loadedOcap=False
+            try:
+                with open(ocapFilename, 'r') as fp:
+                    ocapJson=commentjson.load(fp)
+                    loadedOcap=True
+            except Exception as e:
+                print('WARN: commentjson exception createBoxBase - '+str(e))
+
+            if loadedOcap:
+                if ocapJson.get('id'):
+                    if ocapJson['id'] in capsList:                                    
+                        postsInBoxDict[statusNumber]=sharedInboxFilename
+                        postsCtr+=1
+        else:
+            postsInBoxDict[statusNumber]=sharedInboxFilename
+            postsCtr+=1
+    return postsCtr
+
 def createBoxBase(session,baseDir: str,boxname: str, \
                   nickname: str,domain: str,port: int,httpPrefix: str, \
                   itemsPerPage: int,headerOnly: bool,authorized :bool, \
@@ -1961,65 +2032,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
 
     # combine the inbox for the account with the shared inbox
     if sharedBoxDir:
-        handle=nickname+'@'+domain
-        followingFilename=baseDir+'/accounts/'+handle+'/following.txt'
-        postsInSharedInbox=os.scandir(sharedBoxDir)
-        for postFilename in postsInSharedInbox:
-            postFilename=postFilename.name
-            if not postFilename.endswith('.json'):
-                continue
-            statusNumber=getStatusNumberFromPostFilename(postFilename)
-            if statusNumber:                
-                sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
-                # get the actor from the shared post
-                loadedPost=False
-                tries=0
-                while tries<5:
-                    try:
-                        with open(sharedInboxFilename, 'r') as fp:
-                            postJsonObject=commentjson.load(fp)
-                            loadedPost=True
-                            break
-                    except Exception as e:
-                        print('WARN: commentjson exception createBoxBase - '+str(e))
-                        time.sleep(1)
-                        tries+=1
-                if loadedPost:                
-                    actorNickname=getNicknameFromActor(postJsonObject['actor'])
-                    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-                    if actorNickname and actorDomain:
-                        # is the actor followed by this account?
-                        if actorNickname+'@'+actorDomain in open(followingFilename).read():
-                            if ocapAlways:
-                                capsList=None
-                                # Note: should this be in the Create or the object of a post?
-                                if postJsonObject.get('capability'):
-                                    if isinstance(postJsonObject['capability'], list):                                
-                                        capsList=postJsonObject['capability']
-                                # Have capabilities been granted for the sender?
-                                ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJsonObject['actor'].replace('/','#')+'.json'
-                                if os.path.isfile(ocapFilename):
-                                    # read the capabilities id
-                                    loadedOcap=False
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            with open(ocapFilename, 'r') as fp:
-                                                ocapJson=commentjson.load(fp)
-                                                loadedOcap=True
-                                                break
-                                        except Exception as e:
-                                            print('WARN: commentjson exception createBoxBase - '+str(e))
-                                            time.sleep(1)
-                                            tries+=1
-                                    if loadedOcap:
-                                        if ocapJson.get('id'):
-                                            if ocapJson['id'] in capsList:                                    
-                                                postsInBoxDict[statusNumber]=sharedInboxFilename
-                                                postsCtr+=1
-                            else:
-                                postsInBoxDict[statusNumber]=sharedInboxFilename
-                                postsCtr+=1
+        postsCtr=createSharedInboxIndex(sharedBoxDir,postsInBoxDict,postsCtr)
 
     # sort the list in descending order of date
     postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
