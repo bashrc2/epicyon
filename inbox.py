@@ -1509,11 +1509,12 @@ def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bo
     """Updates the index of received posts
     The new entry is added to the top of the file
     """
-    indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
+    boxname='inbox'
+    indexFilename=baseDir+'/accounts/'+handle+'/'+boxname+'.index'
     if debug:
         print('DEBUG: Updating index '+indexFilename)
-    if '/index/' in destinationFilename:
-        destinationFilename=destinationFilename.split('/index/')[1]
+    if '/'+boxname+'/' in destinationFilename:
+        destinationFilename=destinationFilename.split('/'+boxname+'/')[1]
     if os.path.isfile(indexFilename):
         with open(indexFilename, 'r+') as indexFile:
             content = indexFile.read()
