@@ -1908,7 +1908,10 @@ def createBoxIndex(boxDir: str,postsInBoxDict: {}) -> int:
             postsCtr+=1
     return postsCtr
 
-def createSharedInboxIndex(baseDir: str,sharedBoxDir: str,postsInBoxDict: {},postsCtr: int,nickname: str,domain: str) -> int:
+def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
+                           postsInBoxDict: {},postsCtr: int, \
+                           nickname: str,domain: str, \
+                           ocapAlways: bool) -> int:
     """ Creates an index for the given shared inbox
     """
     handle=nickname+'@'+domain
@@ -2039,7 +2042,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         postsCtr= \
             createSharedInboxIndex(baseDir,sharedBoxDir, \
                                    postsInBoxDict,postsCtr, \
-                                   nickname,domain)
+                                   nickname,domain,ocapAlways)
 
     # sort the list in descending order of date
     postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
