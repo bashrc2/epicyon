@@ -906,7 +906,9 @@ if args.actor:
         personUrl = getUserUrl(wfRequest)
     if nickname==domain:
         personUrl=personUrl.replace('/users/','/actor/').replace('/channel/','/actor/').replace('/profile/','/actor/')
-    #print('personUrl: '+personUrl)
+    if not personUrl:
+        print('Failed to get actor url')
+        sys.exit()        
     if '/channel/' in personUrl:
         asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
     personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
