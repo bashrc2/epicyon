@@ -2029,6 +2029,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
 
     # post filenames sorted in descending order
     postsInBoxDict={}
+    postsInBox={}
 
     indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxname+'.index'
     if os.path.isfile(indexFilename):
@@ -2039,7 +2040,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
             maxPostCtr=itemsPerPage*pageNumber
         with open(indexFilename, 'r') as indexFile:
             for postFilename in indexFile:
-                postsInBoxDict[postsCtr]=os.path.join(boxDir, postFilename)
+                postsInBox[postsCtr]=os.path.join(boxDir, postFilename)
                 postsCtr+=1
                 if maxPostCtr:
                     if postsCtr>=maxPostCtr:
