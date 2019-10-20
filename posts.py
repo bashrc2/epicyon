@@ -2045,6 +2045,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                 if maxPostCtr:
                     if postsCtr>=maxPostCtr:
                         break
+        print(str(postsInBox))
     else:
         postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
@@ -2080,10 +2081,12 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         # Are we at the starting page yet?
         if prevPostFilename and currPage==pageNumber and postsCtr==0:
             # update the prev entry for the last message id
-            postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
-            boxHeader['prev']= \
-                httpPrefix+'://'+domain+'/users/'+nickname+'/'+ \
-                boxname+'?min_id='+postId+'&page=true'
+            if '#statuses#' in prevPostFilename:
+                postId = prevPostFilename.split('#statuses#')[1].replace('#activity','')
+                boxHeader['prev']= \
+                    httpPrefix+'://'+domain+'/users/'+nickname+'/'+ \
+                    boxname+'?min_id='+postId+'&page=true'
+
         # get the full path of the post file
         filePath = postFilename
         try:
