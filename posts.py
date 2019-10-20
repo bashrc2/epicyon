@@ -167,7 +167,10 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
     else:
         personUrl = httpPrefix+'://'+domain+'/users/'+nickname
     if not personUrl:
-        return None,None,None,None,None,None,None,None
+        # try single user instance
+        personUrl = httpPrefix+'://'+domain
+        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        #return None,None,None,None,None,None,None,None
     personJson = getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         if '/channel/' in personUrl:
