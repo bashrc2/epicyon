@@ -2029,17 +2029,33 @@ def createBoxBase(session,baseDir: str,boxname: str, \
 
     # post filenames sorted in descending order
     postsInBoxDict={}
-    postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
-    # combine the inbox for the account with the shared inbox
-    if sharedBoxDir:
-        postsCtr= \
-            createSharedInboxIndex(baseDir,sharedBoxDir, \
-                                   postsInBoxDict,postsCtr, \
-                                   nickname,domain,ocapAlways)
+    indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxname+'.index'
+    if os.path.isfile(indexFilename):
+        print('DEBUG: using index file to construct timeline')
+        postsCtr=0
+        maxPostCtr=None
+        if pageNumber:
+            maxPostCtr=itemsPerPage*pageNumber
+        with open(indexFilename, 'r') as indexFile:
+            for postFilename in indexFile:
+                postsInBoxDict[postsCtr]=os.path.join(boxDir, postFilename)
+                postsCtr+=1
+                if maxPostCtr:
+                    if postsCtr>=maxPostCtr:
+                        break
+    else:
+        postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
-    # sort the list in descending order of date
-    postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
+        # combine the inbox for the account with the shared inbox
+        if sharedBoxDir:
+            postsCtr= \
+                createSharedInboxIndex(baseDir,sharedBoxDir, \
+                                       postsInBoxDict,postsCtr, \
+                                       nickname,domain,ocapAlways)
+
+        # sort the list in descending order of date
+        postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
 
     # number of posts in box
     boxHeader['totalItems']=postsCtr
