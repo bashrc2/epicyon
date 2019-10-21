@@ -183,6 +183,7 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
             personJson = getJson(session,personUrl,asHeader,None, \
                                  projectVersion,httpPrefix,domain)
             if not personJson:
+                print('Unable to get actor')
                 return None,None,None,None,None,None,None,None
     boxJson=None
     if not personJson.get(boxName):
