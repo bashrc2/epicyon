@@ -42,6 +42,7 @@ from blocking import isBlocked
 from blocking import isBlockedDomain
 from filters import isFiltered
 from announce import updateAnnounceCollection
+from announce import undoAnnounceCollectionEntry
 from httpsig import messageContentDigest
 from posts import downloadAnnounce
 from posts import isDM
