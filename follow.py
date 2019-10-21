@@ -626,7 +626,7 @@ def sendFollowRequest(session,baseDir: str, \
     """    
     if not domainPermitted(followDomain,federationList):
         return None
-
+    
     fullDomain=domain
     followActor=httpPrefix+'://'+domain+'/users/'+nickname
     if port:
@@ -643,7 +643,15 @@ def sendFollowRequest(session,baseDir: str, \
 
     statusNumber,published = getStatusNumber()
     
-    followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
+    if followNickname:
+        followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
+        followHandle=followNickname+'@'+requestDomain
+    else:
+        if debug:
+            print('DEBUG: sendFollowRequest - assuming single user instance')
+        followedId=followHttpPrefix+'://'+requestDomain
+        singleUserNickname='dev'
+        followHandle=singleUserNickname+'@'+requestDomain
 
     newFollowJson = {
         '@context': 'https://www.w3.org/ns/activitystreams',
@@ -659,7 +667,7 @@ def sendFollowRequest(session,baseDir: str, \
     # follow request will block them again.
     removeFromFollowRejects(baseDir, \
                             nickname,domain, \
-                            followNickname+'@'+requestDomain,debug)
+                            followHandle,debug)
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
                    followNickname,followDomain,followPort, \
