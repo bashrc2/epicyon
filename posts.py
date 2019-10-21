@@ -179,7 +179,11 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
         personJson = getJson(session,personUrl,asHeader,None, \
                              projectVersion,httpPrefix,domain)
         if not personJson:
-            return None,None,None,None,None,None,None,None
+            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+            personJson = getJson(session,personUrl,asHeader,None, \
+                                 projectVersion,httpPrefix,domain)
+            if not personJson:
+                return None,None,None,None,None,None,None,None
     boxJson=None
     if not personJson.get(boxName):
         if personJson.get('endpoints'):
