@@ -1831,6 +1831,15 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                       displayName,False)
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
+        if not messageId:
+            pprint(postJsonObject)
+            print('ERROR: no messageId')
+        if not actorNickname:
+            pprint(postJsonObject)
+            print('ERROR: no actorNickname')
+        if not actorDomain:
+            pprint(postJsonObject)
+            print('ERROR: no actorDomain')
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
 
     # Show a DM icon for DMs in the inbox timeline
