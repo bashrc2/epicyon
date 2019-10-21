@@ -1358,7 +1358,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     if toNickname:
         handle=httpPrefix+'://'+toDomain+'/@'+toNickname
     else:
-        handle=httpPrefix+'://'+toDomain
+        singleUserInstanceNickname='dev'
+        handle=httpPrefix+'://'+toDomain+'/@'+singleUserInstanceNickname
         
     if debug:
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
