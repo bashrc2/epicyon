@@ -1143,7 +1143,7 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of undo announce - '+handle)
     # if this post in the outbox of the person?
-    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object'])
+    postFilename=locatePost(baseDir,handle.split('@')[0],handle.split('@')[1],messageJson['object']['object'])
     if not postFilename:
         if debug:
             print('DEBUG: undo announce post not found in inbox or outbox')
