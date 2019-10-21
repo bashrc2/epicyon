@@ -1819,7 +1819,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     actorNickname=getNicknameFromActor(postJsonObject['actor'])
     if not actorNickname:
         # single user instance
-        actorNickname='dev'
+        actorNickname='owner'
     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
     messageId=''
     if postJsonObject.get('id'):
