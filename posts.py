@@ -114,7 +114,7 @@ def cleanHtml(rawHtml: str) -> str:
     text = BeautifulSoup(rawHtml, 'html.parser').get_text()
     return html.unescape(text)
 
-def getUserUrl(wfRequest) -> str:
+def getUserUrl(wfRequest: {}) -> str:
     if wfRequest.get('links'):
         for link in wfRequest['links']:
             if link.get('type') and link.get('href'):
