@@ -1287,28 +1287,33 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,pe
         return
 
     lookupActor=postJsonObject['object']['inReplyTo']
-    if lookupActor:
-        if '/users/' in lookupActor or \
-           '/channel/' in lookupActor or \
-           '/profile/' in lookupActor:
-            if '/statuses/' in lookupActor:
-                lookupActor=lookupActor.split('/statuses/')[0]
-            
-            if debug:
-                print('DEBUG: Obtaining actor for reply post '+lookupActor)
-            for tries in range(6):
-                pubKey= \
-                    getPersonPubKey(baseDir,session,lookupActor, \
-                                    personCache,debug, \
-                                    __version__,httpPrefix,domain)                
-                if pubKey:
-                    print('DEBUG: public key obtained for reply: '+lookupActor)
-                    break
+    if not lookupActor:
+        return
 
-                if debug:
-                    print('DEBUG: Retry '+str(tries+1)+ \
-                          ' obtaining actor for '+lookupActor)
-                time.sleep(5)                
+    if not ('/users/' in lookupActor or \
+            '/channel/' in lookupActor or \
+            '/profile/' in lookupActor):
+        return
+
+    if '/statuses/' in lookupActor:
+        lookupActor=lookupActor.split('/statuses/')[0]
+            
+    if debug:
+        print('DEBUG: Obtaining actor for reply post '+lookupActor)
+
+    for tries in range(6):
+        pubKey= \
+            getPersonPubKey(baseDir,session,lookupActor, \
+                            personCache,debug, \
+                            __version__,httpPrefix,domain)                
+        if pubKey:
+            print('DEBUG: public key obtained for reply: '+lookupActor)
+            break
+
+        if debug:
+            print('DEBUG: Retry '+str(tries+1)+ \
+                  ' obtaining actor for '+lookupActor)
+        time.sleep(5)                
 
 def dmNotify(baseDir: str,handle: str,url: str) -> None:
     """Creates a notification that a new DM has arrived
