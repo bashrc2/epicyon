@@ -197,6 +197,7 @@ def receiveAcceptReject(session,baseDir: str, \
         return False
     nickname=getNicknameFromActor(messageJson['actor'])
     if not nickname:
+        # single user instance
         nickname='dev'
         if debug:
             print('DEBUG: '+messageJson['type']+' does not contain a nickname. Assuming single user instance.')

@@ -459,9 +459,10 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         return False
     nickname=getNicknameFromActor(messageJson['actor'])
     if not nickname:
+        # single user instance
+        nickname='dev'
         if debug:
-            print('DEBUG: follow request does not contain a nickname')
-        return False
+            print('DEBUG: follow request does not contain a nickname. Assuming single user instance.')
     if not messageJson.get('to'):
         messageJson['to']=messageJson['object']
     handle=nickname.lower()+'@'+domain.lower()
