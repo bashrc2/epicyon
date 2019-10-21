@@ -1045,10 +1045,6 @@ def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
         if debug:
             print('DEBUG: "users", "channel" or "profile" missing in '+messageJson['type'])
         return False
-    #if '/statuses/' not in messageJson['object']:
-    #    if debug:
-    #        print('DEBUG: "statuses" missing from object in '+messageJson['type'])
-    #    return False
     objectDomain=messageJson['object'].replace('https://','').replace('http://','').replace('dat://','')
     if '/' in objectDomain:
         objectDomain=objectDomain.split('/')[0]
@@ -1136,10 +1132,6 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type']+' announce')
         return False
-    #if '/statuses/' not in messageJson['object']:
-    #    if debug:
-    #        print('DEBUG: "statuses" missing from object in '+messageJson['type']+' announce')
-    #    return False
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('DEBUG: unknown recipient of undo announce - '+handle)
     # if this post in the outbox of the person?
