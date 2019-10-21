@@ -3254,9 +3254,9 @@ def htmlProfileAfterSearch(translate: {}, \
         if not personUrl:
             personUrl = getUserUrl(wf)
         if not personUrl:
-            if debug:
-                print('DEBUG: Webfinger did not return an actor url')
-            return None            
+            # try single user instance
+            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+            personUrl=httpPrefix+'://'+searchDomainFull
         profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
             asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
