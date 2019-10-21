@@ -247,9 +247,9 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
                             if isBlocked(baseDir,nickname,domain,replyNickname,replyDomain):
                                 print('WARN: post contains reply from '+str(actor)+' to a blocked account: '+replyNickname+'@'+replyDomain)
                                 return None
-                        else:
-                            print('WARN: post is a reply to an unidentified account: '+postJsonObject['object']['inReplyTo'])
-                            return None
+                        #else:
+                        #    print('WARN: post is a reply to an unidentified account: '+postJsonObject['object']['inReplyTo'])
+                        #    return None
             if postJsonObject['object'].get('content'):
                 if isinstance(postJsonObject['object']['content'], str):
                     if isFiltered(baseDir,nickname,domain,postJsonObject['object']['content']):
