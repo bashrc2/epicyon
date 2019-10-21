@@ -119,13 +119,11 @@ def getUserUrl(wfRequest: {}) -> str:
         for link in wfRequest['links']:
             if link.get('type') and link.get('href'):
                 if link['type'] == 'application/activity+json':
-                    if '/users/' in link['href'] or \
-                       '/profile/' in link['href'] or \
-                       '/channel/' in link['href']:
-                        return link['href']
-                    else:
-                        print('Webfinger activity+json does not contain a valid actor')
-                        print(link['href'])
+                    if not ('/users/' in link['href'] or \
+                            '/profile/' in link['href'] or \
+                            '/channel/' in link['href']):
+                        print('Webfinger activity+json contains single user instance actor')
+                    return link['href']
     return None
 
 def parseUserFeed(session,feedUrl: str,asHeader: {}, \
