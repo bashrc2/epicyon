@@ -189,8 +189,7 @@ def receiveAcceptReject(session,baseDir: str, \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
-        return False
+            print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type']+'. Assuming single user instance.')
     domain,tempPort=getDomainFromActor(messageJson['actor'])
     if not domainPermitted(domain,federationList):
         if debug:
@@ -198,9 +197,9 @@ def receiveAcceptReject(session,baseDir: str, \
         return False
     nickname=getNicknameFromActor(messageJson['actor'])
     if not nickname:
+        nickname='dev'
         if debug:
-            print('DEBUG: '+messageJson['type']+' does not contain a nickname')
-        return False
+            print('DEBUG: '+messageJson['type']+' does not contain a nickname. Assuming single user instance.')
     handle=nickname.lower()+'@'+domain.lower()
     # receive follow accept
     acceptFollow(baseDir,domain,messageJson,federationList,debug)
