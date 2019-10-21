@@ -246,7 +246,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
                         replyNickname=getNicknameFromActor(postJsonObject['object']['inReplyTo'])
                         if replyNickname and replyDomain:
                             if isBlocked(baseDir,nickname,domain,replyNickname,replyDomain):
-                                print('WARN: post contains reply from '+str(actor)+' to a blocked account: '+replyNickname+'@'+replyDomain)
+                                print('WARN: post contains reply from '+str(actor)+ \
+                                      ' to a blocked account: '+replyNickname+'@'+replyDomain)
                                 return None
                         #else:
                         #    print('WARN: post is a reply to an unidentified account: '+postJsonObject['object']['inReplyTo'])
@@ -458,7 +459,9 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
             followerRecipients=True
     return followerRecipients,recipientsDict
 
-def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int, debug :bool) -> ([],[]):
+def inboxPostRecipients(baseDir :str,postJsonObject :{}, \
+                        httpPrefix :str,domain : str,port :int, \
+                        debug :bool) -> ([],[]):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -1273,7 +1276,9 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
     print('ACCEPT: post content is valid')
     return True
 
-def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str,domain: str,personCache: {},postJsonObject: {},debug: bool) -> None:
+def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
+                             domain: str,personCache: {}, \
+                             postJsonObject: {},debug: bool) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
     """
