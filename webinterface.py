@@ -2353,7 +2353,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
             tlStr+='</div>\n'
 
     # page down arrow
-    if itemCtr>=itemsPerPage/2:
+    if itemCtr>1:
         tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
