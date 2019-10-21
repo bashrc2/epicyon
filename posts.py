@@ -165,12 +165,15 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
     if not wfRequest.get('errors'):
         personUrl = getUserUrl(wfRequest)
     else:
-        personUrl = httpPrefix+'://'+domain+'/users/'+nickname
+        if nickname=='dev':
+            # try single user instance
+            print('getPersonBox: Trying single user instance with ld+json')
+            personUrl = httpPrefix+'://'+domain
+            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        else:
+            personUrl = httpPrefix+'://'+domain+'/users/'+nickname
     if not personUrl:
-        # try single user instance
-        personUrl = httpPrefix+'://'+domain
-        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-        #return None,None,None,None,None,None,None,None
+        return None,None,None,None,None,None,None,None
     personJson = getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         if '/channel/' in personUrl:
