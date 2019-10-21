@@ -1817,6 +1817,9 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     containerClassIcons='containericons'
     timeClass='time-right'
     actorNickname=getNicknameFromActor(postJsonObject['actor'])
+    if not actorNickname:
+        # single user instance
+        actorNickname='dev'
     actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
     messageId=''
     if postJsonObject.get('id'):
