@@ -1564,6 +1564,8 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
         url=content.split('"'+videoSite)[1]
         if '"' in url:
             url=url.split('"')[0].replace('/watch?v=','/embed/')
+            if '&' in url:
+                url=url.split('&')[0]
             content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
@@ -1573,6 +1575,8 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             url=content.split('"'+videoSite)[1]
             if '"' in url:
                 url=url.split('"')[0].replace('/watch?v=','/embed/')
+                if '&' in url:
+                    url=url.split('&')[0]
                 content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
                 return content
 
