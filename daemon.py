@@ -278,12 +278,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('Error when showing 404')
             print(e)
 
-    def _robotsTxt(self) -> bool:
-        if not self.path.lower().startswith('/robot'):
-            return False
-        msg='User-agent: *\nDisallow: /'
-        msg=msg.encode('utf-8')
-        self._set_headers('text/plain; charset=utf-8',len(msg),None)
+    def _write(self,msg) -> None:
         tries=0
         while tries<5:
             try:
@@ -293,6 +288,14 @@ class PubServer(BaseHTTPRequestHandler):
                 print(e)
                 time.sleep(1)
                 tries+=1
+
+    def _robotsTxt(self) -> bool:
+        if not self.path.lower().startswith('/robot'):
+            return False
+        msg='User-agent: *\nDisallow: /'
+        msg=msg.encode('utf-8')
+        self._set_headers('text/plain; charset=utf-8',len(msg),None)
+        self._write(msg)
         return True
 
     def _webfinger(self) -> bool:
@@ -308,15 +311,7 @@ class PubServer(BaseHTTPRequestHandler):
             if wfResult:
                 msg=wfResult.encode('utf-8')
                 self._set_headers('application/xrd+xml',len(msg),None)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
             return
 
         if self.server.debug:
@@ -325,15 +320,7 @@ class PubServer(BaseHTTPRequestHandler):
         if wfResult:
             msg=json.dumps(wfResult).encode('utf-8')
             self._set_headers('application/jrd+json',len(msg),None)
-            tries=0
-            while tries<5:
-                try:
-                    self.wfile.write(msg)
-                    break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            self._write(msg)
         else:
             if self.server.debug:
                 print('DEBUG: WEBFINGER lookup 404 '+self.path)
@@ -714,15 +701,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          optionsLink, \
                                          pageNumber).encode()
                    self._set_headers('text/html',len(msg),cookie)
-                   tries=0
-                   while tries<5:
-                       try:
-                           self.wfile.write(msg)
-                           break
-                       except Exception as e:
-                           print(e)
-                           time.sleep(1)
-                           tries+=1
+                   self._write(msg)
                    self.server.GETbusy=False
                    return
                self._redirect_headers(originPathStr,cookie)
@@ -739,15 +718,7 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.GETbusy=False
                return                
             self._set_headers('text/html',len(msg),cookie)
-            tries=0
-            while tries<5:
-                try:
-                    self.wfile.write(msg)
-                    break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            self._write(msg)
             self.server.GETbusy=False
             return
 
@@ -756,15 +727,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.httpPrefix, \
                                    self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
-            tries=0
-            while tries<5:
-                try:
-                    self.wfile.write(msg)
-                    break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            self._write(msg)
             self.server.GETbusy=False
             return
 
@@ -773,15 +736,7 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.httpPrefix, \
                           self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
-            tries=0
-            while tries<5:
-                try:
-                    self.wfile.write(msg)
-                    break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            self._write(msg)
             self.server.GETbusy=False
             return
 
@@ -840,15 +795,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries+=1
                 msg=css.encode('utf-8')
                 self._set_headers('text/css',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 return
         # image on login screen
         if self.path=='/login.png':
@@ -868,15 +815,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries+=1
                 if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(mediaBinary)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(mediaBinary)
                     return
             self._404()
             return        
@@ -898,15 +837,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries+=1
                 if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(mediaBinary)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(mediaBinary)
                     return
             self._404()
             return
@@ -928,15 +859,7 @@ class PubServer(BaseHTTPRequestHandler):
                         tries+=1
                 if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(mediaBinary)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(mediaBinary)
                     return
             self._404()
             return
@@ -959,15 +882,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(emojiFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(mediaBinary)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(mediaBinary)
                     return
             self._404()
             return
@@ -1003,15 +918,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self._set_headers(mediaFileType,len(mediaBinary),cookie)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(mediaBinary)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(mediaBinary)
                     return        
             self._404()
             return
@@ -1035,15 +942,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(mediaBinary)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(mediaBinary)
                     return        
             self._404()
             return
@@ -1059,15 +958,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             self._set_headers('image/png',len(mediaBinary),cookie)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(mediaBinary)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(mediaBinary)
                         return        
             self._404()
             return
@@ -1090,15 +981,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('image/jpeg',len(mediaBinary),cookie)
                         #self._404()
                         return
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(mediaBinary)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1                    
+                    self._write(mediaBinary)
                     return        
             self._404()
             return
@@ -1127,15 +1010,7 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(avatarFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(mediaBinary)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1       
+                            self._write(mediaBinary)
                         return
 
         # This busy state helps to avoid flooding
@@ -1167,15 +1042,7 @@ class PubServer(BaseHTTPRequestHandler):
             # request basic auth
             msg=htmlLogin(self.server.translate,self.server.baseDir).encode('utf-8')
             self._login_headers('text/html',len(msg))
-            tries=0
-            while tries<5:
-                try:
-                    self.wfile.write(msg)
-                    break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1       
+            self._write(msg)
             self.server.GETbusy=False
             return
 
@@ -1192,15 +1059,7 @@ class PubServer(BaseHTTPRequestHandler):
             if isBlockedHashtag(self.server.baseDir,hashtag):
                 msg=htmlHashtagBlocked(self.server.baseDir).encode('utf-8')
                 self._login_headers('text/html',len(msg))
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.GETbusy=False
                 return
             hashtagStr= \
@@ -1214,15 +1073,7 @@ class PubServer(BaseHTTPRequestHandler):
             if hashtagStr:
                 msg=hashtagStr.encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
             else:
                 originPathStr=self.path.split('/tags/')[0]
                 self._redirect_headers(originPathStr+'/search',cookie)                
@@ -1236,15 +1087,7 @@ class PubServer(BaseHTTPRequestHandler):
                msg=htmlSearch(self.server.translate, \
                               self.server.baseDir,self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
-               tries=0
-               while tries<5:
-                   try:
-                       self.wfile.write(msg)
-                       break
-                   except Exception as e:
-                       print(e)
-                       time.sleep(1)
-                       tries+=1
+               self._write(msg)
                self.server.GETbusy=False
                return
 
@@ -1257,15 +1100,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.httpPrefix, \
                                 self.server.domainFull).encode()
                self._set_headers('text/html',len(msg),cookie)
-               tries=0
-               while tries<5:
-                   try:
-                       self.wfile.write(msg)
-                       break
-                   except Exception as e:
-                       print(e)
-                       time.sleep(1)
-                       tries+=1
+               self._write(msg)
                self.server.GETbusy=False
                return
 
@@ -1277,15 +1112,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.baseDir, \
                                             self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
-               tries=0
-               while tries<5:
-                   try:
-                       self.wfile.write(msg)
-                       break
-                   except Exception as e:
-                       print(e)
-                       time.sleep(1)
-                       tries+=1
+               self._write(msg)
                self.server.GETbusy=False
                return
 
@@ -1559,15 +1386,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.personCache)
                 if deleteStr:
                     self._set_headers('text/html',len(deleteStr),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(deleteStr.encode())
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(deleteStr.encode())
                     self.server.GETbusy=False
                     return
             self.server.GETbusy=False
@@ -1647,15 +1466,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.path,self.server.domain, \
                                     self.server.port).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.GETbusy=False
                 return
 
@@ -1674,15 +1485,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 shareDescription, \
                                 replyPageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.GETbusy=False
                 return
 
@@ -1724,28 +1527,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                            self.server.httpPrefix, \
                                                            self.server.projectVersion).encode('utf-8')
                                     self._set_headers('text/html',len(msg),cookie)                    
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            self.wfile.write(msg)
-                                            break
-                                        except Exception as e:
-                                            print(e)
-                                            time.sleep(1)
-                                            tries+=1
+                                    self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
                                         msg=json.dumps(postJsonObject).encode('utf-8')
                                         self._set_headers('application/json',len(msg),None)
-                                        tries=0
-                                        while tries<5:
-                                            try:
-                                                self.wfile.write(msg)
-                                                break
-                                            except Exception as e:
-                                                print(e)
-                                                time.sleep(1)
-                                                tries+=1
+                                        self._write(msg)
                                     else:
                                         self._404()
                             self.server.GETbusy=False
@@ -1801,28 +1588,12 @@ class PubServer(BaseHTTPRequestHandler):
                                         self._set_headers('text/html',len(msg),cookie)
                                         print('----------------------------------------------------')
                                         pprint(repliesJson)
-                                        tries=0
-                                        while tries<5:
-                                            try:
-                                                self.wfile.write(msg)
-                                                break
-                                            except Exception as e:
-                                                print(e)
-                                                time.sleep(1)
-                                                tries+=1
+                                        self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
                                             msg=json.dumps(repliesJson).encode('utf-8')
                                             self._set_headers('application/json',len(msg),None)
-                                            tries=0
-                                            while tries<5:
-                                                try:
-                                                    self.wfile.write(msg)
-                                                    break
-                                                except Exception as e:
-                                                    print(e)
-                                                    time.sleep(1)
-                                                    tries+=1
+                                            self._write(msg)
                                         else:
                                             self._404()
                                     self.server.GETbusy=False
@@ -1864,28 +1635,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.server.httpPrefix, \
                                                             self.server.projectVersion).encode('utf-8')
                                         self._set_headers('text/html',len(msg),cookie)
-                                        tries=0
-                                        while tries<5:
-                                            try:
-                                                self.wfile.write(msg)
-                                                break
-                                            except Exception as e:
-                                                print(e)
-                                                time.sleep(1)
-                                                tries+=1
+                                        self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
                                             msg=json.dumps(repliesJson).encode('utf-8')
                                             self._set_headers('application/json',len(msg),None)
-                                            tries=0
-                                            while tries<5:
-                                                try:
-                                                    self.wfile.write(msg)
-                                                    break
-                                                except Exception as e:
-                                                    print(e)
-                                                    time.sleep(1)
-                                                    tries+=1
+                                            self._write(msg)
                                         else:
                                             self._404()
                                     self.server.GETbusy=False
@@ -1919,28 +1674,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                     actorJson['roles'], \
                                                     None,None).encode('utf-8')
                                     self._set_headers('text/html',len(msg),cookie)
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            self.wfile.write(msg)
-                                            break
-                                        except Exception as e:
-                                            print(e)
-                                            time.sleep(1)
-                                            tries+=1
+                                    self._write(msg)
                             else:
                                 if self._fetchAuthenticated():
                                     msg=json.dumps(actorJson['roles']).encode('utf-8')
                                     self._set_headers('application/json',len(msg),None)
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            self.wfile.write(msg)
-                                            break
-                                        except Exception as e:
-                                            print(e)
-                                            time.sleep(1)
-                                            tries+=1
+                                    self._write(msg)
                                 else:
                                     self._404()
                             self.server.GETbusy=False
@@ -1975,28 +1714,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                     actorJson['skills'], \
                                                     None,None).encode('utf-8')
                                     self._set_headers('text/html',len(msg),cookie)
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            self.wfile.write(msg)
-                                            break
-                                        except Exception as e:
-                                            print(e)
-                                            time.sleep(1)
-                                            tries+=1
+                                    self._write(msg)
                             else:
                                 if self._fetchAuthenticated():
                                     msg=json.dumps(actorJson['skills']).encode('utf-8')
                                     self._set_headers('application/json',len(msg),None)
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            self.wfile.write(msg)
-                                            break
-                                        except Exception as e:
-                                            print(e)
-                                            time.sleep(1)
-                                            tries+=1
+                                    self._write(msg)
                                 else:
                                     self._404()
                             self.server.GETbusy=False
@@ -2041,28 +1764,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                            self.server.httpPrefix, \
                                                            self.server.projectVersion).encode('utf-8')
                                     self._set_headers('text/html',len(msg),cookie)
-                                    tries=0
-                                    while tries<5:
-                                        try:
-                                            self.wfile.write(msg)
-                                            break
-                                        except Exception as e:
-                                            print(e)
-                                            time.sleep(1)
-                                            tries+=1
+                                    self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
                                         msg=json.dumps(postJsonObject).encode('utf-8')
                                         self._set_headers('application/json',len(msg),None)
-                                        tries=0
-                                        while tries<5:
-                                            try:
-                                                self.wfile.write(msg)
-                                                break
-                                            except Exception as e:
-                                                print(e)
-                                                time.sleep(1)
-                                                tries+=1
+                                        self._write(msg)
                                     else:
                                         self._404()
                             self.server.GETbusy=False
@@ -2119,29 +1826,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.httpPrefix, \
                                           self.server.projectVersion).encode('utf-8')
                             self._set_headers('text/html',len(msg),cookie)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(msg)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(inboxFeed).encode('utf-8')
                             self._set_headers('application/json',len(msg),None)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(msg)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(msg)
                         self.server.GETbusy=False
                         return
                 else:
@@ -2205,29 +1896,13 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.httpPrefix, \
                                              self.server.projectVersion).encode('utf-8')
                             self._set_headers('text/html',len(msg),cookie)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(msg)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(inboxDMFeed).encode('utf-8')
                             self._set_headers('application/json',len(msg),None)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(msg)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(msg)
                         self.server.GETbusy=False
                         return
                 else:
@@ -2294,29 +1969,13 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.httpPrefix, \
                                              self.server.projectVersion).encode('utf-8')
                         self._set_headers('text/html',len(msg),cookie)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
                         msg=json.dumps(inboxRepliesFeed).encode('utf-8')
                         self._set_headers('application/json',len(msg),None)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                     self.server.GETbusy=False
                     return
                 else:
@@ -2383,29 +2042,13 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.httpPrefix, \
                                            self.server.projectVersion).encode('utf-8')
                         self._set_headers('text/html',len(msg),cookie)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
                         msg=json.dumps(inboxMediaFeed).encode('utf-8')
                         self._set_headers('application/json',len(msg),None)
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                     self.server.GETbusy=False
                     return
                 else:
@@ -2464,28 +2107,12 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.httpPrefix, \
                                self.server.projectVersion).encode('utf-8')
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(outboxFeed).encode('utf-8')
                     self._set_headers('application/json',len(msg),None)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                 else:
                     self._404()
             self.server.GETbusy=False
@@ -2540,29 +2167,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.httpPrefix, \
                                                self.server.projectVersion).encode('utf-8')
                             self._set_headers('text/html',len(msg),cookie)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(msg)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(moderationFeed).encode('utf-8')
                             self._set_headers('application/json',len(msg),None)
-                            tries=0
-                            while tries<5:
-                                try:
-                                    self.wfile.write(msg)
-                                    break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            self._write(msg)
                         self.server.GETbusy=False
                         return
                 else:
@@ -2618,30 +2229,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     shares, \
                                     pageNumber,sharesPerPage).encode('utf-8')
                     self._set_headers('text/html',len(msg),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                     self.server.GETbusy=False
                     return
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(shares).encode('utf-8')
                     self._set_headers('application/json',len(msg),None)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                 else:
                     self._404()
                 self.server.GETbusy=False
@@ -2688,30 +2283,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     following, \
                                     pageNumber,followsPerPage).encode('utf-8')
                     self._set_headers('text/html',len(msg),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                     self.server.GETbusy=False
                     return
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(following).encode('utf-8')
                     self._set_headers('application/json',len(msg),None)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                 else:
                     self._404()
                 self.server.GETbusy=False
@@ -2756,30 +2335,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     followers, \
                                     pageNumber,followsPerPage).encode('utf-8')
                     self._set_headers('text/html',len(msg),cookie)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                     self.server.GETbusy=False
                     return
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(followers).encode('utf-8')
                     self._set_headers('application/json',len(msg),None)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                 else:
                     self._404()
             self.server.GETbusy=False
@@ -2806,28 +2369,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.personCache, \
                                 None,None).encode('utf-8')
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(getPerson).encode('utf-8')
                     self._set_headers('application/json',len(msg),None)
-                    tries=0
-                    while tries<5:
-                        try:
-                            self.wfile.write(msg)
-                            break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    self._write(msg)
                 else:
                     self._404()
             self.server.GETbusy=False
@@ -2853,15 +2400,7 @@ class PubServer(BaseHTTPRequestHandler):
                 contentJson=json.loads(content)
                 msg=json.dumps(contentJson).encode('utf-8')
                 self._set_headers('application/json',len(msg),None)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
         else:
             if self.server.debug:
                 print('DEBUG: GET Unknown file')
@@ -3276,15 +2815,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if isSuspended(self.server.baseDir,loginNickname):
                         msg=htmlSuspended(self.server.baseDir).encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return                        
                     # login success - redirect with authorization
@@ -3572,15 +3103,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg=htmlModerationInfo(self.server.translate, \
                                                self.server.baseDir).encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return                        
                     elif moderationStr.startswith('submitBlock'):
@@ -3763,15 +3286,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if hashtagStr:
                         msg=hashtagStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return
                 elif searchStr.startswith('*'):      
@@ -3785,15 +3300,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if skillStr:
                         msg=skillStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return
                 elif '@' in searchStr:
@@ -3820,15 +3327,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if profileStr:
                         msg=profileStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return
                     else:
@@ -3846,15 +3345,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if emojiStr:
                         msg=emojiStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return
                 else:
@@ -3870,15 +3361,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if sharedItemsStr:
                         msg=sharedItemsStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))
-                        tries=0
-                        while tries<5:
-                            try:
-                                self.wfile.write(msg)
-                                break
-                            except Exception as e:
-                                print(e)
-                                time.sleep(1)
-                                tries+=1
+                        self._write(msg)
                         self.server.POSTbusy=False
                         return
             self._redirect_headers(actorStr+'/inbox',cookie)
@@ -4182,15 +3665,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        optionsActor, \
                                        optionsAvatarUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.POSTbusy=False
                 return
             if '&submitFollow=' in optionsConfirmParams:
@@ -4202,15 +3677,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       optionsActor, \
                                       optionsAvatarUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.POSTbusy=False
                 return
             if '&submitUnfollow=' in optionsConfirmParams:
@@ -4222,15 +3689,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         optionsActor, \
                                         optionsAvatarUrl).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.POSTbusy=False
                 return
             if '&submitDM=' in optionsConfirmParams:
@@ -4243,15 +3702,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 [optionsActor],None, \
                                 pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.POSTbusy=False
                 return            
             if '&submitReport=' in optionsConfirmParams:
@@ -4263,15 +3714,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 reportPath,None,[], \
                                 postUrl,pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)
-                tries=0
-                while tries<5:
-                    try:
-                        self.wfile.write(msg)
-                        break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries+=1
+                self._write(msg)
                 self.server.POSTbusy=False
                 return            
 
