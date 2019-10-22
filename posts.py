@@ -1866,11 +1866,22 @@ def isReply(postJsonObject: {},actor: str) -> bool:
         return False
     if postJsonObject['object']['type']!='Note':
         return False
-    if not postJsonObject['object'].get('inReplyTo'):
+    if postJsonObject['object'].get('inReplyTo'):
+        if postJsonObject['object']['inReplyTo'].startswith(actor):
+            return True        
+    if not postJsonObject['object'].get('tag'):
         return False
-    if not postJsonObject['object']['inReplyTo'].startswith(actor):
+    if not isinstance(postJsonObject['object']['tag'], list):
         return False
-    return True
+    for tag in postJsonObject['object']['tag']:
+        if not tag.get('type'):
+            continue
+        if tag['type']=='Mention':
+            if not tag.get('href'):
+                continue
+            if actor in tag['href']:
+                return True
+    return False
 
 def createBoxIndex(boxDir: str,postsInBoxDict: {}) -> int:
     """ Creates an index for the given box
