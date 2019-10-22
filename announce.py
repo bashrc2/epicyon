@@ -18,6 +18,8 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import getCachedPostFilename
+from utils import loadJson
+from utils import saveJson
 from posts import sendSignedJson
 from posts import getPersonBox
 from session import postJson
@@ -70,17 +72,7 @@ def undoAnnounceCollectionEntry(baseDir: str,postFilename: str,actor: str,domain
     collection within a post. Note that the "shares" collection has no relation
     to shared items in shares.py. It's shares of posts, not shares of physical objects.
     """
-    postJsonObject=None
-    tries=0
-    while tries<5:
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception undoAnnounceCollectionEntry - '+str(e))
-            time.sleep(2)
-            tries+=1
+    postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this announce so that the like icon is changed
         nickname=getNicknameFromActor(actor)
@@ -122,33 +114,14 @@ def undoAnnounceCollectionEntry(baseDir: str,postFilename: str,actor: str,domain
                 del postJsonObject['object']['shares']
             else:
                 postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
-            tries=0
-            while tries<5:
-                try:
-                    with open(postFilename, 'w') as fp:
-                        commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
-                        break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            saveJson(postJsonObject,postFilename)
 
 def updateAnnounceCollection(baseDir: str,postFilename: str,actor: str,domain: str,debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
-    postJsonObject=None
-    tries=0
-    while tries<5:
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception updateAnnounceCollection - '+str(e))
-            time.sleep(1)
-            tries+=1
+    postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this announce so that the like icon is changed
         nickname=getNicknameFromActor(actor)
@@ -197,16 +170,7 @@ def updateAnnounceCollection(baseDir: str,postFilename: str,actor: str,domain: s
         if debug:
             print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
-        tries=0
-        while tries<5:
-            try:
-                with open(postFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(postJsonObject,postFilename)
 
 def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is announced by the given person
@@ -269,16 +233,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     if saveToFile:
         outboxDir = createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newAnnounceId.replace('/','#')+'.json'
-        tries=0
-        while tries<5:
-            try:
-                with open(filename, 'w') as fp:
-                    commentjson.dump(newAnnounce, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(newAnnounce,filename)
 
     announceNickname=None
     announceDomain=None

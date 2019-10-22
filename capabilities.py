@@ -14,6 +14,8 @@ import commentjson
 from auth import createPassword
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import loadJson
+from utils import saveJson
 
 def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
     """Returns the filename for a particular capability accepted or granted
@@ -127,16 +129,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
 
     # if the capability already exists then load it from file
     if os.path.isfile(ocapFilename):
-        tries=0
-        while tries<5:
-            try:
-                with open(ocapFilename, 'r') as fp:
-                    ocapAccept=commentjson.load(fp)
-                    break
-            except Exception as e:
-                print('WARN: commentjson exception capabilitiesAccept - '+str(e))
-                time.sleep(1)
-                tries+=1
+        ocapAccept=loadJson(ocapFilename)
     # otherwise create a new capability    
     if not ocapAccept:
         acceptedActorNickname=getNicknameFromActor(acceptedActor)
@@ -160,16 +153,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             ocapAccept['actor']=httpPrefix+"://"+fullDomain+'/users/'+nickname
 
     if saveToFile:
-        tries=0
-        while tries<5:
-            try:
-                with open(ocapFilename, 'w') as fp:
-                    commentjson.dump(ocapAccept, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(ocapAccept,ocapFilename)
     return ocapAccept
 
 def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> bool:
@@ -181,16 +165,7 @@ def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> 
     ocapFilename=getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
     if not ocapFilename:
         return False
-    tries=0
-    while tries<5:
-        try:
-            with open(ocapFilename, 'w') as fp:
-                commentjson.dump(ocap, fp, indent=2, sort_keys=False)
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    saveJson(ocap,ocapFilename)
     return True
 
 def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
@@ -232,16 +207,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
     }
 
     # read the existing capability
-    tries=0
-    while tries<5:
-        try:
-            with open(ocapFilename, 'r') as fp:
-                ocapJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception capabilitiesUpdate - '+str(e))
-            time.sleep(1)
-            tries+=1
+    ocapJson=loadJson(ocapFilename)
 
     # set the new capabilities list. eg. ["inbox:write","objects:read"]
     ocapJson['capability']=updateCaps
@@ -260,16 +226,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
     ocapUpdate['object']=ocapJson
 
     # save it again
-    tries=0
-    while tries<5:
-        try:
-            with open(ocapFilename, 'w') as fp:
-                commentjson.dump(ocapJson, fp, indent=2, sort_keys=False)
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    saveJson(ocapJson,ocapFilename)
 
     return ocapUpdate
 
@@ -291,30 +248,11 @@ def capabilitiesReceiveUpdate(baseDir :str, \
             print(ocapFilename)
         return False
 
-    ocapJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(ocapFilename, 'r') as fp:
-                ocapJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception capabilitiesReceiveUpdate - '+str(e))
-            time.sleep(1)
-            tries+=1
+    ocapJson=loadJson(ocapFilename)
 
     if ocapJson:
         ocapJson['id']=newCapabilitiesId
         ocapJson['capability']=capabilityList
 
-        tries=0
-        while tries<5:
-            try:
-                with open(ocapFilename, 'w') as fp:
-                    commentjson.dump(ocapJson, fp, indent=2, sort_keys=False)
-                    return True
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        return saveJson(ocapJson,ocapFilename)
     return False

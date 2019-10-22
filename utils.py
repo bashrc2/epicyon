@@ -12,6 +12,37 @@ import shutil
 import datetime
 import commentjson
 
+def saveJson(jsonObject: {},filename: str) -> bool:
+    """Saves json to a file
+    """
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'w') as fp:
+                commentjson.dump(jsonObject, fp, indent=2, sort_keys=False)
+                return True
+        except Exception as e:
+            print(e)
+            time.sleep(1)
+            tries+=1
+    return False
+
+def loadJson(filename: str) -> {}:
+    """Makes a few attempts to load a json formatted file
+    """
+    jsonObject=None
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'r') as fp:
+                jsonObject=commentjson.load(fp)
+                break
+        except Exception as e:
+            print('WARN: loadJson exception - '+str(e))
+            time.sleep(2)
+            tries+=1
+    return jsonObject
+
 def getStatusNumber() -> (str,str):
     """Returns the status number and published date
     """

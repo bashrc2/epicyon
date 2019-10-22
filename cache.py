@@ -10,6 +10,8 @@ import os
 import time
 import datetime
 import commentjson
+from utils import loadJson
+from utils import saveJson
         
 def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {}) -> None:
     """Store an actor in the cache
@@ -26,16 +28,7 @@ def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {
     if os.path.isdir(baseDir+'/cache/actors'):
         cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if not os.path.isfile(cacheFilename):
-            tries=0
-            while tries<5:
-                try:
-                    with open(cacheFilename, 'w') as fp:
-                        commentjson.dump(personJson, fp, indent=2, sort_keys=False)
-                        break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            saveJson(personJson,cacheFilename)
 
 def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
     """Get an actor from the cache
@@ -45,19 +38,7 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
     if not personCache.get(personUrl):
         cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if os.path.isfile(cacheFilename):
-            personJson=None
-            tries=0
-            while tries<5:
-                try:
-                    with open(cacheFilename, 'r') as fp:
-                        personJson=commentjson.load(fp)
-                        break
-                except Exception as e:
-                    print('WARN: commentjson exception getPersonFromCache - '+str(e))
-                    print('ERROR: unable to load actor from cache '+cacheFilename+' try '+str(tries))
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            personJson=loadJson(cacheFilename)
             if personJson:
                 storePersonInCache(baseDir,personUrl,personJson,personCache)
                 loadedFromFile=True

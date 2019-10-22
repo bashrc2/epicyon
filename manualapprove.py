@@ -13,6 +13,8 @@ import time
 from follow import followedAccountAccepts
 from follow import followedAccountRejects
 from follow import removeFromFollowRequests
+from utils import loadJson
+from utils import saveJson
 
 def manualDenyFollowRequest(session,baseDir: str, \
                             httpPrefix: str,
@@ -97,17 +99,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                 requestsDir=accountsDir+'/requests'
                 followActivityfilename=requestsDir+'/'+handle+'.follow'
                 if os.path.isfile(followActivityfilename):
-                    followJson=None
-                    tries=0
-                    while tries<5:
-                        try:
-                            with open(followActivityfilename, 'r') as fp:
-                                followJson=commentjson.load(fp)
-                                break
-                        except Exception as e:
-                            print('WARN: commentjson exception manualApproveFollowRequest - '+str(e))
-                            time.sleep(1)
-                            tries+=1
+                    followJson=loadJson(followActivityfilename)
                     if followJson:
                         approveNickname=approveHandle.split('@')[0]
                         approveDomain=approveHandle.split('@')[1].replace('\n','')

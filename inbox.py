@@ -23,6 +23,8 @@ from utils import locatePost
 from utils import deletePost
 from utils import removeAttachment
 from utils import removeModerationPostFromIndex
+from utils import loadJson
+from utils import saveJson
 from httpsig import verifyPostHeaders
 from session import createSession
 from session import getJson
@@ -314,16 +316,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
     if debug:
         print('Inbox queue item created')
         pprint(newQueueItem)
-    tries=0
-    while tries<5:
-        try:
-            with open(filename, 'w') as fp:
-                commentjson.dump(newQueueItem, fp, indent=2, sort_keys=False)
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    saveJson(newQueueItem,filename)
     return filename
 
 def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
@@ -348,17 +341,7 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
                 queue.pop(0)
             return False
 
-    tries=0
-    oc=None
-    while tries<5:
-        try:
-            with open(ocapFilename, 'r') as fp:
-                oc=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception inboxCheckCapabilities - '+str(e))
-            time.sleep(1)
-            tries+=1
+    oc=loadJson(ocapFilename)
     if not oc: 
         return False
 
@@ -424,19 +407,8 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
                 ocapFilename=baseDir+'/accounts/'+handle+'/ocap/accept/'+actor.replace('/','#')+'.json'
                 if os.path.isfile(ocapFilename):
                     # read the granted capabilities and obtain the id
-                    loadedOcap=False
-                    tries=0
-                    while tries<5:
-                        try:
-                            with open(ocapFilename, 'r') as fp:
-                                ocapJson=commentjson.load(fp)
-                                loadedOcap=True
-                                break
-                        except Exception as e:
-                            print('WARN: commentjson exception inboxPostRecipientsAdd - '+str(e))
-                            time.sleep(1)
-                            tries+=1
-                    if loadedOcap:
+                    ocapJson=loadJson(ocapFilename)
+                    if ocapJson:
                         if ocapJson.get('id'):
                             # append with the capabilities id
                             recipientsDict[handle]=ocapJson['id']
@@ -723,19 +695,8 @@ def personReceiveUpdate(baseDir: str, \
             return False
     else:
         if os.path.isfile(actorFilename):
-            loadedActor=False
-            tries=0
-            while tries<5:
-                try:
-                    with open(actorFilename, 'r') as fp:
-                        existingPersonJson=commentjson.load(fp)
-                        loadedActor=True
-                        break
-                except Exception as e:
-                    print('WARN: commentjson exception personReceiveUpdate - '+str(e))
-                    time.sleep(1)
-                    tries+=1
-            if loadedActor:
+            existingPersonJson=loadJson(actorFilename)
+            if existingPersonJson:
                 if existingPersonJson['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
                     if debug:
                         print('WARN: Public key does not match cached actor when updating')
@@ -743,17 +704,8 @@ def personReceiveUpdate(baseDir: str, \
     # save to cache in memory
     storePersonInCache(baseDir,personJson['id'],personJson,personCache)
     # save to cache on file
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFilename, 'w') as fp:
-                commentjson.dump(personJson, fp, indent=2, sort_keys=False)
-                print('actor updated for '+personJson['id'])
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    if saveJson(personJson,actorFilename):
+        print('actor updated for '+personJson['id'])
 
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
@@ -1148,19 +1100,8 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
     if debug:
         print('DEBUG: announced/repeated post to be undone found in inbox')
 
-    loadedPost=False
-    tries=0
-    while tries<5:
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                loadedPost=True
-                break
-        except Exception as e:
-            print('WARN: commentjson exception receiveUndoAnnounce - '+str(e))
-            time.sleep(1)
-            tries+=1
-    if loadedPost:
+    postJsonObject=loadJson(postFilename)
+    if postJsonObject:
         if not postJsonObject.get('type'):
             if postJsonObject['type']!='Announce':
                 if debug:
@@ -1348,17 +1289,7 @@ def groupHandle(baseDir: str,handle: str) -> bool:
     actorFile=baseDir+'/accounts/'+handle+'.json'
     if not os.path.isfile(actorFile):
         return False
-    actorJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFile, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception groupHandle - '+str(e))
-            time.sleep(1)
-            tries+=1
+    actorJson=loadJson(actorFile)
     if not actorJson:
         return False
     return actorJson['type']=='Group'
@@ -1369,17 +1300,7 @@ def getGroupName(baseDir: str,handle: str) -> str:
     actorFile=baseDir+'/accounts/'+handle+'.json'
     if not os.path.isfile(actorFile):
         return False
-    actorJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFile, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception getGroupName - '+str(e))
-            time.sleep(1)
-            tries+=1
+    actorJson=loadJson(actorFile)
     if not actorJson:
         return 'Group'
     return actorJson['name']
@@ -1659,20 +1580,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
 
         # save the post to file
-        postSavedToFile=False
-        tries=0
-        while tries<5:
-            try:
-                with open(destinationFilename, 'w+') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
-                    postSavedToFile=True
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
-
-        if postSavedToFile:
+        if saveJson(postJsonObject,destinationFilename):
             if not inboxUpdateIndex(baseDir,handle,destinationFilename,debug):
                 print('ERROR: unable to update inbox index')
 
@@ -2062,17 +1970,7 @@ def runInboxQueue(projectVersion: str, \
             if len(recipientsDictFollowers)>0:
                 sharedInboxPostFilename=queueJson['destination'].replace(inboxHandle,inboxHandle)
                 if not os.path.isfile(sharedInboxPostFilename):
-                    tries=0
-                    while tries<5:
-                        try:
-                            with open(sharedInboxPostFilename, 'w') as fp:
-                                commentjson.dump(queueJson['post'],fp,indent=2, \
-                                                 sort_keys=False)
-                                break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries+=1
+                    saveJson(queueJson['post'],sharedInboxPostFilename)
 
             # for posts addressed to specific accounts
             for handle,capsId in recipientsDict.items():              

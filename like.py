@@ -16,6 +16,8 @@ from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
 from utils import getCachedPostFilename
+from utils import loadJson
+from utils import saveJson
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
@@ -25,18 +27,7 @@ from posts import getPersonBox
 def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str,actor: str,domain: str,debug: bool) -> None:
     """Undoes a like for a particular actor
     """
-    postJsonObject=None
-    tries=0
-    while tries<5:
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception undoLikesCollectionEntry - '+str(e))
-            time.sleep(1)
-            tries+=1
-
+    postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this post so that the like icon is changed
         nickname=getNicknameFromActor(actor)
@@ -80,16 +71,7 @@ def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str,actor
                 del postJsonObject['object']['likes']
             else:
                 postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
-            tries=0
-            while tries<5:
-                try:
-                    with open(postFilename, 'w') as fp:
-                        commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
-                        break
-                except Exception as e:
-                    print(e)
-                    time.sleep(1)
-                    tries+=1
+            saveJson(postJsonObject,postFilename)
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is liked by the given person
@@ -121,18 +103,7 @@ def noOfLikes(postJsonObject: {}) -> int:
 def updateLikesCollection(baseDir: str,postFilename: str,objectUrl: str, actor: str,domain: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """
-    postJsonObject=None
-    tries=0
-    while tries<5:
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception updateLikesCollection - '+str(e))
-            time.sleep(1)
-            tries+=1
-
+    postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this post so that the like icon is changed
         nickname=getNicknameFromActor(actor)
@@ -178,16 +149,7 @@ def updateLikesCollection(baseDir: str,postFilename: str,objectUrl: str, actor: 
         if debug:
             print('DEBUG: saving post with likes added')
             pprint(postJsonObject)
-        tries=0
-        while tries<5:
-            try:
-                with open(postFilename, 'w') as fp:
-                    commentjson.dump(postJsonObject, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(postJsonObject,postFilename)
 
 def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \

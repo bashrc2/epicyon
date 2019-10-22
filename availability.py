@@ -16,6 +16,8 @@ from posts import getPersonBox
 from session import postJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import loadJson
+from utils import saveJson
 
 def setAvailability(baseDir: str,nickname: str,domain: str, \
                     status: str) -> bool:
@@ -27,29 +29,10 @@ def setAvailability(baseDir: str,nickname: str,domain: str, \
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    actorJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFilename, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception setAvailability - '+str(e))
-            time.sleep(1)
-            tries+=1
+    actorJson=loadJson(actorFilename)
     if actorJson:
         actorJson['availability']=status
-        tries=0
-        while tries<5:
-            try:
-                with open(actorFilename, 'w') as fp:
-                    commentjson.dump(actorJson, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(actorJson,actorFilename)
     return True
 
 def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
@@ -58,17 +41,7 @@ def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
     actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
     if not os.path.isfile(actorFilename):
         return False
-    actorJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFilename, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception getAvailability - '+str(e))
-            time.sleep(1)
-            tries+=1
+    actorJson=loadJson(actorFilename)
     if actorJson:
         if not actorJson.get('availability'):
             return None

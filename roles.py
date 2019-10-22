@@ -16,6 +16,8 @@ from posts import getPersonBox
 from session import postJson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import loadJson
+from utils import saveJson
 
 def clearModeratorStatus(baseDir: str) -> None:
     """Removes moderator status from all accounts
@@ -29,32 +31,12 @@ def clearModeratorStatus(baseDir: str) -> None:
         if filename.endswith(".json") and '@' in filename: 
             filename=os.path.join(baseDir+'/accounts/', filename)
             if '"moderator"' in open(filename).read():
-                actorJson=None
-                tries=0
-                while tries<5:
-                    try:
-                        with open(filename, 'r') as fp:
-                            actorJson=commentjson.load(fp)
-                            break
-                    except Exception as e:
-                        print('WARN: commentjson exception clearModeratorStatus - '+str(e))
-                        time.sleep(1)
-                        tries+=1
-
+                actorJson=loadJson(filename)
                 if actorJson:
                     if actorJson['roles'].get('instance'):
                         if 'moderator' in actorJson['roles']['instance']:
                             actorJson['roles']['instance'].remove('moderator')
-                            tries=0
-                            while tries<5:
-                                try:
-                                    with open(filename, 'w') as fp:
-                                        commentjson.dump(actorJson, fp, indent=2, sort_keys=False)
-                                        break
-                                except Exception as e:
-                                    print(e)
-                                    time.sleep(1)
-                                    tries+=1
+                            saveJson(actorJson,filename)
 
 def addModerator(baseDir: str,nickname: str,domain: str) -> None:
     """Adds a moderator nickname to the file
@@ -108,18 +90,7 @@ def setRole(baseDir: str,nickname: str,domain: str, \
     if not os.path.isfile(actorFilename):
         return False
 
-    actorJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFilename, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception setRole - '+str(e))
-            time.sleep(1)
-            tries+=1
-
+    actorJson=loadJson(actorFilename)
     if actorJson:        
         if role:
             # add the role
@@ -139,16 +110,7 @@ def setRole(baseDir: str,nickname: str,domain: str, \
                 # if the project contains no roles then remove it
                 if len(actorJson['roles'][project])==0:
                     del actorJson['roles'][project]
-        tries=0
-        while tries<5:
-            try:
-                with open(actorFilename, 'w') as fp:
-                    commentjson.dump(actorJson, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(actorJson,actorFilename)
     return True
 
 def getRoles(baseDir: str,nickname: str,domain: str, \
@@ -159,18 +121,7 @@ def getRoles(baseDir: str,nickname: str,domain: str, \
     if not os.path.isfile(actorFilename):
         return False
 
-    actorJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(actorFilename, 'r') as fp:
-                actorJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception getRoles - '+str(e))
-            time.sleep(1)
-            tries+=1
-
+    actorJson=loadJson(actorFilename)
     if actorJson:
         if not actorJson.get('roles'):
             return None

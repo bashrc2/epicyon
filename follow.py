@@ -20,6 +20,8 @@ from utils import getStatusNumber
 from utils import followPerson
 from posts import sendSignedJson
 from posts import getPersonBox
+from utils import loadJson
+from utils import saveJson
 from acceptreject import createAccept
 from acceptreject import createReject
 from webfinger import webfingerHandle
@@ -337,17 +339,7 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
         domainToFollow=domainToFollow.split(':')[0]
     actorFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'.json'
     if os.path.isfile(actorFilename):
-        actor=None
-        tries=0
-        while tries<5:
-            try:
-                with open(actorFilename, 'r') as fp:
-                    actor=commentjson.load(fp)
-                    break
-            except Exception as e:
-                print('WARN: commentjson exception followApprovalRequired - '+str(e))
-                time.sleep(1)
-                tries+=1
+        actor=loadJson(actorFilename)
         if actor:
             if actor.get('manuallyApprovesFollowers'):
                 manuallyApproveFollows=actor['manuallyApprovesFollowers']
@@ -412,17 +404,7 @@ def storeFollowRequest(baseDir: str, \
     if not os.path.isdir(requestsDir):
         os.mkdir(requestsDir)
     followActivityfilename=requestsDir+'/'+approveHandle+'.follow'
-    tries=0
-    while tries<5:
-        try:
-            with open(followActivityfilename, 'w') as fp:
-                commentjson.dump(followJson, fp, indent=2, sort_keys=False)
-                return True
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
-    return False
+    return saveJson(followJson,followActivityfilename)
 
 def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                          port: int,sendThreads: [],postLog: [], \
@@ -889,17 +871,7 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
                         if debug:
                             print('DEBUG: checking capabilities of'+account)
                         if os.path.isfile(ocapFilename):
-                            ocapJson=None
-                            tries=0
-                            while tries<5:
-                                try:
-                                    with open(ocapFilename, 'r') as fp:
-                                        ocapJson=commentjson.load(fp)
-                                        break
-                                except Exception as e:
-                                    print('WARN: commentjson exception getFollowersOfActor - '+str(e))
-                                    time.sleep(1)
-                                    tries+=1
+                            ocapJson=loadJson(ocapFilename)
                             if ocapJson:
                                 if ocapJson.get('id'):
                                     if debug:

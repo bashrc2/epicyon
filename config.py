@@ -10,6 +10,8 @@ import os
 import time
 import json
 import commentjson
+from utils import loadJson
+from utils import saveJson
 
 def createConfig(baseDir: str) -> None:
     """Creates a configuration file
@@ -19,59 +21,26 @@ def createConfig(baseDir: str) -> None:
         return
     configJson = {
     }
-    tries=0
-    while tries<5:
-        try:
-            with open(configFilename, 'w') as fp:
-                commentjson.dump(configJson, fp, indent=2, sort_keys=False)
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    saveJson(configJson,configFilename)
 
 def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     """Sets a configuration value
     """
     createConfig(baseDir)
     configFilename=baseDir+'/config.json'
-    tries=0
-    while tries<5:
-        try:
-            with open(configFilename, 'r') as fp:
-                configJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception setConfigParam - '+str(e))
-            time.sleep(1)
-            tries+=1
+    configJson={}
+    if os.path.isfile(configFilename):
+        configJson=loadJson(configFilename)
     configJson[variableName]=variableValue
-    tries=0
-    while tries<5:
-        try:
-            with open(configFilename, 'w') as fp:
-                commentjson.dump(configJson, fp, indent=2, sort_keys=False)
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    saveJson(configJson,configFilename)
 
 def getConfigParam(baseDir: str, variableName: str):
     """Gets a configuration value
     """
     createConfig(baseDir)
     configFilename=baseDir+'/config.json'
-    tries=0
-    while tries<5:
-        try:
-            with open(configFilename, 'r') as fp:
-                configJson=commentjson.load(fp)
-                if configJson.get(variableName):
-                    return configJson[variableName]
-                break
-        except Exception as e:
-            print('WARN: commentjson exception getConfigParam - '+str(e))
-            time.sleep(1)
-            tries+=1
+    configJson=loadJson(configFilename)
+    if configJson:
+        if configJson.get(variableName):
+            return configJson[variableName]
     return None

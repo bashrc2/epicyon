@@ -18,6 +18,8 @@ from session import postJson
 from utils import validNickname
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import loadJson
+from utils import saveJson
 from media import removeMetaData
 
 def removeShare(baseDir: str,nickname: str,domain: str, \
@@ -26,16 +28,7 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
     """
     sharesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
     if os.path.isfile(sharesFilename):
-        tries=0
-        while tries<5:
-            try:
-                with open(sharesFilename, 'r') as fp:
-                    sharesJson=commentjson.load(fp)
-                    break
-            except Exception as e:
-                print('WARN: commentjson exception removeShare - '+str(e))
-                time.sleep(1)
-                tries+=1
+        sharesJson=loadJson(sharesFilename)
 
     itemID=displayName.replace(' ','')
     if sharesJson.get(itemID):
@@ -50,16 +43,7 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
                 os.remove(itemIDfile+'.gif')
         # remove the item itself
         del sharesJson[itemID]
-        tries=0
-        while tries<5:
-            try:
-                with open(sharesFilename, 'w') as fp:
-                    commentjson.dump(sharesJson, fp, indent=2, sort_keys=False)
-                    break
-            except Exception as e:
-                print(e)
-                time.sleep(1)
-                tries+=1
+        saveJson(sharesJson,sharesFilename)
 
 def addShare(baseDir: str, \
              httpPrefix: str,nickname: str,domain: str,port: int, \
@@ -76,16 +60,7 @@ def addShare(baseDir: str, \
     sharesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
     sharesJson={}
     if os.path.isfile(sharesFilename):
-        tries=0
-        while tries<5:
-            try:
-                with open(sharesFilename, 'r') as fp:
-                    sharesJson=commentjson.load(fp)
-                    break
-            except Exception as e:
-                print('WARN: commentjson exception addShare - '+str(e))
-                time.sleep(1)
-                tries+=1
+        sharesJson=loadJson(sharesFilename)
 
     duration=duration.lower()
     durationSec=0
@@ -161,16 +136,7 @@ def addShare(baseDir: str, \
         "expire": durationSec
     }
 
-    tries=0
-    while tries<5:
-        try:
-            with open(sharesFilename, 'w') as fp:
-                commentjson.dump(sharesJson, fp, indent=2, sort_keys=False)
-                break
-        except Exception as e:
-            print(e)
-            time.sleep(1)
-            tries+=1
+    saveJson(sharesJson,sharesFilename)
 
 def expireShares(baseDir: str) -> None:
     """Removes expired items from shares
@@ -192,17 +158,7 @@ def expireSharesForAccount(baseDir: str,nickname: str,domain: str) -> None:
     handle=nickname+'@'+handleDomain
     sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'    
     if os.path.isfile(sharesFilename):
-        sharesJson=None
-        tries=0
-        while tries<5:
-            try:
-                with open(sharesFilename, 'r') as fp:
-                    sharesJson=commentjson.load(fp)
-                    break
-            except Exception as e:
-                print('WARN: commentjson exception expireSharesForAccount - '+str(e))
-                time.sleep(1)
-                tries+=1
+        sharesJson=loadJson(sharesFilename)
         if sharesJson:
             currTime=int(time.time())
             deleteItemID=[]
@@ -220,16 +176,7 @@ def expireSharesForAccount(baseDir: str,nickname: str,domain: str) -> None:
                         os.remove(itemIDfile+'.jpg')
                     if os.path.isfile(itemIDfile+'.gif'):
                         os.remove(itemIDfile+'.gif')
-                tries=0
-                while tries<5:
-                    try:
-                        with open(sharesFilename, 'w') as fp:
-                            commentjson.dump(sharesJson, fp, indent=2, sort_keys=False)
-                            break
-                    except Exception as e:
-                        print('WARN: commentjson exception expireSharesForAccount 2 - '+str(e))
-                        time.sleep(1)
-                        tries+=1
+                saveJson(sharesJson,sharesFilename)
 
 def getSharesFeedForPerson(baseDir: str, \
                            domain: str,port: int, \
@@ -280,17 +227,9 @@ def getSharesFeedForPerson(baseDir: str, \
     if headerOnly:
         noOfShares=0
         if os.path.isfile(sharesFilename):
-            tries=0
-            while tries<5:
-                try:
-                    with open(sharesFilename, 'r') as fp:
-                        sharesJson=commentjson.load(fp)
-                        noOfShares=len(sharesJson.items())
-                        break
-                except Exception as e:
-                    print('WARN: commentjson exception getSharesFeedForPerson - '+str(e))
-                    time.sleep(1)
-                    tries+=1
+            sharesJson=loadJson(sharesFilename)
+            if sharesJson:
+                noOfShares=len(sharesJson.items())
         shares = {
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': httpPrefix+'://'+domain+'/users/'+nickname+'/shares?page=1',
@@ -318,18 +257,7 @@ def getSharesFeedForPerson(baseDir: str, \
     pageCtr=0
     totalCtr=0
 
-    sharesJson=None
-    tries=0
-    while tries<5:
-        try:
-            with open(sharesFilename, 'r') as fp:
-                sharesJson=commentjson.load(fp)
-                break
-        except Exception as e:
-            print('WARN: commentjson exception getSharesFeedForPerson 2 - '+str(e))
-            time.sleep(1)
-            tries+=1
-
+    sharesJson=loadJson(sharesFilename)
     if sharesJson:
         for itemID,item in sharesJson.items():
             pageCtr += 1
