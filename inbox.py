@@ -49,6 +49,7 @@ from httpsig import messageContentDigest
 from posts import downloadAnnounce
 from posts import isDM
 from posts import isReply
+from posts import isImageMedia
 from posts import sendSignedJson
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
@@ -1580,6 +1581,10 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
                     replyNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/tlreplies')
+
+            if isImageMedia(session,baseDir,httpPrefix,nickname,domain,postJsonObject):
+                # media index will be updated
+                updateIndexList.append('tlmedia')
 
         # get the avatar for a reply/announce
         obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
