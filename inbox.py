@@ -1575,8 +1575,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
 
             # create a reply notification file if needed
+            nickname=handle.split('@')[0]
             if isReply(postJsonObject,actor):
-                nickname=handle.split('@')[0]
                 if nickname!='inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
