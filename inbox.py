@@ -1553,13 +1553,16 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         postJsonObject=messageJson
 
     if validPostContent(postJsonObject,maxMentions):
-        postIsReply=False
+        # list of indexes to be updated
+        updateIndexList=['inbox']
         populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
         if not isGroup:
             # create a DM notification file if needed
             if isDM(postJsonObject):
                 nickname=handle.split('@')[0]
                 if nickname!='inbox':
+                    # dm index will be updated
+                    updateIndexList.append('dm')
                     dmNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/dm')
 
             # get the actor being replied to
@@ -1574,7 +1577,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             if isReply(postJsonObject,actor):
                 nickname=handle.split('@')[0]
                 if nickname!='inbox':
-                    postIsReply=True
+                    # replies index will be updated
+                    updateIndexList.append('tlreplies')
                     replyNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/tlreplies')
 
         # get the avatar for a reply/announce
@@ -1582,11 +1586,10 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
         # save the post to file
         if saveJson(postJsonObject,destinationFilename):
-            if not inboxUpdateIndex('inbox',baseDir,handle,destinationFilename,debug):
-                print('ERROR: unable to update inbox index')
-            if postIsReply:
-                if not inboxUpdateIndex('tlreplies',baseDir,handle,destinationFilename,debug):
-                    print('ERROR: unable to update replies index')
+            # update the indexes for different timelines
+            for boxname in updateIndexList:
+                if not inboxUpdateIndex(boxname,baseDir,handle,destinationFilename,debug):
+                    print('ERROR: unable to update '+boxname+' index')
 
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
