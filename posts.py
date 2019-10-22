@@ -1966,6 +1966,9 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                   ocapAlways: bool,pageNumber=None) -> {}:
     """Constructs the box feed for a person with the given nickname
     """
+    if not authorized:
+        pageNumber=1
+
     if boxname!='inbox' and boxname!='dm' and \
        boxname!='tlreplies' and boxname!='tlmedia' and boxname!='outbox':
         return None
