@@ -1429,11 +1429,10 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
                 calendarNotificationFile.write('/calendar?year='+str(eventYear)+'?month='+str(eventMonthNumber)+'?day='+str(eventDayOfMonth))
                 calendarNotificationFile.close()
 
-def inboxUpdateIndex(baseDir: str,handle: str,destinationFilename: str,debug: bool) -> bool:
+def inboxUpdateIndex(boxname: str,baseDir: str,handle: str,destinationFilename: str,debug: bool) -> bool:
     """Updates the index of received posts
     The new entry is added to the top of the file
     """
-    boxname='inbox'
     indexFilename=baseDir+'/accounts/'+handle+'/'+boxname+'.index'
     if debug:
         print('DEBUG: Updating index '+indexFilename)
@@ -1554,6 +1553,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
         postJsonObject=messageJson
 
     if validPostContent(postJsonObject,maxMentions):
+        postIsReply=False
         populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
         if not isGroup:
             # create a DM notification file if needed
@@ -1574,6 +1574,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             if isReply(postJsonObject,actor):
                 nickname=handle.split('@')[0]
                 if nickname!='inbox':
+                    postIsReply=True
                     replyNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/tlreplies')
 
         # get the avatar for a reply/announce
@@ -1581,8 +1582,11 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
 
         # save the post to file
         if saveJson(postJsonObject,destinationFilename):
-            if not inboxUpdateIndex(baseDir,handle,destinationFilename,debug):
+            if not inboxUpdateIndex('inbox',baseDir,handle,destinationFilename,debug):
                 print('ERROR: unable to update inbox index')
+            if postIsReply:
+                if not inboxUpdateIndex('tlreplies',baseDir,handle,destinationFilename,debug):
+                    print('ERROR: unable to update replies index')
 
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
