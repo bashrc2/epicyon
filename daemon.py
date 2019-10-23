@@ -979,9 +979,9 @@ class PubServer(BaseHTTPRequestHandler):
                 imageFilename=imageFilename.split('?')[0]
             imageDescription=None
             if '?desc=' in self.path:
-                imageDescription=self.path.split('?desc=')[1]
+                imageDescription=self.path.split('?desc=')[1].replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
                 if '?' in imageDescription:
-                    imageDescription=imageDescription.split('?')[0]            
+                    imageDescription=imageDescription.split('?')[0]
             msg=htmlFullScreenImage(imageFilename,imageDescription).encode('utf-8')
             self._set_headers('text/html',len(msg),cookie)
             self._write(msg)

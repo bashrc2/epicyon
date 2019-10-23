@@ -68,9 +68,9 @@ def htmlFullScreenImage(imageFilename: str,description: str) -> str:
     htmlStr+='  background-image: url("'+imageFilename+'");\n'
     htmlStr+='\n'
     if description:
-        htmlStr+='  width: 90%;\n'
+        htmlStr+='  height: 90%;\n'
     else:
-        htmlStr+='  width: 100%;\n'
+        htmlStr+='  height: 100%;\n'
     htmlStr+=''
     htmlStr+='  background-position: center;\n'
     htmlStr+='  background-repeat: no-repeat;\n'
