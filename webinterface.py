@@ -1260,10 +1260,13 @@ def htmlProfile(translate: {},projectVersion: str, \
             if len(profileDescription.split('<br>'))>2:
                 profileDescriptionShort=''
                 profileDescription=profileDescription.replace('<br>','\n')
+    avatarDescription=''
+    if profileJson.get('summary'):
+        avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
     profileHeaderStr= \
         '<div class="hero-image">' \
         '  <div class="hero-text">'+ \
-        '    <img loading="lazy" src="'+profileJson['icon']['url']+'" title="'+profileDescription+'" alt="'+profileDescription+'" class="title">' \
+        '    <img loading="lazy" src="'+profileJson['icon']['url']+'" title="'+avatarDescription+'" alt="'+avatarDescription+'" class="title">' \
         '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileDescriptionShort+'</p>'+ \
@@ -3230,11 +3233,13 @@ def htmlProfileAfterSearch(translate: {}, \
             if '<br>' in profileDescription:
                 if len(profileDescription.split('<br>'))>2:
                     profileDescriptionShort=''
-                    profileDescription=profileDescription.replace('<br>','\n')
+        avatarDescription=''
+        if profileJson.get('summary'):
+            avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
         profileStr= \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
-            '    <img loading="lazy" src="'+avatarUrl+'" alt="'+profileDescription+'" title="'+profileDescription+'">' \
+            '    <img loading="lazy" src="'+avatarUrl+'" alt="'+avatarDescription+'" title="'+avatarDescription+'">' \
             '    <h1>'+displayName+'</h1>' \
             '    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>' \
             '    <p>'+profileDescriptionShort+'</p>'+ \
