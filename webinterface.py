@@ -1259,6 +1259,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         if '<br>' in profileDescription:
             if len(profileDescription.split('<br>'))>2:
                 profileDescriptionShort=''
+                profileDescription=profileDescription.replace('<br>','\n')
     profileHeaderStr= \
         '<div class="hero-image">' \
         '  <div class="hero-text">'+ \
@@ -3229,6 +3230,7 @@ def htmlProfileAfterSearch(translate: {}, \
             if '<br>' in profileDescription:
                 if len(profileDescription.split('<br>'))>2:
                     profileDescriptionShort=''
+                    profileDescription=profileDescription.replace('<br>','\n')
         profileStr= \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
