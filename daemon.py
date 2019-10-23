@@ -651,7 +651,7 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized:
             if self.path=='/':
                 if self.headers.get('Nickname'):
-                    self.path='/users/'+self.headers.get('Nickname'):
+                    self.path='/users/'+self.headers['Nickname']+'/inbox'
             if self.server.debug:
                 print('GET Authorization granted')
         else:
