@@ -613,9 +613,12 @@ class PubServer(BaseHTTPRequestHandler):
                 tokenStr=self.headers['Cookie'].split('=',1)[1]
                 if self.server.tokensLookup.get(tokenStr):
                     nickname=self.server.tokensLookup[tokenStr]
+                    # default to the inbox of the person
+                    if self.path=='/':
+                        self.path='/users/'+nickname+'/inbox'
                     # check that the path contains the same nickname as the cookie
                     # otherwise it would be possible to be authorized to use
-                    # an account you don't own
+                    # an account you don't own                    
                     if '/'+nickname+'/' in self.path:
                         return True
                     if self.path.endswith('/'+nickname):
