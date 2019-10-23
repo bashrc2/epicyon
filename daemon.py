@@ -651,7 +651,11 @@ class PubServer(BaseHTTPRequestHandler):
         if authorized:
             if self.path=='/':
                 if cookie and self.headers.get('Nickname'):
-                    self.path='/users/'+self.headers['Nickname']+'/inbox'
+                    self.send_header('Location', '/users/'+self.headers['Nickname']+'/inbox')
+                    self.send_header('Content-Length', '0')
+                    self.send_header('X-Robots-Tag','noindex')
+                    self.end_headers()
+                    return
             if self.server.debug:
                 print('GET Authorization granted')
         else:
