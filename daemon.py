@@ -754,7 +754,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/emoji/' not in self.path and \
                '/tags/' not in self.path and \
                '/avatars/' not in self.path and \
-               not self.path.startswith('/fullscreen') and \
+               '/fullscreen?' not in self.path and \
                '/icons/' not in self.path:
                 divertToLoginScreen=True
                 if self.path.startswith('/users/'):
@@ -973,7 +973,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # full screen images shown from the media timeline
-        if htmlGET and authorized and self.path.startswith('/fullscreen'):
+        if htmlGET and authorized and '/fullscreen?' in self.path:
             imageFilename=self.path.split('?img=')[1]
             if '?' in imageFilename:
                 imageFilename=imageFilename.split('?')[0]
