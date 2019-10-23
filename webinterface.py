@@ -51,6 +51,44 @@ from skills import getSkills
 from cache import getPersonFromCache
 from cache import storePersonInCache
 
+def htmlFullScreenImage(imageFilename: str,description: str) -> str:
+    """On the media timeline show a full screen image when selecting it
+    """
+    htmlStr='<!DOCTYPE html>\n'
+    htmlStr+='<html>\n'
+    htmlStr+='<head>\n'
+    htmlStr+='<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+    htmlStr+='<style>\n'
+    htmlStr+='body, html {\n'
+    htmlStr+='  height: 100%;\n'
+    htmlStr+='  margin: 0;\n'
+    htmlStr+='}\n'
+    htmlStr+='\n'
+    htmlStr+='.bg {\n'
+    htmlStr+='  background-image: url("'+imageFilename+'");\n'
+    htmlStr+='\n'
+    if description:
+        htmlStr+='  height: 90%;\n'
+    else:
+        htmlStr+='  height: 100%;\n'
+    htmlStr+=''
+    htmlStr+='  background-position: center;\n'
+    htmlStr+='  background-repeat: no-repeat;\n'
+    htmlStr+='  background-size: cover;\n'
+    htmlStr+='}\n'
+    htmlStr+='</style>\n'
+    htmlStr+='</head>\n'
+    htmlStr+='<body>\n'
+    htmlStr+='\n'
+    htmlStr+='<div class="bg"></div>\n'
+    htmlStr+='\n'
+    if description:
+        htmlStr+='<p>'+description+'</p>\n'
+        htmlStr+='\n'
+    htmlStr+='</body>\n'
+    htmlStr+='</html>'
+    return htmlStr
+
 def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avatarUrl: str,personCache: {},force=False) -> str:
     """Updates the cached avatar for the given actor
     """
@@ -1885,7 +1923,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                 galleryStr+= \
                                     '<div class="gallery">\n' \
                                     '  <a href="'+messageId+'">\n' \
-                                    '    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
+                                    '    <img loading="lazy" src="/fullscreen?'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
                                     '  </a>\n</div>\n'
                             attachmentStr+= \
                                 '<a href="'+attach['url']+'">' \

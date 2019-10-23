@@ -81,6 +81,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlFullScreenImage
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
 from webinterface import htmlRemoveSharedItem
@@ -753,6 +754,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/emoji/' not in self.path and \
                '/tags/' not in self.path and \
                '/avatars/' not in self.path and \
+               '/fullscreen?' not in self.path and \
                '/icons/' not in self.path:
                 divertToLoginScreen=True
                 if self.path.startswith('/users/'):
@@ -797,6 +799,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/css',len(msg),cookie)
                 self._write(msg)
                 return
+
         # image on login screen
         if self.path=='/login.png':
             mediaFilename= \
@@ -818,7 +821,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self._write(mediaBinary)
                     return
             self._404()
-            return        
+            return
+
         # login screen background image
         if self.path=='/login-background.png':
             mediaFilename= \
@@ -841,6 +845,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             self._404()
             return
+
         # follow screen background image
         if self.path=='/follow-background.png':
             mediaFilename= \
@@ -863,6 +868,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             self._404()
             return
+
         # emoji images
         if '/emoji/' in self.path:
             if self.path.endswith('.png') or \
@@ -886,6 +892,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             self._404()
             return
+
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
@@ -922,6 +929,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return        
             self._404()
             return
+
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
@@ -946,6 +954,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return        
             self._404()
             return
+
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
@@ -962,6 +971,20 @@ class PubServer(BaseHTTPRequestHandler):
                         return        
             self._404()
             return
+
+        # full screen images shown from the media timeline
+        if authorized and self.path.startswith('/fullscreen?'):
+            fullscreenImageStr=self.path.split('?')
+            imageFilename=fullscreenImageStr[1]
+            imageDescription=None
+            if len(fullscreenImageStr)>2:
+                imageDescription=fullscreenImageStr[2]
+            msg=htmlFullScreenImage(imageFilename,imageDescription)
+            self._login_headers('text/html',len(msg))
+            self._write(msg)
+            self.server.GETbusy=False
+            return
+
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/avatars/'):
