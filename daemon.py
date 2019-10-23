@@ -649,6 +649,9 @@ class PubServer(BaseHTTPRequestHandler):
         # check authorization
         authorized = self._isAuthorized()
         if authorized:
+            if self.path=='/':
+                if self.headers.get('Nickname'):
+                    self.path='/users/'+self.headers.get('Nickname'):
             if self.server.debug:
                 print('GET Authorization granted')
         else:
@@ -2839,7 +2842,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.salts[loginNickname]=createPassword(32)
                     self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+self.server.salts[loginNickname]).encode('utf-8')).hexdigest()
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
-                    self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
+                    self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; Nickname='+loginNickname+'; SameSite=Strict')
                     self.send_header('Location', '/users/'+loginNickname+'/inbox')
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
