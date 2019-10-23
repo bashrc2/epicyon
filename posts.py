@@ -1012,14 +1012,18 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
     sendIntervalSec=30
     for attempt in range(20):
         postResult=None
+        unauthorized=False
         try:
-            postResult = \
+            postResult,unauthorized = \
                 postJsonString(session,postJsonStr,federationList, \
                                inboxUrl,signatureHeaderJson, \
                                "inbox:write",debug)
         except Exception as e:
-            print('ERROR: postJsonString failed')
-            print(e)
+            print('ERROR: postJsonString failed '+str(e))
+        if unauthorized==True:
+            print(postJsonStr)
+            print('threadSendPost: Post is unauthorized')
+            break
         if postResult:
             logStr='Success on try '+str(tries)+': '+postJsonStr
         else:

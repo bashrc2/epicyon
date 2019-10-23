@@ -75,9 +75,10 @@ def postJsonString(session,postJsonStr: str, \
                    inboxUrl: str, \
                    headers: {}, \
                    capability: str, \
-                   debug: bool) -> bool:
+                   debug: bool) -> (bool,bool):
     """Post a json message string to the inbox of another person
     Supplying a capability, such as "inbox:write"
+    The second boolean returned is true if the send is unauthorized
     NOTE: Here we post a string rather than the original json so that
     conversions between string and json format don't invalidate
     the message body digest of http signatures
@@ -88,7 +89,7 @@ def postJsonString(session,postJsonStr: str, \
         # check that we are posting to a permitted domain
         if not urlPermitted(inboxUrl,federationList,capability):
             print('postJson: '+inboxUrl+' not permitted by capabilities')
-            return None
+            return None,None
 
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
     if postResult.status_code<200 or postResult.status_code>202:
@@ -97,13 +98,14 @@ def postJsonString(session,postJsonStr: str, \
         #    postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
         #    if not (postResult.status_code<200 or postResult.status_code>202):
         #        return True
-        if postResult.status_code==401:
+        if postResult.status_code>=400 and postResult.status_code<=405:
             print('WARN: >>> Post to '+inboxUrl+' is unauthorized <<<')
+            return False,True
         else:
             print('WARN: Failed to post to '+inboxUrl+' with headers '+str(headers))
             print('status code '+str(postResult.status_code))
-        return False
-    return True
+            return False,False
+    return True,False
 
 def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
     """Post an image to the inbox of another person or outbox via c2s
