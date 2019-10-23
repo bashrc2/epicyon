@@ -3258,7 +3258,7 @@ def htmlProfileAfterSearch(translate: {}, \
             '    <center>' \
             '      <input type="hidden" name="actor" value="'+personUrl+'">' \
             '      <button type="submit" class="button" name="submitYes">'+translate['Follow']+'</button>' \
-            '      <a href="'+personUrl+'"><button class="button">'+translate['View']+'</button></a>' \
+            '      <button type="submit" class="button" name="submitView">'+translate['View']+'</button>' \
             '      <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>' \
             '    </center>' \
             '  </form>' \

@@ -3443,6 +3443,13 @@ class PubServer(BaseHTTPRequestHandler):
             followerNickname=getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
+            if '&submitView=' in followConfirmParams:
+                followingActor=followConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
+                if '&' in followingActor:
+                    followingActor=followingActor.split('&')[0]
+                self._redirect_headers(followingActor,cookie)
+                self.server.POSTbusy=False
+                return
             if '&submitYes=' in followConfirmParams:
                 followingActor=followConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
                 if '&' in followingActor:
