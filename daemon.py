@@ -973,7 +973,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # full screen images shown from the media timeline
-        if self.path.startswith('/fullscreen'):
+        if htmlGET and authorized and self.path.startswith('/fullscreen'):
             imageFilename=self.path.split('?img=')[1]
             if '?' in imageFilename:
                 imageFilename=imageFilename.split('?')[0]
@@ -983,8 +983,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?' in imageDescription:
                     imageDescription=imageDescription.split('?')[0]            
             msg=htmlFullScreenImage(imageFilename,imageDescription)
-            self._login_headers('text/html',len(msg))
+            self._set_headers('text/html',len(msg),cookie)
             self._write(msg)
+            self.server.GETbusy=False
             return
 
         # cached avatar images
