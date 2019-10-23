@@ -974,7 +974,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # full screen images shown from the media timeline
         if htmlGET and authorized and '/fullscreen?' in self.path:
-            imageFilename=self.path.split('?img=')[1]
+            imageFilename=self.path.split('?img=')[1].replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
             if '?' in imageFilename:
                 imageFilename=imageFilename.split('?')[0]
             imageDescription=None
