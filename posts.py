@@ -1851,7 +1851,9 @@ def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,
         return False
     for attach in postJsonObject['object']['attachment']:
         if attach.get('mediaType') and attach.get('url'):
-            if attach['mediaType'].startswith('image/'):
+            if attach['mediaType'].startswith('image/') or \
+               attach['mediaType'].startswith('audio/') or \
+               attach['mediaType'].startswith('video/'):
                 return True
     return False
 
