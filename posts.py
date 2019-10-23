@@ -2026,6 +2026,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
     postsInBox={}
 
     indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxname+'.index'
+    lookedUpFromIndex=False
     if os.path.isfile(indexFilename):
         print('DEBUG: using index file to construct timeline')
         postsCtr=0
@@ -2042,6 +2043,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                     break
                 postsInBox[postsCtr]=os.path.join(boxDir, postFilename.replace('\n',''))
                 postsCtr+=1
+        lookedUpFromIndex=True
     else:
         postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
@@ -2112,18 +2114,21 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                         # get the post as json
                         p = json.loads(postStr)
 
-                        if (boxname!='dm' and boxname!='tlreplies' and boxname!='tlmedia'):
+                        if lookedUpFromIndex:
                             isTimelinePost=True
                         else:
-                            if boxname=='dm':
-                                if isDM(p):
-                                    isTimelinePost=True
-                            elif boxname=='tlreplies':
-                                if isDM(p) or isReply(p,boxActor):
-                                    isTimelinePost=True
-                            elif boxname=='tlmedia':
-                                if isImageMedia(session,baseDir,httpPrefix,nickname,domain,p):
-                                    isTimelinePost=True
+                            if (boxname!='dm' and boxname!='tlreplies' and boxname!='tlmedia'):
+                                isTimelinePost=True
+                            else:
+                                if boxname=='dm':
+                                    if isDM(p):
+                                        isTimelinePost=True
+                                elif boxname=='tlreplies':
+                                    if isDM(p) or isReply(p,boxActor):
+                                        isTimelinePost=True
+                                elif boxname=='tlmedia':
+                                    if isImageMedia(session,baseDir,httpPrefix,nickname,domain,p):
+                                        isTimelinePost=True
 
                         if isTimelinePost and currPage == pageNumber:
                             # remove any capability so that it's not displayed
