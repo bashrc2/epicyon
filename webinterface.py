@@ -1705,7 +1705,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          storeToCache=True) -> str:
     """ Shows a single post as html
     """
-    if not showPublicOnly and storeToCache:
+    if not showPublicOnly and storeToCache and boxname!='tlmedia':
         postHtml= \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
                                               postJsonObject)
@@ -2092,7 +2092,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     else:
         postHtml=galleryStr
 
-    if not showPublicOnly and storeToCache:
+    if not showPublicOnly and storeToCache and boxname!='tlmedia':
         saveIndividualPostAsHtmlToCache(baseDir,nickname,domain, \
                                         postJsonObject,postHtml)
 
