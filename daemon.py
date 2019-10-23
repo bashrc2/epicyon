@@ -650,7 +650,7 @@ class PubServer(BaseHTTPRequestHandler):
         authorized = self._isAuthorized()
         if authorized:
             if self.path=='/':
-                if self.headers.get('Nickname'):
+                if cookie and self.headers.get('Nickname'):
                     self.path='/users/'+self.headers['Nickname']+'/inbox'
             if self.server.debug:
                 print('GET Authorization granted')
@@ -1049,7 +1049,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
 
-        if self.path.startswith('/login') or self.path=='/':
+        if self.path.startswith('/login') or \
+           (self.path=='/' and not authorized):
             # request basic auth
             msg=htmlLogin(self.server.translate,self.server.baseDir).encode('utf-8')
             self._login_headers('text/html',len(msg))
@@ -2816,10 +2817,10 @@ class PubServer(BaseHTTPRequestHandler):
                         del self.server.salts[loginNickname]
                     self.send_response(303)
                     self.send_header('Content-Length', '0')
-                    self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
+                    self.send_header('Set-Cookie', 'epicyon=; Nickname=; SameSite=Strict')
                     self.send_header('Location', '/login')
                     self.send_header('X-Robots-Tag','noindex')
-                    self.end_headers()                    
+                    self.end_headers()
                     self.server.POSTbusy=False
                     return
                 else:
