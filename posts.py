@@ -1006,10 +1006,10 @@ def createReportPost(baseDir: str,
 def threadSendPost(session,postJsonStr: str,federationList: [],\
                    inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
                    debug :bool) -> None:
-    """Sends a post with exponential backoff
+    """Sends a with retries
     """
     tries=0
-    backoffTime=60
+    sendIntervalSec=30
     for attempt in range(20):
         postResult=None
         try:
@@ -1043,9 +1043,8 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         if debug:
             print(postJsonStr)
             print('DEBUG: json post to '+inboxUrl+' failed. Waiting for '+ \
-                  str(backoffTime)+' seconds.')
-        time.sleep(backoffTime)
-        backoffTime *= 2
+                  str(sendIntervalSec)+' seconds.')
+        time.sleep(sendIntervalSec)
         tries+=1
         
 def sendPost(projectVersion: str, \
