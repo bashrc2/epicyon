@@ -1251,18 +1251,26 @@ def htmlProfile(translate: {},projectVersion: str, \
                             followApprovalsSection+='<button class="followDeny">'+translate['Deny']+'</button></a>'
                             followApprovalsSection+='</div>'
 
-    profileStr= \
-        linkToTimelineStart+ \
-        ' <div class="hero-image">' \
+    profileDescriptionShort=profileDescription
+    if '\n' in profileDescription:
+        if len(profileDescription.split('\n'))>2:
+            profileDescriptionShort=''
+    else:
+        if '<br>' in profileDescription:
+            if len(profileDescription.split('<br>'))>2:
+                profileDescriptionShort=''
+    profileHeaderStr= \
+        '<div class="hero-image">' \
         '  <div class="hero-text">'+ \
-        '    <img loading="lazy" src="'+profileJson['icon']['url']+'" alt="'+nickname+'@'+domainFull+'" class="title">' \
+        '    <img loading="lazy" src="'+profileJson['icon']['url']+'" title="'+profileDescription+'" alt="'+profileDescription+'" class="title">' \
         '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
-        '    <p>'+profileDescription+'</p>'+ \
+        '    <p>'+profileDescriptionShort+'</p>'+ \
         loginButton+ \
         '  </div>' \
-        '</div>'+ \
-        linkToTimelineEnd+ \
+        '</div>'
+    profileStr= \
+        linkToTimelineStart + profileHeaderStr + linkToTimelineEnd + \
         '<div class="container">\n' \
         '  <center>' \
         '    <a href="'+actor+'"><button class="'+postsButton+'"><span>'+translate['Posts']+' </span></button></a>' \
@@ -3213,13 +3221,21 @@ def htmlProfileAfterSearch(translate: {}, \
         if not backUrl.endswith('/inbox'):
             backUrl+='/inbox'
 
+        profileDescriptionShort=profileDescription
+        if '\n' in profileDescription:
+            if len(profileDescription.split('\n'))>2:
+                profileDescriptionShort=''
+        else:
+            if '<br>' in profileDescription:
+                if len(profileDescription.split('<br>'))>2:
+                    profileDescriptionShort=''
         profileStr= \
             ' <div class="hero-image">' \
             '  <div class="hero-text">' \
-            '    <img loading="lazy" src="'+avatarUrl+'" alt="'+searchNickname+'@'+searchDomainFull+'">' \
+            '    <img loading="lazy" src="'+avatarUrl+'" alt="'+profileDescription+'" title="'+profileDescription+'">' \
             '    <h1>'+displayName+'</h1>' \
             '    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>' \
-            '    <p>'+profileDescription+'</p>'+ \
+            '    <p>'+profileDescriptionShort+'</p>'+ \
             '  </div>' \
             '</div>'+ \
             '<div class="container">\n' \
