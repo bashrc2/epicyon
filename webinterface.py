@@ -1922,7 +1922,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if boxName=='tlmedia':
                                 galleryStr+= \
                                     '<div class="gallery">\n' \
-                                    '  <a href="/fullscreen?'+attach['url']+'?'+imageDescription+'">\n' \
+                                    '  <a href="/fullscreen?img='+attach['url']+'?desc='+imageDescription+'">\n' \
                                     '    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
                                     '  </a>\n</div>\n'
                             attachmentStr+= \

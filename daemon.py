@@ -974,11 +974,15 @@ class PubServer(BaseHTTPRequestHandler):
 
         # full screen images shown from the media timeline
         if self.path.startswith('/fullscreen?'):
-            fullscreenImageStr=self.path.split('?')
+            fullscreenImageStr=self.path.split('?img=')
             imageFilename=fullscreenImageStr[1]
+            if '?' in imageFilename:
+                imageFilename=imageFilename.split('?')[0]
             imageDescription=None
-            if len(fullscreenImageStr)>2:
-                imageDescription=fullscreenImageStr[2]
+            if '?desc=' in self.path:
+                imageDescription=self.path.split('?desc=')
+                if '?' in imageDescription:
+                    imageDescription=imageDescription.split('?')[0]            
             msg=htmlFullScreenImage(imageFilename,imageDescription)
             self._login_headers('text/html',len(msg))
             self._write(msg)
