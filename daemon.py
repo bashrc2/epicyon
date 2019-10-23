@@ -81,7 +81,6 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
-from webinterface import htmlFullScreenImage
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
 from webinterface import htmlRemoveSharedItem
@@ -754,7 +753,6 @@ class PubServer(BaseHTTPRequestHandler):
                '/emoji/' not in self.path and \
                '/tags/' not in self.path and \
                '/avatars/' not in self.path and \
-               '/fullscreen?' not in self.path and \
                '/icons/' not in self.path:
                 divertToLoginScreen=True
                 if self.path.startswith('/users/'):
@@ -970,22 +968,6 @@ class PubServer(BaseHTTPRequestHandler):
                             self._write(mediaBinary)
                         return        
             self._404()
-            return
-
-        # full screen images shown from the media timeline
-        if htmlGET and authorized and '/fullscreen?' in self.path:
-            imageFilename=self.path.split('?img=')[1].replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
-            if '?' in imageFilename:
-                imageFilename=imageFilename.split('?')[0]
-            imageDescription=None
-            if '?desc=' in self.path:
-                imageDescription=self.path.split('?desc=')[1].replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
-                if '?' in imageDescription:
-                    imageDescription=imageDescription.split('?')[0]
-            msg=htmlFullScreenImage(imageFilename,imageDescription).encode('utf-8')
-            self._set_headers('text/html',len(msg),cookie)
-            self._write(msg)
-            self.server.GETbusy=False
             return
 
         # cached avatar images
