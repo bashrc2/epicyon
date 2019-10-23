@@ -1902,6 +1902,15 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                         if attach['url'].endswith(extension):
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
+                            if boxName=='tlmedia':
+                                galleryStr+= \
+                                    '<div class="gallery">\n' \
+                                    '  <a href="'+attach['url']+'">\n' \
+                                    '    <video width="600" height="400" controls>\n' \
+                                    '      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'+ \
+                                    translate['Your browser does not support the video tag.']+ \
+                                    '    </video>\n' \
+                                    '  </a>\n</div>\n'
                             attachmentStr+= \
                                 '<center><video width="400" height="300" controls>' \
                                 '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'+ \
@@ -1916,6 +1925,15 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                         if attach['url'].endswith(extension):
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
+                            if boxName=='tlmedia':
+                                galleryStr+= \
+                                    '<div class="gallery">\n' \
+                                    '  <a href="'+attach['url']+'">\n' \
+                                    '    <audio controls>\n' \
+                                    '      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'+ \
+                                    translate['Your browser does not support the audio tag.']+ \
+                                    '    </audio>\n' \
+                                    '  </a>\n</div>\n'
                             attachmentStr+= \
                                 '<center><audio controls>' \
                                 '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'+ \
