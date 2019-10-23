@@ -1260,6 +1260,10 @@ def htmlProfile(translate: {},projectVersion: str, \
             if len(profileDescription.split('<br>'))>2:
                 profileDescriptionShort=''
                 profileDescription=profileDescription.replace('<br>','\n')
+    # keep the profile description short
+    if len(profileDescriptionShort)>256:
+        profileDescriptionShort=''
+    # remove formatting from profile description used on title
     avatarDescription=''
     if profileJson.get('summary'):
         avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
@@ -3233,6 +3237,10 @@ def htmlProfileAfterSearch(translate: {}, \
             if '<br>' in profileDescription:
                 if len(profileDescription.split('<br>'))>2:
                     profileDescriptionShort=''
+        # keep the profile description short
+        if len(profileDescriptionShort)>256:
+            profileDescriptionShort=''
+        # remove formatting from profile description used on title
         avatarDescription=''
         if profileJson.get('summary'):
             avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
