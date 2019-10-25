@@ -2835,7 +2835,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_response(303)
                     # This produces a deterministic token based on nick+password+salt
                     if not self.server.salts.get(loginNickname):
-                        saltFilename=baseDir+'/accounts/'+loginNickname+'@'+self.server.domain+'/.salt'
+                        saltFilename=self.server.baseDir+'/accounts/'+loginNickname+'@'+self.server.domain+'/.salt'
                         if os.path.isfile(saltFilename):
                             with open(saltFilename, 'r') as fp:
                                 self.server.salts[loginNickname] = fp.read()
