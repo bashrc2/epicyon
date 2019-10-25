@@ -2836,12 +2836,27 @@ class PubServer(BaseHTTPRequestHandler):
                     saltFilename=self.server.baseDir+'/accounts/'+loginNickname+'@'+self.server.domain+'/.salt'
                     salt=createPassword(32)
                     if os.path.isfile(saltFilename):
-                        with open(saltFilename, 'r') as fp:
-                            salt = fp.read()
+                        try:
+                            with open(saltFilename, 'r') as fp:
+                                salt = fp.read()
+                        except Exception as e:
+                            print('WARN: Unable to read salt for '+loginNickname+' '+str(e))
                     else:
-                        with open(saltFilename, 'w') as fp:
-                            fp.write(salt)
-                    self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+salt).encode('utf-8')).hexdigest()
+                        try:
+                            with open(saltFilename, 'w') as fp:
+                                fp.write(salt)
+                        except Exception as e:
+                            print('WARN: Unable to save salt for '+loginNickname+' '+str(e))
+
+                    token=sha256((loginNickname+loginPassword+salt).encode('utf-8')).hexdigest()
+                    self.server.tokens[loginNickname]=token
+                    tokenFilename=self.server.baseDir+'/accounts/'+loginNickname+'@'+self.server.domain+'/.token'
+                    try:
+                        with open(tokenFilename, 'w') as fp:
+                            fp.write(token)
+                    except Exception as e:
+                        print('WARN: Unable to save token for '+loginNickname+' '+str(e))
+
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
                     self.send_header('Location', '/users/'+loginNickname+'/inbox')
@@ -4045,6 +4060,25 @@ def runSharesExpireWatchdog(projectVersion: str,httpd) -> None:
             httpd.thrSharesExpire.start()
             print('Restarting shares expiry...')
 
+def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) ->:
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for handle in dirs:
+            if '@' in handle:
+                tokenFilename=baseDir+'/accounts/'+handle+'/.token'
+                if not os.path.isfile(tokenFilename):
+                    continue
+                nickname=handle.split('@')[0]
+                token=None
+                try:
+                    with open(tokenFilename, 'r') as fp:
+                        token = fp.read()
+                except Exception as e:
+                    print('WARN: Unable to read token for '+nickname+' '+str(e))
+                if not token:
+                    continue
+                tokensDict[nickname]=token
+                tokensLookup[token]=nickname
+
 def runDaemon(projectVersion, \
               instanceId,clientToServer: bool, \
               baseDir: str,domain: str, \
@@ -4129,6 +4163,7 @@ def runDaemon(projectVersion, \
     httpd.maxReplies=maxReplies
     httpd.tokens={}
     httpd.tokensLookup={}
+    loadTokens(baseDir,httpd.tokens,httpd.tokensLookup)
     httpd.instanceOnlySkillsSearch=instanceOnlySkillsSearch
     httpd.acceptedCaps=["inbox:write","objects:read"]
     if noreply:
