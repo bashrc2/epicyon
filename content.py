@@ -237,6 +237,10 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     for wordStr in longWordsList:
         if wordStr.startswith('<'):
             continue
+        if wordStr.startswith('http'):
+            continue
+        if '/' in wordStr:
+            continue
         if len(wordStr[maxWordLength:])<maxWordLength:
             content= \
                 content.replace(wordStr, \
