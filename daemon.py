@@ -2834,13 +2834,15 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Login success: '+loginNickname)
                     self.send_response(303)
                     # This produces a deterministic token based on nick+password+salt
-                    # But notice that the salt is ephemeral, so a server reboot changes them.
-                    # This allows you to be logged in on two or more devices with the
-                    # same token, but also ensures that if an adversary obtains the token
-                    # then rebooting the server is sufficient to thwart them, without
-                    # any password changes.
                     if not self.server.salts.get(loginNickname):
-                        self.server.salts[loginNickname]=createPassword(32)
+                        saltFilename=baseDir+'/accounts/'+loginNickname+'@'+self.server.domain+'/.salt'
+                        if os.path.isfile(saltFilename):
+                            with open(saltFilename, 'r') as fp:
+                                self.server.salts[loginNickname] = fp.read()
+                        else:
+                            self.server.salts[loginNickname]=createPassword(32)
+                            with open(saltFilename, 'w') as fp:
+                                fp.write(self.server.salts[loginNickname])
                     self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+self.server.salts[loginNickname]).encode('utf-8')).hexdigest()
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
