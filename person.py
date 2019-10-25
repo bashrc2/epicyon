@@ -566,11 +566,8 @@ def unsuspendAccount(baseDir: str,nickname: str) -> None:
                 suspendedFile.write(suspended)
         suspendedFile.close()
 
-def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
+def suspendAccount(baseDir: str,nickname: str) -> None:
     """Suspends the given account
-    This also changes the salt used by the authentication token
-    so that the person can't continue to use the system without
-    going through the login screen
     """
     # Don't suspend the admin
     adminNickname=getConfigParam(baseDir,'admin')
@@ -597,13 +594,11 @@ def suspendAccount(baseDir: str,nickname: str,salts: {}) -> None:
         if suspendedFile:
             suspendedFile.write(nickname+'\n')
             suspendedFile.close()
-            salts[nickname]=createPassword(32)            
     else:
         suspendedFile=open(suspendedFilename,'w+')
         if suspendedFile:
             suspendedFile.write(nickname+'\n')
             suspendedFile.close()
-            salts[nickname]=createPassword(32)            
 
 def canRemovePost(baseDir: str,nickname: str,domain: str,port: int,postId: str) -> bool:
     """Returns true if the given post can be removed

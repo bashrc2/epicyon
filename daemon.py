@@ -2814,7 +2814,6 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.tokens.get(loginNickname):
                         del self.server.tokensLookup[self.server.tokens[loginNickname]]
                         del self.server.tokens[loginNickname]
-                        del self.server.salts[loginNickname]
                     self.send_response(303)
                     self.send_header('Content-Length', '0')
                     self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
@@ -2835,14 +2834,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_response(303)
                     # This produces a deterministic token based on nick+password+salt
                     saltFilename=self.server.baseDir+'/accounts/'+loginNickname+'@'+self.server.domain+'/.salt'
+                    salt=createPassword(32)
                     if os.path.isfile(saltFilename):
                         with open(saltFilename, 'r') as fp:
-                            self.server.salts[loginNickname] = fp.read()
+                            salt = fp.read()
                     else:
-                        self.server.salts[loginNickname]=createPassword(32)
                         with open(saltFilename, 'w') as fp:
-                            fp.write(self.server.salts[loginNickname])
-                    self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+self.server.salts[loginNickname]).encode('utf-8')).hexdigest()
+                            fp.write(salt)
+                    self.server.tokens[loginNickname]=sha256((loginNickname+loginPassword+salt).encode('utf-8')).hexdigest()
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', 'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
                     self.send_header('Location', '/users/'+loginNickname+'/inbox')
@@ -3140,7 +3139,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '@' in nickname:
                         nickname=nickname.split('@')[0]
                     if moderationButton=='suspend':
-                        suspendAccount(self.server.baseDir,nickname,self.server.salts)
+                        suspendAccount(self.server.baseDir,nickname)
                     if moderationButton=='unsuspend':
                         unsuspendAccount(self.server.baseDir,nickname)
                     if moderationButton=='block':
@@ -4128,7 +4127,6 @@ def runDaemon(projectVersion, \
     httpd.allowDeletion=allowDeletion
     httpd.lastLoginTime=0
     httpd.maxReplies=maxReplies
-    httpd.salts={}
     httpd.tokens={}
     httpd.tokensLookup={}
     httpd.instanceOnlySkillsSearch=instanceOnlySkillsSearch
