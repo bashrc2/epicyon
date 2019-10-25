@@ -4060,7 +4060,7 @@ def runSharesExpireWatchdog(projectVersion: str,httpd) -> None:
             httpd.thrSharesExpire.start()
             print('Restarting shares expiry...')
 
-def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) ->:
+def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for handle in dirs:
             if '@' in handle:
