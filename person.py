@@ -566,7 +566,7 @@ def unsuspendAccount(baseDir: str,nickname: str) -> None:
                 suspendedFile.write(suspended)
         suspendedFile.close()
 
-def suspendAccount(baseDir: str,nickname: str) -> None:
+def suspendAccount(baseDir: str,nickname: str,domain: str) -> None:
     """Suspends the given account
     """
     # Don't suspend the admin
@@ -583,6 +583,13 @@ def suspendAccount(baseDir: str,nickname: str) -> None:
             if moderator.strip('\n')==nickname:
                 return
 
+    saltFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.salt'
+    if os.path.isfile(saltFilename):
+        os.remove(saltFilename)
+    tokenFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.token'
+    if os.path.isfile(tokenFilename):
+        os.remove(tokenFilename)
+    
     suspendedFilename=baseDir+'/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, "r") as f:

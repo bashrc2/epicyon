@@ -3154,7 +3154,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if '@' in nickname:
                         nickname=nickname.split('@')[0]
                     if moderationButton=='suspend':
-                        suspendAccount(self.server.baseDir,nickname)
+                        suspendAccount(self.server.baseDir,nickname,self.server.domain)
                     if moderationButton=='unsuspend':
                         unsuspendAccount(self.server.baseDir,nickname)
                     if moderationButton=='block':
