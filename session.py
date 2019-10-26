@@ -68,7 +68,9 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
             return None
 
     postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
-    return postResult.text
+    if postResult:
+        return postResult.text
+    return None
 
 def postJsonString(session,postJsonStr: str, \
                    federationList: [], \
@@ -137,5 +139,6 @@ def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,
     with open(attachImageFilename, 'rb') as avFile:
         mediaBinary = avFile.read()
         postResult = session.post(url=inboxUrl, data=mediaBinary, headers=headers)
-        return postResult.text
+        if postResult:
+            return postResult.text
     return None
