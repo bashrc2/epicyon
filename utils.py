@@ -21,8 +21,8 @@ def saveJson(jsonObject: {},filename: str) -> bool:
             with open(filename, 'w') as fp:
                 commentjson.dump(jsonObject, fp, indent=2, sort_keys=False)
                 return True
-        except Exception as e:
-            print(e)
+        except commentjson.JSONLibraryException as e:
+            print('WARN: saveJson '+str(e))
             time.sleep(1)
             tries+=1
     return False
@@ -37,7 +37,7 @@ def loadJson(filename: str) -> {}:
             with open(filename, 'r') as fp:
                 jsonObject=commentjson.load(fp)
                 break
-        except Exception as e:
+        except commentjson.JSONLibraryException as e:
             print('WARN: loadJson exception - '+str(e))
             time.sleep(2)
             tries+=1
@@ -127,8 +127,8 @@ def getDisplayName(baseDir: str,actor: str,personCache: {}) -> str:
                     with open(cachedActorFilename, 'r') as fp:
                         actorJson=commentjson.load(fp)
                         break
-                except Exception as e:
-                    print(e)
+                except commentjson.JSONLibraryException as e:
+                    print('WARN: getDisplayName '+str(e))
                     time.sleep(1)
                     tries+=1
             if actorJson:
@@ -300,8 +300,8 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
             with open(postFilename, 'r') as fp:
                 postJsonObject=commentjson.load(fp)
                 break
-        except Exception as e:
-            print(e)
+        except commentjson.JSONLibraryException as e:
+            print('WARN: deletePost '+str(e))
             time.sleep(1)
             tries+=1
 

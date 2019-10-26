@@ -1927,7 +1927,7 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
         try:
             with open(sharedInboxFilename, 'r') as fp:
                 postJsonObject=commentjson.load(fp)                
-        except Exception as e:
+        except commentjson.JSONLibraryException as e:
             print('WARN: commentjson exception createBoxBase - '+str(e))
             continue
 
@@ -1963,7 +1963,7 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
                 with open(ocapFilename, 'r') as fp:
                     ocapJson=commentjson.load(fp)
                     loadedOcap=True
-            except Exception as e:
+            except commentjson.JSONLibraryException as e:
                 print('WARN: commentjson exception createBoxBase - '+str(e))
 
             if loadedOcap:
