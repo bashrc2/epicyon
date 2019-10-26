@@ -37,8 +37,8 @@ def loadJson(filename: str) -> {}:
             with open(filename, 'r') as fp:
                 jsonObject=commentjson.load(fp)
                 break
-        except (IndexError, AttributeError, commentjson.JSONLibraryException) as e:
-            print('WARN: loadJson exception - '+str(e))
+        except:
+            print('WARN: loadJson exception')
             time.sleep(2)
             tries+=1
     return jsonObject
@@ -127,8 +127,8 @@ def getDisplayName(baseDir: str,actor: str,personCache: {}) -> str:
                     with open(cachedActorFilename, 'r') as fp:
                         actorJson=commentjson.load(fp)
                         break
-                except (IndexError, AttributeError, commentjson.JSONLibraryException) as e:
-                    print('WARN: getDisplayName '+str(e))
+                except:
+                    print('WARN: getDisplayName')
                     time.sleep(1)
                     tries+=1
             if actorJson:
@@ -300,8 +300,8 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
             with open(postFilename, 'r') as fp:
                 postJsonObject=commentjson.load(fp)
                 break
-        except (IndexError, AttributeError, commentjson.JSONLibraryException) as e:
-            print('WARN: deletePost '+str(e))
+        except:
+            print('WARN: deletePost')
             time.sleep(1)
             tries+=1
 
