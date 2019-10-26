@@ -326,7 +326,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                             if emojiDictCtr>0:
                                 print('emojiDict loaded on try '+str(emojiDictCtr))
                             break
-                    except commentjson.JSONLibraryException as e:
+                    except (IndexError, AttributeError, commentjson.JSONLibraryException) as e:
                         print('WARN: commentjson exception addHtmlTags - '+str(e))
                         print('Failed to load emoji (try '+str(emojiDictCtr)+'): '+baseDir+'/emoji/emoji.json '+str(e))
                         time.sleep(1)

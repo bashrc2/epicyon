@@ -1727,7 +1727,7 @@ def runInboxQueue(projectVersion: str, \
             try:
                 with open(queueFilename, 'r') as fp:
                     queueJson=commentjson.load(fp)
-            except commentjson.JSONLibraryException as e:
+            except (IndexError, AttributeError, commentjson.JSONLibraryException) as e:
                 itemReadFailed+=1
                 print('WARN: commentjson exception runInboxQueue - '+str(e))
                 print('WARN: Failed to load inbox queue item '+queueFilename+' (try '+str(itemReadFailed)+')')
