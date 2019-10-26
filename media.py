@@ -19,10 +19,14 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 
-def removeMetaData(imageFilename: str,outputFilename: str):
+def removeMetaData(imageFilename: str,outputFilename: str) -> None:
     imageFile = open(imageFilename)
     image = Image.open(imageFilename)
+    if not image:
+        return
     data = list(image.getdata())
+    if not data:
+        return
     imageWithoutExif = Image.new(image.mode, image.size)
     imageWithoutExif.putdata(data)
     imageWithoutExif.save(outputFilename)
