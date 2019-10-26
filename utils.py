@@ -21,8 +21,8 @@ def saveJson(jsonObject: {},filename: str) -> bool:
             with open(filename, 'w') as fp:
                 commentjson.dump(jsonObject, fp, indent=2, sort_keys=False)
                 return True
-        except commentjson.JSONLibraryException as e:
-            print('WARN: saveJson '+str(e))
+        except:
+            print('WARN: saveJson')
             time.sleep(1)
             tries+=1
     return False
