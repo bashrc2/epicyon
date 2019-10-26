@@ -219,11 +219,17 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
             if debug:
                 print('DEBUG: follow already exists')
             return True
-        with open(filename, "a") as followfile:
-            followfile.write(followNickname+'@'+followDomain+'\n')
-            if debug:
-                print('DEBUG: follow added')
-            return True
+        # prepend to follow file
+        try:
+            with open(filename, 'r+') as followFile:
+                content = followFile.read()
+                followFile.seek(0, 0)
+                followFile.write(followNickname+'@'+followDomain+'\n'+content)
+                if debug:
+                    print('DEBUG: follow added')
+                return True
+        except Exception as e:
+            print('WARN: Failed to write entry to follow file '+filename+' '+str(e))        
     if debug:
         print('DEBUG: creating new following file')
     with open(filename, "w") as followfile:
