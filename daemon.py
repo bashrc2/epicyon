@@ -3259,12 +3259,12 @@ class PubServer(BaseHTTPRequestHandler):
             # post being voted on
             messageId=None
             if 'messageId=' in questionParams:
-                messageId=searchParams.split('messageId=')[1]
+                messageId=questionParams.split('messageId=')[1]
                 if '&' in messageId:
                     messageId=messageId.split('&')[0]
             answer=None
             if 'answer=' in questionParams:
-                answer=searchParams.split('answer=')[1]
+                answer=questionParams.split('answer=')[1]
                 if '&' in answer:
                     answer=answer.split('&')[0]
             print('Voting on message '+messageId)
