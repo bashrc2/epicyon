@@ -1827,7 +1827,8 @@ def runInboxQueue(projectVersion: str, \
                                     personCache,debug, \
                                     projectVersion,httpPrefix,domain)
                 if pubKey:
-                    print('DEBUG: public key: '+str(pubKey))
+                    if debug:
+                        print('DEBUG: public key: '+str(pubKey))
                     break
                     
                 if debug:
