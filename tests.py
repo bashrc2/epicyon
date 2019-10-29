@@ -1559,13 +1559,15 @@ def testAddEmoji():
     contentModified= \
         addHtmlTags(baseDir,httpPrefix, \
                     nickname,domain,content, \
-                    recipients,hashtags)
+                    recipients,hashtags,True)
+    assert ':lemon:' in contentModified
     tags=[]
     for tagName,tag in hashtags.items():
         tags.append(tag)
     content=contentModified
     contentModified=replaceEmojiFromTags(content,tags,'content')
     assert 'img src' in contentModified
+    assert ':lemon:' not in contentModified
 
     os.chdir(baseDirOriginal)
     shutil.rmtree(baseDirOriginal+'/.tests')

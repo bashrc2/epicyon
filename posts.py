@@ -483,7 +483,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         addHtmlTags(baseDir,httpPrefix, \
                     nickname,domain,content, \
                     mentionedRecipients, \
-                    hashtagsDict)
+                    hashtagsDict,True)
     
     statusNumber,published = getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'

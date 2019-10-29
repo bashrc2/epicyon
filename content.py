@@ -254,7 +254,7 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
 
 def addHtmlTags(baseDir: str,httpPrefix: str, \
                 nickname: str,domain: str,content: str, \
-                recipients: [],hashtags: {}) -> str:
+                recipients: [],hashtags: {},isJsonContent=False) -> str:
     """ Replaces plaintext mentions such as @nick@domain into html
     by matching against known following accounts
     """
@@ -340,9 +340,10 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=content.replace(wordStr,replaceStr)
     for wordStr,replaceStr in replaceHashTags.items():
         content=content.replace(wordStr,replaceStr)
-    for wordStr,replaceStr in replaceEmoji.items():
-        content=content.replace(wordStr,replaceStr)
-        
+    if not isJsonContent:
+        for wordStr,replaceStr in replaceEmoji.items():
+            content=content.replace(wordStr,replaceStr)
+
     content=addWebLinks(content)
     if longWordsList:
         content=removeLongWords(content,maxWordLength,longWordsList)
