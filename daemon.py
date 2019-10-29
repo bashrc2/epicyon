@@ -3275,7 +3275,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.domain,self.server.port, \
                                  self.server.httpPrefix, \
                                  answer,False,False,False, \
-                                 filename,attachmentMediaType,None,True, \
+                                 None,None,None,True, \
                                  messageId,messageId,None, \
                                  None,None,None)
             if messageJson:
