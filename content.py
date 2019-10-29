@@ -198,8 +198,16 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
                 replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
                 return True
         return False
+    possibleNickname=None
+    possibleDomain=None
+    if '@' not in possibleHandle:
+        return False
     possibleNickname=possibleHandle.split('@')[0]
+    if not possibleNickname:
+        return False
     possibleDomain=possibleHandle.split('@')[1].strip('\n')
+    if not possibleDomain:
+        return False
     if following:
         for follow in following:
             if follow.replace('\n','')!=possibleHandle:
@@ -215,20 +223,18 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
             replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
             return True
     # @nick@domain
-    if '@' in possibleHandle:
-        if not (possibleDomain=='localhost' or '.' in possibleDomain):
-            return False        
-        recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
-        if recipientActor not in recipients:
-            recipients.append(recipientActor)
-        tags[wordStr]={
-            'href': recipientActor,
-            'name': wordStr,
-            'type': 'Mention'
-        }
-        replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
-        return True
-    return False
+    if not (possibleDomain=='localhost' or '.' in possibleDomain):
+        return False        
+    recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
+    if recipientActor not in recipients:
+        recipients.append(recipientActor)
+    tags[wordStr]={
+        'href': recipientActor,
+        'name': wordStr,
+        'type': 'Mention'
+    }
+    replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+    return True
 
 def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't disrupt the layout
