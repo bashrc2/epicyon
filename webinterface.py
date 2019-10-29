@@ -540,7 +540,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
             elif actorJson['type']=='Group':
                 isGroup='checked'
                 isBot=''
-    if os.path.isfile(actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'):
+    if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'):
         followDMs='checked'
                 
     filterStr=''
