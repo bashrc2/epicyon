@@ -525,7 +525,6 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             if isPublic:
                 updateHashtagsIndex(baseDir,tag,newPostId)
         print('Content tags: '+str(tags))
-        content=replaceEmojiFromTags(content,tags,'content')
 
     if inReplyTo and not sensitive:
         # locate the post which this is a reply to and check if
