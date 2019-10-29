@@ -2475,7 +2475,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
         
         if not announcedJson.get('id'):
             rejectAnnounce(announceFilename)
-            pprint(announcedJson)
+            #pprint(announcedJson)
             return None
         if '/statuses/' not in announcedJson['id']:
             rejectAnnounce(announceFilename)
@@ -2487,11 +2487,11 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
             return None
         if not announcedJson.get('type'):
             rejectAnnounce(announceFilename)
-            pprint(announcedJson)
+            #pprint(announcedJson)
             return None
         if announcedJson['type']!='Note':
             rejectAnnounce(announceFilename)
-            pprint(announcedJson)
+            #pprint(announcedJson)
             return None
                             
         # wrap in create to be consistent with other posts
@@ -2501,7 +2501,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
                                     announcedJson)
         if announcedJson['type']!='Create':
             rejectAnnounce(announceFilename)
-            pprint(announcedJson)
+            #pprint(announcedJson)
             return None
 
         # set the id to the original status

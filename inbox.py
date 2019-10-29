@@ -225,7 +225,8 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
             return None
         postDomain,postPort=getDomainFromActor(postJsonObject['actor'])
         if not postDomain:
-            pprint(postJsonObject)
+            if debug:
+                pprint(postJsonObject)
             print('No post Domain in actor')
             return None
         if isBlocked(baseDir,nickname,domain,postNickname,postDomain):

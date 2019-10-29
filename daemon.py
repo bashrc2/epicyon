@@ -583,7 +583,7 @@ class PubServer(BaseHTTPRequestHandler):
         # For like activities add a 'to' field, which is a copy of the actor within the object field
         messageJson,toFieldExists=addToField('Like',messageJson,self.server.debug)
 
-        pprint(messageJson)
+        #pprint(messageJson)
 
         # save the json for later queue processing
         queueFilename = \
@@ -1599,7 +1599,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.server.projectVersion).encode('utf-8')
                                         self._set_headers('text/html',len(msg),cookie)
                                         print('----------------------------------------------------')
-                                        pprint(repliesJson)
+                                        #pprint(repliesJson)
                                         self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():

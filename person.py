@@ -13,7 +13,6 @@ import os
 import fileinput
 import subprocess
 import shutil
-from pprint import pprint
 from pathlib import Path
 from Crypto.PublicKey import RSA
 from shutil import copyfile

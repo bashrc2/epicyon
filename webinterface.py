@@ -1785,13 +1785,13 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
     else:
         if not messageId:
-            pprint(postJsonObject)
+            #pprint(postJsonObject)
             print('ERROR: no messageId')
         if not actorNickname:
-            pprint(postJsonObject)
+            #pprint(postJsonObject)
             print('ERROR: no actorNickname')
         if not actorDomain:
-            pprint(postJsonObject)
+            #pprint(postJsonObject)
             print('ERROR: no actorDomain')
         titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
 
