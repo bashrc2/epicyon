@@ -1562,6 +1562,21 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             if isDM(postJsonObject):
                 nickname=handle.split('@')[0]
                 if nickname!='inbox':
+                    followDMsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'
+                    if os.path.isfile(followDMsFilename):
+                        followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
+                        if not postJsonObject.get('actor'):
+                            return False
+                        sendingActor=postJsonObject['actor']
+                        sendingActorNickname=getNicknameFromActor(sendingActor)
+                        sendingActorDomain,sendingActorPort=getDomainFromActor(sendingActor)
+                        if sendingActorNickname and sendingActorDomain:
+                            if sendingActorNickname+'@'+sendingActorDomain != nickname+'@'+domain:
+                                if sendingActorNickname+'@'+sendingActorDomain not in open(followingFilename).read():
+                                    print(nickname+'@'+domain+' cannot receive DM from '+sendingActorNickname+'@'+sendingActorDomain+' because they do not follow them')
+                                    return False
+                        else:
+                            return False
                     # dm index will be updated
                     updateIndexList.append('dm')
                     dmNotify(baseDir,handle,httpPrefix+'://'+domain+'/users/'+nickname+'/dm')

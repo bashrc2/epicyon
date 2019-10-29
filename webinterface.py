@@ -518,6 +518,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
 
     isBot=''
     isGroup=''
+    followDMs=''
     displayNickname=nickname
     bioStr=''
     manuallyApprovesFollowers=''
@@ -539,6 +540,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
             elif actorJson['type']=='Group':
                 isGroup='checked'
                 isBot=''
+    if os.path.isfile(actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'):
+        followDMs='checked'
                 
     filterStr=''
     filterFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/filters.txt'
@@ -620,6 +623,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>'+translate['Approve follower requests']+'<br>' \
         '      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>' \
         '      <input type="checkbox" class=profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>' \
+        '      <input type="checkbox" class=profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>' \
         '      <br><b>'+translate['Filtered words']+'</b>' \
         '      <br>'+translate['One per line']+ \
         '      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>' \

@@ -3050,18 +3050,32 @@ class PubServer(BaseHTTPRequestHandler):
                         if approveFollowers!=actorJson['manuallyApprovesFollowers']:
                             actorJson['manuallyApprovesFollowers']=approveFollowers
                             actorChanged=True
+                        # only receive DMs from accounts you follow
+                        followDMsFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/.followDMs'
+                        followDMsActive=False
+                        if fields.get('followDMs'):
+                            if fields['followDMs']=='on':
+                                followDMsActive=True
+                                with open(followDMsFilename, "w") as followDMsFile:
+                                    followDMsFile.write('\n')
+                        if not followDMsActive:
+                            if os.path.isfile(followDMsFilename):
+                                os.remove(followDMsFilename)
+                        # this account is a bot
                         if fields.get('isBot'):
                             if fields['isBot']=='on':
                                 if actorJson['type']!='Service':
                                     actorJson['type']='Service'
                                     actorChanged=True
                         else:
+                            # this account is a group
                             if fields.get('isGroup'):
                                 if fields['isGroup']=='on':
                                     if actorJson['type']!='Group':
                                         actorJson['type']='Group'
                                         actorChanged=True
                             else:
+                                # this account is a person (default)
                                 if actorJson['type']!='Person':
                                     actorJson['type']='Person'
                                     actorChanged=True
