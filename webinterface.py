@@ -713,7 +713,7 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
 
     autocompleteStr=''
     if not autocomplete:
-        autocompleteStr='autocomplete="off"'
+        autocompleteStr='autocomplete="off" value=""'
 
     loginForm=htmlHeader(cssFilename,loginCSS)
     loginForm+= \
