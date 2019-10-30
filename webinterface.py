@@ -669,7 +669,7 @@ def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str,boo
                 register=True
     return nickname,password,register
 
-def htmlLogin(translate: {},baseDir: str) -> str:
+def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
     """Shows the login screen
     """
     accounts=noOfAccounts(baseDir)
@@ -710,7 +710,11 @@ def htmlLogin(translate: {},baseDir: str) -> str:
     loginButtonStr=''
     if accounts>0:
         loginButtonStr='<button type="submit" name="submit">'+translate['Login']+'</button>'
-            
+
+    autocompleteStr=''
+    if not autocomplete:
+        autocompleteStr='autocomplete="off"'
+
     loginForm=htmlHeader(cssFilename,loginCSS)
     loginForm+= \
         '<form method="POST" action="/login">' \
@@ -721,10 +725,10 @@ def htmlLogin(translate: {},baseDir: str) -> str:
         '' \
         '  <div class="container">' \
         '    <label for="nickname"><b>'+translate['Nickname']+'</b></label>' \
-        '    <input type="text" placeholder="'+translate['Enter Nickname']+'" name="username" required autofocus>' \
+        '    <input type="text" '+autocompleteStr+' placeholder="'+translate['Enter Nickname']+'" name="username" required autofocus>' \
         '' \
         '    <label for="password"><b>'+translate['Password']+'</b></label>' \
-        '    <input type="password" placeholder="'+translate['Enter Password']+'" name="password" required>'+ \
+        '    <input type="password" '+autocompleteStr+' placeholder="'+translate['Enter Password']+'" name="password" required>'+ \
         registerButtonStr+loginButtonStr+ \
         '  </div>' \
         '</form>'

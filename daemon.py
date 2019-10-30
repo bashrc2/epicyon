@@ -242,6 +242,16 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
+    def _logout_headers(self,fileFormat: str,length: int) -> None:
+        self.send_response(200)
+        self.send_header('Content-type', fileFormat)
+        self.send_header('Content-Length', str(length))
+        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
+        self.send_header('Host', self.server.domainFull)
+        self.send_header('WWW-Authenticate', 'title="Login to Epicyon", Basic realm="epicyon"')
+        self.send_header('X-Robots-Tag','noindex')
+        self.end_headers()
+    
     def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
@@ -634,12 +644,9 @@ class PubServer(BaseHTTPRequestHandler):
     
     def do_GET(self):
         if self.path=='/logout':
-            self.send_response(303)
-            self.send_header('Content-Length', '0')
-            self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-            self.send_header('Location', '/')
-            self.send_header('X-Robots-Tag','noindex')
-            self.end_headers()
+            msg=htmlLogin(self.server.translate,self.server.baseDir,False).encode('utf-8')
+            self._logout_headers('text/html',len(msg))
+            self._write(msg)            
             return
         
         # redirect music to #nowplaying list
