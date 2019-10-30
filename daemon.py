@@ -633,6 +633,15 @@ class PubServer(BaseHTTPRequestHandler):
         return False
     
     def do_GET(self):
+        if self.path=='/logout':
+            self.send_response(200)
+            self.send_header('Content-Length', '0')
+            self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
+            self.send_header('Location', '/')
+            self.send_header('X-Robots-Tag','noindex')
+            self.end_headers()
+            return
+        
         # redirect music to #nowplaying list
         if self.path=='/music' or self.path=='/nowplaying':
             self.path='/tags/nowplaying'
