@@ -150,8 +150,8 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
     """
     if ':' in domain:
         domain=domain.split(':')[0]
-    handle=nickname.lower()+'@'+domain.lower()
-    handleToUnfollow=followNickname.lower()+'@'+followDomain.lower()
+    handle=nickname+'@'+domain
+    handleToUnfollow=followNickname+'@'+followDomain
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
@@ -171,6 +171,7 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
         for line in lines:
             if line.strip("\n") != handleToUnfollow:
                 f.write(line)
+    return True
 
 def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \
                        followerNickname: str,followerDomain: str, \
