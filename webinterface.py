@@ -1223,6 +1223,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
     else:
         editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>'+translate['Edit']+' </span></button></a>'
+        logoutStr='<a href="/logout"><button class="button"><span>'+translate['Logout']+' </span></button></a>'
         linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="'+translate['Switch to timeline view']+'" alt="'+translate['Switch to timeline view']+'">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
@@ -1291,7 +1292,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>'+translate['Roles']+' </span></button></a>' \
         '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>'+translate['Skills']+' </span></button></a>' \
         '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'+ \
-        editProfileStr+ \
+        editProfileStr+logoutStr+ \
         '  </center>' \
         '</div>'
 
