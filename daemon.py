@@ -634,7 +634,7 @@ class PubServer(BaseHTTPRequestHandler):
     
     def do_GET(self):
         if self.path=='/logout':
-            self.send_response(200)
+            self.send_response(303)
             self.send_header('Content-Length', '0')
             self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
             self.send_header('Location', '/')
