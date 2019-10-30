@@ -28,7 +28,7 @@ Or on Debian:
 ``` bash
 sudo apt-get -y install tor python3-pip python3-socks imagemagick \
                 python3-numpy python3-setuptools python3-crypto \
-		python3-dateutil python3-pil.imagetk certbot
+		python3-dateutil python3-pil.imagetk certbot nginx
 sudo pip3 install commentjson beautifulsoup4 pycryptodome
 ```
 
@@ -98,9 +98,6 @@ server {
     error_log /dev/null;
     client_max_body_size 31m;
     client_body_buffer_size 128k;
-
-    limit_conn conn_limit_per_ip 10;
-    limit_req zone=req_limit_per_ip burst=10 nodelay;
 
     index index.html;
     rewrite ^ https://$server_name$request_uri? permanent;
