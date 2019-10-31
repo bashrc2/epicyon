@@ -2311,12 +2311,12 @@ def htmlTimeline(translate: {},pageNumber: int, \
             tlStr+='<div class="galleryContainer">\n'
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
-                avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
+                #avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
                 itemCtr+=1
                 currTlStr= \
                     individualPostAsHtml(iconsDir,translate,pageNumber, \
                                          baseDir,session,wfRequest,personCache, \
-                                         nickname,domain,port,item,avatarUrl,True, \
+                                         nickname,domain,port,item,None,True, \
                                          allowDeletion, \
                                          httpPrefix,projectVersion,boxName, \
                                          boxName!='dm', \
