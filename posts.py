@@ -2138,7 +2138,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                             # remove any capability so that it's not displayed
                             if p.get('capability'):
                                 del p['capability']
-                            # Don't show likes or replies to unauthorized viewers
+                            # Don't show likes, replies or shares (announces) to unauthorized viewers
                             if not authorized:
                                 if p.get('object'):
                                     if isinstance(p['object'], dict):                                
@@ -2146,6 +2146,8 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                                             p['likes']={}
                                         if p['object'].get('replies'):
                                             p['replies']={}
+                                        if p['object'].get('shares'):
+                                            p['shares']={}
                             # insert it into the box feed
                             if postsOnPageCtr < itemsPerPage:
                                 if not headerOnly:
