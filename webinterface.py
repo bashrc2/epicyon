@@ -114,22 +114,23 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """Returns the avatar url for the person
     """
     personJson = getPersonFromCache(baseDir,personUrl,personCache)    
-    if personJson:
-        # get from locally stored image
-        actorStr=personJson['id'].replace('/','-')
-        avatarImagePath=baseDir+'/cache/avatars/'+actorStr
-        if os.path.isfile(avatarImagePath+'.png'):
-            return '/avatars/'+actorStr+'.png'
-        if os.path.isfile(avatarImagePath+'.jpg'):
-            return '/avatars/'+actorStr+'.jpg'
-        if os.path.isfile(avatarImagePath+'.gif'):
-            return '/avatars/'+actorStr+'.gif'
-        if os.path.isfile(avatarImagePath):
-            return '/avatars/'+actorStr
+    if not personJson:
+        return None
+    # get from locally stored image
+    actorStr=personJson['id'].replace('/','-')
+    avatarImagePath=baseDir+'/cache/avatars/'+actorStr
+    if os.path.isfile(avatarImagePath+'.png'):
+        return '/avatars/'+actorStr+'.png'
+    if os.path.isfile(avatarImagePath+'.jpg'):
+        return '/avatars/'+actorStr+'.jpg'
+    if os.path.isfile(avatarImagePath+'.gif'):
+        return '/avatars/'+actorStr+'.gif'
+    if os.path.isfile(avatarImagePath):
+        return '/avatars/'+actorStr
         
-        if personJson.get('icon'):
-            if personJson['icon'].get('url'):
-                return personJson['icon']['url']
+    if personJson.get('icon'):
+        if personJson['icon'].get('url'):
+            return personJson['icon']['url']
     return None
 
 def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
