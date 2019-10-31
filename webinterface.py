@@ -1737,6 +1737,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if postHtml:
             return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
+    postActor=postJsonObject['actor']
+
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
     showDMicon=False
@@ -1771,16 +1773,16 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     containerClass='container'
     containerClassIcons='containericons'
     timeClass='time-right'
-    actorNickname=getNicknameFromActor(postJsonObject['actor'])
+    actorNickname=getNicknameFromActor(postActor)
     if not actorNickname:
         # single user instance
         actorNickname='dev'
-    actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+    actorDomain,actorPort=getDomainFromActor(postActor)
     messageId=''
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
 
-    displayName=getDisplayName(baseDir,postJsonObject['actor'],personCache)
+    displayName=getDisplayName(baseDir,postActor,personCache)
     if displayName:
         if ':' in displayName:
             displayName= \
@@ -1812,7 +1814,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
-                if postJsonObject['object']['attributedTo'].startswith(postJsonObject['actor']):
+                if postJsonObject['object']['attributedTo'].startswith(postActor):
                     titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
                 else:
                     announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
@@ -1848,7 +1850,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 containerClassIcons='containericons darker'
                 containerClass='container darker'
                 #avatarPosition=' class="right"'
-                if postJsonObject['object']['inReplyTo'].startswith(postJsonObject['actor']):
+                if postJsonObject['object']['inReplyTo'].startswith(postActor):
                     titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
@@ -1968,13 +1970,13 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             attachmentStr+='</div>'
 
     if not avatarUrl:
-        avatarUrl=getPersonAvatarUrl(baseDir,postJsonObject['actor'],personCache)
-        avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
+        avatarUrl=getPersonAvatarUrl(baseDir,postActor,personCache)
+        avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
     else:
-        updateAvatarImageCache(session,baseDir,httpPrefix,postJsonObject['actor'],avatarUrl,personCache)
+        updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
 
     if not avatarUrl:
-        avatarUrl=postJsonObject['actor']+'/avatar.png'
+        avatarUrl=postActor+'/avatar.png'
 
     fullDomain=domain
     if port:
@@ -1982,7 +1984,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
         
-    if fullDomain not in postJsonObject['actor']:
+    if fullDomain not in postActor:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
             getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,nickname,domain,'outbox')
@@ -1998,14 +2000,14 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     avatarImageInPost= \
         '  <div class="timeline-avatar">' \
-        '    <a href="'+postJsonObject['actor']+'">' \
+        '    <a href="'+postActor+'">' \
         '    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
         '  </div>'
     
-    if showAvatarOptions and fullDomain+'/users/'+nickname not in postJsonObject['actor']:
+    if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
         avatarImageInPost= \
             '  <div class="timeline-avatar">' \
-            '    <a href="/users/'+nickname+'?options='+postJsonObject['actor']+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
+            '    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
             '    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
             '  </div>'
 
@@ -2055,8 +2057,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     deleteStr=''
     if allowDeletion or \
-       ('/'+fullDomain+'/' in postJsonObject['actor'] and \
-        postJsonObject['object']['id'].startswith(postJsonObject['actor'])):
+       ('/'+fullDomain+'/' in postActor and \
+        postJsonObject['object']['id'].startswith(postActor)):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr= \
                 '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">' \
