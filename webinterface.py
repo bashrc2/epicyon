@@ -2125,6 +2125,9 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     if postJsonObject['object'].get('tag'):
         contentStr=replaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],'content')
 
+    # replace 's
+    contentStr=contentStr.replace("\ufffd\ufffd\ufffds","'s")
+
     contentStr='<div class="message">'+contentStr+'</div>'
 
     postHtml=''
