@@ -1387,7 +1387,7 @@ def individualFollowAsHtml(translate: {}, \
     return \
         '<div class="container">\n' \
         '<a href="'+followUrl+'">' \
-        '<p><img loading="lazy" src="'+avatarUrl+'" alt="Avatar">\n'+ \
+        '<p><img loading="lazy" src="'+avatarUrl+'">\n'+ \
         titleStr+'</a>'+buttonsStr+'</p>' \
         '</div>\n'
 
@@ -1839,7 +1839,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     '<a href="/users/'+nickname+'?options='+announceActor+';'+str(pageNumber)+';'+announceAvatarUrl+messageIdStr+'">' \
                                     '<img loading="lazy" src="'+announceAvatarUrl+'" ' \
                                     'title="'+translate['Show options for this person']+ \
-                                    '" alt="Avatar"'+avatarPosition+'/></a></div>'
+                                    '" '+avatarPosition+'/></a></div>'
                         else:
                             titleStr+=' <img loading="lazy" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
                     else:
@@ -1878,7 +1878,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                             '<a href="/users/'+nickname+'?options='+replyActor+';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">' \
                                             '<img loading="lazy" src="'+replyAvatarUrl+'" ' \
                                             'title="'+translate['Show profile']+ \
-                                            '" alt="Avatar"'+avatarPosition+'/></a></div>'
+                                            '" '+avatarPosition+'/></a></div>'
                                 else:
                                     titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:
@@ -2002,7 +2002,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     avatarImageInPost= \
         '  <div class="timeline-avatar">' \
         '    <a href="'+postActor+'">' \
-        '    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt="Avatar"'+avatarPosition+'/></a>' \
+        '    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" '+avatarPosition+'/></a>' \
         '  </div>'
     
     if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
