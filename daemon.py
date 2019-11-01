@@ -2747,13 +2747,15 @@ class PubServer(BaseHTTPRequestHandler):
             headers[dictEntryName]=headerLine
         print('New post headers: '+str(headers))
 
-        print('Creating new post thread: '+newPostThreadName)
-        self.server.newPostThread[newPostThreadName]= \
-            threadWithTrace(target=self._receiveNewPostThread, \
-                            args=(authorized,postType,path,headers),daemon=True)
+        #print('Creating new post thread: '+newPostThreadName)
+        #self.server.newPostThread[newPostThreadName]= \
+        #    threadWithTrace(target=self._receiveNewPostThread, \
+        #                    args=(authorized,postType,path,headers),daemon=True)        
+        #print('Starting new post thread')
+        #self.server.newPostThread[newPostThreadName].start()
 
-        print('Starting new post thread')
-        self.server.newPostThread[newPostThreadName].start()
+        print('Creating new post: '+newPostThreadName)
+        self._receiveNewPostThread(authorized,postType,path,headers)
         return pageNumber
         
     def do_POST(self):
