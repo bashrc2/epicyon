@@ -479,13 +479,16 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
 
     # convert content to html
     emojisDict={}
+
+    # replace 's
+    content=content.replace("\ufffd\ufffd\ufffds","'s").replace("’","'")
+
+    # add tags
     content= \
         addHtmlTags(baseDir,httpPrefix, \
                     nickname,domain,content, \
                     mentionedRecipients, \
                     hashtagsDict,True)
-    # replace 's
-    content=content.replace("\ufffd\ufffd\ufffds","'s")
     
     statusNumber,published = getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'
