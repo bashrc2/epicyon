@@ -2438,7 +2438,8 @@ class PubServer(BaseHTTPRequestHandler):
     def do_HEAD(self):
         self._set_headers('application/json',0,None)
 
-    def _receiveNewPostThread(self,authorized: bool,postType: str,path: str,headers: {}) -> int:
+    def _receiveNewPostProcess(self,authorized: bool,postType: str,path: str,headers: {}) -> int:
+        # Note: this needs to happen synchronously
         # 0 = this is not a new post
         # 1 = new post success
         # -1 = new post failed
@@ -2747,15 +2748,10 @@ class PubServer(BaseHTTPRequestHandler):
             headers[dictEntryName]=headerLine
         print('New post headers: '+str(headers))
 
-        #print('Creating new post thread: '+newPostThreadName)
-        #self.server.newPostThread[newPostThreadName]= \
-        #    threadWithTrace(target=self._receiveNewPostThread, \
-        #                    args=(authorized,postType,path,headers),daemon=True)        
-        #print('Starting new post thread')
-        #self.server.newPostThread[newPostThreadName].start()
-
+        # Note sending new posts needs to be synchronous, otherwise any attachments
+        # can get mangled if other events happen during their decoding
         print('Creating new post: '+newPostThreadName)
-        self._receiveNewPostThread(authorized,postType,path,headers)
+        self._receiveNewPostProcess(authorized,postType,path,headers)
         return pageNumber
         
     def do_POST(self):
