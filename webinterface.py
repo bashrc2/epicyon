@@ -1230,7 +1230,7 @@ def sharesTimelineJson(actor: str,pageNumber: int,itemsPerPage: int, \
     return resultJson,lastPage
 
 def htmlSharesTimeline(translate: {},pageNumber: int,itemsPerPage: int, \
-                       baseDir: str, \
+                       baseDir: str,actor: str, \
                        nickname: str,domain: str,port: int, \
                        maxSharesPerAccount: int,httpPrefix: str) -> str:
     """Show shared items timeline as html
@@ -2398,7 +2398,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
     if boxName=='tlshares':
         maxSharesPerAccount=itemsPerPage
         return htmlSharesTimeline(translate,pageNumber,itemsPerPage, \
-                                  baseDir,nickname,domain,port, \
+                                  baseDir,actor,nickname,domain,port, \
                                   maxSharesPerAccount,httpPrefix) + \
                                   htmlFooter()
 
