@@ -10,6 +10,7 @@ import json
 import time
 import os
 import commentjson
+from collections import OrderedDict
 from datetime import datetime
 from datetime import date
 from dateutil.parser import parse
@@ -1153,24 +1154,107 @@ def htmlProfileSkills(translate: {},nickname: str,domain: str,skillsJson: {}) ->
         profileStr='<center><div class="skill-title">'+profileStr+'</div></center>'
     return profileStr
 
-def htmlProfileShares(translate: {},nickname: str,domain: str,sharesJson: {}) -> str:
+def htmlIndividualShare(actor: str,item: {},translate: {},showContact: bool) -> str:
+    """Returns an individual shared item as html
+    """
+    profileStr='<div class="container">'
+    profileStr+='<p class="share-title">'+item['displayName']+'</p>'
+    if item.get('imageUrl'):
+        profileStr+='<a href="'+item['imageUrl']+'">'
+        profileStr+='<img loading="lazy" src="'+item['imageUrl']+'" alt="'+translate['Item image']+'"></a>'
+    profileStr+='<p>'+item['summary']+'</p>'
+    profileStr+='<p><b>'+translate['Type']+':</b> '+item['itemType']+' '
+    profileStr+='<b>'+translate['Category']+':</b> '+item['category']+' '
+    profileStr+='<b>'+translate['Location']+':</b> '+item['location']+'</p>'
+    if showContact:
+        contactActor=item['actor']
+        sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+item['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
+    profileStr+='</div>'
+    return profileStr
+
+def htmlProfileShares(actor: str,translate: {},nickname: str,domain: str,sharesJson: {}) -> str:
     """Shows shares on the profile screen
     """
     profileStr=''
     for item in sharesJson['orderedItems']:
-        profileStr+='<div class="container">'
-        profileStr+='<p class="share-title">'+item['displayName']+'</p>'
-        if item.get('imageUrl'):
-            profileStr+='<a href="'+item['imageUrl']+'">'
-            profileStr+='<img loading="lazy" src="'+item['imageUrl']+'" alt="'+translate['Item image']+'"></a>'
-        profileStr+='<p>'+item['summary']+'</p>'
-        profileStr+='<p><b>'+translate['Type']+':</b> '+item['itemType']+' '
-        profileStr+='<b>'+translate['Category']+':</b> '+item['category']+' '
-        profileStr+='<b>'+translate['Location']+':</b> '+item['location']+'</p>'
-        profileStr+='</div>'
+        profileStr+=htmlIndividualShare(actor,item,translate,False)
     if len(profileStr)>0:
         profileStr='<div class="share-title">'+profileStr+'</div>'
     return profileStr
+
+def sharesTimelineJson(actor: str,pageNumber: int,itemsPerPage: int, \
+                       baseDir: str,maxSharesPerAccount: int) -> ({},bool):
+    """Get a page on the shared items timeline as json
+    maxSharesPerAccount helps to avoid one person dominating the timeline
+    by sharing a large number of things
+    """
+    allSharesJson={}
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for handle in dirs:
+            if '@' in handle:
+                accountDir=baseDir+'/accounts/'+handle
+                sharesFilename=accountDir+'/shares.json'
+                if os.path.isfile(sharesFilename):
+                    sharesJson=loadJson(sharesFilename)
+                    if not sharesJson:
+                        continue
+                    ctr=0
+                    for itemID,item in sharesJson.items():
+                        allSharesJson[str(item['published'])]=item
+                        ctr+=1
+                        if ctr>=maxSharesPerAccount:
+                            break
+    # sort the shared items in descending order of publication date
+    sharesJson=OrderedDict(sorted(allSharesJson.items(),reverse=True))
+    lastPage=False
+    startIndex=itemsPerPage*pageNumber
+    maxIndex=len(sharesJson.items())
+    if maxIndex<itemsPerPage:
+        lastPage=True
+    if startIndex>=maxIndex-itemsPerPage:
+        lastPage=True
+        startIndex=maxIndex-itemsPerPage
+        if startIndex<0:
+            startIndex=0
+    ctr=0
+    resultJson={}
+    for published,item in sharesJson.items():
+        if ctr>=startIndex+itemsPerPage:
+            break        
+        if ctr<startIndex:
+            ctr+=1
+            continue
+        item['actor']=actor
+        resultJson[published]=item
+        ctr+=1
+    return resultJson,lastPage
+
+def htmlSharesTimeline(translate: {},pageNumber: int,itemsPerPage: int, \
+                       baseDir: str, \
+                       nickname: str,domain: str,port: int, \
+                       maxSharesPerAccount: int,httpPrefix: str) -> str:
+    """Show shared items timeline as html
+    """
+    sharesJson,lastPage= \
+        sharesTimelineJson(actor,pageNumber,itemsPerPage, \
+                           baseDir,maxSharesPerAccount)
+    domainFull=domain
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            domainFull=domain+':'+str(port)
+    actor=httpPrefix+'://'+domainFull+'/users/'+nickname
+    timelineStr=''
+
+    if pageNumber>1:
+        timelineStr+='<center><a href="'+actor+'/tlshares?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+
+    for published,item in sharesJson.items():
+        timelineStr+=htmlIndividualShare(actor,item,translate,True)
+
+    if not lastPage:
+        timelineStr+='<center><a href="'+actor+'/tlshares?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+        
+    return timelineStr
 
 def htmlProfile(translate: {},projectVersion: str, \
                 baseDir: str,httpPrefix: str,authorized: bool, \
@@ -1346,7 +1430,7 @@ def htmlProfile(translate: {},projectVersion: str, \
                 htmlProfileSkills(translate,nickname,domainFull,extraJson)
         if selected=='shares':
             profileStr+= \
-                htmlProfileShares(translate,nickname,domainFull,extraJson)+licenseStr
+                htmlProfileShares(actor,translate,nickname,domainFull,extraJson)+licenseStr
         profileStr=htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
     return profileStr
 
@@ -2310,6 +2394,13 @@ def htmlTimeline(translate: {},pageNumber: int, \
             '    <input type="submit" title="'+translate['Unblock an account on another instance']+'" name="submitUnblock" value="'+translate['Unblock']+'">' \
             '    <input type="submit" title="'+translate['Information about current blocks/suspensions']+'" name="submitInfo" value="'+translate['Info']+'">' \
             '</div></form>'
+
+    if boxName=='tlshares':
+        maxSharesPerAccount=itemsPerPage
+        return htmlSharesTimeline(translate,pageNumber,itemsPerPage, \
+                                  baseDir,nickname,domain,port, \
+                                  maxSharesPerAccount,httpPrefix) + \
+                                  htmlFooter()
 
     # add the javascript for content warnings
     tlStr+='<script>'+contentWarningScript()+'</script>'
