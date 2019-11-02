@@ -2327,7 +2327,12 @@ def htmlTimeline(translate: {},pageNumber: int, \
         sharesButton='buttonselected'
         if newShare:
             sharesButton='buttonselectedhighlighted'
-    actor='/users/'+nickname
+
+    fullDomain=domain
+    if port!=80 and port!=443:
+        if ':' not in domain:
+            fullDomain=domain+':'+str(port)
+    actor=httpPrefix+'://'+fullDomain+'/users/'+nickname
 
     showIndividualPostIcons=True
     if boxName=='inbox':
