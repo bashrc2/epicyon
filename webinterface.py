@@ -2193,6 +2193,14 @@ def htmlTimeline(translate: {},pageNumber: int, \
         if boxName=='tlreplies':
             os.remove(replyFile)
 
+    # should the Shares button be highlighted?
+    newShare=False
+    newShareFile=baseDir+'/accounts/.newShare'
+    if os.path.isfile(newShareFile):
+        newShare=True
+        if boxName=='tlshares':
+            os.remove(newShareFile)
+
     iconsDir=getIconsDir(baseDir)
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -2213,6 +2221,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         repliesButton='buttonhighlighted'
     mediaButton='button'
     sentButton='button'
+    sharesButton='button'
     moderationButton='button'
     if boxName=='inbox':
         inboxButton='buttonselected'
@@ -2230,6 +2239,10 @@ def htmlTimeline(translate: {},pageNumber: int, \
         sentButton='buttonselected'
     elif boxName=='moderation':
         moderationButton='buttonselected'
+    elif boxName=='tlshares':
+        sharesButton='buttonselected'
+        if newShare:
+            sharesButton='buttonselectedhighlighted'
     actor='/users/'+nickname
 
     showIndividualPostIcons=True
@@ -2250,6 +2263,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
     moderationButtonStr=''
     if moderator:
         moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>'+translate['Mod']+' </span></button></a>'
+
+    sharesButtonStr='<a href="'+actor+'/tlshares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'
 
     tlStr=htmlHeader(cssFilename,profileStyle)
     #if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
@@ -2275,7 +2290,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
         '    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>' \
         '    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>' \
         '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
-        moderationButtonStr+newPostButtonStr+ \
+        sharesButtonStr+moderationButtonStr+newPostButtonStr+ \
         '    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
         '    <a href="'+actor+calendarPath+'"><img loading="lazy" src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
         '    <a href="'+actor+'/'+boxName+'"><img loading="lazy" src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
