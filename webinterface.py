@@ -2397,10 +2397,11 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     if boxName=='tlshares':
         maxSharesPerAccount=itemsPerPage
-        return htmlSharesTimeline(translate,pageNumber,itemsPerPage, \
-                                  baseDir,actor,nickname,domain,port, \
-                                  maxSharesPerAccount,httpPrefix) + \
-                                  htmlFooter()
+        return tlStr+ \
+            htmlSharesTimeline(translate,pageNumber,itemsPerPage, \
+                               baseDir,actor,nickname,domain,port, \
+                               maxSharesPerAccount,httpPrefix) + \
+                               htmlFooter()
 
     # add the javascript for content warnings
     tlStr+='<script>'+contentWarningScript()+'</script>'
