@@ -1168,7 +1168,7 @@ def htmlIndividualShare(actor: str,item: {},translate: {},showContact: bool) -> 
     profileStr+='<b>'+translate['Location']+':</b> '+item['location']+'</p>'
     if showContact:
         contactActor=item['actor']
-        sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+item['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
+        profileStr+='<p><a href="'+actor+'?replydm=sharedesc:'+item['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
     profileStr+='</div>'
     return profileStr
 
