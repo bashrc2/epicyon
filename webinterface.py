@@ -2113,8 +2113,6 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             contentStr+='<b>'+postJsonObject['object']['summary']+'</b> '
             if isModerationPost:
                 containerClass='container report'
-        else:
-            contentStr+='<b>Sensitive</b> '
         contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">'+translate['SHOW MORE']+'</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=postJsonObject['object']['content']+attachmentStr
