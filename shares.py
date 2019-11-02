@@ -102,14 +102,15 @@ def addShare(baseDir: str, \
             imageFilename=sharesImageFilename+'.gif'
             moveImage=True
 
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
+
     # copy or move the image for the shared item to its destination
     if imageFilename:
         if os.path.isfile(imageFilename):
-            domainFull=domain
-            if port:
-                if port!=80 and port!=443:
-                    if ':' not in domain:
-                        domainFull=domain+':'+str(port)
             if not os.path.isdir(baseDir+'/sharefiles'):
                 os.mkdir(baseDir+'/sharefiles')
             if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
@@ -151,9 +152,10 @@ def addShare(baseDir: str, \
                 accountDir=baseDir+'/accounts/'+handle
                 newShareFile=accountDir+'/.newShare'
                 if not os.path.isfile(newShareFile):
+                    nickname=handle.split('@')[0]
                     try:
                         with open(newShareFile, 'w') as fp:
-                            fp.write('\n')
+                            fp.write(httpPrefix+'://'+domainFull+'/users/'+nickname+'/tlshares')
                     except:
                         pass
 
