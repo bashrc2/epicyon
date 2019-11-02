@@ -2701,7 +2701,7 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['itemType'], \
                          fields['category'], \
                          fields['location'], \
-                         fields['duration'],
+                         fields['duration']+' days',
                          self.server.debug)
                 if filename:
                     if os.path.isfile(filename):
