@@ -2691,6 +2691,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if attachmentMediaType:
                     if attachmentMediaType!='image':
                         return -1
+                durationStr=fields['duration']
+                if durationStr:
+                    if ' ' not in durationStr:
+                        durationStr=durationStr+' days'
                 addShare(self.server.baseDir, \
                          self.server.httpPrefix, \
                          nickname, \
@@ -2701,7 +2705,7 @@ class PubServer(BaseHTTPRequestHandler):
                          fields['itemType'], \
                          fields['category'], \
                          fields['location'], \
-                         fields['duration']+' days',
+                         durationStr,
                          self.server.debug)
                 if filename:
                     if os.path.isfile(filename):
