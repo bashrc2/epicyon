@@ -2441,6 +2441,21 @@ def htmlTimeline(translate: {},pageNumber: int, \
     tlStr+=htmlFooter()
     return tlStr
 
+def htmlShares(translate: {},pageNumber: int,itemsPerPage: int, \
+               session,baseDir: str,wfRequest: {},personCache: {}, \
+               nickname: str,domain: str,port: int,inboxJson: {}, \
+               allowDeletion: bool, \
+               httpPrefix: str,projectVersion: str) -> str:
+    """Show the shares timeline as html
+    """
+    manuallyApproveFollowers= \
+        followerApprovalActive(baseDir,nickname,domain)
+
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'tlshares',allowDeletion, \
+                        httpPrefix,projectVersion,manuallyApproveFollowers)
+
 def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}, \

@@ -92,6 +92,7 @@ from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
 from webinterface import htmlInbox
+from webinterface import htmlShares
 from webinterface import htmlOutbox
 from webinterface import htmlModeration
 from webinterface import htmlPostReplies
@@ -2093,6 +2094,44 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 return
 
+        # get the shared items timeline for a given person
+        if self.path.endswith('/tlshares') or '/tlshares?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    if self._requestHTTP():
+                        nickname=self.path.replace('/users/','').replace('/tlshares','')
+                        pageNumber=1
+                        if '?page=' in nickname:
+                            pageNumber=nickname.split('?page=')[1]
+                            nickname=nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber=int(pageNumber)
+                            else:
+                                pageNumber=1
+                        msg=htmlShares(self.server.translate, \
+                                       pageNumber,maxPostsInFeed, \
+                                       self.server.session, \
+                                       self.server.baseDir, \
+                                       self.server.cachedWebfingers, \
+                                       self.server.personCache, \
+                                       nickname, \
+                                       self.server.domain, \
+                                       self.server.port, \
+                                       self.server.allowDeletion, \
+                                       self.server.httpPrefix, \
+                                       self.server.projectVersion).encode('utf-8')
+                        self._set_headers('text/html',len(msg),cookie)
+                        self._write(msg)
+                        self.server.GETbusy=False
+                        return
+            # not the shares timeline
+            if self.server.debug:
+                print('DEBUG: GET access to shares timeline is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy=False
+            return
+            
         # get outbox feed for a person
         outboxFeed=personBoxJson(self.server.session, \
                                  self.server.baseDir,self.server.domain, \
