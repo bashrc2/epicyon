@@ -144,6 +144,14 @@ def addShare(baseDir: str, \
 
     saveJson(sharesJson,sharesFilename)
 
+    # indicate that a new share is available
+    newShareFile=baseDir+'/accounts/.newShare'
+    try:
+        with open(newShareFile, 'w') as fp:
+            fp.write('\n')
+    except:
+        pass
+
 def expireShares(baseDir: str) -> None:
     """Removes expired items from shares
     """
