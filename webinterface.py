@@ -2443,7 +2443,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
 def htmlShares(translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
-               nickname: str,domain: str,port: int,inboxJson: {}, \
+               nickname: str,domain: str,port: int, \
                allowDeletion: bool, \
                httpPrefix: str,projectVersion: str) -> str:
     """Show the shares timeline as html
@@ -2453,7 +2453,7 @@ def htmlShares(translate: {},pageNumber: int,itemsPerPage: int, \
 
     return htmlTimeline(translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,inboxJson,'tlshares',allowDeletion, \
+                        nickname,domain,port,None,'tlshares',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
 def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
