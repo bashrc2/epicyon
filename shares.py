@@ -79,7 +79,7 @@ def addShare(baseDir: str, \
             if 'year' in durationList[1]:
                 durationSec=published+(int(durationList[0])*60*60*24*365)
 
-    itemID=displayName.replace(' ','')
+    itemID=displayName.replace(' ','').replace('/','-').replace('\\','-').replace('.','_').replace('?','-').replace('\n','').replace("’","'")
 
     # has an image for this share been uploaded?
     imageUrl=None
