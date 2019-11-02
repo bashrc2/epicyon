@@ -2195,7 +2195,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     # should the Shares button be highlighted?
     newShare=False
-    newShareFile=baseDir+'/accounts/.newShare'
+    newShareFile=accountDir+'/.newShare'
     if os.path.isfile(newShareFile):
         newShare=True
         if boxName=='tlshares':

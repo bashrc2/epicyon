@@ -145,13 +145,17 @@ def addShare(baseDir: str, \
     saveJson(sharesJson,sharesFilename)
 
     # indicate that a new share is available
-    newShareFile=baseDir+'/accounts/.newShare'
-    if not os.path.isfile(newShareFile):
-        try:
-            with open(newShareFile, 'w') as fp:
-                fp.write('\n')
-        except:
-            pass
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for handle in dirs:
+            if '@' in handle:
+                accountDir=baseDir+'/accounts/'+handle
+                newShareFile=accountDir+'/.newShare'
+                if not os.path.isfile(newShareFile):
+                    try:
+                        with open(newShareFile, 'w') as fp:
+                            fp.write('\n')
+                    except:
+                        pass
 
 def expireShares(baseDir: str) -> None:
     """Removes expired items from shares
