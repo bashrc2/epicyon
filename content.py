@@ -30,13 +30,13 @@ def addMusicTag(content: str,tag: str) -> str:
 def addWebLinks(content: str) -> str:
     """Adds markup for web links
     """
-    if not ('https://' in content or 'http://' in content):
+    if not ('https://' in content or 'http://' in content or 'dat://' in content):
         return content
 
     words=content.replace('\n',' --linebreak--').split(' ')
     replaceDict={}
     for w in words:
-        if w.startswith('https://') or w.startswith('http://'):
+        if w.startswith('https://') or w.startswith('http://') or w.startswith('dat://'):
             if w.endswith('.') or w.endswith(';'):
                 w=w[:-1]
             markup='<a href="'+w+'" rel="nofollow noopener" target="_blank">'
@@ -44,7 +44,9 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">https://</span>'
             elif w.startswith('http://'):
                 markup+='<span class="invisible">http://</span>'
-            markup+='<span class="ellipsis">'+w.replace('https://','').replace('http://','')+'</span></a>'
+            elif w.startswith('dat://'):
+                markup+='<span class="invisible">dat://</span>'
+            markup+='<span class="ellipsis">'+w.replace('https://','').replace('http://','').replace('dat://','')+'</span></a>'
             replaceDict[w]=markup
     for url,markup in replaceDict.items():
         content=content.replace(url,markup)
