@@ -2637,7 +2637,7 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     domain,port=getDomainFromActor(actor)
     sharesFile=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
     if not os.path.isfile(sharesFile):
-        print('ERROR: no shares file '+sharesFile
+        print('ERROR: no shares file '+sharesFile)
         return None
     sharesJson=loadJson(sharesFile)    
     if not sharesJson:
