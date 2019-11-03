@@ -1200,7 +1200,7 @@ def sharesTimelineJson(actor: str,pageNumber: int,itemsPerPage: int, \
                     sharesJson=loadJson(sharesFilename)
                     if not sharesJson:
                         continue
-                    owner=actor.split('/users/')[0]+handle.split('@')[0]
+                    owner=actor.split('/users/')[0]+'/users/'+handle.split('@')[0]
                     ctr=0
                     for itemID,item in sharesJson.items():
                         item['actor']=owner
