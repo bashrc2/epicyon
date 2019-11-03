@@ -46,7 +46,8 @@ def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
         return actorJson['availability']
     return None
 
-def outboxAvailability(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool:
+def outboxAvailability(baseDir: str,nickname: str,messageJson: {}, \
+                       debug: bool) -> bool:
     """Handles receiving an availability update
     """
     if not messageJson.get('type'):

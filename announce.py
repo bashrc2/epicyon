@@ -62,7 +62,8 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
                 return True
     return False
 
-def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> None:
+def undoAnnounceCollectionEntry(postFilename: str,actor: str, \
+                                debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from the "shares"
     collection within a post. Note that the "shares" collection has no relation
     to shared items in shares.py. It's shares of posts, not shares of physical objects.
@@ -102,14 +103,15 @@ def undoAnnounceCollectionEntry(postFilename: str,actor: str,debug: bool) -> Non
                     print('DEBUG: shares (announcements) was removed from post')
                 del postJsonObject['object']['shares']
             else:
-                postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
+                postJsonObject['object']['shares']['totalItems']= \
+                    len(postJsonObject['object']['shares']['items'])
             with open(postFilename, 'w') as fp:
                 commentjson.dump(postJsonObject, fp, indent=4, sort_keys=True)            
 
 def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
     """Updates the announcements collection within a post
-    Confusingly this is known as "shares", but isn't the same as shared items within shares.py
-    It's shares of posts, not shares of physical objects.
+    Confusingly this is known as "shares", but isn't the same as shared
+    items within shares.py. It's shares of posts, not shares of physical objects.
     """
     with open(postFilename, 'r') as fp:
         postJsonObject=commentjson.load(fp)
@@ -146,7 +148,8 @@ def updateAnnounceCollection(postFilename: str,actor: str,debug: bool) -> None:
                     'actor': actor
                 }
                 postJsonObject['object']['shares']['items'].append(newAnnounce)
-                postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
+                postJsonObject['object']['shares']['totalItems']= \
+                    len(postJsonObject['object']['shares']['items'])
             else:
                 if debug:
                     print('DEBUG: shares (announcements) section of post has no items list')

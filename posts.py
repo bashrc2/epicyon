@@ -372,7 +372,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
             break
     return personPosts
 
-def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None:
+def deleteAllPosts(baseDir: str, \
+                   nickname: str, domain: str,boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname!='inbox' and boxname!='outbox':
@@ -656,8 +657,9 @@ def outboxMessageCreateWrap(httpPrefix: str, \
         httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     return newPost
 
-def postIsAddressedToFollowers(baseDir: str,
-                               nickname: str, domain: str, port: int,httpPrefix: str,
+def postIsAddressedToFollowers(baseDir: str, \
+                               nickname: str,domain: str, \
+                               port: int,httpPrefix: str, \
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
@@ -816,13 +818,15 @@ def getMentionedPeople(baseDir: str,httpPrefix: str, \
             mentions.append(actor)
     return mentions
 
-def createDirectMessagePost(baseDir: str,
-                            nickname: str, domain: str, port: int,httpPrefix: str, \
-                            content: str, followersOnly: bool, saveToFile: bool,
+def createDirectMessagePost(baseDir: str, \
+                            nickname: str,domain: str,port: int, \
+                            httpPrefix: str, \
+                            content: str,followersOnly: bool,saveToFile: bool,
                             clientToServer: bool,\
                             attachImageFilename: str,mediaType: str, \
                             imageDescription: str,useBlurhash: bool, \
-                            inReplyTo=None, inReplyToAtomUri=None, subject=None,debug=False) -> {}:
+                            inReplyTo=None,inReplyToAtomUri=None, \
+                            subject=None,debug=False) -> {}:
     """Direct Message post
     """
     mentionedPeople=getMentionedPeople(baseDir,httpPrefix,content,domain,debug)
@@ -840,9 +844,9 @@ def createDirectMessagePost(baseDir: str,
                           imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject)
 
-def createReportPost(baseDir: str,
-                     nickname: str, domain: str, port: int,httpPrefix: str, \
-                     content: str, followersOnly: bool, saveToFile: bool,
+def createReportPost(baseDir: str, \
+                     nickname: str,domain: str,port: int,httpPrefix: str, \
+                     content: str, followersOnly: bool, saveToFile: bool, \
                      clientToServer: bool,\
                      attachImageFilename: str,mediaType: str, \
                      imageDescription: str,useBlurhash: bool, \
@@ -915,8 +919,9 @@ def createReportPost(baseDir: str,
                            True,None, None, subject)
     return postJsonObject
 
-def threadSendPost(session,postJsonStr: str,federationList: [],\
-                   inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
+def threadSendPost(session,postJsonStr: str,federationList: [], \
+                   inboxUrl: str, baseDir: str, \
+                   signatureHeaderJson: {},postLog: [], \
                    debug :bool) -> None:
     """Sends a post with exponential backoff
     """
@@ -955,15 +960,17 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         tries+=1
 
 def sendPost(projectVersion: str, \
-             session,baseDir: str,nickname: str, domain: str, port: int, \
-             toNickname: str, toDomain: str, toPort: int, cc: str, \
-             httpPrefix: str, content: str, followersOnly: bool, \
-             saveToFile: bool, clientToServer: bool, \
+             session,baseDir: str,nickname: str,domain: str,port: int, \
+             toNickname: str,toDomain: str,toPort: int,cc: str, \
+             httpPrefix: str,content: str,followersOnly: bool, \
+             saveToFile: bool,clientToServer: bool, \
              attachImageFilename: str,mediaType: str, \
              imageDescription: str,useBlurhash: bool, \
-             federationList: [],\
-             sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
-             debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
+             federationList: [], \
+             sendThreads: [],postLog: [], \
+             cachedWebfingers: {},personCache: {}, \
+             debug=False,inReplyTo=None, \
+             inReplyToAtomUri=None,subject=None) -> int:
     """Post to another inbox
     """
     withDigest=True
@@ -1061,7 +1068,8 @@ def sendPostViaServer(projectVersion: str, \
                       attachImageFilename: str,mediaType: str, \
                       imageDescription: str,useBlurhash: bool, \
                       cachedWebfingers: {},personCache: {}, \
-                      debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
+                      debug=False,inReplyTo=None, \
+                      inReplyToAtomUri=None,subject=None) -> int:
     """Send a post via a proxy (c2s)
     """
     if not session:
@@ -1566,23 +1574,31 @@ def sendToFollowers(session,baseDir: str, \
             print('DEBUG: End of sendToFollowers')
         
 
-def createInbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                 itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+def createInbox(baseDir: str,nickname: str,domain: str,port: int, \
+                httpPrefix: str, \
+                itemsPerPage: int,headerOnly: bool, \
+                ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'inbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createDMTimeline(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                 itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+def createDMTimeline(baseDir: str,nickname: str,domain: str,port: int, \
+                     httpPrefix: str, \
+                     itemsPerPage: int,headerOnly: bool, \
+                     ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'dm',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createOutbox(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                 itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
+def createOutbox(baseDir: str,nickname: str,domain: str,port: int, \
+                 httpPrefix: str, \
+                 itemsPerPage: int,headerOnly: bool, \
+                 authorized: bool,pageNumber=None) -> {}:
     return createBoxBase(baseDir,'outbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,authorized,False,pageNumber)
 
-def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                     itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+def createModeration(baseDir: str,nickname: str,domain: str,port: int, \
+                     httpPrefix: str, \
+                     itemsPerPage: int,headerOnly: bool, \
+                     ocapAlways: bool,pageNumber=None) -> {}:
     boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     boxname='moderation'
 
@@ -1857,7 +1873,8 @@ def createBoxBase(baseDir: str,boxname: str, \
         return boxHeader
     return boxItems
 
-def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,maxPostsInBox=256):
+def expireCache(baseDir: str,personCache: {}, \
+                httpPrefix: str,archiveDir: str,maxPostsInBox=256):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
@@ -1866,7 +1883,8 @@ def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,max
         expirePersonCache(basedir,personCache)
         archivePosts(baseDir,httpPrefix,archiveDir,maxPostsInBox)
 
-def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=256) -> None:
+def archivePosts(baseDir: str,httpPrefix: str, \
+                 archiveDir: str,maxPostsInBox=256) -> None:
     """Archives posts for all accounts
     """
     if archiveDir:
@@ -1899,8 +1917,10 @@ def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=256)
                                       'outbox',archiveSubdir, \
                                       maxPostsInBox)
 
-def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str, \
-                          boxname: str,archiveDir: str,maxPostsInBox=256) -> None:
+def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str, \
+                          baseDir: str, \
+                          boxname: str,archiveDir: str, \
+                          maxPostsInBox=256) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
     """
@@ -2005,8 +2025,11 @@ def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
                           sendThreads,postLog,cachedWebfingers, \
                           personCache,debug,projectVersion)
 
-def populateRepliesJson(baseDir: str,nickname: str,domain: str,postRepliesFilename: str,authorized: bool,repliesJson: {}) -> None:
-    # populate the items list with replies
+def populateRepliesJson(baseDir: str,nickname: str,domain: str, \
+                        postRepliesFilename: str,authorized: bool, \
+                        repliesJson: {}) -> None:
+    """populate the items list with replies
+    """
     repliesBoxes=['outbox','inbox']
     with open(postRepliesFilename,'r') as repliesFile: 
         for messageId in repliesFile:

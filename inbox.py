@@ -132,7 +132,8 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
             return False
     return True
 
-def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
+def inboxPermittedMessage(domain: str,messageJson: {}, \
+                          federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
     testParam='actor'
@@ -160,7 +161,7 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
 
     return True
 
-def validPublishedDate(published) -> bool:
+def validPublishedDate(published: str) -> bool:
     currTime=datetime.datetime.utcnow()
     pubDate=datetime.datetime.strptime(published,"%Y-%m-%dT%H:%M:%SZ")
     daysSincePublished = (currTime - pubTime).days
@@ -387,7 +388,9 @@ def inboxPostRecipientsAdd(baseDir :str,httpPrefix :str,toList :[], \
             followerRecipients=True
     return followerRecipients,recipientsDict
 
-def inboxPostRecipients(baseDir :str,postJsonObject :{},httpPrefix :str,domain : str,port :int, debug :bool) -> ([],[]):
+def inboxPostRecipients(baseDir :str,postJsonObject :{}, \
+                        httpPrefix :str,domain : str,port :int, \
+                        debug :bool) -> ([],[]):
     """Returns dictionaries containing the recipients of the given post
     The shared dictionary contains followers
     """
@@ -1052,8 +1055,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
                            queue: [],domain: str,port: int,useTor: bool, \
                            federationList: [],ocapAlways: bool,debug: bool, \
-                           acceptedCaps: [],
-                           queueFilename :str,destinationFilename :str,
+                           acceptedCaps: [], \
+                           queueFilename :str,destinationFilename :str, \
                            maxReplies: int,allowDeletion: bool) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """

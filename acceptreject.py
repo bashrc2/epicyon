@@ -58,9 +58,13 @@ def createAcceptReject(baseDir: str,federationList: [], \
 def createAccept(baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
-                 objectJson: {},acceptedCaps=["inbox:write","objects:read"]) -> {}:
+                 objectJson: {}, \
+                 acceptedCaps=["inbox:write","objects:read"]) -> {}:
     # create capabilities accept
-    ocapNew=capabilitiesAccept(baseDir,httpPrefix,nickname,domain,port,toUrl,True,acceptedCaps)
+    ocapNew= \
+        capabilitiesAccept(baseDir,httpPrefix, \
+                           nickname,domain,port, \
+                           toUrl,True,acceptedCaps)
     return createAcceptReject(baseDir,federationList, \
                               nickname,domain,port, \
                               toUrl,ccUrl,httpPrefix, \
@@ -126,7 +130,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
             print('DEBUG: nickname not found in '+thisActor)        
         return
     if acceptedPort:
-        if not '/'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname in thisActor:
+        if '/'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname not in thisActor:
             if debug:
                 print('Port: '+str(acceptedPort))
                 print('Expected: /'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname)
@@ -134,7 +138,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                 print('DEBUG: unrecognized actor '+thisActor)
             return
     else:
-        if not '/'+acceptedDomain+'/users/'+nickname in thisActor:
+        if '/'+acceptedDomain+'/users/'+nickname not in thisActor:
             if debug:
                 print('Expected: /'+acceptedDomain+'/users/'+nickname)
                 print('Actual:   '+thisActor)

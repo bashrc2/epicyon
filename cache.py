@@ -11,7 +11,8 @@ import time
 import datetime
 import commentjson
 
-def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {}) -> None:
+def storePersonInCache(baseDir: str,personUrl: str, \
+                       personJson: {},personCache: {}) -> None:
     """Store an actor in the cache
     """
     currTime=datetime.datetime.utcnow()
@@ -35,7 +36,8 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
     # if the actor is not in memory then try to load it from file
     loadedFromFile=False
     if not personCache.get(personUrl):
-        cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
+        cacheFilename= \
+            baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if os.path.isfile(cacheFilename):
             personJson=None
             try:
@@ -52,11 +54,12 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
         if not loadedFromFile:
             # update the timestamp for the last time the actor was retrieved
             currTime=datetime.datetime.utcnow()
-            personCache[personUrl]['timestamp']=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+            personCache[personUrl]['timestamp']= \
+                currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
         return personCache[personUrl]['actor']
     return None
 
-def expirePersonCache(personCache: {}):
+def expirePersonCache(personCache: {}) -> None:
     """Expires old entries from the cache in memory
     """
     currTime=datetime.datetime.utcnow()

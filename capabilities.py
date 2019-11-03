@@ -15,7 +15,8 @@ from auth import createPassword
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 
-def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: str) -> str:
+def getOcapFilename(baseDir :str,nickname: str,domain: str, \
+                    actor :str,subdir: str) -> str:
     """Returns the filename for a particular capability accepted or granted
     Also creates directories as needed
     """
@@ -40,7 +41,8 @@ def getOcapFilename(baseDir :str,nickname: str,domain: str,actor :str,subdir: st
     if not os.path.isdir(ocDir):
         os.mkdir(ocDir)
 
-    return baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+subdir+'/'+actor.replace('/','#')+'.json'
+    return baseDir+'/accounts/'+nickname+'@'+domain+'/ocap/'+ \
+        subdir+'/'+actor.replace('/','#')+'.json'
 
 def CapablePost(postJson: {}, capabilityList: [], debug :bool) -> bool:
     """Determines whether a post arriving in the inbox
@@ -120,7 +122,8 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
                 fullDomain=domain+':'+str(port)
     
     # make directories to store capabilities
-    ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
+    ocapFilename= \
+        getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
     if not ocapFilename:
         return None
     ocapAccept=None
@@ -137,9 +140,11 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             return None
         acceptedActorDomain,acceptedActorPort=getDomainFromActor(acceptedActor)
         if acceptedActorPort:            
-            ocapId=acceptedActorNickname+'@'+acceptedActorDomain+':'+str(acceptedActorPort)+'#'+createPassword(32)
+            ocapId=acceptedActorNickname+'@'+acceptedActorDomain+':'+ \
+                str(acceptedActorPort)+'#'+createPassword(32)
         else:
-            ocapId=acceptedActorNickname+'@'+acceptedActorDomain+'#'+createPassword(32)
+            ocapId=acceptedActorNickname+'@'+acceptedActorDomain+'#'+ \
+                createPassword(32)
         ocapAccept = {
             "@context": "https://www.w3.org/ns/activitystreams",
             "id": httpPrefix+"://"+fullDomain+"/caps/"+ocapId,
@@ -156,13 +161,15 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             commentjson.dump(ocapAccept, fp, indent=4, sort_keys=False)
     return ocapAccept
 
-def capabilitiesGrantedSave(baseDir :str,nickname :str,domain :str,ocap: {}) -> bool:
+def capabilitiesGrantedSave(baseDir :str, \
+                            nickname :str,domain :str,ocap: {}) -> bool:
     """A capabilities accept is received, so stor it for
     reference when sending to the actor
     """
     if not ocap.get('actor'):
         return False
-    ocapFilename=getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
+    ocapFilename= \
+        getOcapFilename(baseDir,nickname,domain,ocap['actor'],'granted')
     if not ocapFilename:
         return False
     with open(ocapFilename, 'w') as fp:
@@ -189,7 +196,8 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
                 fullDomain=domain+':'+str(port)
     
     # Get the filename of the capability
-    ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,updateActor,'accept')
+    ocapFilename= \
+        getOcapFilename(baseDir,nickname,fullDomain,updateActor,'accept')
     if not ocapFilename:
         return None
 
@@ -221,7 +229,8 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
         return None
     updateActorDomain,updateActorPort=getDomainFromActor(updateActor)
     if updateActorPort:
-        ocapId=updateActorNickname+'@'+updateActorDomain+':'+str(updateActorPort)+'#'+createPassword(32)
+        ocapId=updateActorNickname+'@'+updateActorDomain+':'+ \
+            str(updateActorPort)+'#'+createPassword(32)
     else:
         ocapId=updateActorNickname+'@'+updateActorDomain+'#'+createPassword(32)
     ocapJson['id']=httpPrefix+"://"+fullDomain+"/caps/"+ocapId

@@ -32,7 +32,7 @@ def setConfigParam(baseDir: str, variableName: str, variableValue) -> None:
     with open(configFilename, 'w') as fp:
         commentjson.dump(configJson, fp, indent=4, sort_keys=True)
 
-def getConfigParam(baseDir: str, variableName: str):
+def getConfigParam(baseDir: str, variableName: str) -> None:
     """Gets a configuration value
     """
     createConfig(baseDir)
