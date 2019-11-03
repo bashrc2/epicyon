@@ -48,7 +48,8 @@ def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
         return actorJson['availability']
     return None
 
-def outboxAvailability(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool:
+def outboxAvailability(baseDir: str,nickname: str,messageJson: {}, \
+                       debug: bool) -> bool:
     """Handles receiving an availability update
     """
     if not messageJson.get('type'):
@@ -133,10 +134,6 @@ def sendAvailabilityViaServer(baseDir: str,session, \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newAvailabilityJson,[],inboxUrl,headers,"inbox:write")
-    #if not postResult:
-    #    if debug:
-    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
-    #    return 5
 
     if debug:
         print('DEBUG: c2s POST availability success')

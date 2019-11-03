@@ -137,11 +137,13 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
         blockHandle=blockNickname+'@'+blockDomain
         if blockHandle in open(globalBlockingFilename).read():
             return True
-    allowFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
+    allowFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
     if os.path.isfile(allowFilename):
         if blockDomain not in open(allowFilename).read():
             return True
-    blockingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
+    blockingFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
     if os.path.isfile(blockingFilename):
         if '*@'+blockDomain in open(blockingFilename).read():
             return True
@@ -168,8 +170,9 @@ def sendBlockViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl= 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl= \
+        httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     blockActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
     newBlockJson = {
@@ -215,10 +218,6 @@ def sendBlockViaServer(baseDir: str,session, \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newBlockJson,[],inboxUrl,headers,"inbox:write")
-    #if not postResult:
-    #    if debug:
-    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
-    #    return 5
 
     if debug:
         print('DEBUG: c2s POST block success')
@@ -243,8 +242,9 @@ def sendUndoBlockViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl= 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl= \
+        httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     blockActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
     newBlockJson = {
@@ -263,8 +263,9 @@ def sendUndoBlockViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -294,10 +295,6 @@ def sendUndoBlockViaServer(baseDir: str,session, \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newBlockJson,[],inboxUrl,headers,"inbox:write")
-    #if not postResult:
-    #    if debug:
-    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
-    #    return 5
 
     if debug:
         print('DEBUG: c2s POST block success')

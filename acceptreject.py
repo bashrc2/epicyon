@@ -58,9 +58,12 @@ def createAcceptReject(baseDir: str,federationList: [], \
 def createAccept(baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int, \
                  toUrl: str,ccUrl: str,httpPrefix: str, \
-                 objectJson: {},acceptedCaps=["inbox:write","objects:read"]) -> {}:
+                 objectJson: {}, \
+                 acceptedCaps=["inbox:write","objects:read"]) -> {}:
     # create capabilities accept
-    ocapNew=capabilitiesAccept(baseDir,httpPrefix,nickname,domain,port,toUrl,True,acceptedCaps)
+    ocapNew= \
+        capabilitiesAccept(baseDir,httpPrefix, \
+                           nickname,domain,port,toUrl,True,acceptedCaps)
     return createAcceptReject(baseDir,federationList, \
                               nickname,domain,port, \
                               toUrl,ccUrl,httpPrefix, \
@@ -94,17 +97,6 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         if debug:
             print('DEBUG: No "to" parameter in follow Accept')
         return
-    #if len(messageJson['object']['to'])!=1:
-    #    if debug:
-    #        print('DEBUG: "to" does not contain a single recipient')
-    #        print(str(messageJson['object']['to']))
-    #    if messageJson['object'].get('object'):
-    #        if not isinstance(messageJson['object']['object'], str):
-    #            messageJson['object']['to']=messageJson['object']['object']
-    #        else:
-    #            return
-    #    else:
-    #        return        
     if debug:
         print('DEBUG: follow Accept received')
     thisActor=messageJson['object']['actor']
@@ -117,19 +109,16 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         if debug:
             print('DEBUG: domain not found in '+thisActor)
         return
-    #if acceptedDomain != domain:
-    #    if debug:
-    #        print('DEBUG: domain mismatch '+acceptedDomain+' != '+domain)
-    #    return
     if not nickname:
         if debug:
             print('DEBUG: nickname not found in '+thisActor)        
         return
     if acceptedPort:
-        if not '/'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname in thisActor:
+        if '/'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname not in thisActor:
             if debug:
                 print('Port: '+str(acceptedPort))
-                print('Expected: /'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname)
+                print('Expected: /'+acceptedDomain+':'+str(acceptedPort)+ \
+                      '/users/'+nickname)
                 print('Actual:   '+thisActor)
                 print('DEBUG: unrecognized actor '+thisActor)
             return
@@ -167,10 +156,13 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                     followedNickname,followedDomainFull, \
                     federationList,debug):
         if debug:
-            print('DEBUG: '+nickname+'@'+acceptedDomainFull+' followed '+followedNickname+'@'+followedDomainFull)
+            print('DEBUG: '+nickname+'@'+acceptedDomainFull+ \
+                  ' followed '+followedNickname+'@'+followedDomainFull)
     else:
         if debug:
-            print('DEBUG: Unable to create follow - '+nickname+'@'+acceptedDomain+' -> '+followedNickname+'@'+followedDomain)
+            print('DEBUG: Unable to create follow - '+ \
+                  nickname+'@'+acceptedDomain+' -> '+ \
+                  followedNickname+'@'+followedDomain)
 
 def receiveAcceptReject(session,baseDir: str, \
                         httpPrefix: str,domain :str,port: int, \
@@ -189,18 +181,21 @@ def receiveAcceptReject(session,baseDir: str, \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type']+'. Assuming single user instance.')
+            print('DEBUG: "users" or "profile" missing from actor in '+ \
+                  messageJson['type']+'. Assuming single user instance.')
     domain,tempPort=getDomainFromActor(messageJson['actor'])
     if not domainPermitted(domain,federationList):
         if debug:
-            print('DEBUG: '+messageJson['type']+' from domain not permitted - '+domain)
+            print('DEBUG: '+messageJson['type']+ \
+                  ' from domain not permitted - '+domain)
         return False
     nickname=getNicknameFromActor(messageJson['actor'])
     if not nickname:
         # single user instance
         nickname='dev'
         if debug:
-            print('DEBUG: '+messageJson['type']+' does not contain a nickname. Assuming single user instance.')
+            print('DEBUG: '+messageJson['type']+ \
+                  ' does not contain a nickname. Assuming single user instance.')
     handle=nickname.lower()+'@'+domain.lower()
     # receive follow accept
     acceptFollow(baseDir,domain,messageJson,federationList,debug)

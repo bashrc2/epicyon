@@ -46,7 +46,8 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
         domain,port=getDomainFromActor(messageJson['actor'])
         postFilename=locatePost(baseDir,nickname,domain,messageJson['object'])
         if postFilename:
-            updateAnnounceCollection(baseDir,postFilename,messageJson['actor'],domain,debug)
+            updateAnnounceCollection(baseDir,postFilename, \
+                                     messageJson['actor'],domain,debug)
             return True
     if messageJson['type']=='Undo':
         if not isinstance(messageJson['object'], dict):
@@ -61,22 +62,29 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
                 print('WARN: no nickname found in '+messageJson['actor'])
                 return False
             domain,port=getDomainFromActor(messageJson['actor'])
-            postFilename=locatePost(baseDir,nickname,domain,messageJson['object']['object'])
+            postFilename= \
+                locatePost(baseDir,nickname,domain, \
+                           messageJson['object']['object'])
             if postFilename:
-                undoAnnounceCollectionEntry(baseDir,postFilename,messageJson['actor'],domain,debug)
+                undoAnnounceCollectionEntry(baseDir,postFilename, \
+                                            messageJson['actor'], \
+                                            domain,debug)
                 return True
     return False
 
-def undoAnnounceCollectionEntry(baseDir: str,postFilename: str,actor: str,domain: str,debug: bool) -> None:
-    """Undoes an announce for a particular actor by removing it from the "shares"
-    collection within a post. Note that the "shares" collection has no relation
-    to shared items in shares.py. It's shares of posts, not shares of physical objects.
+def undoAnnounceCollectionEntry(baseDir: str,postFilename: str, \
+                                actor: str,domain: str,debug: bool) -> None:
+    """Undoes an announce for a particular actor by removing it from
+    the "shares" collection within a post. Note that the "shares" 
+    collection has no relation to shared items in shares.py. It's
+    shares of posts, not shares of physical objects.
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this announce so that the like icon is changed
         nickname=getNicknameFromActor(actor)
-        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        cachedPostFilename= \
+            getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
@@ -113,19 +121,24 @@ def undoAnnounceCollectionEntry(baseDir: str,postFilename: str,actor: str,domain
                     print('DEBUG: shares (announcements) was removed from post')
                 del postJsonObject['object']['shares']
             else:
-                postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
+                postJsonObject['object']['shares']['totalItems']= \
+                    len(postJsonObject['object']['shares']['items'])
             saveJson(postJsonObject,postFilename)
 
-def updateAnnounceCollection(baseDir: str,postFilename: str,actor: str,domain: str,debug: bool) -> None:
+def updateAnnounceCollection(baseDir: str,postFilename: str, \
+                             actor: str,domain: str,debug: bool) -> None:
     """Updates the announcements collection within a post
-    Confusingly this is known as "shares", but isn't the same as shared items within shares.py
+    Confusingly this is known as "shares", but isn't the
+    same as shared items within shares.py
     It's shares of posts, not shares of physical objects.
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
-        # remove any cached version of this announce so that the like icon is changed
+        # remove any cached version of this announce so that the like
+        # icon is changed
         nickname=getNicknameFromActor(actor)
-        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        cachedPostFilename= \
+            getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
@@ -139,7 +152,8 @@ def updateAnnounceCollection(baseDir: str,postFilename: str,actor: str,domain: s
         postUrl=postJsonObject['id'].replace('/activity','')+'/shares'
         if not postJsonObject['object'].get('shares'):
             if debug:
-                print('DEBUG: Adding initial shares (announcements) to '+postUrl)
+                print('DEBUG: Adding initial shares (announcements) to '+ \
+                      postUrl)
             announcementsJson = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': postUrl,
@@ -162,7 +176,8 @@ def updateAnnounceCollection(baseDir: str,postFilename: str,actor: str,domain: s
                     'actor': actor
                 }
                 postJsonObject['object']['shares']['items'].append(newAnnounce)
-                postJsonObject['object']['shares']['totalItems']=len(postJsonObject['object']['shares']['items'])
+                postJsonObject['object']['shares']['totalItems']= \
+                    len(postJsonObject['object']['shares']['items'])
             else:
                 if debug:
                     print('DEBUG: shares (announcements) section of post has no items list')
@@ -442,7 +457,8 @@ def sendAnnounceViaServer(baseDir: str,session, \
 
     statusNumber,published = getStatusNumber()
     newAnnounceId= \
-        httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/statuses/'+statusNumber
+        httpPrefix+'://'+fromDomainFull+'/users/'+ \
+        fromNickname+'/statuses/'+statusNumber
     newAnnounceJson = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -489,10 +505,6 @@ def sendAnnounceViaServer(baseDir: str,session, \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newAnnounceJson,[],inboxUrl,headers,"inbox:write")
-    #if not postResult:
-    #    if debug:
-    #        print('DEBUG: POST announce failed for c2s to '+inboxUrl)
-    #    return 5
 
     if debug:
         print('DEBUG: c2s POST announce success')
