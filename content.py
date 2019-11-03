@@ -248,8 +248,12 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
             continue
         if len(wordStr)>2 and wordStr.startswith(':') and wordStr.endswith(':') and not emojiDict:
             print('Loading emoji lookup')
+
+            # emoji.json is generated so that it can be customized and the changes
+            # will be retained even if default_emoji.json is subsequently updated
             if not os.path.isfile(baseDir+'/emoji/emoji.json'):
                 copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+
             with open(baseDir+'/emoji/emoji.json', 'r') as fp:
                 emojiDict=commentjson.load(fp)
 
