@@ -1200,9 +1200,12 @@ def sharesTimelineJson(actor: str,pageNumber: int,itemsPerPage: int, \
                     sharesJson=loadJson(sharesFilename)
                     if not sharesJson:
                         continue
-                    owner=actor.split('/users/')[0]+'/users/'+handle.split('@')[0]
+                    nickname=handle.split('@')[0]
+                    # actor who owns this share
+                    owner=actor.split('/users/')[0]+'/users/'+nickname
                     ctr=0
                     for itemID,item in sharesJson.items():
+                        # assign owner to the item
                         item['actor']=owner
                         allSharesJson[str(item['published'])]=item
                         ctr+=1
@@ -2634,11 +2637,14 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     domain,port=getDomainFromActor(actor)
     sharesFile=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
     if not os.path.isfile(sharesFile):
+        print('ERROR: no shares file '+sharesFile
         return None
     sharesJson=loadJson(sharesFile)    
     if not sharesJson:
+        print('ERROR: unable to load shares.json')
         return None
     if not sharesJson.get(shareName):
+        print('ERROR: share named "'+shareName+'" is not in '+sharesFile)
         return None
     sharedItemDisplayName=sharesJson[shareName]['displayName']
     sharedItemImageUrl=None
