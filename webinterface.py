@@ -51,6 +51,7 @@ from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
 from cache import storePersonInCache
+from shares import getValidSharedItemID
 
 def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avatarUrl: str,personCache: {},force=False) -> str:
     """Updates the cached avatar for the given actor
@@ -2633,6 +2634,7 @@ def htmlPostReplies(translate: {},baseDir: str, \
 def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
+    itemID=getValidSharedItemID(shareName)
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
     sharesFile=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
@@ -2643,13 +2645,13 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     if not sharesJson:
         print('ERROR: unable to load shares.json')
         return None
-    if not sharesJson.get(shareName):
-        print('ERROR: share named "'+shareName+'" is not in '+sharesFile)
+    if not sharesJson.get(itemID):
+        print('ERROR: share named "'+itemID+'" is not in '+sharesFile)
         return None
-    sharedItemDisplayName=sharesJson[shareName]['displayName']
+    sharedItemDisplayName=sharesJson[itemID]['displayName']
     sharedItemImageUrl=None
-    if sharesJson[shareName].get('imageUrl'):
-        sharedItemImageUrl=sharesJson[shareName]['imageUrl']
+    if sharesJson[itemID].get('imageUrl'):
+        sharedItemImageUrl=sharesJson[itemID]['imageUrl']
 
     if os.path.isfile(baseDir+'/img/shares-background.png'):
         if not os.path.isfile(baseDir+'/accounts/shares-background.png'):

@@ -22,7 +22,7 @@ from utils import loadJson
 from utils import saveJson
 from media import removeMetaData
 
-def getValidItemID(displayName: str) -> str:
+def getValidSharedItemID(displayName: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
@@ -36,7 +36,7 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
     if os.path.isfile(sharesFilename):
         sharesJson=loadJson(sharesFilename)
 
-    itemID=getValidItemID(displayName)
+    itemID=getValidSharedItemID(displayName)
     if sharesJson.get(itemID):
         # remove any image for the item
         itemIDfile=baseDir+'/sharefiles/'+itemID
@@ -85,7 +85,7 @@ def addShare(baseDir: str, \
             if 'year' in durationList[1]:
                 durationSec=published+(int(durationList[0])*60*60*24*365)
 
-    itemID=getValidItemID(displayName)
+    itemID=getValidSharedItemID(displayName)
 
     # has an image for this share been uploaded?
     imageUrl=None
