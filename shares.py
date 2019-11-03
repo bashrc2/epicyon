@@ -33,23 +33,34 @@ def removeShare(baseDir: str,nickname: str,domain: str, \
     """Removes a share for a person
     """
     sharesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/shares.json'
-    if os.path.isfile(sharesFilename):
-        sharesJson=loadJson(sharesFilename)
+    if not os.path.isfile(sharesFilename):
+        print('ERROR: missing shares.json '+sharesFilename)
+        return
+
+    sharesJson=loadJson(sharesFilename)
+    if not sharesJson:
+        print('ERROR: shares.json could not be loaded from '+sharesFilename)
+        return
 
     itemID=getValidSharedItemID(displayName)
     if sharesJson.get(itemID):
         # remove any image for the item
-        itemIDfile=baseDir+'/sharefiles/'+itemID
+        itemIDfile=baseDir+'/sharefiles/'+nickname+'/'+itemID
         if sharesJson[itemID]['imageUrl']:
             if sharesJson[itemID]['imageUrl'].endswith('.png'):
-                os.remove(itemIDfile+'.png')
+                if os.path.isfile(itemIDfile+'.png'):
+                    os.remove(itemIDfile+'.png')
             if sharesJson[itemID]['imageUrl'].endswith('.jpg'):
-                os.remove(itemIDfile+'.jpg')
+                if os.path.isfile(itemIDfile+'.jpg'):
+                    os.remove(itemIDfile+'.jpg')
             if sharesJson[itemID]['imageUrl'].endswith('.gif'):
-                os.remove(itemIDfile+'.gif')
+                if os.path.isfile(itemIDfile+'.gif'):
+                    os.remove(itemIDfile+'.gif')
         # remove the item itself
         del sharesJson[itemID]
         saveJson(sharesJson,sharesFilename)
+    else:
+        print('ERROR: share index "'+itemID+'" does not exist in '+sharesFilename)
 
 def addShare(baseDir: str, \
              httpPrefix: str,nickname: str,domain: str,port: int, \
