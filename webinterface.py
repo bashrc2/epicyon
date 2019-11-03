@@ -1154,7 +1154,7 @@ def htmlProfileSkills(translate: {},nickname: str,domain: str,skillsJson: {}) ->
         profileStr='<center><div class="skill-title">'+profileStr+'</div></center>'
     return profileStr
 
-def htmlIndividualShare(actor: str,item: {},translate: {},showContact: bool) -> str:
+def htmlIndividualShare(actor: str,item: {},translate: {},showContact: bool,removeButton: bool) -> str:
     """Returns an individual shared item as html
     """
     profileStr='<div class="container">'
@@ -1169,6 +1169,8 @@ def htmlIndividualShare(actor: str,item: {},translate: {},showContact: bool) -> 
     if showContact:
         contactActor=item['actor']
         profileStr+='<p><a href="'+actor+'?replydm=sharedesc:'+item['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
+    if removeButton:
+        profileStr+=' <a href="'+actor+'?rmshare='+item['displayName']+'"><button class="button">'+translate['Remove']+'</button></a>'
     profileStr+='</div>'
     return profileStr
 
@@ -1177,7 +1179,7 @@ def htmlProfileShares(actor: str,translate: {},nickname: str,domain: str,sharesJ
     """
     profileStr=''
     for item in sharesJson['orderedItems']:
-        profileStr+=htmlIndividualShare(actor,item,translate,False)
+        profileStr+=htmlIndividualShare(actor,item,translate,False,False)
     if len(profileStr)>0:
         profileStr='<div class="share-title">'+profileStr+'</div>'
     return profileStr
@@ -1198,8 +1200,10 @@ def sharesTimelineJson(actor: str,pageNumber: int,itemsPerPage: int, \
                     sharesJson=loadJson(sharesFilename)
                     if not sharesJson:
                         continue
+                    owner=actor.split('/users/')[0]+handle.split('@')[0]
                     ctr=0
                     for itemID,item in sharesJson.items():
+                        item['actor']=owner
                         allSharesJson[str(item['published'])]=item
                         ctr+=1
                         if ctr>=maxSharesPerAccount:
@@ -1224,7 +1228,6 @@ def sharesTimelineJson(actor: str,pageNumber: int,itemsPerPage: int, \
         if ctr<startIndex:
             ctr+=1
             continue
-        item['actor']=actor
         resultJson[published]=item
         ctr+=1
     return resultJson,lastPage
@@ -1249,7 +1252,13 @@ def htmlSharesTimeline(translate: {},pageNumber: int,itemsPerPage: int, \
         timelineStr+='<center><a href="'+actor+'/tlshares?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
 
     for published,item in sharesJson.items():
-        timelineStr+=htmlIndividualShare(actor,item,translate,True)
+        showContactButton=False
+        if item['actor']!=actor:
+            showContactButton=True
+        showRemoveButton=False
+        if item['actor']==actor:
+            showRemoveButton=True
+        timelineStr+=htmlIndividualShare(actor,item,translate,showContactButton,showRemoveButton)
 
     if not lastPage:
         timelineStr+='<center><a href="'+actor+'/tlshares?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
