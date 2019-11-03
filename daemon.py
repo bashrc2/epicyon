@@ -3367,7 +3367,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
-                searchStr=searchStr.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').strip()
+                searchStr=searchStr.replace('+',' ').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
                 if self.server.debug:
                     print('searchStr: '+searchStr)
                 if searchForEmoji:
@@ -3473,7 +3473,8 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             removeShareConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removeShareConfirmParams:
-                removeShareConfirmParams=removeShareConfirmParams.replace('%3A',':').replace('%2F','/')
+                removeShareConfirmParams= \
+                    removeShareConfirmParams.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
                 shareActor=removeShareConfirmParams.split('actor=')[1]
                 if '&' in shareActor:
                     shareActor=shareActor.split('&')[0]
@@ -3495,7 +3496,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             removePostConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removePostConfirmParams:
-                removePostConfirmParams=removePostConfirmParams.replace('%3A',':').replace('%2F','/')
+                removePostConfirmParams=removePostConfirmParams.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
                 removeMessageId=removePostConfirmParams.split('messageId=')[1]
                 if '&' in removeMessageId:
                     removeMessageId=removeMessageId.split('&')[0]
