@@ -731,6 +731,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             shareName=self.path.split('?rmshare=')[1]
+            shareName=shareName.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
             actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?rmshare=')[0]
             msg=htmlRemoveSharedItem(self.server.translate,self.server.baseDir,actor,shareName).encode()
             if not msg:
