@@ -319,7 +319,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                 #print('TAG: emoji located - '+wordStr)
                 wordStr2=wordStr.split(':')[1]
                 if not emojiDict:
-                    #print('Loading emoji lookup')
+                    # emoji.json is generated so that it can be customized and the changes
+                    # will be retained even if default_emoji.json is subsequently updated                    
                     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
                         copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
                 emojiDictCtr=0

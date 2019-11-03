@@ -139,6 +139,8 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
     """Search results for emoji
     """
 
+    # emoji.json is generated so that it can be customized and the changes
+    # will be retained even if default_emoji.json is subsequently updated                    
     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
         copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
 
@@ -2948,6 +2950,8 @@ def htmlSearchEmojiTextEntry(translate: {}, \
                              baseDir: str,path: str) -> str:
     """Search for an emoji by name
     """
+    # emoji.json is generated so that it can be customized and the changes
+    # will be retained even if default_emoji.json is subsequently updated                    
     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
         copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
 
