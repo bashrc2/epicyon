@@ -3474,7 +3474,7 @@ class PubServer(BaseHTTPRequestHandler):
             removeShareConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removeShareConfirmParams:
                 removeShareConfirmParams= \
-                    removeShareConfirmParams.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
+                    removeShareConfirmParams.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').replace('+',' ').strip()
                 shareActor=removeShareConfirmParams.split('actor=')[1]
                 if '&' in shareActor:
                     shareActor=shareActor.split('&')[0]

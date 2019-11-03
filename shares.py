@@ -26,7 +26,7 @@ def getValidSharedItemID(displayName: str) -> str:
     """Removes any invalid characters from the display name to
     produce an item ID
     """
-    return displayName.replace(' ','').replace('/','-').replace('\\','-').replace('.','_').replace('?','-').replace('\n','').replace("’","'")
+    return displayName.replace(' ','').replace('+','-').replace('/','-').replace('\\','-').replace('.','_').replace('?','-').replace('\n','').replace("’","'").replace('&','-')
 
 def removeShare(baseDir: str,nickname: str,domain: str, \
                 displayName: str) -> None:
