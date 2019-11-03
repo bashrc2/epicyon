@@ -731,7 +731,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             shareName=self.path.split('?rmshare=')[1]
-            shareName=shareName.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
+            shareName=shareName.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
             actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path.split('?rmshare=')[0]
             msg=htmlRemoveSharedItem(self.server.translate,self.server.baseDir,actor,shareName).encode()
             if not msg:
@@ -1484,7 +1484,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 replyPageNumber=int(replyPageStr)
                     inReplyToUrl=mentionsList[0]
                     if inReplyToUrl.startswith('sharedesc:'):
-                        shareDescription=inReplyToUrl.replace('sharedesc:','').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%23','#')
+                        shareDescription=inReplyToUrl.replace('sharedesc:','').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#')
                 self.path=self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path '+self.path)
@@ -3367,7 +3367,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
-                searchStr=searchStr.replace('+',' ').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
+                searchStr=searchStr.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
                 if self.server.debug:
                     print('searchStr: '+searchStr)
                 if searchForEmoji:
