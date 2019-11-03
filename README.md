@@ -8,7 +8,7 @@ Epicyon is a modern [ActivityPub](https://www.w3.org/TR/activitypub) compliant s
 
 Matrix room: **#epicyon:matrix.freedombone.net**
 
-Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0). Follow request icon from [flaticon](https://www.flaticon.com/free-icon/add-user-hand-drawn-outline_35851). Blob Cat Emoji and Meowmoji were made by Nitro Blob Hub, licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
+Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source emoji and icon project. License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0). Blob Cat Emoji and Meowmoji were made by Nitro Blob Hub, licensed under [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 <img src="https://code.freedombone.net/bashrc/epicyon/raw/main/img/screenshot_light.jpg" width="80%"/>
 

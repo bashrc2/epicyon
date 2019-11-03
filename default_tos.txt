@@ -38,6 +38,4 @@
 
 <p>Emojis designed by <a href="https://openmoji.org">OpenMoji</a> – the open-source emoji and icon project. License: <a href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a></p>
 
-<p>Follow request icon from <a href="https://www.flaticon.com/free-icon/add-user-hand-drawn-outline_35851">flaticon</a>.</p>
-
 <p>Blob Cat Emoji and Meowmoji were made by Nitro Blob Hub, licensed under <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0</a>.</p>
