@@ -1830,14 +1830,19 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          storeToCache=True) -> str:
     """ Shows a single post as html
     """
+    postActor=postJsonObject['actor']
+
     if not showPublicOnly and storeToCache and boxName!='tlmedia':
+        # update avatar if needed
+        if not avatarUrl:
+            avatarUrl=getPersonAvatarUrl(baseDir,postActor,personCache)
+        updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
+
         postHtml= \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
                                               postJsonObject)
         if postHtml:
             return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
-
-    postActor=postJsonObject['actor']
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
