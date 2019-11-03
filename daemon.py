@@ -3485,7 +3485,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if shareNickname:
                     shareDomain,sharePort=getDomainFromActor(shareActor)
                     removeShare(self.server.baseDir,shareNickname,shareDomain,shareName)
-            self._redirect_headers(originPathStr+'/inbox',cookie)
+            self._redirect_headers(originPathStr+'/tlshares',cookie)
             self.server.POSTbusy=False
             return
 
