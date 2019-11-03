@@ -28,7 +28,7 @@
 
 <h3>Federation with Monopolies</h3>
 
-In a proactive effort to avoid the classic fate of <i>"embrace, extend, extinguish"</i> this system will block any instance launched, acquired or funded by Alphabet, Facebook, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.
+<p>In a proactive effort to avoid the classic fate of <i>"embrace, extend, extinguish"</i> this system will block any instance launched, acquired or funded by Alphabet, Facebook, Twitter, Microsoft, Apple, Amazon, Elsevier or other monopolistic Silicon Valley companies.</p>
 
 <h3>Copyrights</h3>
 
