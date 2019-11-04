@@ -1654,6 +1654,7 @@ def sendToFollowers(session,baseDir: str, \
 
     # for each instance
     for followerDomain,followerHandles in grouped.items():
+        time.sleep(4)
         if debug:
             print('DEBUG: follower handles for '+followerDomain)
             pprint(followerHandles)
