@@ -468,19 +468,20 @@ class PubServer(BaseHTTPRequestHandler):
                 createSession(self.server.domain,self.server.port,self.server.useTor)
         if self.server.debug:
             print('DEBUG: sending c2s post to followers')
-        followersThread=sendToFollowersThread(self.server.session, \
-                                         self.server.baseDir, \
-                                         self.postToNickname, \
-                                         self.server.domain, \
-                                         self.server.port, \
-                                         self.server.httpPrefix, \
-                                         self.server.federationList, \
-                                         self.server.sendThreads, \
-                                         self.server.postLog, \
-                                         self.server.cachedWebfingers, \
-                                         self.server.personCache, \
-                                         messageJson,self.server.debug, \
-                                         self.server.projectVersion)
+        followersThread= \
+            sendToFollowersThread(self.server.session, \
+                                  self.server.baseDir, \
+                                  self.postToNickname, \
+                                  self.server.domain, \
+                                  self.server.port, \
+                                  self.server.httpPrefix, \
+                                  self.server.federationList, \
+                                  self.server.sendThreads, \
+                                  self.server.postLog, \
+                                  self.server.cachedWebfingers, \
+                                  self.server.personCache, \
+                                  messageJson,self.server.debug, \
+                                  self.server.projectVersion)
         self.server.followersThreads.append(followersThread)
         # retain up to 10 threads
         if len(self.server.followersThreads)>10:
