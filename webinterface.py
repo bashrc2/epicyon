@@ -47,6 +47,7 @@ from blocking import isBlocked
 from content import getMentionsFromHtml
 from content import addHtmlTags
 from content import replaceEmojiFromTags
+from content import removeLongWords
 from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
@@ -2205,9 +2206,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         postJsonObject['object']['sensitive']=False
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary']=''
-        
+
+    objectContent=removeLongWords(postJsonObject['object']['content'],40,[])
     if not postJsonObject['object']['sensitive']:
-        contentStr=postJsonObject['object']['content']+attachmentStr
+        contentStr=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
         contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
     else:
@@ -2219,7 +2221,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 containerClass='container report'
         contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">'+translate['SHOW MORE']+'</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
-        contentStr+=postJsonObject['object']['content']+attachmentStr
+        contentStr+=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
         contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
         contentStr+='</div>'

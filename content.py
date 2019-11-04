@@ -240,22 +240,38 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't disrupt the layout
     """
     words=content.split(' ')
+    separator='\n'
+    if not longWordsList:
+        longWordsList=[]
+        separator='<br>'
+        for wordStr in words:
+            if len(wordStr)>maxWordLength:
+                if wordStr not in longWordsList:
+                    longWordsList.append(wordStr)
     for wordStr in longWordsList:
         if wordStr.startswith('<'):
             continue
-        if wordStr.startswith('http'):
+        if 'https:' in wordStr:
             continue
+        elif 'http:' in wordStr:
+            continue
+        elif 'dat:' in wordStr:
+            continue
+        suffix=''
+        if '<' in wordStr:
+            suffix='<'+wordStr.split('<',1)[1]
+            wordStr=wordStr.split('<',1)[0]
         if '/' in wordStr:
             continue
         if len(wordStr[maxWordLength:])<maxWordLength:
             content= \
                 content.replace(wordStr, \
-                                wordStr[:maxWordLength]+'\n'+ \
-                                wordStr[maxWordLength:])
+                                wordStr[:maxWordLength]+separator+ \
+                                wordStr[maxWordLength:]+suffix)
         else:
             content= \
                 content.replace(wordStr, \
-                                wordStr[:maxWordLength])
+                                wordStr[:maxWordLength]+suffix)
     return content
 
 def addHtmlTags(baseDir: str,httpPrefix: str, \

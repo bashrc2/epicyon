@@ -69,6 +69,7 @@ from inbox import validInboxFilenames
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
+from content import removeLongWords
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1528,6 +1529,9 @@ def testWebLinks():
     exampleText='This post has a very long web link\n\nhttp://cbwebewuvfuftdiudbqd33dddbbyuef23fyug3bfhcyu2fct2cuyqbcbucuwvckiwyfgewfvqejbchevbhwevuevwbqebqekveqvuvjfkf.onion\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
     assert 'ellipsis' in linkedText
+    exampleText='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAH</p>'
+    resultText=removeLongWords(exampleText,40,[])
+    assert resultText=='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA</p></p>'
 
 def testAddEmoji():
     print('testAddEmoji')
