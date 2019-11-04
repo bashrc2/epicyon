@@ -34,7 +34,7 @@ from person import removeAccount
 from person import canRemovePost
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
-from posts import sendToFollowers
+from posts import sendToFollowersThread
 from posts import postIsAddressedToPublic
 from posts import sendToNamedAddresses
 from posts import createPublicPost
@@ -468,17 +468,23 @@ class PubServer(BaseHTTPRequestHandler):
                 createSession(self.server.domain,self.server.port,self.server.useTor)
         if self.server.debug:
             print('DEBUG: sending c2s post to followers')
-        sendToFollowers(self.server.session,self.server.baseDir, \
-                        self.postToNickname,self.server.domain, \
-                        self.server.port, \
-                        self.server.httpPrefix, \
-                        self.server.federationList, \
-                        self.server.sendThreads, \
-                        self.server.postLog, \
-                        self.server.cachedWebfingers, \
-                        self.server.personCache, \
-                        messageJson,self.server.debug, \
-                        self.server.projectVersion)
+        followersThread=sendToFollowersThread(self.server.session, \
+                                         self.server.baseDir, \
+                                         self.postToNickname, \
+                                         self.server.domain, \
+                                         self.server.port, \
+                                         self.server.httpPrefix, \
+                                         self.server.federationList, \
+                                         self.server.sendThreads, \
+                                         self.server.postLog, \
+                                         self.server.cachedWebfingers, \
+                                         self.server.personCache, \
+                                         messageJson,self.server.debug, \
+                                         self.server.projectVersion)
+        self.server.followersThreads.append(followersThread)
+        # retain up to 10 threads
+        if len(self.server.followersThreads)>10:
+            self.server.followersThreads.pop(0)
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
@@ -4449,6 +4455,8 @@ def runDaemon(projectVersion, \
     loadTokens(baseDir,httpd.tokens,httpd.tokensLookup)
     httpd.instanceOnlySkillsSearch=instanceOnlySkillsSearch
     httpd.acceptedCaps=["inbox:write","objects:read"]
+    # contains threads used to send posts to followers
+    httpd.followersThreads=[]
     if noreply:
         httpd.acceptedCaps.append('inbox:noreply')
     if nolike:

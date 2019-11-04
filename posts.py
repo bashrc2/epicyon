@@ -1620,7 +1620,7 @@ def hasSharedInbox(session,httpPrefix: str,domain: str) -> bool:
         if not wfRequest.get('errors'):
             return True
     return False
-        
+
 def sendToFollowers(session,baseDir: str, \
                     nickname: str, domain: str, port: int, \
                     httpPrefix: str,federationList: [], \
@@ -1654,7 +1654,6 @@ def sendToFollowers(session,baseDir: str, \
 
     # for each instance
     for followerDomain,followerHandles in grouped.items():
-        time.sleep(4)
         if debug:
             print('DEBUG: follower handles for '+followerDomain)
             pprint(followerHandles)
@@ -1720,7 +1719,28 @@ def sendToFollowers(session,baseDir: str, \
                 
         if debug:
             print('DEBUG: End of sendToFollowers')
-        
+        time.sleep(4)   
+
+def sendToFollowersThread(session,baseDir: str, \
+                          nickname: str, domain: str, port: int, \
+                          httpPrefix: str,federationList: [], \
+                          sendThreads: [],postLog: [], \
+                          cachedWebfingers: {},personCache: {}, \
+                          postJsonObject: {},debug: bool, \
+                          projectVersion: str):
+    """Returns a thread used to send a post to followers
+    """
+    sendThread= \
+        threadWithTrace(target=sendToFollowers, \
+                        args=(session,baseDir, \
+                              nickname,domain,port, \
+                              httpPrefix,federationList, \
+                              sendThreads,postLog, \
+                              cachedWebfingers,personCache, \
+                              postJsonObject.copy(),debug, \
+                              projectVersion),daemon=True)
+    sendThread.start()
+    return sendThread
 
 def createInbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
