@@ -240,10 +240,8 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't disrupt the layout
     """
     words=content.split(' ')
-    separator='\n'
     if not longWordsList:
         longWordsList=[]
-        separator='<br>'
         for wordStr in words:
             if len(wordStr)>maxWordLength:
                 if wordStr not in longWordsList:
@@ -266,7 +264,7 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
         if len(wordStr[maxWordLength:])<maxWordLength:
             content= \
                 content.replace(wordStr, \
-                                wordStr[:maxWordLength]+separator+ \
+                                wordStr[:maxWordLength]+'\n'+ \
                                 wordStr[maxWordLength:])
         else:
             content= \
