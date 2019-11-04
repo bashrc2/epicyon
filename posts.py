@@ -505,6 +505,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
         sensitive=True
 
     toRecipients=[]
+    toCC=[]
     if toUrl:
         if not isinstance(toUrl, str):
             print('ERROR: toUrl is not a string')
@@ -514,8 +515,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
     # who to send to
     if mentionedRecipients:
         for mention in mentionedRecipients:
-            if mention not in toRecipients:
-                toRecipients.append(mention)
+            if mention not in toCC:
+                toCC.append(mention)
 
     # create a list of hashtags
     # Only posts which are #Public are searchable by hashtag
@@ -603,8 +604,8 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             'type': 'Create',
             'actor': actorUrl,
             'published': published,
-            'to': [toUrl],
-            'cc': [],
+            'to': toRecipients,
+            'cc': toCC,
             'object': {
                 'id': newPostId,
                 'type': 'Note',
@@ -614,7 +615,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
                 'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
                 'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
                 'to': toRecipients,
-                'cc': [],
+                'cc': toCC,
                 'sensitive': sensitive,
                 'atomUri': newPostId,
                 'inReplyToAtomUri': inReplyToAtomUri,
@@ -651,7 +652,7 @@ def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
             'url': httpPrefix+'://'+domain+'/@'+nickname+'/'+statusNumber,
             'attributedTo': httpPrefix+'://'+domain+'/users/'+nickname,
             'to': toRecipients,
-            'cc': [],
+            'cc': toCC,
             'sensitive': sensitive,
             'atomUri': newPostId,
             'inReplyToAtomUri': inReplyToAtomUri,
