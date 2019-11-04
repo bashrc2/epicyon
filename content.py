@@ -252,7 +252,8 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
         if '=\"' in wordStr:
             continue
         if '@' in wordStr:
-            continue
+            if '@@' not in wordStr:
+                continue
         if 'https:' in wordStr:
             continue
         elif 'http:' in wordStr:
