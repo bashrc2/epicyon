@@ -756,15 +756,13 @@ def postIsAddressedToFollowers(baseDir: str,
     ccList=[]
     if postJsonObject['type']!='Update' and \
        isinstance(postJsonObject['object'], dict):
-        if not postJsonObject['object'].get('to'):
-            return False
-        toList=postJsonObject['object']['to']
+        if postJsonObject['object'].get('to'):
+            toList=postJsonObject['object']['to']
         if postJsonObject['object'].get('cc'):
             ccList=postJsonObject['object']['cc']
     else:
-        if not postJsonObject.get('to'):
-            return False
-        toList=postJsonObject['to']
+        if postJsonObject.get('to'):
+            toList=postJsonObject['to']
         if postJsonObject.get('cc'):
             ccList=postJsonObject['cc']
         
@@ -774,9 +772,8 @@ def postIsAddressedToFollowers(baseDir: str,
     addressedToFollowers=False
     if followersUrl in toList:
         addressedToFollowers=True
-    if not addressedToFollowers:
-        if followersUrl in ccList:
-            addressedToFollowers=True
+    elif followersUrl in ccList:
+        addressedToFollowers=True
     return addressedToFollowers
 
 def postIsAddressedToPublic(baseDir: str,postJsonObject: {}) -> bool:
