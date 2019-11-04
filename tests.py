@@ -1531,7 +1531,7 @@ def testWebLinks():
     assert 'ellipsis' in linkedText
     exampleText='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAH</p>'
     resultText=removeLongWords(exampleText,40,[])
-    assert resultText=='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA</p></p>'
+    assert resultText=='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA</p>'
 
 def testAddEmoji():
     print('testAddEmoji')
