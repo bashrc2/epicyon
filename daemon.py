@@ -485,7 +485,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.followersThreads.append(followersThread)
         # retain up to 10 threads
         if len(self.server.followersThreads)>10:
-            self.server.followersThreads.pop(0)
+            for i in range(2):
+                self.server.followersThreads.pop(0)
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
