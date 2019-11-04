@@ -468,6 +468,14 @@ class PubServer(BaseHTTPRequestHandler):
                 createSession(self.server.domain,self.server.port,self.server.useTor)
         if self.server.debug:
             print('DEBUG: sending c2s post to followers')
+        # remove inactive threads
+        inactiveFollowerThreads=[]
+        for th in self.server.followersThreads:
+            if not th.is_alive():
+                inactiveFollowerThreads.append(th)
+        for th in inactiveFollowerThreads:
+            self.server.followersThreads.remove(th)
+        # create a thread to send the post to followers
         followersThread= \
             sendToFollowersThread(self.server.session, \
                                   self.server.baseDir, \
@@ -486,6 +494,10 @@ class PubServer(BaseHTTPRequestHandler):
         # retain up to 10 threads
         if len(self.server.followersThreads)>10:
             for i in range(2):
+                # kill the thread if it is still alive
+                if self.server.followersThreads[0].is_alive():
+                    self.server.followersThreads[0].kill()
+                # remove it from the list
                 self.server.followersThreads.pop(0)
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
