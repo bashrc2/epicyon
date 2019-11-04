@@ -1693,13 +1693,13 @@ def sendToFollowers(session,baseDir: str, \
             
             if debug:
                 print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
-                sendSignedJson(postJsonObject,session,baseDir, \
-                               nickname,domain,port, \
-                               toNickname,toDomain,toPort, \
-                               cc,httpPrefix,True,clientToServer, \
-                               federationList, \
-                               sendThreads,postLog,cachedWebfingers, \
-                               personCache,debug,projectVersion)
+            sendSignedJson(postJsonObject,session,baseDir, \
+                           nickname,domain,port, \
+                           toNickname,toDomain,toPort, \
+                           cc,httpPrefix,True,clientToServer, \
+                           federationList, \
+                           sendThreads,postLog,cachedWebfingers, \
+                           personCache,debug,projectVersion)
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
@@ -1707,13 +1707,13 @@ def sendToFollowers(session,baseDir: str, \
 
             if debug:
                 print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
-                sendSignedJson(postJsonObject,session,baseDir, \
-                               nickname,domain,port, \
-                               toNickname,toDomain,toPort, \
-                               cc,httpPrefix,True,clientToServer, \
-                               federationList, \
-                               sendThreads,postLog,cachedWebfingers, \
-                               personCache,debug,projectVersion)
+            sendSignedJson(postJsonObject,session,baseDir, \
+                           nickname,domain,port, \
+                           toNickname,toDomain,toPort, \
+                           cc,httpPrefix,True,clientToServer, \
+                           federationList, \
+                           sendThreads,postLog,cachedWebfingers, \
+                           personCache,debug,projectVersion)
                 
         if debug:
             print('DEBUG: End of sendToFollowers')
