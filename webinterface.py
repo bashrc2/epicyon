@@ -645,6 +645,10 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         '      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']+ \
         skillsStr+moderatorsStr+ \
         '    </div>' \
+        '    <div class="container">' \
+        '      <b>'+translate['Danger Zone']+'</b><br>' \
+        '      <input type="checkbox" class=dangercheckbox" name="deactivateThisAccount">'+translate['Deactivate this account']+'<br>' \
+        '    </div>' \
         '  </div>' \
         '</form>'
     editProfileForm+=htmlFooter()
