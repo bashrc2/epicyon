@@ -702,21 +702,46 @@ def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
 def deactivateAccount(baseDir: str,nickname: str,domain: str) -> bool:
     """Makes an account temporarily unavailable
     """
-    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    handle=nickname+'@'+domain
+
+    accountDir=baseDir+'/accounts/'+handle
     if not os.path.isdir(accountDir):
         return False
     deactivatedDir=baseDir+'/deactivated'
     if not os.path.isdir(deactivatedDir):
         os.mkdir(deactivatedDir)
-    shutil.move(accountDir,deactivatedDir+'/'+nickname+'@'+domain)
+    shutil.move(accountDir,deactivatedDir+'/'+handle)
+
+    if os.path.isfile(baseDir+'/wfendpoints/'+handle+'.json'):
+        deactivatedWebfingerDir=baseDir+'/wfdeactivated'
+        if not os.path.isdir(deactivatedWebfingerDir):
+            os.mkdir(deactivatedWebfingerDir)
+        shutil.move(baseDir+'/wfendpoints/'+handle+'.json',deactivatedWebfingerDir+'/'+handle+'.json')
+
+    if os.path.isdir(baseDir+'/sharefiles/'+nickname):
+        deactivatedSharefilesDir=baseDir+'/sharefilesdeactivated'
+        if not os.path.isdir(deactivatedSharefilesDir):
+            os.mkdir(deactivatedSharefilesDir)
+        shutil.move(baseDir+'/sharefiles/'+nickname,deactivatedSharefilesDir+'/'+nickname)
     return os.path.isdir(deactivatedDir+'/'+nickname+'@'+domain)
 
 def activateAccount(baseDir: str,nickname: str,domain: str) -> None:
     """Makes a deactivated account available
     """
+    handle=nickname+'@'+domain
+
     deactivatedDir=baseDir+'/deactivated'
-    deactivatedAccountDir=deactivatedDir+'/'+nickname+'@'+domain
-    if not os.path.isdir(deactivatedAccountDir):
-        return
-    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
-    shutil.move(deactivatedAccountDir,accountDir)
+    deactivatedAccountDir=deactivatedDir+'/'+handle
+    if os.path.isdir(deactivatedAccountDir):
+        accountDir=baseDir+'/accounts/'+handle
+        if not os.path.isdir(accountDir):
+            shutil.move(deactivatedAccountDir,accountDir)
+
+    deactivatedWebfingerDir=baseDir+'/wfdeactivated'
+    if os.path.isfile(deactivatedWebfingerDir+'/'+handle+'.json'):
+        shutil.move(deactivatedWebfingerDir+'/'+handle+'.json',baseDir+'/wfendpoints/'+handle+'.json')
+
+    deactivatedSharefilesDir=baseDir+'/sharefilesdeactivated'
+    if os.path.isdir(deactivatedSharefilesDir+'/'+nickname):
+        if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
+            shutil.move(deactivatedSharefilesDir+'/'+nickname,baseDir+'/sharefiles/'+nickname)
