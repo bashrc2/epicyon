@@ -955,6 +955,9 @@ if args.addaccount:
     if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print('Account already exists')
         sys.exit()
+    if os.path.isdir(baseDir+'/deactivated/'+nickname+'@'+domain):
+        print('Account is deactivated')
+        sys.exit()
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,args.password.strip())
     if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print('Account created for '+nickname+'@'+domain)
