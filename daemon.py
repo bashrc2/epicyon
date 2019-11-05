@@ -23,6 +23,7 @@ from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
+from person import activateAccount
 from person import registerAccount
 from person import personLookup
 from person import personBoxJson
@@ -3024,10 +3025,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        return                        
+                        return                 
                     # login success - redirect with authorization
                     print('Login success: '+loginNickname)
                     self.send_response(303)
+                    # re-activate account if needed
+                    activateAccount(baseDir,loginNickname,self.server.domain)
                     # This produces a deterministic token based on nick+password+salt
                     saltFilename= \
                         self.server.baseDir+'/accounts/'+ \

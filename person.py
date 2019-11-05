@@ -696,3 +696,24 @@ def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
     if os.path.isdir(baseDir+'/sharefiles/'+nickname):
         shutil.rmtree(baseDir+'/sharefiles/'+nickname)
     return True
+
+def deactivateAccount(baseDir: str,nickname: str,domain: str) -> None:
+    """Makes an account temporarily unavailable
+    """
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    if not os.path.isdir(accountDir):
+        return
+    deactivatedDir=baseDir+'/deactivated'
+    if not os.path.isdir(deactivatedDir):
+        os.mkdir(deactivatedDir)
+    shutil.move(accountDir,deactivatedDir+'/'+nickname+'@'+domain)
+
+def activateAccount(baseDir: str,nickname: str,domain: str) -> None:
+    """Makes a deactivated account available
+    """
+    deactivatedDir=baseDir+'/deactivated'
+    deactivatedAccountDir=deactivatedDir+'/'+nickname+'@'+domain
+    if not os.path.isdir(deactivatedAccountDir):
+        return
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    shutil.move(deactivatedAccountDir,accountDir)
