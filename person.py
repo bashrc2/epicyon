@@ -697,6 +697,10 @@ def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
         os.remove(baseDir+'/keys/public/'+handle+'.pem')
     if os.path.isdir(baseDir+'/sharefiles/'+nickname):
         shutil.rmtree(baseDir+'/sharefiles/'+nickname)
+    if os.path.isfile(baseDir+'/wfdeactivated/'+handle+'.json':
+        os.remove(baseDir+'/wfdeactivated/'+handle+'.json')
+    if os.path.isdir(baseDir+'/sharefilesdeactivated/'+nickname):
+        shutil.rmtree(baseDir+'/sharefilesdeactivated/'+nickname)
     return True
 
 def deactivateAccount(baseDir: str,nickname: str,domain: str) -> bool:
