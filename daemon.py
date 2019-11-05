@@ -3036,7 +3036,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Login success: '+loginNickname)
                     self.send_response(303)
                     # re-activate account if needed
-                    activateAccount(baseDir,loginNickname,self.server.domain)
+                    activateAccount(self.server.baseDir,loginNickname,self.server.domain)
                     # This produces a deterministic token based on nick+password+salt
                     saltFilename= \
                         self.server.baseDir+'/accounts/'+ \
