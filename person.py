@@ -683,6 +683,8 @@ def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
     handle=nickname+'@'+domain
     removePassword(baseDir,nickname)
     removeTagsForNickname(baseDir,nickname,domain,port)
+    if os.path.isdir(baseDir+'/deactivated/'+handle):
+        shutil.rmtree(baseDir+'/deactivated/'+handle)
     if os.path.isdir(baseDir+'/accounts/'+handle):
         shutil.rmtree(baseDir+'/accounts/'+handle)
     if os.path.isfile(baseDir+'/accounts/'+handle+'.json'):
