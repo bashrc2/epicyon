@@ -128,7 +128,8 @@ def accountExists(baseDir: str,nickname: str,domain: str) -> bool:
     """
     if ':' in domain:
         domain=domain.split(':')[0]
-    return os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain)
+    return os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain) or \
+        os.path.isdir(baseDir+'/deactivated/'+nickname+'@'+domain)
 
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
