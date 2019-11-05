@@ -128,9 +128,13 @@ def manualApproveFollowRequest(session,baseDir: str, \
         followersFilename=accountsDir+'/followers.txt'
         if os.path.isfile(followersFilename):
             if approveHandle not in open(followersFilename).read():
-                followersFile=open(followersFilename, "a+")
-                followersFile.write(approveHandle+'\n')
-                followersFile.close()
+                try:
+                    with open(followersFilename, 'r+') as followersFile:
+                        content = followersFile.read()
+                        followersFile.seek(0, 0)
+                        followersFile.write(approveHandle+'\n'+content)
+                except Exception as e:
+                    print('WARN: Failed to write entry to followers file '+str(e))
         else:
             followersFile=open(followersFilename, "w+")
             followersFile.write(approveHandle+'\n')
