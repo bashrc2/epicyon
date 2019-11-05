@@ -517,7 +517,7 @@ input[type=checkbox]
     -o-transform: scale(2);
     transform: scale(2);
     padding: 10px;
-    margin: 10px 5px;
+    margin: 20px 30px;
 }
 
 .slider {
