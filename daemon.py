@@ -24,6 +24,7 @@ from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from person import activateAccount
+from person import deactivateAccount
 from person import registerAccount
 from person import personLookup
 from person import personBoxJson
@@ -680,6 +681,20 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
         return False
     
+    def _clearLoginDetails(self,nickname: str):
+        """Clears login details for the given account
+        """
+        # remove any token
+        if self.server.tokens.get(nickname):
+            del self.server.tokensLookup[self.server.tokens[nickname]]
+            del self.server.tokens[nickname]
+        self.send_response(303)
+        self.send_header('Content-Length', '0')
+        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
+        self.send_header('Location', '/login')
+        self.send_header('X-Robots-Tag','noindex')
+        self.end_headers()
+
     def do_GET(self):
         if self.path=='/logout':
             msg=htmlLogin(self.server.translate, \
@@ -3007,16 +3022,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not authorizeBasic(self.server.baseDir,'/users/'+ \
                                       loginNickname+'/outbox',authHeader,False):
                     print('Login failed: '+loginNickname)
-                    # remove any token
-                    if self.server.tokens.get(loginNickname):
-                        del self.server.tokensLookup[self.server.tokens[loginNickname]]
-                        del self.server.tokens[loginNickname]
-                    self.send_response(303)
-                    self.send_header('Content-Length', '0')
-                    self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-                    self.send_header('Location', '/login')
-                    self.send_header('X-Robots-Tag','noindex')
-                    self.end_headers()
+                    self._clearLoginDetails(loginNickname)
                     self.server.POSTbusy=False
                     return
                 else:
@@ -3278,7 +3284,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 approveFollowers=True
                         if approveFollowers!=actorJson['manuallyApprovesFollowers']:
                             actorJson['manuallyApprovesFollowers']=approveFollowers
-                            actorChanged=True
+                            actorChanged=True                                
                         # only receive DMs from accounts you follow
                         followDMsFilename= \
                             self.server.baseDir+'/accounts/'+ \
@@ -3361,6 +3367,12 @@ class PubServer(BaseHTTPRequestHandler):
                             }
                             self.postToNickname=nickname
                             self._postToOutboxThread(updateActorJson)
+                        if fields.get('deactivateThisAccount'):
+                            if fields['deactivateThisAccount']=='on':
+                                deactivateAccount(self.server.baseDir,nickname,self.server.domain)
+                                self._clearLoginDetails(nickname)
+                                self.server.POSTbusy=False
+                                return
             self._redirect_headers(actorStr,cookie)
             self.server.POSTbusy=False
             return
