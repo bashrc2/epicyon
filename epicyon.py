@@ -14,6 +14,7 @@ from person import setDisplayNickname
 from person import setBio
 from person import setProfileImage
 from person import removeAccount
+from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from person import setOrganizationScheme
@@ -112,6 +113,9 @@ parser.add_argument('-a','--addaccount', dest='addaccount', \
 parser.add_argument('-g','--addgroup', dest='addgroup', \
                     type=str,default=None, \
                     help='Adds a new group')
+parser.add_argument('--deactivate', dest='deactivate', \
+                    type=str,default=None, \
+                    help='Deactivate an account')
 parser.add_argument('-r','--rmaccount', dest='rmaccount', \
                     type=str,default=None, \
                     help='Remove an account')
@@ -985,6 +989,9 @@ if args.addgroup:
 if args.rmgroup:
     args.rmaccount=args.rmgroup
 
+if args.deactivate:
+    args.rmaccount=args.deactivate
+
 if args.rmaccount:
     if '@' in args.rmaccount:
         nickname=args.rmaccount.split('@')[0]
@@ -994,6 +1001,12 @@ if args.rmaccount:
         if not args.domain or not getConfigParam(baseDir,'domain'):
             print('Use the --domain option to set the domain name')
             sys.exit()
+    if args.deactivate:
+        if deactivateAccount(baseDir,nickname,domain):
+            print('Account for '+handle+' was deactivated')
+        else:
+            print('Account for '+handle+' was not found')
+        sys.exit()
     if removeAccount(baseDir,nickname,domain,port):
         if not args.rmgroup:
             print('Account for '+handle+' was removed')
