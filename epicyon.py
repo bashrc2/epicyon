@@ -14,6 +14,7 @@ from person import setDisplayNickname
 from person import setBio
 from person import setProfileImage
 from person import removeAccount
+from person import activateAccount
 from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
@@ -113,6 +114,9 @@ parser.add_argument('-a','--addaccount', dest='addaccount', \
 parser.add_argument('-g','--addgroup', dest='addgroup', \
                     type=str,default=None, \
                     help='Adds a new group')
+parser.add_argument('--activate', dest='activate', \
+                    type=str,default=None, \
+                    help='Activate a previously deactivated account')
 parser.add_argument('--deactivate', dest='deactivate', \
                     type=str,default=None, \
                     help='Deactivate an account')
@@ -1013,6 +1017,21 @@ if args.rmaccount:
         else:
             print('Group '+handle+' was removed')
         sys.exit()
+
+if args.activate:
+    if '@' in args.activate:
+        nickname=args.activate.split('@')[0]
+        domain=args.activate.split('@')[1]
+    else:
+        nickname=args.activate
+        if not args.domain or not getConfigParam(baseDir,'domain'):
+            print('Use the --domain option to set the domain name')
+            sys.exit()
+    if activateAccount(baseDir,nickname,domain):
+        print('Account for '+handle+' was activated')
+    else:
+        print('Deactivated account for '+handle+' was not found')
+    sys.exit()
 
 if args.changepassword:
     if len(args.changepassword)!=2:
