@@ -705,6 +705,10 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)            
             return
         
+        # replace https://domain/@nick with https://domain/users/nick
+        if self.path.startswith('/@'):
+            self.path=self.path.replace('/@','/users/')
+
         # redirect music to #nowplaying list
         if self.path=='/music' or self.path=='/nowplaying':
             self.path='/tags/nowplaying'
@@ -740,10 +744,6 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Accept'):
             if self._requestHTTP():
                 htmlGET=True
-
-        # replace https://domain/@nick with https://domain/users/nick
-        if self.path.startswith('/@'):
-            self.path=self.path.replace('/@','/users/')
 
         # treat shared inbox paths consistently
         if self.path=='/sharedInbox' or \
