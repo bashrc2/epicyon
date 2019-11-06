@@ -751,7 +751,7 @@ def activateAccount(baseDir: str,nickname: str,domain: str) -> None:
         if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
             shutil.move(deactivatedSharefilesDir+'/'+nickname,baseDir+'/sharefiles/'+nickname)
 
-def isPersonSnoozed(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
+def isPersonSnoozed(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> bool:
     """Returns true if the given actor is snoozed
     """
     snoozedFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/snoozed.txt'
