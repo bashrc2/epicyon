@@ -2285,6 +2285,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
 
     postsInBoxDict={}
     postsCtr=0
+    postsInBox=os.scandir(boxDir)
     for postFilename in postsInBox:
         postFilename=postFilename.name
         if not postFilename.endswith('.json'):
