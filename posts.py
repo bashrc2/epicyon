@@ -2312,8 +2312,6 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     postCacheDir=boxDir.replace('/'+boxname,'/postcache')
 
     for publishedStr,postFilename in postsInBoxSorted.items():
-        print('publishedStr: '+publishedStr)
-        break
         filePath=os.path.join(boxDir,postFilename)        
         if not os.path.isfile(filePath):
             continue
