@@ -18,6 +18,7 @@ from shutil import copyfile
 from shutil import copyfileobj
 from pprint import pprint
 from person import personBoxJson
+from person import isPersonSnoozed
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -1837,6 +1838,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     """
     postActor=postJsonObject['actor']
 
+    # ZZZzzz
+    if isPersonSnoozed(baseDir,nickname,domain,postActor):
+        return ''
+
     if not showPublicOnly and storeToCache and boxName!='tlmedia':
         # update avatar if needed
         if not avatarUrl:
@@ -2837,6 +2842,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
 
     followStr='Follow'
     blockStr='Block'
+    nickname=None
     if originPathStr.startswith('/users/'):
         nickname=originPathStr.split('/users/')[1]
         if '/' in nickname:
@@ -2863,6 +2869,13 @@ def htmlPersonOptions(translate: {},baseDir: str, \
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
+
+    # To snooze, or not to snooze? That is the question
+    snoozeButtonStr='Snooze'
+    if nickname:
+        if isPersonSnoozed(baseDir,nickname,domain,optionsActor):
+            snoozeButtonStr='Unsnooze'
+
     optionsStr=htmlHeader(cssFilename,profileStyle)
     optionsStr+='<div class="options">'
     optionsStr+='  <div class="optionsAvatar">'
@@ -2879,7 +2892,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
         '    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>' \
         '    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>' \
         '    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>' \
-        '    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>' \
+        '    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>'+ \
+        '    <button type="submit" class="button" name="submit"'+snoozeButtonStr+'>'+translate[snoozeButtonStr]+'</button>' \
         '    <button type="submit" class="button" name="submitReport">'+translate['Report']+'</button>' \
         '  </form>'
     optionsStr+='</center>'

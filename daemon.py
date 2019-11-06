@@ -34,6 +34,8 @@ from person import suspendAccount
 from person import unsuspendAccount
 from person import removeAccount
 from person import canRemovePost
+from person import personSnooze
+from person import personUnsnooze
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
@@ -4046,6 +4048,26 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 self.server.POSTbusy=False
                 return            
+            if '&submitSnooze=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Snoozing '+optionsActor)
+                thisActor=self.path.split('/personoptions')[0]
+                if '/users/' in thisActor:
+                    nickname=thisActor.split('/users/')[1]
+                    personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    self._redirect_headers(thisActor+ \
+                                           '/inbox?page='+str(pageNumber),cookie)
+                    self.server.POSTbusy=False
+            if '&submitUnSnooze=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Unsnoozing '+optionsActor)
+                thisActor=self.path.split('/personoptions')[0]
+                if '/users/' in thisActor:
+                    nickname=thisActor.split('/users/')[1]
+                    personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    self._redirect_headers(thisActor+ \
+                                           '/inbox?page='+str(pageNumber),cookie)
+                    self.server.POSTbusy=False
             if '&submitReport=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Reporting '+optionsActor)

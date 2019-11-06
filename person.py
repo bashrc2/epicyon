@@ -750,3 +750,85 @@ def activateAccount(baseDir: str,nickname: str,domain: str) -> None:
     if os.path.isdir(deactivatedSharefilesDir+'/'+nickname):
         if not os.path.isdir(baseDir+'/sharefiles/'+nickname):
             shutil.move(deactivatedSharefilesDir+'/'+nickname,baseDir+'/sharefiles/'+nickname)
+
+def isPersonSnoozed(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
+    """Returns true if the given actor is snoozed
+    """
+    snoozedFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/snoozed.txt'
+    if not os.path.isfile(snoozedFilename):
+        return False
+    if snoozeActor+' ' not in open(snoozedFilename).read():
+        return False
+    # remove the snooze entry if it has timed out
+    replaceStr=None
+    with open(snoozedFilename, 'r') as snoozedFile:
+        for line in snoozedFile:
+            # is this the entry for the actor?
+            if line.startswith(snoozeActor+' '):
+                snoozedTimeStr=line.split(' ')[1].replace('\n','')
+                # is there a time appended?
+                if snoozedTimeStr.isdigit():
+                    snoozedTime=int(snoozedTimeStr)
+                    currTime=int(time.time())
+                    # has the snooze timed out?
+                    if int(currTime-snoozedTime)>60*60*24:
+                        replaceStr=line
+                else:
+                    replaceStr=line
+                break
+    if replaceStr:
+        content=None
+        with open(snoozedFilename, 'r') as snoozedFile:
+            content=snoozedFile.read().replace(replaceStr,'')
+        if content:
+            writeSnoozedFile=open(snoozedFilename, 'w')
+            if writeSnoozedFile:
+                writeSnoozedFile.write(content)
+                writeSnoozedFile.close()
+
+    if snoozeActor+' ' in open(snoozedFilename).read():
+        return True
+    return False
+
+def personSnooze(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> None:
+    """Temporarily ignores the given actor
+    """
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    if not os.path.isdir(accountDir):
+        print('ERROR: unknown account '+accountDir)
+        return
+    snoozedFilename=accountDir+'/snoozed.txt'
+    if snoozeActor+' ' in open(snoozedFilename).read():
+        return
+    snoozedFile=open(snoozedFilename, "a+")
+    if snoozedFile:
+        snoozedFile.write(snoozeActor+' '+str(int(time.time()))+'\n')
+        snoozedFile.close()
+
+def personUnsnooze(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> None:
+    """Undoes a temporarily ignore of the given actor
+    """
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    if not os.path.isdir(accountDir):
+        print('ERROR: unknown account '+accountDir)
+        return
+    snoozedFilename=accountDir+'/snoozed.txt'
+    if not os.path.isfile(snoozedFilename):
+        return
+    if snoozeActor+' ' not in open(snoozedFilename).read():
+        return
+    replaceStr=None
+    with open(snoozedFilename, 'r') as snoozedFile:
+        for line in snoozedFile:
+            if line.startswith(snoozeActor+' '):
+                replaceStr=line
+                break
+    if replaceStr:
+        content=None
+        with open(snoozedFilename, 'r') as snoozedFile:
+            content=snoozedFile.read().replace(replaceStr,'')
+        if content:
+            writeSnoozedFile=open(snoozedFilename, 'w')
+            if writeSnoozedFile:
+                writeSnoozedFile.write(content)
+                writeSnoozedFile.close()
