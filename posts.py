@@ -2297,11 +2297,9 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
                 publishedStr=content.split('"published":')[1]
                 if '"' in publishedStr:
                     publishedStr=publishedStr.split('"')[1]
-                    print('publishedStr: '+publishedStr)
-                    postsInBoxDict[secondsSinceEpoch]=postFilename
-                    postsCtr+=1
-
-    return
+                    if publishedStr.endswith('Z'):
+                        postsInBoxDict[publishedStr]=postFilename
+                        postsCtr+=1
 
     noOfPosts=postsCtr
     if noOfPosts<=maxPostsInBox:
@@ -2313,7 +2311,9 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     # directory containing cached html posts
     postCacheDir=boxDir.replace('/'+boxname,'/postcache')
 
-    for secondsSinceEpoch,postFilename in postsInBoxSorted.items():
+    for publishedStr,postFilename in postsInBoxSorted.items():
+        print('publishedStr: '+publishedStr)
+        break
         filePath=os.path.join(boxDir,postFilename)        
         if not os.path.isfile(filePath):
             continue
