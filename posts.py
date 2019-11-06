@@ -2290,9 +2290,9 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         if not postFilename.endswith('.json'):
             continue
         # Time of file creation
-        secondsSinceEpoch=getCreationTimeOfFile(postFilename)
+        secondsSinceEpoch=getCreationTimeOfFile(os.path.join(boxDir, postFilename))
         if secondsSinceEpoch:
-            postsInBoxDict[secondsSinceEpoch]=os.path.join(boxDir, postFilename)
+            postsInBoxDict[secondsSinceEpoch]=postFilename
             postsCtr+=1
 
     noOfPosts=postsCtr
