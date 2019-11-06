@@ -798,8 +798,9 @@ def personSnooze(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> Non
         print('ERROR: unknown account '+accountDir)
         return
     snoozedFilename=accountDir+'/snoozed.txt'
-    if snoozeActor+' ' in open(snoozedFilename).read():
-        return
+    if os.path.isfile(snoozedFilename):
+        if snoozeActor+' ' in open(snoozedFilename).read():
+            return
     snoozedFile=open(snoozedFilename, "a+")
     if snoozedFile:
         snoozedFile.write(snoozeActor+' '+str(int(time.time()))+'\n')
