@@ -431,8 +431,3 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
         getCachedPostDirectory(baseDir,nickname,domain)+ \
         '/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
     return cachedPostFilename
-
-def getCreationTimeOfFile(filename: str):
-    """Gets the time of creation of a file in seconds since epoch
-    """
-    return os.stat(filename).st_ctime

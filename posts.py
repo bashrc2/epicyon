@@ -41,7 +41,6 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
-from utils import getCreationTimeOfFile
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
@@ -2291,27 +2290,36 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         if not postFilename.endswith('.json'):
             continue
         # Time of file creation
-        secondsSinceEpoch=getCreationTimeOfFile(os.path.join(boxDir, postFilename))
-        if secondsSinceEpoch:
-            postsInBoxDict[secondsSinceEpoch]=postFilename
-            postsCtr+=1
+        fullFilename=os.path.join(boxDir,postFilename)
+        if os.path.isfile(fullFilename):
+            content=open(fullFilename).read()
+            if '"published":' in content:
+                publishedStr=content.split('"published":')[1]
+                if '"' in publishedStr:
+                    publishedStr=publishedStr.split('"')[1]
+                    print('publishedStr: '+publishedStr)
+                    postsInBoxDict[secondsSinceEpoch]=postFilename
+                    postsCtr+=1
+
+    return
 
     noOfPosts=postsCtr
     if noOfPosts<=maxPostsInBox:
         return
+
     # sort the list in ascending order of date
-    postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
+    postsInBoxSorted=OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
 
     # directory containing cached html posts
     postCacheDir=boxDir.replace('/'+boxname,'/postcache')
 
-    for secondsSinceEpoch,postFilename in postsInBox.items():
-        filePath = os.path.join(boxDir, postFilename)        
+    for secondsSinceEpoch,postFilename in postsInBoxSorted.items():
+        filePath=os.path.join(boxDir,postFilename)        
         if not os.path.isfile(filePath):
             continue
         if archiveDir:
             repliesPath=filePath.replace('.json','.replies')
-            archivePath = os.path.join(archiveDir, postFilename)
+            archivePath=os.path.join(archiveDir,postFilename)
             os.rename(filePath,archivePath)
             if os.path.isfile(repliesPath):
                 os.rename(repliesPath,archivePath)
@@ -2319,12 +2327,12 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
             deletePost(baseDir,httpPrefix,nickname,domain,filePath,False)
 
         # remove cached html posts
-        postCacheFilename=os.path.join(postCacheDir, postFilename).replace('.json','.html')
+        postCacheFilename=os.path.join(postCacheDir,postFilename).replace('.json','.html')
         if os.path.isfile(postCacheFilename):
             os.remove(postCacheFilename)
 
-        noOfPosts -= 1
-        if noOfPosts <= maxPostsInBox:
+        noOfPosts-=1
+        if noOfPosts<=maxPostsInBox:
             break
 
 def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
