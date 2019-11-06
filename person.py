@@ -859,7 +859,7 @@ def getDonationUrl(actorJson: {}) -> str:
             continue
         if '<a href="' not in propertyValue['value']:
             continue
-        donateUrl=value.split('<a href="')[1]
+        donateUrl=propertyValue['value'].split('<a href="')[1]
         if '"' in donateUrl:
             return donateUrl.split('"')[0]
     return ''
