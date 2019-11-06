@@ -3368,7 +3368,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 'object': actorJson
                             }
                             self.postToNickname=nickname
-                            self._postToOutboxThread(updateActorJson)
+                            self._postToOutbox(updateActorJson,__version__)
                         if fields.get('deactivateThisAccount'):
                             if fields['deactivateThisAccount']=='on':
                                 deactivateAccount(self.server.baseDir,nickname,self.server.domain)
