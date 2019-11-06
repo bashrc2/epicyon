@@ -41,6 +41,7 @@ from utils import validNickname
 from utils import locatePost
 from utils import loadJson
 from utils import saveJson
+from utils import getCreationTimeOfFile
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
@@ -2288,10 +2289,10 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         postFilename=postFilename.name
         if not postFilename.endswith('.json'):
             continue
-        # extract the status number
-        statusNumber=getStatusNumberFromPostFilename(postFilename)
-        if statusNumber:
-            postsInBoxDict[statusNumber]=os.path.join(boxDir, postFilename)
+        # Time of file creation
+        secondsSinceEpoch=getCreationTimeOfFile(postFilename)
+        if secondsSinceEpoch:
+            postsInBoxDict[secondsSinceEpoch]=os.path.join(boxDir, postFilename)
             postsCtr+=1
 
     noOfPosts=postsCtr
@@ -2303,7 +2304,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     # directory containing cached html posts
     postCacheDir=boxDir.replace('/'+boxname,'/postcache')
 
-    for statusNumber,postFilename in postsInBox.items():
+    for secondsSinceEpoch,postFilename in postsInBox.items():
         filePath = os.path.join(boxDir, postFilename)        
         if not os.path.isfile(filePath):
             continue
