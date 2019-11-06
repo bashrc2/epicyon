@@ -176,6 +176,8 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                                'schema': 'http://schema.org#',
                                'value': 'schema:value'}],
                  'attachment': [],
+                 'alsoKnownAs': [],
+                 'discoverable': False,
                  'endpoints': {
                      'id': personId+'/endpoints',
                      'sharedInbox': httpPrefix+'://'+domain+'/inbox',
