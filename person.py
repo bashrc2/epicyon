@@ -835,3 +835,70 @@ def personUnsnooze(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> N
             if writeSnoozedFile:
                 writeSnoozedFile.write(content)
                 writeSnoozedFile.close()
+
+
+def getDonationTypes() -> str:
+    return ('patreon','paypal','gofundme','liberapay')
+    
+def getDonationUrl(actorJson: {}) -> str:
+    """Returns a link used for donations
+    """
+    if not actorJson.get('attachment'):
+        return ''
+    donationType=getDonationTypes()
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if propertyValue['name'].lower() not in donationType:
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type']!='PropertyValue':
+            continue
+        if '<a href="' not in propertyValue['value']:
+            continue
+        donateUrl=value.split('<a href="')[1]
+        if '"' in donateUrl:
+            return donateUrl.split('"')[0]
+    return ''
+
+def setDonationUrl(actorJson: {},donateUrl: str) -> None:
+    """Sets a link used for donations
+    """
+    if not actorJson.get('attachment'):
+        actorJson['attachment']=[]
+
+    donateName=None
+    if 'patreon' in donateUrl:
+        donateName='Patreon'
+    elif 'gofundme' in donateUrl:
+        donateName='GoFundMe'
+    elif 'liberapay' in donateUrl:
+        donateName='LiberaPay'
+    elif 'paypal' in donateUrl:
+        donateName='PayPal'
+    else:
+        return
+
+    donateValue='<a href="'+donateUrl+'" rel="me nofollow noopener noreferrer" target="_blank">'+donateUrl+'</a>'
+
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if propertyValue['name']!=donateName:
+            continue
+        if propertyValue['type']!='PropertyValue':
+            continue
+        propertyValue['value']=donateValue
+        return
+
+    newDonate={
+        "name": donateName,
+        "type": "PropertyValue",
+        "value": donateValue
+    }
+    actorJson['attachment'].append(newDonate)

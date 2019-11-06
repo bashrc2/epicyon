@@ -19,6 +19,7 @@ from shutil import copyfileobj
 from pprint import pprint
 from person import personBoxJson
 from person import isPersonSnoozed
+from person import getDonationUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -528,9 +529,11 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     followDMs=''
     displayNickname=nickname
     bioStr=''
+    donateUrl=''
     manuallyApprovesFollowers=''
     actorJson=loadJson(actorFilename)
     if actorJson:
+        donateUrl=getDonationUrl(actorJson)
         if actorJson.get('name'):
             displayNickname=actorJson['name']
         if actorJson.get('summary'):
@@ -612,7 +615,9 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         '    </div>'+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="name" name="displayNickname" value="'+displayNickname+'">' \
-        '      <textarea id="message" name="bio" placeholder="'+translate['Your bio']+'..." style="height:200px">'+bioStr+'</textarea>' \
+        '      <textarea id="message" name="bio" placeholder="'+translate['Your bio']+'..." style="height:200px">'+bioStr+'</textarea>'+ \
+        translate['Donations link']+'<br>'+ \
+        '      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">' \
         '    </div>' \
         '    <div class="container">' \
         '      '+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'<br>' \

@@ -23,6 +23,8 @@ from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
+from person import getDonationUrl
+from person import setDonationUrl
 from person import activateAccount
 from person import deactivateAccount
 from person import registerAccount
@@ -3223,6 +3225,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('displayNickname'):
                             if fields['displayNickname']!=actorJson['name']:
                                 actorJson['name']=fields['displayNickname']
+                                actorChanged=True
+                        if fields.get('donateUrl'):
+                            currentDonateUrl=getDonationUrl(actorJson)
+                            if fields['donateUrl']!=currentDonateUrl:
+                                setDonationUrl(actorJson,fields['donateUrl'])
                                 actorChanged=True
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:
