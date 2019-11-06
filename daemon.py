@@ -4049,9 +4049,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return            
             if '&submitSnooze=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Snoozing '+optionsActor)
                 thisActor=self.path.split('/personoptions')[0]
+                if self.server.debug:
+                    print('Snoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
@@ -4059,9 +4059,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            '/inbox?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
             if '&submitUnSnooze=' in optionsConfirmParams:
-                if self.server.debug:
-                    print('Unsnoozing '+optionsActor)
                 thisActor=self.path.split('/personoptions')[0]
+                if self.server.debug:
+                    print('Unsnoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)

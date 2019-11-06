@@ -2893,7 +2893,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
         '    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>' \
         '    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>' \
         '    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>'+ \
-        '    <button type="submit" class="button" name="submit"'+snoozeButtonStr+'>'+translate[snoozeButtonStr]+'</button>' \
+        '    <button type="submit" class="button" name="submit'+snoozeButtonStr+'">'+translate[snoozeButtonStr]+'</button>' \
         '    <button type="submit" class="button" name="submitReport">'+translate['Report']+'</button>' \
         '  </form>'
     optionsStr+='</center>'
