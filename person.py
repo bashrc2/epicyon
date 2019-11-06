@@ -838,7 +838,7 @@ def personUnsnooze(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> N
 
 
 def getDonationTypes() -> str:
-    return ('patreon','paypal','gofundme','liberapay')
+    return ('patreon','paypal','gofundme','liberapay','kickstarter','indiegogo','crowdsupply')
     
 def getDonationUrl(actorJson: {}) -> str:
     """Returns a link used for donations
@@ -879,6 +879,12 @@ def setDonationUrl(actorJson: {},donateUrl: str) -> None:
         donateName='LiberaPay'
     elif 'paypal' in donateUrl:
         donateName='PayPal'
+    elif 'kickstarter' in donateUrl:
+        donateName='Kickstarter'
+    elif 'indiegogo' in donateUrl:
+        donateName='IndieGoGo'
+    elif 'crowdsupply' in donateUrl:
+        donateName='CrowdSupply'
     else:
         return
 
