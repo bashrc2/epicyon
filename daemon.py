@@ -139,6 +139,7 @@ from announce import outboxAnnounce
 from content import addHtmlTags
 from media import removeMetaData
 from cache import storePersonInCache
+from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 import os
 import sys
@@ -770,6 +771,10 @@ class PubServer(BaseHTTPRequestHandler):
                    optionsLink=None
                    if len(optionsList)>3:
                        optionsLink=optionsList[3]
+                   donateUrl=None
+                   actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
+                   if actorJson:
+                       donateUrl=getDonationUrl(actorJson)
                    msg=htmlPersonOptions(self.server.translate, \
                                          self.server.baseDir, \
                                          self.server.domain, \
@@ -777,7 +782,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          optionsActor, \
                                          optionsProfileUrl, \
                                          optionsLink, \
-                                         pageNumber).encode()
+                                         pageNumber,donateUrl).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
                    self.server.GETbusy=False

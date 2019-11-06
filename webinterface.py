@@ -2836,7 +2836,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
                       optionsActor: str, \
                       optionsProfileUrl: str, \
                       optionsLink: str, \
-                      pageNumber: int) -> str:
+                      pageNumber: int,
+                      donateUrl: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain,optionsPort=getDomainFromActor(optionsActor)
@@ -2881,6 +2882,11 @@ def htmlPersonOptions(translate: {},baseDir: str, \
         if isPersonSnoozed(baseDir,nickname,domain,optionsActor):
             snoozeButtonStr='Unsnooze'
 
+    donateStr=''
+    if donateUrl:
+        donateStr= \
+            '    <a href="'+donateUrl+'"><button class="button" name="submitDonate">'+translate['Donate']+'</button></a>'
+
     optionsStr=htmlHeader(cssFilename,profileStyle)
     optionsStr+='<div class="options">'
     optionsStr+='  <div class="optionsAvatar">'
@@ -2894,7 +2900,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
         '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
         '    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'+ \
         optionsLinkStr+ \
-        '    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>' \
+        '    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'+ \
+        donateStr+ \
         '    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>' \
         '    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>' \
         '    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>'+ \
