@@ -1703,8 +1703,10 @@ def sendToFollowers(session,baseDir: str, \
         else:
             # send to individual followers without using a shared inbox
             for handle in followerHandles:
+                if debug:
+                    print('DEBUG: Sending to '+handle)
                 toNickname=handle.split('@')[0]
-
+                
                 if debug:
                     if postJsonObject['type']!='Update':
                         print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
