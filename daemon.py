@@ -482,6 +482,8 @@ class PubServer(BaseHTTPRequestHandler):
                 inactiveFollowerThreads.append(th)
         for th in inactiveFollowerThreads:
             self.server.followersThreads.remove(th)
+        if self.server.debug:
+            print('DEBUG: '+str(len(self.server.followersThreads))+' followers threads active')
         # create a thread to send the post to followers
         followersThread= \
             sendToFollowersThread(self.server.session, \
@@ -498,8 +500,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   messageJson,self.server.debug, \
                                   self.server.projectVersion)
         self.server.followersThreads.append(followersThread)
-        # retain up to 10 threads
-        if len(self.server.followersThreads)>10:
+        # retain up to 20 threads
+        if len(self.server.followersThreads)>20:
             for i in range(2):
                 # kill the thread if it is still alive
                 if self.server.followersThreads[0].is_alive():
