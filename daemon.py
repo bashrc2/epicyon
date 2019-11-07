@@ -460,11 +460,12 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             pprint(messageJson)
             print('DEBUG: savePostToBox')
-        savePostToBox(self.server.baseDir, \
-                      self.server.httpPrefix, \
-                      postId, \
-                      self.postToNickname, \
-                      self.server.domainFull,messageJson,'outbox')
+        if messageJson['type']!='Upgrade':
+            savePostToBox(self.server.baseDir, \
+                          self.server.httpPrefix, \
+                          postId, \
+                          self.postToNickname, \
+                          self.server.domainFull,messageJson,'outbox')
         if outboxAnnounce(self.server.baseDir,messageJson,self.server.debug):
             if self.server.debug:
                 print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
