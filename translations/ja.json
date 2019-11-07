@@ -166,10 +166,10 @@
     "December": "12月",
     "Only people I follow can send me DMs": "直接メッセージを送信できるのは、フォローしている人だけです",
     "Logout": "ログアウト",
-    "Danger Zone": "Danger Zone",
-    "Deactivate this account": "Deactivate this account",
-    "Snooze": "Snooze",
-    "Unsnooze": "Unsnooze",
-    "Donations link": "Donations link",
-    "Donate": "Donate"
+    "Danger Zone": "危険区域",
+    "Deactivate this account": "このアカウントを無効化",
+    "Snooze": "スヌーズ",
+    "Unsnooze": "目を覚ます",
+    "Donations link": "寄付リンク",
+    "Donate": "寄付する"
 }
