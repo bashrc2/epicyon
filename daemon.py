@@ -3122,6 +3122,7 @@ class PubServer(BaseHTTPRequestHandler):
                 fields={}
                 filename=None
                 lastImageLocation=0
+                actorChanged=False
                 for f in messageFields:
                     if f=='--':
                         continue
@@ -3200,6 +3201,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                    filename.replace('.temp',''))
                                     os.remove(filename)
                                     lastImageLocation=imageLocation+1
+                                    actorChanged=True
                                     
                 actorFilename= \
                     self.server.baseDir+'/accounts/'+ \
@@ -3207,7 +3209,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if os.path.isfile(actorFilename):
                     actorJson=loadJson(actorFilename)
                     if actorJson:                    
-                        actorChanged=False
                         skillCtr=1
                         newSkills={}
                         while skillCtr<10:
