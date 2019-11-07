@@ -1721,7 +1721,7 @@ def sendToFollowers(session,baseDir: str, \
                 
         if debug:
             print('DEBUG: End of sendToFollowers')
-        time.sleep(4)   
+        time.sleep(2)   
 
 def sendToFollowersThread(session,baseDir: str, \
                           nickname: str, domain: str, port: int, \
