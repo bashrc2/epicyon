@@ -838,7 +838,9 @@ def personUnsnooze(baseDir: str,nickname: str,domain: str,snoozeActor: str) -> N
 
 
 def getDonationTypes() -> str:
-    return ('patreon','paypal','gofundme','liberapay','kickstarter','indiegogo','crowdsupply')
+    return ('patreon','paypal','gofundme','liberapay', \
+            'kickstarter','indiegogo','crowdsupply', \
+            'subscribestar')
     
 def getDonationUrl(actorJson: {}) -> str:
     """Returns a link used for donations
@@ -870,22 +872,12 @@ def setDonationUrl(actorJson: {},donateUrl: str) -> None:
     if not actorJson.get('attachment'):
         actorJson['attachment']=[]
 
+    donationType=getDonationTypes()
     donateName=None
-    if 'patreon' in donateUrl:
-        donateName='Patreon'
-    elif 'gofundme' in donateUrl:
-        donateName='GoFundMe'
-    elif 'liberapay' in donateUrl:
-        donateName='LiberaPay'
-    elif 'paypal' in donateUrl:
-        donateName='PayPal'
-    elif 'kickstarter' in donateUrl:
-        donateName='Kickstarter'
-    elif 'indiegogo' in donateUrl:
-        donateName='IndieGoGo'
-    elif 'crowdsupply' in donateUrl:
-        donateName='CrowdSupply'
-    else:
+    for paymentService in donationType:
+        if paymentService in donateUrl:
+            donateName=paymentService
+    if not donateName:
         return
 
     donateValue='<a href="'+donateUrl+'" rel="me nofollow noopener noreferrer" target="_blank">'+donateUrl+'</a>'
@@ -895,7 +887,7 @@ def setDonationUrl(actorJson: {},donateUrl: str) -> None:
             continue
         if not propertyValue.get('type'):
             continue
-        if propertyValue['name']!=donateName:
+        if propertyValue['name'].lower()!=donateName:
             continue
         if propertyValue['type']!='PropertyValue':
             continue
