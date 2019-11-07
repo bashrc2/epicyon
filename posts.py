@@ -1722,9 +1722,10 @@ def sendToFollowers(session,baseDir: str, \
                                sendThreads,postLog,cachedWebfingers, \
                                personCache,debug,projectVersion)
                 
-        if debug:
-            print('DEBUG: End of sendToFollowers')
         time.sleep(4)
+
+    if debug:
+        print('DEBUG: End of sendToFollowers')
 
 def sendToFollowersThread(session,baseDir: str, \
                           nickname: str, domain: str, port: int, \
