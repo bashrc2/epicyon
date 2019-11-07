@@ -432,19 +432,6 @@ input[type=submit] {
     opacity: 0.7;
 }
 
-.donateButton {
-    background-color: var(--button-background);
-    color: var(--button-text);
-    float: none;
-    margin: 0px 10px;
-    padding: 12px 40px;
-    border: none;
-    border-radius: var(--button-corner-radius);
-    cursor: pointer;
-    font-size: var(--font-size2);
-    opacity: 0.7;
-}
-
 input[type=submit]:hover {
     background-color: var(--button-background);
 }
@@ -857,6 +844,18 @@ div.gallery img {
         margin: 0% 1%;
         width: 10%;
     }
+    .donateButton {
+	background-color: var(--button-background);
+	color: var(--button-text);
+	float: none;
+	margin: 0px 10px;
+	padding: 12px 40px;
+	border: none;
+	border-radius: var(--button-corner-radius);
+	cursor: pointer;
+	font-size: var(--font-size2);
+	opacity: 0.7;
+    }
 }
 
 @media screen and (max-width: 1000px) {
@@ -1120,5 +1119,17 @@ div.gallery img {
         float: right;
         margin: 0% 1%;
         width: 20%;
+    }
+    .donateButton {
+	background-color: var(--button-background);
+	color: var(--button-text);
+	float: none;
+	margin: 0px 10px;
+	padding: 12px 40px;
+	border: none;
+	border-radius: var(--button-corner-radius);
+	cursor: pointer;
+	font-size: var(--font-size3);
+	opacity: 0.7;
     }
 }
