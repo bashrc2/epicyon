@@ -432,6 +432,10 @@ input[type=submit] {
     opacity: 0.7;
 }
 
+.donateLink {
+    font-size: var(--font-size3);
+}
+
 input[type=submit]:hover {
     background-color: var(--button-background);
 }

@@ -1334,12 +1334,13 @@ def htmlProfile(translate: {},projectVersion: str, \
     editProfileStr=''
     actor=profileJson['id']
 
-    donateButton=''
+    donateLink=''
     donateUrl=getDonationUrl(profileJson)
     if donateUrl:
         if authorized:
-            donateButton+='<br>'
-        donateButton+='<a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>'
+            donateLink+='<br><a href="'+donateUrl+'" class="donateLink">'+translate['Donate']+'</a>'
+        else:
+            donateLink='<br><a href="'+donateUrl+'"><button class="loginLink">'+translate['Donate']+'</button></a>'
 
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
@@ -1401,7 +1402,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileDescriptionShort+'</p>'+ \
-        loginButton+donateButton+ \
+        loginButton+donateLink+ \
         '  </div>' \
         '</div>'
     profileStr= \
