@@ -95,7 +95,6 @@ server {
     listen 80;
     listen [::]:80;
     server_name YOUR_DOMAIN;
-    root /var/www/YOUR_DOMAIN/htdocs;
     access_log /dev/null;
     error_log /dev/null;
     client_max_body_size 31m;
@@ -133,7 +132,6 @@ server {
     access_log /dev/null;
     error_log /dev/null;
 
-    root /var/www/YOUR_DOMAIN/htdocs;
     index index.html;
  
     location / {
