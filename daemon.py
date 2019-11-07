@@ -484,6 +484,13 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.followersThreads.remove(th)
         if self.server.debug:
             print('DEBUG: '+str(len(self.server.followersThreads))+' followers threads active')
+        # retain up to 20 threads
+        if len(self.server.followersThreads)>20:
+            # kill the thread if it is still alive
+            if self.server.followersThreads[0].is_alive():
+                self.server.followersThreads[0].kill()
+            # remove it from the list
+            self.server.followersThreads.pop(0)
         # create a thread to send the post to followers
         followersThread= \
             sendToFollowersThread(self.server.session, \
@@ -500,14 +507,6 @@ class PubServer(BaseHTTPRequestHandler):
                                   messageJson,self.server.debug, \
                                   self.server.projectVersion)
         self.server.followersThreads.append(followersThread)
-        # retain up to 20 threads
-        if len(self.server.followersThreads)>20:
-            for i in range(2):
-                # kill the thread if it is still alive
-                if self.server.followersThreads[0].is_alive():
-                    self.server.followersThreads[0].kill()
-                # remove it from the list
-                self.server.followersThreads.pop(0)
         if self.server.debug:
             print('DEBUG: handle any unfollow requests')
         outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
