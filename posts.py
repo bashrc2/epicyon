@@ -1140,7 +1140,7 @@ def sendPost(projectVersion: str, \
                            postPath,httpPrefix,withDigest,postJsonStr)
 
     # Keep the number of threads being used small
-    while len(sendThreads)>20:
+    while len(sendThreads)>1000:
         print('WARN: Maximum threads reached - killing send thread')
         sendThreads[0].kill()
         sendThreads.pop(0)
@@ -1341,11 +1341,12 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
             if ':' not in toDomain:
                 toDomain=toDomain+':'+str(toPort)        
 
+    handleBase=httpPrefix+'://'+toDomain+'/@'
     if toNickname:
-        handle=httpPrefix+'://'+toDomain+'/@'+toNickname
+        handle=handleBase+toNickname
     else:
         singleUserInstanceNickname='dev'
-        handle=httpPrefix+'://'+toDomain+'/@'+singleUserInstanceNickname
+        handle=handleBase+singleUserInstanceNickname
         
     if debug:
         print('DEBUG: handle - '+handle+' toPort '+str(toPort))
