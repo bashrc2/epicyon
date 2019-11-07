@@ -1337,7 +1337,9 @@ def htmlProfile(translate: {},projectVersion: str, \
     donateButton=''
     donateUrl=getDonationUrl(profileJson)
     if donateUrl:
-        donateButton='<a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>'
+        if authorized:
+            donateButton+='<br>'
+        donateButton+='<a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>'
 
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
