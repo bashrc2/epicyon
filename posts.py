@@ -1671,7 +1671,12 @@ def sendToFollowers(session,baseDir: str, \
             toDomain=toDomain.split(':')[0]
 
         cc=''
-        if withSharedInbox and postJsonObject['type']!='Update':
+
+        isUpdate=False
+        if postJsonObject['type']=='Update':
+            idUpdate=True
+
+        if withSharedInbox and not isUpdate:
             toNickname=followerHandles[index].split('@')[0]
 
             # if there are more than one followers on the domain
@@ -1712,6 +1717,8 @@ def sendToFollowers(session,baseDir: str, \
                         print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
                     else:
                         print('DEBUG: Sending profile update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                if isUpdate:
+                    postJsonObject['cc']=[httpPrefix+'://'+toDomain+'/users/'+toNickname]
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
                                toNickname,toDomain,toPort, \
@@ -1722,7 +1729,7 @@ def sendToFollowers(session,baseDir: str, \
                 
         if debug:
             print('DEBUG: End of sendToFollowers')
-        time.sleep(2)   
+        time.sleep(4)
 
 def sendToFollowersThread(session,baseDir: str, \
                           nickname: str, domain: str, port: int, \
