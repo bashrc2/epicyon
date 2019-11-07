@@ -1334,13 +1334,15 @@ def htmlProfile(translate: {},projectVersion: str, \
     editProfileStr=''
     actor=profileJson['id']
 
-    donateLink=''
+    donateSection=''
     donateUrl=getDonationUrl(profileJson)
     if donateUrl:
-        if authorized:
-            donateLink+='<br><a href="'+donateUrl+'" class="donateLink">'+translate['Donate']+'</a>'
-        else:
-            donateLink='<br><a href="'+donateUrl+'"><button class="loginLink">'+translate['Donate']+'</button></a>'
+        donateSection= \
+            '<div class="container">\n' \
+            '  <center>\n' \
+            '    <a href="'+donateUrl+'"><button class="loginLink">'+translate['Donate']+'</button></a>\n' \
+            '  </center>\n' \
+            '</div>\n'
 
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
@@ -1402,11 +1404,11 @@ def htmlProfile(translate: {},projectVersion: str, \
         '    <h1>'+displayName+'</h1>' \
         '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
         '    <p>'+profileDescriptionShort+'</p>'+ \
-        loginButton+donateLink+ \
+        loginButton+ \
         '  </div>' \
         '</div>'
     profileStr= \
-        linkToTimelineStart + profileHeaderStr + linkToTimelineEnd + \
+        linkToTimelineStart + profileHeaderStr + linkToTimelineEnd + donateSection + \
         '<div class="container">\n' \
         '  <center>' \
         '    <a href="'+actor+'"><button class="'+postsButton+'"><span>'+translate['Posts']+' </span></button></a>' \
