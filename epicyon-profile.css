@@ -432,8 +432,17 @@ input[type=submit] {
     opacity: 0.7;
 }
 
-.donateLink {
+.donateButton {
+    background-color: #2965;
+    color: #000;
+    float: none;
+    margin: 0px 10px;
+    padding: 12px 40px;
+    border: none;
+    border-radius: var(--button-corner-radius);
+    cursor: pointer;
     font-size: var(--font-size3);
+    opacity: 0.7;
 }
 
 input[type=submit]:hover {

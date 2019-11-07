@@ -1340,7 +1340,7 @@ def htmlProfile(translate: {},projectVersion: str, \
         donateSection= \
             '<div class="container">\n' \
             '  <center>\n' \
-            '    <a href="'+donateUrl+'"><button class="loginLink">'+translate['Donate']+'</button></a>\n' \
+            '    <a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>\n' \
             '  </center>\n' \
             '</div>\n'
 
