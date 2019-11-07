@@ -23,8 +23,8 @@ from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
-from person import getDonationUrl
-from person import setDonationUrl
+from donate import getDonationUrl
+from donate import setDonationUrl
 from person import activateAccount
 from person import deactivateAccount
 from person import registerAccount

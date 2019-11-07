@@ -19,7 +19,7 @@ from shutil import copyfileobj
 from pprint import pprint
 from person import personBoxJson
 from person import isPersonSnoozed
-from person import getDonationUrl
+from donate import getDonationUrl
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
