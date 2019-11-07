@@ -1672,11 +1672,7 @@ def sendToFollowers(session,baseDir: str, \
 
         cc=''
 
-        isUpdate=False
-        if postJsonObject['type']=='Update':
-            idUpdate=True
-
-        if withSharedInbox and not isUpdate:
+        if withSharedInbox:
             toNickname=followerHandles[index].split('@')[0]
 
             # if there are more than one followers on the domain
@@ -1684,17 +1680,17 @@ def sendToFollowers(session,baseDir: str, \
             if len(followerHandles)>1:
                 toNickname='inbox'
 
-            #if toNickname!='inbox' and postJsonObject.get('type'):
-            #    if postJsonObject['type']=='Update':
-            #        if postJsonObject.get('object'):
-            #            if isinstance(postJsonObject['object'], dict):
-            #                if postJsonObject['object'].get('type'):
-            #                    if postJsonObject['object']['type']=='Person' or \
-            #                       postJsonObject['object']['type']=='Application' or \
-            #                       postJsonObject['object']['type']=='Group' or \
-            #                       postJsonObject['object']['type']=='Service':
-            #                        print('Sending profile update to shared inbox of '+toDomain)
-            #                        toNickname='inbox'
+            if toNickname!='inbox' and postJsonObject.get('type'):
+                if postJsonObject['type']=='Update':
+                    if postJsonObject.get('object'):
+                        if isinstance(postJsonObject['object'], dict):
+                            if postJsonObject['object'].get('type'):
+                                if postJsonObject['object']['type']=='Person' or \
+                                   postJsonObject['object']['type']=='Application' or \
+                                   postJsonObject['object']['type']=='Group' or \
+                                   postJsonObject['object']['type']=='Service':
+                                    print('Sending profile update to shared inbox of '+toDomain)
+                                    toNickname='inbox'
             
             if debug:
                 print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
@@ -1717,8 +1713,6 @@ def sendToFollowers(session,baseDir: str, \
                         print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
                     else:
                         print('DEBUG: Sending profile update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
-                if isUpdate:
-                    postJsonObject['cc']=[httpPrefix+'://'+toDomain+'/users/'+toNickname]
 
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
