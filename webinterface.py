@@ -1332,6 +1332,7 @@ def htmlProfile(translate: {},projectVersion: str, \
     linkToTimelineStart=''
     linkToTimelineEnd=''
     editProfileStr=''
+    logoutStr=''
     actor=profileJson['id']
 
     donateSection=''
