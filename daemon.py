@@ -438,7 +438,7 @@ class PubServer(BaseHTTPRequestHandler):
                         messageJson['object']['attachment'][attachmentIndex]['url']= \
                             self.server.httpPrefix+'://'+self.server.domainFull+ \
                             '/'+mediaPath
-                
+
         permittedOutboxTypes=[
             'Create','Announce','Like','Follow','Undo', \
             'Update','Add','Remove','Block','Delete', \
