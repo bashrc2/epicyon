@@ -1705,15 +1705,18 @@ def sendToFollowers(session,baseDir: str, \
             for handle in followerHandles:
                 toNickname=handle.split('@')[0]
 
-            if debug:
-                print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
-            sendSignedJson(postJsonObject,session,baseDir, \
-                           nickname,domain,port, \
-                           toNickname,toDomain,toPort, \
-                           cc,httpPrefix,True,clientToServer, \
-                           federationList, \
-                           sendThreads,postLog,cachedWebfingers, \
-                           personCache,debug,projectVersion)
+                if debug:
+                    if postJsonObject['type']!='Update':
+                        print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                    else:
+                        print('DEBUG: Sending update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                sendSignedJson(postJsonObject,session,baseDir, \
+                               nickname,domain,port, \
+                               toNickname,toDomain,toPort, \
+                               cc,httpPrefix,True,clientToServer, \
+                               federationList, \
+                               sendThreads,postLog,cachedWebfingers, \
+                               personCache,debug,projectVersion)
                 
         if debug:
             print('DEBUG: End of sendToFollowers')

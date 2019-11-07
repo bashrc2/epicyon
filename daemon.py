@@ -3115,7 +3115,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 postBytes=self.rfile.read(length)
 
-                msg = email.parser.BytesParser().parsebytes(postBytes)                
+                msg = email.parser.BytesParser().parsebytes(postBytes)
                 messageFields=msg.get_payload(decode=False).split(boundary)
                 fields={}
                 filename=None
@@ -3375,8 +3375,8 @@ class PubServer(BaseHTTPRequestHandler):
                             updateActorJson={
                                 'type': 'Update',
                                 'actor': actorJson['id'],
-                                'to': ['https://www.w3.org/ns/activitystreams#Public'],
-                                'cc': [actorJson['id']+'/followers'],
+                                'to': [actorJson['id']+'/followers'],
+                                'cc': [],
                                 'object': actorJson
                             }
                             self.postToNickname=nickname
