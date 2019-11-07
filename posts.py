@@ -1719,6 +1719,7 @@ def sendToFollowers(session,baseDir: str, \
                         print('DEBUG: Sending profile update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
                 if isUpdate:
                     postJsonObject['cc']=[httpPrefix+'://'+toDomain+'/users/'+toNickname]
+
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
                                toNickname,toDomain,toPort, \

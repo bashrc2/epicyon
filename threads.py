@@ -90,7 +90,7 @@ def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
                         print('DEBUG: thread is not alive ten seconds after start')
                     removeThread=True
             # timeout for started threads
-            if (currTime-th.startTime).total_seconds()>120:
+            if (currTime-th.startTime).total_seconds()>600:
                 if debug:
                     print('DEBUG: started thread timed out')
                 removeThread=True
