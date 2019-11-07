@@ -1710,7 +1710,7 @@ def sendToFollowers(session,baseDir: str, \
                     if postJsonObject['type']!='Update':
                         print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
                     else:
-                        print('DEBUG: Sending update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                        print('DEBUG: Sending profile update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
                                toNickname,toDomain,toPort, \
