@@ -3568,6 +3568,8 @@ class PubServer(BaseHTTPRequestHandler):
                                     messageJson, \
                                     self.server.maxReplies, \
                                     self.server.debug)
+                else:
+                    print('ERROR: unable to post vote to outbox')
             else:
                 print('ERROR: unable to create vote')
             self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
