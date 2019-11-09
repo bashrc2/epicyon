@@ -2655,9 +2655,9 @@ class PubServer(BaseHTTPRequestHandler):
             # email style encoding message/rfc822
             print('messageFields1: '+str(msg.get_payload(decode=False)))
             print('messageFields2: '+str(msg.get_payload(decode=True)))
-            imageBoundary=b"Content-Disposition: form-data"
+            imageBoundary=b'Content-Disposition: form-data; name="attachpic";'
             imageLocation=postBytes.find(imageBoundary)
-            print('messageFields3')
+            print('messageFields3: '+str(imageLocation))
             if imageLocation>-1:
                 print('messageFields4')
                 msg = email.parser.BytesParser().parsebytes(postBytes[:imageLocation])
