@@ -32,7 +32,7 @@ No insults, harassment (sexual or otherwise), condescension, ad hominem, threats
 
 Condescension means treating others as inferior. Subtle condescension still violates the Code of Conduct even if not blatantly demeaning.
 
-No stereotyping of or promoting prejudice or discrimination against particular groups or classes of people, including sexism, racism, homophobia, transphobia, age discrimination or discrimination based upon nationality.
+No stereotyping of or promoting prejudice or discrimination against particular groups or classes/castes of people, including sexism, racism, homophobia, transphobia, age discrimination or discrimination based upon nationality.
 
 In cases where criticism of ideology or culture remains on-topic, respectfully discuss the ideas.
 
