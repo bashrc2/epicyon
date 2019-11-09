@@ -424,12 +424,14 @@ def testPostMessageBetweenServers():
     for name in os.listdir(inboxPath):
         filename=os.path.join(inboxPath, name)
         assert os.path.isfile(filename)
+        receivedJson=None
         with open(filename, 'r') as fp:
             receivedJson=commentjson.load(fp)
             pprint(receivedJson['object']['content'])
-            assert 'Why is a mouse when it spins?' in receivedJson['object']['content']
-            assert 'यह एक परीक्षण है' in receivedJson['object']['content']
-    
+        assert receivedJson
+        assert 'Why is a mouse when it spins?' in receivedJson['object']['content']
+        assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
 
