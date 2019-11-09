@@ -151,7 +151,7 @@ def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
     authHeader=createBasicAuthHeader(Nickname,password)
      
     headers = {'host': domain, \
-               'Content-type': 'application/json; charset=utf-8', \
+               'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newSkillJson,[],inboxUrl,headers,"inbox:write")

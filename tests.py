@@ -85,7 +85,7 @@ def testHttpsigBase(withDigest):
     os.mkdir(path)
     os.chdir(path)
 
-    contentType='application/activity+json; charset=utf-8'
+    contentType='application/activity+json'
     nickname='socrates'
     domain='argumentative.social'
     httpPrefix='https'
@@ -106,7 +106,7 @@ def testHttpsigBase(withDigest):
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath='/inbox'
     if not withDigest:
-        headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json; charset=utf-8'}
+        headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json'}
         signatureHeader = \
             signPostHeaders(dateStr,privateKeyPem, nickname, \
                             domain, port, \
@@ -122,7 +122,6 @@ def testHttpsigBase(withDigest):
                             boxpath, httpPrefix, messageBodyJsonStr)
 
     headers['signature'] = signatureHeader
-    assert 'utf-8' in headers['content-type']
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              boxpath,False,None, \
                              messageBodyJsonStr)
@@ -134,7 +133,7 @@ def testHttpsigBase(withDigest):
                              messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
-        headers = {'host': 'bogon.domain','date': dateStr,'content-type': 'application/json; charset=utf-8'}
+        headers = {'host': 'bogon.domain','date': dateStr,'content-type': 'application/json'}
     else:
         # correct domain but fake message
         messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'
@@ -391,7 +390,7 @@ def testPostMessageBetweenServers():
         sendPost(__version__, \
                  sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
-                 'Why is a mouse when it spins? Crème brûlée यह एक परीक्षण है #sillyquestion', followersOnly, \
+                 'Why is a mouse when it spins? यह एक परीक्षण है #sillyquestion', followersOnly, \
                  saveToFile, clientToServer,attachedImageFilename,mediaType, \
                  attachedImageDescription,useBlurhash, federationList, \
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
@@ -432,7 +431,6 @@ def testPostMessageBetweenServers():
         assert receivedJson
         assert 'Why is a mouse when it spins?' in receivedJson['object']['content']
         assert 'यह एक परीक्षण है' in receivedJson['object']['content']
-        assert 'Crème brûlée' in receivedJson['object']['content']
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
@@ -931,7 +929,7 @@ def testFollowBetweenServers():
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
 
     # queue item removed
-    time.sleep(2)
+    time.sleep(4)
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
     
     os.chdir(baseDir)
@@ -1600,7 +1598,7 @@ def testGetStatusNumber():
             assert int(statusNumber) > prevStatusNumber
         prevStatusNumber=int(statusNumber)
 
-def testCommentJson():
+def testCommentJson() -> None:
     print('testCommentJson')
     filename='/tmp/test.json'
     messageStr="Crème brûlée यह एक परीक्षण ह"

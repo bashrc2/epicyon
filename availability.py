@@ -130,7 +130,7 @@ def sendAvailabilityViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(Nickname,password)
      
     headers = {'host': domain, \
-               'Content-type': 'application/json; charset=utf-8', \
+               'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newAvailabilityJson,[],inboxUrl,headers,"inbox:write")

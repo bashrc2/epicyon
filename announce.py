@@ -501,7 +501,7 @@ def sendAnnounceViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json; charset=utf-8', \
+               'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newAnnounceJson,[],inboxUrl,headers,"inbox:write")

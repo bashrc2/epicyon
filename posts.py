@@ -120,7 +120,7 @@ def getUserUrl(wfRequest: {}) -> str:
     if wfRequest.get('links'):
         for link in wfRequest['links']:
             if link.get('type') and link.get('href'):
-                if 'application/activity+json' in link['type']:
+                if link['type'] == 'application/activity+json':
                     if not ('/users/' in link['href'] or \
                             '/profile/' in link['href'] or \
                             '/channel/' in link['href']):
@@ -1250,7 +1250,7 @@ def sendPostViaServer(projectVersion: str, \
         #    return 9
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json; charset=utf-8', \
+               'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJsonString(session,json.dumps(postJsonObject),[],inboxUrl,headers,"inbox:write",debug)
@@ -1420,7 +1420,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    postJsonStr=json.dumps(postJsonObject, ensure_ascii=False)
+    postJsonStr=json.dumps(postJsonObject)
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
@@ -1894,34 +1894,29 @@ def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,
 def isReply(postJsonObject: {},actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
-    if isDM(postJsonObject):
-        if postJsonObject['object'].get('inReplyTo'):
-            if postJsonObject['object']['inReplyTo'].startswith(actor):
-                return True        
-    else:
-        if postJsonObject['type']!='Create':
-            return False
-        if not postJsonObject.get('object'):
-            return False
-        if not isinstance(postJsonObject['object'], dict):
-            return False
-        if postJsonObject['object']['type']!='Note':
-            return False
-        if postJsonObject['object'].get('inReplyTo'):
-            if postJsonObject['object']['inReplyTo'].startswith(actor):
-                return True        
-        if not postJsonObject['object'].get('tag'):
-            return False
-        if not isinstance(postJsonObject['object']['tag'], list):
-            return False
-        for tag in postJsonObject['object']['tag']:
-            if not tag.get('type'):
+    if postJsonObject['type']!='Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if postJsonObject['object']['type']!='Note':
+        return False
+    if postJsonObject['object'].get('inReplyTo'):
+        if postJsonObject['object']['inReplyTo'].startswith(actor):
+            return True        
+    if not postJsonObject['object'].get('tag'):
+        return False
+    if not isinstance(postJsonObject['object']['tag'], list):
+        return False
+    for tag in postJsonObject['object']['tag']:
+        if not tag.get('type'):
+            continue
+        if tag['type']=='Mention':
+            if not tag.get('href'):
                 continue
-            if tag['type']=='Mention':
-                if not tag.get('href'):
-                    continue
-                if actor in tag['href']:
-                    return True
+            if actor in tag['href']:
+                return True
     return False
 
 def createBoxIndex(boxDir: str,postsInBoxDict: {}) -> int:

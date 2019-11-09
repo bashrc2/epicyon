@@ -392,7 +392,7 @@ def sendShareViaServer(baseDir,session, \
             postImage(session,imageFilename,[],inboxUrl.replace('/'+postToBox,'/shares'),headers,"inbox:write")
     
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json; charset=utf-8', \
+               'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newShareJson,[],inboxUrl,headers,"inbox:write")
@@ -473,7 +473,7 @@ def sendUndoShareViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
     
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json; charset=utf-8', \
+               'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,undoShareJson,[],inboxUrl,headers,"inbox:write")

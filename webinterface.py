@@ -606,7 +606,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         
     editProfileForm=htmlHeader(cssFilename,editProfileCSS)
     editProfileForm+= \
-        '<form enctype="multipart/form-data" method="POST" action="'+path+'/profiledata">' \
+        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">' \
         '  <div class="vertical-center">' \
         '    <p class="new-post-text">'+translate['Profile for']+' '+nickname+'@'+domainFull+'</p>' \
         '    <div class="container">' \
@@ -1001,7 +1001,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
     
     newPostForm+= \
-        '<form enctype="multipart/form-data" method="POST" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">' \
+        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">' \
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
@@ -3321,7 +3321,7 @@ def htmlSearch(translate: {}, \
     followStr+='  <center>'    
     followStr+='  <p class="followText">'+translate['Enter an address, shared item, #hashtag, *skill or :emoji: to search for']+'</p>'
     followStr+= \
-        '  <form method="POST" action="'+actor+'/searchhandle">' \
+        '  <form method="POST" accept-charset="UTF-8" action="'+actor+'/searchhandle">' \
         '    <input type="hidden" name="actor" value="'+actor+'">' \
         '    <input type="text" name="searchtext" autofocus><br>' \
         '    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>' \
