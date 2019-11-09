@@ -1,0 +1,52 @@
+{
+    "Chief Editor": {
+        "Creative": {
+            "Photographer": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    },
+            "Layout editor": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    },
+            "Writers team": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    }
+	},
+        "Copy": {
+            "Proof reader": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    },
+            "Fact checker": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    }
+	},
+        "Publicity": {
+            "Website designer": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    },
+            "Social media publicist": {
+                description: "",
+                pitch: "",
+		iconUrl: "",
+                members: []
+	    }
+	}
+    }
+}
