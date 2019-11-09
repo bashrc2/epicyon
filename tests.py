@@ -391,7 +391,7 @@ def testPostMessageBetweenServers():
         sendPost(__version__, \
                  sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
-                 'Why is a mouse when it spins? यह एक परीक्षण है #sillyquestion', followersOnly, \
+                 'Why is a mouse when it spins? Crème brûlée यह एक परीक्षण है #sillyquestion', followersOnly, \
                  saveToFile, clientToServer,attachedImageFilename,mediaType, \
                  attachedImageDescription,useBlurhash, federationList, \
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
@@ -432,6 +432,7 @@ def testPostMessageBetweenServers():
         assert receivedJson
         assert 'Why is a mouse when it spins?' in receivedJson['object']['content']
         assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+        assert 'Crème brûlée' in receivedJson['object']['content']
 
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
