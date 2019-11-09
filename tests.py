@@ -85,7 +85,7 @@ def testHttpsigBase(withDigest):
     os.mkdir(path)
     os.chdir(path)
 
-    contentType='application/activity+json'
+    contentType='application/activity+json; charset=utf-8'
     nickname='socrates'
     domain='argumentative.social'
     httpPrefix='https'
@@ -106,7 +106,7 @@ def testHttpsigBase(withDigest):
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath='/inbox'
     if not withDigest:
-        headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json'}
+        headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json; charset=utf-8'}
         signatureHeader = \
             signPostHeaders(dateStr,privateKeyPem, nickname, \
                             domain, port, \
@@ -122,6 +122,7 @@ def testHttpsigBase(withDigest):
                             boxpath, httpPrefix, messageBodyJsonStr)
 
     headers['signature'] = signatureHeader
+    assert 'utf-8' in headers['content-type']
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              boxpath,False,None, \
                              messageBodyJsonStr)
@@ -133,7 +134,7 @@ def testHttpsigBase(withDigest):
                              messageBodyJsonStr) == False
     if not withDigest:
         # fake domain
-        headers = {'host': 'bogon.domain','date': dateStr,'content-type': 'application/json'}
+        headers = {'host': 'bogon.domain','date': dateStr,'content-type': 'application/json; charset=utf-8'}
     else:
         # correct domain but fake message
         messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'

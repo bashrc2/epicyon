@@ -733,7 +733,7 @@ def sendFollowRequestViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newFollowJson,[],inboxUrl,headers,"inbox:write")
@@ -818,7 +818,7 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,unfollowJson,[],inboxUrl,headers,"inbox:write")

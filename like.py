@@ -402,7 +402,7 @@ def sendLikeViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newLikeJson,[],inboxUrl,headers,"inbox:write")
@@ -481,7 +481,7 @@ def sendUndoLikeViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newUndoLikeJson,[],inboxUrl,headers,"inbox:write")

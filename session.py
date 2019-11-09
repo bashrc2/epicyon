@@ -96,7 +96,7 @@ def postJsonString(session,postJsonStr: str, \
     postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
     if postResult.status_code<200 or postResult.status_code>202:
         #if postResult.status_code==400:
-        #    headers['content-type']='application/ld+json'
+        #    headers['content-type']='application/ld+json; charset=utf-8'
         #    postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
         #    if not (postResult.status_code<200 or postResult.status_code>202):
         #        return True

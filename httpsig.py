@@ -47,10 +47,10 @@ def signPostHeaders(dateStr: str,privateKeyPem: str, \
         dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     keyID=httpPrefix+'://'+domain+'/users/'+nickname+'#main-key'
     if not messageBodyJsonStr:
-        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json'}
+        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json; charset=utf-8'}
     else:
         bodyDigest=messageContentDigest(messageBodyJsonStr)
-        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
+        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json; charset=utf-8'}
     privateKeyPem=RSA.import_key(privateKeyPem)
     #headers.update({
     #    '(request-target)': f'post {path}',
@@ -87,7 +87,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
                        messageBodyJsonStr: str) -> {}:
     """Note that the domain is the destination, not the sender
     """
-    contentType='application/activity+json'
+    contentType='application/activity+json; charset=utf-8'
     headerDomain=toDomain
 
     if toPort:

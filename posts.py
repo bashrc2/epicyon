@@ -120,7 +120,7 @@ def getUserUrl(wfRequest: {}) -> str:
     if wfRequest.get('links'):
         for link in wfRequest['links']:
             if link.get('type') and link.get('href'):
-                if link['type'] == 'application/activity+json':
+                if 'application/activity+json' in link['type']:
                     if not ('/users/' in link['href'] or \
                             '/profile/' in link['href'] or \
                             '/channel/' in link['href']):
@@ -1250,7 +1250,7 @@ def sendPostViaServer(projectVersion: str, \
         #    return 9
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJsonString(session,json.dumps(postJsonObject),[],inboxUrl,headers,"inbox:write",debug)

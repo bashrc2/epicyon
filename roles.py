@@ -281,7 +281,7 @@ def sendRoleViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(delegatorNickname,password)
      
     headers = {'host': delegatorDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newRoleJson,[],inboxUrl,headers,"inbox:write")
@@ -294,3 +294,4 @@ def sendRoleViaServer(baseDir: str,session, \
         print('DEBUG: c2s POST role success')
 
     return newRoleJson
+

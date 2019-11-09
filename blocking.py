@@ -214,7 +214,7 @@ def sendBlockViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newBlockJson,[],inboxUrl,headers,"inbox:write")
@@ -291,7 +291,7 @@ def sendUndoBlockViaServer(baseDir: str,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
      
     headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
+               'Content-type': 'application/json; charset=utf-8', \
                'Authorization': authHeader}
     postResult = \
         postJson(session,newBlockJson,[],inboxUrl,headers,"inbox:write")
