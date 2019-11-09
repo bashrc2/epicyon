@@ -2653,21 +2653,18 @@ class PubServer(BaseHTTPRequestHandler):
             # why don't we just use msg.is_multipart(), rather than splitting?
             # TL;DR it doesn't work for this use case because we're not using
             # email style encoding message/rfc822
-            print('messageFields1: '+str(msg.get_payload(decode=False)))
-            print('messageFields2: '+str(msg.get_payload(decode=True)))
             imageBoundary=b'Content-Disposition: form-data; name="attachpic";'
             imageLocation=postBytes.find(imageBoundary)
-            print('messageFields3: '+str(imageLocation))
             if imageLocation>-1:
-                print('messageFields4')
+                # get the first part of the data containing text fields
+                # If we try to use decode=True on the full data, including images,
+                # then it will fail
                 msg = email.parser.BytesParser().parsebytes(postBytes[:imageLocation])
-                print('messageFields5')
             messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
-            print('messageFields6')
-            print('messageFields7: '+str(messageFields))
             fields={}
             filename=None
             attachmentMediaType=None
+            # get the text fields
             for f in messageFields:
                 if f=='--':
                     continue
@@ -2686,6 +2683,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             postValue+='\n'
                                         postValue+=postLines[line]
                                 fields[postKey]=postValue
+            # now extract any attached image or other media
             if imageLocation>-1:
                 imageLocation2=-1
                 filename=None
