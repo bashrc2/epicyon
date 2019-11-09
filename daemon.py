@@ -2674,7 +2674,11 @@ class PubServer(BaseHTTPRequestHandler):
                                         if line>2:
                                             postValue+='\n'
                                         postValue+=postLines[line]
-                                fields[postKey]=postValue
+                                fields[postKey]=postValue.decode()
+                                if postKey=='message':
+                                    print('************************************************************************')
+                                    print('message: '+fields[postKey]+' *******************************************')
+                                    print('************************************************************************')
                         else:
                             # directly search the binary array for the beginning
                             # of an image
