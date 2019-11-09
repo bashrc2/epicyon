@@ -1600,8 +1600,26 @@ def testGetStatusNumber():
             assert int(statusNumber) > prevStatusNumber
         prevStatusNumber=int(statusNumber)
 
+def testCommentJson():
+    print('testCommentJson')
+    filename='/tmp/test.json'
+    messageStr="Crème brûlée यह एक परीक्षण ह"
+    testJson={
+        "content": messageStr
+    }
+    with open(filename, 'w') as fp:
+        commentjson.dump(testJson, fp, indent=2, sort_keys=False)
+    receivedJson=None
+    with open(filename, 'r') as fp:
+        receivedJson=commentjson.load(fp)
+    assert receivedJson
+    assert receivedJson['content']==messageStr
+    encodedStr=json.dumps(testJson)
+    assert 'Cr\\u00e8me br\\u00fbl\\u00e9e \\u092f\\u0939 \\u090f\\u0915 \\u092a\\u0930\\u0940\\u0915\\u094d\\u0937\\u0923 \\u0939' in encodedStr
+
 def runAllTests():
     print('Running tests...')
+    testCommentJson()
     testGetStatusNumber()
     testAddEmoji()
     testWebLinks()
