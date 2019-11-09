@@ -2687,6 +2687,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         postValue+=postLines[line]
                                 fields[postKey]=postValue
             if imageLocation>-1:
+                imageLocation2=-1
+                filename=None
+                searchStr=''
                 # directly search the binary array for the beginning
                 # of an image
                 extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
@@ -2704,12 +2707,11 @@ class PubServer(BaseHTTPRequestHandler):
                         searchStr=b'Content-Type: audio/mpeg'
                     elif extension=='ogg':
                         searchStr=b'Content-Type: audio/ogg'
-                    imageLocation=postBytes.find(searchStr)
+                    imageLocation2=postBytes.find(searchStr)
                     filenameBase= \
                         self.server.baseDir+'/accounts/'+ \
                         nickname+'@'+self.server.domain+'/upload'
-                    if imageLocation>-1:
-                        imageFound=True
+                    if imageLocation2>-1:
                         if extension=='jpeg':
                             extension='jpg'
                         elif extension=='mpeg':
@@ -2718,10 +2720,10 @@ class PubServer(BaseHTTPRequestHandler):
                         attachmentMediaType= \
                             searchStr.decode().split('/')[0].replace('Content-Type: ','')
                         break
-                if filename and imageLocation>-1:
+                if filename and imageLocation2>-1:
                     # locate the beginning of the image, after any
                     # carriage returns
-                    startPos=imageLocation+len(searchStr)
+                    startPos=imageLocation2+len(searchStr)
                     for offset in range(1,8):
                         if postBytes[startPos+offset]!=10:
                             if postBytes[startPos+offset]!=13:
@@ -3130,7 +3132,8 @@ class PubServer(BaseHTTPRequestHandler):
                 postBytes=self.rfile.read(length)
 
                 msg = email.parser.BytesParser().parsebytes(postBytes)
-                messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
+                #messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
+                messageFields=msg.get_payload(decode=False).split(boundary)
                 fields={}
                 filename=None
                 lastImageLocation=0
