@@ -2653,7 +2653,9 @@ class PubServer(BaseHTTPRequestHandler):
             # why don't we just use msg.is_multipart(), rather than splitting?
             # TL;DR it doesn't work for this use case because we're not using
             # email style encoding message/rfc822
-            messageFields=msg.get_payload(decode=False).split(boundary)
+            print('msg.get_payload1: '+msg.get_payload(decode=False))
+            print('msg.get_payload2: '+msg.get_payload(decode=True).decode('utf-8'))
+            messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
             fields={}
             filename=None
             attachmentMediaType=None
@@ -3118,7 +3120,7 @@ class PubServer(BaseHTTPRequestHandler):
                 postBytes=self.rfile.read(length)
 
                 msg = email.parser.BytesParser().parsebytes(postBytes)
-                messageFields=msg.get_payload(decode=False).split(boundary)
+                messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
                 fields={}
                 filename=None
                 lastImageLocation=0
