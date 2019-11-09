@@ -2653,8 +2653,11 @@ class PubServer(BaseHTTPRequestHandler):
             # why don't we just use msg.is_multipart(), rather than splitting?
             # TL;DR it doesn't work for this use case because we're not using
             # email style encoding message/rfc822
+            print('messageFields1: '+str(msg.get_payload(decode=False)))
+            print('messageFields2: '+str(msg.get_payload(decode=True)))
             messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
-            print('messageFields: '+str(messageFields))
+            print('messageFields3')
+            print('messageFields4: '+str(messageFields))
             fields={}
             filename=None
             attachmentMediaType=None
