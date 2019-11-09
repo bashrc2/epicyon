@@ -341,7 +341,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: WEBFINGER lookup '+self.path+' '+str(self.server.baseDir))
         wfResult=webfingerLookup(self.path,self.server.baseDir,self.server.port,self.server.debug)
         if wfResult:
-            msg=json.dumps(wfResult, ensure_ascii=False).encode('utf-8')
+            msg=json.dumps(wfResult).encode('utf-8')
             self._set_headers('application/jrd+json; charset=utf-8',len(msg),None)
             self._write(msg)
         else:
@@ -1666,7 +1666,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
-                                        msg=json.dumps(postJsonObject, ensure_ascii=False).encode('utf-8')
+                                        msg=json.dumps(postJsonObject).encode('utf-8')
                                         self._set_headers('application/json; charset=utf-8',len(msg),None)
                                         self._write(msg)
                                     else:
@@ -1733,7 +1733,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
-                                            msg=json.dumps(repliesJson, ensure_ascii=False).encode('utf-8')
+                                            msg=json.dumps(repliesJson).encode('utf-8')
                                             self._set_headers('application/json; charset=utf-8',len(msg),None)
                                             self._write(msg)
                                         else:
@@ -1782,7 +1782,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
-                                            msg=json.dumps(repliesJson, ensure_ascii=False).encode('utf-8')
+                                            msg=json.dumps(repliesJson).encode('utf-8')
                                             self._set_headers('application/json; charset=utf-8',len(msg),None)
                                             self._write(msg)
                                         else:
@@ -1824,7 +1824,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._write(msg)
                             else:
                                 if self._fetchAuthenticated():
-                                    msg=json.dumps(actorJson['roles'], ensure_ascii=False).encode('utf-8')
+                                    msg=json.dumps(actorJson['roles']).encode('utf-8')
                                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                                     self._write(msg)
                                 else:
@@ -1867,7 +1867,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._write(msg)
                             else:
                                 if self._fetchAuthenticated():
-                                    msg=json.dumps(actorJson['skills'], ensure_ascii=False).encode('utf-8')
+                                    msg=json.dumps(actorJson['skills']).encode('utf-8')
                                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                                     self._write(msg)
                                 else:
@@ -1923,7 +1923,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
-                                        msg=json.dumps(postJsonObject, ensure_ascii=False).encode('utf-8')
+                                        msg=json.dumps(postJsonObject).encode('utf-8')
                                         self._set_headers('application/json; charset=utf-8',len(msg),None)
                                         self._write(msg)
                                     else:
@@ -1986,7 +1986,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
-                            msg=json.dumps(inboxFeed, ensure_ascii=False).encode('utf-8')
+                            msg=json.dumps(inboxFeed).encode('utf-8')
                             self._set_headers('application/json; charset=utf-8',len(msg),None)
                             self._write(msg)
                         self.server.GETbusy=False
@@ -2056,7 +2056,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
-                            msg=json.dumps(inboxDMFeed, ensure_ascii=False).encode('utf-8')
+                            msg=json.dumps(inboxDMFeed).encode('utf-8')
                             self._set_headers('application/json; charset=utf-8',len(msg),None)
                             self._write(msg)
                         self.server.GETbusy=False
@@ -2129,7 +2129,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
-                        msg=json.dumps(inboxRepliesFeed, ensure_ascii=False).encode('utf-8')
+                        msg=json.dumps(inboxRepliesFeed).encode('utf-8')
                         self._set_headers('application/json; charset=utf-8',len(msg),None)
                         self._write(msg)
                     self.server.GETbusy=False
@@ -2202,7 +2202,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
-                        msg=json.dumps(inboxMediaFeed, ensure_ascii=False).encode('utf-8')
+                        msg=json.dumps(inboxMediaFeed).encode('utf-8')
                         self._set_headers('application/json; charset=utf-8',len(msg),None)
                         self._write(msg)
                     self.server.GETbusy=False
@@ -2307,7 +2307,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 if self._fetchAuthenticated():
-                    msg=json.dumps(outboxFeed, ensure_ascii=False).encode('utf-8')
+                    msg=json.dumps(outboxFeed).encode('utf-8')
                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                     self._write(msg)
                 else:
@@ -2370,7 +2370,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
-                            msg=json.dumps(moderationFeed, ensure_ascii=False).encode('utf-8')
+                            msg=json.dumps(moderationFeed).encode('utf-8')
                             self._set_headers('application/json; charset=utf-8',len(msg),None)
                             self._write(msg)
                         self.server.GETbusy=False
@@ -2440,7 +2440,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             else:
                 if self._fetchAuthenticated():
-                    msg=json.dumps(shares, ensure_ascii=False).encode('utf-8')
+                    msg=json.dumps(shares).encode('utf-8')
                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                     self._write(msg)
                 else:
@@ -2496,7 +2496,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             else:
                 if self._fetchAuthenticated():
-                    msg=json.dumps(following, ensure_ascii=False).encode('utf-8')
+                    msg=json.dumps(following).encode('utf-8')
                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                     self._write(msg)
                 else:
@@ -2551,7 +2551,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             else:
                 if self._fetchAuthenticated():
-                    msg=json.dumps(followers, ensure_ascii=False).encode('utf-8')
+                    msg=json.dumps(followers).encode('utf-8')
                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                     self._write(msg)
                 else:
@@ -2584,7 +2584,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 if self._fetchAuthenticated():
-                    msg=json.dumps(getPerson, ensure_ascii=False).encode('utf-8')
+                    msg=json.dumps(getPerson).encode('utf-8')
                     self._set_headers('application/json; charset=utf-8',len(msg),None)
                     self._write(msg)
                 else:
@@ -2610,7 +2610,7 @@ class PubServer(BaseHTTPRequestHandler):
             with open(filename, 'r', encoding='utf-8') as File:
                 content = File.read()
                 contentJson=json.loads(content)
-                msg=json.dumps(contentJson, ensure_ascii=False).encode('utf-8')
+                msg=json.dumps(contentJson).encode('utf-8')
                 self._set_headers('application/json; charset=utf-8',len(msg),None)
                 self._write(msg)
         else:

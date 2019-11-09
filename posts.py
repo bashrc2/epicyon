@@ -1420,7 +1420,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
-    postJsonStr=json.dumps(postJsonObject, ensure_ascii=False)
+    postJsonStr=json.dumps(postJsonObject)
 
     # construct the http header, including the message body digest
     signatureHeaderJson = \
