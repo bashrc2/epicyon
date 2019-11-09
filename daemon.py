@@ -2730,9 +2730,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 startPos+=offset
                                 break
 
-                                fd = open(filename, 'wb')
-                                fd.write(postBytes[startPos:])
-                                fd.close()
+                    fd = open(filename, 'wb')
+                    fd.write(postBytes[startPos:])
+                    fd.close()
                 else:
                     filename=None
 
