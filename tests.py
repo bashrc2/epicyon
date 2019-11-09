@@ -929,7 +929,7 @@ def testFollowBetweenServers():
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
 
     # queue item removed
-    time.sleep(2)    
+    time.sleep(4)
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
     
     os.chdir(baseDir)
