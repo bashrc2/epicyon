@@ -1894,29 +1894,34 @@ def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,
 def isReply(postJsonObject: {},actor: str) -> bool:
     """Returns true if the given post is a reply to the given actor
     """
-    if postJsonObject['type']!='Create':
-        return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
-        return False
-    if postJsonObject['object']['type']!='Note':
-        return False
-    if postJsonObject['object'].get('inReplyTo'):
-        if postJsonObject['object']['inReplyTo'].startswith(actor):
-            return True        
-    if not postJsonObject['object'].get('tag'):
-        return False
-    if not isinstance(postJsonObject['object']['tag'], list):
-        return False
-    for tag in postJsonObject['object']['tag']:
-        if not tag.get('type'):
-            continue
-        if tag['type']=='Mention':
-            if not tag.get('href'):
+    if isDM(postJsonObject):
+        if postJsonObject['object'].get('inReplyTo'):
+            if postJsonObject['object']['inReplyTo'].startswith(actor):
+                return True        
+    else:
+        if postJsonObject['type']!='Create':
+            return False
+        if not postJsonObject.get('object'):
+            return False
+        if not isinstance(postJsonObject['object'], dict):
+            return False
+        if postJsonObject['object']['type']!='Note':
+            return False
+        if postJsonObject['object'].get('inReplyTo'):
+            if postJsonObject['object']['inReplyTo'].startswith(actor):
+                return True        
+        if not postJsonObject['object'].get('tag'):
+            return False
+        if not isinstance(postJsonObject['object']['tag'], list):
+            return False
+        for tag in postJsonObject['object']['tag']:
+            if not tag.get('type'):
                 continue
-            if actor in tag['href']:
-                return True
+            if tag['type']=='Mention':
+                if not tag.get('href'):
+                    continue
+                if actor in tag['href']:
+                    return True
     return False
 
 def createBoxIndex(boxDir: str,postsInBoxDict: {}) -> int:
