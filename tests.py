@@ -390,7 +390,7 @@ def testPostMessageBetweenServers():
         sendPost(__version__, \
                  sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
                  'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
-                 'Why is a mouse when it spins? #sillyquestion', followersOnly, \
+                 'Why is a mouse when it spins? यह एक परीक्षण है #sillyquestion', followersOnly, \
                  saveToFile, clientToServer,attachedImageFilename,mediaType, \
                  attachedImageDescription,useBlurhash, federationList, \
                  aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
@@ -420,7 +420,16 @@ def testPostMessageBetweenServers():
     assert testval==0
     assert validInbox(bobDir,'bob',bobDomain)
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
-
+    print('Check that message received from Alice contains the expected text')
+    for name in os.listdir(inboxPath):
+        filename=os.path.join(inboxPath, name)
+        assert os.path.isfile(filename)
+        with open(filename, 'r') as fp:
+            receivedJson=commentjson.load(fp)
+            pprint(receivedJson['object']['content'])
+            assert 'Why is a mouse when it spins?' in receivedJson['object']['content']
+            assert 'यह एक परीक्षण है' in receivedJson['object']['content']
+    
     print('\n\n*******************************************************')
     print("Bob likes Alice's post")
 
