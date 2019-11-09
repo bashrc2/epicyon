@@ -2686,52 +2686,53 @@ class PubServer(BaseHTTPRequestHandler):
                                             postValue+='\n'
                                         postValue+=postLines[line]
                                 fields[postKey]=postValue
-                        else:
-                            # directly search the binary array for the beginning
-                            # of an image
-                            extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
-                            for extension in extensionList:
-                                searchStr=b'Content-Type: image/png'
-                                if extension=='jpeg':
-                                    searchStr=b'Content-Type: image/jpeg'
-                                elif extension=='gif':
-                                    searchStr=b'Content-Type: image/gif'
-                                elif extension=='mp4':
-                                    searchStr=b'Content-Type: video/mp4'
-                                elif extension=='ogv':
-                                    searchStr=b'Content-Type: video/ogv'
-                                elif extension=='mp3':
-                                    searchStr=b'Content-Type: audio/mpeg'
-                                elif extension=='ogg':
-                                    searchStr=b'Content-Type: audio/ogg'
-                                imageLocation=postBytes.find(searchStr)
-                                filenameBase= \
-                                    self.server.baseDir+'/accounts/'+ \
-                                    nickname+'@'+self.server.domain+'/upload'
-                                if imageLocation>-1:
-                                    if extension=='jpeg':
-                                        extension='jpg'
-                                    if extension=='mpeg':
-                                        extension='mp3'
-                                    filename=filenameBase+'.'+extension
-                                    attachmentMediaType= \
-                                        searchStr.decode().split('/')[0].replace('Content-Type: ','')
-                                    break
-                            if filename and imageLocation>-1:
-                                # locate the beginning of the image, after any
-                                # carriage returns
-                                startPos=imageLocation+len(searchStr)
-                                for offset in range(1,8):
-                                    if postBytes[startPos+offset]!=10:
-                                        if postBytes[startPos+offset]!=13:
-                                            startPos+=offset
-                                            break
+            if imageLocation>-1:
+                # directly search the binary array for the beginning
+                # of an image
+                extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
+                for extension in extensionList:
+                    searchStr=b'Content-Type: image/png'
+                    if extension=='jpeg':
+                        searchStr=b'Content-Type: image/jpeg'
+                    elif extension=='gif':
+                        searchStr=b'Content-Type: image/gif'
+                    elif extension=='mp4':
+                        searchStr=b'Content-Type: video/mp4'
+                    elif extension=='ogv':
+                        searchStr=b'Content-Type: video/ogv'
+                    elif extension=='mp3':
+                        searchStr=b'Content-Type: audio/mpeg'
+                    elif extension=='ogg':
+                        searchStr=b'Content-Type: audio/ogg'
+                    imageLocation=postBytes.find(searchStr)
+                    filenameBase= \
+                        self.server.baseDir+'/accounts/'+ \
+                        nickname+'@'+self.server.domain+'/upload'
+                    if imageLocation>-1:
+                        imageFound=True
+                        if extension=='jpeg':
+                            extension='jpg'
+                        elif extension=='mpeg':
+                            extension='mp3'
+                        filename=filenameBase+'.'+extension
+                        attachmentMediaType= \
+                            searchStr.decode().split('/')[0].replace('Content-Type: ','')
+                        break
+                if filename and imageLocation>-1:
+                    # locate the beginning of the image, after any
+                    # carriage returns
+                    startPos=imageLocation+len(searchStr)
+                    for offset in range(1,8):
+                        if postBytes[startPos+offset]!=10:
+                            if postBytes[startPos+offset]!=13:
+                                startPos+=offset
+                                break
 
                                 fd = open(filename, 'wb')
                                 fd.write(postBytes[startPos:])
                                 fd.close()
-                            else:
-                                filename=None
+                else:
+                    filename=None
 
             # send the post
             if not fields.get('message') and not fields.get('imageDescription'):
