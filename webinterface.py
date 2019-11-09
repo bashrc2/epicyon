@@ -1001,7 +1001,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
     
     newPostForm+= \
-        '<form enctype="multipart/form-data" method="POST" action="'+pathBase+'?'+endpoint+'?page='+str(pageNumber)+'">' \
+        '<form enctype="multipart/form-data" method="POST" action="'+pathBase+'/'+endpoint+'?page='+str(pageNumber)+'">' \
         '  <div class="vertical-center">' \
         '    <label for="nickname"><b>'+newPostText+'</b></label>' \
         '    <div class="container">' \
