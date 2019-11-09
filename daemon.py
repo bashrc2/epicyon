@@ -2655,9 +2655,16 @@ class PubServer(BaseHTTPRequestHandler):
             # email style encoding message/rfc822
             print('messageFields1: '+str(msg.get_payload(decode=False)))
             print('messageFields2: '+str(msg.get_payload(decode=True)))
-            messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
-            print('messageFields3')
-            print('messageFields4: '+str(messageFields))
+            imageBoundary="Content-Disposition: form-data"
+            if imageBoundary in str(msg.get_payload(decode=True)):
+                msg=msg.get_payload(decode=True).split(imageBoundary,1)[0]
+                print('messageFields3.1')
+                messageFields=msg.decode('utf-8').split(boundary)
+                print('messageFields3.2')
+            else:
+                messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
+                print('messageFields4')
+            print('messageFields5: '+str(messageFields))
             fields={}
             filename=None
             attachmentMediaType=None
