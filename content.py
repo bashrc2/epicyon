@@ -405,7 +405,7 @@ def extractMediaInFormPOST(postBytes,boundary,name: str):
     mediaBytes=postBytes[imageStartLocation:]
 
     # look for the next boundary
-    imageEndBoundary=boundary
+    imageEndBoundary=boundary.encode('utf8', 'ignore')
     imageEndLocation=mediaBytes.find(imageEndBoundary)
     if imageEndLocation==-1:
         # no ending boundary
