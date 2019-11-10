@@ -2665,15 +2665,37 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: media was found. '+str(len(mediaBytes))+' bytes')
                 else:
                     print('DEBUG: no media was found in POST')
+
+            # Note: a .temp extension is used here so that at no time is
+            # an image with metadata publicly exposed, even for a few mS
+            filenameBase= \
+                self.server.baseDir+'/accounts/'+ \
+                nickname+'@'+self.server.domain+'/upload.temp'
+                    
             filename,attachmentMediaType= \
-                saveMediaInFormPOST(mediaBytes,self.server.baseDir, \
-                                    nickname,self.server.domain, \
-                                    self.server.debug,None)
+                saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
             if self.server.debug:
                 if filename:
                     print('DEBUG: POST media filename is '+filename)
                 else:
                     print('DEBUG: no media filename in POST')
+
+            if filename:
+                if filename.endswith('.png') or \
+                   filename.endswith('.jpg') or \
+                   filename.endswith('.gif'):
+                    if self.server.debug:
+                        print('DEBUG: POST media removing metadata')
+                    postImageFilename=filename.replace('.temp','')
+                    removeMetaData(filename,postImageFilename)
+                    if os.path.isfile(postImageFilename):
+                        print('POST media saved to '+postImageFilename)
+                    else:
+                        print('ERROR: POST media could not be saved to '+postImageFilename)
+                else:
+                    if os.path.isfile(filename):
+                        os.rename(filename,filename.replace('.temp',''))
+
             fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
             if self.server.debug:
                 if fields:
@@ -3075,95 +3097,57 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy=False
                     return
 
+                # read the bytes of the http form POST
                 postBytes=self.rfile.read(length)
 
-                msg = email.parser.BytesParser().parsebytes(postBytes)
-                #messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
-                messageFields=msg.get_payload(decode=False).split(boundary)
-                fields={}
-                filename=None
-                lastImageLocation=0
-                actorChanged=False
-                for f in messageFields:
-                    if f=='--':
+                # extract each image type
+                actorChanged=True
+                profileMediaTypes=['avatar','image','banner']
+                for mType in profileMediaTypes:
+                    if self.server.debug:
+                        print('DEBUG: profile update extracting '+mType+' image from POST')
+                    mediaBytes,postBytes=extractMediaInFormPOST(postBytes,boundary,mType)
+                    if mediaBytes:
+                        if self.server.debug:
+                            print('DEBUG: profile update '+mType+' image was found. '+str(len(mediaBytes))+' bytes')
+                    else:
+                        if self.server.debug:
+                            print('DEBUG: profile update, no '+mType+' image was found in POST')
                         continue
-                    if ' name="' in f:
-                        postStr=f.split(' name="',1)[1]
-                        if '"' in postStr:
-                            postKey=postStr.split('"',1)[0]
-                            postValueStr=postStr.split('"',1)[1]
-                            if ';' not in postValueStr:
-                                if '\r\n' in postValueStr:
-                                    postLines=postValueStr.split('\r\n')                                    
-                                    postValue=''
-                                    if len(postLines)>2:
-                                        for line in range(2,len(postLines)-1):
-                                            if line>2:
-                                                postValue+='\n'
-                                            postValue+=postLines[line]
-                                    fields[postKey]=postValue
-                            else:
-                                if 'filename="' not in postStr:
-                                    continue
-                                filenameStr=postStr.split('filename="')[1]
-                                if '"' not in filenameStr:
-                                    continue
-                                postImageFilename=filenameStr.split('"')[0]
-                                if '.' not in postImageFilename:
-                                    continue
-                                # directly search the binary array for the beginning
-                                # of an image
-                                searchStr=b'Content-Type: image/png'                                
-                                imageLocation=postBytes.find(searchStr,lastImageLocation)
-                                filenameBase= \
-                                    self.server.baseDir+'/accounts/'+ \
-                                    nickname+'@'+self.server.domain+'/'+postKey
-                                # Note: a .temp extension is used here so that at no time is
-                                # an image with metadata publicly exposed, even for a few mS
-                                if imageLocation>-1:
-                                    filename=filenameBase+'.png.temp'
-                                else:        
-                                    searchStr=b'Content-Type: image/jpeg'
-                                    imageLocation= \
-                                        postBytes.find(searchStr, \
-                                                       lastImageLocation)
-                                    if imageLocation>-1:                                    
-                                        filename=filenameBase+'.jpg.temp'
-                                    else:     
-                                        searchStr=b'Content-Type: image/gif'
-                                        imageLocation= \
-                                            postBytes.find(searchStr, \
-                                                           lastImageLocation)
-                                        if imageLocation>-1:                                    
-                                            filename=filenameBase+'.gif.temp'
-                                if filename and imageLocation>-1:
-                                    # locate the beginning of the image, after any
-                                    # carriage returns
-                                    startPos=imageLocation+len(searchStr)
-                                    for offset in range(1,8):
-                                        if postBytes[startPos+offset]!=10:
-                                            if postBytes[startPos+offset]!=13:
-                                                startPos+=offset
-                                                break
 
-                                    # look for the end of the image
-                                    imageLocationEnd= \
-                                        postBytes.find(b'-------',imageLocation+1)
+                    # Note: a .temp extension is used here so that at no time is
+                    # an image with metadata publicly exposed, even for a few mS
+                    filenameBase= \
+                        self.server.baseDir+'/accounts/'+ \
+                        nickname+'@'+self.server.domain+'/'+mType+'.temp'
 
-                                    fd = open(filename, 'wb')
-                                    if imageLocationEnd>-1:
-                                        fd.write(postBytes[startPos:][:imageLocationEnd-startPos])
-                                    else:
-                                        fd.write(postBytes[startPos:])
-                                    fd.close()
+                    filename,attachmentMediaType= \
+                        saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
+                    if filename:
+                        if self.server.debug:
+                            print('DEBUG: profile update POST '+mType+' media filename is '+filename)
+                    else:
+                        if self.server.debug:
+                            print('DEBUG: profile update, no '+mType+' media filename in POST')
+                        continue
 
-                                    # remove exif/metadata
-                                    removeMetaData(filename, \
-                                                   filename.replace('.temp',''))
-                                    os.remove(filename)
-                                    lastImageLocation=imageLocation+1
-                                    actorChanged=True
-                                    
+                    if self.server.debug:
+                        print('DEBUG: POST '+mType+' media removing metadata')
+                    postImageFilename=filename.replace('.temp','')
+                    removeMetaData(filename,postImageFilename)
+                    if os.path.isfile(postImageFilename):
+                        print('profile update POST '+mType+' image saved to '+postImageFilename)
+                        actorChanged=True
+                    else:
+                        print('ERROR: profile update POST '+mType+' image could not be saved to '+postImageFilename)                            
+
+                fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
+                if self.server.debug:
+                    if fields:
+                        print('DEBUG: profile update text field extracted from POST '+str(fields))
+                    else:
+                        print('WARN: profile update, no text fields could be extracted from POST')
+
                 actorFilename= \
                     self.server.baseDir+'/accounts/'+ \
                     nickname+'@'+self.server.domain+'.json'

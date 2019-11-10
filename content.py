@@ -420,8 +420,7 @@ def extractMediaInFormPOST(postBytes,boundary,name: str):
     # return the media and the before+after bytes
     return mediaBytes,postBytes[:imageStartLocation]+remainder
 
-def saveMediaInFormPOST(mediaBytes,baseDir: str, \
-                        nickname: str,domain: str,debug: bool, \
+def saveMediaInFormPOST(mediaBytes,debug: bool, \
                         filenameBase=None) -> (str,str):
     """Saves the given media bytes extracted from http form POST
     Returns the filename and attachment type
@@ -449,10 +448,6 @@ def saveMediaInFormPOST(mediaBytes,baseDir: str, \
     for extension,contentType in extensionList.items():
         searchStr=b'Content-Type: '+contentType.encode('utf8', 'ignore')
         mediaLocation=mediaBytes.find(searchStr)
-        if not filenameBase:
-            filenameBase= \
-                baseDir+'/accounts/'+ \
-                nickname+'@'+domain+'/upload'
         if mediaLocation>-1:
             mediaFound=True
             if extension=='jpeg':
