@@ -396,7 +396,7 @@ def extractMediaInFormPOST(postBytes,boundary,name: str):
     """Extracts the binary encoding for image/video/audio within a http form POST
     Returns the media bytes and the remaining bytes
     """
-    imageStartBoundary=b'Content-Disposition: form-data; name="'+unicode(name,"utf-8")+b'";'
+    imageStartBoundary=b'Content-Disposition: form-data; name="'+name.encode('utf8', 'ignore')+b'";'
     imageStartLocation=postBytes.find(imageStartBoundary)
     if imageStartLocation==-1:
         return None,postBytes
@@ -447,7 +447,7 @@ def saveMediaInFormPOST(mediaBytes,baseDir: str, \
         'ogg': 'audio/ogg'
     }
     for extension,contentType in extensionList.items():
-        searchStr=b'Content-Type: '+unicode(contentType,'utf-8')
+        searchStr=b'Content-Type: '+contentType.encode('utf8', 'ignore')
         mediaLocation=mediaBytes.find(searchStr)
         if not filenameBase:
             filenameBase= \
