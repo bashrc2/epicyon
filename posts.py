@@ -457,12 +457,12 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
     tagFile.write(newPostId+'\n')
     tagFile.close()
 
-def createPostBase(baseDir: str,nickname: str, domain: str, port: int, \
-                   toUrl: str, ccUrl: str, httpPrefix: str, content: str, \
-                   followersOnly: bool, saveToFile: bool, clientToServer: bool, \
+def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
+                   toUrl: str,ccUrl: str,httpPrefix: str,content: str, \
+                   followersOnly: bool,saveToFile: bool,clientToServer: bool, \
                    attachImageFilename: str,mediaType: str,imageDescription: str, \
                    useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
-                   inReplyToAtomUri=None, subject=None, \
+                   inReplyToAtomUri=None,subject=None, \
                    eventDate=None,eventTime=None,location=None) -> {}:
     """Creates a message
     """
@@ -920,14 +920,19 @@ def createDirectMessagePost(baseDir: str,
         return None
     postTo=None
     postCc=None
-    return createPostBase(baseDir,nickname,domain,port, \
-                          postTo,postCc, \
-                          httpPrefix,content,followersOnly,saveToFile, \
-                          clientToServer, \
-                          attachImageFilename,mediaType, \
-                          imageDescription,useBlurhash, \
-                          False,inReplyTo,inReplyToAtomUri,subject, \
-                          eventDate,eventTime,location)
+    messageJson= \
+        createPostBase(baseDir,nickname,domain,port, \
+                       postTo,postCc, \
+                       httpPrefix,content,followersOnly,saveToFile, \
+                       clientToServer, \
+                       attachImageFilename,mediaType, \
+                       imageDescription,useBlurhash, \
+                       False,inReplyTo,inReplyToAtomUri,subject, \
+                       eventDate,eventTime,location)
+    # mentioned recipients go into To rather than Cc
+    messageJson['object']['to']=messageJson['object']['cc']
+    messageJson['object']['cc']=[]
+    return messageJson
 
 def createReportPost(baseDir: str,
                      nickname: str, domain: str, port: int,httpPrefix: str, \

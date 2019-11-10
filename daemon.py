@@ -2797,10 +2797,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.debug, \
                                                 fields['eventDate'], \
                                                 fields['eventTime'], \
-                                                fields['location'])
+                                                fields['location'])                    
                 if messageJson:
                     self.postToNickname=nickname
                     if self.server.debug:
+                        pprint(messageJson)
                         print('DEBUG: new DM to '+str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson,__version__):
                         populateReplies(self.server.baseDir, \
