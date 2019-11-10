@@ -3,7 +3,7 @@
         description: "",
         pitch: "",
         iconUrl: "",
-        members: []
+        members: [],
 	team: {
             "Creative": {
                 "Photographer": {
