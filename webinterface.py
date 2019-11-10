@@ -1016,14 +1016,13 @@ def htmlNewPost(translate: {},baseDir: str, \
         replyStr+ \
         '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
         '' \
-        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>' \
-        ''+extraFields+ \
+        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>'+ \
+        extraFields+dateAndLocation+ \
         '    <div class="container">' \
         '      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">' \
         '      <input type="file" id="attachpic" name="attachpic"' \
         '            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">' \
         '    </div>' \
-        ''+dateAndLocation+ \
         '  </div>' \
         '</form>'
 
