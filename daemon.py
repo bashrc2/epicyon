@@ -137,6 +137,9 @@ from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
 from announce import outboxAnnounce
 from content import addHtmlTags
+from content import extractMediaInFormPOST
+from content import saveMediaInFormPOST
+from content import extractTextFieldsInPOST
 from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
@@ -172,8 +175,8 @@ def readFollowList(filename: str) -> None:
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.1'
-
+    protocol_version = 'HTTP/1.1'        
+    
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
         """
@@ -2649,92 +2652,14 @@ class PubServer(BaseHTTPRequestHandler):
             # in Python 3.8/3.10
             # Instead we use the multipart mime parser from the email module
             postBytes=self.rfile.read(length)
-            msg = email.parser.BytesParser().parsebytes(postBytes)
-            # why don't we just use msg.is_multipart(), rather than splitting?
-            # TL;DR it doesn't work for this use case because we're not using
-            # email style encoding message/rfc822
-            imageBoundary=b'Content-Disposition: form-data; name="attachpic";'
-            imageLocation=postBytes.find(imageBoundary)
-            if imageLocation>-1:
-                # get the first part of the data containing text fields
-                # If we try to use decode=True on the full data, including images,
-                # then it will fail
-                msg = email.parser.BytesParser().parsebytes(postBytes[:imageLocation])
-            messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
-            fields={}
-            filename=None
-            attachmentMediaType=None
-            # get the text fields
-            for f in messageFields:
-                if f=='--':
-                    continue
-                if ' name="' in f:
-                    postStr=f.split(' name="',1)[1]
-                    if '"' in postStr:
-                        postKey=postStr.split('"',1)[0]
-                        postValueStr=postStr.split('"',1)[1]
-                        if ';' not in postValueStr:
-                            if '\r\n' in postValueStr:
-                                postLines=postValueStr.split('\r\n')                                    
-                                postValue=''
-                                if len(postLines)>2:
-                                    for line in range(2,len(postLines)-1):
-                                        if line>2:
-                                            postValue+='\n'
-                                        postValue+=postLines[line]
-                                fields[postKey]=postValue
-            # now extract any attached image or other media
-            if imageLocation>-1:
-                imageLocation2=-1
-                filename=None
-                searchStr=''
-                # directly search the binary array for the beginning
-                # of an image
-                extensionList=['png','jpeg','gif','mp4','webm','ogv','mp3','ogg']
-                for extension in extensionList:
-                    searchStr=b'Content-Type: image/png'
-                    if extension=='jpeg':
-                        searchStr=b'Content-Type: image/jpeg'
-                    elif extension=='gif':
-                        searchStr=b'Content-Type: image/gif'
-                    elif extension=='mp4':
-                        searchStr=b'Content-Type: video/mp4'
-                    elif extension=='ogv':
-                        searchStr=b'Content-Type: video/ogv'
-                    elif extension=='mp3':
-                        searchStr=b'Content-Type: audio/mpeg'
-                    elif extension=='ogg':
-                        searchStr=b'Content-Type: audio/ogg'
-                    imageLocation2=postBytes.find(searchStr)
-                    filenameBase= \
-                        self.server.baseDir+'/accounts/'+ \
-                        nickname+'@'+self.server.domain+'/upload'
-                    if imageLocation2>-1:
-                        if extension=='jpeg':
-                            extension='jpg'
-                        elif extension=='mpeg':
-                            extension='mp3'
-                        filename=filenameBase+'.'+extension
-                        attachmentMediaType= \
-                            searchStr.decode().split('/')[0].replace('Content-Type: ','')
-                        break
-                if filename and imageLocation2>-1:
-                    # locate the beginning of the image, after any
-                    # carriage returns
-                    startPos=imageLocation2+len(searchStr)
-                    for offset in range(1,8):
-                        if postBytes[startPos+offset]!=10:
-                            if postBytes[startPos+offset]!=13:
-                                startPos+=offset
-                                break
+            mediaBytes,postBytes=extractMediaInFormPOST(postBytes,boundary,'attachpic')
+            filename,attachmentMediaType= \
+                saveMediaInFormPOST(mediaBytes,self.server.baseDir, \
+                                    nickname,self.server.domain, \
+                                    self.server.debug,None)
+            fields=extractTextFieldsInPOST(postBytes,boundary)
 
-                    fd = open(filename, 'wb')
-                    fd.write(postBytes[startPos:])
-                    fd.close()
-                else:
-                    filename=None
-
-            # send the post
+            # process the received text fields from the POST
             if not fields.get('message') and not fields.get('imageDescription'):
                 return -1
             if fields.get('submitPost'):

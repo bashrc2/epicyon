@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import time
 import commentjson
+import email.parser
 from shutil import copyfile
 
 def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
@@ -390,3 +391,124 @@ def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\
             if actorStr not in mentions:
                 mentions.append(actorStr)
     return mentions
+
+def extractMediaInFormPOST(postBytes,boundary,name: str):
+    """Extracts the binary encoding for image/video/audio within a http form POST
+    Returns the media bytes and the remaining bytes
+    """
+    imageStartBoundary=b'Content-Disposition: form-data; name="'+unicode(name,"utf-8")+b'";'
+    imageStartLocation=postBytes.find(imageStartBoundary)
+    if imageStartLocation==-1:
+        return None,postBytes
+
+    # bytes after the start boundary appears
+    mediaBytes=postBytes[imageStartLocation:]
+
+    # look for the next boundary
+    imageEndBoundary=boundary
+    imageEndLocation=mediaBytes.find(imageEndBoundary)
+    if imageEndLocation==-1:
+        # no ending boundary
+        return mediaBytes,postBytes[:imageStartLocation]
+
+    # remaining bytes after the end of the image
+    remainder=mediaBytes[imageEndLocation:]
+
+    # remove bytes after the end boundary
+    mediaBytes=mediaBytes[:imageEndLocation]
+
+    # return the media and the before+after bytes
+    return mediaBytes,postBytes[:imageStartLocation]+remainder
+
+def saveMediaInFormPOST(mediaBytes,baseDir: str, \
+                        nickname: str,domain: str,debug: bool, \
+                        filenameBase=None) -> (str,str):
+    """Saves the given media bytes extracted from http form POST
+    Returns the filename and attachment type
+    """
+    if not mediaBytes:
+        if debug:
+            print('DEBUG: No media found within POST')
+        return None,None
+
+    mediaLocation=-1
+    searchStr=''
+    filename=None
+    
+    # directly search the binary array for the beginning
+    # of an image
+    extensionList= {
+        'png': 'image/png',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'mp4': 'video/mp4',
+        'ogv': 'video/ogv',
+        'mp3': 'audio/mpeg',
+        'ogg': 'audio/ogg'
+    }
+    for extension,contentType in extensionList.items():
+        searchStr=b'Content-Type: '+unicode(contentType,'utf-8')
+        mediaLocation=mediaBytes.find(searchStr)
+        if not filenameBase:
+            filenameBase= \
+                baseDir+'/accounts/'+ \
+                nickname+'@'+domain+'/upload'
+        if mediaLocation>-1:
+            mediaFound=True
+            if extension=='jpeg':
+                extension='jpg'
+            elif extension=='mpeg':
+                extension='mp3'
+            filename=filenameBase+'.'+extension
+            attachmentMediaType= \
+                searchStr.decode().split('/')[0].replace('Content-Type: ','')
+            break
+
+    if not filename:
+        return None,None
+
+    # locate the beginning of the image, after any
+    # carriage returns
+    startPos=mediaLocation+len(searchStr)
+    for offset in range(1,8):
+        if mediaBytes[startPos+offset]!=10:
+            if mediaBytes[startPos+offset]!=13:
+                startPos+=offset
+                break
+
+    fd = open(filename, 'wb')
+    fd.write(mediaBytes[startPos:])
+    fd.close()
+    return filename,attachmentMediaType
+
+def extractTextFieldsInPOST(postBytes,boundary) -> {}:
+    """Returns a dictionary containing the text fields of a http form POST
+    The boundary argument comes from the http header
+    """    
+    msg = email.parser.BytesParser().parsebytes(postBytes)
+    messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
+    fields={}
+    # examine each section of the POST, separated by the boundary
+    for f in messageFields:
+        if f=='--':
+            continue
+        if ' name="' not in f:
+            continue                    
+        postStr=f.split(' name="',1)[1]
+        if '"' not in postStr:
+            continue
+        postKey=postStr.split('"',1)[0]
+        postValueStr=postStr.split('"',1)[1]
+        if ';' in postValueStr:
+            continue
+        if '\r\n' not in postValueStr:
+            continue
+        postLines=postValueStr.split('\r\n')                                    
+        postValue=''
+        if len(postLines)>2:
+            for line in range(2,len(postLines)-1):
+                if line>2:
+                    postValue+='\n'
+                postValue+=postLines[line]
+        fields[postKey]=postValue
+    return fields
