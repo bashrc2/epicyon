@@ -29,7 +29,7 @@ Or on Debian:
 sudo apt-get -y install tor python3-pip python3-socks imagemagick \
                 python3-numpy python3-setuptools python3-crypto \
 		python3-dateutil python3-pil.imagetk certbot nginx
-sudo pip3 install commentjson beautifulsoup4 pycryptodome
+sudo pip3 install requests commentjson beautifulsoup4 pycryptodome
 ```
 
 ## Installation
