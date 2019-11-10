@@ -930,7 +930,9 @@ def createDirectMessagePost(baseDir: str,
                        False,inReplyTo,inReplyToAtomUri,subject, \
                        eventDate,eventTime,location)
     # mentioned recipients go into To rather than Cc
-    messageJson['object']['to']=messageJson['object']['cc']
+    messageJson['to']=messageJson['object']['cc']
+    messageJson['object']['to']=messageJson['to']
+    messageJson['cc']=[]
     messageJson['object']['cc']=[]
     return messageJson
 
