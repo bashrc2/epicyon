@@ -481,11 +481,13 @@ def saveMediaInFormPOST(mediaBytes,baseDir: str, \
     fd.close()
     return filename,attachmentMediaType
 
-def extractTextFieldsInPOST(postBytes,boundary) -> {}:
+def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """    
     msg = email.parser.BytesParser().parsebytes(postBytes)
+    if debug:
+        print('DEBUG: POST arriving '+msg.get_payload(decode=True).decode('utf-8'))
     messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
     fields={}
     # examine each section of the POST, separated by the boundary

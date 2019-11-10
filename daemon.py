@@ -2652,12 +2652,29 @@ class PubServer(BaseHTTPRequestHandler):
             # in Python 3.8/3.10
             # Instead we use the multipart mime parser from the email module
             postBytes=self.rfile.read(length)
+            if self.server.debug:
+                print('DEBUG: extracting media from POST')
             mediaBytes,postBytes=extractMediaInFormPOST(postBytes,boundary,'attachpic')
+            if self.server.debug:
+                if mediaBytes:
+                    print('DEBUG: media was found. '+str(len(mediaBytes))+' bytes')
+                else:
+                    print('DEBUG: no media was found in POST')
             filename,attachmentMediaType= \
                 saveMediaInFormPOST(mediaBytes,self.server.baseDir, \
                                     nickname,self.server.domain, \
                                     self.server.debug,None)
-            fields=extractTextFieldsInPOST(postBytes,boundary)
+            if self.server.debug:
+                if filename:
+                    print('DEBUG: POST media filename is '+filename)
+                else:
+                    print('DEBUG: no media filename in POST')
+            fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
+            if self.server.debug:
+                if fields:
+                    print('DEBUG: text field extracted from POST '+str(fields))
+                else:
+                    print('WARN: no text fields could be extracted from POST')
 
             # process the received text fields from the POST
             if not fields.get('message') and not fields.get('imageDescription'):
