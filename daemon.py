@@ -2632,7 +2632,12 @@ class PubServer(BaseHTTPRequestHandler):
         # 1 = new post success
         # -1 = new post failed
         # 2 = new post canceled
+        if self.server.debug:
+            print('DEBUG: receiving POST')
+
         if ' boundary=' in headers['Content-Type']:
+            if self.server.debug:
+                print('DEBUG: receiving POST headers '+headers['Content-Type'])
             nickname=None
             nicknameStr=path.split('/users/')[1]
             if '/' in nicknameStr:
