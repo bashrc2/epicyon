@@ -108,6 +108,9 @@ parser.add_argument('--proxy', dest='proxyPort', type=int,default=None, \
 parser.add_argument('--path', dest='baseDir', \
                     type=str,default=os.getcwd(), \
                     help='Directory in which to store posts')
+parser.add_argument('--language', dest='baseDir', \
+                    type=str,default=None, \
+                    help='Language code, eg. en/fr/de/es')
 parser.add_argument('-a','--addaccount', dest='addaccount', \
                     type=str,default=None, \
                     help='Adds a new account')
@@ -355,7 +358,12 @@ if not os.path.isdir(baseDir+'/cache/announce'):
 if args.domain:
     domain=args.domain
     setConfigParam(baseDir,'domain',domain)
-    
+
+if not args.language:
+    languageCode=getConfigParam(baseDir,'language')
+    if languageCode:
+        args.language=languageCode
+
 # maximum number of new registrations
 if not args.maxRegistrations:
     maxRegistrations=getConfigParam(baseDir,'maxRegistrations')
@@ -1442,7 +1450,7 @@ if args.testdata:
 if args.maxMentions<4:
     args.maxMentions=4
     
-runDaemon(__version__, \
+runDaemon(args.language,__version__, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \
           federationList,args.maxMentions, \

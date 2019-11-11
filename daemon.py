@@ -4383,8 +4383,8 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 tokensDict[nickname]=token
                 tokensLookup[token]=nickname
 
-def runDaemon(projectVersion, \
-              instanceId,clientToServer: bool, \
+def runDaemon(language: str,projectVersion: str, \
+              instanceId: str,clientToServer: bool, \
               baseDir: str,domain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
               fedList=[],maxMentions=10, \
@@ -4414,9 +4414,14 @@ def runDaemon(projectVersion, \
         if not os.path.isdir(baseDir+'/translations'):
             print('ERROR: translations directory not found')
             return
-        systemLanguage=locale.getdefaultlocale()[0]
+        if not language:
+            systemLanguage=locale.getdefaultlocale()[0]
+        else:
+            systemLanguage=language
         if '_' in systemLanguage:
             systemLanguage=systemLanguage.split('_')[0]
+        while '/' in systemLanguage:
+            systemLanguage=systemLanguage.split('/')[1]
         if '.' in systemLanguage:
             systemLanguage=systemLanguage.split('.')[0]
         translationsFile=baseDir+'/translations/'+systemLanguage+'.json'
