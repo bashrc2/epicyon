@@ -87,8 +87,8 @@ To make a public post:
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto public --message "hello" \
-		   --warning "This is a content warning" \
-		   --password [c2s password]
+                   --warning "This is a content warning" \
+                   --password [c2s password]
 ```
 
 To post to followers only:
@@ -96,8 +96,8 @@ To post to followers only:
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto followers --message "hello" \
-		   --warning "This is a content warning" \
-		   --password [c2s password]
+                   --warning "This is a content warning" \
+                   --password [c2s password]
 ```
 
 To send a post to a particular address (direct message):
@@ -105,8 +105,8 @@ To send a post to a particular address (direct message):
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto othernick@domain --message "hello" \
-		   --warning "This is a content warning" \
-		   --password [c2s password]
+                   --warning "This is a content warning" \
+                   --password [c2s password]
 ```
 
 The password is the c2s password for your account.
@@ -116,10 +116,10 @@ You can also attach an image. It must be in png, jpg or gif format.
 ``` bash
 python3 epicyon.py --nickname [yournick] --domain [name] \
                    --sendto othernick@domain --message "bees!" \
-		   --warning "bee-related content" --attach bees.png \
-		   --imagedescription "bees on flowers" \
-		   --blurhash \
-		   --password [c2s password]
+                   --warning "bee-related content" --attach bees.png \
+                   --imagedescription "bees on flowers" \
+                   --blurhash \
+                   --password [c2s password]
 ```
 
 ## Viewing Public Posts
@@ -273,8 +273,8 @@ Within an organization you may want to define different roles and for some proje
 ``` bash
 python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
                    --delegate [person nickname] \
-		   --project [project name] --role [title] \
-		   --password [c2s password]
+                   --project [project name] --role [title] \
+                   --password [c2s password]
 ```
 
 The other person could also be made a delegator, but they will only be able to delegate further within projects which they're assigned to. By design, this creates a restricted organizational hierarchy. For example:
@@ -282,8 +282,8 @@ The other person could also be made a delegator, but they will only be able to d
 ``` bash
 python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
                    --delegate [person nickname] \
-		   --project [project name] --role delegator \
-		   --password [c2s password]
+                   --project [project name] --role delegator \
+                   --password [c2s password]
 ```
 
 A delegated role can also be removed.
@@ -291,8 +291,8 @@ A delegated role can also be removed.
 ``` bash
 python3 epicyon.py --nickname [admin nickname] --domain [mydomain] \
                    --undelegate [person nickname] \
-		   --project [project name] \
-		   --password [c2s password]
+                   --project [project name] \
+                   --password [c2s password]
 ```
 
 This extends the ActivityPub client-to-server protocol to include activities called *Delegate* and *Role*. The json looks like:
@@ -320,7 +320,7 @@ To help create organizations you can assign some skills to your account. Note th
 ``` bash
 python3 epicyon.py --nickname [nick] --domain [mydomain] \
                    --skill [tag] --level [0-100] \
-		   --password [c2s password]
+                   --password [c2s password]
 ```
 
 The level value is a percentage which indicates how proficient you are with that skill.
@@ -342,7 +342,7 @@ For the purpose of things like knowing current task status or task completion a 
 ``` bash
 python3 epicyon.py --nickname [nick] --domain [mydomain] \
                    --availability [status] \
-		   --password [c2s password]
+                   --password [c2s password]
 ```
 
 The status value can be any string, and can become part of organization building by combining it with roles and skills.
