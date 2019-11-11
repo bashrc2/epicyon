@@ -108,7 +108,7 @@ parser.add_argument('--proxy', dest='proxyPort', type=int,default=None, \
 parser.add_argument('--path', dest='baseDir', \
                     type=str,default=os.getcwd(), \
                     help='Directory in which to store posts')
-parser.add_argument('--language', dest='baseDir', \
+parser.add_argument('--language', dest='language', \
                     type=str,default=None, \
                     help='Language code, eg. en/fr/de/es')
 parser.add_argument('-a','--addaccount', dest='addaccount', \
