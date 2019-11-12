@@ -41,7 +41,7 @@ The following instructions install Epicyon to the **/etc** directory. It's not e
 Add a dedicated user so that we don't have to run as root.
 
 ``` bash
-adduser --system --home=/etc/epicyon --group epicyon
+adduser --system --home=/opt/epicyon --group epicyon
 ```
 
 Edit */etc/systemd/system/epicyon.service* and add the following:
@@ -56,8 +56,8 @@ After=network.target
 Type=simple
 User=epicyon
 Group=epicyon
-WorkingDirectory=/etc/epicyon
-ExecStart=/usr/bin/python3 /etc/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open
+WorkingDirectory=/opt/epicyon
+ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open
 Environment=USER=epicyon
 Restart=always
 StandardError=syslog
@@ -66,13 +66,13 @@ StandardError=syslog
 WantedBy=multi-user.target
 ```
 
-Here the server was installed to */etc/epicyon*, but you can change that to wherever you installed it.
+Here the server was installed to */opt/epicyon*, but you can change that to wherever you installed it.
 
 Then run the daemon:
 
 ``` bash
 systemctl enable epicyon
-chown -R epicyon:epicyon /etc/epicyon
+chown -R epicyon:epicyon /opt/epicyon
 systemctl start epicyon
 ```
 

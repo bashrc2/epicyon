@@ -1238,7 +1238,7 @@
     </p>
     <div class="shell">
       <p>sudo su</p>
-      <p>adduser --system --home=/etc/epicyon --group epicyon</p>
+      <p>adduser --system --home=/opt/epicyon --group epicyon</p>
     </div>
 
     <p class="intro">
@@ -1247,14 +1247,14 @@
     <div class="shell">
       <p>cd /etc</p>
       <p>git clone https://gitlab.com/bashrc2/epicyon</p>
-      <p>chown -R epicyon:epicyon /etc/epicyon</p>
+      <p>chown -R epicyon:epicyon /opt/epicyon</p>
     </div>
 
     <p class="intro">
       If you want to use a theme other than the default one:
     </p>
     <div class="shell">
-      <p>cd /etc/epicyon</p>
+      <p>cd /opt/epicyon</p>
       <p>theme purple</p>
     </div>
     <p class="intro">
@@ -1280,8 +1280,8 @@
       Type=simple<br>
       User=epicyon<br>
       Group=epicyon<br>
-      WorkingDirectory=/etc/epicyon<br>
-      ExecStart=/usr/bin/python3 /etc/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug<br>
+      WorkingDirectory=/opt/epicyon<br>
+      ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug<br>
       Environment=USER=epicyon<br>
       Restart=always<br>
       StandardError=syslog<br>
