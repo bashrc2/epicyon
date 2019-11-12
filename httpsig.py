@@ -104,13 +104,14 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
                             path,httpPrefix,None)
     else:
         bodyDigest=messageContentDigest(messageBodyJsonStr)
+        contentLength=len(messageBodyJsonStr)
         #print('***************************Send (request-target): post '+path)
         #print('***************************Send host: '+headerDomain)
         #print('***************************Send date: '+dateStr)
         #print('***************************Send digest: '+bodyDigest)
         #print('***************************Send Content-type: '+contentType)
         #print('***************************Send messageBodyJsonStr: '+messageBodyJsonStr)
-        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
+        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-length': contentLength,'content-type': contentType}
         signatureHeader = \
             signPostHeaders(dateStr,privateKeyPem,nickname, \
                             domain,port, \
@@ -168,6 +169,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
+    contentLength=len(messageBodyJsonStr)
     for signedHeader in signatureDict['headers'].split(' '):
         if signedHeader == '(request-target)':
             signedHeaderList.append(
@@ -183,6 +185,9 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             #print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
         else:
             if headers.get(signedHeader):
+                if signedHeader=='content-length':
+                    if int(headers[signedHeader])!=contentLength:
+                        return False
                 if signedHeader=='date':
                     if not verifyRecentSignature(headers[signedHeader]):
                         return False
@@ -191,6 +196,9 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 signedHeaderCap=signedHeader.capitalize()
+                if signedHeaderCap=='Content-length':
+                    if int(headers[signedHeader])!=contentLength:
+                        return False
                 if signedHeaderCap=='Date':
                     if not verifyRecentSignature(headers[signedHeaderCap]):
                         return False
