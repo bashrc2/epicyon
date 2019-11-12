@@ -191,7 +191,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
             #print('***************************Verify digest: SHA-256='+bodyDigest)
             #print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
-        elif signedHeader == 'content-length' or signedHeader == 'Content-Length':
+        elif signedHeader == 'content-length':
             if headers.get(signedHeader):
                 if int(headers[signedHeader])!=contentLength:
                     if debug:
@@ -200,6 +200,18 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 if debug:
                     print('DEBUG: verifyPostHeaders adding content-length to signedHeaderList')
                 signedHeaderList.append(f'content-length: {headers[signedHeader]}')
+            else:
+                if debug:
+                    print('DEBUG: verifyPostHeaders '+signedHeader+' not found in '+str(headers))
+        elif signedHeader == 'Content-Length':
+            if headers.get(signedHeader):
+                if int(headers[signedHeader])!=contentLength:
+                    if debug:
+                        print('DEBUG: verifyPostHeaders Content-Length does not match '+headers[signedHeader]+' != '+str(contentLength))
+                    return False
+                if debug:
+                    print('DEBUG: verifyPostHeaders adding Content-Length to signedHeaderList')
+                signedHeaderList.append(f'Content-Length: {headers[signedHeader]}')
             else:
                 if debug:
                     print('DEBUG: verifyPostHeaders '+signedHeader+' not found in '+str(headers))
