@@ -2901,8 +2901,16 @@ class PubServer(BaseHTTPRequestHandler):
         This creates a thread to send the new post
         """
         pageNumber=1
-        if not (authorized and '/users/' in path and '?'+postType+'?' in path):
-            print('Not receiving new post for '+path)
+        if not authorized:
+            print('Not receiving new post for '+path+' because not authorized')
+            return None
+
+        if '/users/' not in path:
+            print('Not receiving new post for '+path+' because /users/ not in path')
+            return None
+
+        if '?'+postType+'?' not in path:
+            print('Not receiving new post for '+path+' because ?'+postType+'? not in path')
             return None
 
         print('New post begins: '+postType+' '+path)
