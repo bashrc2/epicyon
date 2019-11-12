@@ -173,9 +173,6 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
     signedHeaderList = []
-    contentLength=len(messageBodyJsonStr)
-    if debug:
-        print('DEBUG: verifyPostHeaders contentLength='+str(contentLength))
     for signedHeader in signatureDict['headers'].split(' '):
         if debug:
             print('DEBUG: verifyPostHeaders signedHeader='+signedHeader)
@@ -197,24 +194,12 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 if headers.get('Content-Length'):
                     contentLengthStr='Content-Length'                
             if headers.get(contentLengthStr):
-                if int(headers[contentLengthStr])!=contentLength:
-                    if debug:
-                        print('DEBUG: verifyPostHeaders content-length does not match '+headers[contentLengthStr]+' != '+str(contentLength))
-                    return False
-                if debug:
-                    print('DEBUG: verifyPostHeaders adding '+contentLengthStr+' to signedHeaderList')
                 signedHeaderList.append(f'{contentLengthStr}: {headers[signedHeader]}')
             else:
                 if debug:
                     print('DEBUG: verifyPostHeaders '+contentLengthStr+' not found in '+str(headers))
         elif signedHeader == 'Content-Length':
             if headers.get(signedHeader):
-                if int(headers[signedHeader])!=contentLength:
-                    if debug:
-                        print('DEBUG: verifyPostHeaders Content-Length does not match '+headers[signedHeader]+' != '+str(contentLength))
-                    return False
-                if debug:
-                    print('DEBUG: verifyPostHeaders adding Content-Length to signedHeaderList')
                 signedHeaderList.append(f'Content-Length: {headers[signedHeader]}')
             else:
                 if debug:
