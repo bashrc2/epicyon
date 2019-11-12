@@ -195,7 +195,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 if debug:
                     print('DEBUG: verifyPostHeaders content-length does not match '+headers[signedHeader]+' != '+str(contentLength))
                 return False
-            signedHeaderList.append(f'content-length: '+headers[signedHeader])
+            signedHeaderList.append(f'content-length: {headers[signedHeader]}')
         else:
             if headers.get(signedHeader):
                 if signedHeader=='date':
