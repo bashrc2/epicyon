@@ -114,7 +114,8 @@ def testHttpsigBase(withDigest):
                             boxpath, httpPrefix, None)
     else:
         bodyDigest = messageContentDigest(messageBodyJsonStr)
-        headers = {'host': headersDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
+        contentLength=len(messageBodyJsonStr)
+        headers = {'host': headersDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType,'content-length': str(contentLength)}
         signatureHeader = \
             signPostHeaders(dateStr,privateKeyPem, nickname, \
                             domain, port, \
@@ -125,6 +126,12 @@ def testHttpsigBase(withDigest):
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              boxpath,False,None, \
                              messageBodyJsonStr,False)
+    if withDigest:
+        # everything correct except for content-length
+        headers['content-length']=str(contentLength+2)
+        assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
+                                 boxpath,False,None, \
+                                 messageBodyJsonStr,False) == False
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              '/parambulator'+boxpath,False,None, \
                              messageBodyJsonStr,False) == False
@@ -137,12 +144,14 @@ def testHttpsigBase(withDigest):
     else:
         # correct domain but fake message
         messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'
+        contentLength=len(messageBodyJsonStr)
         bodyDigest = messageContentDigest(messageBodyJsonStr)
-        headers = {'host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType}
+        headers = {'host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType,'content-length': str(contentLength)}
     headers['signature'] = signatureHeader
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              boxpath,True,None, \
                              messageBodyJsonStr,False) == False
+
     os.chdir(baseDir)
     shutil.rmtree(path)
 

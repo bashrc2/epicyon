@@ -50,7 +50,8 @@ def signPostHeaders(dateStr: str,privateKeyPem: str, \
         headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'content-type': 'application/json'}
     else:
         bodyDigest=messageContentDigest(messageBodyJsonStr)
-        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json'}
+        contentLength=len(messageBodyJsonStr)
+        headers={'(request-target)': f'post {path}','host': toDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': 'application/activity+json','content-length': str(contentLength)}
     privateKeyPem=RSA.import_key(privateKeyPem)
     #headers.update({
     #    '(request-target)': f'post {path}',
