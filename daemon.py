@@ -4438,6 +4438,8 @@ def runDaemon(language: str,projectVersion: str, \
             systemLanguage=locale.getdefaultlocale()[0]
         else:
             systemLanguage=language
+        if not systemLanguage:
+            systemLanguage='en'            
         if '_' in systemLanguage:
             systemLanguage=systemLanguage.split('_')[0]
         while '/' in systemLanguage:
