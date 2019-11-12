@@ -193,14 +193,16 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             if headers.get(signedHeader):
                 signedHeaderList.append(f'content-length: {headers[signedHeader]}')
             else:
-                if debug:
-                    print('DEBUG: verifyPostHeaders '+signedHeader+' not found in '+str(headers))
-        elif signedHeader == 'Content-Length':
-            if headers.get(signedHeader):
-                signedHeaderList.append(f'Content-Length: {headers[signedHeader]}')
-            else:
-                if debug:
-                    print('DEBUG: verifyPostHeaders '+signedHeader+' not found in '+str(headers))
+                if headers.get('Content-Length'):
+                    contentLength=headers['Content-Length']
+                    signedHeaderList.append(f'content-length: {contentLength}')
+                else:
+                    if headers.get('Content-length'):
+                        contentLength=headers['Content-length']
+                        signedHeaderList.append(f'content-length: {contentLength}')
+                    else:
+                        if debug:
+                            print('DEBUG: verifyPostHeaders '+signedHeader+' not found in '+str(headers))
         else:
             if headers.get(signedHeader):
                 if signedHeader=='date':
