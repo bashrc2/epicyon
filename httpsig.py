@@ -196,7 +196,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 signedHeaderCap=signedHeader.capitalize()
-                if signedHeaderCap=='Content-length':
+                if signedHeaderCap=='Content-Length':
                     if int(headers[signedHeader])!=contentLength:
                         return False
                 if signedHeaderCap=='Date':
