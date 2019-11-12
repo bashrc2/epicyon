@@ -266,28 +266,26 @@ def htmlSearchSharedItems(translate: {}, \
                             sharedItemsForm+='</p></div>'
                             if not resultsExist and currPage>1:
                                 # previous page link, needs to be a POST
-                                sharedItemsForm+= \
-                                    '<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber-1)+'">' \
-                                    '  <input type="hidden" name="actor" value="'+actor+'">' \
-                                    '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
-                                    '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
-                                    '    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"/></a>' \
-                                    '  </center>' \
-                                    '</form>'
-                            resultsExist=True
+                                sharedItemsForm+='<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber-1)+'">'
+                                sharedItemsForm+='  <input type="hidden" name="actor" value="'+actor+'">'
+                                sharedItemsForm+='  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>'
+                                sharedItemsForm+='  <center><a href="'+actor+'" type="submit" name="submitSearch">'
+                                sharedItemsForm+='    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"/></a>'
+                                sharedItemsForm+='  </center>'
+                                sharedItemsForm+='</form>'
+                                resultsExist=True
                         ctr+=1
                         if ctr>=resultsPerPage:
                             currPage+=1
                             if currPage>pageNumber:
                                 # next page link, needs to be a POST
-                                sharedItemsForm+= \
-                                    '<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber+1)+'">' \
-                                    '  <input type="hidden" name="actor" value="'+actor+'">' \
-                                    '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>' \
-                                    '  <center><a href="'+actor+'" type="submit" name="submitSearch">' \
-                                    '    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"/></a>' \
-                                    '  </center>' \
-                                    '</form>'
+                                sharedItemsForm+='<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber+1)+'">'
+                                sharedItemsForm+='  <input type="hidden" name="actor" value="'+actor+'">'
+                                sharedItemsForm+='  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>'
+                                sharedItemsForm+='  <center><a href="'+actor+'" type="submit" name="submitSearch">'
+                                sharedItemsForm+='    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"/></a>'
+                                sharedItemsForm+='  </center>'
+                                sharedItemsForm+='</form>'
                                 break
                             ctr=0
         if not resultsExist:
@@ -311,24 +309,22 @@ def htmlModerationInfo(translate: {},baseDir: str) -> str:
         if os.path.isfile(suspendedFilename):
             with open(suspendedFilename, "r") as f:
                 suspendedStr = f.read()
-                infoForm+= \
-                    '<div class="container">' \
-                    '  <br><b>'+translate['Suspended accounts']+'</b>' \
-                    '  <br>'+translate['These are currently suspended']+ \
-                    '  <textarea id="message" name="suspended" style="height:200px">'+suspendedStr+'</textarea>' \
-                    '</div>'
+                infoForm+='<div class="container">'
+                infoForm+='  <br><b>'+translate['Suspended accounts']+'</b>'
+                infoForm+='  <br>'+translate['These are currently suspended']
+                infoForm+='  <textarea id="message" name="suspended" style="height:200px">'+suspendedStr+'</textarea>'
+                infoForm+='</div>'
                 infoShown=True
 
         blockingFilename=baseDir+'/accounts/blocking.txt'
         if os.path.isfile(blockingFilename):
             with open(blockingFilename, "r") as f:
                 blockedStr = f.read()
-                infoForm+= \
-                    '<div class="container">' \
-                    '  <br><b>'+translate['Blocked accounts and hashtags']+'</b>' \
-                    '  <br>'+translate['These are globally blocked for all accounts on this instance']+ \
-                    '  <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>' \
-                    '</div>'        
+                infoForm+='<div class="container">'
+                infoForm+='  <br><b>'+translate['Blocked accounts and hashtags']+'</b>'
+                infoForm+='  <br>'+translate['These are globally blocked for all accounts on this instance']
+                infoForm+='  <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>'
+                infoForm+='</div>'        
                 infoShown=True
         if not infoShown:
             infoForm+='<center><p>'+translate['Any blocks or suspensions made by moderators will be shown here.']+'</p></center>'
@@ -597,66 +593,65 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         if os.path.isfile(moderatorsFile):
             with open(moderatorsFile, "r") as f:
                 moderators = f.read()
-        moderatorsStr= \
-            '<div class="container">' \
-            '  <b>'+translate['Moderators']+'</b><br>' \
-            '  '+translate['A list of moderator nicknames. One per line.']+ \
-            '  <textarea id="message" name="moderators" placeholder="'+translate['List of moderator nicknames']+'..." style="height:200px">'+moderators+'</textarea>' \
-            '</div>'
+        moderatorsStr='<div class="container">'
+        moderatorsStr+='  <b>'+translate['Moderators']+'</b><br>'
+        moderatorsStr+='  '+translate['A list of moderator nicknames. One per line.']
+        moderatorsStr+='  <textarea id="message" name="moderators" placeholder="'+translate['List of moderator nicknames']+'..." style="height:200px">'+moderators+'</textarea>'
+        moderatorsStr+='</div>'
         
     editProfileForm=htmlHeader(cssFilename,editProfileCSS)
-    editProfileForm+= \
-        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">' \
-        '  <div class="vertical-center">' \
-        '    <p class="new-post-text">'+translate['Profile for']+' '+nickname+'@'+domainFull+'</p>' \
-        '    <div class="container">' \
-        '      <input type="submit" name="submitProfile" value="'+translate['Submit']+'">' \
-        '      <a href="'+pathOriginal+'"><button class="cancelbtn">'+translate['Cancel']+'</button></a>' \
-        '    </div>'+ \
-        '    <div class="container">' \
-        '      <input type="text" placeholder="name" name="displayNickname" value="'+displayNickname+'">' \
-        '      <textarea id="message" name="bio" placeholder="'+translate['Your bio']+'..." style="height:200px">'+bioStr+'</textarea>'+ \
-        translate['Donations link']+'<br>'+ \
-        '      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">' \
-        '    </div>' \
-        '    <div class="container">' \
-        '      '+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'<br>' \
-        '      '+translate['Avatar image']+ \
-        '      <input type="file" id="avatar" name="avatar"' \
-        '            accept=".png">' \
-        '      <br>'+translate['Background image']+ \
-        '      <input type="file" id="image" name="image"' \
-        '            accept=".png">' \
-        '      <br>'+translate['Timeline banner image']+ \
-        '      <input type="file" id="banner" name="banner"' \
-        '            accept=".png">' \
-        '    </div>' \
-        '    <div class="container">' \
-        '      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>'+translate['Approve follower requests']+'<br>' \
-        '      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>' \
-        '      <input type="checkbox" class=profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>' \
-        '      <input type="checkbox" class=profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>' \
-        '      <br><b>'+translate['Filtered words']+'</b>' \
-        '      <br>'+translate['One per line']+ \
-        '      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>' \
-        '      <br><b>'+translate['Blocked accounts']+'</b>' \
-        '      <br>'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']+ \
-        '      <textarea id="message" name="blocked" placeholder="" style="height:200px">'+blockedStr+'</textarea>' \
-        '      <br><b>'+translate['Federation list']+'</b>' \
-        '      <br>'+translate['Federate only with a defined set of instances. One domain name per line.']+ \
-        '      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>' \
-        '    </div>' \
-        '    <div class="container">' \
-        '      <b>'+translate['Skills']+'</b><br>' \
-        '      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']+ \
-        skillsStr+moderatorsStr+ \
-        '    </div>' \
-        '    <div class="container">' \
-        '      <b>'+translate['Danger Zone']+'</b><br>' \
-        '      <input type="checkbox" class=dangercheckbox" name="deactivateThisAccount">'+translate['Deactivate this account']+'<br>' \
-        '    </div>' \
-        '  </div>' \
-        '</form>'
+    editProfileForm+=
+    editProfileForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">'
+    editProfileForm+='  <div class="vertical-center">'
+    editProfileForm+='    <p class="new-post-text">'+translate['Profile for']+' '+nickname+'@'+domainFull+'</p>'
+    editProfileForm+='    <div class="container">'
+    editProfileForm+='      <input type="submit" name="submitProfile" value="'+translate['Submit']+'">'
+    editProfileForm+='      <a href="'+pathOriginal+'"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
+    editProfileForm+='    </div>'
+    editProfileForm+='    <div class="container">'
+    editProfileForm+='      <input type="text" placeholder="name" name="displayNickname" value="'+displayNickname+'">'
+    editProfileForm+='      <textarea id="message" name="bio" placeholder="'+translate['Your bio']+'..." style="height:200px">'+bioStr+'</textarea>'
+    editProfileForm+=translate['Donations link']+'<br>'
+    editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
+    editProfileForm+='    </div>'
+    editProfileForm+='    <div class="container">'
+    editProfileForm+='      '+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'<br>'
+    editProfileForm+='      '+translate['Avatar image']
+    editProfileForm+='      <input type="file" id="avatar" name="avatar"'
+    editProfileForm+='            accept=".png">'
+    editProfileForm+='      <br>'+translate['Background image']
+    editProfileForm+='      <input type="file" id="image" name="image"'
+    editProfileForm+='            accept=".png">'
+    editProfileForm+='      <br>'+translate['Timeline banner image']
+    editProfileForm+='      <input type="file" id="banner" name="banner"'
+    editProfileForm+='            accept=".png">'
+    editProfileForm+='    </div>'
+    editProfileForm+='    <div class="container">'
+    editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="approveFollowers" '+manuallyApprovesFollowers+'>'+translate['Approve follower requests']+'<br>'
+    editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>'
+    editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>'
+    editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>'
+    editProfileForm+='      <br><b>'+translate['Filtered words']+'</b>'
+    editProfileForm+='      <br>'+translate['One per line']
+    editProfileForm+='      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>'
+    editProfileForm+='      <br><b>'+translate['Blocked accounts']+'</b>'
+    editProfileForm+='      <br>'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']
+    editProfileForm+='      <textarea id="message" name="blocked" placeholder="" style="height:200px">'+blockedStr+'</textarea>'
+    editProfileForm+='      <br><b>'+translate['Federation list']+'</b>'
+    editProfileForm+='      <br>'+translate['Federate only with a defined set of instances. One domain name per line.']
+    editProfileForm+='      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>'
+    editProfileForm+='    </div>'
+    editProfileForm+='    <div class="container">'
+    editProfileForm+='      <b>'+translate['Skills']+'</b><br>'
+    editProfileForm+='      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']
+    editProfileForm+=skillsStr+moderatorsStr
+    editProfileForm+='    </div>'
+    editProfileForm+='    <div class="container">'
+    editProfileForm+='      <b>'+translate['Danger Zone']+'</b><br>'
+    editProfileForm+='      <input type="checkbox" class=dangercheckbox" name="deactivateThisAccount">'+translate['Deactivate this account']+'<br>'
+    editProfileForm+='    </div>'
+    editProfileForm+='  </div>'
+    editProfileForm+='</form>'
     editProfileForm+=htmlFooter()
     return editProfileForm
 
@@ -732,22 +727,21 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
         autocompleteStr='autocomplete="off" value=""'
 
     loginForm=htmlHeader(cssFilename,loginCSS)
-    loginForm+= \
-        '<form method="POST" action="/login">' \
-        '  <div class="imgcontainer">' \
-        '    <img loading="lazy" src="login.png" alt="login image" class="loginimage">'+ \
-        loginText+TOSstr+ \
-        '  </div>' \
-        '' \
-        '  <div class="container">' \
-        '    <label for="nickname"><b>'+translate['Nickname']+'</b></label>' \
-        '    <input type="text" '+autocompleteStr+' placeholder="'+translate['Enter Nickname']+'" name="username" required autofocus>' \
-        '' \
-        '    <label for="password"><b>'+translate['Password']+'</b></label>' \
-        '    <input type="password" '+autocompleteStr+' placeholder="'+translate['Enter Password']+'" name="password" required>'+ \
-        registerButtonStr+loginButtonStr+ \
-        '  </div>' \
-        '</form>'
+    loginForm+='<form method="POST" action="/login">'
+    loginForm+='  <div class="imgcontainer">'
+    loginForm+='    <img loading="lazy" src="login.png" alt="login image" class="loginimage">'
+    loginForm+=loginText+TOSstr
+    loginForm+='  </div>'
+    loginForm+=''
+    loginForm+='  <div class="container">'
+    loginForm+='    <label for="nickname"><b>'+translate['Nickname']+'</b></label>'
+    loginForm+='    <input type="text" '+autocompleteStr+' placeholder="'+translate['Enter Nickname']+'" name="username" required autofocus>'
+    loginForm+=''
+    loginForm+='    <label for="password"><b>'+translate['Password']+'</b></label>'
+    loginForm+='    <input type="password" '+autocompleteStr+' placeholder="'+translate['Enter Password']+'" name="password" required>'
+    loginForm+=registerButtonStr+loginButtonStr
+    loginForm+='  </div>'
+    loginForm+='</form>'
     loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" src="/icons/agpl.png" /></a>'
     loginForm+=htmlFooter()
     return loginForm
@@ -920,25 +914,23 @@ def htmlNewPost(translate: {},baseDir: str, \
         placeholderSubject=translate['Name of the shared item']+'...'
         placeholderMessage=translate['Description of the item being shared']+'...'
         endpoint='newshare'
-        extraFields= \
-            '<div class="container">' \
-            '  <input type="text" class="itemType" placeholder="'+translate['Type of shared item. eg. hat']+'" name="itemType">' \
-            '  <input type="text" class="category" placeholder="'+translate['Category of shared item. eg. clothing']+'" name="category">' \
-            '  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">' \
-            '</div>' \
-            '<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
+        extraFields='<div class="container">'
+        extraFields+='  <input type="text" class="itemType" placeholder="'+translate['Type of shared item. eg. hat']+'" name="itemType">'
+        extraFields+='  <input type="text" class="category" placeholder="'+translate['Category of shared item. eg. clothing']+'" name="category">'
+        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">'
+        extraFields+='</div>'
+        extraFields+='<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
 
     dateAndLocation=''
     if endpoint!='newshare' and endpoint!='newreport':
-        dateAndLocation= \
-            '<div class="container">' \
-            '<p><img loading="lazy" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>' \
-            '<label class="labels">'+translate['Date']+': </label>' \
-            '<input type="date" name="eventDate">' \
-            '<label class="labelsright">'+translate['Time']+':' \
-            '<input type="time" name="eventTime"></label></p>' \
-            '<input type="text" placeholder="'+translate['Location']+'" name="location">' \
-            '</div>'
+        dateAndLocation='<div class="container">'
+        dateAndLocation+='<p><img loading="lazy" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>'
+        dateAndLocation+='<label class="labels">'+translate['Date']+': </label>'
+        dateAndLocation+='<input type="date" name="eventDate">'
+        dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
+        dateAndLocation+='<input type="time" name="eventTime"></label></p>'
+        dateAndLocation+='<input type="text" placeholder="'+translate['Location']+'" name="location">'
+        dateAndLocation+='</div>'
 
     newPostForm=htmlHeader(cssFilename,newPostCSS)
 
@@ -988,43 +980,41 @@ def htmlNewPost(translate: {},baseDir: str, \
         
     dropDownContent=''
     if not reportUrl:
-        dropDownContent= \
-            '        <div id="myDropdown" class="dropdown-content">' \
-            '          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>' \
-            '          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>' \
-            '          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>' \
-            '          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>' \
-            '          <a href="'+pathBase+dropdownReportSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'+ \
-            shareOptionOnDropdown+ \
-            '        </div>'
+        dropDownContent+='        <div id="myDropdown" class="dropdown-content">'
+        dropDownContent+='          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>'
+        dropDownContent+='          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>'
+        dropDownContent+='          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>'
+        dropDownContent+='          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>'
+        dropDownContent+='          <a href="'+pathBase+dropdownReportSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'
+        dropDownContent+=shareOptionOnDropdown
+        dropDownContent+='        </div>'
     else:
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
     
-    newPostForm+= \
-        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">' \
-        '  <div class="vertical-center">' \
-        '    <label for="nickname"><b>'+newPostText+'</b></label>' \
-        '    <div class="container">' \
-        '      <div class="dropbtn" onclick="dropdown()">' \
-        '        <img loading="lazy" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'+ \
-        dropDownContent+ \
-        '      </div>' \
-        '      <input type="submit" name="submitPost" value="'+translate['Submit']+'">' \
-        '      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a>' \
-        '      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'+ \
-        '    </div>'+ \
-        replyStr+ \
-        '    <input type="text" placeholder="'+placeholderSubject+'" name="subject">' \
-        '' \
-        '    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>'+ \
-        extraFields+dateAndLocation+ \
-        '    <div class="container">' \
-        '      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">' \
-        '      <input type="file" id="attachpic" name="attachpic"' \
-        '            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">' \
-        '    </div>' \
-        '  </div>' \
-        '</form>'
+    newPostForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">'
+    newPostForm+='  <div class="vertical-center">'
+    newPostForm+='    <label for="nickname"><b>'+newPostText+'</b></label>'
+    newPostForm+='    <div class="container">'
+    newPostForm+='      <div class="dropbtn" onclick="dropdown()">'
+    newPostForm+='        <img loading="lazy" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
+    newPostForm+=dropDownContent
+    newPostForm+='      </div>'
+    newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
+    newPostForm+='      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
+    newPostForm+='      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'
+    newPostForm+='    </div>'
+    newPostForm+=replyStr
+    newPostForm+='    <input type="text" placeholder="'+placeholderSubject+'" name="subject">'
+    newPostForm+=''
+        newPostForm+='    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>'
+    newPostForm+=extraFields+dateAndLocation
+    newPostForm+='    <div class="container">'
+    newPostForm+='      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">'
+    newPostForm+='      <input type="file" id="attachpic" name="attachpic"'
+    newPostForm+='            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">'
+    newPostForm+='    </div>'
+    newPostForm+='  </div>'
+    newPostForm+='</form>'
 
     if not reportUrl:
         newPostForm+='<script>'+clickToDropDownScript()+cursorToEndOfMessageScript()+'</script>'
@@ -1042,28 +1032,25 @@ def htmlHeader(cssFilename: str,css=None,refreshSec=0,lang='en') -> str:
     if not css:
         if '/' in cssFilename:
             cssFilename=cssFilename.split('/')[-1]
-        htmlStr= \
-            '<!DOCTYPE html>\n' \
-            '<html lang="'+lang+'">\n'+ \
-            meta+ \
-            '  <style>\n' \
-            '    @import url("'+cssFilename+'");\n'+ \
-            '    background-color: #282c37' \
-            '  </style>\n' \
-            '  <body>\n'
+        htmlStr='<!DOCTYPE html>\n'
+        htmlStr+='<html lang="'+lang+'">\n'
+        htmlStr+=meta
+        htmlStr+='  <style>\n'
+        htmlStr+='    @import url("'+cssFilename+'");\n'
+        htmlStr+='    background-color: #282c37'
+        htmlStr+='  </style>\n'
+        htmlStr+='  <body>\n'
     else:
-        htmlStr= \
-            '<!DOCTYPE html>\n' \
-            '<html lang="'+lang+'">\n'+ \
-            meta+ \
-            '  <style>\n'+css+'</style>\n' \
-            '  <body>\n'        
+        htmlStr='<!DOCTYPE html>\n'
+        htmlStr+='<html lang="'+lang+'">\n'
+        htmlStr+=meta
+        htmlStr+='  <style>\n'+css+'</style>\n'
+        htmlStr+='  <body>\n'        
     return htmlStr
 
 def htmlFooter() -> str:
-    htmlStr= \
-        '  </body>\n' \
-        '</html>\n'
+    htmlStr='  </body>\n'
+    htmlStr+='</html>\n'
     return htmlStr
 
 def htmlProfilePosts(translate: {}, \
@@ -1337,12 +1324,11 @@ def htmlProfile(translate: {},projectVersion: str, \
     donateSection=''
     donateUrl=getDonationUrl(profileJson)
     if donateUrl:
-        donateSection= \
-            '<div class="container">\n' \
-            '  <center>\n' \
-            '    <a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>\n' \
-            '  </center>\n' \
-            '</div>\n'
+        donateSection='<div class="container">\n'
+        donateSection+='  <center>\n'
+        donateSection+='    <a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>\n'
+        donateSection+='  </center>\n'
+        donateSection+='</div>\n'
 
     if not authorized:
         loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
@@ -1397,29 +1383,28 @@ def htmlProfile(translate: {},projectVersion: str, \
     avatarDescription=''
     if profileJson.get('summary'):
         avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
-    profileHeaderStr= \
-        '<div class="hero-image">' \
-        '  <div class="hero-text">'+ \
-        '    <img loading="lazy" src="'+profileJson['icon']['url']+'" title="'+avatarDescription+'" alt="'+avatarDescription+'" class="title">' \
-        '    <h1>'+displayName+'</h1>' \
-        '    <p><b>@'+nickname+'@'+domainFull+'</b></p>' \
-        '    <p>'+profileDescriptionShort+'</p>'+ \
-        loginButton+ \
-        '  </div>' \
-        '</div>'
-    profileStr= \
-        linkToTimelineStart + profileHeaderStr + linkToTimelineEnd + donateSection + \
-        '<div class="container">\n' \
-        '  <center>' \
-        '    <a href="'+actor+'"><button class="'+postsButton+'"><span>'+translate['Posts']+' </span></button></a>' \
-        '    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>'+translate['Following']+' </span></button></a>' \
-        '    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>'+translate['Followers']+' </span></button></a>' \
-        '    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>'+translate['Roles']+' </span></button></a>' \
-        '    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>'+translate['Skills']+' </span></button></a>' \
-        '    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'+ \
-        editProfileStr+logoutStr+ \
-        '  </center>' \
-        '</div>'
+    profileHeaderStr='<div class="hero-image">'
+    profileHeaderStr+='  <div class="hero-text">'
+    profileHeaderStr+='    <img loading="lazy" src="'+profileJson['icon']['url']+'" title="'+avatarDescription+'" alt="'+avatarDescription+'" class="title">'
+    profileHeaderStr+='    <h1>'+displayName+'</h1>'
+    profileHeaderStr+='    <p><b>@'+nickname+'@'+domainFull+'</b></p>'
+    profileHeaderStr+='    <p>'+profileDescriptionShort+'</p>'
+    profileHeaderStr+=loginButton
+    profileHeaderStr+='  </div>'
+    profileHeaderStr+='</div>'
+
+    profileStr=linkToTimelineStart + profileHeaderStr + linkToTimelineEnd + donateSection
+    profileStr+='<div class="container">\n'
+    profileStr+='  <center>'
+    profileStr+='    <a href="'+actor+'"><button class="'+postsButton+'"><span>'+translate['Posts']+' </span></button></a>'
+    profileStr+='    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>'+translate['Following']+' </span></button></a>'
+    profileStr+='    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>'+translate['Followers']+' </span></button></a>'
+    profileStr+='    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>'+translate['Roles']+' </span></button></a>'
+    profileStr+='    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>'+translate['Skills']+' </span></button></a>'
+    profileStr+='    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'
+    profileStr+=editProfileStr+logoutStr
+    profileStr+='  </center>'
+    profileStr+='</div>'
 
     profileStr+=followApprovalsSection
     
@@ -1504,55 +1489,52 @@ def individualFollowAsHtml(translate: {}, \
                 buttonsStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
                 #buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
 
-    return \
-        '<div class="container">\n' \
-        '<a href="'+followUrl+'">' \
-        '<p><img loading="lazy" src="'+avatarUrl+'" alt=" ">\n'+ \
-        titleStr+'</a>'+buttonsStr+'</p>' \
-        '</div>\n'
+    resultStr='<div class="container">\n'
+    resultStr+='<a href="'+followUrl+'">'
+    resultStr+='<p><img loading="lazy" src="'+avatarUrl+'" alt=" ">\n'
+    resultStr+=titleStr+'</a>'+buttonsStr+'</p>'
+    resultStr+='</div>\n'
+    return resultStr
 
 def clickToDropDownScript() -> str:
     """Function run onclick to create a dropdown
     """
-    script= \
-        'function dropdown() {\n' \
-        '  document.getElementById("myDropdown").classList.toggle("show");\n' \
-        '}\n'
+    script='function dropdown() {\n'
+    script+='  document.getElementById("myDropdown").classList.toggle("show");\n'
+    script+='}\n'
     return script
 
 def cursorToEndOfMessageScript() -> str:
     """Moves the cursor to the end of the text in a textarea
     This avoids the cursor being in the wrong position when replying
     """
-    script = \
-        'function focusOnMessage() {\n' \
-        "  var replyTextArea = document.getElementById('message');\n" \
-        '  val = replyTextArea.value;\n' \
-        '  if ((val.length>0) && (val.charAt(val.length-1) != " ")) {\n' \
-        '    val += " ";\n' \
-        '  }\n' \
-        '  replyTextArea.focus();\n' \
-        '  replyTextArea.value="";\n' \
-        '  replyTextArea.value=val;\n' \
-        '}\n' \
-        "var replyTextArea = document.getElementById('message')\n" \
-        'replyTextArea.onFocus = function() {\n' \
-        '  focusOnMessage();' \
-        '}\n'
+    script='function focusOnMessage() {\n'
+    script+="  var replyTextArea = document.getElementById('message');\n"
+    script+='  val = replyTextArea.value;\n'
+    script+='  if ((val.length>0) && (val.charAt(val.length-1) != " ")) {\n'
+    script+='    val += " ";\n'
+    script+='  }\n'
+    script+='  replyTextArea.focus();\n'
+    script+='  replyTextArea.value="";\n'
+    script+='  replyTextArea.value=val;\n'
+    script+='}\n'
+    script+="var replyTextArea = document.getElementById('message')\n"
+    script+='replyTextArea.onFocus = function() {\n'
+    script+='  focusOnMessage();'
+    script+='}\n'
     return script
 
 def contentWarningScript() -> str:
     """Returns a script used for content warnings
     """
-    script= \
-        'function showContentWarning(postID) {\n' \
-        '  var x = document.getElementById(postID);\n' \
-        '  if (x.style.display !== "block") {\n' \
-        '    x.style.display = "block";\n' \
-        '  } else {\n' \
-        '    x.style.display = "none";\n' \
-        '  }\n' \
-        '}\n'
+    script='function showContentWarning(postID) {\n'
+    script+='  var x = document.getElementById(postID);\n'
+    script+='  if (x.style.display !== "block") {\n'
+    script+='    x.style.display = "block";\n'
+    script+='  } else {\n'
+    script+='    x.style.display = "none";\n'
+    script+='  }\n'
+    script+='}\n'
     return script
 
 def addEmbeddedAudio(translate: {},content: str) -> str:
@@ -2002,12 +1984,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                     # show avatar of person replied to
                                     replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
                                     if replyAvatarUrl:
-                                        replyAvatarImageInPost= \
-                                            '<div class="timeline-avatar-reply">' \
-                                            '<a href="/users/'+nickname+'?options='+replyActor+';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">' \
-                                            '<img loading="lazy" src="'+replyAvatarUrl+'" ' \
-                                            'title="'+translate['Show profile']+ \
-                                            '" alt=" "'+avatarPosition+'/></a></div>'
+                                        replyAvatarImageInPost='<div class="timeline-avatar-reply">'
+                                        replyAvatarImageInPost+='<a href="/users/'+nickname+'?options='+replyActor+';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">'
+                                        replyAvatarImageInPost+='<img loading="lazy" src="'+replyAvatarUrl+'" '
+                                        replyAvatarImageInPost+='title="'+translate['Show profile']
+                                        replyAvatarImageInPost+='" alt=" "'+avatarPosition+'/></a></div>'
                                 else:
                                     titleStr+=' <img loading="lazy" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:
@@ -2039,14 +2020,13 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
-                                galleryStr+= \
-                                    '<div class="gallery">\n' \
-                                    '  <a href="'+attach['url']+'">\n' \
-                                    '    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n' \
-                                    '  </a>\n</div>\n'
-                            attachmentStr+= \
-                                '<a href="'+attach['url']+'">' \
-                                '<img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
+                                galleryStr+='<div class="gallery">\n'
+                                galleryStr+='  <a href="'+attach['url']+'">\n'
+                                galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n'
+                                galleryStr+='  </a>\n</div>\n'
+
+                            attachmentStr+='<a href="'+attach['url']+'">'
+                            attachmentStr+='<img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1                            
                     elif mediaType=='video/mp4' or \
                          mediaType=='video/webm' or \
@@ -2060,19 +2040,18 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
-                                galleryStr+= \
-                                    '<div class="gallery">\n' \
-                                    '  <a href="'+attach['url']+'">\n' \
-                                    '    <video width="600" height="400" controls>\n' \
-                                    '      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'+ \
-                                    translate['Your browser does not support the video tag.']+ \
-                                    '    </video>\n' \
-                                    '  </a>\n</div>\n'
-                            attachmentStr+= \
-                                '<center><video width="400" height="300" controls>' \
-                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'+ \
-                                translate['Your browser does not support the video tag.']+ \
-                                '</video></center>'
+                                galleryStr+='<div class="gallery">\n'
+                                galleryStr+='  <a href="'+attach['url']+'">\n'
+                                galleryStr+='    <video width="600" height="400" controls>\n'
+                                galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
+                                galleryStr+=translate['Your browser does not support the video tag.']
+                                galleryStr+='    </video>\n'
+                                galleryStr+='  </a>\n</div>\n'
+
+                                attachmentStr+='<center><video width="400" height="300" controls>'
+                                attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
+                                attachmentStr+=translate['Your browser does not support the video tag.']
+                                attachmentStr+='</video></center>'
                             attachmentCtr+=1
                     elif mediaType=='audio/mpeg' or \
                          mediaType=='audio/ogg':
@@ -2083,19 +2062,18 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
-                                galleryStr+= \
-                                    '<div class="gallery">\n' \
-                                    '  <a href="'+attach['url']+'">\n' \
-                                    '    <audio controls>\n' \
-                                    '      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'+ \
-                                    translate['Your browser does not support the audio tag.']+ \
-                                    '    </audio>\n' \
-                                    '  </a>\n</div>\n'
-                            attachmentStr+= \
-                                '<center><audio controls>' \
-                                '<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'+ \
-                                translate['Your browser does not support the audio tag.']+ \
-                                '</audio></center>'
+                                galleryStr+='<div class="gallery">\n'
+                                galleryStr+='  <a href="'+attach['url']+'">\n'
+                                galleryStr+='    <audio controls>\n'
+                                galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
+                                galleryStr+=translate['Your browser does not support the audio tag.']
+                                galleryStr+='    </audio>\n'
+                                galleryStr+='  </a>\n</div>\n'
+
+                            attachmentStr+='<center><audio controls>'
+                            attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
+                            attachmentStr+=translate['Your browser does not support the audio tag.']
+                            attachmentStr+='</audio></center>'
                             attachmentCtr+=1
             attachmentStr+='</div>'
 
@@ -2128,18 +2106,16 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                                           displayName,False)
             titleStr=displayName+' '+titleStr
 
-    avatarImageInPost= \
-        '  <div class="timeline-avatar">' \
-        '    <a href="'+postActor+'">' \
-        '    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt=" "'+avatarPosition+'/></a>' \
-        '  </div>'
+    avatarImageInPost='  <div class="timeline-avatar">'
+    avatarImageInPost+='    <a href="'+postActor+'">'
+    avatarImageInPost+='    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt=" "'+avatarPosition+'/></a>'
+    avatarImageInPost+='  </div>'
     
     if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
-        avatarImageInPost= \
-            '  <div class="timeline-avatar">' \
-            '    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">' \
-            '    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>' \
-            '  </div>'
+        avatarImageInPost='  <div class="timeline-avatar">'
+        avatarImageInPost+='    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'
+        avatarImageInPost+='    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>'
+        avatarImageInPost+='  </div>'
 
     publishedStr=postJsonObject['object']['published']
     if '.' not in publishedStr:
@@ -2167,9 +2143,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             announceIcon='repeat.png'
             announceLink='unrepeat'
             announceTitle=translate['Undo the repeat']
-        announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+announceTitle+'">' \
-            '<img loading="lazy" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
+        announceStr='<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+announceTitle+'">'
+        announceStr+='<img loading="lazy" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
     if not isModerationPost:
@@ -2181,18 +2156,16 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             if likedByPerson(postJsonObject,nickname,fullDomain):
                 likeLink='unlike'
                 likeTitle=translate['Undo the like']
-        likeStr= \
-            '<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+likeTitle+'">' \
-            '<img loading="lazy" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
+        likeStr='<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+likeTitle+'">'
+        likeStr+='<img loading="lazy" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     deleteStr=''
     if allowDeletion or \
        ('/'+fullDomain+'/' in postActor and \
         postJsonObject['object']['id'].startswith(postActor)):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
-            deleteStr= \
-                '<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">' \
-                '<img loading="lazy" src="/'+iconsDir+'/delete.png"/></a>'
+            deleteStr='<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">'
+            deleteStr+='<img loading="lazy" src="/'+iconsDir+'/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
@@ -2260,12 +2233,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     postHtml=''
     if boxName!='tlmedia':
-        postHtml= \
-            '<div class="'+containerClass+'">\n'+ \
-            avatarImageInPost+ \
-            '<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'+ \
-            contentStr+footerStr+ \
-            '</div>\n'
+        postHtml='<div class="'+containerClass+'">\n'
+        postHtml+=avatarImageInPost
+        postHtml+='<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'
+        postHtml+=contentStr+footerStr
+        postHtml+='</div>\n'
     else:
         postHtml=galleryStr
 
@@ -2415,36 +2387,34 @@ def htmlTimeline(translate: {},pageNumber: int, \
         newPostButtonStr='<a href="'+actor+'/newdm"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
 
     # banner and row of buttons
-    tlStr+= \
-        '<a href="/users/'+nickname+'" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'">' \
-        '<div class="timeline-banner">' \
-        '</div></a>' \
-        '<div class="container">\n'+ \
-        '    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>' \
-        '    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>' \
-        '    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>' \
-        '    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>' \
-        '    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'+ \
-        sharesButtonStr+moderationButtonStr+newPostButtonStr+ \
-        '    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'+ \
-        '    <a href="'+actor+calendarPath+'"><img loading="lazy" src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'+ \
-        '    <a href="'+actor+'/'+boxName+'"><img loading="lazy" src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'+ \
-        followApprovals+ \
-        '</div>'
+    tlStr+='<a href="/users/'+nickname+'" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'">'
+    tlStr+='<div class="timeline-banner">'
+    tlStr+='</div></a>'
+    tlStr+='<div class="container">\n'
+    tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
+    tlStr+='    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>'
+    tlStr+='    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>'
+    tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
+    tlStr+='    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'
+    tlStr+=sharesButtonStr+moderationButtonStr+newPostButtonStr
+    tlStr+='    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'
+    tlStr+='    <a href="'+actor+calendarPath+'"><img loading="lazy" src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'
+    tlStr+='    <a href="'+actor+'/'+boxName+'"><img loading="lazy" src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'
+    tlStr+=followApprovals
+    tlStr+='</div>'
 
     # second row of buttons for moderator actions
     if moderator and boxName=='moderation':
-        tlStr+= \
-            '<form method="POST" action="/users/'+nickname+'/moderationaction">' \
-            '<div class="container">\n'+ \
-            '    <input type="text" placeholder="'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'" name="moderationAction" value="" autofocus>' \
-            '    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">' \
-            '    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">' \
-            '    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">' \
-            '    <input type="submit" title="'+translate['Block an account on another instance']+'" name="submitBlock" value="'+translate['Block']+'">' \
-            '    <input type="submit" title="'+translate['Unblock an account on another instance']+'" name="submitUnblock" value="'+translate['Unblock']+'">' \
-            '    <input type="submit" title="'+translate['Information about current blocks/suspensions']+'" name="submitInfo" value="'+translate['Info']+'">' \
-            '</div></form>'
+        tlStr+='<form method="POST" action="/users/'+nickname+'/moderationaction">'
+        tlStr+='<div class="container">\n'
+        tlStr+='    <input type="text" placeholder="'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'" name="moderationAction" value="" autofocus>'
+        tlStr+='    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">'
+        tlStr+='    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">'
+        tlStr+='    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">'
+        tlStr+='    <input type="submit" title="'+translate['Block an account on another instance']+'" name="submitBlock" value="'+translate['Block']+'">'
+        tlStr+='    <input type="submit" title="'+translate['Unblock an account on another instance']+'" name="submitUnblock" value="'+translate['Unblock']+'">'
+        tlStr+='    <input type="submit" title="'+translate['Information about current blocks/suspensions']+'" name="submitInfo" value="'+translate['Info']+'">'
+        tlStr+='</div></form>'
 
     if boxName=='tlshares':
         maxSharesPerAccount=itemsPerPage
@@ -2702,13 +2672,12 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     if sharedItemImageUrl:
         sharesStr+='  <img loading="lazy" src="'+sharedItemImageUrl+'"/>'
     sharesStr+='  <p class="followText">'+translate['Remove']+' '+sharedItemDisplayName+' ?</p>'
-    sharesStr+= \
-        '  <form method="POST" action="'+actor+'/rmshare">' \
-        '    <input type="hidden" name="actor" value="'+actor+'">' \
-        '    <input type="hidden" name="shareName" value="'+shareName+'">' \
-        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
-        '    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>' \
-        '  </form>'
+    sharesStr+='  <form method="POST" action="'+actor+'/rmshare">'
+    sharesStr+='    <input type="hidden" name="actor" value="'+actor+'">'
+    sharesStr+='    <input type="hidden" name="shareName" value="'+shareName+'">'
+    sharesStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+    sharesStr+='    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>'
+    sharesStr+='  </form>'
     sharesStr+='  </center>'
     sharesStr+='  </div>'
     sharesStr+='</div>'
@@ -2758,13 +2727,12 @@ def htmlDeletePost(translate,pageNumber: int, \
                                  False,False,False,False,False)
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">'+translate['Delete this post?']+'</p>'
-        deletePostStr+= \
-            '  <form method="POST" action="'+actor+'/rmpost">' \
-            '    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">' \
-            '    <input type="hidden" name="messageId" value="'+messageId+'">' \
-            '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
-            '    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>' \
-            '  </form>'
+        deletePostStr+='  <form method="POST" action="'+actor+'/rmpost">'
+        deletePostStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
+        deletePostStr+='    <input type="hidden" name="messageId" value="'+messageId+'">'
+        deletePostStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+        deletePostStr+='    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>'
+        deletePostStr+='  </form>'
         deletePostStr+='</center>'
         deletePostStr+=htmlFooter()
     return deletePostStr
@@ -2793,12 +2761,11 @@ def htmlFollowConfirm(translate: {},baseDir: str, \
     followStr+='  <a href="'+followActor+'">'
     followStr+='  <img loading="lazy" src="'+followProfileUrl+'"/></a>'
     followStr+='  <p class="followText">'+translate['Follow']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
-    followStr+= \
-        '  <form method="POST" action="'+originPathStr+'/followconfirm">' \
-        '    <input type="hidden" name="actor" value="'+followActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
-        '  </form>'
+    followStr+='  <form method="POST" action="'+originPathStr+'/followconfirm">'
+    followStr+='    <input type="hidden" name="actor" value="'+followActor+'">'
+    followStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+    followStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+    followStr+='  </form>'
     followStr+='</center>'
     followStr+='</div>'
     followStr+='</div>'
@@ -2829,12 +2796,11 @@ def htmlUnfollowConfirm(translate: {},baseDir: str, \
     followStr+='  <a href="'+followActor+'">'
     followStr+='  <img loading="lazy" src="'+followProfileUrl+'"/></a>'
     followStr+='  <p class="followText">'+translate['Stop following']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
-    followStr+= \
-        '  <form method="POST" action="'+originPathStr+'/unfollowconfirm">' \
-        '    <input type="hidden" name="actor" value="'+followActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
-        '  </form>'
+    followStr+='  <form method="POST" action="'+originPathStr+'/unfollowconfirm">'
+    followStr+='    <input type="hidden" name="actor" value="'+followActor+'">'
+    followStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+    followStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+    followStr+='  </form>'
     followStr+='</center>'
     followStr+='</div>'
     followStr+='</div>'
@@ -2904,20 +2870,19 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <a href="'+optionsActor+'">'
     optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
-    optionsStr+= \
-        '  <form method="POST" action="'+originPathStr+'/personoptions">' \
-        '    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">' \
-        '    <input type="hidden" name="actor" value="'+optionsActor+'">' \
-        '    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'+ \
-        optionsLinkStr+ \
-        '    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'+ \
-        donateStr+ \
-        '    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>' \
-        '    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>' \
-        '    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>'+ \
-        '    <button type="submit" class="button" name="submit'+snoozeButtonStr+'">'+translate[snoozeButtonStr]+'</button>' \
-        '    <button type="submit" class="button" name="submitReport">'+translate['Report']+'</button>' \
-        '  </form>'
+    optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
+    optionsStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
+    optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'
+    optionsStr+='    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'
+    optionsStr+=optionsLinkStr
+    optionsStr+='    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'
+    optionsStr+=donateStr
+    optionsStr+='    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>'
+    optionsStr+='    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>'
+    optionsStr+='    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>'
+    optionsStr+='    <button type="submit" class="button" name="submit'+snoozeButtonStr+'">'+translate[snoozeButtonStr]+'</button>'
+    optionsStr+='    <button type="submit" class="button" name="submitReport">'+translate['Report']+'</button>'
+    optionsStr+='  </form>'
     optionsStr+='</center>'
     optionsStr+='</div>'
     optionsStr+='</div>'
@@ -2945,12 +2910,11 @@ def htmlPersonOptions(translate: {},baseDir: str, \
 #    blockStr+='  <a href="'+blockActor+'">'
 #    blockStr+='  <img loading="lazy" src="'+blockProfileUrl+'"/></a>'
 #    blockStr+='  <p class="blockText">'+translate['Block']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
-#    blockStr+= \
-#        '  <form method="POST" action="'+originPathStr+'/blockconfirm">' \
-#        '    <input type="hidden" name="actor" value="'+blockActor+'">' \
-#        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
-#        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
-#        '  </form>'
+#    blockStr+='  <form method="POST" action="'+originPathStr+'/blockconfirm">'
+#    blockStr+='    <input type="hidden" name="actor" value="'+blockActor+'">'
+#    blockStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+#    blockStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+#    blockStr+='  </form>'
 #    blockStr+='</center>'
 #    blockStr+='</div>'
 #    blockStr+='</div>'
@@ -2981,12 +2945,11 @@ def htmlUnblockConfirm(translate: {},baseDir: str, \
     blockStr+='  <a href="'+blockActor+'">'
     blockStr+='  <img loading="lazy" src="'+blockProfileUrl+'"/></a>'
     blockStr+='  <p class="blockText">'+translate['Stop blocking']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
-    blockStr+= \
-        '  <form method="POST" action="'+originPathStr+'/unblockconfirm">' \
-        '    <input type="hidden" name="actor" value="'+blockActor+'">' \
-        '    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>' \
-        '    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>' \
-        '  </form>'
+    blockStr+='  <form method="POST" action="'+originPathStr+'/unblockconfirm">'
+    blockStr+='    <input type="hidden" name="actor" value="'+blockActor+'">'
+    blockStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+    blockStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+    blockStr+='  </form>'
     blockStr+='</center>'
     blockStr+='</div>'
     blockStr+='</div>'
@@ -3020,12 +2983,11 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     emojiStr+='  <div class="followAvatar">'
     emojiStr+='  <center>'    
     emojiStr+='  <p class="followText">'+translate['Enter an emoji name to search for']+'</p>'
-    emojiStr+= \
-        '  <form method="POST" action="'+actor+'/searchhandleemoji">' \
-        '    <input type="hidden" name="actor" value="'+actor+'">' \
-        '    <input type="text" name="searchtext" autofocus><br>' \
-        '    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>' \
-        '  </form>'
+    emojiStr+='  <form method="POST" action="'+actor+'/searchhandleemoji">'
+    emojiStr+='    <input type="hidden" name="actor" value="'+actor+'">'
+    emojiStr+='    <input type="text" name="searchtext" autofocus><br>'
+    emojiStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
+    emojiStr+='  </form>'
     emojiStr+='  </center>'
     emojiStr+='  </div>'
     emojiStr+='</div>'
@@ -3319,12 +3281,11 @@ def htmlSearch(translate: {}, \
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'    
     followStr+='  <p class="followText">'+translate['Enter an address, shared item, #hashtag, *skill or :emoji: to search for']+'</p>'
-    followStr+= \
-        '  <form method="POST" accept-charset="UTF-8" action="'+actor+'/searchhandle">' \
-        '    <input type="hidden" name="actor" value="'+actor+'">' \
-        '    <input type="text" name="searchtext" autofocus><br>' \
-        '    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>' \
-        '  </form>'
+    followStr+='  <form method="POST" accept-charset="UTF-8" action="'+actor+'/searchhandle">'
+    followStr+='    <input type="hidden" name="actor" value="'+actor+'">'
+    followStr+='    <input type="text" name="searchtext" autofocus><br>'
+    followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
+    followStr+='  </form>'
     followStr+='  </center>'
     followStr+='  </div>'
     followStr+='</div>'
@@ -3452,25 +3413,24 @@ def htmlProfileAfterSearch(translate: {}, \
         avatarDescription=''
         if profileJson.get('summary'):
             avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
-        profileStr= \
-            ' <div class="hero-image">' \
-            '  <div class="hero-text">' \
-            '    <img loading="lazy" src="'+avatarUrl+'" alt="'+avatarDescription+'" title="'+avatarDescription+'">' \
-            '    <h1>'+displayName+'</h1>' \
-            '    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>' \
-            '    <p>'+profileDescriptionShort+'</p>'+ \
-            '  </div>' \
-            '</div>'+ \
-            '<div class="container">\n' \
-            '  <form method="POST" action="'+backUrl+'/followconfirm">' \
-            '    <center>' \
-            '      <input type="hidden" name="actor" value="'+personUrl+'">' \
-            '      <button type="submit" class="button" name="submitYes">'+translate['Follow']+'</button>' \
-            '      <button type="submit" class="button" name="submitView">'+translate['View']+'</button>' \
-            '      <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>' \
-            '    </center>' \
-            '  </form>' \
-            '</div>'
+        profileStr=' <div class="hero-image">'
+        profileStr+='  <div class="hero-text">'
+        profileStr+='    <img loading="lazy" src="'+avatarUrl+'" alt="'+avatarDescription+'" title="'+avatarDescription+'">'
+        profileStr+='    <h1>'+displayName+'</h1>'
+        profileStr+='    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>'
+        profileStr+='    <p>'+profileDescriptionShort+'</p>'
+        profileStr+='  </div>'
+        profileStr+='</div>'
+        profileStr+='<div class="container">\n'
+        profileStr+='  <form method="POST" action="'+backUrl+'/followconfirm">'
+        profileStr+='    <center>'
+        profileStr+='      <input type="hidden" name="actor" value="'+personUrl+'">'
+        profileStr+='      <button type="submit" class="button" name="submitYes">'+translate['Follow']+'</button>'
+        profileStr+='      <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'
+        profileStr+='      <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>'
+        profileStr+='    </center>'
+        profileStr+='  </form>'
+        profileStr+='</div>'
 
         profileStr+='<script>'+contentWarningScript()+'</script>'
 
