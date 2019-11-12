@@ -355,6 +355,11 @@ if not os.path.isdir(baseDir+'/cache/announce'):
     print('Creating announce cache')
     os.mkdir(baseDir+'/cache/announce')
 
+# set the theme in config.json
+themeName=getConfigParam(baseDir,'theme')
+if not themeName:
+    setConfigParam(baseDir,'theme','default')
+    
 if args.domain:
     domain=args.domain
     setConfigParam(baseDir,'domain',domain)
