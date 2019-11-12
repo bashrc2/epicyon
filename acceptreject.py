@@ -86,13 +86,17 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         return
     if not messageJson['object'].get('type'):
         return 
+    if not messageJson['object']['type']=='Follow':
+        return
+    if debug:
+        print('DEBUG: receiving Follow activity')
     if not messageJson['object'].get('actor'):
+        print('DEBUG: no actor in Follow activity')
         return
     # no, this isn't a mistake
     if not messageJson['object'].get('object'):
+        print('DEBUG: no object within Follow activity')
         return 
-    if not messageJson['object']['type']=='Follow':
-        return
     if not messageJson.get('to'):
         if debug:
             print('DEBUG: No "to" parameter in follow Accept')
@@ -132,12 +136,14 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
     followedActor=messageJson['object']['object']
     followedDomain,port=getDomainFromActor(followedActor)
     if not followedDomain:
+        print('DEBUG: no domain found within Follow activity object '+followedActor)
         return
     followedDomainFull=followedDomain
     if port:
         followedDomainFull=followedDomain+':'+str(port)
     followedNickname=getNicknameFromActor(followedActor)
     if not followedNickname:
+        print('DEBUG: no nickname found within Follow activity object '+followedActor)
         return
 
     acceptedDomainFull=acceptedDomain
