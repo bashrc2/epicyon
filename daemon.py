@@ -65,6 +65,7 @@ from auth import authorize
 from auth import createPassword
 from auth import createBasicAuthHeader
 from auth import authorizeBasic
+from auth import storeBasicCredentials
 from threads import threadWithTrace
 from threads import removeDormantThreads
 from media import getMediaPath
@@ -3139,7 +3140,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('profile update POST '+mType+' image saved to '+postImageFilename)
                         actorChanged=True
                     else:
-                        print('ERROR: profile update POST '+mType+' image could not be saved to '+postImageFilename)                            
+                        print('ERROR: profile update POST '+mType+' image could not be saved to '+postImageFilename)
 
                 fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
                 if self.server.debug:
@@ -3175,6 +3176,12 @@ class PubServer(BaseHTTPRequestHandler):
                         if len(actorJson['skills'].items())!=len(newSkills.items()):
                             actorChanged=True
                         actorJson['skills']=newSkills
+                        if fields.get('password'):
+                            if fields.get('passwordconfirm'):
+                                if actorJson['password']==fields['passwordconfirm']:
+                                    if len(actorJson['password'])>2:
+                                        # set password
+                                        storeBasicCredentials(self.server.baseDir,nickname,actorJson['password'])
                         if fields.get('displayNickname'):
                             if fields['displayNickname']!=actorJson['name']:
                                 actorJson['name']=fields['displayNickname']
