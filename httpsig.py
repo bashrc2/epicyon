@@ -111,7 +111,7 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
         #print('***************************Send digest: '+bodyDigest)
         #print('***************************Send Content-type: '+contentType)
         #print('***************************Send messageBodyJsonStr: '+messageBodyJsonStr)
-        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-length': contentLength,'content-type': contentType}
+        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-length': str(contentLength),'content-type': contentType}
         signatureHeader = \
             signPostHeaders(dateStr,privateKeyPem,nickname, \
                             domain,port, \
