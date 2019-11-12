@@ -141,7 +141,7 @@ def verifyRecentSignature(signedDateStr: str) -> bool:
 def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                       path: str,GETmethod: bool, \
                       messageBodyDigest: str, \
-                      messageBodyJsonStr: str) -> bool:
+                      messageBodyJsonStr: str,debug: bool) -> bool:
     """Returns true or false depending on if the key that we plugged in here
     validates against the headers, method, and path.
     publicKeyPem - the public key from an rsa key pair
@@ -155,6 +155,9 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
         method='GET'
     else:
         method='POST'
+
+    if debug:
+        print('DEBUG: verifyPostHeaders '+method)
         
     publicKeyPem = RSA.import_key(publicKeyPem)
     # Build a dictionary of the signature values
@@ -170,7 +173,11 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
     # body (if a digest was included)
     signedHeaderList = []
     contentLength=len(messageBodyJsonStr)
+    if debug:
+        print('DEBUG: verifyPostHeaders contentLength='+str(contentLength))
     for signedHeader in signatureDict['headers'].split(' '):
+        if debug:
+            print('DEBUG: verifyPostHeaders signedHeader='+signedHeader)
         if signedHeader == '(request-target)':
             signedHeaderList.append(
                 f'(request-target): {method.lower()} {path}')
@@ -187,9 +194,13 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             if headers.get(signedHeader):
                 if signedHeader=='content-length':
                     if int(headers[signedHeader])!=contentLength:
+                        if debug:
+                            print('DEBUG: verifyPostHeaders content-length does not match '+headers[signedHeader]+' != '+str(contentLength))
                         return False
                 if signedHeader=='date':
                     if not verifyRecentSignature(headers[signedHeader]):
+                        if debug:
+                            print('DEBUG: verifyPostHeaders date is not recent '+headers[signedHeader])
                         return False
                 #print('***************************Verify '+signedHeader+': '+headers[signedHeader])
                 signedHeaderList.append(
@@ -198,9 +209,13 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                 signedHeaderCap=signedHeader.capitalize()
                 if signedHeaderCap=='Content-Length':
                     if int(headers[signedHeader])!=contentLength:
+                        if debug:
+                            print('DEBUG: verifyPostHeaders Content-Length does not match '+headers[signedHeader]+' != '+str(contentLength))
                         return False
                 if signedHeaderCap=='Date':
                     if not verifyRecentSignature(headers[signedHeaderCap]):
+                        if debug:
+                            print('DEBUG: verifyPostHeaders date is not recent '+headers[signedHeader])
                         return False
                 #print('***************************Verify '+signedHeaderCap+': '+headers[signedHeaderCap])
                 if headers.get(signedHeaderCap):
@@ -221,4 +236,6 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
         pkcs1_15.new(publicKeyPem).verify(headerDigest, signature)
         return True
     except (ValueError, TypeError):
+        if debug:
+            print('DEBUG: verifyPostHeaders pkcs1_15 verify failure')
         return False

@@ -1854,7 +1854,8 @@ def runInboxQueue(projectVersion: str, \
                                      queueJson['httpHeaders'], \
                                      queueJson['path'],False, \
                                      queueJson['digest'], \
-                                     json.dumps(queueJson['post'])):
+                                     json.dumps(queueJson['post']), \
+                                     debug):
                 if debug:
                     print('DEBUG: Header signature check failed')
                     if os.path.isfile(queueFilename):

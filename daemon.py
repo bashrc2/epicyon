@@ -244,7 +244,8 @@ class PubServer(BaseHTTPRequestHandler):
         if verifyPostHeaders(self.server.httpPrefix, \
                              pubKey,self.headers, \
                              self.path,True, \
-                             GETrequestDigest,GETrequestBody):
+                             GETrequestDigest, \
+                             GETrequestBody,debug):
             return True
         return False
 
