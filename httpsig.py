@@ -189,15 +189,11 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             #print('***************************Verify digest: SHA-256='+bodyDigest)
             #print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
         elif signedHeader == 'content-length':
-            contentLengthStr=signedHeader
-            if not headers.get(contentLengthStr):
-                if headers.get('Content-Length'):
-                    contentLengthStr='Content-Length'                
-            if headers.get(contentLengthStr):
-                signedHeaderList.append(f'{contentLengthStr}: {headers[signedHeader]}')
+            if headers.get(signedHeader):
+                signedHeaderList.append(f'content-length: {headers[signedHeader]}')
             else:
                 if debug:
-                    print('DEBUG: verifyPostHeaders '+contentLengthStr+' not found in '+str(headers))
+                    print('DEBUG: verifyPostHeaders '+signedHeader+' not found in '+str(headers))
         elif signedHeader == 'Content-Length':
             if headers.get(signedHeader):
                 signedHeaderList.append(f'Content-Length: {headers[signedHeader]}')
