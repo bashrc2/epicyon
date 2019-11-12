@@ -600,7 +600,6 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         moderatorsStr+='</div>'
         
     editProfileForm=htmlHeader(cssFilename,editProfileCSS)
-    editProfileForm+=
     editProfileForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">'
     editProfileForm+='  <div class="vertical-center">'
     editProfileForm+='    <p class="new-post-text">'+translate['Profile for']+' '+nickname+'@'+domainFull+'</p>'
