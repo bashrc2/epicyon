@@ -186,7 +186,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
             if messageBodyDigest:
                 bodyDigest=messageBodyDigest
             else:
-                bodyDigest = messageContentDigest(messageBodyJsonStr)
+                bodyDigest=messageContentDigest(messageBodyJsonStr)
             signedHeaderList.append(f'digest: SHA-256={bodyDigest}')
             #print('***************************Verify digest: SHA-256='+bodyDigest)
             #print('***************************Verify messageBodyJsonStr: '+messageBodyJsonStr)
@@ -197,7 +197,10 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                         if debug:
                             print('DEBUG: verifyPostHeaders content-length does not match '+headers[signedHeader]+' != '+str(contentLength))
                         return False
-                if signedHeader=='date':
+                    elif debug:
+                        print('DEBUG: verifyPostHeaders content-length matches '+headers[signedHeader])
+                        
+                elif signedHeader=='date':
                     if not verifyRecentSignature(headers[signedHeader]):
                         if debug:
                             print('DEBUG: verifyPostHeaders date is not recent '+headers[signedHeader])
@@ -207,12 +210,15 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
                     f'{signedHeader}: {headers[signedHeader]}')
             else:
                 signedHeaderCap=signedHeader.capitalize()
-                if signedHeaderCap=='Content-Length':
+                if signedHeader=='Content-Length':
+                    signedHeaderCap=signedHeader
                     if int(headers[signedHeader])!=contentLength:
                         if debug:
                             print('DEBUG: verifyPostHeaders Content-Length does not match '+headers[signedHeader]+' != '+str(contentLength))
                         return False
-                if signedHeaderCap=='Date':
+                    elif debug:
+                        print('DEBUG: verifyPostHeaders Content-Length matches '+headers[signedHeader])
+                elif signedHeaderCap=='Date':
                     if not verifyRecentSignature(headers[signedHeaderCap]):
                         if debug:
                             print('DEBUG: verifyPostHeaders date is not recent '+headers[signedHeader])
@@ -224,6 +230,8 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
 
     #print('***********************signedHeaderList: ')
     #pprint(signedHeaderList)
+    if debug:
+        print('DEBUG: signedHeaderList: '+str(signedHeaderList))
     # Now we have our header data digest
     signedHeaderText = '\n'.join(signedHeaderList)
     #print('***********************Verify: signedHeaderText: '+signedHeaderText)
