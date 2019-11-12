@@ -633,6 +633,10 @@ class PubServer(BaseHTTPRequestHandler):
             headersDict['digest']=self.headers['digest']
         if self.headers.get('Content-type'):
             headersDict['Content-type']=self.headers['Content-type']
+        if self.headers.get('Content-Length'):
+            headersDict['Content-Length']=self.headers['Content-Length']
+        if self.headers.get('content-length'):
+            headersDict['content-length']=self.headers['content-length']
 
         # For follow activities add a 'to' field, which is a copy
         # of the object field
