@@ -34,9 +34,6 @@ if [[ "$themeName" == 'highvis'* || "$themeName" == 'highviz'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then
 	    sed -i 's|"theme".*|"theme": "highvis",|g' config.json
-	else
-	    sed -i '/"admin"/a "theme": "highvis",' config.json
-	    sed -i 's|"theme"|    "theme"|g' config.json
 	fi	
     fi
     filename=epicyon.css
@@ -67,9 +64,6 @@ if [[ "$themeName" == 'purple'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then
 	    sed -i 's|"theme".*|"theme": "purple",|g' config.json
-	else
-	    sed -i '/"admin"/a "theme": "purple",' config.json
-	    sed -i 's|"theme"|    "theme"|g' config.json
 	fi	
     fi
     filename=epicyon.css
@@ -158,9 +152,6 @@ if [[ "$themeName" == 'hack'* || "$themeName" == 'hax'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then
 	    sed -i 's|"theme".*|"theme": "hacker",|g' config.json
-	else
-	    sed -i '/"admin"/a "theme": "hacker",' config.json
-	    sed -i 's|"theme"|    "theme"|g' config.json
 	fi	
     fi
     filename=epicyon.css
@@ -260,9 +251,6 @@ if [[ "$themeName" == 'light'* ]]; then
     if [ -f config.json ]; then
 	if grep -q '"theme"' config.json; then
 	    sed -i 's|"theme".*|"theme": "light",|g' config.json
-	else
-	    sed -i '/"admin"/a "theme": "light",' config.json
-	    sed -i 's|"theme"|    "theme"|g' config.json
 	fi	
     fi
     filename=epicyon.css
