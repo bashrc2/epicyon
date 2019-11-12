@@ -2955,7 +2955,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.server.useTor)
 
         if self.server.debug:
-            print('DEBUG: POST to from '+self.server.baseDir+ \
+            print('DEBUG: POST to '+self.server.baseDir+ \
                   ' path: '+self.path+' busy: '+ \
                   str(self.server.POSTbusy))
         if self.server.POSTbusy:
