@@ -2808,6 +2808,20 @@ class PubServer(BaseHTTPRequestHandler):
             if not fields.get('location'):
                 fields['location']=None
 
+            # Store a file which contains the time in seconds
+            # since epoch when an attempt to post something was made.
+            # This is then used for active monthly users counts
+            lastUsedFilename= \
+                self.server.baseDir+'/accounts/'+ \
+                nickname+'@'+self.server.domain+'/.lastUsed'
+            try:
+                lastUsedFile=open(lastUsedFilename,'w')
+                if lastUsedFile:
+                    lastUsedFile.write(str(int(time.time())))
+                    lastUsedFile.close()
+            except:
+                pass
+
             if postType=='newpost':
                 messageJson= \
                     createPublicPost(self.server.baseDir, \
@@ -2833,20 +2847,6 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
-
-            # Store a file which contains the time in seconds
-            # since epoch when an attempt to post something was made.
-            # This is then used for active monthly users counts
-            lastUsedFilename= \
-                self.server.baseDir+'/accounts/'+ \
-                nickname+'@'+self.server.domain+'/.lastUsed'
-            try:
-                lastUsedFile=open(lastUsedFilename,'w')
-                if lastUsedFile:
-                    lastUsedFile.write(str(int(time.time())))
-                    lastUsedFile.close()
-            except:
-                pass
             
             if postType=='newunlisted':
                 messageJson= \
