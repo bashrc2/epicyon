@@ -56,7 +56,7 @@ def metaDataInstance(instanceTitle: str, \
         return {}
 
     instance = {
-        'approval_required': False,
+        'approval_required': True,
         'contact_account': {'acct': adminActor['preferredUsername'],
                             'avatar': adminActor['icon']['url'],
                             'avatar_static': adminActor['icon']['url'],
