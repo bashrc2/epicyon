@@ -393,7 +393,7 @@ def noOfActiveAccountsMonthly(baseDir: str,months: int) -> bool:
     """
     accountCtr=0
     currTime=int(time.time())
-    monthSeconds=60*60*24*30*months
+    monthSeconds=int(60*60*24*30*months)
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for account in dirs:
             if '@' in account:
