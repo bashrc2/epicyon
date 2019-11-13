@@ -2354,7 +2354,7 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
                            debug: bool,projectVersion: str) -> None:
     """ This is really just for test purposes
     """
-    session = createSession(domain,port,useTor)
+    session = createSession(useTor)
     personCache={}
     cachedWebfingers={}
     federationList=[]

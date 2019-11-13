@@ -345,6 +345,13 @@ if args.postsraw:
                            __version__)
     sys.exit()
 
+if args.json:
+    session = createSession(False)
+    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+    testJson = getJson(session,args.json,asHeader,None,__version__,httpPrefix,None)
+    pprint(testJson)
+    sys.exit()
+
 # create cache for actors
 if not os.path.isdir(baseDir+'/cache'):
     os.mkdir(baseDir+'/cache')
@@ -465,7 +472,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -489,7 +496,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -531,7 +538,7 @@ if args.message:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()        
@@ -602,7 +609,7 @@ if args.announce:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending announce/repeat of '+args.announce)
@@ -646,7 +653,7 @@ if args.itemName:
         print('Specify a duration to share the object with the --duration option')
         sys.exit()
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending shared item: '+args.itemName)
@@ -678,7 +685,7 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending undo of shared item: '+args.undoItemName)
@@ -704,7 +711,7 @@ if args.like:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending like of '+args.like)
@@ -729,7 +736,7 @@ if args.undolike:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending undo like of '+args.undolike)
@@ -754,7 +761,7 @@ if args.delete:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending delete request of '+args.delete)
@@ -788,7 +795,7 @@ if args.follow:
         sys.exit()        
     followDomain,followPort=getDomainFromActor(args.follow)
 
-    session = createSession(domain,port,useTor)
+    session = createSession(useTor)
     personCache={}
     cachedWebfingers={}
     followHttpPrefix=httpPrefix
@@ -826,7 +833,7 @@ if args.unfollow:
         sys.exit()        
     followDomain,followPort=getDomainFromActor(args.unfollow)
 
-    session = createSession(domain,port,useTor)
+    session = createSession(useTor)
     personCache={}
     cachedWebfingers={}
     followHttpPrefix=httpPrefix
@@ -900,7 +907,7 @@ if args.actor:
     else:
         httpPrefix='https'
         port=443
-    session=createSession(domain,port,useTor)
+    session=createSession(useTor)
     if nickname=='inbox':
         nickname=domain
 
@@ -938,13 +945,6 @@ if args.actor:
         pprint(personJson)
     else:
         print('Failed to get '+personUrl)
-    sys.exit()
-
-if args.json:
-    session = createSession(domain,port,False)
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    testJson = getJson(session,args.json,asHeader,None,__version__,httpPrefix,None)
-    pprint(testJson)
     sys.exit()
 
 if args.addaccount:
@@ -1166,7 +1166,7 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending '+args.skill+' skill level '+str(args.skillLevelPercent)+' for '+nickname)
@@ -1192,7 +1192,7 @@ if args.availability:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending availability status of '+nickname+' as '+args.availability)
@@ -1237,7 +1237,7 @@ if args.block:
             print(args.block+' does not look like an actor url')
             sys.exit()
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending block of '+args.block)
@@ -1273,7 +1273,7 @@ if args.delegate:
         delegatedNickname=args.delegate.split('@')[0]
         args.delegate=blockedActor
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending delegation for '+args.delegate+' with role '+args.role+' in project '+args.project)
@@ -1307,7 +1307,7 @@ if args.undelegate:
         delegatedNickname=args.undelegate.split('@')[0]
         args.undelegate=blockedActor
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending delegation removal for '+args.undelegate+' from role '+args.role+' in project '+args.project)
@@ -1343,7 +1343,7 @@ if args.unblock:
             print(args.unblock+' does not look like an actor url')
             sys.exit()
 
-    session = createSession(domain,port,useTor)        
+    session = createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending undo block of '+args.unblock)

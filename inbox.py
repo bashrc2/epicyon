@@ -1679,7 +1679,7 @@ def runInboxQueue(projectVersion: str, \
     """
     currSessionTime=int(time.time())
     sessionLastUpdate=currSessionTime
-    session=createSession(domain,port,useTor)
+    session=createSession(useTor)
     inboxHandle='inbox@'+domain
     if debug:
         print('DEBUG: Inbox queue running')
@@ -1724,7 +1724,7 @@ def runInboxQueue(projectVersion: str, \
             # recreate the session periodically
             if not session or currTime-sessionLastUpdate>1200:
                 print('Creating inbox session')
-                session=createSession(domain,port,useTor)
+                session=createSession(useTor)
                 sessionLastUpdate=currTime            
 
             # oldest item first

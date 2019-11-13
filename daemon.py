@@ -225,8 +225,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: creating new session during authenticated fetch')
             self.server.session= \
-                createSession(self.server.domain,self.server.port, \
-                              self.server.useTor)
+                createSession(self.server.useTor)
         # obtain the public key
         pubKey= \
             getPersonPubKey(self.server.baseDir,self.server.session,keyId, \
@@ -499,7 +498,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: creating new session for c2s')
             self.server.session= \
-                createSession(self.server.domain,self.server.port,self.server.useTor)
+                createSession(self.server.useTor)
         if self.server.debug:
             print('DEBUG: sending c2s post to followers')
         # remove inactive threads
@@ -771,8 +770,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not self.server.session:
             self.server.session= \
-                createSession(self.server.domain, \
-                              self.server.port,self.server.useTor)
+                createSession(self.server.useTor)
 
         # is this a html request?
         htmlGET=False
@@ -1279,8 +1277,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return                
             if not self.server.session:
                 self.server.session= \
-                    createSession(self.server.domain, \
-                                  self.server.port,self.server.useTor)                
+                    createSession(self.server.useTor)                
             announceJson= \
                 createAnnounce(self.server.session, \
                                self.server.baseDir, \
@@ -1330,8 +1327,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return                
             if not self.server.session:
                 self.server.session= \
-                    createSession(self.server.domain,self.server.port, \
-                                  self.server.useTor)
+                    createSession(self.server.useTor)
             undoAnnounceActor= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 '/users/'+self.postToNickname
@@ -1364,8 +1360,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '@' in followingHandle:
                 if not self.server.session:
                     self.server.session= \
-                        createSession(self.server.domain,self.server.port, \
-                                      self.server.useTor)
+                        createSession(self.server.useTor)
                 manualApproveFollowRequest(self.server.session, \
                                            self.server.baseDir, \
                                            self.server.httpPrefix, \
@@ -1438,8 +1433,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return                
             if not self.server.session:
                 self.server.session= \
-                    createSession(self.server.domain,self.server.port, \
-                                  self.server.useTor)
+                    createSession(self.server.useTor)
             likeActor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+'/users/'+self.postToNickname
@@ -1483,9 +1477,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return                
             if not self.server.session:
                 self.server.session= \
-                    createSession(self.server.domain, \
-                                  self.server.port, \
-                                  self.server.useTor)
+                    createSession(self.server.useTor)
             undoActor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+'/users/'+self.postToNickname
@@ -1539,8 +1531,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return                    
                 if not self.server.session:
                     self.server.session= \
-                        createSession(self.server.domain,self.server.port, \
-                                      self.server.useTor)
+                        createSession(self.server.useTor)
 
                 deleteStr= \
                     htmlDeletePost(self.server.translate,pageNumber, \
@@ -1747,9 +1738,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             if self.server.debug:
                                                 print('DEBUG: creating new session')
                                             self.server.session= \
-                                                createSession(self.server.domain, \
-                                                              self.server.port, \
-                                                              self.server.useTor)
+                                                createSession(self.server.useTor)
                                         msg=htmlPostReplies(self.server.translate, \
                                                             self.server.baseDir, \
                                                             self.server.session, \
@@ -1798,9 +1787,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             if self.server.debug:
                                                 print('DEBUG: creating new session')
                                             self.server.session= \
-                                                createSession(self.server.domain, \
-                                                              self.server.port, \
-                                                              self.server.useTor)
+                                                createSession(self.server.useTor)
                                         msg=htmlPostReplies(self.server.translate, \
                                                             self.server.baseDir, \
                                                             self.server.session, \
@@ -2453,9 +2440,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session= \
-                            createSession(self.server.domain, \
-                                          self.server.port, \
-                                          self.server.useTor)
+                            createSession(self.server.useTor)
                     msg=htmlProfile(self.server.translate, \
                                     self.server.projectVersion, \
                                     self.server.baseDir, \
@@ -2508,9 +2493,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session= \
-                            createSession(self.server.domain, \
-                                          self.server.port, \
-                                          self.server.useTor)
+                            createSession(self.server.useTor)
 
                     msg=htmlProfile(self.server.translate, \
                                     self.server.projectVersion, \
@@ -2565,8 +2548,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session= \
-                            createSession(self.server.domain, \
-                                          self.server.port,self.server.useTor)
+                            createSession(self.server.useTor)
                     msg=htmlProfile(self.server.translate, \
                                     self.server.projectVersion, \
                                     self.server.baseDir, \
@@ -2601,8 +2583,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: creating new session')
                     self.server.session= \
-                        createSession(self.server.domain, \
-                                      self.server.port,self.server.useTor)
+                        createSession(self.server.useTor)
                 msg=htmlProfile(self.server.translate, \
                                 self.server.projectVersion, \
                                 self.server.baseDir, \
@@ -2981,8 +2962,7 @@ class PubServer(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.server.session:
             self.server.session= \
-                createSession(self.server.domain,self.server.port, \
-                              self.server.useTor)
+                createSession(self.server.useTor)
 
         if self.server.debug:
             print('DEBUG: POST to '+self.server.baseDir+ \
@@ -3629,9 +3609,7 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname=getNicknameFromActor(self.path)
                     if not self.server.session:
                         self.server.session= \
-                            createSession(self.server.domain, \
-                                          self.server.port, \
-                                          self.server.useTor)
+                            createSession(self.server.useTor)
                     profileStr= \
                         htmlProfileAfterSearch(self.server.translate, \
                                                self.server.baseDir, \

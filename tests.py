@@ -376,7 +376,7 @@ def testPostMessageBetweenServers():
     print('\n\n*******************************************************')
     print('Alice sends to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    sessionAlice = createSession(useTor)
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
@@ -449,7 +449,7 @@ def testPostMessageBetweenServers():
     followPerson(aliceDir,'alice',aliceDomain,'bob', \
                  bobDomain+':'+str(bobPort),federationList,False)
 
-    sessionBob = createSession(bobDomain,bobPort,useTor)
+    sessionBob = createSession(useTor)
     bobPostLog = []
     bobPersonCache={}
     bobCachedWebfingers={}
@@ -599,7 +599,7 @@ def testFollowBetweenServersWithCapabilities():
     print('Alice sends a follow request to Bob')
     print('Both are strictly enforcing object capabilities')
     os.chdir(aliceDir)
-    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    sessionAlice = createSession(useTor)
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
@@ -643,7 +643,7 @@ def testFollowBetweenServersWithCapabilities():
         
     print('\n\n*********************************************************')
     print('Eve tries to send to Bob')
-    sessionEve = createSession(eveDomain,evePort,useTor)
+    sessionEve = createSession(useTor)
     evePostLog = []
     evePersonCache={}
     eveCachedWebfingers={}
@@ -714,7 +714,7 @@ def testFollowBetweenServersWithCapabilities():
     aliceCapsFilename= \
         aliceDir+'/accounts/alice@'+aliceDomain+'/ocap/granted/'+ \
         httpPrefix+':##'+bobDomain+':'+str(bobPort)+'#users#bob.json'
-    sessionBob = createSession(bobDomain,bobPort,useTor)
+    sessionBob = createSession(useTor)
     bobPostLog = []
     bobPersonCache={}
     bobCachedWebfingers={}
@@ -863,7 +863,7 @@ def testFollowBetweenServers():
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    sessionAlice = createSession(useTor)
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
@@ -1309,7 +1309,7 @@ def testClientToServer():
     print('\n\n*******************************************************')
     print('Alice sends to Bob via c2s')
 
-    sessionAlice = createSession(aliceDomain,alicePort,useTor)
+    sessionAlice = createSession(useTor)
     followersOnly=False
     attachedImageFilename=baseDir+'/img/logo.png'
     mediaType=getAttachmentMediaType(attachedImageFilename)
@@ -1415,7 +1415,7 @@ def testClientToServer():
 
 
     print('\n\nBob likes the post')
-    sessionBob = createSession(bobDomain,bobPort,useTor)
+    sessionBob = createSession(useTor)
     password='bobpass'
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
     inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
