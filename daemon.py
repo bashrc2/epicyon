@@ -334,7 +334,7 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: WEBFINGER nodeinfo')
         info=metaDataNodeInfo(self.server.registration,self.server.projectVersion)
         if info:
-            msg=wfResult.encode('utf-8')
+            msg=info.encode('utf-8')
             self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
         return True
