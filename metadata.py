@@ -9,10 +9,12 @@ __status__ = "Production"
 import os
 import json
 import commentjson
+from utils import noOfAccounts
 
-def metaDataNodeInfo(registration: bool,version: str) -> {}:
+def metaDataNodeInfo(baseDir: str,registration: bool,version: str) -> {}:
     """ /nodeinfo/2.0 endpoint
     """
+    activeAccounts=noOfAccounts(baseDir)
     nodeinfo = {
         'openRegistrations': registration,
         'protocols': ['activitypub'],
@@ -25,7 +27,7 @@ def metaDataNodeInfo(registration: bool,version: str) -> {}:
             'users': {
                 'activeHalfyear': 1,
                 'activeMonth': 1,
-                'total': 1
+                'total': activeAccounts
             }
         },
         'version': '2.0'
@@ -58,7 +60,7 @@ def metaDataInstance(instanceTitle: str, \
     isBot=False
     if adminActor['type']!='Person':
         isBot=True
-
+        
     instance = {
         'approval_required': False,
         'contact_account': {'acct': adminActor['preferredUsername'],
@@ -87,9 +89,9 @@ def metaDataInstance(instanceTitle: str, \
         'registrations': registration,
         'short_description': instanceDescriptionShort,
         'stats': {
-            'domain_count': 1,
+            'domain_count': 2,
             'status_count': 1,
-            'user_count': 1
+            'user_count': noOfAccounts(baseDir)
         },
         'thumbnail': httpPrefix+'://'+domainFull+'/login.png',
         'title': instanceTitle,

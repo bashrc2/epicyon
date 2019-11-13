@@ -380,7 +380,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: nodeinfo '+self.path)
-        info=metaDataNodeInfo(self.server.registration,self.server.projectVersion)
+        info=metaDataNodeInfo(self.server.baseDir,self.server.registration,self.server.projectVersion)
         if info:
             msg=json.dumps(info).encode('utf-8')
             self._set_headers('application/ld+json',len(msg),None)
