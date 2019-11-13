@@ -336,7 +336,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: mastodon api '+self.path)
-        if self.path.startswith('/api/v1/peers'):
+        if self.path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
             # On a large instance you are somewhat lost in the crowd, but on small
@@ -346,7 +346,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
             return True
-        if self.path.startswith('/api/v1/activity'):
+        if self.path.startswith('/api/v1/instance/activity'):
             # This is just a dummy result.
             msg=json.dumps([]).encode('utf-8')
             self._set_headers('application/ld+json',len(msg),None)
