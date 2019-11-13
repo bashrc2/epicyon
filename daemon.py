@@ -3242,7 +3242,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname+'@'+self.server.domain+'/'+mType+'.temp'
                     else:
                         filenameBase= \
-                            self.server.baseDir+'/accounts/logo.temp'
+                            self.server.baseDir+'/accounts/logo.temp.png'
 
                     filename,attachmentMediaType= \
                         saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
