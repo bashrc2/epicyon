@@ -71,7 +71,7 @@ def metaDataInstance(instanceTitle: str, \
                             'header_static': adminActor['image']['url'],
                             'id': '1',
                             'last_status_at': '2019-07-01T10:30:00Z',
-                            'locked': False,
+                            'locked': adminActor['manuallyApprovesFollowers'],
                             'note': '<p>Admin of '+domain+'</p>',
                             'statuses_count': 1,
                             'url': httpPrefix+'://'+domainFull+'/@'+adminActor['preferredUsername'],
