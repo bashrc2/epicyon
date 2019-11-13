@@ -327,11 +327,38 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         return True
 
+    def _mastoApi(self) -> bool:
+        """This is a vestigil mastodon API for the purpose
+        of returning an empty result to sites like
+        https://mastopeek.app-dist.eu
+        """
+        if not self.path.startswith('/api/v1/'):
+            return False
+        if self.server.debug:
+            print('DEBUG: mastodon api '+self.path)
+        if self.path.startswith('/api/v1/peers'):
+            # This is just a dummy result.
+            # Showing the full list of peers would have privacy implications.
+            # On a large instance you are somewhat lost in the crowd, but on small
+            # instances a full list of peers would convey a lot of information about
+            # the interests of a small number of accounts
+            msg=json.dumps([self.server.domainFull]).encode('utf-8')
+            self._set_headers('application/ld+json',len(msg),None)
+            self._write(msg)
+            return True
+        if self.path.startswith('/api/v1/activity'):
+            # This is just a dummy result.
+            msg=json.dumps([]).encode('utf-8')
+            self._set_headers('application/ld+json',len(msg),None)
+            self._write(msg)
+            return True
+        return False
+        
     def _nodeinfo(self) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
-            print('DEBUG: WEBFINGER nodeinfo')
+            print('DEBUG: nodeinfo '+self.path)
         info=metaDataNodeInfo(self.server.registration,self.server.projectVersion)
         if info:
             msg=json.dumps(info).encode('utf-8')
@@ -1166,6 +1193,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # get nodeinfo endpoint
         if self._nodeinfo():
+            self.server.GETbusy=False
+            return
+        # minimal mastodon api
+        if self._mastoApi():
             self.server.GETbusy=False
             return
 
