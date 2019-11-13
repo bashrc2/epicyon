@@ -1283,6 +1283,7 @@
       WorkingDirectory=/opt/epicyon<br>
       ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --port 443 --proxy 7156 --domain YOUR_DOMAIN --registration open --debug<br>
       Environment=USER=epicyon<br>
+      Environment=PYTHONUNBUFFERED=true<br>
       Restart=always<br>
       StandardError=syslog<br>
       CPUQuota=80%<br>
