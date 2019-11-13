@@ -1454,8 +1454,12 @@ if args.testdata:
 # so that it can't be accidentally set to zero and disable replies
 if args.maxMentions<4:
     args.maxMentions=4
+
+registration=getConfigParam(baseDir,'registration')
+if not registration:
+    registration=False
     
-runDaemon(args.language,__version__, \
+runDaemon(registration,args.language,__version__, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \
           federationList,args.maxMentions, \

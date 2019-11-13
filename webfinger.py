@@ -151,27 +151,34 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
     }
     return account
 
+def webfingerNodeInfo(httpPrefix: str,domainFull: str) -> {}:
+    """ /.well-known/nodeinfo endpoint
+    """
+    nodeinfo = {
+        'links': [
+            {
+                'href': httpPrefix+'://'+domainFull+'/nodeinfo/2.0',
+                'rel': 'http://nodeinfo.diaspora.software/ns/schema/2.0'
+            }
+        ]
+    }
+    return nodeinfo
+
 def webfingerMeta(httpPrefix: str,domainFull: str) -> str:
     """Return /.well-known/host-meta
     """
-    #return \
-    #    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" \
-    #    "<XRD xmlns=\"http://docs.oasis-open.org/ns/xri/xrd-1.0\">" \
-    #    "<Link rel=\"lrdd\" type=\"application/xrd+xml\" template=\""+httpPrefix+"://"+domainFull+"/.well-known/webfinger?resource={uri}\"/>" \
-    #    "</XRD>"
-
-    return \
-        "<?xml version=’1.0' encoding=’UTF-8'?>" \
-        "<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'" \
-        " xmlns:hm=’http://host-meta.net/xrd/1.0'>" \
-        "" \
-        "<hm:Host>"+domainFull+"</hm:Host>" \
-        "" \
-        "<Link rel=’lrdd’" \
-        " template=’"+httpPrefix+"://"+domainFull+"/describe?uri={uri}'>" \
-        " <Title>Resource Descriptor</Title>" \
-        " </Link>" \
-        "</XRD>"
+    metaStr="<?xml version=’1.0' encoding=’UTF-8'?>"
+    metaStr+="<XRD xmlns=’http://docs.oasis-open.org/ns/xri/xrd-1.0'"
+    metaStr+=" xmlns:hm=’http://host-meta.net/xrd/1.0'>"
+    metaStr+=""
+    metaStr+="<hm:Host>"+domainFull+"</hm:Host>"
+    metaStr+=""
+    metaStr+="<Link rel=’lrdd’"
+    metaStr+=" template=’"+httpPrefix+"://"+domainFull+"/describe?uri={uri}'>"
+    metaStr+=" <Title>Resource Descriptor</Title>"
+    metaStr+=" </Link>"
+    metaStr+="</XRD>"
+    return metaStr
 
 def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account

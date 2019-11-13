@@ -21,8 +21,10 @@ from hashlib import sha256
 from pprint import pprint
 from session import createSession
 from webfinger import webfingerMeta
+from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
+from metadata import metaDataNodeInfo
 from donate import getDonationUrl
 from donate import setDonationUrl
 from person import activateAccount
@@ -326,6 +328,18 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         return True
 
+    def _nodeinfo(self) -> bool:
+        if not self.path.startswith('/nodeinfo/2.0'):
+            return False
+        if self.server.debug:
+            print('DEBUG: WEBFINGER nodeinfo')
+        info=metaDataNodeInfo(self.server.registration,self.server.projectVersion)
+        if info:
+            msg=wfResult.encode('utf-8')
+            self._set_headers('application/json',len(msg),None)
+            self._write(msg)
+        return True
+
     def _webfinger(self) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
@@ -340,7 +354,14 @@ class PubServer(BaseHTTPRequestHandler):
                 msg=wfResult.encode('utf-8')
                 self._set_headers('application/xrd+xml',len(msg),None)
                 self._write(msg)
-            return
+            return True
+        if self.path.startswith('/.well-known/nodeinfo'):
+            wfResult=webfingerNodeInfo(self.server.httpPrefix,self.server.domainFull)
+            if wfResult:
+                msg=wfResult.encode('utf-8')
+                self._set_headers('application/json',len(msg),None)
+                self._write(msg)
+            return True
 
         if self.server.debug:
             print('DEBUG: WEBFINGER lookup '+self.path+' '+str(self.server.baseDir))
@@ -1143,6 +1164,10 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # get webfinger endpoint for a person
         if self._webfinger():
+            self.server.GETbusy=False
+            return
+        # get nodeinfo endpoint
+        if self._nodeinfo():
             self.server.GETbusy=False
             return
 
@@ -4403,7 +4428,8 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 tokensDict[nickname]=token
                 tokensLookup[token]=nickname
 
-def runDaemon(language: str,projectVersion: str, \
+def runDaemon(registration: bool, \
+              language: str,projectVersion: str, \
               instanceId: str,clientToServer: bool, \
               baseDir: str,domain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
@@ -4453,6 +4479,7 @@ def runDaemon(language: str,projectVersion: str, \
         print('System language: '+systemLanguage)
         httpd.translate=loadJson(translationsFile)
 
+    httpd.registration=registration
     httpd.outboxThread={}
     httpd.newPostThread={}
     httpd.projectVersion=projectVersion
