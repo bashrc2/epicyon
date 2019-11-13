@@ -342,7 +342,7 @@ class PubServer(BaseHTTPRequestHandler):
             # On a large instance you are somewhat lost in the crowd, but on small
             # instances a full list of peers would convey a lot of information about
             # the interests of a small number of accounts
-            msg=json.dumps([self.server.domainFull]).encode('utf-8')
+            msg=json.dumps(['mastodon.social',self.server.domainFull]).encode('utf-8')
             self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
             return True
