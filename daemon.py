@@ -2834,7 +2834,12 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
 
-            lastUsedFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/.lastUsed'
+            # Store a file which contains the time in seconds
+            # since epoch when an attempt to post something was made.
+            # This is then used for active monthly users counts
+            lastUsedFilename= \
+                self.server.baseDir+'/accounts/'+ \
+                nickname+'@'+self.server.domain+'/.lastUsed'
             try:
                 lastUsedFile=open(lastUsedFilename,'w')
                 if lastUsedFile:
