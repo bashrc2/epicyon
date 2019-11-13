@@ -10,11 +10,14 @@ import os
 import json
 import commentjson
 from utils import noOfAccounts
+from utils import noOfActiveAccountsMonthly
 
 def metaDataNodeInfo(baseDir: str,registration: bool,version: str) -> {}:
     """ /nodeinfo/2.0 endpoint
     """
     activeAccounts=noOfAccounts(baseDir)
+    activeAccountsMonthly=noOfActiveAccountsMonthly(baseDir,1)
+    activeAccountsHalfYear=noOfActiveAccountsMonthly(baseDir,6)
     nodeinfo = {
         'openRegistrations': registration,
         'protocols': ['activitypub'],
@@ -25,8 +28,8 @@ def metaDataNodeInfo(baseDir: str,registration: bool,version: str) -> {}:
         'usage': {
             'localPosts': 1,
             'users': {
-                'activeHalfyear': 1,
-                'activeMonth': 1,
+                'activeHalfyear': activeAccountsHalfYear,
+                'activeMonth': activeAccountsMonthly,
                 'total': activeAccounts
             }
         },
