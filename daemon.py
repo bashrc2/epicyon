@@ -3221,7 +3221,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                 # extract each image type
                 actorChanged=True
-                profileMediaTypes=['avatar','image','banner']
+                profileMediaTypes=['avatar','image','banner','instanceLogo']
                 for mType in profileMediaTypes:
                     if self.server.debug:
                         print('DEBUG: profile update extracting '+mType+' image from POST')
@@ -3236,9 +3236,13 @@ class PubServer(BaseHTTPRequestHandler):
 
                     # Note: a .temp extension is used here so that at no time is
                     # an image with metadata publicly exposed, even for a few mS
-                    filenameBase= \
-                        self.server.baseDir+'/accounts/'+ \
-                        nickname+'@'+self.server.domain+'/'+mType+'.temp'
+                    if mType!='instanceLogo':
+                        filenameBase= \
+                            self.server.baseDir+'/accounts/'+ \
+                            nickname+'@'+self.server.domain+'/'+mType+'.temp'
+                    else:
+                        filenameBase= \
+                            self.server.baseDir+'/accounts/logo.temp'
 
                     filename,attachmentMediaType= \
                         saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
@@ -3309,6 +3313,18 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['donateUrl']!=currentDonateUrl:
                                 setDonationUrl(actorJson,fields['donateUrl'])
                                 actorChanged=True
+                        if fields.get('instanceTitle'):
+                            currInstanceTitle=getConfigParam(self.server.baseDir,'instanceTitle')
+                            if fields['instanceTitle']!=currInstanceTitle:
+                                setConfigParam(self.server.baseDir,'instanceTitle',fields['instanceTitle'])
+                        if fields.get('instanceDescriptionShort'):
+                            currInstanceDescriptionShort=getConfigParam(self.server.baseDir,'instanceDescriptionShort')
+                            if fields['instanceDescriptionShort']!=currInstanceDescriptionShort:
+                                setConfigParam(self.server.baseDir,'instanceDescriptionShort',fields['instanceDescriptionShort'])
+                        if fields.get('instanceDescription'):
+                            currInstanceDescription=getConfigParam(self.server.baseDir,'instanceDescription')
+                            if fields['instanceDescription']!=currInstanceDescription:
+                                setConfigParam(self.server.baseDir,'instanceDescription',fields['instanceDescription'])
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:
                                 actorTags={}

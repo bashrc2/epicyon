@@ -585,9 +585,25 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     with open(cssFilename, 'r') as cssFile:
         editProfileCSS = cssFile.read()
 
+    instanceStr=''
     moderatorsStr=''
     adminNickname=getConfigParam(baseDir,'admin')
     if path.startswith('/users/'+adminNickname+'/'):
+        instanceDescription=getConfigParam(baseDir,'instanceDescription')
+        instanceDescriptionShort=getConfigParam(baseDir,'instanceDescriptionShort')
+        instanceTitle=getConfigParam(baseDir,'instanceTitle')
+        instanceStr='<div class="container">'
+        instanceStr+='  '+translate['Instance Title']
+        instanceStr+='  <input type="text" name="instanceTitle" value="'+instanceTitle+'">'
+        instanceStr+='  '+translate['Instance Short Description']
+        instanceStr+='  <input type="text" name="instanceDescriptionShort" value="'+instanceDescriptionShort+'">'
+        instanceStr+='  '+translate['Instance Description']
+        instanceStr+='  <textarea id="message" name="instanceDescription" style="height:200px">'+instanceDescription+'</textarea>'
+        instanceStr+='  '+translate['Instance Logo']
+        instanceStr+='  <input type="file" id="instanceLogo" name="instanceLogo"'
+        instanceStr+='      accept=".png">'
+        instanceStr+='</div>'
+        
         moderators=''
         moderatorsFile=baseDir+'/accounts/moderators.txt'
         if os.path.isfile(moderatorsFile):
@@ -650,7 +666,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <b>'+translate['Skills']+'</b><br>'
     editProfileForm+='      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']
     editProfileForm+=skillsStr+moderatorsStr
-    editProfileForm+='    </div>'
+    editProfileForm+='    </div>'+instanceStr
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <b>'+translate['Danger Zone']+'</b><br>'
     editProfileForm+='      <input type="checkbox" class=dangercheckbox" name="deactivateThisAccount">'+translate['Deactivate this account']+'<br>'
