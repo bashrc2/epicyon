@@ -55,12 +55,16 @@ def metaDataInstance(instanceTitle: str, \
     if not adminActor:
         return {}
 
+    isBot=False
+    if adminActor['type']!='Person':
+        isBot=True
+
     instance = {
         'approval_required': False,
         'contact_account': {'acct': adminActor['preferredUsername'],
                             'avatar': adminActor['icon']['url'],
                             'avatar_static': adminActor['icon']['url'],
-                            'bot': False,
+                            'bot': isBot,
                             'created_at': '2019-07-01T10:30:00Z',
                             'display_name': adminActor['name'],
                             'emojis': [],
