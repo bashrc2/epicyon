@@ -335,7 +335,7 @@ class PubServer(BaseHTTPRequestHandler):
         info=metaDataNodeInfo(self.server.registration,self.server.projectVersion)
         if info:
             msg=json.dumps(info).encode('utf-8')
-            self._set_headers('application/json',len(msg),None)
+            self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
         return True
 
@@ -358,7 +358,7 @@ class PubServer(BaseHTTPRequestHandler):
             wfResult=webfingerNodeInfo(self.server.httpPrefix,self.server.domainFull)
             if wfResult:
                 msg=json.dumps(wfResult).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
+                self._set_headers('application/ld+json',len(msg),None)
                 self._write(msg)
             return True
 
