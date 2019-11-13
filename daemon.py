@@ -4511,7 +4511,10 @@ def runDaemon(registration: bool, \
         httpd.systemLanguage=systemLanguage
         httpd.translate=loadJson(translationsFile)
 
-    httpd.registration=registration
+    if registration=='open':
+        httpd.registration=True
+    else:
+        httpd.registration=False
     httpd.outboxThread={}
     httpd.newPostThread={}
     httpd.projectVersion=projectVersion
