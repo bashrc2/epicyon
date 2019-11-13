@@ -2834,6 +2834,15 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         return -1
 
+            lastUsedFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/.lastUsed'
+            try:
+                lastUsedFile=open(lastUsedFilename,'w')
+                if lastUsedFile:
+                    lastUsedFile.write(str(int(time.time())))
+                    lastUsedFile.close()
+            except:
+                pass
+            
             if postType=='newunlisted':
                 messageJson= \
                     createUnlistedPost(self.server.baseDir, \
