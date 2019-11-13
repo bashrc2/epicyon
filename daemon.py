@@ -3242,7 +3242,7 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname+'@'+self.server.domain+'/'+mType+'.temp'
                     else:
                         filenameBase= \
-                            self.server.baseDir+'/accounts/logo.temp.png'
+                            self.server.baseDir+'/accounts/logo.temp'
 
                     filename,attachmentMediaType= \
                         saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
@@ -3257,6 +3257,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: POST '+mType+' media removing metadata')
                     postImageFilename=filename.replace('.temp','')
+                    if mType=='instanceLogo':
+                        filename=self.server.baseDir+'/accounts/logo.temp.png'
+                        postImageFilename=self.server.baseDir+'/accounts/logo.png'
                     removeMetaData(filename,postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('profile update POST '+mType+' image saved to '+postImageFilename)
