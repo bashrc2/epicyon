@@ -359,6 +359,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self._set_headers('application/json',len(msg),None)
             self._write(msg)
+            print('instance metadata sent')
             return True            
         if self.path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
@@ -372,6 +373,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self._set_headers('application/json',len(msg),None)
             self._write(msg)
+            print('instance peers metadata sent')
             return True
         if self.path.startswith('/api/v1/instance/activity'):
             # This is just a dummy result.
@@ -381,6 +383,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self._set_headers('application/json',len(msg),None)
             self._write(msg)
+            print('instance activity metadata sent')
             return True
         return False
         
@@ -397,6 +400,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 self._set_headers('application/json',len(msg),None)
             self._write(msg)
+            print('nodeinfo sent')
         return True
     
     def _webfinger(self) -> bool:
