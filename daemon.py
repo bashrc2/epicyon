@@ -25,6 +25,7 @@ from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from metadata import metaDataNodeInfo
+from metadata import metaDataInstance
 from donate import getDonationUrl
 from donate import setDonationUrl
 from person import activateAccount
@@ -336,6 +337,26 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         if self.server.debug:
             print('DEBUG: mastodon api '+self.path)
+        if self.path=='/api/v1/instance':
+            adminNickname=getConfigParam(self.server.baseDir,'admin')
+            instanceDescriptionShort=getConfigParam(self.server.baseDir,'instanceDescriptionShort')
+            instanceDescription=getConfigParam(self.server.baseDir,'instanceDescription')
+            instanceTitle=getConfigParam(self.server.baseDir,'instanceTitle')
+            instanceJson= \
+                metaDataInstance(instanceTitle, \
+                                 instanceDescriptionShort, \
+                                 instanceDescription, \
+                                 self.server.httpPrefix, \
+                                 self.server.baseDir, \
+                                 adminNickname, \
+                                 self.server.domain,self.server.domainFull, \
+                                 self.server.registration, \
+                                 self.server.systemLanguage, \
+                                 self.server.projectVersion)
+            msg=json.dumps(instanceJson).encode('utf-8')
+            self._set_headers('application/ld+json',len(msg),None)
+            self._write(msg)
+            return True            
         if self.path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
@@ -365,7 +386,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
         return True
-
+    
     def _webfinger(self) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
@@ -4465,6 +4486,7 @@ def runDaemon(registration: bool, \
 
     # load translations dictionary
     httpd.translate={}
+    httpd.systemLanguage='en'
     if not unitTest:
         if not os.path.isdir(baseDir+'/translations'):
             print('ERROR: translations directory not found')
@@ -4486,6 +4508,7 @@ def runDaemon(registration: bool, \
             systemLanguage='en'
             translationsFile=baseDir+'/translations/'+systemLanguage+'.json'
         print('System language: '+systemLanguage)
+        httpd.systemLanguage=systemLanguage
         httpd.translate=loadJson(translationsFile)
 
     httpd.registration=registration

@@ -366,7 +366,22 @@ if not os.path.isdir(baseDir+'/cache/announce'):
 themeName=getConfigParam(baseDir,'theme')
 if not themeName:
     setConfigParam(baseDir,'theme','default')
-    
+
+# set the instance title in config.json
+title=getConfigParam(baseDir,'instanceTitle')
+if not title:
+    setConfigParam(baseDir,'instanceTitle','Epicyon')
+
+# set the instance description in config.json
+descFull=getConfigParam(baseDir,'instanceDescription')
+if not descFull:
+    setConfigParam(baseDir,'instanceDescription','Just another ActivityPub server')
+
+# set the short instance description in config.json
+descShort=getConfigParam(baseDir,'instanceDescriptionShort')
+if not descShort:
+    setConfigParam(baseDir,'instanceDescriptionShort','Just another ActivityPub server')
+
 if args.domain:
     domain=args.domain
     setConfigParam(baseDir,'domain',domain)
