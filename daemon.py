@@ -354,7 +354,10 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.systemLanguage, \
                                  self.server.projectVersion)
             msg=json.dumps(instanceJson).encode('utf-8')
-            self._set_headers('application/ld+json',len(msg),None)
+            if 'application/ld+json' in self.headers['Accept']:
+                self._set_headers('application/ld+json',len(msg),None)
+            else:
+                self._set_headers('application/json',len(msg),None)
             self._write(msg)
             return True            
         if self.path.startswith('/api/v1/instance/peers'):
@@ -364,13 +367,19 @@ class PubServer(BaseHTTPRequestHandler):
             # instances a full list of peers would convey a lot of information about
             # the interests of a small number of accounts
             msg=json.dumps(['mastodon.social',self.server.domainFull]).encode('utf-8')
-            self._set_headers('application/ld+json',len(msg),None)
+            if 'application/ld+json' in self.headers['Accept']:
+                self._set_headers('application/ld+json',len(msg),None)
+            else:
+                self._set_headers('application/json',len(msg),None)
             self._write(msg)
             return True
         if self.path.startswith('/api/v1/instance/activity'):
             # This is just a dummy result.
             msg=json.dumps([]).encode('utf-8')
-            self._set_headers('application/ld+json',len(msg),None)
+            if 'application/ld+json' in self.headers['Accept']:
+                self._set_headers('application/ld+json',len(msg),None)
+            else:
+                self._set_headers('application/json',len(msg),None)
             self._write(msg)
             return True
         return False
@@ -383,7 +392,10 @@ class PubServer(BaseHTTPRequestHandler):
         info=metaDataNodeInfo(self.server.baseDir,self.server.registration,self.server.projectVersion)
         if info:
             msg=json.dumps(info).encode('utf-8')
-            self._set_headers('application/ld+json',len(msg),None)
+            if 'application/ld+json' in self.headers['Accept']:
+                self._set_headers('application/ld+json',len(msg),None)
+            else:
+                self._set_headers('application/json',len(msg),None)
             self._write(msg)
         return True
     
@@ -406,7 +418,10 @@ class PubServer(BaseHTTPRequestHandler):
             wfResult=webfingerNodeInfo(self.server.httpPrefix,self.server.domainFull)
             if wfResult:
                 msg=json.dumps(wfResult).encode('utf-8')
-                self._set_headers('application/ld+json',len(msg),None)
+                if 'application/ld+json' in self.headers['Accept']:
+                    self._set_headers('application/ld+json',len(msg),None)
+                else:
+                    self._set_headers('application/json',len(msg),None)
                 self._write(msg)
             return True
 
