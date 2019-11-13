@@ -388,6 +388,26 @@ def noOfAccounts(baseDir: str) -> bool:
                     accountCtr+=1
     return accountCtr
 
+def noOfActiveAccountsMonthly(baseDir: str) -> bool:
+    """Returns the number of accounts on the system this month
+    """
+    accountCtr=0
+    currTime=int(time.time())
+    monthSeconds=60*60*24*30
+    for subdir, dirs, files in os.walk(baseDir+'/accounts'):
+        for account in dirs:
+            if '@' in account:
+                if not account.startswith('inbox@'):
+                    lastUsedFilename=baseDir+'/accounts/'+account+'/.lastUsed'
+                    if os.path.isfile(lastUsedFilename):
+                        with open(lastUsedFilename, 'r') as lastUsedFile:
+                            lastUsed = lastUsedFile.read()
+                            if lastUsed.isdigit():
+                                timeDiff=(currTime-int(lastUsed))
+                                if timeDiff<monthSeconds:
+                                    accountCtr+=1
+    return accountCtr
+
 def isPublicPost(postJsonObject: {}) -> bool:
     """Returns true if the given post is public
     """
