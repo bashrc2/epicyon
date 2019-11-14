@@ -2347,11 +2347,23 @@ def htmlTimeline(translate: {},pageNumber: int, \
     iconsDir=getIconsDir(baseDir)
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
-        cssFilename=baseDir+'/epicyon.css'        
+        cssFilename=baseDir+'/epicyon.css'
+
+    bannerFile='banner.png'
+    bannerFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile='banner.jpg'
+        bannerFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile='banner.gif'
+        bannerFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+bannerFile
+    if not os.path.isfile(bannerFilename):
+        bannerFile='banner.webp'
+    
     with open(cssFilename, 'r') as cssFile:
         profileStyle = \
             cssFile.read().replace('banner.png', \
-                                   '/users/'+nickname+'/banner.png')
+                                   '/users/'+nickname+'/'+bannerFile)
 
     moderator=isModerator(baseDir,nickname)
 
