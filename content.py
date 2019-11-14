@@ -451,7 +451,6 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
         searchStr=b'Content-Type: '+contentType.encode('utf8', 'ignore')
         mediaLocation=mediaBytes.find(searchStr)
         if mediaLocation>-1:
-            mediaFound=True
             if extension=='jpeg':
                 extension='jpg'
             elif extension=='mpeg':
