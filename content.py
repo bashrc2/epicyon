@@ -440,11 +440,13 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
         'png': 'image/png',
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
+        'webp': 'image/webp',
         'mp4': 'video/mp4',
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg'
     }
+    detectedExtension=None
     for extension,contentType in extensionList.items():
         searchStr=b'Content-Type: '+contentType.encode('utf8', 'ignore')
         mediaLocation=mediaBytes.find(searchStr)
@@ -457,6 +459,7 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
             filename=filenameBase+'.'+extension
             attachmentMediaType= \
                 searchStr.decode().split('/')[0].replace('Content-Type: ','')
+            detectedExtension=extension
             break
 
     if not filename:
@@ -470,6 +473,16 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
             if mediaBytes[startPos+offset]!=13:
                 startPos+=offset
                 break
+
+    # remove any existing image files with a different format
+    extensionTypes=('png','jpg','jpeg','gif','webp')
+    if detectedExtension in extensionTypes:
+        for ex in extensionTypes:
+            if ex==detectedExtension:
+                continue
+            possibleOtherFormat=filename.replace('.'+detectedExtension,'.'+ex)
+            if os.path.isfile(possibleOtherFormat):
+                os.remove(possibleOtherFormat)                          
 
     fd = open(filename, 'wb')
     fd.write(mediaBytes[startPos:])

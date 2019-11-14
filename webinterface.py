@@ -505,6 +505,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
 def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
     """
+    imageFormats='.png .jpg .jpeg .gif .webp'
     pathOriginal=path
     path=path.replace('/inbox','').replace('/outbox','').replace('/shares','')
     nickname=getNicknameFromActor(path)
@@ -601,7 +602,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         instanceStr+='  <textarea id="message" name="instanceDescription" style="height:200px">'+instanceDescription+'</textarea>'
         instanceStr+='  '+translate['Instance Logo']
         instanceStr+='  <input type="file" id="instanceLogo" name="instanceLogo"'
-        instanceStr+='      accept=".png">'
+        instanceStr+='      accept="'+imageFormats+'">'
         instanceStr+='</div>'
         
         moderators=''
@@ -633,13 +634,13 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      '+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'<br>'
     editProfileForm+='      '+translate['Avatar image']
     editProfileForm+='      <input type="file" id="avatar" name="avatar"'
-    editProfileForm+='            accept=".png">'
+    editProfileForm+='            accept="'+imageFormats+'">'
     editProfileForm+='      <br>'+translate['Background image']
     editProfileForm+='      <input type="file" id="image" name="image"'
-    editProfileForm+='            accept=".png">'
+    editProfileForm+='            accept="'+imageFormats+'">'
     editProfileForm+='      <br>'+translate['Timeline banner image']
     editProfileForm+='      <input type="file" id="banner" name="banner"'
-    editProfileForm+='            accept=".png">'
+    editProfileForm+='            accept="'+imageFormats+'">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+=translate['Change Password']+'<br>'
@@ -706,8 +707,26 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
     """
     accounts=noOfAccounts(baseDir)
 
-    if not os.path.isfile(baseDir+'/accounts/login.png'):
-        copyfile(baseDir+'/img/login.png',baseDir+'/accounts/login.png')
+    loginImage='login.png'
+    loginImageFilename=None
+    if os.path.isfile(os.path.isfile(baseDir+'/accounts/'+loginImage)):
+        loginImageFilename=baseDir+'/accounts/'+loginImage
+    if os.path.isfile(os.path.isfile(baseDir+'/accounts/login.jpg')):
+        loginImage='login.jpg'
+        loginImageFilename=baseDir+'/accounts/'+loginImage
+    if os.path.isfile(os.path.isfile(baseDir+'/accounts/login.jpeg')):
+        loginImage='login.jpeg'
+        loginImageFilename=baseDir+'/accounts/'+loginImage
+    if os.path.isfile(os.path.isfile(baseDir+'/accounts/login.gif')):
+        loginImage='login.gif'
+        loginImageFilename=baseDir+'/accounts/'+loginImage
+    if os.path.isfile(os.path.isfile(baseDir+'/accounts/login.webp')):
+        loginImage='login.webp'
+        loginImageFilename=baseDir+'/accounts/'+loginImage
+
+    if not loginImageFilename:
+        loginImageFilename=baseDir+'/accounts/'+loginImage
+        copyfile(baseDir+'/img/login.png',loginImageFilename)
     if os.path.isfile(baseDir+'/img/login-background.png'):
         if not os.path.isfile(baseDir+'/accounts/login-background.png'):
             copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
@@ -747,10 +766,11 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
     if not autocomplete:
         autocompleteStr='autocomplete="off" value=""'
 
+        
     loginForm=htmlHeader(cssFilename,loginCSS)
     loginForm+='<form method="POST" action="/login">'
     loginForm+='  <div class="imgcontainer">'
-    loginForm+='    <img loading="lazy" src="login.png" alt="login image" class="loginimage">'
+    loginForm+='    <img loading="lazy" src="'+loginImage+'" alt="login image" class="loginimage">'
     loginForm+=loginText+TOSstr
     loginForm+='  </div>'
     loginForm+=''

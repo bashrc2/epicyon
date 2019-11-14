@@ -999,9 +999,12 @@ class PubServer(BaseHTTPRequestHandler):
                 return
 
         # image on login screen
-        if self.path=='/login.png':
+        if self.path=='/login.png' or \
+           self.path=='/login.gif' or \
+           self.path=='/login.jpeg' or \
+           self.path=='/login.jpg':
             mediaFilename= \
-                self.server.baseDir+'/accounts/login.png'
+                self.server.baseDir+'/accounts'+self.path
             if os.path.isfile(mediaFilename):
                 tries=0
                 mediaBinary=None
@@ -3222,6 +3225,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # extract each image type
                 actorChanged=True
                 profileMediaTypes=['avatar','image','banner','instanceLogo']
+                profileMediaTypesUploaded={}
                 for mType in profileMediaTypes:
                     if self.server.debug:
                         print('DEBUG: profile update extracting '+mType+' image from POST')
@@ -3260,7 +3264,10 @@ class PubServer(BaseHTTPRequestHandler):
                     removeMetaData(filename,postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('profile update POST '+mType+' image saved to '+postImageFilename)
-                        actorChanged=True
+                        if mType!='instanceLogo':
+                            lastPartOfImageFilename=postImageFilename.split('/')[-1]
+                            profileMediaTypesUploaded[mType]=lastPartOfImageFilename
+                            actorChanged=True
                     else:
                         print('ERROR: profile update POST '+mType+' image could not be saved to '+postImageFilename)
 
@@ -3276,7 +3283,21 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
                     actorJson=loadJson(actorFilename)
-                    if actorJson:                    
+                    if actorJson:
+
+                        # update the avatar/image url file extension
+                        for mType,lastPartOfImageFilename in profileMediaTypesUploaded.items():
+                            if mType=='avatar':
+                                lastPartOfUrl=actorJson['icon']['url'].split('/')[-1]
+                                actorJson['icon']['url']= \
+                                    actorJson['icon']['url'].replace('/'+lastPartOfUrl, \
+                                                                     '/'+lastPartOfImageFilename)
+                            elif mType=='image':
+                                lastPartOfUrl=actorJson['image']['url'].split('/')[-1]
+                                actorJson['image']['url']= \
+                                    actorJson['image']['url'].replace('/'+lastPartOfUrl, \
+                                                                      '/'+lastPartOfImageFilename)
+
                         skillCtr=1
                         newSkills={}
                         while skillCtr<10:
