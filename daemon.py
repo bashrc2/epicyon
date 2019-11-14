@@ -1384,7 +1384,7 @@ class PubServer(BaseHTTPRequestHandler):
                     createSession(self.server.useTor)                
             self.server.actorRepeat=self.path.split('?actor=')[1]
             if '?' in self.server.actorRepeat:
-                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]                
+                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]
             announceJson= \
                 createAnnounce(self.server.session, \
                                self.server.baseDir, \
@@ -1400,7 +1400,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.cachedWebfingers, \
                                self.server.debug, \
                                self.server.projectVersion)
-            if announceJson:                
+            if announceJson:
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
@@ -1437,7 +1437,7 @@ class PubServer(BaseHTTPRequestHandler):
                     createSession(self.server.useTor)
             self.server.actorRepeat=self.path.split('?actor=')[1]
             if '?' in self.server.actorRepeat:
-                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]                
+                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]
             undoAnnounceActor= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 '/users/'+self.postToNickname
@@ -1549,7 +1549,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull+'/users/'+self.postToNickname                    
             self.server.actorLiked=self.path.split('?actor=')[1]
             if '?' in self.server.actorLiked:
-                self.server.actorLiked=self.server.actorLiked.split('?')[0]                
+                self.server.actorLiked=self.server.actorLiked.split('?')[0]
             likeJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Like',
@@ -1605,7 +1605,7 @@ class PubServer(BaseHTTPRequestHandler):
             }
             self.server.actorLiked=self.path.split('?actor=')[1]
             if '?' in self.server.actorLiked:
-                self.server.actorLiked=self.server.actorLiked.split('?')[0]                
+                self.server.actorLiked=self.server.actorLiked.split('?')[0]
             self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
