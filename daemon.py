@@ -1510,11 +1510,11 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # like from the web interface icon
-        if htmlGET and '?like=' in self.path and '/statuses/' in self.path:
+        if htmlGET and '?like=' in self.path:
             pageNumber=1
             likeUrl=self.path.split('?like=')[1]
             if '?' in likeUrl:
-                likeUrl=likeUrl.split('?')[0]
+                likeUrl=likeUrl.split('?')[0]                
             actor=self.path.split('?like=')[0]
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
@@ -1540,8 +1540,7 @@ class PubServer(BaseHTTPRequestHandler):
                     createSession(self.server.useTor)
             likeActor= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+'/users/'+self.postToNickname
-            actorLiked=likeUrl.split('/statuses/')[0]
+                self.server.domainFull+'/users/'+self.postToNickname                    
             likeJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Like',
@@ -1555,7 +1554,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # undo a like from the web interface icon
-        if htmlGET and '?unlike=' in self.path and '/statuses/' in self.path:
+        if htmlGET and '?unlike=' in self.path:
             pageNumber=1
             likeUrl=self.path.split('?unlike=')[1]
             if '?' in likeUrl:
@@ -1585,7 +1584,6 @@ class PubServer(BaseHTTPRequestHandler):
             undoActor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+'/users/'+self.postToNickname
-            actorLiked=likeUrl.split('/statuses/')[0]
             undoLikeJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Undo',
