@@ -1453,7 +1453,7 @@ def htmlProfile(translate: {},projectVersion: str, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read().replace('image.png',actor+'/image.png')
+        profileStyle = cssFile.read().replace('image.png',profileJson['image']['url'])
 
         licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" src="/icons/agpl.png" /></a>'
 
