@@ -2190,7 +2190,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             announceIcon='repeat.png'
             announceLink='unrepeat'
             announceTitle=translate['Undo the repeat']
-        announceStr='<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+announceTitle+'">'
+        announceStr= \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \
+            '?actor='+postJsonObject['actor']+ \
+            '?tl='+boxName+'" title="'+announceTitle+'">'
         announceStr+='<img loading="lazy" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
@@ -2203,7 +2206,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             if likedByPerson(postJsonObject,nickname,fullDomain):
                 likeLink='unlike'
                 likeTitle=translate['Undo the like']
-        likeStr='<a href="/users/'+nickname+'?'+likeLink+'='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'" title="'+likeTitle+'">'
+        likeStr= \
+            '<a href="/users/' + nickname + '?' + \
+            likeLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            '?actor='+postJsonObject['actor']+ \
+            '?tl='+boxName+'" title="'+likeTitle+'">'
         likeStr+='<img loading="lazy" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     deleteStr=''
@@ -2236,11 +2243,20 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         footerStr='<div class="'+containerClassIcons+'">'
         if not isModerationPost and showRepeatIcon:
             if not manuallyApprovesFollowers:
-                footerStr+='<a href="/users/'+nickname+'?replyto='+replyToLink+'" title="'+translate['Reply to this post']+'">'
+                footerStr+= \
+                    '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
+                    '?actor='+postJsonObject['actor']+ \
+                    '" title="'+translate['Reply to this post']+'">'
             else:
-                footerStr+='<a href="/users/'+nickname+'?replyfollowers='+replyToLink+'" title="'+translate['Reply to this post']+'">'
+                footerStr+= \
+                    '<a href="/users/'+nickname+'?replyfollowers='+replyToLink+ \
+                    '?actor='+postJsonObject['actor']+ \
+                    '" title="'+translate['Reply to this post']+'">'
         else:
-            footerStr+='<a href="/users/'+nickname+'?replydm='+replyToLink+'" title="'+translate['Reply to this post']+'">'
+            footerStr+= \
+                '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
+                '?actor='+postJsonObject['actor']+ \
+                '" title="'+translate['Reply to this post']+'">'
         footerStr+='<img loading="lazy" src="/'+iconsDir+'/reply.png"/></a>'
         footerStr+=announceStr+likeStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
