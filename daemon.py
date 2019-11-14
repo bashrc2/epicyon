@@ -1556,7 +1556,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'actor': likeActor,
                 'object': likeUrl
             }    
-            self._postToOutbox(likeJson)
+            self._postToOutboxThread(likeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
@@ -1606,7 +1606,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.actorLiked=self.path.split('?actor=')[1]
             if '?' in self.server.actorLiked:
                 self.server.actorLiked=self.server.actorLiked.split('?')[0]
-            self._postToOutbox(undoLikeJson)
+            self._postToOutboxThread(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
