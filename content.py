@@ -438,7 +438,6 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
     # of an image
     extensionList= {
         'png': 'image/png',
-        'jpg': 'image/jpeg',
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
         'webp': 'image/webp',
@@ -476,13 +475,12 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
 
     # remove any existing image files with a different format
     extensionTypes=('png','jpg','jpeg','gif','webp')
-    if detectedExtension in extensionTypes:
-        for ex in extensionTypes:
-            if ex==detectedExtension:
-                continue
-            possibleOtherFormat=filename.replace('.'+detectedExtension,'.'+ex)
-            if os.path.isfile(possibleOtherFormat):
-                os.remove(possibleOtherFormat)                          
+    for ex in extensionTypes:
+        if ex==detectedExtension:
+            continue
+        possibleOtherFormat=filename.replace('.temp','').replace('.'+detectedExtension,'.'+ex)
+        if os.path.isfile(possibleOtherFormat):
+            os.remove(possibleOtherFormat)
 
     fd = open(filename, 'wb')
     fd.write(mediaBytes[startPos:])
