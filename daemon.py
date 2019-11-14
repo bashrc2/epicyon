@@ -1382,6 +1382,9 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)                
+            self.server.actorRepeat=self.path.split('?actor=')[1]
+            if '?' in self.server.actorRepeat:
+                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]                
             announceJson= \
                 createAnnounce(self.server.session, \
                                self.server.baseDir, \
@@ -1397,7 +1400,7 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.cachedWebfingers, \
                                self.server.debug, \
                                self.server.projectVersion)
-            if announceJson:
+            if announceJson:                
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
@@ -1432,6 +1435,9 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
+            self.server.actorRepeat=self.path.split('?actor=')[1]
+            if '?' in self.server.actorRepeat:
+                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]                
             undoAnnounceActor= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 '/users/'+self.postToNickname
@@ -1541,13 +1547,16 @@ class PubServer(BaseHTTPRequestHandler):
             likeActor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+'/users/'+self.postToNickname                    
+            self.server.actorLiked=self.path.split('?actor=')[1]
+            if '?' in self.server.actorLiked:
+                self.server.actorLiked=self.server.actorLiked.split('?')[0]                
             likeJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Like',
                 'actor': likeActor,
                 'object': likeUrl
             }    
-            self._postToOutboxThread(likeJson)
+            self._postToOutbox(likeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
@@ -1594,7 +1603,10 @@ class PubServer(BaseHTTPRequestHandler):
                     'object': likeUrl
                 }
             }
-            self._postToOutboxThread(undoLikeJson)
+            self.server.actorLiked=self.path.split('?actor=')[1]
+            if '?' in self.server.actorLiked:
+                self.server.actorLiked=self.server.actorLiked.split('?')[0]                
+            self._postToOutbox(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
@@ -1656,6 +1668,7 @@ class PubServer(BaseHTTPRequestHandler):
         replyToList=[]
         replyPageNumber=1
         shareDescription=None
+        replytoActor=None
         if htmlGET:
             # public reply
             if '?replyto=' in self.path:
@@ -1671,6 +1684,8 @@ class PubServer(BaseHTTPRequestHandler):
                             replyPageStr=m.replace('page=','')
                             if replyPageStr.isdigit():
                                 replyPageNumber=int(replyPageStr)
+                        if m.startswith('actor='):
+                            replytoActor=m.replace('actor=','')
                     inReplyToUrl=mentionsList[0]
                 self.path=self.path.split('?replyto=')[0]+'/newpost'
                 if self.server.debug:
@@ -1690,6 +1705,8 @@ class PubServer(BaseHTTPRequestHandler):
                             replyPageStr=m.replace('page=','')
                             if replyPageStr.isdigit():
                                 replyPageNumber=int(replyPageStr)
+                        if m.startswith('actor='):
+                            replytoActor=m.replace('actor=','')
                     inReplyToUrl=mentionsList[0]
                 self.path=self.path.split('?replyfollowers=')[0]+'/newfollowers'
                 if self.server.debug:
@@ -1709,6 +1726,8 @@ class PubServer(BaseHTTPRequestHandler):
                             replyPageStr=m.replace('page=','')
                             if replyPageStr.isdigit():
                                 replyPageNumber=int(replyPageStr)
+                        if m.startswith('actor='):
+                            replytoActor=m.replace('actor=','')
                     inReplyToUrl=mentionsList[0]
                     if inReplyToUrl.startswith('sharedesc:'):
                         shareDescription= \
