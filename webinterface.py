@@ -505,7 +505,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
 def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) -> str:
     """Shows the edit profile screen
     """
-    imageFormats='.png|.jpg|.jpeg|.gif|.webp'
+    imageFormats='.png, .jpg, .jpeg, .gif, .webp'
     pathOriginal=path
     path=path.replace('/inbox','').replace('/outbox','').replace('/shares','')
     nickname=getNicknameFromActor(path)
