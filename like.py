@@ -24,14 +24,16 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 
-def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str,actor: str,domain: str,debug: bool) -> None:
+def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str, \
+                             actor: str,domain: str,debug: bool) -> None:
     """Undoes a like for a particular actor
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this post so that the like icon is changed
         nickname=getNicknameFromActor(actor)
-        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        cachedPostFilename= \
+            getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
@@ -70,7 +72,8 @@ def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str,actor
                     print('DEBUG: likes was removed from post')
                 del postJsonObject['object']['likes']
             else:
-                postJsonObject['object']['likes']['totalItems']=len(postJsonObject['likes']['items'])
+                postJsonObject['object']['likes']['totalItems']= \
+                    len(postJsonObject['likes']['items'])
             saveJson(postJsonObject,postFilename)
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
@@ -100,14 +103,17 @@ def noOfLikes(postJsonObject: {}) -> int:
         postJsonObject['object']['likes']['totalItems']=0
     return len(postJsonObject['object']['likes']['items'])
 
-def updateLikesCollection(baseDir: str,postFilename: str,objectUrl: str, actor: str,domain: str,debug: bool) -> None:
+def updateLikesCollection(baseDir: str,postFilename: str, \
+                          objectUrl: str, \
+                          actor: str,domain: str,debug: bool) -> None:
     """Updates the likes collection within a post
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
         # remove any cached version of this post so that the like icon is changed
         nickname=getNicknameFromActor(actor)
-        cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+        cachedPostFilename= \
+            getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
 
@@ -144,14 +150,16 @@ def updateLikesCollection(baseDir: str,postFilename: str,objectUrl: str, actor: 
                 'actor': actor
             }
             postJsonObject['object']['likes']['items'].append(newLike)
-            postJsonObject['object']['likes']['totalItems']=len(postJsonObject['object']['likes']['items'])
+            postJsonObject['object']['likes']['totalItems']= \
+                len(postJsonObject['object']['likes']['items'])
 
         if debug:
             print('DEBUG: saving post with likes added')
             pprint(postJsonObject)
         saveJson(postJsonObject,postFilename)
 
-def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
+def like(session,baseDir: str,federationList: [], \
+         nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
          sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
          debug: bool,projectVersion: str) -> {}:
@@ -202,7 +210,8 @@ def like(session,baseDir: str,federationList: [],nickname: str,domain: str,port:
             print('DEBUG: like objectUrl: '+objectUrl)
             return None
         
-        updateLikesCollection(baseDir,postFilename,objectUrl,newLikeJson['actor'],domain,debug)
+        updateLikesCollection(baseDir,postFilename,objectUrl, \
+                              newLikeJson['actor'],domain,debug)
         
         sendSignedJson(newLikeJson,session,baseDir, \
                        nickname,domain,port, \
@@ -238,14 +247,17 @@ def likePost(session,baseDir: str,federationList: [], \
     if likePort:
         if likePort!=80 and likePort!=443:
             if ':' not in likeDomain:
-                ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
+                ccUrl= \
+                    httpPrefix+'://'+likeDomain+':'+ \
+                    str(likePort)+'/users/'+likeNickname
         
     return like(session,baseDir,federationList,nickname,domain,port, \
                 ccList,httpPrefix,objectUrl,clientToServer, \
                 sendThreads,postLog,personCache,cachedWebfingers, \
                 debug,projectVersion)
 
-def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,port: int, \
+def undolike(session,baseDir: str,federationList: [], \
+             nickname: str,domain: str,port: int, \
              ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
              sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
              debug: bool,projectVersion: str) -> {}:
@@ -297,7 +309,8 @@ def undolike(session,baseDir: str,federationList: [],nickname: str,domain: str,p
         if not postFilename:
             return None
 
-        undoLikesCollectionEntry(baseDir,postFilename,objectUrl,newLikeJson['actor'],domain,debug)
+        undoLikesCollectionEntry(baseDir,postFilename,objectUrl, \
+                                 newLikeJson['actor'],domain,debug)
         
         sendSignedJson(newUndoLikeJson,session,baseDir, \
                        nickname,domain,port, \
@@ -335,7 +348,9 @@ def undoLikePost(session,baseDir: str,federationList: [], \
     if likePort:
         if likePort!=80 and likePort!=443:
             if ':' not in likeDomain:
-                ccUrl=httpPrefix+'://'+likeDomain+':'+str(likePort)+'/users/'+likeNickname
+                ccUrl= \
+                    httpPrefix+'://'+likeDomain+':'+ \
+                    str(likePort)+'/users/'+likeNickname
         
     return undoLike(session,baseDir,federationList,nickname,domain,port, \
                     ccList,httpPrefix,objectUrl,clientToServer, \
@@ -359,8 +374,8 @@ def sendLikeViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = ['https://www.w3.org/ns/activitystreams#Public']
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl=['https://www.w3.org/ns/activitystreams#Public']
+    ccUrl=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     if '/statuses/' in likeUrl:
         toUrl=[likeUrl.split('/statuses/')[0]]
@@ -375,8 +390,8 @@ def sendLikeViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -434,8 +449,8 @@ def sendUndoLikeViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = ['https://www.w3.org/ns/activitystreams#Public']
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl=['https://www.w3.org/ns/activitystreams#Public']
+    ccUrl=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     if '/statuses/' in likeUrl:
         toUrl=[likeUrl.split('/statuses/')[0]]
@@ -538,7 +553,8 @@ def outboxLike(baseDir: str,httpPrefix: str, \
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
-    updateLikesCollection(baseDir,postFilename,messageId,messageJson['actor'],domain,debug)
+    updateLikesCollection(baseDir,postFilename,messageId, \
+                          messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: post liked via c2s - '+postFilename)
 
@@ -595,6 +611,7 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(baseDir,postFilename,messageId,messageJson['actor'],domain,debug)
+    undoLikesCollectionEntry(baseDir,postFilename,messageId, \
+                             messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: post undo liked via c2s - '+postFilename)
