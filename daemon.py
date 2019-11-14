@@ -517,6 +517,8 @@ class PubServer(BaseHTTPRequestHandler):
                         fileExtension='jpg'
                     elif mediaTypeStr.endswith('gif'):
                         fileExtension='gif'
+                    elif mediaTypeStr.endswith('webp'):
+                        fileExtension='webp'
                     elif mediaTypeStr.endswith('audio/mpeg'):
                         fileExtension='mp3'
                     elif mediaTypeStr.endswith('ogg'):
@@ -1085,6 +1087,8 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaImageType='png'
                     elif emojiFilename.endswith('.jpg'):
                         mediaImageType='jpeg'
+                    elif emojiFilename.endswith('.webp'):
+                        mediaImageType='webp'
                     else:
                         mediaImageType='gif'                        
                     with open(emojiFilename, 'rb') as avFile:
@@ -1101,6 +1105,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
                self.path.endswith('.gif') or \
+               self.path.endswith('.webp') or \
                self.path.endswith('.mp4') or \
                self.path.endswith('.ogv') or \
                self.path.endswith('.mp3') or \
@@ -1116,6 +1121,8 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaFileType='image/jpeg'
                     elif mediaFilename.endswith('.gif'):
                         mediaFileType='image/gif'
+                    elif mediaFilename.endswith('.webp'):
+                        mediaFileType='image/webp'
                     elif mediaFilename.endswith('.mp4'):
                         mediaFileType='video/mp4'
                     elif mediaFilename.endswith('.ogv'):
@@ -1137,6 +1144,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '/sharefiles/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
+               self.path.endswith('.webp') or \
                self.path.endswith('.gif'):
                 mediaStr=self.path.split('/sharefiles/')[1]
                 mediaFilename= \
@@ -1147,6 +1155,8 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaFileType='png'
                     elif mediaFilename.endswith('.jpg'):
                         mediaFileType='jpeg'
+                    elif mediaFilename.endswith('.webp'):
+                        mediaFileType='webp'
                     else:
                         mediaFileType='gif'
                     with open(mediaFilename, 'rb') as avFile:
@@ -4347,6 +4357,8 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaFilename=mediaFilenameBase+'.jpg'
             if self.headers['Content-type'].endswith('gif'):
                 mediaFilename=mediaFilenameBase+'.gif'
+            if self.headers['Content-type'].endswith('webp'):
+                mediaFilename=mediaFilenameBase+'.webp'
             with open(mediaFilename, 'wb') as avFile:
                 avFile.write(mediaBytes)
             if self.server.debug:

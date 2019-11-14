@@ -35,7 +35,7 @@ def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
 
 def isMedia(imageFilename: str) -> bool:
-    permittedMedia=['png','jpg','gif','mp4','ogv','mp3','ogg']
+    permittedMedia=['png','jpg','gif','webp','mp4','ogv','mp3','ogg']
     for m in permittedMedia:        
         if imageFilename.endswith('.'+m):
             return True
@@ -58,7 +58,7 @@ def getAttachmentMediaType(filename: str) -> str:
     image, video or audio
     """
     mediaType=None
-    imageTypes=['png','jpg','jpeg','gif']
+    imageTypes=['png','jpg','jpeg','gif','webp']
     for mType in imageTypes:
         if filename.endswith('.'+mType):
             return 'image'
@@ -84,7 +84,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
         return postJson
     
     fileExtension=None
-    acceptedTypes=['png','jpg','gif','mp4','webm','ogv','mp3','ogg']
+    acceptedTypes=['png','jpg','gif','webp','mp4','webm','ogv','mp3','ogg']
     for mType in acceptedTypes:
         if imageFilename.endswith('.'+mType):
             if mType=='jpg':

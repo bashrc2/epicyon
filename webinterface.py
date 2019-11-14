@@ -72,6 +72,9 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
     elif avatarUrl.endswith('.gif') or '.gif?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/gif'}
         avatarImageFilename=avatarImagePath+'.gif'
+    elif avatarUrl.endswith('.webp') or '.webp?' in avatarUrl:
+        sessionHeaders = {'Accept': 'image/webp'}
+        avatarImageFilename=avatarImagePath+'.webp'
     else:
         return None
     if not os.path.isfile(avatarImageFilename) or force:
@@ -130,6 +133,8 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
         return '/avatars/'+actorStr+'.jpg'
     if os.path.isfile(avatarImagePath+'.gif'):
         return '/avatars/'+actorStr+'.gif'
+    if os.path.isfile(avatarImagePath+'.webp'):
+        return '/avatars/'+actorStr+'.webp'
     if os.path.isfile(avatarImagePath):
         return '/avatars/'+actorStr
         
@@ -1052,7 +1057,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='    <div class="container">'
     newPostForm+='      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">'
     newPostForm+='      <input type="file" id="attachpic" name="attachpic"'
-    newPostForm+='            accept=".png, .jpg, .jpeg, .gif, .mp4, .webm, .ogv, .mp3, .ogg">'
+    newPostForm+='            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
     newPostForm+='    </div>'
     newPostForm+='  </div>'
     newPostForm+='</form>'
@@ -2057,6 +2062,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                         if attach['url'].endswith('.png') or \
                            attach['url'].endswith('.jpg') or \
                            attach['url'].endswith('.jpeg') or \
+                           attach['url'].endswith('.webp') or \
                            attach['url'].endswith('.gif'):
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
