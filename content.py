@@ -438,6 +438,7 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
     # of an image
     extensionList= {
         'png': 'image/png',
+        'jpg': 'image/jpeg',
         'jpeg': 'image/jpeg',
         'gif': 'image/gif',
         'webp': 'image/webp',
