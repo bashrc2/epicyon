@@ -1001,6 +1001,7 @@ class PubServer(BaseHTTPRequestHandler):
         # image on login screen
         if self.path=='/login.png' or \
            self.path=='/login.gif' or \
+           self.path=='/login.webp' or \
            self.path=='/login.jpeg' or \
            self.path=='/login.jpg':
             mediaFilename= \
@@ -1196,14 +1197,16 @@ class PubServer(BaseHTTPRequestHandler):
                     return        
             self._404()
             return
+
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
         if '/users/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
+               self.path.endswith('.webp') or \
                self.path.endswith('.gif'):
                 avatarStr=self.path.split('/users/')[1]
-                if '/' in avatarStr:
+                if '/' in avatarStr and '.temp.' not in self.path:
                     avatarNickname=avatarStr.split('/')[0]
                     avatarFile=avatarStr.split('/')[1]
                     avatarFilename= \
@@ -1216,8 +1219,10 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaImageType='png'
                         elif avatarFile.endswith('.jpg'):
                             mediaImageType='jpeg'
-                        else:
+                        elif avatarFile.endswith('.gif'):
                             mediaImageType='gif'
+                        else:
+                            mediaImageType='webp'
                         with open(avatarFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             self._set_headers('image/'+mediaImageType, \
