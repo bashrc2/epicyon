@@ -840,13 +840,13 @@ class PubServer(BaseHTTPRequestHandler):
                 timeDiff='0'+timeDiff            
             print('BENCHMARK GET|'+timeDiff+'|'+self.path)
 
-    def _benchmarkPOST(self,POSTstartTime):
+    def _benchmarkPOST(self,POSTstartTime,postID: int):
         if self.server.debug:
             timeDiff=str(int((time.time()-POSTstartTime)*1000))
             timeDiffLen=len(timeDiff)
             for i in range(6-timeDiffLen):
                 timeDiff='0'+timeDiff            
-            print('BENCHMARK POST|'+timeDiff+'|'+self.path)
+            print('BENCHMARK POST|'+timeDiff+'|'+self.path+'|ID'+str(postID))
 
     def do_GET(self):
         GETstartTime=time.time()
@@ -3238,7 +3238,7 @@ class PubServer(BaseHTTPRequestHandler):
             if currTimePOST-self.server.lastPOST==0:
                 self.send_response(429)
                 self.end_headers()
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,1)
                 return              
             self.server.lastPOST=currTimePOST
             
@@ -3248,7 +3248,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,2)
             return
 
         # remove any trailing slashes from the path
@@ -3287,7 +3287,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(401)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,3)
                 return                
             loginParams=self.rfile.read(length).decode('utf-8')
             loginNickname,loginPassword,register= \
@@ -3302,7 +3302,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            loginNickname,loginPassword):
                         self.server.POSTbusy=False
                         self._redirect_headers('/login',cookie)
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,4)
                         return
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+ \
@@ -3310,7 +3310,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Login failed: '+loginNickname)
                     self._clearLoginDetails(loginNickname)
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,5)
                     return
                 else:
                     if isSuspended(self.server.baseDir,loginNickname):
@@ -3318,7 +3318,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,6)
                         return                 
                     # login success - redirect with authorization
                     print('Login success: '+loginNickname)
@@ -3365,12 +3365,12 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,7)
                     return
             self.send_response(200)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,8)
             return
 
         # update of profile/avatar from web interface
@@ -3386,14 +3386,14 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in '+actorStr)
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,9)
                     return
                 length = int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
                     print('Maximum profile data length exceeded '+str(length))
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,10)
                     return
 
                 # read the bytes of the http form POST
@@ -3673,11 +3673,11 @@ class PubServer(BaseHTTPRequestHandler):
                                 deactivateAccount(self.server.baseDir,nickname,self.server.domain)
                                 self._clearLoginDetails(nickname)
                                 self.server.POSTbusy=False
-                                self._benchmarkPOST(POSTstartTime)
+                                self._benchmarkPOST(POSTstartTime,11)
                                 return
             self._redirect_headers(actorStr,cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,12)
             return
 
         # moderator action buttons
@@ -3704,7 +3704,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,14)
                         return                        
                     elif moderationStr.startswith('submitBlock'):
                         moderationButton='block'
@@ -3790,7 +3790,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.debug)
             self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,15)
             return
 
         searchForEmoji=False
@@ -3816,7 +3816,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull+self.path.replace('/question','')
             nickname=getNicknameFromActor(actor)
             if not nickname:
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,16)
                 self._redirect_headers(actor+'/inbox?page='+ \
                                        str(pageNumber),cookie)
                 self.server.POSTbusy=False
@@ -3863,7 +3863,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to create vote')
             self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,17)
             return                
 
         # a search was made
@@ -3909,7 +3909,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,18)
                         return
                 elif searchStr.startswith('*'):      
                     # skill search
@@ -3924,7 +3924,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,19)
                         return
                 elif '@' in searchStr:
                     # profile search
@@ -3950,12 +3950,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,20)
                         return
                     else:
                         self._redirect_headers(actorStr+'/search',cookie)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,21)
                         return                        
                 elif searchStr.startswith(':') or \
                      searchStr.lower().strip('\n').endswith(' emoji'):
@@ -3972,7 +3972,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,22)
                         return
                 else:
                     # shared items search
@@ -3989,9 +3989,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,23)
                         return
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,24)
             self._redirect_headers(actorStr+'/inbox',cookie)
             self.server.POSTbusy=False
             return
@@ -4017,7 +4017,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 shareNickname,shareDomain,shareName)
             self._redirect_headers(originPathStr+'/tlshares',cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,25)
             return
 
         # removes a post
@@ -4061,7 +4061,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStr+'/outbox?page='+ \
                                        str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,26)
             return
 
         # decision to follow in the web interface is confirmed
@@ -4077,7 +4077,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followingActor=followingActor.split('&')[0]
                 self._redirect_headers(followingActor,cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,27)
                 return
             if '&submitYes=' in followConfirmParams:
                 followingActor= \
@@ -4112,7 +4112,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,28)
             return
 
         # decision to unfollow in the web interface is confirmed
@@ -4159,7 +4159,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._postToOutboxThread(unfollowJson)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,29)
             return
 
         # decision to unblock in the web interface is confirmed
@@ -4170,7 +4170,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,30)
                 return                
             length = int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -4184,7 +4184,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,31)
                     return                    
                 blockingDomain,blockingPort=getDomainFromActor(blockingActor)
                 blockingDomainFull=blockingDomain
@@ -4205,7 +4205,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 blockingNickname,blockingDomainFull)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,32)
             return
 
         # decision to block in the web interface is confirmed
@@ -4216,7 +4216,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,33)
                 return                
             length = int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -4230,7 +4230,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,34)
                     return                    
                 blockingDomain,blockingPort= \
                     getDomainFromActor(blockingActor)
@@ -4254,7 +4254,7 @@ class PubServer(BaseHTTPRequestHandler):
                              blockingNickname,blockingDomainFull)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,35)
             return
 
         # an option was chosen from person options screen
@@ -4267,7 +4267,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,36)
                 return                
             length = int(self.headers['Content-length'])
             optionsConfirmParams= \
@@ -4299,7 +4299,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+optionsActor)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,37)
                 return                
             optionsDomain,optionsPort=getDomainFromActor(optionsActor)
             optionsDomainFull=optionsDomain
@@ -4318,7 +4318,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Viewing '+optionsActor)
                 self._redirect_headers(optionsActor,cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,38)
                 return
             if '&submitBlock=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4338,7 +4338,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,39)
                 return
             if '&submitFollow=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4351,7 +4351,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,40)
                 return
             if '&submitUnfollow=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4364,7 +4364,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,41)
                 return
             if '&submitDM=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4378,7 +4378,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,42)
                 return            
             if '&submitSnooze=' in optionsConfirmParams:
                 thisActor=self.path.split('/personoptions')[0]
@@ -4387,7 +4387,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,43)
                     self._redirect_headers(thisActor+ \
                                            '/inbox?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
@@ -4399,7 +4399,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,44)
                     self._redirect_headers(thisActor+ \
                                            '/inbox?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
@@ -4415,10 +4415,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,45)
                 return            
 
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,46)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -4428,7 +4428,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,47)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -4438,7 +4438,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,48)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -4448,7 +4448,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,49)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -4458,7 +4458,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,50)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -4468,7 +4468,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,51)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -4478,7 +4478,7 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,52)
             self._redirect_headers('/users/'+nickname+ \
                                    '/shares?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -4494,7 +4494,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(405)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,53)
                 return
 
         # check that the post is to an expected path
@@ -4508,7 +4508,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,54)
             return
 
         # read the message and convert it into a python dictionary
@@ -4523,7 +4523,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,55)
                 return
         else:
             if length>self.server.maxMediaSize:
@@ -4531,7 +4531,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,56)
                 return
 
         # receive images to the outbox
@@ -4543,14 +4543,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,57)
                 return            
             pathUsersSection=self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
                 self.send_response(404)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,58)
                 return                
             self.postFromNickname=pathUsersSection.split('/')[0]
             accountsDir= \
@@ -4560,7 +4560,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,59)
                 return                
             mediaBytes=self.rfile.read(length)
             mediaFilenameBase=accountsDir+'/upload'
@@ -4578,7 +4578,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,60)
             return            
 
         # refuse to receive non-json content
@@ -4594,7 +4594,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,61)
             return
 
         if self.server.debug:
@@ -4612,7 +4612,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(201)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,62)
                 return
             else:
                 if self.server.debug:
@@ -4620,7 +4620,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,63)
                 return
 
         # check the necessary properties are available
@@ -4636,7 +4636,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,64)
                 return
 
         if not inboxPermittedMessage(self.server.domain, \
@@ -4648,7 +4648,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,65)
             return
 
         if self.server.debug:
@@ -4661,7 +4661,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
+                self._benchmarkPOST(POSTstartTime,66)
                 return
         
         if self.server.debug:
@@ -4681,13 +4681,13 @@ class PubServer(BaseHTTPRequestHandler):
                         self.send_response(200)
                         self.end_headers()
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,67)
                         return
                     if queueStatus==1:
                         self.send_response(503)
                         self.end_headers()
                         self.server.POSTbusy=False
-                        self._benchmarkPOST(POSTstartTime)
+                        self._benchmarkPOST(POSTstartTime,68)
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited without doing anything')
@@ -4697,7 +4697,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
+            self._benchmarkPOST(POSTstartTime,69)
             return
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
@@ -4708,13 +4708,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_response(200)
                     self.end_headers()
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,70)
                     return
                 if queueStatus==1:
                     self.send_response(503)
                     self.end_headers()
                     self.server.POSTbusy=False
-                    self._benchmarkPOST(POSTstartTime)
+                    self._benchmarkPOST(POSTstartTime,71)
                     return                    
         self.send_response(200)
         self.end_headers()
