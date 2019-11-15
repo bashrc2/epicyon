@@ -774,6 +774,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         #pprint(messageJson)
 
+        beginSaveTime=time.time()
         # save the json for later queue processing
         queueFilename = \
             savePostToInboxQueue(self.server.baseDir,
@@ -789,6 +790,16 @@ class PubServer(BaseHTTPRequestHandler):
             # add json to the queue
             if queueFilename not in self.server.inboxQueue:
                 self.server.inboxQueue.append(queueFilename)
+            if self.server.debug:
+                timeDiff=int((time.time()-beginSaveTime)*1000)
+                if timeDiff>200:
+                    print('WARN: slow save of inbox queue item '+queueFilename+' took '+str(timeDiff)+' mS')
+                    try:
+                        with open(queueFilename, 'r') as fp:
+                            queueJson=commentjson.load(fp)
+                            print('SLOW: '+str(queueJson))
+                    except:
+                        pass
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
