@@ -394,13 +394,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             print('instance activity metadata sent')
             return True
-        return False
+        self._404()            
+        return True
         
     def _nodeinfo(self) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
-            print('DEBUG: nodeinfo '+self.path)
+            print('DEBUG: nodeinfo '+self.path)        
         info=metaDataNodeInfo(self.server.baseDir,self.server.registration,self.server.projectVersion)
         if info:
             msg=json.dumps(info).encode('utf-8')
@@ -413,6 +414,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
             print('nodeinfo sent')
+            return True
+        self._404()
         return True
     
     def _webfinger(self) -> bool:
@@ -429,6 +432,8 @@ class PubServer(BaseHTTPRequestHandler):
                 msg=wfResult.encode('utf-8')
                 self._set_headers('application/xrd+xml',len(msg),None)
                 self._write(msg)
+                return True
+            self._404()            
             return True
         if self.path.startswith('/.well-known/nodeinfo'):
             wfResult=webfingerNodeInfo(self.server.httpPrefix,self.server.domainFull)
@@ -442,6 +447,8 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self._set_headers('application/ld+json',len(msg),None)
                 self._write(msg)
+                return True
+            self._404()            
             return True
 
         if self.server.debug:
