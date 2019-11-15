@@ -1383,8 +1383,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.session= \
                     createSession(self.server.useTor)                
             self.server.actorRepeat=self.path.split('?actor=')[1]
-            if '?' in self.server.actorRepeat:
-                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]
             announceJson= \
                 createAnnounce(self.server.session, \
                                self.server.baseDir, \
@@ -1435,9 +1433,6 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
-            self.server.actorRepeat=self.path.split('?actor=')[1]
-            if '?' in self.server.actorRepeat:
-                self.server.actorRepeat=self.server.actorRepeat.split('?')[0]
             undoAnnounceActor= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 '/users/'+self.postToNickname
