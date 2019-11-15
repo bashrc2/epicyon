@@ -1704,10 +1704,10 @@ def runInboxQueue(projectVersion: str, \
     queueRestoreCtr=0
 
     while True:
-        time.sleep(1)
+        time.sleep(5)
 
         # heartbeat to monitor whether the inbox queue is running
-        heartBeatCtr+=1
+        heartBeatCtr+=5
         if heartBeatCtr>=10:
             print('>>> Heartbeat Q:{:d} {:%F %T}'.format(len(queue), datetime.datetime.now()))
             heartBeatCtr=0
