@@ -853,6 +853,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('GET Not authorized')
 
         if not self.server.session:
+            print('Starting new session')
             self.server.session= \
                 createSession(self.server.useTor)
 
@@ -861,6 +862,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Accept'):
             if self._requestHTTP():
                 htmlGET=True
+        else:
+            return
 
         # treat shared inbox paths consistently
         if self.path=='/sharedInbox' or \
