@@ -816,6 +816,15 @@ class PubServer(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
+        # Since fediverse crawlers are quite active, make returning info to them high priority
+        # get nodeinfo endpoint
+        if self._nodeinfo():
+            return
+
+        # minimal mastodon api
+        if self._mastoApi():
+            return
+
         if self.path=='/logout':
             msg=htmlLogin(self.server.translate, \
                           self.server.baseDir,False).encode('utf-8')
@@ -1257,14 +1266,6 @@ class PubServer(BaseHTTPRequestHandler):
             return
         # get webfinger endpoint for a person
         if self._webfinger():
-            self.server.GETbusy=False
-            return
-        # get nodeinfo endpoint
-        if self._nodeinfo():
-            self.server.GETbusy=False
-            return
-        # minimal mastodon api
-        if self._mastoApi():
             self.server.GETbusy=False
             return
 
