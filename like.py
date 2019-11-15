@@ -160,8 +160,11 @@ def updateLikesCollection(baseDir: str,postFilename: str, \
 
 def like(session,baseDir: str,federationList: [], \
          nickname: str,domain: str,port: int, \
-         ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
-         sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
+         ccList: [],httpPrefix: str, \
+         objectUrl: str,actorLiked: str, \
+         clientToServer: bool, \
+         sendThreads: [],postLog: [], \
+         personCache: {},cachedWebfingers: {}, \
          debug: bool,projectVersion: str) -> {}:
     """Creates a like
     actor is the person doing the liking
@@ -195,11 +198,15 @@ def like(session,baseDir: str,federationList: [], \
     likedPostNickname=None
     likedPostDomain=None
     likedPostPort=None
-    if '/users/' in objectUrl or \
-       '/channel/' in objectUrl or \
-       '/profile/' in objectUrl:
-        likedPostNickname=getNicknameFromActor(objectUrl)
-        likedPostDomain,likedPostPort=getDomainFromActor(objectUrl)
+    if actorLiked:
+        likedPostNickname=getNicknameFromActor(actorLiked)
+        likedPostDomain,likedPostPort=getDomainFromActor(actorLiked)
+    else:
+        if '/users/' in objectUrl or \
+           '/channel/' in objectUrl or \
+           '/profile/' in objectUrl:
+            likedPostNickname=getNicknameFromActor(objectUrl)
+            likedPostDomain,likedPostPort=getDomainFromActor(objectUrl)
 
     if likedPostNickname:
         postFilename=locatePost(baseDir,nickname,domain,objectUrl)
@@ -231,7 +238,7 @@ def likePost(session,baseDir: str,federationList: [], \
              sendThreads: [],postLog: [], \
              personCache: {},cachedWebfingers: {}, \
              debug: bool,projectVersion: str) -> {}:
-    """Likes a given status post
+    """Likes a given status post. This is only used by unit tests
     """
     likeDomain=likeDomain
     if likePort:
@@ -239,9 +246,9 @@ def likePost(session,baseDir: str,federationList: [], \
             if ':' not in likeDomain:
                 likeDomain=likeDomain+':'+str(likePort)
 
-    objectUrl = \
-        httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \
-        '/statuses/'+str(likeStatusNumber)
+    actorLiked= \
+        httpPrefix + '://'+likeDomain+'/users/'+likeNickname
+    objectUrl=actorLiked+'/statuses/'+str(likeStatusNumber)
 
     ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
     if likePort:
@@ -250,16 +257,19 @@ def likePost(session,baseDir: str,federationList: [], \
                 ccUrl= \
                     httpPrefix+'://'+likeDomain+':'+ \
                     str(likePort)+'/users/'+likeNickname
-        
+
     return like(session,baseDir,federationList,nickname,domain,port, \
-                ccList,httpPrefix,objectUrl,clientToServer, \
+                ccList,httpPrefix,objectUrl,actorLiked,clientToServer, \
                 sendThreads,postLog,personCache,cachedWebfingers, \
                 debug,projectVersion)
 
 def undolike(session,baseDir: str,federationList: [], \
              nickname: str,domain: str,port: int, \
-             ccList: [],httpPrefix: str,objectUrl: str,clientToServer: bool, \
-             sendThreads: [],postLog: [],personCache: {},cachedWebfingers: {}, \
+             ccList: [],httpPrefix: str, \
+             objectUrl: str,actorLiked: str, \
+             clientToServer: bool, \
+             sendThreads: [],postLog: [], \
+             personCache: {},cachedWebfingers: {}, \
              debug: bool,projectVersion: str) -> {}:
     """Removes a like
     actor is the person doing the liking
@@ -298,11 +308,15 @@ def undolike(session,baseDir: str,federationList: [], \
     likedPostNickname=None
     likedPostDomain=None
     likedPostPort=None
-    if '/users/' in objectUrl or \
-       '/channel/' in objectUrl or \
-       '/profile/' in objectUrl:
-        likedPostNickname=getNicknameFromActor(objectUrl)
-        likedPostDomain,likedPostPort=getDomainFromActor(objectUrl)
+    if actorLiked:
+        likedPostNickname=getNicknameFromActor(actorLiked)
+        likedPostDomain,likedPostPort=getDomainFromActor(actorLiked)
+    else:
+        if '/users/' in objectUrl or \
+           '/channel/' in objectUrl or \
+           '/profile/' in objectUrl:
+            likedPostNickname=getNicknameFromActor(objectUrl)
+            likedPostDomain,likedPostPort=getDomainFromActor(objectUrl)
 
     if likedPostNickname:
         postFilename=locatePost(baseDir,nickname,domain,objectUrl)
