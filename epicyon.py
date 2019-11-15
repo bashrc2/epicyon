@@ -289,7 +289,7 @@ parser.add_argument('--registration', dest='registration', type=str,default=None
                     help='Whether new registrations are open or closed')
 parser.add_argument("--nosharedinbox", type=str2bool, nargs='?', \
                     const=True, default=False, \
-                    help='Enable shared inbox')
+                    help='Disable shared inbox')
 parser.add_argument('--maxregistrations', dest='maxRegistrations', type=int,default=None, \
                     help='The maximum number of new registrations')
 parser.add_argument("--resetregistrations", type=str2bool, nargs='?', \
