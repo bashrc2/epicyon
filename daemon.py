@@ -999,7 +999,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
                     return
-            
+
         # get css
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.endswith('.css'):
@@ -1564,7 +1564,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'to': [actorLiked],
                 'object': likeUrl
             }    
-            self._postToOutboxThread(likeJson)
+            self._postToOutbox(likeJson,self.server.projectVersion)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
@@ -1616,7 +1616,7 @@ class PubServer(BaseHTTPRequestHandler):
                     'object': likeUrl
                 }
             }
-            self._postToOutboxThread(undoLikeJson)
+            self._postToOutbox(undoLikeJson,self.server.projectVersion)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
