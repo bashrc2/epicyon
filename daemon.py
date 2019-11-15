@@ -902,10 +902,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          pageNumber,donateUrl).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
-                   self.server.GETbusy=False
+                   #self.server.GETbusy=False
                    return
                self._redirect_headers(originPathStr,cookie)
-               self.server.GETbusy=False
+               #self.server.GETbusy=False
                return
 
         # remove a shared item
@@ -920,11 +920,11 @@ class PubServer(BaseHTTPRequestHandler):
                                      actor,shareName).encode()
             if not msg:
                self._redirect_headers(actor+'/inbox',cookie)
-               self.server.GETbusy=False
+               #self.server.GETbusy=False
                return                
             self._set_headers('text/html',len(msg),cookie)
             self._write(msg)
-            self.server.GETbusy=False
+            #self.server.GETbusy=False
             return
 
         if self.path.startswith('/terms'):
@@ -933,7 +933,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
             self._write(msg)
-            self.server.GETbusy=False
+            #self.server.GETbusy=False
             return
 
         if self.path.startswith('/about'):
@@ -942,12 +942,12 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
             self._write(msg)
-            self.server.GETbusy=False
+            #self.server.GETbusy=False
             return
 
         # send robots.txt if asked
         if self._robotsTxt():
-            self.server.GETbusy=False
+            #self.server.GETbusy=False
             return
             
         # if not authorized then show the login screen
@@ -981,7 +981,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
-                    self.server.GETbusy=False
+                    #self.server.GETbusy=False
                     return
             
         # get css
