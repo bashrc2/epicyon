@@ -314,6 +314,9 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _400(self) -> None:
         self._httpReturnCode(400,'Bad Request')
+
+    def _503(self) -> None:
+        self._httpReturnCode(503,'Service Unavailable')
             
     def _write(self,msg) -> None:
         tries=0
@@ -916,6 +919,12 @@ class PubServer(BaseHTTPRequestHandler):
            self.path=='/users/inbox' or \
            self.path=='/actor/inbox' or \
            self.path=='/users/'+self.server.domain:
+            # if shared inbox is not enabled
+            if not self.server.enableSharedInbox:
+                self._503()
+                self._benchmarkGET(GETstartTime)
+                return
+                
             self.path='/inbox'
 
         # show the person options screen with view/follow/block/report
@@ -3248,6 +3257,12 @@ class PubServer(BaseHTTPRequestHandler):
             self.path= \
                 self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
 
+        if self.path=='/inbox':
+            if not self.server.enableSharedInbox:
+                self._503()
+                self._benchmarkPOST(POSTstartTime)
+                return
+
         cookie=None
         if self.headers.get('Cookie'):
             cookie=self.headers['Cookie']
@@ -4771,7 +4786,7 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 tokensDict[nickname]=token
                 tokensLookup[token]=nickname
 
-def runDaemon(registration: bool, \
+def runDaemon(enableSharedInbox: bool,registration: bool, \
               language: str,projectVersion: str, \
               instanceId: str,clientToServer: bool, \
               baseDir: str,domain: str, \
@@ -4828,6 +4843,7 @@ def runDaemon(registration: bool, \
         httpd.registration=True
     else:
         httpd.registration=False
+    httpd.enableSharedInbox=enableSharedInbox
     httpd.outboxThread={}
     httpd.newPostThread={}
     httpd.projectVersion=projectVersion

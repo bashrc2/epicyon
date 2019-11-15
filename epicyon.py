@@ -287,6 +287,9 @@ parser.add_argument('--duration', dest='duration', type=str,default=None, \
                     help='Duration for which to share an item')
 parser.add_argument('--registration', dest='registration', type=str,default=None, \
                     help='Whether new registrations are open or closed')
+parser.add_argument("--sharedinbox", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help='Enable shared inbox')
 parser.add_argument('--maxregistrations', dest='maxRegistrations', type=int,default=None, \
                     help='The maximum number of new registrations')
 parser.add_argument("--resetregistrations", type=str2bool, nargs='?', \
@@ -1474,7 +1477,8 @@ registration=getConfigParam(baseDir,'registration')
 if not registration:
     registration=False
     
-runDaemon(registration,args.language,__version__, \
+runDaemon(args.sharedinbox, \
+          registration,args.language,__version__, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \
           federationList,args.maxMentions, \
