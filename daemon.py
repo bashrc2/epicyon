@@ -295,7 +295,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
-    def _httpReturnCode(self,httpCode: int,httpDescription: str) -> None        
+    def _httpReturnCode(self,httpCode: int,httpDescription: str) -> None:
         msg="<html><head></head><body><h1>"+str(httpCode)+" "+httpDescription+"</h1></body></html>"
         msg=msg.encode('utf-8')
         self.send_response(httpCode)
