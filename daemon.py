@@ -295,9 +295,10 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
-    def _404(self) -> None:
-        msg="<html><head></head><body><h1>404 Not Found</h1></body></html>".encode('utf-8')
-        self.send_response(404)
+    def _httpReturnCode(self,httpCode: int,httpDescription: str) -> None        
+        msg="<html><head></head><body><h1>"+str(httpCode)+" "+httpDescription+"</h1></body></html>"
+        msg=msg.encode('utf-8')
+        self.send_response(httpCode)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', str(len(msg)))
         self.send_header('X-Robots-Tag','noindex')
@@ -305,9 +306,15 @@ class PubServer(BaseHTTPRequestHandler):
         try:
             self.wfile.write(msg)
         except Exception as e:
-            print('Error when showing 404')
+            print('Error when showing '+str(httpCode))
             print(e)
 
+    def _404(self) -> None:
+        self._httpReturnCode(404,'Not Found')
+
+    def _400(self) -> None:
+        self._httpReturnCode(400,'Bad Request')
+            
     def _write(self,msg) -> None:
         tries=0
         while tries<5:
@@ -879,6 +886,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._requestHTTP():
                 htmlGET=True
         else:
+            self._400()
             return
 
         # treat shared inbox paths consistently
@@ -1010,6 +1018,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/css',len(msg),cookie)
                 self._write(msg)
                 return
+            self._404()
 
         # image on login screen
         if self.path=='/login.png' or \
