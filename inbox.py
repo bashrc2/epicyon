@@ -208,6 +208,9 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
     """Saves the give json to the inbox queue for the person
     keyId specifies the actor sending the post
     """
+    if len(messageBytes)>10240:
+        print('WARN: inbox message too long '+str(len(messageBytes))+' bytes')
+        return None
     originalDomain=domain
     if ':' in domain:
         domain=domain.split(':')[0]
