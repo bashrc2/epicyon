@@ -1,0 +1,7 @@
+#!/bin/bash
+if [ -d /etc/epicyon ]; then
+    cd /etc/epicyon || exit 0
+else
+    cd /opt/epicyon || exit 0
+fi
+journalctl -u epicyon | grep "BENCHMARK GET|0\|BENCHMARK POST|0" | awk -F 'BENCHMARK' '{print $2}' | uniq | sort -r | head -n 20
