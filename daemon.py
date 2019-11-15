@@ -1715,15 +1715,15 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor not in deleteUrl:
                     # You can only delete your own posts
                     self.server.GETbusy=False
-                    self._redirect_headers(actor+'/inbox',cookie)
                     self._benchmarkGET(GETstartTime)
+                    self._redirect_headers(actor+'/inbox',cookie)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.postToNickname:
                     print('WARN: unable to find nickname in '+actor)
                     self.server.GETbusy=False
-                    self._redirect_headers(actor+'/inbox',cookie)
                     self._benchmarkGET(GETstartTime)
+                    self._redirect_headers(actor+'/inbox',cookie)
                     return                    
                 if not self.server.session:
                     self.server.session= \
@@ -3217,6 +3217,7 @@ class PubServer(BaseHTTPRequestHandler):
         POSTstartTime=time.time()
 
         if not self.server.session:
+            print('Starting new session from POST')
             self.server.session= \
                 createSession(self.server.useTor)
 
@@ -3802,10 +3803,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull+self.path.replace('/question','')
             nickname=getNicknameFromActor(actor)
             if not nickname:
+                self._benchmarkPOST(POSTstartTime)
                 self._redirect_headers(actor+'/inbox?page='+ \
                                        str(pageNumber),cookie)
                 self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime)
                 return
             # get the parameters
             length = int(self.headers['Content-length'])
@@ -3977,9 +3978,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         self._benchmarkPOST(POSTstartTime)
                         return
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers(actorStr+'/inbox',cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
 
         # removes a shared item
@@ -4373,9 +4374,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    self._benchmarkPOST(POSTstartTime)
                     self._redirect_headers(thisActor+ \
                                            '/inbox?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
+                    return
             if '&submitUnSnooze=' in optionsConfirmParams:
                 thisActor=self.path.split('/personoptions')[0]
                 if self.server.debug:
@@ -4383,9 +4386,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    self._benchmarkPOST(POSTstartTime)
                     self._redirect_headers(thisActor+ \
                                            '/inbox?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
+                    return
             if '&submitReport=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Reporting '+optionsActor)
@@ -4400,9 +4405,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self._benchmarkPOST(POSTstartTime)
                 return            
 
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
 
         pageNumber=self._receiveNewPost(authorized,'newpost',self.path)
@@ -4410,60 +4415,60 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path)
         if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path)
         if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newdm',self.path)
         if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newreport',self.path)
         if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newshare',self.path)
         if pageNumber:
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
+            self._benchmarkPOST(POSTstartTime)
             self._redirect_headers('/users/'+nickname+ \
                                    '/shares?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            self._benchmarkPOST(POSTstartTime)
             return
 
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
