@@ -831,11 +831,19 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _benchmarkGET(self,GETstartTime):
         if self.server.debug:
-            print('BENCHMARK GET|'+str(int((time.time()-GETstartTime)*1000))+'|'+self.path)
+            timeDiff=str(int((time.time()-GETstartTime)*1000))
+            timeDiffLen=len(timeDiff)
+            for i in range(6-timeDiffLen):
+                timeDiff='0'+timeDiff            
+            print('BENCHMARK GET|'+timeDiff+'|'+self.path)
 
     def _benchmarkPOST(self,POSTstartTime):
         if self.server.debug:
-            print('BENCHMARK POST|'+str(int((time.time()-POSTstartTime)*1000))+'|'+self.path)
+            timeDiff=str(int((time.time()-GETstartTime)*1000))
+            timeDiffLen=len(timeDiff)
+            for i in range(6-timeDiffLen):
+                timeDiff='0'+timeDiff            
+            print('BENCHMARK POST|'+timeDiff+'|'+self.path)
 
     def do_GET(self):
         GETstartTime=time.time()
