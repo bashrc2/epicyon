@@ -839,7 +839,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _benchmarkPOST(self,POSTstartTime):
         if self.server.debug:
-            timeDiff=str(int((time.time()-GETstartTime)*1000))
+            timeDiff=str(int((time.time()-POSTstartTime)*1000))
             timeDiffLen=len(timeDiff)
             for i in range(6-timeDiffLen):
                 timeDiff='0'+timeDiff            
