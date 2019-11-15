@@ -549,16 +549,6 @@ def outboxLike(baseDir: str,httpPrefix: str, \
         print('DEBUG: c2s like request arrived in outbox')
 
     messageId=messageJson['object'].replace('/activity','')
-    if '/statuses/' not in messageId:
-        if debug:
-            print('DEBUG: c2s like object is not a status')
-        return
-    if '/users/' not in messageId and \
-       '/channel/' not in messageId and \
-       '/profile/' not in messageId:
-        if debug:
-            print('DEBUG: c2s like object has no nickname')
-        return
     if ':' in domain:
         domain=domain.split(':')[0]
     postFilename=locatePost(baseDir,nickname,domain,messageId)
@@ -607,16 +597,6 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
         print('DEBUG: c2s undo like request arrived in outbox')
 
     messageId=messageJson['object']['object'].replace('/activity','')
-    if '/statuses/' not in messageId:
-        if debug:
-            print('DEBUG: c2s undo like object is not a status')
-        return
-    if '/users/' not in messageId and \
-       '/channel/' not in messageId and \
-       '/profile/' not in messageId:
-        if debug:
-            print('DEBUG: c2s undo like object has no nickname')
-        return
     if ':' in domain:
         domain=domain.split(':')[0]
     postFilename=locatePost(baseDir,nickname,domain,messageId)

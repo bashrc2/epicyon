@@ -1547,13 +1547,14 @@ class PubServer(BaseHTTPRequestHandler):
             likeActor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+'/users/'+self.postToNickname                    
-            self.server.actorLiked=self.path.split('?actor=')[1]
-            if '?' in self.server.actorLiked:
-                self.server.actorLiked=self.server.actorLiked.split('?')[0]
+            actorLiked=self.path.split('?actor=')[1]
+            if '?' in actorLiked:
+                actorLiked=actorLiked.split('?')[0]
             likeJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Like',
                 'actor': likeActor,
+                'to': [actorLiked],
                 'object': likeUrl
             }    
             self._postToOutboxThread(likeJson)
@@ -1593,19 +1594,21 @@ class PubServer(BaseHTTPRequestHandler):
             undoActor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+'/users/'+self.postToNickname
+            actorLiked=self.path.split('?actor=')[1]
+            if '?' in actorLiked:
+                actorLiked=actorLiked.split('?')[0]
             undoLikeJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Undo',
                 'actor': undoActor,
+                'to': [actorLiked],
                 'object': {
                     'type': 'Like',
                     'actor': undoActor,
+                    'to': [actorLiked],
                     'object': likeUrl
                 }
             }
-            self.server.actorLiked=self.path.split('?actor=')[1]
-            if '?' in self.server.actorLiked:
-                self.server.actorLiked=self.server.actorLiked.split('?')[0]
             self._postToOutboxThread(undoLikeJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
