@@ -829,14 +829,26 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
+    def _benchmarkGET(self,GETstartTime):
+        if self.server.debug:
+            print('BENCHMARK GET|'+self.path+'|'+str(int((time.time()-GETstartTime)*1000)))
+
+    def _benchmarkPOST(self,POSTstartTime):
+        if self.server.debug:
+            print('BENCHMARK POST|'+self.path+'|'+str(int((time.time()-POSTstartTime)*1000)))
+
     def do_GET(self):
+        GETstartTime=time.time()
+
         # Since fediverse crawlers are quite active, make returning info to them high priority
         # get nodeinfo endpoint
         if self._nodeinfo():
+            self._benchmarkGET(GETstartTime)
             return
 
         # minimal mastodon api
         if self._mastoApi():
+            self._benchmarkGET(GETstartTime)
             return
 
         if self.path=='/logout':
@@ -844,6 +856,7 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.baseDir,False).encode('utf-8')
             self._logout_headers('text/html',len(msg))
             self._write(msg)            
+            self._benchmarkGET(GETstartTime)
             return
 
         # replace https://domain/@nick with https://domain/users/nick
@@ -887,6 +900,7 @@ class PubServer(BaseHTTPRequestHandler):
                 htmlGET=True
         else:
             self._400()
+            self._benchmarkGET(GETstartTime)
             return
 
         # treat shared inbox paths consistently
@@ -926,8 +940,10 @@ class PubServer(BaseHTTPRequestHandler):
                                          pageNumber,donateUrl).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
+                   self._benchmarkGET(GETstartTime)
                    return
                self._redirect_headers(originPathStr,cookie)
+               self._benchmarkGET(GETstartTime)
                return
 
         # remove a shared item
@@ -942,9 +958,11 @@ class PubServer(BaseHTTPRequestHandler):
                                      actor,shareName).encode()
             if not msg:
                self._redirect_headers(actor+'/inbox',cookie)
+               self._benchmarkGET(GETstartTime)
                return                
             self._set_headers('text/html',len(msg),cookie)
             self._write(msg)
+            self._benchmarkGET(GETstartTime)
             return
 
         if self.path.startswith('/terms'):
@@ -953,6 +971,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
             self._write(msg)
+            self._benchmarkGET(GETstartTime)
             return
 
         if self.path.startswith('/about'):
@@ -961,10 +980,12 @@ class PubServer(BaseHTTPRequestHandler):
                           self.server.domainFull).encode()
             self._login_headers('text/html',len(msg))
             self._write(msg)
+            self._benchmarkGET(GETstartTime)
             return
 
         # send robots.txt if asked
         if self._robotsTxt():
+            self._benchmarkGET(GETstartTime)
             return
             
         # if not authorized then show the login screen
@@ -998,6 +1019,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
+                    self._benchmarkGET(GETstartTime)
                     return
 
         # get css
@@ -1017,8 +1039,11 @@ class PubServer(BaseHTTPRequestHandler):
                 msg=css.encode('utf-8')
                 self._set_headers('text/css',len(msg),cookie)
                 self._write(msg)
+                self._benchmarkGET(GETstartTime)
                 return
             self._404()
+            self._benchmarkGET(GETstartTime)
+            return
 
         # image on login screen
         if self.path=='/login.png' or \
@@ -1043,8 +1068,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self._write(mediaBinary)
+                    self._benchmarkGET(GETstartTime)
                     return
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # login screen background image
@@ -1066,8 +1093,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self._write(mediaBinary)
+                    self._benchmarkGET(GETstartTime)
                     return
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # follow screen background image
@@ -1089,8 +1118,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if mediaBinary:
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self._write(mediaBinary)
+                    self._benchmarkGET(GETstartTime)
                     return
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # emoji images
@@ -1115,8 +1146,10 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaBinary = avFile.read()
                         self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
                         self._write(mediaBinary)
+                    self._benchmarkGET(GETstartTime)
                     return
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # show media
@@ -1155,8 +1188,10 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaBinary = avFile.read()
                         self._set_headers(mediaFileType,len(mediaBinary),cookie)
                         self._write(mediaBinary)
+                        self._benchmarkGET(GETstartTime)
                     return        
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # show shared item images
@@ -1183,8 +1218,10 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaBinary = avFile.read()
                         self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie)
                         self._write(mediaBinary)
+                    self._benchmarkGET(GETstartTime)
                     return        
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # icon images
@@ -1200,8 +1237,10 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaBinary = avFile.read()
                             self._set_headers('image/png',len(mediaBinary),cookie)
                             self._write(mediaBinary)
+                        self._benchmarkGET(GETstartTime)
                         return        
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # cached avatar images
@@ -1222,10 +1261,13 @@ class PubServer(BaseHTTPRequestHandler):
                         # default to jpeg
                         self._set_headers('image/jpeg',len(mediaBinary),cookie)
                         #self._404()
+                        self._benchmarkGET(GETstartTime)
                         return
                     self._write(mediaBinary)
+                    self._benchmarkGET(GETstartTime)
                     return        
             self._404()
+            self._benchmarkGET(GETstartTime)
             return
 
         # show avatar or background image
@@ -1258,6 +1300,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('image/'+mediaImageType, \
                                               len(mediaBinary),cookie)
                             self._write(mediaBinary)
+                        self._benchmarkGET(GETstartTime)
                         return
 
         # This busy state helps to avoid flooding
@@ -1270,6 +1313,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('DEBUG: GET Busy')
                 self.send_response(429)                    
                 self.end_headers()
+                self._benchmarkGET(GETstartTime)
                 return
             self.server.lastGET=currTimeGET
         self.server.GETbusy=True
@@ -1279,10 +1323,12 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET Not permitted')
             self._404()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
         # get webfinger endpoint for a person
         if self._webfinger():
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         if self.path.startswith('/login') or \
@@ -1293,6 +1339,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._login_headers('text/html',len(msg))
             self._write(msg)
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         # hashtag search
@@ -1310,6 +1357,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._login_headers('text/html',len(msg))
                 self._write(msg)
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
             hashtagStr= \
                 htmlHashtagSearch(self.server.translate, \
@@ -1327,6 +1375,7 @@ class PubServer(BaseHTTPRequestHandler):
                 originPathStr=self.path.split('/tags/')[0]
                 self._redirect_headers(originPathStr+'/search',cookie)                
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         # search for a fediverse address, shared item or emoji
@@ -1339,6 +1388,7 @@ class PubServer(BaseHTTPRequestHandler):
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False
+               self._benchmarkGET(GETstartTime)
                return
 
         # Show the calendar for a user
@@ -1352,6 +1402,7 @@ class PubServer(BaseHTTPRequestHandler):
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False
+               self._benchmarkGET(GETstartTime)
                return
 
         # search for emoji by name
@@ -1364,6 +1415,7 @@ class PubServer(BaseHTTPRequestHandler):
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False
+               self._benchmarkGET(GETstartTime)
                return
 
         # announce/repeat from the web interface
@@ -1390,6 +1442,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 self._redirect_headers(actor+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
+                self._benchmarkGET(GETstartTime)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1415,6 +1468,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
                                    str(pageNumber),cookie)
+            self._benchmarkGET(GETstartTime)
             return
 
         # undo an announce/repeat from the web interface
@@ -1441,6 +1495,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
                                        str(pageNumber),cookie)
+                self._benchmarkGET(GETstartTime)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1466,6 +1521,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
                                    str(pageNumber),cookie)
+            self._benchmarkGET(GETstartTime)
             return
 
         # send a follow request approval from the web interface
@@ -1495,6 +1551,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         # deny a follow request from the web interface
@@ -1520,6 +1577,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         # like from the web interface icon
@@ -1547,6 +1605,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 self._redirect_headers(actor+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
+                self._benchmarkGET(GETstartTime)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1568,6 +1627,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
+            self._benchmarkGET(GETstartTime)
             return
 
         # undo a like from the web interface icon
@@ -1594,6 +1654,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 self._redirect_headers(actor+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
+                self._benchmarkGET(GETstartTime)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1620,6 +1681,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
                                    '?page='+str(pageNumber),cookie)
+            self._benchmarkGET(GETstartTime)
             return
 
         # delete a post from the web interface icon
@@ -1646,12 +1708,14 @@ class PubServer(BaseHTTPRequestHandler):
                     # You can only delete your own posts
                     self.server.GETbusy=False
                     self._redirect_headers(actor+'/inbox',cookie)
+                    self._benchmarkGET(GETstartTime)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.postToNickname:
                     print('WARN: unable to find nickname in '+actor)
                     self.server.GETbusy=False
                     self._redirect_headers(actor+'/inbox',cookie)
+                    self._benchmarkGET(GETstartTime)
                     return                    
                 if not self.server.session:
                     self.server.session= \
@@ -1667,8 +1731,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html',len(deleteStr),cookie)
                     self._write(deleteStr.encode())
                     self.server.GETbusy=False
+                    self._benchmarkGET(GETstartTime)
                     return
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             self._redirect_headers(actor+'/inbox',cookie)
             return
 
@@ -1755,6 +1821,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
             # Various types of new post in the web interface
@@ -1774,6 +1841,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
         # get an individual post from the path /@nickname/statusnumber
@@ -1828,10 +1896,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     else:
                                         self._404()
                             self.server.GETbusy=False
+                            self._benchmarkGET(GETstartTime)
                             return
                         else:
                             self._404()
                             self.server.GETbusy=False
+                            self._benchmarkGET(GETstartTime)
                             return
 
         # get replies to a post /users/nickname/statuses/number/replies
@@ -1893,6 +1963,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         else:
                                             self._404()
                                     self.server.GETbusy=False
+                                    self._benchmarkGET(GETstartTime)
                                     return
                                 else:
                                     # replies exist. Itterate through the text file containing message ids
@@ -1940,6 +2011,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         else:
                                             self._404()
                                     self.server.GETbusy=False
+                                    self._benchmarkGET(GETstartTime)
                                     return
 
         if self.path.endswith('/roles') and '/users/' in self.path:
@@ -1982,6 +2054,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 else:
                                     self._404()
                             self.server.GETbusy=False
+                            self._benchmarkGET(GETstartTime)
                             return
 
         # show skills on the profile page
@@ -2025,8 +2098,10 @@ class PubServer(BaseHTTPRequestHandler):
                                 else:
                                     self._404()
                             self.server.GETbusy=False
+                            self._benchmarkGET(GETstartTime)
                             return
             actor=self.path.replace('/skills','')
+            self._benchmarkGET(GETstartTime)
             self._redirect_headers(actor,cookie)
             self.server.GETbusy=False
             return
@@ -2052,6 +2127,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.send_response(429)
                                 self.end_headers()
                                 self.server.GETbusy=False
+                                self._benchmarkGET(GETstartTime)
                                 return
                             else:
                                 # Only authorized viewers get to see likes on posts
@@ -2081,10 +2157,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     else:
                                         self._404()
                             self.server.GETbusy=False
+                            self._benchmarkGET(GETstartTime)
                             return
                         else:
                             self._404()
                             self.server.GETbusy=False
+                            self._benchmarkGET(GETstartTime)
                             return
 
         # get the inbox for a given person
@@ -2142,6 +2220,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('application/json',len(msg),None)
                             self._write(msg)
                         self.server.GETbusy=False
+                        self._benchmarkGET(GETstartTime)
                         return
                 else:
                     if self.server.debug:
@@ -2155,6 +2234,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(405)
                 self.end_headers()
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
         # get the direct messages for a given person
@@ -2212,6 +2292,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('application/json',len(msg),None)
                             self._write(msg)
                         self.server.GETbusy=False
+                        self._benchmarkGET(GETstartTime)
                         return
                 else:
                     if self.server.debug:
@@ -2225,6 +2306,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(405)
                 self.end_headers()
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
         # get the replies for a given person
@@ -2285,6 +2367,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('application/json',len(msg),None)
                         self._write(msg)
                     self.server.GETbusy=False
+                    self._benchmarkGET(GETstartTime)
                     return
                 else:
                     if self.server.debug:
@@ -2298,6 +2381,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(405)
                 self.end_headers()
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
         # get the media for a given person
@@ -2358,6 +2442,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('application/json',len(msg),None)
                         self._write(msg)
                     self.server.GETbusy=False
+                    self._benchmarkGET(GETstartTime)
                     return
                 else:
                     if self.server.debug:
@@ -2371,6 +2456,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(405)
                 self.end_headers()
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
         # get the shared items timeline for a given person
@@ -2402,6 +2488,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/html',len(msg),cookie)
                         self._write(msg)
                         self.server.GETbusy=False
+                        self._benchmarkGET(GETstartTime)
                         return
             # not the shares timeline
             if self.server.debug:
@@ -2409,6 +2496,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(405)
             self.end_headers()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
             
         # get outbox feed for a person
@@ -2465,6 +2553,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self._404()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         # get the moderation feed for a moderator
@@ -2526,6 +2615,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('application/json',len(msg),None)
                             self._write(msg)
                         self.server.GETbusy=False
+                        self._benchmarkGET(GETstartTime)
                         return
                 else:
                     if self.server.debug:
@@ -2537,6 +2627,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(405)
             self.end_headers()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
         
         shares=getSharesFeedForPerson(self.server.baseDir, \
@@ -2587,6 +2678,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html',len(msg),cookie)
                     self._write(msg)
                     self.server.GETbusy=False
+                    self._benchmarkGET(GETstartTime)
                     return
             else:
                 if self._fetchAuthenticated():
@@ -2596,6 +2688,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self._404()
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
 
         following=getFollowingFeed(self.server.baseDir,self.server.domain, \
@@ -2641,6 +2734,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html',len(msg),cookie)
                     self._write(msg)
                     self.server.GETbusy=False
+                    self._benchmarkGET(GETstartTime)
                     return
             else:
                 if self._fetchAuthenticated():
@@ -2650,6 +2744,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self._404()
                 self.server.GETbusy=False
+                self._benchmarkGET(GETstartTime)
                 return
         followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
                                    self.server.port,self.path, \
@@ -2695,6 +2790,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html',len(msg),cookie)
                     self._write(msg)
                     self.server.GETbusy=False
+                    self._benchmarkGET(GETstartTime)
                     return
             else:
                 if self._fetchAuthenticated():
@@ -2704,6 +2800,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self._404()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
         # look up a person
         getPerson = personLookup(self.server.domain,self.path, \
@@ -2736,6 +2833,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     self._404()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
         # check that a json file was requested
         if not self.path.endswith('.json'):
@@ -2743,12 +2841,15 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: GET Not json: '+self.path+' '+self.server.baseDir)
             self._404()
             self.server.GETbusy=False
+            self._benchmarkGET(GETstartTime)
             return
 
         if not self._fetchAuthenticated():
             if self.server.debug:
                 print('WARN: Unauthenticated GET')
             self._404()
+            self._benchmarkGET(GETstartTime)
+            return
         
         # check that the file exists
         filename=self.server.baseDir+self.path
@@ -3105,6 +3206,8 @@ class PubServer(BaseHTTPRequestHandler):
         return pageNumber
         
     def do_POST(self):
+        POSTstartTime=time.time()
+
         if not self.server.session:
             self.server.session= \
                 createSession(self.server.useTor)
@@ -3118,6 +3221,7 @@ class PubServer(BaseHTTPRequestHandler):
             if currTimePOST-self.server.lastPOST==0:
                 self.send_response(429)
                 self.end_headers()
+                self._benchmarkPOST(POSTstartTime)
                 return              
             self.server.lastPOST=currTimePOST
             
@@ -3127,6 +3231,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # remove any trailing slashes from the path
@@ -3160,6 +3265,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(401)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             loginParams=self.rfile.read(length).decode('utf-8')
             loginNickname,loginPassword,register= \
@@ -3174,6 +3280,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            loginNickname,loginPassword):
                         self.server.POSTbusy=False
                         self._redirect_headers('/login',cookie)
+                        self._benchmarkPOST(POSTstartTime)
                         return
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+ \
@@ -3181,6 +3288,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Login failed: '+loginNickname)
                     self._clearLoginDetails(loginNickname)
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return
                 else:
                     if isSuspended(self.server.baseDir,loginNickname):
@@ -3188,6 +3296,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return                 
                     # login success - redirect with authorization
                     print('Login success: '+loginNickname)
@@ -3234,11 +3343,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return
             self.send_response(200)
             self.end_headers()
             self.server.POSTbusy=False
-            return            
+            self._benchmarkPOST(POSTstartTime)
+            return
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
@@ -3253,12 +3364,14 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: nickname not found in '+actorStr)
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return
                 length = int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
                     print('Maximum profile data length exceeded '+str(length))
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return
 
                 # read the bytes of the http form POST
@@ -3538,9 +3651,11 @@ class PubServer(BaseHTTPRequestHandler):
                                 deactivateAccount(self.server.baseDir,nickname,self.server.domain)
                                 self._clearLoginDetails(nickname)
                                 self.server.POSTbusy=False
+                                self._benchmarkPOST(POSTstartTime)
                                 return
             self._redirect_headers(actorStr,cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # moderator action buttons
@@ -3567,6 +3682,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return                        
                     elif moderationStr.startswith('submitBlock'):
                         moderationButton='block'
@@ -3652,6 +3768,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.debug)
             self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         searchForEmoji=False
@@ -3680,6 +3797,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actor+'/inbox?page='+ \
                                        str(pageNumber),cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             # get the parameters
             length = int(self.headers['Content-length'])
@@ -3723,6 +3841,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to create vote')
             self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return                
 
         # a search was made
@@ -3768,6 +3887,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
                 elif searchStr.startswith('*'):      
                     # skill search
@@ -3782,6 +3902,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
                 elif '@' in searchStr:
                     # profile search
@@ -3807,10 +3928,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
                     else:
                         self._redirect_headers(actorStr+'/search',cookie)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return                        
                 elif searchStr.startswith(':') or \
                      searchStr.lower().strip('\n').endswith(' emoji'):
@@ -3827,6 +3950,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
                 else:
                     # shared items search
@@ -3843,9 +3967,11 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
             self._redirect_headers(actorStr+'/inbox',cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # removes a shared item
@@ -3869,6 +3995,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 shareNickname,shareDomain,shareName)
             self._redirect_headers(originPathStr+'/tlshares',cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # removes a post
@@ -3912,6 +4039,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStr+'/outbox?page='+ \
                                        str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # decision to follow in the web interface is confirmed
@@ -3927,6 +4055,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followingActor=followingActor.split('&')[0]
                 self._redirect_headers(followingActor,cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             if '&submitYes=' in followConfirmParams:
                 followingActor= \
@@ -3961,6 +4090,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.projectVersion)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # decision to unfollow in the web interface is confirmed
@@ -4007,6 +4137,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._postToOutboxThread(unfollowJson)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # decision to unblock in the web interface is confirmed
@@ -4017,6 +4148,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             length = int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -4030,6 +4162,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return                    
                 blockingDomain,blockingPort=getDomainFromActor(blockingActor)
                 blockingDomainFull=blockingDomain
@@ -4050,6 +4183,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 blockingNickname,blockingDomainFull)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # decision to block in the web interface is confirmed
@@ -4060,6 +4194,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             length = int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -4073,6 +4208,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return                    
                 blockingDomain,blockingPort= \
                     getDomainFromActor(blockingActor)
@@ -4096,6 +4232,7 @@ class PubServer(BaseHTTPRequestHandler):
                              blockingNickname,blockingDomainFull)
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # an option was chosen from person options screen
@@ -4108,6 +4245,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             length = int(self.headers['Content-length'])
             optionsConfirmParams= \
@@ -4139,6 +4277,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+optionsActor)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             optionsDomain,optionsPort=getDomainFromActor(optionsActor)
             optionsDomainFull=optionsDomain
@@ -4157,6 +4296,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Viewing '+optionsActor)
                 self._redirect_headers(optionsActor,cookie)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             if '&submitBlock=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4176,6 +4316,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             if '&submitFollow=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4188,6 +4329,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             if '&submitUnfollow=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4200,6 +4342,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             if '&submitDM=' in optionsConfirmParams:
                 if self.server.debug:
@@ -4213,6 +4356,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return            
             if '&submitSnooze=' in optionsConfirmParams:
                 thisActor=self.path.split('/personoptions')[0]
@@ -4245,10 +4389,12 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return            
 
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         pageNumber=self._receiveNewPost(authorized,'newpost',self.path)
@@ -4259,6 +4405,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path)
         if pageNumber:
@@ -4268,6 +4415,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path)
         if pageNumber:
@@ -4277,6 +4425,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newdm',self.path)
         if pageNumber:
@@ -4286,6 +4435,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newreport',self.path)
         if pageNumber:
@@ -4295,6 +4445,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
         pageNumber=self._receiveNewPost(authorized,'newshare',self.path)
         if pageNumber:
@@ -4304,6 +4455,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers('/users/'+nickname+ \
                                    '/shares?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
@@ -4316,6 +4468,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(405)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
 
         # check that the post is to an expected path
@@ -4329,6 +4482,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         # read the message and convert it into a python dictionary
@@ -4343,6 +4497,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
         else:
             if length>self.server.maxMediaSize:
@@ -4350,6 +4505,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
 
         # receive images to the outbox
@@ -4361,12 +4517,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return            
             pathUsersSection=self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
                 self.send_response(404)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             self.postFromNickname=pathUsersSection.split('/')[0]
             accountsDir= \
@@ -4376,6 +4534,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return                
             mediaBytes=self.rfile.read(length)
             mediaFilenameBase=accountsDir+'/upload'
@@ -4393,6 +4552,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return            
 
         # refuse to receive non-json content
@@ -4408,6 +4568,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         if self.server.debug:
@@ -4425,6 +4586,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(201)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
             else:
                 if self.server.debug:
@@ -4432,6 +4594,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
 
         # check the necessary properties are available
@@ -4447,6 +4610,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
 
         if not inboxPermittedMessage(self.server.domain, \
@@ -4458,6 +4622,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
 
         if self.server.debug:
@@ -4470,6 +4635,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime)
                 return
         
         if self.server.debug:
@@ -4489,11 +4655,13 @@ class PubServer(BaseHTTPRequestHandler):
                         self.send_response(200)
                         self.end_headers()
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
                     if queueStatus==1:
                         self.send_response(503)
                         self.end_headers()
                         self.server.POSTbusy=False
+                        self._benchmarkPOST(POSTstartTime)
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited without doing anything')
@@ -4503,6 +4671,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(403)
             self.end_headers()
             self.server.POSTbusy=False
+            self._benchmarkPOST(POSTstartTime)
             return
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
@@ -4513,11 +4682,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_response(200)
                     self.end_headers()
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return
                 if queueStatus==1:
                     self.send_response(503)
                     self.end_headers()
                     self.server.POSTbusy=False
+                    self._benchmarkPOST(POSTstartTime)
                     return                    
         self.send_response(200)
         self.end_headers()
