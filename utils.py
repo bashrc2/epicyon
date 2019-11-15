@@ -22,7 +22,7 @@ def saveJson(jsonObject: {},filename: str) -> bool:
                 commentjson.dump(jsonObject, fp, indent=2, sort_keys=False)
                 return True
         except:
-            print('WARN: saveJson')
+            print('WARN: saveJson '+str(tries))
             time.sleep(1)
             tries+=1
     return False
