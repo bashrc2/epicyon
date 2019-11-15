@@ -778,7 +778,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _isAuthorized(self) -> bool:
         # token based authenticated used by the web interface
         if self.headers.get('Cookie'):
-            if '=' in self.headers['Cookie']:
+            if self.headers['Cookie'].startswith('epicyon='):
                 tokenStr=self.headers['Cookie'].split('=',1)[1]
                 if self.server.tokensLookup.get(tokenStr):
                     nickname=self.server.tokensLookup[tokenStr]
@@ -822,7 +822,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._logout_headers('text/html',len(msg))
             self._write(msg)            
             return
-        
+
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path=self.path.replace('/@','/users/')
