@@ -317,7 +317,6 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
 
     if debug:
         print('Inbox queue item created')
-        pprint(newQueueItem)
     saveJson(newQueueItem,filename)
     return filename
 
