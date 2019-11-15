@@ -922,7 +922,6 @@ class PubServer(BaseHTTPRequestHandler):
             # if shared inbox is not enabled
             if not self.server.enableSharedInbox:
                 self._503()
-                self._benchmarkGET(GETstartTime)
                 return
                 
             self.path='/inbox'
@@ -3260,7 +3259,6 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path=='/inbox':
             if not self.server.enableSharedInbox:
                 self._503()
-                self._benchmarkPOST(POSTstartTime)
                 return
 
         cookie=None
