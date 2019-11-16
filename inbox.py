@@ -302,9 +302,11 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
 
     digestStartTime=time.time()
     digest=messageContentDigest(messageBytes)
-    timeDiff=int((time.time()-digestStartTime)*1000)
-    if debug or timeDiff>200:
-        print('DIGEST|'+str(timeDiff)+'|'+filename)
+    timeDiffStr=str(int((time.time()-digestStartTime)*1000))
+    if debug:
+        while len(timeDiffStr)<6:
+            timeDiffStr='0'+timeDiffStr
+        print('DIGEST|'+timeDiffStr+'|'+filename)
 
     newQueueItem = {
         'originalId': originalPostId,
