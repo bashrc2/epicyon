@@ -18,7 +18,6 @@ import email.parser
 # for saving images
 from binascii import a2b_base64
 from hashlib import sha256
-from pprint import pprint
 from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
@@ -511,7 +510,6 @@ class PubServer(BaseHTTPRequestHandler):
                     messageJson.get('object') and \
                     messageJson.get('to')):
                 if self.server.debug:
-                    pprint(messageJson)
                     print('DEBUG: POST to outbox - Create does not have the required parameters')
                 return False
             testDomain,testPort=getDomainFromActor(messageJson['actor'])
@@ -584,7 +582,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: No id attribute within POST to outbox')
             postId=None
         if self.server.debug:
-            pprint(messageJson)
             print('DEBUG: savePostToBox')
         if messageJson['type']!='Upgrade':
             savePostToBox(self.server.baseDir, \
@@ -774,8 +771,6 @@ class PubServer(BaseHTTPRequestHandler):
         # the actor within the object field
         messageJson,toFieldExists= \
             addToField('Like',messageJson,self.server.debug)
-
-        #pprint(messageJson)
 
         beginSaveTime=time.time()
         # save the json for later queue processing
@@ -2024,7 +2019,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.server.projectVersion).encode('utf-8')
                                         self._set_headers('text/html',len(msg),cookie)
                                         print('----------------------------------------------------')
-                                        #pprint(repliesJson)
                                         self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
@@ -3154,7 +3148,6 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     self.postToNickname=nickname
                     if self.server.debug:
-                        pprint(messageJson)
                         print('DEBUG: new DM to '+str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson,__version__):
                         populateReplies(self.server.baseDir, \
@@ -4117,8 +4110,6 @@ class PubServer(BaseHTTPRequestHandler):
                         'cc': [removePostActor+'/followers'],
                         'type': 'Delete'
                     }
-                    if self.server.debug:
-                        pprint(deleteJson)
                     self.postToNickname=getNicknameFromActor(removePostActor)
                     if self.postToNickname:
                         self._postToOutboxThread(deleteJson)
@@ -4710,7 +4701,6 @@ class PubServer(BaseHTTPRequestHandler):
            self.path=='/sharedInbox':
             if not inboxMessageHasParams(messageJson):
                 if self.server.debug:
-                    pprint(messageJson)
                     print("DEBUG: inbox message doesn't have the required parameters")
                 self.send_response(403)
                 self.end_headers()
@@ -4740,9 +4730,6 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy=False
             return
-
-        if self.server.debug:
-            pprint(messageJson)
         
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,23)
 
