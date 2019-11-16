@@ -1625,12 +1625,14 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             if not unitTest:
                 if debug:
                     print('DEBUG: saving inbox post as html to cache')
+                htmlCacheStartTime=time.time()
                 inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
                                           session,cachedWebfingers,personCache, \
                                           handle.split('@')[0],domain,port, \
                                           postJsonObject,allowDeletion)
                 if debug:
-                    print('DEBUG: saved inbox post as html to cache')
+                    timeDiff=str(int((time.time()-htmlCacheStartTime)*1000))
+                    print('DEBUG: saved inbox post as html to cache in '+timeDiff+' mS')
 
             # send the post out to group members
             if isGroup:
