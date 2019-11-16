@@ -166,10 +166,9 @@ def inboxMessageHasParams(messageJson: {}) -> bool:
 def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> bool:
     """ check that we are receiving from a permitted domain
     """
-    testParam='actor'
-    if not messageJson.get(testParam):
+    if not messageJson.get('actor'):
         return False
-    actor=messageJson[testParam]
+    actor=messageJson['actor']
     # always allow the local domain
     if domain in actor:
         return True
@@ -177,10 +176,8 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
     if not urlPermitted(actor,federationList,"inbox:write"):
         return False
 
-    if messageJson['type']!='Follow' and \
-       messageJson['type']!='Like' and \
-       messageJson['type']!='Delete' and \
-       messageJson['type']!='Announce':
+    alwaysAllowedTypes=('Follow','Like','Delete','Announce')
+    if messageJson['type'] not in alwaysAllowedTypes:
         if messageJson.get('object'):
             if not isinstance(messageJson['object'], dict):
                 return False
