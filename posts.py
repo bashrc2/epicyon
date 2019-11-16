@@ -1937,6 +1937,8 @@ def isReply(postJsonObject: {},actor: str) -> bool:
         return False
     if not isinstance(postJsonObject['object'], dict):
         return False
+    if postJsonObject['object'].get('moderationStatus'):
+        return False
     if postJsonObject['object']['type']!='Note':
         return False
     if postJsonObject['object'].get('inReplyTo'):
