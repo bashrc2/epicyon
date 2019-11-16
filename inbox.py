@@ -178,13 +178,14 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
 
     alwaysAllowedTypes=('Follow','Like','Delete','Announce')
     if messageJson['type'] not in alwaysAllowedTypes:
-        if messageJson.get('object'):
-            if not isinstance(messageJson['object'], dict):
+        if not messageJson.get('object'):
+            return True
+        if not isinstance(messageJson['object'], dict):
+            return False
+        if messageJson['object'].get('inReplyTo'):
+            inReplyTo=messageJson['object']['inReplyTo']
+            if not urlPermitted(inReplyTo,federationList,"inbox:write"):
                 return False
-            if messageJson['object'].get('inReplyTo'):
-                inReplyTo=messageJson['object']['inReplyTo']
-                if not urlPermitted(inReplyTo,federationList,"inbox:write"):
-                    return False
 
     return True
 
