@@ -2407,7 +2407,11 @@ def htmlTimeline(translate: {},pageNumber: int, \
     mediaButton='button'
     sentButton='button'
     sharesButton='button'
+    if newShare:
+        sharesButton='buttonhighlighted'
     moderationButton='button'
+    if newReport:
+        moderationButton='buttonhighlighted'
     if boxName=='inbox':
         inboxButton='buttonselected'
     elif boxName=='dm':
