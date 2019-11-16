@@ -796,7 +796,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 timeDiff=int((time.time()-beginSaveTime)*1000)
                 if timeDiff>200:
-                    print('WARN: slow save of inbox queue item '+queueFilename+' took '+str(timeDiff)+' mS')
+                    print('SLOW: slow save of inbox queue item '+queueFilename+' took '+str(timeDiff)+' mS')
                     try:
                         with open(queueFilename, 'r') as fp:
                             queueJson=commentjson.load(fp)
