@@ -2366,6 +2366,14 @@ def htmlTimeline(translate: {},pageNumber: int, \
         if boxName=='tlshares':
             os.remove(newShareFile)
 
+    # should the Moderation button be highlighted?
+    newReport=False
+    newReportFile=accountDir+'/.newReport'
+    if os.path.isfile(newReportFile):
+        newReport=True
+        if boxName=='moderation':
+            os.remove(newReportFile)
+
     iconsDir=getIconsDir(baseDir)
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -2416,6 +2424,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
         sentButton='buttonselected'
     elif boxName=='moderation':
         moderationButton='buttonselected'
+        if newReport:
+            moderationButton='buttonselectedhighlighted'
     elif boxName=='tlshares':
         sharesButton='buttonselected'
         if newShare:

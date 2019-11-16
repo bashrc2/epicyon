@@ -1000,7 +1000,7 @@ def createReportPost(baseDir: str,
     postTo=moderatorsList
     postCc=None
     postJsonObject=None
-    for toUrl in postTo:
+    for toUrl in postTo:        
         postJsonObject= \
             createPostBase(baseDir,nickname, domain, port, \
                            toUrl,postCc, \
@@ -1010,6 +1010,21 @@ def createReportPost(baseDir: str,
                            imageDescription,useBlurhash, \
                            True,None, None, subject, \
                            None,None,None)
+        if not postJsonObject:
+            continue
+        # save a notification file so that the moderator
+        # knows something new has appeared
+        toNickname=toUrl.split('/users/')[1]
+        handle=toNickname+'@'+domain
+        newReportFile=baseDir+'/accounts/'+handle+'/.newReport'
+        if os.path.isfile(newReportFile):
+            continue
+        try:
+            with open(newReportFile, 'w') as fp:
+                fp.write(toUrl+'/moderation')
+        except:
+            pass
+
     return postJsonObject
 
 def threadSendPost(session,postJsonStr: str,federationList: [],\
