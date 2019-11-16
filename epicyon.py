@@ -243,6 +243,8 @@ parser.add_argument('--maxreplies', dest='maxReplies', type=int,default=64, \
                     help='Maximum number of replies to a post')
 parser.add_argument('--maxMentions','--hellthread', dest='maxMentions', type=int,default=10, \
                     help='Maximum number of mentions within a post')
+parser.add_argument('--maxEmoji','--maxemoji', dest='maxEmoji', type=int,default=10, \
+                    help='Maximum number of emoji within a post')
 parser.add_argument('--role', dest='role', type=str,default=None, \
                     help='Set a role for a person')
 parser.add_argument('--organization','--project', dest='project', type=str,default=None, \
@@ -1482,7 +1484,7 @@ runDaemon(not args.nosharedinbox, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \
           federationList,args.maxMentions, \
-          args.authenticatedFetch, \
+          args.maxEmoji,args.authenticatedFetch, \
           args.noreply,args.nolike,args.nopics, \
           args.noannounce,args.cw,ocapAlways, \
           useTor,args.maxReplies, \

@@ -1181,14 +1181,14 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
 def estimateNumberOfMentions(content: str) -> int:
     """Returns a rough estimate of the number of mentions
     """
-    words=content.split(' ')
-    ctr=0
-    for word in words:
-        if word.startswith('@') or '>@' in word:
-            ctr+=1
-    return ctr
+    return int(content.count('@')/2)
 
-def validPostContent(messageJson: {},maxMentions: int) -> bool:
+def estimateNumberOfEmoji(content: str) -> int:
+    """Returns a rough estimate of the number of emoji
+    """
+    return int(content.count(':')/2)
+
+def validPostContent(messageJson: {},maxMentions: int,maxEmoji: int) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1205,14 +1205,19 @@ def validPostContent(messageJson: {},maxMentions: int) -> bool:
     for badStr in invalidStrings:
         if badStr in messageJson['object']['content']:
             if messageJson['object'].get('id'):
-                print('REJECT: '+messageJson['object']['id'])
-            print('REJECT: bad string in post - '+messageJson['object']['content'])
+                print('REJECT ARBITRARY HTML: '+messageJson['object']['id'])
+            print('REJECT ARBITRARY HTML: bad string in post - '+messageJson['object']['content'])
             return False
     # check (rough) number of mentions
     if estimateNumberOfMentions(messageJson['object']['content'])>maxMentions:
         if messageJson['object'].get('id'):
-            print('REJECT: '+messageJson['object']['id'])
-        print('REJECT: Too many mentions in post - '+messageJson['object']['content'])
+            print('REJECT HELLTHREAD: '+messageJson['object']['id'])
+        print('REJECT HELLTHREAD: Too many mentions in post - '+messageJson['object']['content'])
+        return False
+    if estimateNumberOfEmoji(messageJson['object']['content'])>maxEmoji:
+        if messageJson['object'].get('id'):
+            print('REJECT EMOJI OVERLOAD: '+messageJson['object']['id'])
+        print('REJECT EMOJI OVERLOAD: Too many emoji in post - '+messageJson['object']['content'])
         return False
     # check number of tags
     if messageJson['object'].get('tag'):
@@ -1476,7 +1481,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                            acceptedCaps: [], \
                            queueFilename :str,destinationFilename :str, \
                            maxReplies: int,allowDeletion: bool, \
-                           maxMentions: int,translate: {}, \
+                           maxMentions: int,maxEmoji: int,translate: {}, \
                            unitTest: bool) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
@@ -1562,7 +1567,7 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
     else:
         postJsonObject=messageJson
 
-    if validPostContent(postJsonObject,maxMentions):
+    if validPostContent(postJsonObject,maxMentions,maxEmoji):
         # list of indexes to be updated
         updateIndexList=['inbox']
         populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
@@ -1682,7 +1687,7 @@ def runInboxQueue(projectVersion: str, \
                   ocapAlways: bool,maxReplies: int, \
                   domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
                   allowDeletion: bool,debug: bool,maxMentions: int, \
-                  translate: {},unitTest: bool, \
+                  maxEmoji: int,translate: {},unitTest: bool, \
                   acceptedCaps=["inbox:write","objects:read"]) -> None:
     """Processes received items and moves them to
     the appropriate directories
@@ -2034,7 +2039,8 @@ def runInboxQueue(projectVersion: str, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion, \
-                                               maxMentions,translate,unitTest)
+                                               maxMentions,maxEmoji, \
+                                               translate,unitTest)
                     else:
                         if debug:
                             print('DEBUG: object capabilities check has failed')
@@ -2052,7 +2058,8 @@ def runInboxQueue(projectVersion: str, \
                                                debug,acceptedCaps, \
                                                queueFilename,destination, \
                                                maxReplies,allowDeletion, \
-                                               maxMentions,translate,unitTest)
+                                               maxMentions,maxEmoji, \
+                                               translate,unitTest)
                     if debug:
                         pprint(queueJson['post'])
                         print('No capability list within post')

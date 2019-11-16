@@ -4853,7 +4853,7 @@ def runDaemon(enableSharedInbox: bool,registration: bool, \
               instanceId: str,clientToServer: bool, \
               baseDir: str,domain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
-              fedList=[],maxMentions=10, \
+              fedList=[],maxMentions=10,maxEmoji=10, \
               authenticatedFetch=False, \
               noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
@@ -5027,7 +5027,8 @@ def runDaemon(enableSharedInbox: bool,registration: bool, \
                               domain,port,useTor,httpd.federationList, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-                              allowDeletion,debug,maxMentions,httpd.translate, \
+                              allowDeletion,debug,maxMentions,maxEmoji, \
+                              httpd.translate, \
                               unitTest,httpd.acceptedCaps),daemon=True)
     if not unitTest: 
         httpd.thrWatchdog= \
