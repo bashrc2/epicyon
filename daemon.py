@@ -4738,6 +4738,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._benchmarkPOST(POSTstartTime,63)
                 return
 
+        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,20)
+
         # check the necessary properties are available
         if self.server.debug:
             print('DEBUG: Check message has params')
@@ -4754,6 +4756,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._benchmarkPOST(POSTstartTime,64)
                 return
 
+        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,21)
+
         if not inboxPermittedMessage(self.server.domain, \
                                      messageJson, \
                                      self.server.federationList):
@@ -4769,7 +4773,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             pprint(messageJson)
 
-        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,20)
+        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,22)
 
         if not self.headers.get('signature'):
             if 'keyId=' not in self.headers['signature']:
@@ -4781,6 +4785,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._benchmarkPOST(POSTstartTime,66)
                 return
         
+        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,23)
+
         if self.server.debug:
             print('DEBUG: POST saving to inbox queue')
         if '/users/' in self.path:
