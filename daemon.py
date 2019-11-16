@@ -4619,9 +4619,9 @@ class PubServer(BaseHTTPRequestHandler):
             length=0
             if self.headers.get('Content-length'):
                 length = int(self.headers['Content-length'])
-            if self.headers.get('Content-Length'):
+            elif self.headers.get('Content-Length'):
                 length = int(self.headers['Content-Length'])
-            if self.headers.get('content-length'):
+            elif self.headers.get('content-length'):
                 length = int(self.headers['content-length'])
             if length>10240:
                 print('WARN: post to shared inbox is too long '+str(length)+' bytes')
