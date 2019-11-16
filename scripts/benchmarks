@@ -6,4 +6,4 @@ else
 fi
 journalctl -u epicyon -r | grep "BENCHMARK GET|0\|BENCHMARK POST|0" | head -n 50 | grep "|ID" | awk -F 'BENCHMARK' '{print $2}' | uniq | sort -r | head -n 20
 echo ''
-journalctl -u epicyon | grep "DIGEST|" awk -F '|' '{print $2}' | uniq | sort -r | head -n 20
+journalctl -u epicyon | grep "DIGEST|" | awk -F '|' '{print $2}' | uniq | sort -r | head -n 20
