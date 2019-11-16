@@ -4615,6 +4615,16 @@ class PubServer(BaseHTTPRequestHandler):
             print('DEBUG: Reading message')
 
         messageBytes=self.rfile.read(length)
+        if self.path == '/sharedInbox' or self.path == '/inbox':
+            lenMessage=len(messageBytes)
+            if lenMessage>10240:
+                print('WARN: post to shared inbox is too long '+str(lenMessage)+' bytes')
+                self._400()
+                self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime,125)
+                return
+
+        # convert the raw bytes to json
         messageJson=json.loads(messageBytes)
             
         # https://www.w3.org/TR/activitypub/#object-without-create
