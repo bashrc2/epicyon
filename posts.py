@@ -1012,6 +1012,9 @@ def createReportPost(baseDir: str,
                            None,None,None)
         if not postJsonObject:
             continue
+
+        # who is this report going to?
+        toNickname=toUrl.split('/users/')[1]
         handle=toNickname+'@'+domain
 
         # update the inbox index with the report filename
@@ -1026,7 +1029,6 @@ def createReportPost(baseDir: str,
 
         # save a notification file so that the moderator
         # knows something new has appeared
-        toNickname=toUrl.split('/users/')[1]
         newReportFile=baseDir+'/accounts/'+handle+'/.newReport'
         if os.path.isfile(newReportFile):
             continue
