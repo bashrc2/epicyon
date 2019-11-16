@@ -12,4 +12,4 @@ journalctl -u epicyon | grep "DIGEST|" | awk -F '|' '{print $2}' | sort -r | uni
 
 echo ''
 echo 'Timings for POST'
-journalctl -u epicyon | grep "POST TIMING|" | head -n 20
+journalctl -u epicyon | grep "POST TIMING|" | head -n 50
