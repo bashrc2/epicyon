@@ -9,3 +9,7 @@ journalctl -u epicyon -r | grep "BENCHMARK GET|0\|BENCHMARK POST|0" | head -n 50
 echo ''
 echo 'Digest calculation times'
 journalctl -u epicyon | grep "DIGEST|" | awk -F '|' '{print $2}' | sort -r | uniq | head -n 20
+
+echo ''
+echo 'Timings for POST'
+journalctl -u epicyon | grep "POST TIMING|" | head -n 20
