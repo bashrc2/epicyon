@@ -2920,7 +2920,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers('application/json',0,None)
 
     def _receiveNewPostProcess(self,authorized: bool, \
-                               postType: str,path: str,headers: {}) -> int:
+                               postType: str,path: str,headers: {},
+                               length: int,postBytes,boundary: str) -> int:
         # Note: this needs to happen synchronously
         # 0 = this is not a new post
         # 1 = new post success
@@ -2950,7 +2951,6 @@ class PubServer(BaseHTTPRequestHandler):
             # Note: we don't use cgi here because it's due to be deprecated
             # in Python 3.8/3.10
             # Instead we use the multipart mime parser from the email module
-            postBytes=self.rfile.read(length)
             if self.server.debug:
                 print('DEBUG: extracting media from POST')
             mediaBytes,postBytes=extractMediaInFormPOST(postBytes,boundary,'attachpic')
@@ -3057,9 +3057,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.debug)
                         return 1
                     else:
-                        return -1
-            
-            if postType=='newunlisted':
+                        return -1            
+            elif postType=='newunlisted':
                 messageJson= \
                     createUnlistedPost(self.server.baseDir, \
                                        nickname, \
@@ -3084,8 +3083,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
-
-            if postType=='newfollowers':
+            elif postType=='newfollowers':
                 messageJson= \
                     createFollowersOnlyPost(self.server.baseDir, \
                                             nickname, \
@@ -3110,8 +3108,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
-
-            if postType=='newdm':
+            elif postType=='newdm':
                 messageJson=None
                 if '@' in fields['message']:
                     messageJson= \
@@ -3143,8 +3140,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
-
-            if postType=='newreport':
+            elif postType=='newreport':
                 if attachmentMediaType:
                     if attachmentMediaType!='image':
                         return -1
@@ -3167,8 +3163,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
-
-            if postType=='newshare':
+            elif postType=='newshare':
                 if not fields.get('itemType'):
                     return -1
                 if not fields.get('category'):
@@ -3249,10 +3244,29 @@ class PubServer(BaseHTTPRequestHandler):
             headers[dictEntryName]=headerLine
         print('New post headers: '+str(headers))
 
-        # Note sending new posts needs to be synchronous, otherwise any attachments
-        # can get mangled if other events happen during their decoding
-        print('Creating new post: '+newPostThreadName)
-        self._receiveNewPostProcess(authorized,postType,path,headers)
+        length = int(headers['Content-Length'])
+        if length>self.server.maxPostLength:
+            print('POST size too large')
+            return pageNumber
+
+        if ' boundary=' in headers['Content-Type']:
+            boundary=headers['Content-Type'].split('boundary=')[1]
+            if ';' in boundary:
+                boundary=boundary.split(';')[0]
+
+            postBytes=self.rfile.read(length)
+            
+            # second length check from the bytes received
+            # since Content-Length could be untruthful
+            length=len(postBytes)
+            if length>self.server.maxPostLength:
+                print('POST size too large')
+                return pageNumber
+            
+            # Note sending new posts needs to be synchronous, otherwise any attachments
+            # can get mangled if other events happen during their decoding
+            print('Creating new post: '+newPostThreadName)
+            self._receiveNewPostProcess(authorized,postType,path,headers,length,postBytes,boundary)
         return pageNumber
         
     def do_POST(self):
