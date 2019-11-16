@@ -299,7 +299,13 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
     if nickname=='inbox':
         nickname=originalDomain
         sharedInboxItem=True
-        
+
+    digestStartTime=time.time()
+    digest=messageContentDigest(messageBytes)
+    timeDiff=int((time.time()-digestStartTime)*1000)
+    if debug or timeDiff>200:
+        print('DIGEST|'+str(timeDiff)+'|'+filename)
+
     newQueueItem = {
         'originalId': originalPostId,
         'id': postId,
@@ -313,7 +319,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
         'httpHeaders': httpHeaders,
         'path': postPath,
         'post': postJsonObject,
-        'digest': messageContentDigest(messageBytes),
+        'digest': digest,
         'filename': filename,
         'destination': destination
     }
