@@ -4614,7 +4614,25 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Reading message')
 
+        # check content length before reading bytes
+        if self.path == '/sharedInbox' or self.path == '/inbox':
+            length=0
+            if self.headers.get('Content-length'):
+                length = int(self.headers['Content-length'])
+            if self.headers.get('Content-Length'):
+                length = int(self.headers['Content-Length'])
+            if self.headers.get('content-length'):
+                length = int(self.headers['content-length'])
+            if length>10240:
+                print('WARN: post to shared inbox is too long '+str(length)+' bytes')
+                self._400()
+                self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime,125)
+                return
+
         messageBytes=self.rfile.read(length)
+
+        # check content length after reading bytes
         if self.path == '/sharedInbox' or self.path == '/inbox':
             lenMessage=len(messageBytes)
             if lenMessage>10240:
