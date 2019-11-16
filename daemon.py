@@ -3296,6 +3296,8 @@ class PubServer(BaseHTTPRequestHandler):
         self.outboxAuthenticated=False
         self.postToNickname=None
 
+        self._benchmarkPOST(POSTstartTime,111)
+        
         if self.path.startswith('/login'):
             # get the contents of POST containing login credentials
             length = int(self.headers['Content-length'])
@@ -3389,6 +3391,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,8)
             return
+
+        self._benchmarkPOST(POSTstartTime,222)
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
@@ -3697,6 +3701,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._benchmarkPOST(POSTstartTime,12)
             return
 
+        self._benchmarkPOST(POSTstartTime,333)
+
         # moderator action buttons
         if authorized and '/users/' in self.path and \
            self.path.endswith('/moderationaction'):
@@ -3810,6 +3816,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._benchmarkPOST(POSTstartTime,15)
             return
 
+        self._benchmarkPOST(POSTstartTime,444)
+
         searchForEmoji=False
         if self.path.endswith('/searchhandleemoji'):
             searchForEmoji=True
@@ -3817,6 +3825,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: searching for emoji')
                 print('authorized: '+str(authorized))
+
+        self._benchmarkPOST(POSTstartTime,444)
 
         # a vote/question/poll is posted
         if authorized and \
@@ -3882,6 +3892,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,17)
             return                
+
+        self._benchmarkPOST(POSTstartTime,444)
 
         # a search was made
         if (authorized or searchForEmoji) and \
@@ -4013,6 +4025,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        self._benchmarkPOST(POSTstartTime,555)
+
         # removes a shared item
         if authorized and self.path.endswith('/rmshare'):
             originPathStr=self.path.split('/rmshare')[0]
@@ -4036,6 +4050,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,25)
             return
+
+        self._benchmarkPOST(POSTstartTime,666)
 
         # removes a post
         if authorized and self.path.endswith('/rmpost'):
@@ -4080,6 +4096,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,26)
             return
+
+        self._benchmarkPOST(POSTstartTime,777)
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/followconfirm'):
@@ -4132,6 +4150,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._benchmarkPOST(POSTstartTime,28)
             return
 
+        self._benchmarkPOST(POSTstartTime,888)
+
         # decision to unfollow in the web interface is confirmed
         if authorized and self.path.endswith('/unfollowconfirm'):
             originPathStr=self.path.split('/unfollowconfirm')[0]
@@ -4179,6 +4199,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._benchmarkPOST(POSTstartTime,29)
             return
 
+        self._benchmarkPOST(POSTstartTime,999)
+
         # decision to unblock in the web interface is confirmed
         if authorized and self.path.endswith('/unblockconfirm'):
             originPathStr=self.path.split('/unblockconfirm')[0]
@@ -4224,6 +4246,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,32)
             return
+
+        self._benchmarkPOST(POSTstartTime,1111)
 
         # decision to block in the web interface is confirmed
         if authorized and self.path.endswith('/blockconfirm'):
@@ -4273,6 +4297,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,35)
             return
+
+        self._benchmarkPOST(POSTstartTime,2222)
 
         # an option was chosen from person options screen
         # view/follow/block/report
@@ -4440,6 +4466,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        self._benchmarkPOST(POSTstartTime,3333)
+
         pageNumber=self._receiveNewPost(authorized,'newpost',self.path)
         if pageNumber:
             nickname=self.path.split('/users/')[1]
@@ -4501,6 +4529,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             return
 
+        self._benchmarkPOST(POSTstartTime,4444)
+
         if self.path.endswith('/outbox') or self.path.endswith('/shares'):
             if '/users/' in self.path:
                 if authorized:
@@ -4513,6 +4543,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 self._benchmarkPOST(POSTstartTime,53)
                 return
+
+        self._benchmarkPOST(POSTstartTime,5555)
 
         # check that the post is to an expected path
         if not (self.path.endswith('/outbox') or \
@@ -4527,6 +4559,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.POSTbusy=False
             self._benchmarkPOST(POSTstartTime,54)
             return
+
+        self._benchmarkPOST(POSTstartTime,6666)
 
         # read the message and convert it into a python dictionary
         length = int(self.headers['Content-length'])
@@ -4617,6 +4651,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: Reading message')
 
+        self._benchmarkPOST(POSTstartTime,7777)
+
         # check content length before reading bytes
         if self.path == '/sharedInbox' or self.path == '/inbox':
             length=0
@@ -4648,6 +4684,8 @@ class PubServer(BaseHTTPRequestHandler):
         # convert the raw bytes to json
         messageJson=json.loads(messageBytes)
             
+        self._benchmarkPOST(POSTstartTime,8888)
+
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
             if self._postToOutbox(messageJson,__version__):                
@@ -4698,6 +4736,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             pprint(messageJson)
+
+        self._benchmarkPOST(POSTstartTime,9999)
 
         if not self.headers.get('signature'):
             if 'keyId=' not in self.headers['signature']:
