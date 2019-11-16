@@ -1914,6 +1914,8 @@ def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,
         return False
     if not isinstance(postJsonObject['object'], dict):
         return False
+    if postJsonObject['object'].get('moderationStatus'):
+        return False
     if postJsonObject['object']['type']!='Note':
         return False
     if not postJsonObject['object'].get('attachment'):
