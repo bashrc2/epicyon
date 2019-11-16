@@ -4747,6 +4747,7 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.path == '/sharedInbox' or self.path == '/inbox':
                 print('DEBUG: POST to shared inbox')
+                self._benchmarkPOST(POSTstartTime,700)
                 queueStatus= \
                     self._updateInboxQueue('inbox',messageJson,messageBytes)
                 if queueStatus==0:
