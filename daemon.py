@@ -736,7 +736,10 @@ class PubServer(BaseHTTPRequestHandler):
             while len(self.server.inboxQueue) >= self.server.maxQueueLength-4:
                 queueFilename=self.server.inboxQueue[0]
                 if os.path.isfile(queueFilename):
-                    os.remove(queueFilename)
+                    try:
+                        os.remove(queueFilename)
+                    except:
+                        pass
                 self.server.inboxQueue.pop(0)
             timeDiff=str(int((time.time()-cleardownStartTime)*1000))
             print('Inbox cleardown took '+timeDiff+' mS')
