@@ -4,11 +4,14 @@ if [ -d /etc/epicyon ]; then
 else
     cd /opt/epicyon || exit 0
 fi
-journalctl -u epicyon -r | grep "BENCHMARK GET|0\|BENCHMARK POST|0" | head -n 50 | grep "|ID" | awk -F 'BENCHMARK' '{print $2}' | sort -r | uniq | head -n 20
 
 echo ''
 echo 'Digest calculation times'
 journalctl -u epicyon | grep "DIGEST|" | awk -F '|' '{print $2}' | sort -r | uniq | head -n 20
+
+echo ''
+echo 'Timings for GET'
+journalctl -u epicyon -r | grep "GET TIMING|" | head -n 50
 
 echo ''
 echo 'Timings for POST'
