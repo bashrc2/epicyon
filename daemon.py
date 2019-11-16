@@ -3247,7 +3247,7 @@ class PubServer(BaseHTTPRequestHandler):
         length = int(headers['Content-Length'])
         if length>self.server.maxPostLength:
             print('POST size too large')
-            return pageNumber
+            return None
 
         if ' boundary=' in headers['Content-Type']:
             boundary=headers['Content-Type'].split('boundary=')[1]
@@ -3261,7 +3261,7 @@ class PubServer(BaseHTTPRequestHandler):
             length=len(postBytes)
             if length>self.server.maxPostLength:
                 print('POST size too large')
-                return pageNumber
+                return None
             
             # Note sending new posts needs to be synchronous, otherwise any attachments
             # can get mangled if other events happen during their decoding
