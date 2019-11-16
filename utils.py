@@ -60,7 +60,7 @@ def getStatusNumber() -> (str,str):
 
 def isEvil(domain: str) -> bool:
     # https://www.youtube.com/watch?v=5qw1hcevmdU
-    evilDomains=['gab.com','gabfed.com','spinster.xyz','kiwifarms.cc','djitter.com']
+    evilDomains=('gab.com','gabfed.com','spinster.xyz','kiwifarms.cc','djitter.com')
     for concentratedEvil in evilDomains:
         if domain.endswith(concentratedEvil):
             return True
@@ -99,7 +99,7 @@ def domainPermitted(domain: str, federationList: []):
 def urlPermitted(url: str,federationList: [],capability: str):
     if isEvil(url):
         return False
-    if len(federationList)==0:
+    if not federationList:
         return True
     for domain in federationList:
         if domain in url:
