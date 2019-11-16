@@ -1875,6 +1875,8 @@ def isDM(postJsonObject: {}) -> bool:
         return False
     if postJsonObject['object']['type']!='Note':
         return False
+    if postJsonObject['object'].get('moderationStatus'):
+        return False
     fields=['to','cc']
     for f in fields:        
         if not postJsonObject['object'].get(f):
