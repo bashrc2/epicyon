@@ -4758,6 +4758,18 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,21)
 
+        if not self.headers.get('signature'):
+            if 'keyId=' not in self.headers['signature']:
+                if self.server.debug:
+                    print('DEBUG: POST to inbox has no keyId in header signature parameter')
+                self.send_response(403)
+                self.end_headers()
+                self.server.POSTbusy=False
+                self._benchmarkPOST(POSTstartTime,66)
+                return
+
+        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,22)
+
         if not inboxPermittedMessage(self.server.domain, \
                                      messageJson, \
                                      self.server.federationList):
@@ -4772,18 +4784,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             pprint(messageJson)
-
-        self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,22)
-
-        if not self.headers.get('signature'):
-            if 'keyId=' not in self.headers['signature']:
-                if self.server.debug:
-                    print('DEBUG: POST to inbox has no keyId in header signature parameter')
-                self.send_response(403)
-                self.end_headers()
-                self.server.POSTbusy=False
-                self._benchmarkPOST(POSTstartTime,66)
-                return
         
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,23)
 

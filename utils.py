@@ -96,7 +96,7 @@ def domainPermitted(domain: str, federationList: []):
         return True
     return False
 
-def urlPermitted(url: str, federationList: [],capability: str):
+def urlPermitted(url: str,federationList: [],capability: str):
     if isEvil(url):
         return False
     if len(federationList)==0:
