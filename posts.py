@@ -1001,31 +1001,31 @@ def createReportPost(baseDir: str,
     postCc=None
     postJsonObject=None
     for toUrl in postTo:        
-        postJsonObject= \
-            createPostBase(baseDir,nickname, domain, port, \
-                           toUrl,postCc, \
-                           httpPrefix, content, followersOnly, saveToFile, \
-                           clientToServer, \
-                           attachImageFilename,mediaType, \
-                           imageDescription,useBlurhash, \
-                           True,None, None, subject, \
-                           None,None,None)
-        if not postJsonObject:
-            continue
-
         # who is this report going to?
         toNickname=toUrl.split('/users/')[1]
         handle=toNickname+'@'+domain
 
+        postJsonObject= \
+            createPostBase(baseDir,nickname,domain,port, \
+                           toUrl,postCc, \
+                           httpPrefix,content,followersOnly,saveToFile, \
+                           clientToServer, \
+                           attachImageFilename,mediaType, \
+                           imageDescription,useBlurhash, \
+                           True,None,None,subject, \
+                           None,None,None)
+        if not postJsonObject:
+            continue
+
         # update the inbox index with the report filename
-        indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
-        indexEntry=postJsonObject['id'].replace('/activity','').replace('/','#')+'.json'
-        if indexEntry not in open(indexFilename).read():        
-            try:
-                with open(indexFilename, 'a+') as fp:
-                    fp.write(indexEntry)
-            except:
-                pass
+        #indexFilename=baseDir+'/accounts/'+handle+'/inbox.index'
+        #indexEntry=postJsonObject['id'].replace('/activity','').replace('/','#')+'.json'
+        #if indexEntry not in open(indexFilename).read():        
+        #    try:
+        #        with open(indexFilename, 'a+') as fp:
+        #            fp.write(indexEntry)
+        #    except:
+        #        pass
 
         # save a notification file so that the moderator
         # knows something new has appeared
@@ -1820,7 +1820,7 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
 
     if not pageNumber:
         pageNumber=1
-        
+
     pageStr='?page='+str(pageNumber)
     boxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
                  'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
@@ -1856,7 +1856,7 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix
                 while lineNumber>=endLineNumber:
                     pageLines.append(lines[lineNumber].strip('\n'))
                     lineNumber-=1
-            
+
             for postUrl in pageLines:
                 postFilename=boxDir+'/'+postUrl.replace('/','#')+'.json'
                 if os.path.isfile(postFilename):

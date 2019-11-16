@@ -314,19 +314,22 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
     if postJsonObject:
         # remove any attachment
         removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
-        
+
+        hasObject=False
+        if postJsonObject.get('object'):
+            hasObject=True
+
         # remove from moderation index file
-        if postJsonObject.get('moderationStatus'):
-            if postJsonObject.get('object'):
-                if isinstance(postJsonObject['object'], dict):
-                    if postJsonObject['object'].get('id'):
-                        postId=postJsonObject['object']['id'].replace('/activity','')
-                        removeModerationPostFromIndex(baseDir,postId,debug)
+        if hasObject:
+            if postJsonObject['object'].get('moderationStatus'):
+                if postJsonObject.get('id'):
+                    postId=postJsonObject['id'].replace('/activity','')
+                    removeModerationPostFromIndex(baseDir,postId,debug)
 
         # remove any hashtags index entries
         removeHashtagIndex=False
-        if postJsonObject.get('object'):
-            if isinstance(postJsonObject['object'], dict):
+        if hasObject:
+            if hasObject and isinstance(postJsonObject['object'], dict):
                 if postJsonObject['object'].get('content'):
                     if '#' in postJsonObject['object']['content']:
                         removeHashtagIndex=True
