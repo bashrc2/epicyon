@@ -40,7 +40,7 @@ from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
 from like import updateLikesCollection
 from like import undoLikesCollectionEntry
-from bookmarks import updateBookmarkssCollection
+from bookmarks import updateBookmarksCollection
 from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
 from blocking import isBlockedDomain
