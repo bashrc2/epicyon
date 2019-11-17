@@ -2074,6 +2074,8 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         # extract DMs or replies or media from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
 
+    announceCacheDir=baseDir+'/cache/announce/'+nickname
+
     sharedBoxDir=None
     if boxname=='inbox' or boxname=='tlreplies' or \
        boxname=='tlmedia':
@@ -2133,7 +2135,11 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                 postFilename=indexFile.readline()
                 if not postFilename:
                     break
-                postsInBox[postsCtr]=os.path.join(boxDir, postFilename.replace('\n',''))
+                postFilename=postFilename.replace('\n','')
+                fullPostFilename=os.path.join(boxDir, postFilename)
+                if not os.path.isfile(fullPostFilename):
+                    fullPostFilename=os.path.join(announceCacheDir, postFilename)
+                postsInBox[postsCtr]=fullPostFilename
                 postsCtr+=1
         lookedUpFromIndex=True
     else:
