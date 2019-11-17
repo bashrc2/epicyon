@@ -2117,9 +2117,9 @@ def createBoxBase(session,baseDir: str,boxname: str, \
 
     indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+indexBoxName+'.index'
     lookedUpFromIndex=False
+    postsCtr=0
     if os.path.isfile(indexFilename):
         print('DEBUG: using index file to construct timeline')
-        postsCtr=0
         maxPostCtr=None
         if not pageNumber:
             minPageNumber=4
@@ -2135,17 +2135,18 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                 postsCtr+=1
         lookedUpFromIndex=True
     else:
-        postsCtr=createBoxIndex(boxDir,postsInBoxDict)
+        if boxname!='tlbookmarks':
+            postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
-        # combine the inbox for the account with the shared inbox
-        if sharedBoxDir and boxname!='tlbookmarks':
-            postsCtr= \
-                createSharedInboxIndex(baseDir,sharedBoxDir, \
-                                       postsInBoxDict,postsCtr, \
-                                       nickname,domain,ocapAlways)
+            # combine the inbox for the account with the shared inbox
+            if sharedBoxDir:
+                postsCtr= \
+                    createSharedInboxIndex(baseDir,sharedBoxDir, \
+                                           postsInBoxDict,postsCtr, \
+                                           nickname,domain,ocapAlways)
 
-        # sort the list in descending order of date
-        postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
+            # sort the list in descending order of date
+            postsInBox=OrderedDict(sorted(postsInBoxDict.items(),reverse=True))
 
     # number of posts in box
     boxHeader['totalItems']=postsCtr
