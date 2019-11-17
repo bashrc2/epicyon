@@ -2606,7 +2606,7 @@ def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
 
 def htmlBookmarks(translate: {},pageNumber: int,itemsPerPage: int, \
                   session,baseDir: str,wfRequest: {},personCache: {}, \
-                  nickname: str,domain: str,port: int,inboxJson: {}, \
+                  nickname: str,domain: str,port: int,bookmarksJson: {}, \
                   allowDeletion: bool, \
                   httpPrefix: str,projectVersion: str) -> str:
     """Show the bookmarks as html
@@ -2616,7 +2616,7 @@ def htmlBookmarks(translate: {},pageNumber: int,itemsPerPage: int, \
 
     return htmlTimeline(translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
-                        nickname,domain,port,inboxJson,'tlbookmarks',allowDeletion, \
+                        nickname,domain,port,bookmarksJson,'tlbookmarks',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
 def htmlInboxDMs(translate: {},pageNumber: int,itemsPerPage: int, \
