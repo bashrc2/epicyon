@@ -2468,8 +2468,6 @@ def htmlTimeline(translate: {},pageNumber: int, \
     actor=httpPrefix+'://'+fullDomain+'/users/'+nickname
 
     showIndividualPostIcons=True
-    if boxName=='inbox':
-        showIndividualPostIcons=True
     
     followApprovals=''
     followRequestsFilename= \
