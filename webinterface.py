@@ -2559,7 +2559,6 @@ def htmlTimeline(translate: {},pageNumber: int, \
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
                 #avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
-                itemCtr+=1
                 currTlStr= \
                     individualPostAsHtml(iconsDir,translate,pageNumber, \
                                          baseDir,session,wfRequest,personCache, \
@@ -2571,12 +2570,13 @@ def htmlTimeline(translate: {},pageNumber: int, \
                                          manuallyApproveFollowers,False,True)
                     
                 if currTlStr:
+                    itemCtr+=1
                     tlStr+=currTlStr
         if boxName=='tlmedia':
             tlStr+='</div>\n'
 
     # page down arrow
-    if itemCtr>1:
+    if itemCtr>int(itemsPerPage/2):
         tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
