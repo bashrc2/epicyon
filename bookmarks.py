@@ -598,7 +598,7 @@ def outboxBookmark(baseDir: str,httpPrefix: str, \
     messageId=messageJson['object'].replace('/activity','')
     if ':' in domain:
         domain=domain.split(':')[0]
-        postFilename=locatePost(baseDir,nickname,domain,messageId)
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s bookmark post not found in inbox or outbox')
@@ -655,7 +655,7 @@ def outboxUndoBookmark(baseDir: str,httpPrefix: str, \
     messageId=messageJson['object']['object'].replace('/activity','')
     if ':' in domain:
         domain=domain.split(':')[0]
-        postFilename=locatePost(baseDir,nickname,domain,messageId)
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
     if not postFilename:
         if debug:
             print('DEBUG: c2s undo bookmark post not found in inbox or outbox')
