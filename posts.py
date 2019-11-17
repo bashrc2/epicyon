@@ -2237,6 +2237,8 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                                             p['replies']={}
                                         if p['object'].get('shares'):
                                             p['shares']={}
+                                        if p['object'].get('bookmarks'):
+                                            p['bookmarks']={}
                             # insert it into the box feed
                             if postsOnPageCtr < itemsPerPage:
                                 if not headerOnly:
