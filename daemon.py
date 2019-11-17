@@ -2344,14 +2344,15 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/inbox') or '/inbox?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
-                    inboxFeed=personBoxJson(self.server.session, \
-                                            self.server.baseDir, \
-                                            self.server.domain, \
-                                            self.server.port, \
-                                            self.path, \
-                                            self.server.httpPrefix, \
-                                            maxPostsInFeed, 'inbox', \
-                                            authorized,self.server.ocapAlways)
+                    inboxFeed= \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path, \
+                                      self.server.httpPrefix, \
+                                      maxPostsInFeed, 'inbox', \
+                                      authorized,self.server.ocapAlways)
                     if inboxFeed:
                         if self._requestHTTP():
                             nickname=self.path.replace('/users/','').replace('/inbox','')
@@ -2365,14 +2366,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber=1                                
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
-                                inboxFeed=personBoxJson(self.server.session, \
-                                                        self.server.baseDir, \
-                                                        self.server.domain, \
-                                                        self.server.port, \
-                                                        self.path+'?page=1', \
-                                                        self.server.httpPrefix, \
-                                                        maxPostsInFeed, 'inbox', \
-                                                        authorized,self.server.ocapAlways)
+                                inboxFeed= \
+                                    personBoxJson(self.server.session, \
+                                                  self.server.baseDir, \
+                                                  self.server.domain, \
+                                                  self.server.port, \
+                                                  self.path+'?page=1', \
+                                                  self.server.httpPrefix, \
+                                                  maxPostsInFeed, 'inbox', \
+                                                  authorized,self.server.ocapAlways)
                             msg=htmlInbox(self.server.translate, \
                                           pageNumber,maxPostsInFeed, \
                                           self.server.session, \
@@ -2416,14 +2418,15 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.endswith('/dm') or '/dm?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
-                    inboxDMFeed=personBoxJson(self.server.session, \
-                                              self.server.baseDir, \
-                                              self.server.domain, \
-                                              self.server.port, \
-                                              self.path, \
-                                              self.server.httpPrefix, \
-                                              maxPostsInFeed, 'dm', \
-                                              authorized,self.server.ocapAlways)
+                    inboxDMFeed= \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path, \
+                                      self.server.httpPrefix, \
+                                      maxPostsInFeed, 'dm', \
+                                      authorized,self.server.ocapAlways)
                     if inboxDMFeed:
                         if self._requestHTTP():
                             nickname=self.path.replace('/users/','').replace('/dm','')
@@ -2437,14 +2440,15 @@ class PubServer(BaseHTTPRequestHandler):
                                     pageNumber=1                                
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
-                                inboxDMFeed=personBoxJson(self.server.session, \
-                                                          self.server.baseDir, \
-                                                          self.server.domain, \
-                                                          self.server.port, \
-                                                          self.path+'?page=1', \
-                                                          self.server.httpPrefix, \
-                                                          maxPostsInFeed, 'dm', \
-                                                          authorized,self.server.ocapAlways)
+                                inboxDMFeed= \
+                                    personBoxJson(self.server.session, \
+                                                  self.server.baseDir, \
+                                                  self.server.domain, \
+                                                  self.server.port, \
+                                                  self.path+'?page=1', \
+                                                  self.server.httpPrefix, \
+                                                  maxPostsInFeed, 'dm', \
+                                                  authorized,self.server.ocapAlways)
                             msg=htmlInboxDMs(self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
                                              self.server.session, \
@@ -2745,13 +2749,14 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,47)
 
         # get outbox feed for a person
-        outboxFeed=personBoxJson(self.server.session, \
-                                 self.server.baseDir,self.server.domain, \
-                                 self.server.port,self.path, \
-                                 self.server.httpPrefix, \
-                                 maxPostsInFeed, 'outbox', \
-                                 authorized, \
-                                 self.server.ocapAlways)
+        outboxFeed= \
+            personBoxJson(self.server.session, \
+                          self.server.baseDir,self.server.domain, \
+                          self.server.port,self.path, \
+                          self.server.httpPrefix, \
+                          maxPostsInFeed, 'outbox', \
+                          authorized, \
+                          self.server.ocapAlways)
         if outboxFeed:
             if self._requestHTTP():
                 nickname= \
@@ -2766,15 +2771,16 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumber=1
                 if 'page=' not in self.path:
                     # if a page wasn't specified then show the first one
-                    outboxFeed=personBoxJson(self.server.session, \
-                                             self.server.baseDir, \
-                                             self.server.domain, \
-                                             self.server.port, \
-                                             self.path+'?page=1', \
-                                             self.server.httpPrefix, \
-                                             maxPostsInFeed, 'outbox', \
-                                             authorized, \
-                                             self.server.ocapAlways)
+                    outboxFeed= \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path+'?page=1', \
+                                      self.server.httpPrefix, \
+                                      maxPostsInFeed, 'outbox', \
+                                      authorized, \
+                                      self.server.ocapAlways)
                 msg=htmlOutbox(self.server.translate, \
                                pageNumber,maxPostsInFeed, \
                                self.server.session, \
@@ -2876,11 +2882,12 @@ class PubServer(BaseHTTPRequestHandler):
         
         self._benchmarkGETtimings(GETstartTime,GETtimings,49)
 
-        shares=getSharesFeedForPerson(self.server.baseDir, \
-                                      self.server.domain, \
-                                      self.server.port,self.path, \
-                                      self.server.httpPrefix, \
-                                      sharesPerPage)
+        shares= \
+            getSharesFeedForPerson(self.server.baseDir, \
+                                   self.server.domain, \
+                                   self.server.port,self.path, \
+                                   self.server.httpPrefix, \
+                                   sharesPerPage)
         if shares:
             if self._requestHTTP():
                 pageNumber=1
@@ -2947,10 +2954,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?page=' not in self.path:
                     searchPath=self.path
                     # get a page of following, not the summary
-                    following=getFollowingFeed(self.server.baseDir,self.server.domain, \
-                                               self.server.port,self.path+'?page=true', \
-                                               self.server.httpPrefix, \
-                                               authorized,followsPerPage)
+                    following= \
+                        getFollowingFeed(self.server.baseDir,self.server.domain, \
+                                         self.server.port,self.path+'?page=true', \
+                                         self.server.httpPrefix, \
+                                         authorized,followsPerPage)
                 else:
                     pageNumberStr=self.path.split('?page=')[1]
                     if pageNumberStr.isdigit():
@@ -2993,10 +3001,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,51)
 
-        followers=getFollowingFeed(self.server.baseDir,self.server.domain, \
-                                   self.server.port,self.path, \
-                                   self.server.httpPrefix, \
-                                   authorized,followsPerPage,'followers')
+        followers= \
+            getFollowingFeed(self.server.baseDir,self.server.domain, \
+                             self.server.port,self.path, \
+                             self.server.httpPrefix, \
+                             authorized,followsPerPage,'followers')
         if followers:
             if self._requestHTTP():
                 pageNumber=1
