@@ -2066,15 +2066,17 @@ def createBoxBase(session,baseDir: str,boxname: str, \
        boxname!='tlreplies' and boxname!='tlmedia' and \
        boxname!='outbox' and boxname!='tlbookmarks':
         return None
+
     if boxname!='dm' and boxname!='tlreplies' and \
        boxname!='tlmedia' and boxname!='tlbookmarks':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
         # extract DMs or replies or media from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
+
     sharedBoxDir=None
     if boxname=='inbox' or boxname=='tlreplies' or \
-       boxname=='tlmedia' or boxname=='tlbookmarks':
+       boxname=='tlmedia':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
 
     # bookmarks timeline is like the inbox but has its own separate index
