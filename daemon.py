@@ -2687,7 +2687,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       True,self.server.ocapAlways)
                     if bookmarksFeed:
                         if self._requestHTTP():
-                            nickname=self.path.replace('/users/','').replace('/inbox','')
+                            nickname=self.path.replace('/users/','').replace('/tlbookmarks','')
                             pageNumber=1
                             if '?page=' in nickname:
                                 pageNumber=nickname.split('?page=')[1]
@@ -2732,7 +2732,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                 else:
                     if self.server.debug:
-                        nickname=self.path.replace('/users/','').replace('/inbox','')
+                        nickname=self.path.replace('/users/','').replace('/tlbookmarks','')
                         print('DEBUG: '+nickname+ \
                               ' was not authorized to access '+self.path)
             if self.server.debug:

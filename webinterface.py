@@ -2354,7 +2354,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
                  manuallyApproveFollowers: bool) -> str:
     """Show the timeline as html
     """
-    accountDir=baseDir+'/accounts/'+nickname+'@'+domain
+    accountDir=baseDir+'/accounts/'+nickname+'@'+domain    
 
     # should the calendar icon be highlighted?
     calendarImage='calendar.png'
