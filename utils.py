@@ -296,7 +296,7 @@ def removeModerationPostFromIndex(baseDir: str,postUrl: str,debug: bool) -> None
                         if debug:
                             print('DEBUG: removed '+postId+' from moderation index')
 
-def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool):
+def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool) -> None:
     """Recursively deletes a post and its replies and attachments
     """
     postJsonObject=None
@@ -312,6 +312,13 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
             tries+=1
 
     if postJsonObject:
+        # don't allow deletion of bookmarked posts
+        bookmarksIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
+        if os.path.isfile(bookmarksIndexFilename):
+            bookmarkIndex=postFilename.split('/')[-1]+'\n'
+            if bookmarkIndex in open(bookmarksIndexFilename).read():
+                return
+
         # remove any attachment
         removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
 
