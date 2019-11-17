@@ -1898,6 +1898,11 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         if postHtml:
             return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
+    # don't create new html within the bookmarks timeline
+    # it should already have been created for the inbox
+    if boxName=='tlbookmarks':
+        return ''
+
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
     showDMicon=False
@@ -2321,7 +2326,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     else:
         postHtml=galleryStr
 
-    if not showPublicOnly and storeToCache and boxName!='tlmedia':
+    if not showPublicOnly and storeToCache and \
+       boxName!='tlmedia'and boxName!='tlbookmarks':
         saveIndividualPostAsHtmlToCache(baseDir,nickname,domain, \
                                         postJsonObject,postHtml)
 
