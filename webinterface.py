@@ -1896,6 +1896,9 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
                                               postJsonObject)
         if postHtml:
+            # if on the bookmarks timeline then remain there
+            if boxName=='tlbookmarks':
+                postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
             return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
     # don't create new html within the bookmarks timeline
