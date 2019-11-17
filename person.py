@@ -21,6 +21,7 @@ from webfinger import storeWebfingerEndpoint
 from posts import createDMTimeline
 from posts import createRepliesTimeline
 from posts import createMediaTimeline
+from posts import createBookmarksTimeline
 from posts import createInbox
 from posts import createOutbox
 from posts import createModeration
@@ -411,7 +412,8 @@ def personBoxJson(session,baseDir: str,domain: str,port: int,path: str, \
     """
     if boxname!='inbox' and boxname!='dm' and \
        boxname!='tlreplies' and boxname!='tlmedia' and \
-       boxname!='outbox' and boxname!='moderation':
+       boxname!='outbox' and boxname!='moderation' and \
+       boxname!='tlbookmarks':
         return None
 
     if not '/'+boxname in path:
@@ -448,9 +450,12 @@ def personBoxJson(session,baseDir: str,domain: str,port: int,path: str, \
     if boxname=='inbox':
         return createInbox(session,baseDir,nickname,domain,port,httpPrefix, \
                            noOfItems,headerOnly,ocapAlways,pageNumber)
-    if boxname=='dm':
+    elif boxname=='dm':
         return createDMTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
                                 noOfItems,headerOnly,ocapAlways,pageNumber)
+    elif boxname=='tlbookmarks':
+        return createBookmarksTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
+                                       noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='tlreplies':
         return createRepliesTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
                                      noOfItems,headerOnly,ocapAlways,pageNumber)

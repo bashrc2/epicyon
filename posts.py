@@ -1788,6 +1788,11 @@ def createInbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPre
     return createBoxBase(session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
                          itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
+def createBookmarksTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                            itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxBase(session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
+                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
 def createDMTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxBase(session,baseDir,'dm',nickname,domain,port,httpPrefix, \
@@ -2058,16 +2063,24 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         pageNumber=1
 
     if boxname!='inbox' and boxname!='dm' and \
-       boxname!='tlreplies' and boxname!='tlmedia' and boxname!='outbox':
+       boxname!='tlreplies' and boxname!='tlmedia' and \
+       boxname!='outbox' and boxname!='tlbookmarks':
         return None
-    if boxname!='dm' and boxname!='tlreplies' and boxname!='tlmedia':
+    if boxname!='dm' and boxname!='tlreplies' and \
+       boxname!='tlmedia' and boxname!='tlbookmarks':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
         # extract DMs or replies or media from the inbox
         boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     sharedBoxDir=None
-    if boxname=='inbox' or boxname=='tlreplies' or boxname=='tlmedia':
+    if boxname=='inbox' or boxname=='tlreplies' or \
+       boxname=='tlmedia' or boxname=='tlbookmarks':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
+
+    # bookmarks timeline is like the inbox but has its own separate index
+    indexBoxName=boxname
+    if boxname=='tlbookmarks':
+        indexBoxName='bookmarks'
 
     if port:
         if port!=80 and port!=443:
@@ -2102,7 +2115,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
     postsInBoxDict={}
     postsInBox={}
 
-    indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxname+'.index'
+    indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+indexBoxName+'.index'
     lookedUpFromIndex=False
     if os.path.isfile(indexFilename):
         print('DEBUG: using index file to construct timeline')
@@ -2125,7 +2138,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         postsCtr=createBoxIndex(boxDir,postsInBoxDict)
 
         # combine the inbox for the account with the shared inbox
-        if sharedBoxDir:
+        if sharedBoxDir and boxname!='tlbookmarks':
             postsCtr= \
                 createSharedInboxIndex(baseDir,sharedBoxDir, \
                                        postsInBoxDict,postsCtr, \

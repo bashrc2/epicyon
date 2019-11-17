@@ -40,6 +40,8 @@ from capabilities import CapablePost
 from capabilities import capabilitiesReceiveUpdate
 from like import updateLikesCollection
 from like import undoLikesCollectionEntry
+from bookmarks import updateBookmarkssCollection
+from bookmarks import undoBookmarksCollectionEntry
 from blocking import isBlocked
 from blocking import isBlockedDomain
 from filters import isFiltered
@@ -900,6 +902,129 @@ def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
     undoLikesCollectionEntry(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
+def receiveBookmark(session,handle: str,isGroup: bool,baseDir: str, \
+                    httpPrefix: str,domain :str,port: int, \
+                    sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                    personCache: {},messageJson: {},federationList: [], \
+                    debug : bool) -> bool:
+    """Receives a bookmark activity within the POST section of HTTPServer
+    """
+    if messageJson['type']!='Bookmark':
+        return False
+    if not messageJson.get('actor'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no actor')
+        return False
+    if not messageJson.get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no object')
+        return False
+    if not isinstance(messageJson['object'], str):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' object is not a string')
+        return False
+    if not messageJson.get('to'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' has no "to" list')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type'])
+        return False
+    if '/statuses/' not in messageJson['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from object in '+messageJson['type'])
+        return False
+    if domain not in handle.split('@')[1]:
+        if debug:
+            print('DEBUG: unrecognized domain '+handle)
+        return False        
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)            
+    nickname=handle.split('@')[0]
+    if not messageJson['actor'].endswith(domainFull+'/users/'+nickname):
+        if debug:
+            print('DEBUG: bookmark actor should be the same as the handle sent to '+handle+' != '+messageJson['actor'])
+        return False
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('DEBUG: unknown recipient of bookmark - '+handle)
+    # if this post in the outbox of the person?
+    postFilename=locatePost(baseDir,nickname,domain,messageJson['object'])
+    if not postFilename:
+        if debug:
+            print('DEBUG: post not found in inbox or outbox')
+            print(messageJson['object'])
+        return True
+    if debug:
+        print('DEBUG: bookmarked post was found')
+
+    updateBookmarksCollection(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
+    return True
+
+def receiveUndoBookmark(session,handle: str,isGroup: bool,baseDir: str, \
+                        httpPrefix: str,domain :str,port: int, \
+                        sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                        personCache: {},messageJson: {},federationList: [], \
+                        debug : bool) -> bool:
+    """Receives an undo bookmark activity within the POST section of HTTPServer
+    """
+    if messageJson['type']!='Undo':
+        return False
+    if not messageJson.get('actor'):
+        return False
+    if not messageJson.get('object'):
+        return False
+    if not isinstance(messageJson['object'], dict):
+        return False
+    if not messageJson['object'].get('type'):
+        return False
+    if messageJson['object']['type']!='Bookmark':
+        return False
+    if not messageJson['object'].get('object'):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' like has no object')
+        return False
+    if not isinstance(messageJson['object']['object'], str):
+        if debug:
+            print('DEBUG: '+messageJson['type']+' like object is not a string')
+        return False
+    if '/users/' not in messageJson['actor']:
+        if debug:
+            print('DEBUG: "users" missing from actor in '+messageJson['type']+' like')
+        return False
+    if '/statuses/' not in messageJson['object']['object']:
+        if debug:
+            print('DEBUG: "statuses" missing from like object in '+messageJson['type'])
+        return False
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)            
+    nickname=handle.split('@')[0]
+    if domain not in handle.split('@')[1]:
+        if debug:
+            print('DEBUG: unrecognized bookmark domain '+handle)
+        return False        
+    if not messageJson['actor'].endswith(domainFull+'/users/'+nickname):
+        if debug:
+            print('DEBUG: bookmark actor should be the same as the handle sent to '+handle+' != '+messageJson['actor'])
+        return False
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('DEBUG: unknown recipient of bookmark undo - '+handle)
+    # if this post in the outbox of the person?
+    postFilename=locatePost(baseDir,nickname,domain,messageJson['object']['object'])
+    if not postFilename:
+        if debug:
+            print('DEBUG: unbookmarked post not found in inbox or outbox')
+            print(messageJson['object']['object'])
+        return True
+    if debug:
+        print('DEBUG: bookmarked post found. Now undoing.')
+    undoBookmarksCollectionEntry(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
+    return True
+
 def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -1517,6 +1642,32 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
             print('DEBUG: Undo like accepted from '+actor)
         return False
 
+    if receiveBookmark(session,handle,isGroup, \
+                       baseDir,httpPrefix, \
+                       domain,port, \
+                       sendThreads,postLog, \
+                       cachedWebfingers, \
+                       personCache, \
+                       messageJson, \
+                       federationList, \
+                       debug):
+        if debug:
+            print('DEBUG: Bookmark accepted from '+actor)
+        return False
+
+    if receiveUndoBookmark(session,handle,isGroup, \
+                           baseDir,httpPrefix, \
+                           domain,port, \
+                           sendThreads,postLog, \
+                           cachedWebfingers, \
+                           personCache, \
+                           messageJson, \
+                           federationList, \
+                           debug):
+        if debug:
+            print('DEBUG: Undo bookmark accepted from '+actor)
+        return False
+    
     if receiveAnnounce(session,handle,isGroup, \
                        baseDir,httpPrefix, \
                        domain,port, \

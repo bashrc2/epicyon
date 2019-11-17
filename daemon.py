@@ -75,6 +75,8 @@ from media import createMediaDirs
 from delete import outboxDelete
 from like import outboxLike
 from like import outboxUndoLike
+from bookmarks import outboxBookmark
+from bookmarks import outboxUndoBookmark
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
 from blocking import addBlock
@@ -101,6 +103,7 @@ from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
 from webinterface import htmlProfile
 from webinterface import htmlInbox
+from webinterface import htmlBookmarks
 from webinterface import htmlShares
 from webinterface import htmlOutbox
 from webinterface import htmlModeration
@@ -566,7 +569,7 @@ class PubServer(BaseHTTPRequestHandler):
         permittedOutboxTypes=[
             'Create','Announce','Like','Follow','Undo', \
             'Update','Add','Remove','Block','Delete', \
-            'Delegate','Skill'
+            'Delegate','Skill','Bookmark'
         ]
         if messageJson['type'] not in permittedOutboxTypes:
             if self.server.debug:
@@ -643,6 +646,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: handle availability changes requests')
         outboxAvailability(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
+
         if self.server.debug:
             print('DEBUG: handle any like requests')
         outboxLike(self.server.baseDir,self.server.httpPrefix, \
@@ -653,6 +657,18 @@ class PubServer(BaseHTTPRequestHandler):
         outboxUndoLike(self.server.baseDir,self.server.httpPrefix, \
                        self.postToNickname,self.server.domain,self.server.port, \
                        messageJson,self.server.debug)
+
+        if self.server.debug:
+            print('DEBUG: handle any bookmark requests')
+        outboxBookmark(self.server.baseDir,self.server.httpPrefix, \
+                       self.postToNickname,self.server.domain,self.server.port, \
+                       messageJson,self.server.debug)
+        if self.server.debug:
+            print('DEBUG: handle any undo bookmark requests')
+        outboxUndoBookmark(self.server.baseDir,self.server.httpPrefix, \
+                           self.postToNickname,self.server.domain,self.server.port, \
+                           messageJson,self.server.debug)
+
         if self.server.debug:
             print('DEBUG: handle delete requests')        
         outboxDelete(self.server.baseDir,self.server.httpPrefix, \
@@ -1752,6 +1768,102 @@ class PubServer(BaseHTTPRequestHandler):
                                    '?page='+str(pageNumber),cookie)
             return
 
+        self._benchmarkGETtimings(GETstartTime,GETtimings,36)
+
+        # bookmark from the web interface icon
+        if htmlGET and '?bookmark=' in self.path:
+            pageNumber=1
+            bookmarkUrl=self.path.split('?bookmark=')[1]
+            if '?' in bookmarkUrl:
+                bookmarkUrl=bookmarkUrl.split('?')[0]                
+            actor=self.path.split('?bookmark=')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+            timelineStr='inbox'
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
+
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in '+actor)
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/'+timelineStr+ \
+                                       '?page='+str(pageNumber),cookie)
+                return                
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.useTor)
+            bookmarkActor= \
+                self.server.httpPrefix+'://'+ \
+                self.server.domainFull+'/users/'+self.postToNickname                    
+            bookmarkJson= {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                'type': 'Bookmark',
+                'actor': bookmarkActor,
+                'to': [bookmarkActor],
+                'object': bookmarkUrl
+            }    
+            self._postToOutbox(bookmarkJson,self.server.projectVersion)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/'+timelineStr+ \
+                                   '?page='+str(pageNumber),cookie)
+            return
+
+        # undo a bookmark from the web interface icon
+        if htmlGET and '?unbookmark=' in self.path:
+            pageNumber=1
+            bookmarkUrl=self.path.split('?unbookmark=')[1]
+            if '?' in bookmarkUrl:
+                bookmarkUrl=bookmarkUrl.split('?')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+            timelineStr='inbox'
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
+            actor=self.path.split('?unbookmark=')[0]
+            self.postToNickname=getNicknameFromActor(actor)
+            if not self.postToNickname:
+                print('WARN: unable to find nickname in '+actor)
+                self.server.GETbusy=False
+                self._redirect_headers(actor+'/'+timelineStr+ \
+                                       '?page='+str(pageNumber),cookie)
+                return                
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.useTor)
+            undoActor= \
+                self.server.httpPrefix+'://'+ \
+                self.server.domainFull+'/users/'+self.postToNickname
+            undoBookmarkJson= {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                'type': 'Undo',
+                'actor': undoActor,
+                'to': [undoActor],
+                'object': {
+                    'type': 'Bookmark',
+                    'actor': undoActor,
+                    'to': [undoActor],
+                    'object': bookmarkUrl
+                }
+            }
+            self._postToOutbox(undoBookmarkJson,self.server.projectVersion)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/'+timelineStr+ \
+                                   '?page='+str(pageNumber),cookie)
+            return
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,37)
 
         # delete a post from the web interface icon
@@ -2559,7 +2671,77 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.GETbusy=False
             return
-            
+
+        # get the bookmarks for a given person
+        if self.path.endswith('/tlbookmarks') or '/tlbookmarks?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    bookmarksFeed= \
+                        personBoxJson(self.server.session, \
+                                      self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path, \
+                                      self.server.httpPrefix, \
+                                      maxPostsInFeed, 'tlbookmarks', \
+                                      True,self.server.ocapAlways)
+                    if bookmarksFeed:
+                        if self._requestHTTP():
+                            nickname=self.path.replace('/users/','').replace('/inbox','')
+                            pageNumber=1
+                            if '?page=' in nickname:
+                                pageNumber=nickname.split('?page=')[1]
+                                nickname=nickname.split('?page=')[0]
+                                if pageNumber.isdigit():
+                                    pageNumber=int(pageNumber)
+                                else:
+                                    pageNumber=1                                
+                            if 'page=' not in self.path:
+                                # if no page was specified then show the first
+                                bookmarksFeed= \
+                                    personBoxJson(self.server.session, \
+                                                  self.server.baseDir, \
+                                                  self.server.domain, \
+                                                  self.server.port, \
+                                                  self.path+'?page=1', \
+                                                  self.server.httpPrefix, \
+                                                  maxPostsInFeed, 'tlbookmarks', \
+                                                  True,self.server.ocapAlways)
+                                msg=htmlBookmarks(self.server.translate, \
+                                                  pageNumber,maxPostsInFeed, \
+                                                  self.server.session, \
+                                                  self.server.baseDir, \
+                                                  self.server.cachedWebfingers, \
+                                                  self.server.personCache, \
+                                                  nickname, \
+                                                  self.server.domain, \
+                                                  self.server.port, \
+                                                  bookmarksFeed, \
+                                                  self.server.allowDeletion, \
+                                                  self.server.httpPrefix, \
+                                                  self.server.projectVersion).encode('utf-8')
+                            self._set_headers('text/html',len(msg),cookie)
+                            self._write(msg)
+                        else:
+                            # don't need authenticated fetch here because there is
+                            # already the authorization check
+                            msg=json.dumps(inboxFeed,ensure_ascii=False).encode('utf-8')
+                            self._set_headers('application/json',len(msg),None)
+                            self._write(msg)
+                        self.server.GETbusy=False
+                        return
+                else:
+                    if self.server.debug:
+                        nickname=self.path.replace('/users/','').replace('/inbox','')
+                        print('DEBUG: '+nickname+ \
+                              ' was not authorized to access '+self.path)
+            if self.server.debug:
+                print('DEBUG: GET access to bookmarks is unauthorized')
+            self.send_response(405)
+            self.end_headers()
+            self.server.GETbusy=False
+            return
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,47)
 
         # get outbox feed for a person

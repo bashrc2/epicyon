@@ -44,6 +44,7 @@ from session import getJson
 from auth import createPassword
 from like import likedByPerson
 from like import noOfLikes
+from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from content import getMentionsFromHtml
@@ -2213,6 +2214,22 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             '?tl='+boxName+'" title="'+likeTitle+'">'
         likeStr+='<img loading="lazy" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
+    bookmarkStr=''
+    if not isModerationPost:
+        bookmarkIcon='bookmark_inactive.png'
+        bookmarkLink='bookmark'
+        bookmarkTitle=translate['Bookmark this post']
+        if bookmarkedByPerson(postJsonObject,nickname,fullDomain):
+            bookmarkIcon='bookmark.png'
+            bookmarkLink='unbookmark'
+            bookmarkTitle=translate['Undo the bookmark']
+        bookmarkStr= \
+            '<a href="/users/' + nickname + '?' + \
+            bookmarkLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            '?actor='+postJsonObject['actor']+ \
+            '?tl='+boxName+'" title="'+bookmarkTitle+'">'
+        bookmarkStr+='<img loading="lazy" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
+        
     deleteStr=''
     if allowDeletion or \
        ('/'+fullDomain+'/' in postActor and \
@@ -2258,7 +2275,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                 '?actor='+postJsonObject['actor']+ \
                 '" title="'+translate['Reply to this post']+'">'
         footerStr+='<img loading="lazy" src="/'+iconsDir+'/reply.png"/></a>'
-        footerStr+=announceStr+likeStr+deleteStr
+        footerStr+=announceStr+likeStr+bookmarkStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 
@@ -2405,6 +2422,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
     if newReply:
         repliesButton='buttonhighlighted'
     mediaButton='button'
+    bookmarksButton='button'
     sentButton='button'
     sharesButton='button'
     if newShare:
@@ -2434,6 +2452,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
         sharesButton='buttonselected'
         if newShare:
             sharesButton='buttonselectedhighlighted'
+    elif boxName=='tlbookmarks':
+        bookmarksButton='buttonselected'
 
     fullDomain=domain
     if port!=80 and port!=443:
@@ -2462,6 +2482,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
 
     sharesButtonStr='<a href="'+actor+'/tlshares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'
 
+    bookmarksButtonStr='<a href="'+actor+'/tlbookmarks"><button class="'+bookmarksButton+'"><span>'+translate['Bookmarks']+' </span></button></a>'
+
     tlStr=htmlHeader(cssFilename,profileStyle)
     #if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
         # refresh if on the first page of the inbox and dm timeline
@@ -2485,7 +2507,7 @@ def htmlTimeline(translate: {},pageNumber: int, \
     tlStr+='    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>'
     tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
     tlStr+='    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'
-    tlStr+=sharesButtonStr+moderationButtonStr+newPostButtonStr
+    tlStr+=sharesButtonStr+bookmarksButtonStr+moderationButtonStr+newPostButtonStr
     tlStr+='    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'
     tlStr+='    <a href="'+actor+calendarPath+'"><img loading="lazy" src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'
     tlStr+='    <a href="'+actor+'/'+boxName+'"><img loading="lazy" src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'
@@ -2580,6 +2602,21 @@ def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
     return htmlTimeline(translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
+                        httpPrefix,projectVersion,manuallyApproveFollowers)
+
+def htmlBookmarks(translate: {},pageNumber: int,itemsPerPage: int, \
+                  session,baseDir: str,wfRequest: {},personCache: {}, \
+                  nickname: str,domain: str,port: int,inboxJson: {}, \
+                  allowDeletion: bool, \
+                  httpPrefix: str,projectVersion: str) -> str:
+    """Show the bookmarks as html
+    """
+    manuallyApproveFollowers= \
+        followerApprovalActive(baseDir,nickname,domain)
+
+    return htmlTimeline(translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'tlbookmarks',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
 def htmlInboxDMs(translate: {},pageNumber: int,itemsPerPage: int, \
