@@ -2707,19 +2707,19 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'tlbookmarks', \
                                                   True,self.server.ocapAlways)
-                                msg=htmlBookmarks(self.server.translate, \
-                                                  pageNumber,maxPostsInFeed, \
-                                                  self.server.session, \
-                                                  self.server.baseDir, \
-                                                  self.server.cachedWebfingers, \
-                                                  self.server.personCache, \
-                                                  nickname, \
-                                                  self.server.domain, \
-                                                  self.server.port, \
-                                                  bookmarksFeed, \
-                                                  self.server.allowDeletion, \
-                                                  self.server.httpPrefix, \
-                                                  self.server.projectVersion).encode('utf-8')
+                            msg=htmlBookmarks(self.server.translate, \
+                                              pageNumber,maxPostsInFeed, \
+                                              self.server.session, \
+                                              self.server.baseDir, \
+                                              self.server.cachedWebfingers, \
+                                              self.server.personCache, \
+                                              nickname, \
+                                              self.server.domain, \
+                                              self.server.port, \
+                                              bookmarksFeed, \
+                                              self.server.allowDeletion, \
+                                              self.server.httpPrefix, \
+                                              self.server.projectVersion).encode('utf-8')
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
                         else:
