@@ -583,13 +583,13 @@ def outboxBookmark(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: bookmark object is not string')
         return
-    if messageJson['object'].get('to'):
-        if not isinstance(messageJson['object']['to'], list):
+    if messageJson.get('to'):
+        if not isinstance(messageJson['to'], list):
             return
-        if len(messageJson['object']['to'])!=1:
+        if len(messageJson['to'])!=1:
             print('WARN: Bookmark should only be sent to one recipient')
             return
-        if messageJson['object']['to'][0]!=messageJson['actor']:
+        if messageJson['to'][0]!=messageJson['actor']:
             print('WARN: Bookmark should be addressed to the same actor')
             return            
     if debug:
@@ -640,13 +640,13 @@ def outboxUndoBookmark(baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: undo bookmark object is not string')
         return
-    if messageJson['object'].get('to'):
-        if not isinstance(messageJson['object']['to'], list):
+    if messageJson.get('to'):
+        if not isinstance(messageJson['to'], list):
             return
-        if len(messageJson['object']['to'])!=1:
+        if len(messageJson['to'])!=1:
             print('WARN: Bookmark should only be sent to one recipient')
             return
-        if messageJson['object']['to'][0]!=messageJson['actor']:
+        if messageJson['to'][0]!=messageJson['actor']:
             print('WARN: Bookmark should be addressed to the same actor')
             return            
     if debug:
