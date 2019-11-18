@@ -1311,12 +1311,11 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaFilename= \
                     self.server.baseDir+'/img/icons/'+mediaStr
                 if os.path.isfile(mediaFilename):
-                    if mediaFilename.endswith('.png'):
-                        with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            self._set_headers('image/png',len(mediaBinary),cookie)
-                            self._write(mediaBinary)
-                        return        
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self._set_headers('image/png',len(mediaBinary),cookie)
+                        self._write(mediaBinary)
+                    return        
             self._404()
             return
 
