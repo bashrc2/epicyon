@@ -784,6 +784,7 @@ div.gallery img {
 	font-size: var(--font-size);
 	width: 32px;
 	vertical-align: middle;
+	margin-right: 20px;
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
@@ -1068,6 +1069,7 @@ div.gallery img {
 	font-size: var(--font-size3);
 	height: 90px;
 	vertical-align: middle;
+	margin-right: 20px;
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
