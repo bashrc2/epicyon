@@ -2295,9 +2295,8 @@ def isTimelinePost(filePath: str,boxname: str,postsInBox: []) -> bool:
                 if '"Create"' in postStr:
                     if 'mediaType' not in postStr or 'image/' not in postStr:
                         return False
-            if postsInBox!=None:
-                # add the post to the dictionary
-                postsInBox.append(postStr)
+            # add the post to the dictionary
+            postsInBox.append(postStr)
             return True
     return False
 
@@ -2369,24 +2368,24 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
         with open(indexFilename, 'r') as indexFile:
             while postsCtr<maxPostCtr:
                 postFilename=indexFile.readline()
+
+                # Skip through any posts previous to the current page
+                if postsCtr<int((pageNumber-1)*itemsPerPage):                    
+                    if postFilename:
+                        postsCtr+=1
+                    continue
+                    
                 if not postFilename:
                     continue
 
-                postOnThisTimeline=False
                 # filename of the post without any extension or path
                 postUrl=postFilename.replace('\n','').replace('.json','')
                 # get the full path of the post
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
-                    if postsCtr<int((pageNumber-1)*itemsPerPage):                    
-                        if isTimelinePost(fullPostFilename,boxname,None):
-                            postOnThisTimeline=True
-                    else:
-                        if isTimelinePost(fullPostFilename,boxname,postsInBox):
-                            postOnThisTimeline=True
-
-                if postOnThisTimeline:
+                    if not isTimelinePost(fullPostFilename,boxname,postsInBox):
+                        continue
                     postsCtr+=1
 
     # Generate first and last entries within header
