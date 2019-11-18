@@ -246,7 +246,7 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
 
     # if this post in the shared inbox?
     handle='inbox@'+domain
-    postUrl=postUrl.replace('/','#').replace('/activity','')
+    postUrl=postUrl.replace('/','#').replace('/activity','').strip()
 
     boxName='inbox'
     postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
