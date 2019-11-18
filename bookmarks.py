@@ -29,68 +29,78 @@ def undoBookmarksCollectionEntry(baseDir: str,postFilename: str,objectUrl: str, 
     """Undoes a bookmark for a particular actor
     """
     postJsonObject=loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this post so that the bookmark icon is changed
-        nickname=getNicknameFromActor(actor)
-        cachedPostFilename= \
-            getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+    if not postJsonObject:
+        return
 
-        if not postJsonObject.get('type'):
-            return
-        if postJsonObject['type']!='Create':
-            return
-        if not postJsonObject.get('object'):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post '+objectUrl+' has no object')
-            return
-        if not isinstance(postJsonObject['object'], dict):
-            return
-        if not postJsonObject['object'].get('bookmarks'):
-            return
-        if not isinstance(postJsonObject['object']['bookmarks'], dict):
-            return
-        if not postJsonObject['object']['bookmarks'].get('items'):
-            return
-        totalItems=0
-        if postJsonObject['object']['bookmarks'].get('totalItems'):
-            totalItems=postJsonObject['object']['bookmarks']['totalItems']
-            itemFound=False
-        for bookmarkItem in postJsonObject['object']['bookmarks']['items']:
-            if bookmarkItem.get('actor'):
-                if bookmarkItem['actor']==actor:
-                    if debug:
-                        print('DEBUG: bookmark was removed for '+actor)
-                        postJsonObject['object']['bookmarks']['items'].remove(bookmarkItem)
-                        itemFound=True
-                    break
-        if itemFound:
-            if totalItems==1:
+    # remove any cached version of this post so that the bookmark icon is changed
+    nickname=getNicknameFromActor(actor)
+    cachedPostFilename= \
+        getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+    if os.path.isfile(cachedPostFilename):
+        os.remove(cachedPostFilename)
+
+    if not postJsonObject.get('type'):
+        return
+    if postJsonObject['type']!='Create':
+        return
+    if not postJsonObject.get('object'):
+        if debug:
+            pprint(postJsonObject)
+            print('DEBUG: post '+objectUrl+' has no object')
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('bookmarks'):
+        return
+    if not isinstance(postJsonObject['object']['bookmarks'], dict):
+        return
+    if not postJsonObject['object']['bookmarks'].get('items'):
+        return
+    totalItems=0
+    if postJsonObject['object']['bookmarks'].get('totalItems'):
+        totalItems=postJsonObject['object']['bookmarks']['totalItems']
+        itemFound=False
+    for bookmarkItem in postJsonObject['object']['bookmarks']['items']:
+        if bookmarkItem.get('actor'):
+            if bookmarkItem['actor']==actor:
                 if debug:
-                    print('DEBUG: bookmarks was removed from post')
-                    del postJsonObject['object']['bookmarks']
-            else:
-                postJsonObject['object']['bookmarks']['totalItems']= \
-                    len(postJsonObject['bookmarks']['items'])
-                saveJson(postJsonObject,postFilename)
+                    print('DEBUG: bookmark was removed for '+actor)
+                    postJsonObject['object']['bookmarks']['items'].remove(bookmarkItem)
+                    itemFound=True
+                break
 
-            # remove from the index
-            bookmarksIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
-            if os.path.isfile(bookmarksIndexFilename):
-                bookmarkIndex=postFilename.split('/')[-1]+'\n'
-                if bookmarkIndex in open(bookmarksIndexFilename).read():
-                    indexStr=''
-                    indexStrChanged=False
-                    with open(bookmarksIndexFilename, 'r') as indexFile:
-                        indexStr=indexFile.read().replace(bookmarkIndex,'')
-                        indexStrChanged=True
-                    if indexStrChanged:
-                        bookmarksIndexFile=open(bookmarksIndexFilename,'w')
-                        if bookmarksIndexFile:
-                            bookmarksIndexFile.write(indexStr)
-                            bookmarksIndexFile.close()
+    if not itemFound:
+        return
+
+    if totalItems==1:
+        if debug:
+            print('DEBUG: bookmarks was removed from post')
+        del postJsonObject['object']['bookmarks']
+    else:
+        postJsonObject['object']['bookmarks']['totalItems']= \
+            len(postJsonObject['bookmarks']['items'])
+    saveJson(postJsonObject,postFilename)
+
+    # remove from the index
+    bookmarksIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
+    if not os.path.isfile(bookmarksIndexFilename):
+        return
+    if '/' in postFilename:
+        bookmarkIndex=postFilename.split('/')[-1].strip()
+    else:
+        bookmarkIndex=postFilename.strip()
+    if bookmarkIndex not in open(bookmarksIndexFilename).read():
+        return
+    indexStr=''
+    indexStrChanged=False
+    with open(bookmarksIndexFilename, 'r') as indexFile:
+        indexStr=indexFile.read().replace(bookmarkIndex+'\n','')
+        indexStrChanged=True
+    if indexStrChanged:
+        bookmarksIndexFile=open(bookmarksIndexFilename,'w')
+        if bookmarksIndexFile:
+            bookmarksIndexFile.write(indexStr)
+            bookmarksIndexFile.close()
 
 def bookmarkedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     """Returns True if the given post is bookmarked by the given person
