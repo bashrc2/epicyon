@@ -2332,6 +2332,12 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
     indexBoxName=boxname
     if boxname=='tlbookmarks':
         indexBoxName='bookmarks'
+    elif boxname=='dm':
+        indexBoxName='dm'
+    elif boxname=='tlreplies':
+        indexBoxName='tlreplies'
+    elif boxname=='tlmedia':
+        indexBoxName='tlmedia'
 
     if port:
         if port!=80 and port!=443:
