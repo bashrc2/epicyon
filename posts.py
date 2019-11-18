@@ -2384,6 +2384,10 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                 if not postFilename:
                     continue
 
+                # if this is a full path then remove the directories
+                if '/' in postFilename:
+                    postFilename=postFilename.split('/')[-1]
+
                 # filename of the post without any extension or path
                 postUrl=postFilename.replace('\n','').replace('.json','')
                 # get the full path of the post
