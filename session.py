@@ -52,7 +52,8 @@ def getJson(session,url: str,headers: {},params: {}, \
         print(e)
     return None
 
-def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
+def postJson(session,postJsonObject: {},federationList: [], \
+             inboxUrl: str,headers: {},capability: str) -> str:
     """Post a json message to the inbox of another person
     Supplying a capability, such as "inbox:write"
     """
@@ -64,7 +65,10 @@ def postJson(session,postJsonObject: {},federationList: [],inboxUrl: str,headers
             print('postJson: '+inboxUrl+' not permitted')
             return None
 
-    postResult = session.post(url = inboxUrl, data = json.dumps(postJsonObject), headers=headers)
+    postResult= \
+        session.post(url=inboxUrl, \
+                     data=json.dumps(postJsonObject), \
+                     headers=headers)
     if postResult:
         return postResult.text
     return None
@@ -97,7 +101,8 @@ def postJsonString(session,postJsonStr: str, \
         #    postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
         #    if not (postResult.status_code<200 or postResult.status_code>202):
         #        return True
-        if postResult.status_code>=400 and postResult.status_code<=405 and postResult.status_code!=404:
+        if postResult.status_code>=400 and postResult.status_code<=405 and \
+           postResult.status_code!=404:
             print('WARN: >>> Post to '+inboxUrl+' is unauthorized <<<')
             return False,True
         else:
@@ -106,7 +111,8 @@ def postJsonString(session,postJsonStr: str, \
             return False,False
     return True,False
 
-def postImage(session,attachImageFilename: str,federationList: [],inboxUrl: str,headers: {},capability: str) -> str:
+def postImage(session,attachImageFilename: str,federationList: [], \
+              inboxUrl: str,headers: {},capability: str) -> str:
     """Post an image to the inbox of another person or outbox via c2s
     Supplying a capability, such as "inbox:write"
     """

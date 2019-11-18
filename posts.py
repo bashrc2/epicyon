@@ -2005,7 +2005,7 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
             with open(sharedInboxFilename, 'r') as fp:
                 postJsonObject=commentjson.load(fp)                
         except:
-            print('WARN: commentjson exception createBoxBase')
+            print('WARN: commentjson exception createSharedInboxIndex')
             continue
 
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
@@ -2041,7 +2041,7 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
                     ocapJson=commentjson.load(fp)
                     loadedOcap=True
             except:
-                print('WARN: commentjson exception createBoxBase')
+                print('WARN: commentjson exception createSharedInboxIndex')
 
             if loadedOcap:
                 if ocapJson.get('id'):
