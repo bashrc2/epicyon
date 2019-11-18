@@ -594,12 +594,12 @@ class PubServer(BaseHTTPRequestHandler):
                               postId, \
                               self.postToNickname, \
                               self.server.domainFull,messageJson,'outbox')
-        if messageJson['type']=='Create' or \
-           messageJson['type']=='Note' or \
-           messageJson['type']=='Announce':
-            inboxUpdateIndex('outbox',self.server.baseDir, \
-                             self.postToNickname+'@'+self.server.domain, \
-                             savedFilename,self.server.debug)            
+            if messageJson['type']=='Create' or \
+               messageJson['type']=='Note' or \
+               messageJson['type']=='Announce':
+                inboxUpdateIndex('outbox',self.server.baseDir, \
+                                 self.postToNickname+'@'+self.server.domain, \
+                                 savedFilename,self.server.debug)            
         if outboxAnnounce(self.server.baseDir,messageJson,self.server.debug):
             if self.server.debug:
                 print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
