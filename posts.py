@@ -2276,7 +2276,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         return boxHeader
     return boxItems
 
-def isTimelinePost(filePath: str,boxname: str) -> bool:
+def isTimelinePost(filePath: str,boxname: str,postsInBox: []) -> bool:
     """ is this a valid timeline post?
     """
     # must be a "Note" or "Announce" type
@@ -2295,6 +2295,8 @@ def isTimelinePost(filePath: str,boxname: str) -> bool:
                 if '"Create"' in postStr:
                     if 'mediaType' not in postStr or 'image/' not in postStr:
                         return False
+            # add the post to the dictionary
+            postsInBox.append(filePath)                    
             return True
     return False
 
@@ -2382,15 +2384,9 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
-                    if not isTimelinePost(fullPostFilename,boxname):
+                    if not isTimelinePost(fullPostFilename,boxnamem,postsInBox):
                         continue
-                    # add the post to the dictionary
-                    postsInBox.append(fullPostFilename)
                     postsCtr+=1
-
-    # number of posts in box
-    boxHeader['totalItems']=len(postsInBox)
-    prevPostFilename=None
 
     # Generate first and last entries within header
     if postsCtr>0:
@@ -2401,25 +2397,19 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
             httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+str(lastPage)
 
     if headerOnly:
+        boxHeader['totalItems']=len(postsInBox)
         prevPageStr='true'
         if pageNumber>1:
             prevPageStr=str(pageNumber-1)
         boxHeader['prev']= \
             httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+prevPageStr
 
-        nextPageStr='true'
-        if pageNumber>1:
-            nextPageStr=str(pageNumber+1)
+        nextPageStr=str(pageNumber+1)
         boxHeader['next']= \
             httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+nextPageStr
         return boxHeader
 
-    for postFilename in postsInBox:
-        if not os.path.isfile(postFilename):
-            continue
-
-        # get the full path of the post file
-        filePath = postFilename
+    for postStr in postsInBox:
         p=None
         try:
             p=json.loads(postStr)
