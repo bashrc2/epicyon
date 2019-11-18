@@ -595,6 +595,7 @@ class PubServer(BaseHTTPRequestHandler):
                               self.postToNickname, \
                               self.server.domainFull,messageJson,'outbox')
             if messageJson['type']=='Create' or \
+               messageJson['type']=='Question' or \
                messageJson['type']=='Note' or \
                messageJson['type']=='Announce':
                 inboxUpdateIndex('outbox',self.server.baseDir, \
