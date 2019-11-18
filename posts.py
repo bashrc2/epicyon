@@ -2384,7 +2384,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
-                    if not isTimelinePost(fullPostFilename,boxnamem,postsInBox):
+                    if not isTimelinePost(fullPostFilename,boxname,postsInBox):
                         continue
                     postsCtr+=1
 
