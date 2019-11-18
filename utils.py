@@ -246,7 +246,7 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
     # if this post in the shared inbox?
     handle='inbox@'+domain
     boxName='inbox'
-    postUrl=postUrl.replace('/','#')
+    postUrl=postUrl.replace('/','#').replace('/activity','')
     postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
     if not os.path.isfile(postFilename):
         boxName='outbox'
