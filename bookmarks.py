@@ -65,8 +65,8 @@ def undoBookmarksCollectionEntry(baseDir: str,postFilename: str,objectUrl: str, 
             if bookmarkItem['actor']==actor:
                 if debug:
                     print('DEBUG: bookmark was removed for '+actor)
-                    postJsonObject['object']['bookmarks']['items'].remove(bookmarkItem)
-                    itemFound=True
+                postJsonObject['object']['bookmarks']['items'].remove(bookmarkItem)
+                itemFound=True
                 break
 
     if not itemFound:
@@ -153,17 +153,17 @@ def updateBookmarksCollection(baseDir: str,postFilename: str, \
         if not postJsonObject['object'].get('bookmarks'):
             if debug:
                 print('DEBUG: Adding initial bookmarks to '+objectUrl)
-                bookmarksJson = {
-                    "@context": "https://www.w3.org/ns/activitystreams",
-                    'id': objectUrl,
-                    'type': 'Collection',
-                    "totalItems": 1,
-                    'items': [{
-                        'type': 'Bookmark',
-                        'actor': actor
-                    }]                
-                }
-                postJsonObject['object']['bookmarks']=bookmarksJson
+            bookmarksJson = {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                'id': objectUrl,
+                'type': 'Collection',
+                "totalItems": 1,
+                'items': [{
+                    'type': 'Bookmark',
+                    'actor': actor
+                }]                
+            }
+            postJsonObject['object']['bookmarks']=bookmarksJson
         else:
             if not postJsonObject['object']['bookmarks'].get('items'):
                 postJsonObject['object']['bookmarks']['items']=[]
