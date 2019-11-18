@@ -60,6 +60,7 @@ from inbox import runInboxQueueWatchdog
 from inbox import savePostToInboxQueue
 from inbox import populateReplies
 from inbox import getPersonPubKey
+from inbox import inboxUpdateIndex
 from follow import getFollowingFeed
 from follow import outboxUndoFollow
 from follow import sendFollowRequest
@@ -587,11 +588,15 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: savePostToBox')
         if messageJson['type']!='Upgrade':
-            savePostToBox(self.server.baseDir, \
-                          self.server.httpPrefix, \
-                          postId, \
-                          self.postToNickname, \
-                          self.server.domainFull,messageJson,'outbox')
+            savedFilename= \
+                savePostToBox(self.server.baseDir, \
+                              self.server.httpPrefix, \
+                              postId, \
+                              self.postToNickname, \
+                              self.server.domainFull,messageJson,'outbox')
+            inboxUpdateIndex('outbox',self.server.baseDir, \
+                             self.postToNickname+'@'+self.server.domain, \
+                             savedFilename,self.server.debug)            
         if outboxAnnounce(self.server.baseDir,messageJson,self.server.debug):
             if self.server.debug:
                 print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
