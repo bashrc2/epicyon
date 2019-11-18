@@ -2408,7 +2408,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
             httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+prevPageStr
 
         nextPageStr='true'
-        if nextNumber>1:
+        if pageNumber>1:
             nextPageStr=str(pageNumber+1)
         boxHeader['next']= \
             httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+nextPageStr
