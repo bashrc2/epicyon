@@ -2390,9 +2390,10 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
-                    if not isTimelinePost(fullPostFilename,boxname,postsInBox):
-                        continue
+                    isTimelinePost(fullPostFilename,boxname,postsInBox):
                     postsCtr+=1
+                else:
+                    print('WARN: unable to locate post '+postUrl)
 
     # Generate first and last entries within header
     if postsCtr>0:
