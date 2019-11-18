@@ -2296,7 +2296,7 @@ def isTimelinePost(filePath: str,boxname: str,postsInBox: []) -> bool:
                     if 'mediaType' not in postStr or 'image/' not in postStr:
                         return False
             # add the post to the dictionary
-            postsInBox.append(filePath)                    
+            postsInBox.append(postStr)
             return True
     return False
 
@@ -2433,9 +2433,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                     if p['object'].get('bookmarks'):
                         p['bookmarks']={}
 
-        # insert it into the box feed
-        if not headerOnly:
-            boxItems['orderedItems'].append(p)
+        boxItems['orderedItems'].append(p)
 
     return boxItems
 
