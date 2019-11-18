@@ -1576,8 +1576,14 @@ def inboxUpdateIndex(boxname: str,baseDir: str,handle: str,destinationFilename: 
     indexFilename=baseDir+'/accounts/'+handle+'/'+boxname+'.index'
     if debug:
         print('DEBUG: Updating index '+indexFilename)
+
     if '/'+boxname+'/' in destinationFilename:
         destinationFilename=destinationFilename.split('/'+boxname+'/')[1]
+
+    # remove the path
+    if '/' in destinationFilename:
+        destinationFilename=destinationFilename.split('/')[-1]
+
     if os.path.isfile(indexFilename):
         try:
             with open(indexFilename, 'r+') as indexFile:
