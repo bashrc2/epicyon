@@ -2382,6 +2382,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                     continue
                     
                 if not postFilename:
+                    postsCtr+=1
                     continue
 
                 # if this is a full path then remove the directories
@@ -2395,9 +2396,9 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
                     addPostToTimeline(fullPostFilename,boxname,postsInBox,boxActor)
-                    postsCtr+=1
                 else:
                     print('WARN: unable to locate post '+postUrl)
+                postsCtr+=1
 
     # Generate first and last entries within header
     if postsCtr>0:
