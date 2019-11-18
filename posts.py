@@ -2390,7 +2390,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
-                    isTimelinePost(fullPostFilename,boxname,postsInBox):
+                    isTimelinePost(fullPostFilename,boxname,postsInBox)
                     postsCtr+=1
                 else:
                     print('WARN: unable to locate post '+postUrl)
