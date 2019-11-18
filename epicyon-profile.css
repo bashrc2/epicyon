@@ -783,7 +783,8 @@ div.gallery img {
     input[type=radio] {
 	font-size: var(--font-size);
 	width: 32px;
-    }        
+	vertical-align: middle;
+    }
     input.vote[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
@@ -1065,8 +1066,9 @@ div.gallery img {
     }
     input[type=radio] {
 	font-size: var(--font-size3);
-	height: 70px;
-    }        
+	height: 90px;
+	vertical-align: middle;
+    }
     input.vote[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
