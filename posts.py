@@ -2276,7 +2276,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
         return boxHeader
     return boxItems
 
-def isTimelinePost(filePath: str,boxname: str,postsInBox: []) -> bool:
+def addPostToTimeline(filePath: str,boxname: str,postsInBox: [],boxActor: str) -> bool:
     """ is this a valid timeline post?
     """
     # must be a "Note" or "Announce" type
@@ -2394,7 +2394,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
-                    isTimelinePost(fullPostFilename,boxname,postsInBox)
+                    addPostToTimeline(fullPostFilename,boxname,postsInBox,boxActor)
                     postsCtr+=1
                 else:
                     print('WARN: unable to locate post '+postUrl)
