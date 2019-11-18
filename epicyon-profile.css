@@ -363,10 +363,6 @@ a:link {
     background-color: var(--button-background);
 }
 
-.question {
-    font-size: var(--font-size);
-}
-
 input[type=number] {
     width: 10%;
     padding: 12px;
@@ -781,9 +777,13 @@ div.gallery img {
         font-size: var(--font-size);
         width: 20%;
     }
+    .question {
+	font-size: var(--font-size);
+    }
     input[type=radio] {
-	width: 32px;
-    }    
+	font-size: var(--font-size);
+	height: 70px;
+    }        
     input.vote[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
@@ -1060,8 +1060,12 @@ div.gallery img {
         font-size: var(--font-size3);
         width: 20%;
     }
+    .question {
+	font-size: var(--font-size3);
+    }
     input[type=radio] {
-	width: 70px;
+	font-size: var(--font-size3);
+	height: 70px;
     }        
     input.vote[type=submit] {
         background-color: var(--button-background);
