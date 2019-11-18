@@ -243,23 +243,32 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
         extension='json'
     else:
         extension='replies'
+
     # if this post in the shared inbox?
     handle='inbox@'+domain
-    boxName='inbox'
     postUrl=postUrl.replace('/','#').replace('/activity','')
+
+    boxName='inbox'
     postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
-    if not os.path.isfile(postFilename):
-        boxName='outbox'
-        postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
-        if not os.path.isfile(postFilename):
-            # if this post in the inbox of the person?
-            boxName='inbox'
-            postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
-            if not os.path.isfile(postFilename):
-                postFilename=baseDir+'/cache/announce/'+nickname+'/'+postUrl+'.'+extension
-                if not os.path.isfile(postFilename):
-                    postFilename=None
-    return postFilename
+    if os.path.isfile(postFilename):
+        return postFilename
+
+    boxName='outbox'
+    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
+    if os.path.isfile(postFilename):
+        return postFilename
+
+    # if this post in the inbox of the person?
+    boxName='inbox'
+    postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
+    if os.path.isfile(postFilename):
+        return postFilename
+
+    postFilename=baseDir+'/cache/announce/'+nickname+'/'+postUrl+'.'+extension
+    if os.path.isfile(postFilename):
+        return postFilename
+    print('WARN: unable to locate '+nickname+' '+postUrl+'.'+extension)
+    return None
 
 def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
     if not postJson.get('attachment'):
