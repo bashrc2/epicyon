@@ -1785,28 +1785,28 @@ def sendToFollowersThread(session,baseDir: str, \
 
 def createInbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+    return createBoxIndexed(session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createBookmarksTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                             itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+    return createBoxIndexed(session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createDMTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(session,baseDir,'dm',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+    return createBoxIndexed(session,baseDir,'dm',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createRepliesTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                           itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(session,baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+    return createBoxIndexed(session,baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createMediaTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                         itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxBase(session,baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
-                         itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+    return createBoxIndexed(session,baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createOutbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
@@ -2139,6 +2139,7 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
                 if fullPostFilename:
+                    
                     postsInBox[postsCtr]=fullPostFilename
                     postsCtr+=1
         lookedUpFromIndex=True
@@ -2273,6 +2274,179 @@ def createBoxBase(session,baseDir: str,boxname: str, \
             print(e)
     if headerOnly:
         return boxHeader
+    return boxItems
+
+def isTimelinePost(filePath: str,boxname: str) -> bool:
+    """ is this a valid timeline post?
+    """
+    # must be a "Note" or "Announce" type
+    with open(filePath, 'r') as postFile:
+        postStr = postFile.read()
+        if '"Note"' in postStr or '"Announce"' in postStr or \
+           ('"Question"' in postStr and '"Create"' in postStr):
+
+            if boxname=='dm':
+                if '#Public' in postStr or '/followers' in postStr:
+                    return False
+            elif boxname=='tlreplies':
+                if boxActor not in postStr:
+                    return False
+            elif boxname=='tlmedia':
+                if '"Create"' in postStr:
+                    if 'mediaType' not in postStr or 'image/' not in postStr:
+                        return False
+            return True
+    return False
+
+def createBoxIndexed(session,baseDir: str,boxname: str, \
+                     nickname: str,domain: str,port: int,httpPrefix: str, \
+                     itemsPerPage: int,headerOnly: bool,authorized :bool, \
+                     ocapAlways: bool,pageNumber=None) -> {}:
+    """Constructs the box feed for a person with the given nickname
+    """
+    if not authorized or not pageNumber:
+        pageNumber=1
+
+    if boxname!='inbox' and boxname!='dm' and \
+       boxname!='tlreplies' and boxname!='tlmedia' and \
+       boxname!='outbox' and boxname!='tlbookmarks':
+        return None
+
+    if boxname!='dm' and boxname!='tlreplies' and \
+       boxname!='tlmedia' and boxname!='tlbookmarks':
+        boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    else:
+        # extract DMs or replies or media from the inbox
+        boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
+
+    announceCacheDir=baseDir+'/cache/announce/'+nickname
+
+    sharedBoxDir=None
+    if boxname=='inbox' or boxname=='tlreplies' or \
+       boxname=='tlmedia':
+        sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
+
+    # bookmarks timeline is like the inbox but has its own separate index
+    indexBoxName=boxname
+    if boxname=='tlbookmarks':
+        indexBoxName='bookmarks'
+
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domain=domain+':'+str(port)
+
+    boxActor=httpPrefix+'://'+domain+'/users/'+nickname
+                
+    pageStr='?page=true'
+    if pageNumber:
+        try:
+            pageStr='?page='+str(pageNumber)
+        except:
+            pass
+    boxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
+                 'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+                 'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+                 'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+                 'totalItems': 0,
+                 'type': 'OrderedCollection'}
+    boxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
+                'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
+                'orderedItems': [
+                ],
+                'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+                'type': 'OrderedCollectionPage'}
+
+    postsInBox=[]
+
+    indexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+indexBoxName+'.index'
+    postsCtr=0
+    if os.path.isfile(indexFilename):
+        maxPostCtr=itemsPerPage*pageNumber
+        with open(indexFilename, 'r') as indexFile:
+            while postsCtr<maxPostCtr:
+                postFilename=indexFile.readline()
+
+                # Skip through any posts previous to the current page
+                if postsCtr<int((pageNumber-1)*itemsPerPage):                    
+                    if postFilename:
+                        postsCtr+=1
+                    continue
+                    
+                if not postFilename:
+                    continue
+
+                # filename of the post without any extension or path
+                postUrl=postFilename.replace('\n','').replace('.json','')
+                # get the full path of the post
+                fullPostFilename= \
+                    locatePost(baseDir,nickname,domain,postUrl,False)
+                if fullPostFilename:
+                    if not isTimelinePost(fullPostFilename,boxname):
+                        continue
+                    # add the post to the dictionary
+                    postsInBox.append(fullPostFilename)
+                    postsCtr+=1
+
+    # number of posts in box
+    boxHeader['totalItems']=len(postsInBox)
+    prevPostFilename=None
+
+    # Generate first and last entries within header
+    if postsCtr>0:
+        lastPage=int(postsCtr/itemsPerPage)
+        if lastPage<1:
+            lastPage=1
+        boxHeader['last']= \
+            httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+str(lastPage)
+
+    if headerOnly:
+        prevPageStr='true'
+        if pageNumber>1:
+            prevPageStr=str(pageNumber-1)
+        boxHeader['prev']= \
+            httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+prevPageStr
+
+        nextPageStr='true'
+        if nextNumber>1:
+            nextPageStr=str(pageNumber+1)
+        boxHeader['next']= \
+            httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page='+nextPageStr
+        return boxHeader
+
+    for postFilename in postsInBox:
+        if not os.path.isfile(postFilename):
+            continue
+
+        # get the full path of the post file
+        filePath = postFilename
+        p=None
+        try:
+            p=json.loads(postStr)
+        except:
+            continue
+
+        # remove any capability so that it's not displayed
+        if p.get('capability'):
+            del p['capability']
+
+        # Don't show likes, replies or shares (announces) to unauthorized viewers
+        if not authorized:
+            if p.get('object'):
+                if isinstance(p['object'], dict):                                
+                    if p['object'].get('likes'):
+                        p['likes']={}
+                    if p['object'].get('replies'):
+                        p['replies']={}
+                    if p['object'].get('shares'):
+                        p['shares']={}
+                    if p['object'].get('bookmarks'):
+                        p['bookmarks']={}
+
+        # insert it into the box feed
+        if not headerOnly:
+            boxItems['orderedItems'].append(p)
+
     return boxItems
 
 def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,maxPostsInBox=32000):
