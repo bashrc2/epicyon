@@ -2375,13 +2375,12 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
             while postsCtr<maxPostCtr:
                 postFilename=indexFile.readline()
 
+                if not postFilename:
+                    postsCtr+=1
+                    continue
+
                 # Skip through any posts previous to the current page
                 if postsCtr<int((pageNumber-1)*itemsPerPage):                    
-                    if postFilename:
-                        postsCtr+=1
-                    continue
-                    
-                if not postFilename:
                     postsCtr+=1
                     continue
 
@@ -2390,7 +2389,7 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                     postFilename=postFilename.split('/')[-1]
 
                 # filename of the post without any extension or path
-                postUrl=postFilename.replace('\n','').replace('.json','')
+                postUrl=postFilename.replace('\n','').replace('.json','').strip()
                 # get the full path of the post
                 fullPostFilename= \
                     locatePost(baseDir,nickname,domain,postUrl,False)
