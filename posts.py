@@ -2135,12 +2135,12 @@ def createBoxBase(session,baseDir: str,boxname: str, \
                 postFilename=indexFile.readline()
                 if not postFilename:
                     break
-                postFilename=postFilename.replace('\n','')
-                fullPostFilename=os.path.join(boxDir, postFilename)
-                if not os.path.isfile(fullPostFilename):
-                    fullPostFilename=os.path.join(announceCacheDir, postFilename)
-                postsInBox[postsCtr]=fullPostFilename
-                postsCtr+=1
+                postUrl=postFilename.replace('\n','').replace('.json','')
+                fullPostFilename= \
+                    locatePost(baseDir,nickname,domain,postUrl,False)
+                if fullPostFilename:
+                    postsInBox[postsCtr]=fullPostFilename
+                    postsCtr+=1
         lookedUpFromIndex=True
     else:
         if boxname!='tlbookmarks':
