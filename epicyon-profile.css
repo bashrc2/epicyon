@@ -782,7 +782,7 @@ div.gallery img {
     }
     input[type=radio] {
 	font-size: var(--font-size);
-	height: 70px;
+	width: 32px;
     }        
     input.vote[type=submit] {
         background-color: var(--button-background);
