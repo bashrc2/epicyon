@@ -2238,6 +2238,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             '<a href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor='+postJsonObject['actor']+ \
+            '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
         bookmarkStr+='<img loading="lazy" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
         
