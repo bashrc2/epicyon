@@ -81,7 +81,7 @@ def undoAnnounceCollectionEntry(baseDir: str,postFilename: str, \
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
-        # remove any cached version of this announce so that the like icon is changed
+        # remove any cached version of this announce so that the announce icon is changed
         nickname=getNicknameFromActor(actor)
         cachedPostFilename= \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
@@ -134,7 +134,7 @@ def updateAnnounceCollection(baseDir: str,postFilename: str, \
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
-        # remove any cached version of this announce so that the like
+        # remove any cached version of this announce so that the announce
         # icon is changed
         nickname=getNicknameFromActor(actor)
         cachedPostFilename= \
