@@ -1869,11 +1869,10 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
                          postJsonObject: {}, \
-                         avatarUrl: str, showAvatarOptions: bool,
+                         avatarUrl: str,showAvatarOptions: bool,
                          allowDeletion: bool, \
-                         httpPrefix: str, projectVersion: str, \
-                         boxName: str, \
-                         showRepeats=True, \
+                         httpPrefix: str,projectVersion: str, \
+                         boxName: str,showRepeats=True, \
                          showIcons=False, \
                          manuallyApprovesFollowers=False, \
                          showPublicOnly=False,
@@ -1905,6 +1904,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
     # it should already have been created for the inbox
     if boxName=='tlbookmarks':
         return ''
+
+    timelinePostBookmark=postJsonObject['id'].replace('/activity','').replace('://','-').replace('/','-')
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
@@ -2202,6 +2203,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
         announceStr= \
             '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \
             '?actor='+postJsonObject['actor']+ \
+            '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+announceTitle+'">'
         announceStr+='<img loading="lazy" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
@@ -2219,6 +2221,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             '<a href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor='+postJsonObject['actor']+ \
+            '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+likeTitle+'">'
         likeStr+='<img loading="lazy" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
@@ -2321,7 +2324,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
 
     postHtml=''
     if boxName!='tlmedia':
-        postHtml='<div class="'+containerClass+'">\n'
+        postHtml='<div id="'+timelinePostBookmark+'" class="'+containerClass+'">\n'
         postHtml+=avatarImageInPost
         postHtml+='<p class="post-title">'+titleStr+replyAvatarImageInPost+'</p>'
         postHtml+=contentStr+footerStr

@@ -1516,6 +1516,12 @@ class PubServer(BaseHTTPRequestHandler):
             repeatUrl=self.path.split('?repeat=')[1]
             if '?' in repeatUrl:
                 repeatUrl=repeatUrl.split('?')[0]
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
@@ -1558,7 +1564,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
-                                   str(pageNumber),cookie)
+                                   str(pageNumber)+ \
+                                   timelineBookmark,cookie)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,32)
@@ -1569,6 +1576,12 @@ class PubServer(BaseHTTPRequestHandler):
             repeatUrl=self.path.split('?unrepeat=')[1]
             if '?' in repeatUrl:
                 repeatUrl=repeatUrl.split('?')[0]
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
@@ -1611,7 +1624,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
-                                   str(pageNumber),cookie)
+                                   str(pageNumber)+ \
+                                   timelineBookmark,cookie)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,33)
@@ -1680,6 +1694,12 @@ class PubServer(BaseHTTPRequestHandler):
             likeUrl=self.path.split('?like=')[1]
             if '?' in likeUrl:
                 likeUrl=likeUrl.split('?')[0]                
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             actor=self.path.split('?like=')[0]
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
@@ -1698,7 +1718,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 self._redirect_headers(actor+'/'+timelineStr+ \
-                                       '?page='+str(pageNumber),cookie)
+                                       '?page='+str(pageNumber)+ \
+                                       timelineBookmark,cookie)
                 return                
             if not self.server.session:
                 self.server.session= \
@@ -1719,7 +1740,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(likeJson,self.server.projectVersion)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
-                                   '?page='+str(pageNumber),cookie)
+                                   '?page='+str(pageNumber)+ \
+                                   timelineBookmark,cookie)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,36)
@@ -1730,6 +1752,12 @@ class PubServer(BaseHTTPRequestHandler):
             likeUrl=self.path.split('?unlike=')[1]
             if '?' in likeUrl:
                 likeUrl=likeUrl.split('?')[0]
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
@@ -1773,7 +1801,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(undoLikeJson,self.server.projectVersion)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
-                                   '?page='+str(pageNumber),cookie)
+                                   '?page='+str(pageNumber)+ \
+                                   timelineBookmark,cookie)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,36)
@@ -1784,6 +1813,12 @@ class PubServer(BaseHTTPRequestHandler):
             bookmarkUrl=self.path.split('?bookmark=')[1]
             if '?' in bookmarkUrl:
                 bookmarkUrl=bookmarkUrl.split('?')[0]                
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             actor=self.path.split('?bookmark=')[0]
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
@@ -1820,7 +1855,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(bookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
-                                   '?page='+str(pageNumber),cookie)
+                                   '?page='+str(pageNumber)+ \
+                                   timelineBookmark,cookie)
             return
 
         # undo a bookmark from the web interface icon
@@ -1829,6 +1865,12 @@ class PubServer(BaseHTTPRequestHandler):
             bookmarkUrl=self.path.split('?unbookmark=')[1]
             if '?' in bookmarkUrl:
                 bookmarkUrl=bookmarkUrl.split('?')[0]
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
@@ -1869,7 +1911,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(undoBookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
             self._redirect_headers(actor+'/'+timelineStr+ \
-                                   '?page='+str(pageNumber),cookie)
+                                   '?page='+str(pageNumber)+ \
+                                   timelineBookmark,cookie)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,37)
