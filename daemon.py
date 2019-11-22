@@ -3510,24 +3510,30 @@ class PubServer(BaseHTTPRequestHandler):
             print('POST size too large')
             return None
 
-        if ' boundary=' in headers['Content-Type']:
-            boundary=headers['Content-Type'].split('boundary=')[1]
-            if ';' in boundary:
-                boundary=boundary.split(';')[0]
+        if not headers.get('Content-Type'):
+            if headers.get('Content-type'):
+                headers['Content-Type']=headers['Content-type']
+            elif headers.get('content-type'):
+                headers['Content-Type']=headers['content-type']
+        if headers.get('Content-Type'):
+            if ' boundary=' in headers['Content-Type']:
+                boundary=headers['Content-Type'].split('boundary=')[1]
+                if ';' in boundary:
+                    boundary=boundary.split(';')[0]
 
-            postBytes=self.rfile.read(length)
+                postBytes=self.rfile.read(length)
             
-            # second length check from the bytes received
-            # since Content-Length could be untruthful
-            length=len(postBytes)
-            if length>self.server.maxPostLength:
-                print('POST size too large')
-                return None
+                # second length check from the bytes received
+                # since Content-Length could be untruthful
+                length=len(postBytes)
+                if length>self.server.maxPostLength:
+                    print('POST size too large')
+                    return None
             
-            # Note sending new posts needs to be synchronous, otherwise any attachments
-            # can get mangled if other events happen during their decoding
-            print('Creating new post: '+newPostThreadName)
-            self._receiveNewPostProcess(authorized,postType,path,headers,length,postBytes,boundary)
+                # Note sending new posts needs to be synchronous, otherwise any attachments
+                # can get mangled if other events happen during their decoding
+                print('Creating new post: '+newPostThreadName)
+                self._receiveNewPostProcess(authorized,postType,path,headers,length,postBytes,boundary)
         return pageNumber
         
     def do_POST(self):
