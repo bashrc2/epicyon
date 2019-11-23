@@ -1635,7 +1635,7 @@ def testSaveLoadJson():
     print('testSaveLoadJson')
     testJson={
         "param1": 3,
-        "param2": "test"
+        "param2": '"Crème brûlée यह एक परीक्षण ह"'
     }
     testFilename='/tmp/.epicyonTestSaveLoadJson.json'
     if os.path.isfile(testFilename):
@@ -1647,7 +1647,7 @@ def testSaveLoadJson():
     assert testLoadJson.get('param1')
     assert testLoadJson.get('param2')
     assert testLoadJson['param1']==3
-    assert testLoadJson['param2']=="test"
+    assert testLoadJson['param2']=='"Crème brûlée यह एक परीक्षण ह"'
     os.remove(testFilename)
     
 def runAllTests():

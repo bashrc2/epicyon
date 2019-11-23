@@ -10,6 +10,7 @@ import os
 import time
 import shutil
 import datetime
+import json
 import commentjson
 
 def saveJson(jsonObject: {},filename: str) -> bool:
@@ -19,7 +20,7 @@ def saveJson(jsonObject: {},filename: str) -> bool:
     while tries<5:
         try:
             with open(filename, 'w') as fp:
-                commentjson.dump(jsonObject, fp, indent=2, sort_keys=False)
+                fp.write(json.dumps(jsonObject))
                 return True
         except:
             print('WARN: saveJson '+str(tries))
