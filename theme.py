@@ -111,7 +111,7 @@ def setThemePurple(baseDir: str):
         "lines-color": "#ff42a0",
         "day-number": "#3f2145",
         "day-number2": "#1f152d",
-        "time-color": "#3f2145",
+        "time-color": "#ff42a0",
         "place-color": "black",
         "event-color": "#282c37",
         "today-foreground": "white",
