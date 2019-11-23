@@ -11,7 +11,6 @@ import time
 import shutil
 import datetime
 import json
-import commentjson
 
 def saveJson(jsonObject: {},filename: str) -> bool:
     """Saves json to a file
@@ -36,7 +35,8 @@ def loadJson(filename: str,delaySec=2) -> {}:
     while tries<5:
         try:
             with open(filename, 'r') as fp:
-                jsonObject=commentjson.load(fp)
+                data=fp.read()
+                jsonObject=json.loads(data)
                 break
         except:
             print('WARN: loadJson exception')
@@ -122,17 +122,7 @@ def getDisplayName(baseDir: str,actor: str,personCache: {}) -> str:
         # Try to obtain from the cached actors
         cachedActorFilename=baseDir+'/cache/actors/'+actor.replace('/','#')+'.json'
         if os.path.isfile(cachedActorFilename):
-            actorJson=None
-            tries=0
-            while tries<5:
-                try:
-                    with open(cachedActorFilename, 'r') as fp:
-                        actorJson=commentjson.load(fp)
-                        break
-                except:
-                    print('WARN: getDisplayName')
-                    time.sleep(1)
-                    tries+=1
+            actorJson=loadJson(cachedActorFilename,1)
             if actorJson:
                 if actorJson.get('name'):
                     return(actorJson['name'])
@@ -310,18 +300,7 @@ def removeModerationPostFromIndex(baseDir: str,postUrl: str,debug: bool) -> None
 def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilename: str,debug: bool) -> None:
     """Recursively deletes a post and its replies and attachments
     """
-    postJsonObject=None
-    tries=0
-    while tries<5:
-        try:
-            with open(postFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
-                break
-        except:
-            print('WARN: deletePost')
-            time.sleep(1)
-            tries+=1
-
+    postJsonObject=loadJson(postFilename,1)
     if postJsonObject:
         # don't allow deletion of bookmarked posts
         bookmarksIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
