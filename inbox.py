@@ -2124,7 +2124,8 @@ def runInboxQueue(projectVersion: str, \
             # were specifically addresses to particular accounts
             noOfFollowItems=len(recipientsDictFollowers.items())
             if noOfFollowItems>0:
-                if noOfFollowItems<5:
+                # always deliver to individual inboxes
+                if noOfFollowItems<999999:
                     if debug:
                         print('DEBUG: moving '+str(noOfFollowItems)+ \
                               ' inbox posts addressed to followers')
