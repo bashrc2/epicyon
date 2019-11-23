@@ -632,6 +632,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         themesDropdown+='    <option value="highvis">'+translate['HighVis']+'</option>'
         themesDropdown+='  </select>'
         themesDropdown+='</div>'
+        themeName=getConfigParam(baseDir,'theme')
+        themesDropdown=themesDropdown.replace('<option value="'+themeName+'">','<option value="'+themeName+'" selected>')
 
     editProfileForm=htmlHeader(cssFilename,editProfileCSS)
     editProfileForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">'
