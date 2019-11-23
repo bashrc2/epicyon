@@ -26,34 +26,6 @@ When a moderator report is created the message at the top of the screen can be c
 
 Extra emoji can be added to the *emoji* directory and you should then update the **emoji/emoji.json** file, which maps the name to the filename (without the .png extension).
 
-## Style / Colors
+## Themes
 
-There are a few predefined themes which you can change to. Move to the directory where Epicyon is installed, then you can use:
-
-``` bash
-theme default
-theme light
-theme hacker
-theme purple
-```
-
-Alternatively if you want to create a much more customized theme then you can manually edit css files.
-
-Create copies of the default files:
-
-``` bash
-cp epicyon-profile.css epicyon.css
-cp epicyon-follow.css follow.css
-cp epicyon-login.css login.css
-cp epicyon-suspended.css suspended.css
-```
-
-You can then edit *epicyon.css*, *follow.css*, *login.css* and *follow.css* as needed and those files won't be overwritten if you upgrade.
-
-*epicyon.css* is the main style for displaying profiles and timelines.
-
-*follow.css* is used for displaying options when you select an avatar.
-
-*login.css* defines the style of the login screen.
-
-*suspended.css* is the style for the screen which shows that an account has been suspended.
+If you want to create a new theme then the functions for that are within *theme.py*. These functions take the css templates and modify them. You will need to edit *themesDropdown* within *webinterface.py* and add the appropriate translations for the theme name. Themes are selectable from the profile screen of the administrator.
