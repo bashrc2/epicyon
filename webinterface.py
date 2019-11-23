@@ -624,7 +624,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
 
         themesDropdown= '<div class="container">'
         themesDropdown+='  <b>'+translate['Theme']+'</b><br>'
-        themesDropdown+='  <select id="themeDropdown" class="theme">'
+        themesDropdown+='  <select id="themeDropdown" name="themeDropdown" class="theme">'
         themesDropdown+='    <option value="default">'+translate['Default']+'</option>'
         themesDropdown+='    <option value="light">'+translate['Light']+'</option>'
         themesDropdown+='    <option value="purple">'+translate['Purple']+'</option>'
