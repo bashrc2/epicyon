@@ -1631,8 +1631,28 @@ def testCommentJson() -> None:
     encodedStr=json.dumps(testJson, ensure_ascii=False)
     assert messageStr in encodedStr
 
+def testSaveLoadJson():
+    print('testSaveLoadJson')
+    testJson={
+        "param1": 3,
+        "param2": "test"
+    }
+    testFilename='/tmp/.epicyonTestSaveLoadJson.json'
+    if os.path.isfile(testFilename):
+        os.remove(testFilename)
+    assert saveJson(testJson,testFilename)
+    assert os.path.isfile(testFilename)
+    testLoadJson=loadJson(testFilename)
+    assert(testLoadJson)
+    assert testLoadJson.get('param1')
+    assert testLoadJson.get('param2')
+    assert testLoadJson['param1']==3
+    assert testLoadJson['param2']=="test"
+    os.remove(testFilename)
+    
 def runAllTests():
     print('Running tests...')
+    testSaveLoadJson()
     testCommentJson()
     testGetStatusNumber()
     testAddEmoji()
