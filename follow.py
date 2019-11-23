@@ -8,7 +8,6 @@ __status__ = "Production"
 
 import json
 import time
-import commentjson
 from pprint import pprint
 import os
 import sys

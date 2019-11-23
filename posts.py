@@ -8,7 +8,6 @@ __status__ = "Production"
 
 import requests
 import json
-import commentjson
 import html
 import datetime
 import os
@@ -2001,11 +2000,9 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
                 
         sharedInboxFilename=os.path.join(sharedBoxDir, postFilename)
         # get the actor from the shared post
-        try:
-            with open(sharedInboxFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)                
-        except:
-            print('WARN: commentjson exception createSharedInboxIndex')
+        postJsonObject=loadJson(sharedInboxFilename,0)
+        if not postJsonObject:
+            print('WARN: json load exception createSharedInboxIndex')
             continue
 
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
@@ -2035,15 +2032,10 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
                 continue
 
             # read the capabilities id
-            loadedOcap=False
-            try:
-                with open(ocapFilename, 'r') as fp:
-                    ocapJson=commentjson.load(fp)
-                    loadedOcap=True
-            except:
-                print('WARN: commentjson exception createSharedInboxIndex')
-
-            if loadedOcap:
+            ocapJson=loadJson(ocapFilename,0)
+            if not ocapJson:
+                print('WARN: json load exception createSharedInboxIndex')
+            else:
                 if ocapJson.get('id'):
                     if ocapJson['id'] in capsList:                                    
                         postsInBoxDict[statusNumber]=sharedInboxFilename

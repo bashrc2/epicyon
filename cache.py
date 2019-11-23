@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 import time
 import datetime
-import commentjson
 from utils import loadJson
 from utils import saveJson
         

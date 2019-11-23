@@ -9,7 +9,6 @@ __status__ = "Production"
 import json
 import time
 import os
-import commentjson
 from collections import OrderedDict
 from datetime import datetime
 from datetime import date

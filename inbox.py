@@ -11,7 +11,6 @@ import os
 import datetime
 import time
 import json
-import commentjson
 from shutil import copyfile
 from utils import urlPermitted
 from utils import createInboxQueueDir
@@ -1867,11 +1866,6 @@ def runInboxQueue(projectVersion: str, \
         'accounts': {}
     }
 
-    # keep track of the number of queue item read failures
-    # so that if a file is corrupt then it will eventually
-    # be ignored rather than endlessly retried
-    itemReadFailed=0
-
     heartBeatCtr=0
     queueRestoreCtr=0
 
@@ -1912,24 +1906,19 @@ def runInboxQueue(projectVersion: str, \
             print('Loading queue item '+queueFilename)
             
             # Load the queue json
-            try:
-                with open(queueFilename, 'r') as fp:
-                    queueJson=commentjson.load(fp)
-            except:
-                itemReadFailed+=1
-                print('WARN: commentjson exception runInboxQueue')
-                print('WARN: Failed to load inbox queue item '+queueFilename+' (try '+str(itemReadFailed)+')')
-                if itemReadFailed>4:
-                    # After a few tries we can assume that the file
-                    # is probably corrupt/unreadable
-                    if len(queue)>0:
-                        queue.pop(0)
-                    itemReadFailed=0
-                    # delete the queue file
-                    if os.path.isfile(queueFilename):
+            queueJson=loadJson(queueFilename,1)
+            if not queueJson:
+                print('WARN: runInboxQueue failed to load inbox queue item '+queueFilename)
+                # Assume that the file is probably corrupt/unreadable
+                if len(queue)>0:
+                    queue.pop(0)
+                # delete the queue file
+                if os.path.isfile(queueFilename):
+                    try:
                         os.remove(queueFilename)
+                    except:
+                        pass
                 continue
-            itemReadFailed=0
             
             # clear the daily quotas for maximum numbers of received posts
             if currTime-quotasLastUpdate>60*60*24:

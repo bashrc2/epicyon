@@ -8,7 +8,7 @@ __status__ = "Production"
 
 import os
 import json
-import commentjson
+from utils import loadJson
 from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
@@ -50,14 +50,9 @@ def metaDataInstance(instanceTitle: str, \
     if not os.path.isfile(adminActorFilename):
         return {}
 
-    adminActor=None
-    try:
-        with open(adminActorFilename, 'r') as fp:
-            adminActor=commentjson.load(fp)                
-    except:
-        print('WARN: commentjson exception metaDataInstance')
-
+    adminActor=loadJson(adminActorFilename,0)
     if not adminActor:
+        print('WARN: json load exception metaDataInstance')
         return {}
 
     isBot=False

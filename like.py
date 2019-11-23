@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 import json
 import time
-import commentjson
 from pprint import pprint
 from utils import urlPermitted
 from utils import getNicknameFromActor

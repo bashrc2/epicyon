@@ -10,7 +10,6 @@ import base64
 import time
 import os, os.path
 import shutil
-import commentjson
 import json
 from time import gmtime, strftime
 from pprint import pprint
@@ -41,6 +40,8 @@ from utils import followPerson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import copytree
+from utils import loadJson
+from utils import saveJson
 from utils import getStatusNumber
 from follow import followerOfPerson
 from follow import unfollowPerson
@@ -439,9 +440,8 @@ def testPostMessageBetweenServers():
     for name in os.listdir(inboxPath):
         filename=os.path.join(inboxPath, name)
         assert os.path.isfile(filename)
-        receivedJson=None
-        with open(filename, 'r') as fp:
-            receivedJson=commentjson.load(fp)
+        receivedJson=loadJson(filename,0)
+        if receivedJson:
             pprint(receivedJson['object']['content'])
         assert receivedJson
         assert 'Why is a mouse when it spins?' in receivedJson['object']['content']
@@ -480,8 +480,8 @@ def testPostMessageBetweenServers():
             break
         time.sleep(1)
 
-    with open(outboxPostFilename, 'r') as fp:
-        alicePostJson=commentjson.load(fp)
+    alicePostJson=loadJson(outboxPostFilename,0)
+    if alicePostJson:
         pprint(alicePostJson)
             
     assert 'likes' in open(outboxPostFilename).read()
@@ -638,8 +638,8 @@ def testFollowBetweenServersWithCapabilities():
                         break
         time.sleep(1)
 
-    with open(bobCapsFilename, 'r') as fp:
-        bobCapsJson=commentjson.load(fp)
+    bobCapsJson=loadJson(bobCapsFilename,0)
+    if bobCapsJson:
         if not bobCapsJson.get('capability'):
             print("Unexpected format for Bob's capabilities")
             pprint(bobCapsJson)
@@ -725,14 +725,16 @@ def testFollowBetweenServersWithCapabilities():
     bobPersonCache={}
     bobCachedWebfingers={}
     print("Bob's capabilities for Alice:")
-    with open(bobCapsFilename, 'r') as fp:
-        bobCapsJson=commentjson.load(fp)
+    bobCapsJson=loadJson(bobCapsFilename,0)
+    if bobCapsJson:
         pprint(bobCapsJson)
+        assert bobCapsJson.get('capability')
         assert "inbox:noreply" not in bobCapsJson['capability']
     print("Alice's capabilities granted by Bob")
-    with open(aliceCapsFilename, 'r') as fp:
-        aliceCapsJson=commentjson.load(fp)
+    aliceCapsJson=loadJson(aliceCapsFilename,0)
+    if aliceCapsJson:
         pprint(aliceCapsJson)
+        assert aliceCapsJson.get('capability')
         assert "inbox:noreply" not in aliceCapsJson['capability']
     newCapabilities=["inbox:write","objects:read","inbox:noreply"]
     sendCapabilitiesUpdate(sessionBob,bobDir,httpPrefix, \
@@ -748,8 +750,9 @@ def testFollowBetweenServersWithCapabilities():
     bobNewCapsJson=None
     for i in range(20):
         time.sleep(1)
-        with open(bobCapsFilename, 'r') as fp:
-            bobNewCapsJson=commentjson.load(fp)
+        bobNewCapsJson=loadJson(bobCapsFilename,0)
+        if bobNewCapsJson:
+            assert bobNewCapsJson.get('capability')
             if "inbox:noreply" in bobNewCapsJson['capability']:
                 print("Bob's capabilities were changed")
                 pprint(bobNewCapsJson)
@@ -762,8 +765,9 @@ def testFollowBetweenServersWithCapabilities():
     aliceNewCapsJson=None
     for i in range(20):
         time.sleep(1)
-        with open(aliceCapsFilename, 'r') as fp:
-            aliceNewCapsJson=commentjson.load(fp)
+        aliceNewCapsJson=loadJson(aliceCapsFilename,0)
+        if aliceNewCapsJson:
+            assert aliceNewCapsJson.get('capability')
             if "inbox:noreply" in aliceNewCapsJson['capability']:
                 print("Alice's granted capabilities were changed")
                 pprint(aliceNewCapsJson)
@@ -1367,8 +1371,8 @@ def testClientToServer():
         if '#statuses#' in name:
             statusNumber=int(name.split('#statuses#')[1].replace('.json','').replace('#activity',''))
             outboxPostFilename=outboxPath+'/'+name
-            with open(outboxPostFilename, 'r') as fp:
-                postJsonObject=commentjson.load(fp)
+            postJsonObject=loadJson(outboxPostFilename,0)
+            if postJsonObject:
                 outboxPostId=postJsonObject['id'].replace('/activity','')
     assert outboxPostId
     print('message id obtained: '+outboxPostId)
@@ -1620,11 +1624,8 @@ def testCommentJson() -> None:
     testJson={
         "content": messageStr
     }
-    with open(filename, 'w') as fp:
-        commentjson.dump(testJson, fp, indent=2, sort_keys=False)
-    receivedJson=None
-    with open(filename, 'r') as fp:
-        receivedJson=commentjson.load(fp)
+    assert saveJson(testJson,filename)
+    receivedJson=loadJson(filename,0)
     assert receivedJson
     assert receivedJson['content']==messageStr
     encodedStr=json.dumps(testJson, ensure_ascii=False)

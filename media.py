@@ -12,7 +12,6 @@ import numpy
 import os
 import sys
 import json
-import commentjson
 import datetime
 from auth import createPassword
 from shutil import copyfile

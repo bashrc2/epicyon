@@ -27,7 +27,7 @@ def saveJson(jsonObject: {},filename: str) -> bool:
             tries+=1
     return False
 
-def loadJson(filename: str) -> {}:
+def loadJson(filename: str,delaySec=2) -> {}:
     """Makes a few attempts to load a json formatted file
     """
     jsonObject=None
@@ -39,7 +39,8 @@ def loadJson(filename: str) -> {}:
                 break
         except:
             print('WARN: loadJson exception')
-            time.sleep(2)
+            if delaySec>0:
+                time.sleep(delaySec)
             tries+=1
     return jsonObject
 

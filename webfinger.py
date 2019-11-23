@@ -11,7 +11,6 @@ from Crypto.PublicKey import RSA
 from Crypto.Util import number
 import requests
 import json
-import commentjson
 import os
 import time
 from session import getJson

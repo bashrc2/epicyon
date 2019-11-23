@@ -10,7 +10,6 @@ import os
 import datetime
 import time
 import json
-import commentjson
 from auth import createPassword
 from utils import getNicknameFromActor
 from utils import getDomainFromActor

@@ -8,7 +8,6 @@ __status__ = "Production"
 
 import os
 import json
-import commentjson
 import time
 from follow import followedAccountAccepts
 from follow import followedAccountRejects

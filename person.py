@@ -8,7 +8,6 @@ __status__ = "Production"
 
 import json
 import time
-import commentjson
 import os
 import fileinput
 import subprocess

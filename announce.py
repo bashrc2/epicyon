@@ -9,7 +9,6 @@ __status__ = "Production"
 import os
 import time
 import json
-import commentjson
 from pprint import pprint
 from utils import getStatusNumber
 from utils import createOutboxDir

@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
-import commentjson
 from capabilities import capabilitiesAccept
 from capabilities import capabilitiesGrantedSave
 from utils import getStatusNumber

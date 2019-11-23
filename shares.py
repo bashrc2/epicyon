@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import json
-import commentjson
 import os
 import time
 from shutil import copyfile

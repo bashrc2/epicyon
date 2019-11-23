@@ -8,7 +8,6 @@ __status__ = "Production"
 
 import os
 import json
-import commentjson
 from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted

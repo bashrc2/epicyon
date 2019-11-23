@@ -8,9 +8,9 @@ __status__ = "Production"
 
 import os
 import time
-import commentjson
 import email.parser
 from shutil import copyfile
+from utils import loadJson
 
 def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
     """Uses the tags to replace :emoji: with html image markup
@@ -341,21 +341,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                     # will be retained even if default_emoji.json is subsequently updated                    
                     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
                         copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
-                emojiDictCtr=0
-                while not emojiDict and emojiDictCtr<5:
-                    if emojiDictCtr>0:
-                        print('Retry emoji load '+baseDir+'/emoji/emoji.json')
-                    try:
-                        with open(baseDir+'/emoji/emoji.json', 'r') as fp:
-                            emojiDict=commentjson.load(fp)
-                            if emojiDictCtr>0:
-                                print('emojiDict loaded on try '+str(emojiDictCtr))
-                            break
-                    except:
-                        print('WARN: commentjson exception addHtmlTags')
-                        print('Failed to load emoji (try '+str(emojiDictCtr)+'): '+baseDir+'/emoji/emoji.json')
-                        time.sleep(1)
-                        emojiDictCtr+=1
+                emojiDict=loadJson(baseDir+'/emoji/emoji.json')
 
                 #print('TAG: looking up emoji for :'+wordStr2+':')
                 addEmoji(baseDir,':'+wordStr2+':',httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
