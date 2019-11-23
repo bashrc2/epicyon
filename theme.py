@@ -139,7 +139,7 @@ def setThemeHacker(baseDir: str):
         "button-text": "green",
         "button-corner-radius": "4px",
         "timeline-border-radius": "4px",
-        "*font-family": "'Courier'",
+        "*font-family": "'monospace'",
         "background-color: #554;": "background-color: #062200;",
         "color: #FFFFFE;": "color: green;",
         "calendar-bg-color": "black",
