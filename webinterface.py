@@ -593,6 +593,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
 
     instanceStr=''
     moderatorsStr=''
+    themesDropdown=''
     adminNickname=getConfigParam(baseDir,'admin')
     if path.startswith('/users/'+adminNickname+'/'):
         instanceDescription=getConfigParam(baseDir,'instanceDescription')
@@ -620,7 +621,18 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         moderatorsStr+='  '+translate['A list of moderator nicknames. One per line.']
         moderatorsStr+='  <textarea id="message" name="moderators" placeholder="'+translate['List of moderator nicknames']+'..." style="height:200px">'+moderators+'</textarea>'
         moderatorsStr+='</div>'
-        
+
+        themesDropdown= '<div class="container">'
+        themesDropdown+='  <b>'+translate['Theme']+'</b><br>'
+        themesDropdown+='  <select id="themeDropdown" class="theme">'
+        themesDropdown+='    <option value="default">'+translate['Default']+'</option>'
+        themesDropdown+='    <option value="light">'+translate['Light']+'</option>'
+        themesDropdown+='    <option value="purple">'+translate['Purple']+'</option>'
+        themesDropdown+='    <option value="hacker">'+translate['Hacker']+'</option>'
+        themesDropdown+='    <option value="highvis">'+translate['HighVis']+'</option>'
+        themesDropdown+='  </select>'
+        themesDropdown+='</div>'
+
     editProfileForm=htmlHeader(cssFilename,editProfileCSS)
     editProfileForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">'
     editProfileForm+='  <div class="vertical-center">'
@@ -671,7 +683,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <b>'+translate['Skills']+'</b><br>'
     editProfileForm+='      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']
-    editProfileForm+=skillsStr+moderatorsStr
+    editProfileForm+=skillsStr+themesDropdown+moderatorsStr
     editProfileForm+='    </div>'+instanceStr
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <b>'+translate['Danger Zone']+'</b><br>'

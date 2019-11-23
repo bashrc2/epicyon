@@ -176,5 +176,11 @@
     "Instance Logo": "Instance Logo",
     "Bookmark this post": "Bookmark this post",
     "Undo the bookmark": "Undo the bookmark",
-    "Bookmarks": "Saves"
+    "Bookmarks": "Saves",
+    "Theme": "Theme",
+    "Default": "Default",
+    "Light": "Light",
+    "Purple": "Purple",
+    "Hacker": "Hacker",
+    "HighVis": "HighVis"
 }

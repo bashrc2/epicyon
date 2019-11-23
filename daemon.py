@@ -150,6 +150,7 @@ from media import removeMetaData
 from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
+from theme import setTheme
 import os
 import sys
 
@@ -3809,6 +3810,8 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['displayNickname']!=actorJson['name']:
                                 actorJson['name']=fields['displayNickname']
                                 actorChanged=True
+                        if fields.get('themeDropdown'):
+                            setTheme(self.server.baseDir,fields['themeDropdown'])
                         if fields.get('donateUrl'):
                             currentDonateUrl=getDonationUrl(actorJson)
                             if fields['donateUrl']!=currentDonateUrl:
