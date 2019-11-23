@@ -71,6 +71,7 @@ from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import removeLongWords
+from theme import setCSSparam
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1649,9 +1650,22 @@ def testSaveLoadJson():
     assert testLoadJson['param1']==3
     assert testLoadJson['param2']=='"Crème brûlée यह एक परीक्षण ह"'
     os.remove(testFilename)
-    
+
+def testTheme():
+    print('testTheme')
+    css='somestring --background-value: 24px; --foreground-value: 24px;'
+    result=setCSSparam(css,'background-value','32px')
+    assert result=='somestring --background-value: 32px; --foreground-value: 24px;'
+    css='somestring --background-value: 24px; --foreground-value: 24px; --background-value: 24px;'
+    result=setCSSparam(css,'background-value','32px')
+    assert result=='somestring --background-value: 32px; --foreground-value: 24px; --background-value: 32px;'
+    css='--background-value: 24px; --foreground-value: 24px;'
+    result=setCSSparam(css,'background-value','32px')
+    assert result=='--background-value: 32px; --foreground-value: 24px;'
+
 def runAllTests():
     print('Running tests...')
+    testTheme()
     testSaveLoadJson()
     testCommentJson()
     testGetStatusNumber()

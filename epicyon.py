@@ -80,6 +80,7 @@ from manualapprove import manualApproveFollowRequest
 from shares import sendShareViaServer
 from shares import sendUndoShareViaServer
 from shares import addShare
+from theme import setTheme
 import argparse
 
 def str2bool(v):
@@ -371,6 +372,7 @@ if not os.path.isdir(baseDir+'/cache/announce'):
 themeName=getConfigParam(baseDir,'theme')
 if not themeName:
     setConfigParam(baseDir,'theme','default')
+    themeName='default'
 
 # set the instance title in config.json
 title=getConfigParam(baseDir,'instanceTitle')
@@ -1478,6 +1480,9 @@ if args.maxMentions<4:
 registration=getConfigParam(baseDir,'registration')
 if not registration:
     registration=False
+
+if setTheme(baseDir,themeName):
+    print('Theme set to '+themeName)
     
 runDaemon(not args.nosharedinbox, \
           registration,args.language,__version__, \
