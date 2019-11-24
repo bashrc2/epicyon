@@ -102,7 +102,8 @@ def noOfLikes(postJsonObject: {}) -> int:
         postJsonObject['object']['likes']['totalItems']=0
     return len(postJsonObject['object']['likes']['items'])
 
-def updateLikesCollection(baseDir: str,postFilename: str, \
+def updateLikesCollection(recentPostsCache: {}, \
+                          baseDir: str,postFilename: str, \
                           objectUrl: str, \
                           actor: str,domain: str,debug: bool) -> None:
     """Updates the likes collection within a post
@@ -115,6 +116,13 @@ def updateLikesCollection(baseDir: str,postFilename: str, \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
+        # if the post exists in the recent posts cache then remove it
+        if postJsonObject.get('id') and recentPostsCache.get('index'):
+            postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+            if postId in recentPostsCache['index']:
+                del recentPostsCache['json'][postId]
+                del recentPostsCache['html'][postId]
+                recentPostsCache['index'].remove(postId)
 
         if not postJsonObject.get('object'):
             if debug:
@@ -157,7 +165,8 @@ def updateLikesCollection(baseDir: str,postFilename: str, \
             pprint(postJsonObject)
         saveJson(postJsonObject,postFilename)
 
-def like(session,baseDir: str,federationList: [], \
+def like(recentPostsCache: {}, \
+         session,baseDir: str,federationList: [], \
          nickname: str,domain: str,port: int, \
          ccList: [],httpPrefix: str, \
          objectUrl: str,actorLiked: str, \
@@ -216,7 +225,8 @@ def like(session,baseDir: str,federationList: [], \
             print('DEBUG: like objectUrl: '+objectUrl)
             return None
         
-        updateLikesCollection(baseDir,postFilename,objectUrl, \
+        updateLikesCollection(recentPostsCache, \
+                              baseDir,postFilename,objectUrl, \
                               newLikeJson['actor'],domain,debug)
         
         sendSignedJson(newLikeJson,session,baseDir, \
@@ -257,12 +267,14 @@ def likePost(session,baseDir: str,federationList: [], \
                     httpPrefix+'://'+likeDomain+':'+ \
                     str(likePort)+'/users/'+likeNickname
 
-    return like(session,baseDir,federationList,nickname,domain,port, \
+    return like(recentPostsCache, \
+                session,baseDir,federationList,nickname,domain,port, \
                 ccList,httpPrefix,objectUrl,actorLiked,clientToServer, \
                 sendThreads,postLog,personCache,cachedWebfingers, \
                 debug,projectVersion)
 
-def undolike(session,baseDir: str,federationList: [], \
+def undolike(recentPostsCache: {}, \
+             session,baseDir: str,federationList: [], \
              nickname: str,domain: str,port: int, \
              ccList: [],httpPrefix: str, \
              objectUrl: str,actorLiked: str, \
@@ -337,7 +349,8 @@ def undolike(session,baseDir: str,federationList: [], \
 
     return newUndoLikeJson
 
-def undoLikePost(session,baseDir: str,federationList: [], \
+def undoLikePost(recentPostsCache: {}, \
+                 session,baseDir: str,federationList: [], \
                  nickname: str,domain: str,port: int,httpPrefix: str, \
                  likeNickname: str,likeDomain: str,likePort: int, \
                  ccList: [], \
@@ -365,7 +378,8 @@ def undoLikePost(session,baseDir: str,federationList: [], \
                     httpPrefix+'://'+likeDomain+':'+ \
                     str(likePort)+'/users/'+likeNickname
         
-    return undoLike(session,baseDir,federationList,nickname,domain,port, \
+    return undoLike(recentPostsCache, \
+                    session,baseDir,federationList,nickname,domain,port, \
                     ccList,httpPrefix,objectUrl,clientToServer, \
                     sendThreads,postLog,personCache,cachedWebfingers,debug)
 
@@ -523,7 +537,8 @@ def sendUndoLikeViaServer(baseDir: str,session, \
 
     return newUndoLikeJson
 
-def outboxLike(baseDir: str,httpPrefix: str, \
+def outboxLike(recentPostsCache: {}, \
+               baseDir: str,httpPrefix: str, \
                nickname: str,domain: str,port: int, \
                messageJson: {},debug: bool) -> None:
     """ When a like request is received by the outbox from c2s
@@ -556,7 +571,8 @@ def outboxLike(baseDir: str,httpPrefix: str, \
             print('DEBUG: c2s like post not found in inbox or outbox')
             print(messageId)
         return True
-    updateLikesCollection(baseDir,postFilename,messageId, \
+    updateLikesCollection(recentPostsCache, \
+                          baseDir,postFilename,messageId, \
                           messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: post liked via c2s - '+postFilename)

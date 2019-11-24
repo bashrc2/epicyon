@@ -658,7 +658,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print('DEBUG: handle any like requests')
-        outboxLike(self.server.baseDir,self.server.httpPrefix, \
+        outboxLike(self.server.recentPostsCache, \
+                   self.server.baseDir,self.server.httpPrefix, \
                    self.postToNickname,self.server.domain,self.server.port, \
                    messageJson,self.server.debug)
         if self.server.debug:

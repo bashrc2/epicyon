@@ -470,7 +470,7 @@ def testPostMessageBetweenServers():
             outboxPostFilename=outboxPath+'/'+name
     assert statusNumber>0
     assert outboxPostFilename
-    assert likePost(sessionBob,bobDir,federationList, \
+    assert likePost({},sessionBob,bobDir,federationList, \
                     'bob',bobDomain,bobPort,httpPrefix, \
                     'alice',aliceDomain,alicePort,[], \
                     statusNumber,False,bobSendThreads,bobPostLog, \

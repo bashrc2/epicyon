@@ -827,7 +827,8 @@ def receiveUpdate(session,baseDir: str, \
                     return True
     return False
 
-def receiveLike(session,handle: str,isGroup: bool,baseDir: str, \
+def receiveLike(recentPostsCache: {}, \
+                session,handle: str,isGroup: bool,baseDir: str, \
                 httpPrefix: str,domain :str,port: int, \
                 sendThreads: [],postLog: [],cachedWebfingers: {}, \
                 personCache: {},messageJson: {},federationList: [], \
@@ -874,7 +875,9 @@ def receiveLike(session,handle: str,isGroup: bool,baseDir: str, \
     if debug:
         print('DEBUG: liked post found in inbox')
 
-    updateLikesCollection(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
+    updateLikesCollection(recentPostsCache,baseDir,postFilename, \
+                          messageJson['object'], \
+                          messageJson['actor'],domain,debug)
     return True
 
 def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
@@ -1649,7 +1652,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
 
     isGroup=groupHandle(baseDir,handle)
 
-    if receiveLike(session,handle,isGroup, \
+    if receiveLike(recentPostsCache, \
+                   session,handle,isGroup, \
                    baseDir,httpPrefix, \
                    domain,port, \
                    sendThreads,postLog, \
