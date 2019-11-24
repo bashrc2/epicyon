@@ -55,29 +55,6 @@ from posts import sendSignedJson
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 
-def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
-                           postJsonObject: {},htmlStr: str) -> None:
-    """Store recent posts in memory so that they can be quickly recalled
-    """
-    if not postJsonObject.get('id'):
-        return
-    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
-    if recentPostsCache.get('index'):    
-        recentPostsCache['index'].append(postId)
-        recentPostsCache['json'][postId]=json.dumps(postJsonObject)
-        recentPostsCache['html'][postId]=htmlStr
-
-        while len(recentPostsCache['html'].items())>maxRecentPosts:
-            recentPostsCache['index'].pop(0)
-            del recentPostsCache['json'][postId]
-            del recentPostsCache['html'][postId]
-    else:
-        recentPostsCache['index']=[postId]
-        recentPostsCache['json']={}
-        recentPostsCache['html']={}
-        recentPostsCache['json'][postId]=json.dumps(postJsonObject)
-        recentPostsCache['html'][postId]=htmlStr
-
 def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
                               translate: {}, \
                               baseDir: str,httpPrefix: str, \
@@ -93,15 +70,14 @@ def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
     avatarUrl=None
     boxName='inbox'
     htmlStr= \
-        individualPostAsHtml(getIconsDir(baseDir),translate,pageNumber, \
+        individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                             getIconsDir(baseDir),translate,pageNumber, \
                              baseDir,session,cachedWebfingers,personCache, \
                              nickname,domain,port,postJsonObject, \
                              avatarUrl,True,allowDeletion, \
                              httpPrefix,__version__,boxName, \
                              not isDM(postJsonObject), \
                              True,True,False,True)
-    updateRecentPostsCache(recentPostsCache,maxRecentPosts, \
-                           postJsonObject,htmlStr)
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox

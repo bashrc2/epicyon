@@ -1444,7 +1444,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 return
             hashtagStr= \
-                htmlHashtagSearch(self.server.translate, \
+                htmlHashtagSearch(self.server.recentPostsCache, \
+                                  self.server.maxRecentPosts, \
+                                  self.server.translate, \
                                   self.server.baseDir,hashtag,pageNumber, \
                                   maxPostsInFeed,self.server.session, \
                                   self.server.cachedWebfingers, \
@@ -1949,7 +1951,9 @@ class PubServer(BaseHTTPRequestHandler):
                         createSession(self.server.useTor)
 
                 deleteStr= \
-                    htmlDeletePost(self.server.translate,pageNumber, \
+                    htmlDeletePost(self.server.recentPostsCache, \
+                                   self.server.maxRecentPosts, \
+                                   self.server.translate,pageNumber, \
                                    self.server.session,self.server.baseDir, \
                                    deleteUrl,self.server.httpPrefix, \
                                    __version__,self.server.cachedWebfingers, \
@@ -2102,7 +2106,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         postJsonObject['likes']={'items': []}
                                 if self._requestHTTP():
                                     msg= \
-                                        htmlIndividualPost(self.server.translate, \
+                                        htmlIndividualPost(self.server.recentPostsCache, \
+                                                           self.server.maxRecentPosts, \
+                                                           self.server.translate, \
                                                            self.server.session, \
                                                            self.server.cachedWebfingers, \
                                                            self.server.personCache, \
@@ -2165,7 +2171,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                 print('DEBUG: creating new session')
                                             self.server.session= \
                                                 createSession(self.server.useTor)
-                                        msg=htmlPostReplies(self.server.translate, \
+                                        msg=htmlPostReplies(self.server.recentPostsCache, \
+                                                            self.server.maxRecentPosts, \
+                                                            self.server.translate, \
                                                             self.server.baseDir, \
                                                             self.server.session, \
                                                             self.server.cachedWebfingers, \
@@ -2213,7 +2221,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                 print('DEBUG: creating new session')
                                             self.server.session= \
                                                 createSession(self.server.useTor)
-                                        msg=htmlPostReplies(self.server.translate, \
+                                        msg=htmlPostReplies(self.server.recentPostsCache, \
+                                                            self.server.maxRecentPosts, \
+                                                            self.server.translate, \
                                                             self.server.baseDir, \
                                                             self.server.session, \
                                                             self.server.cachedWebfingers, \
@@ -2256,7 +2266,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.path.replace('/roles',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    msg=htmlProfile(self.server.translate, \
+                                    msg=htmlProfile(self.server.recentPostsCache, \
+                                                    self.server.maxRecentPosts, \
+                                                    self.server.translate, \
                                                     self.server.projectVersion, \
                                                     self.server.baseDir, \
                                                     self.server.httpPrefix, \
@@ -2299,7 +2311,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.path.replace('/skills',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    msg=htmlProfile(self.server.translate, \
+                                    msg=htmlProfile(self.server.recentPostsCache, \
+                                                    self.server.maxRecentPosts, \
+                                                    self.server.translate, \
                                                     self.server.projectVersion, \
                                                     self.server.baseDir, \
                                                     self.server.httpPrefix, \
@@ -2358,7 +2372,9 @@ class PubServer(BaseHTTPRequestHandler):
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={'items': []}                                    
                                 if self._requestHTTP():
-                                    msg=htmlIndividualPost(self.server.translate, \
+                                    msg=htmlIndividualPost(self.server.recentPostsCache, \
+                                                           self.server.maxRecentPosts, \
+                                                           self.server.translate, \
                                                            self.server.baseDir, \
                                                            self.server.session, \
                                                            self.server.cachedWebfingers, \
@@ -2425,6 +2441,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   maxPostsInFeed, 'inbox', \
                                                   authorized,self.server.ocapAlways)
                             msg=htmlInbox(self.server.recentPostsCache, \
+                                          self.server.maxRecentPosts, \
                                           self.server.translate, \
                                           pageNumber,maxPostsInFeed, \
                                           self.server.session, \
@@ -2502,6 +2519,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   maxPostsInFeed, 'dm', \
                                                   authorized,self.server.ocapAlways)
                             msg=htmlInboxDMs(self.server.recentPostsCache, \
+                                             self.server.maxRecentPosts, \
                                              self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
                                              self.server.session, \
@@ -2580,6 +2598,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed, 'tlreplies', \
                                               True,self.server.ocapAlways)
                         msg=htmlInboxReplies(self.server.recentPostsCache, \
+                                             self.server.maxRecentPosts, \
                                              self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
                                              self.server.session, \
@@ -2658,6 +2677,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInMediaFeed, 'tlmedia', \
                                               True,self.server.ocapAlways)
                         msg=htmlInboxMedia(self.server.recentPostsCache, \
+                                           self.server.maxRecentPosts, \
                                            self.server.translate, \
                                            pageNumber,maxPostsInMediaFeed, \
                                            self.server.session, \
@@ -2712,6 +2732,7 @@ class PubServer(BaseHTTPRequestHandler):
                             else:
                                 pageNumber=1
                         msg=htmlShares(self.server.recentPostsCache, \
+                                       self.server.maxRecentPosts, \
                                        self.server.translate, \
                                        pageNumber,maxPostsInFeed, \
                                        self.server.session, \
@@ -2774,6 +2795,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   maxPostsInFeed, 'tlbookmarks', \
                                                   authorized,self.server.ocapAlways)
                             msg=htmlBookmarks(self.server.recentPostsCache, \
+                                              self.server.maxRecentPosts, \
                                               self.server.translate, \
                                               pageNumber,maxPostsInFeed, \
                                               self.server.session, \
@@ -2847,6 +2869,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       authorized, \
                                       self.server.ocapAlways)
                 msg=htmlOutbox(self.server.recentPostsCache, \
+                               self.server.maxRecentPosts, \
                                self.server.translate, \
                                pageNumber,maxPostsInFeed, \
                                self.server.session, \
@@ -2914,6 +2937,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                   maxPostsInFeed, 'moderation', \
                                                   True,self.server.ocapAlways)
                             msg=htmlModeration(self.server.recentPostsCache, \
+                                               self.server.maxRecentPosts, \
                                                self.server.translate, \
                                                pageNumber,maxPostsInFeed, \
                                                self.server.session, \
@@ -2985,7 +3009,9 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.useTor)
-                    msg=htmlProfile(self.server.translate, \
+                    msg=htmlProfile(self.server.recentPostsCache, \
+                                    self.server.maxRecentPosts, \
+                                    self.server.translate, \
                                     self.server.projectVersion, \
                                     self.server.baseDir, \
                                     self.server.httpPrefix, \
@@ -3042,7 +3068,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.useTor)
 
-                    msg=htmlProfile(self.server.translate, \
+                    msg=htmlProfile(self.server.recentPostsCache, \
+                                    self.server.maxRecentPosts, \
+                                    self.server.translate, \
                                     self.server.projectVersion, \
                                     self.server.baseDir, \
                                     self.server.httpPrefix, \
@@ -3100,7 +3128,9 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.useTor)
-                    msg=htmlProfile(self.server.translate, \
+                    msg=htmlProfile(self.server.recentPostsCache, \
+                                    self.server.maxRecentPosts, \
+                                    self.server.translate, \
                                     self.server.projectVersion, \
                                     self.server.baseDir, \
                                     self.server.httpPrefix, \
@@ -3138,7 +3168,9 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: creating new session')
                     self.server.session= \
                         createSession(self.server.useTor)
-                msg=htmlProfile(self.server.translate, \
+                msg=htmlProfile(self.server.recentPostsCache, \
+                                self.server.maxRecentPosts, \
+                                self.server.translate, \
                                 self.server.projectVersion, \
                                 self.server.baseDir, \
                                 self.server.httpPrefix, \
@@ -4229,7 +4261,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.startswith('#'):      
                     # hashtag search
                     hashtagStr= \
-                        htmlHashtagSearch(self.server.translate, \
+                        htmlHashtagSearch(self.server.recentPostsCache, \
+                                          self.server.maxRecentPosts, \
+                                          self.server.translate, \
                                           self.server.baseDir,searchStr[1:],1, \
                                           maxPostsInFeed,self.server.session, \
                                           self.server.cachedWebfingers, \
@@ -4263,7 +4297,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.useTor)
                     profileStr= \
-                        htmlProfileAfterSearch(self.server.translate, \
+                        htmlProfileAfterSearch(self.server.recentPostsCache, \
+                                               self.server.maxRecentPosts, \
+                                               self.server.translate, \
                                                self.server.baseDir, \
                                                self.path.replace('/searchhandle',''), \
                                                self.server.httpPrefix, \

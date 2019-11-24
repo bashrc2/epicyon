@@ -36,6 +36,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -67,7 +68,6 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
-from inbox import updateRecentPostsCache
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags

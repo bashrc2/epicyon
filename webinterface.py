@@ -19,6 +19,7 @@ from pprint import pprint
 from person import personBoxJson
 from person import isPersonSnoozed
 from donate import getDonationUrl
+from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
@@ -336,7 +337,8 @@ def htmlModerationInfo(translate: {},baseDir: str) -> str:
         infoForm+=htmlFooter()
     return infoForm    
 
-def htmlHashtagSearch(translate: {}, \
+def htmlHashtagSearch(recentPostsCache: {},maxRecentPosts: int, \
+                      translate: {}, \
                       baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int, \
                       session,wfRequest: {},personCache: {}, \
                       httpPrefix: str,projectVersion: str) -> str:
@@ -391,7 +393,8 @@ def htmlHashtagSearch(translate: {}, \
                 index-=1
                 continue
             hashtagSearchForm+= \
-                individualPostAsHtml(iconsDir,translate,None, \
+                individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                     iconsDir,translate,None, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
@@ -1113,7 +1116,8 @@ def htmlFooter() -> str:
     htmlStr+='</html>\n'
     return htmlStr
 
-def htmlProfilePosts(translate: {}, \
+def htmlProfilePosts(recentPostsCache: {},maxRecentPosts: int, \
+                     translate: {}, \
                      baseDir: str,httpPrefix: str, \
                      authorized: bool,ocapAlways: bool, \
                      nickname: str,domain: str,port: int, \
@@ -1142,11 +1146,13 @@ def htmlProfilePosts(translate: {}, \
             break
         for item in outboxFeed['orderedItems']:
             if item['type']=='Create':
-                postStr=individualPostAsHtml(iconsDir,translate,None, \
-                                             baseDir,session,wfRequest,personCache, \
-                                             nickname,domain,port,item,None,True,False, \
-                                             httpPrefix,projectVersion,'inbox', \
-                                             False,False,False,True,False)
+                postStr= \
+                    individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                         iconsDir,translate,None, \
+                                         baseDir,session,wfRequest,personCache, \
+                                         nickname,domain,port,item,None,True,False, \
+                                         httpPrefix,projectVersion,'inbox', \
+                                         False,False,False,True,False)
                 if postStr:
                     profileStr+=postStr
                     ctr+=1
@@ -1328,7 +1334,8 @@ def htmlSharesTimeline(translate: {},pageNumber: int,itemsPerPage: int, \
         
     return timelineStr
 
-def htmlProfile(translate: {},projectVersion: str, \
+def htmlProfile(recentPostsCache: {},maxRecentPosts: int, \
+                translate: {},projectVersion: str, \
                 baseDir: str,httpPrefix: str,authorized: bool, \
                 ocapAlways: bool,profileJson: {},selected: str, \
                 session,wfRequest: {},personCache: {}, \
@@ -1478,7 +1485,8 @@ def htmlProfile(translate: {},projectVersion: str, \
 
         if selected=='posts':
             profileStr+= \
-                htmlProfilePosts(translate, \
+                htmlProfilePosts(recentPostsCache,maxRecentPosts, \
+                                 translate, \
                                  baseDir,httpPrefix,authorized, \
                                  ocapAlways,nickname,domain,port, \
                                  session,wfRequest,personCache, \
@@ -1883,7 +1891,8 @@ def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
         postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
     return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
-def individualPostAsHtml(iconsDir: str,translate: {}, \
+def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
+                         iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
                          nickname: str,domain: str,port: int, \
@@ -2353,6 +2362,8 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
        boxName!='tlmedia'and boxName!='tlbookmarks':
         saveIndividualPostAsHtmlToCache(baseDir,nickname,domain, \
                                         postJsonObject,postHtml)
+        updateRecentPostsCache(recentPostsCache,maxRecentPosts, \
+                               postJsonObject,postHtml)
 
     return postHtml
 
@@ -2368,7 +2379,7 @@ def isQuestion(postObjectJson: {}) -> bool:
                             return True
     return False 
 
-def htmlTimeline(recentPostsCache: {}, \
+def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
                  translate: {},pageNumber: int, \
                  itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
@@ -2591,7 +2602,8 @@ def htmlTimeline(recentPostsCache: {}, \
                             #print('Post obtained from recent cache ('+str(len(recentPostsCache['index']))+'): '+postId)
                 if not currTlStr:
                     currTlStr= \
-                        individualPostAsHtml(iconsDir,translate,pageNumber, \
+                        individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                             iconsDir,translate,pageNumber, \
                                              baseDir,session,wfRequest,personCache, \
                                              nickname,domain,port,item,None,True, \
                                              allowDeletion, \
@@ -2612,7 +2624,7 @@ def htmlTimeline(recentPostsCache: {}, \
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlShares(recentPostsCache: {}, \
+def htmlShares(recentPostsCache: {},maxRecentPosts: int, \
                translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int, \
@@ -2623,13 +2635,13 @@ def htmlShares(recentPostsCache: {}, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,None,'tlshares',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInbox(recentPostsCache: {}, \
+def htmlInbox(recentPostsCache: {},maxRecentPosts: int, \
               translate: {},pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2640,13 +2652,13 @@ def htmlInbox(recentPostsCache: {}, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlBookmarks(recentPostsCache: {}, \
+def htmlBookmarks(recentPostsCache: {},maxRecentPosts: int, \
                   translate: {},pageNumber: int,itemsPerPage: int, \
                   session,baseDir: str,wfRequest: {},personCache: {}, \
                   nickname: str,domain: str,port: int,bookmarksJson: {}, \
@@ -2657,13 +2669,13 @@ def htmlBookmarks(recentPostsCache: {}, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,bookmarksJson,'tlbookmarks',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInboxDMs(recentPostsCache: {}, \
+def htmlInboxDMs(recentPostsCache: {},maxRecentPosts: int, \
                  translate: {},pageNumber: int,itemsPerPage: int, \
                  session,baseDir: str,wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2671,13 +2683,13 @@ def htmlInboxDMs(recentPostsCache: {}, \
                  httpPrefix: str,projectVersion: str) -> str:
     """Show the DM timeline as html
     """
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'dm',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlInboxReplies(recentPostsCache: {}, \
+def htmlInboxReplies(recentPostsCache: {},maxRecentPosts: int, \
                      translate: {},pageNumber: int,itemsPerPage: int, \
                      session,baseDir: str,wfRequest: {},personCache: {}, \
                      nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2685,13 +2697,13 @@ def htmlInboxReplies(recentPostsCache: {}, \
                      httpPrefix: str,projectVersion: str) -> str:
     """Show the replies timeline as html
     """
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlreplies',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlInboxMedia(recentPostsCache: {}, \
+def htmlInboxMedia(recentPostsCache: {},maxRecentPosts: int, \
                    translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2699,13 +2711,13 @@ def htmlInboxMedia(recentPostsCache: {}, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the media timeline as html
     """
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlmedia',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlModeration(recentPostsCache: {}, \
+def htmlModeration(recentPostsCache: {},maxRecentPosts: int, \
                    translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2713,13 +2725,13 @@ def htmlModeration(recentPostsCache: {}, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the moderation feed as html
     """
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'moderation',allowDeletion, \
                         httpPrefix,projectVersion,True)
 
-def htmlOutbox(recentPostsCache: {}, \
+def htmlOutbox(recentPostsCache: {},maxRecentPosts: int, \
                translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int,outboxJson: {}, \
@@ -2729,13 +2741,14 @@ def htmlOutbox(recentPostsCache: {}, \
     """
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
-    return htmlTimeline(recentPostsCache, \
+    return htmlTimeline(recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlIndividualPost(translate: {}, \
+def htmlIndividualPost(recentPostsCache: {},maxRecentPosts: int, \
+                       translate: {}, \
                        baseDir: str,session,wfRequest: {},personCache: {}, \
                        nickname: str,domain: str,port: int,authorized: bool, \
                        postJsonObject: {},httpPrefix: str,projectVersion: str) -> str:
@@ -2744,7 +2757,8 @@ def htmlIndividualPost(translate: {}, \
     iconsDir=getIconsDir(baseDir)
     postStr='<script>'+contentWarningScript()+'</script>'    
     postStr+= \
-        individualPostAsHtml(iconsDir,translate,None, \
+        individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                             iconsDir,translate,None, \
                              baseDir,session,wfRequest,personCache, \
                              nickname,domain,port,postJsonObject,None,True,False, \
                              httpPrefix,projectVersion,'inbox', \
@@ -2759,7 +2773,8 @@ def htmlIndividualPost(translate: {}, \
         postJsonObject=loadJson(postFilename)
         if postJsonObject:
             postStr= \
-                individualPostAsHtml(iconsDir,translate,None, \
+                individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                     iconsDir,translate,None, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,False, \
@@ -2778,7 +2793,8 @@ def htmlIndividualPost(translate: {}, \
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr+= \
-                    individualPostAsHtml(iconsDir,translate,None, \
+                    individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                         iconsDir,translate,None, \
                                          baseDir,session,wfRequest,personCache, \
                                          nickname,domain,port,item,None,True,False, \
                                          httpPrefix,projectVersion,'inbox', \
@@ -2790,7 +2806,8 @@ def htmlIndividualPost(translate: {}, \
         postsCSS=cssFile.read()
     return htmlHeader(cssFilename,postsCSS)+postStr+htmlFooter()
 
-def htmlPostReplies(translate: {},baseDir: str, \
+def htmlPostReplies(recentPostsCache: {},maxRecentPosts: int, \
+                    translate: {},baseDir: str, \
                     session,wfRequest: {},personCache: {}, \
                     nickname: str,domain: str,port: int,repliesJson: {}, \
                     httpPrefix: str,projectVersion: str) -> str:
@@ -2801,7 +2818,8 @@ def htmlPostReplies(translate: {},baseDir: str, \
     if repliesJson.get('orderedItems'):
         for item in repliesJson['orderedItems']:
             repliesStr+= \
-                individualPostAsHtml(iconsDir,translate,None, \
+                individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                     iconsDir,translate,None, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,item,None,True,False, \
                                      httpPrefix,projectVersion,'inbox', \
@@ -2864,7 +2882,8 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     sharesStr+=htmlFooter()
     return sharesStr
 
-def htmlDeletePost(translate,pageNumber: int, \
+def htmlDeletePost(recentPostsCache: {},maxRecentPosts: int, \
+                   translate,pageNumber: int, \
                    session,baseDir: str,messageId: str, \
                    httpPrefix: str,projectVersion: str, \
                    wfRequest: {},personCache: {}) -> str:
@@ -2899,7 +2918,8 @@ def htmlDeletePost(translate,pageNumber: int, \
         deletePostStr=htmlHeader(cssFilename,profileStyle)
         deletePostStr+='<script>'+contentWarningScript()+'</script>'
         deletePostStr+= \
-            individualPostAsHtml(iconsDir,translate,pageNumber, \
+            individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                 iconsDir,translate,pageNumber, \
                                  baseDir,session,wfRequest,personCache, \
                                  nickname,domain,port,postJsonObject, \
                                  None,True,False, \
@@ -3472,7 +3492,8 @@ def htmlSearch(translate: {}, \
     followStr+=htmlFooter()
     return followStr
 
-def htmlProfileAfterSearch(translate: {}, \
+def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
+                           translate: {}, \
                            baseDir: str,path: str,httpPrefix: str, \
                            nickname: str,domain: str,port: int, \
                            profileHandle: str, \
@@ -3626,7 +3647,8 @@ def htmlProfileAfterSearch(translate: {}, \
             if not item.get('object'):
                 continue
             profileStr+= \
-                individualPostAsHtml(iconsDir,translate,None,baseDir, \
+                individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                     iconsDir,translate,None,baseDir, \
                                      session,wfRequest,personCache, \
                                      nickname,domain,port, \
                                      item,avatarUrl,False,False, \

@@ -468,3 +468,28 @@ def removePostFromCache(postJsonObject: {},recentPostsCache: {}):
     del recentPostsCache['json'][postId]
     del recentPostsCache['html'][postId]
     recentPostsCache['index'].remove(postId)
+
+def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
+                           postJsonObject: {},htmlStr: str) -> None:
+    """Store recent posts in memory so that they can be quickly recalled
+    """
+    if not postJsonObject.get('id'):
+        return
+    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    if recentPostsCache.get('index'):
+        if postId in recentPostsCache['index']:
+            return
+        recentPostsCache['index'].append(postId)
+        recentPostsCache['json'][postId]=json.dumps(postJsonObject)
+        recentPostsCache['html'][postId]=htmlStr
+
+        while len(recentPostsCache['html'].items())>maxRecentPosts:
+            recentPostsCache['index'].pop(0)
+            del recentPostsCache['json'][postId]
+            del recentPostsCache['html'][postId]
+    else:
+        recentPostsCache['index']=[postId]
+        recentPostsCache['json']={}
+        recentPostsCache['html']={}
+        recentPostsCache['json'][postId]=json.dumps(postJsonObject)
+        recentPostsCache['html'][postId]=htmlStr
