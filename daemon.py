@@ -601,7 +601,8 @@ class PubServer(BaseHTTPRequestHandler):
                 inboxUpdateIndex('outbox',self.server.baseDir, \
                                  self.postToNickname+'@'+self.server.domain, \
                                  savedFilename,self.server.debug)            
-        if outboxAnnounce(self.server.baseDir,messageJson,self.server.debug):
+        if outboxAnnounce(self.server.recentPostsCache, \
+                          self.server.baseDir,messageJson,self.server.debug):
             if self.server.debug:
                 print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
         if not self.server.session:

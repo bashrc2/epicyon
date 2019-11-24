@@ -10,6 +10,7 @@ import os
 import time
 import json
 from pprint import pprint
+from utils import removePostFromCache
 from utils import getStatusNumber
 from utils import createOutboxDir
 from utils import urlPermitted
@@ -25,7 +26,8 @@ from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 
-def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
+def outboxAnnounce(recentPostsCache: {}, \
+                   baseDir: str,messageJson: {},debug: bool) -> bool:
     """ Adds or removes announce entries from the shares collection
     within a given post
     """
@@ -45,7 +47,7 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
         domain,port=getDomainFromActor(messageJson['actor'])
         postFilename=locatePost(baseDir,nickname,domain,messageJson['object'])
         if postFilename:
-            updateAnnounceCollection(baseDir,postFilename, \
+            updateAnnounceCollection(recentPostsCache,baseDir,postFilename, \
                                      messageJson['actor'],domain,debug)
             return True
     if messageJson['type']=='Undo':
@@ -65,13 +67,15 @@ def outboxAnnounce(baseDir: str,messageJson: {},debug: bool) -> bool:
                 locatePost(baseDir,nickname,domain, \
                            messageJson['object']['object'])
             if postFilename:
-                undoAnnounceCollectionEntry(baseDir,postFilename, \
+                undoAnnounceCollectionEntry(recentPostsCache, \
+                                            baseDir,postFilename, \
                                             messageJson['actor'], \
                                             domain,debug)
                 return True
     return False
 
-def undoAnnounceCollectionEntry(baseDir: str,postFilename: str, \
+def undoAnnounceCollectionEntry(recentPostsCache: {}, \
+                                baseDir: str,postFilename: str, \
                                 actor: str,domain: str,debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
     the "shares" collection within a post. Note that the "shares" 
@@ -86,6 +90,7 @@ def undoAnnounceCollectionEntry(baseDir: str,postFilename: str, \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
+        removePostFromCache(postJsonObject,recentPostsCache)
 
         if not postJsonObject.get('type'):
             return
@@ -140,6 +145,7 @@ def updateAnnounceCollection(baseDir: str,postFilename: str, \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
+        removePostFromCache(postJsonObject,recentPostsCache)
 
         if not postJsonObject.get('object'):
             if debug:

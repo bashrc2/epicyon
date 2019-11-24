@@ -10,6 +10,7 @@ import os
 import json
 import time
 from pprint import pprint
+from utils import removePostFromCache
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -35,6 +36,7 @@ def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str, \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
+        removePostFromCache(postJsonObject,recentPostsCache)
 
         if not postJsonObject.get('type'):
             return
@@ -116,13 +118,7 @@ def updateLikesCollection(recentPostsCache: {}, \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
-        # if the post exists in the recent posts cache then remove it
-        if postJsonObject.get('id') and recentPostsCache.get('index'):
-            postId=postJsonObject['id'].replace('/activity','').replace('/','#')
-            if postId in recentPostsCache['index']:
-                del recentPostsCache['json'][postId]
-                del recentPostsCache['html'][postId]
-                recentPostsCache['index'].remove(postId)
+        removePostFromCache(postJsonObject,recentPostsCache)
 
         if not postJsonObject.get('object'):
             if debug:

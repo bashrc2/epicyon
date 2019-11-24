@@ -451,3 +451,20 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
         getCachedPostDirectory(baseDir,nickname,domain)+ \
         '/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
     return cachedPostFilename
+
+def removePostFromCache(postJsonObject: {},recentPostsCache: {}):
+    """ if the post exists in the recent posts cache then remove it
+    """
+    if not postJsonObject.get('id'):
+        return
+
+    if not recentPostsCache.get('index'):
+        return
+
+    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    if postId not in recentPostsCache['index']:
+        return
+
+    del recentPostsCache['json'][postId]
+    del recentPostsCache['html'][postId]
+    recentPostsCache['index'].remove(postId)
