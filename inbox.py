@@ -1098,7 +1098,8 @@ def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
         print('DEBUG: post deleted - '+postFilename)
     return True
 
-def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
+def receiveAnnounce(recentPostsCache: {}, \
+                    session,handle: str,isGroup: bool,baseDir: str, \
                     httpPrefix: str,domain :str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
@@ -1158,7 +1159,8 @@ def receiveAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
             print('DEBUG: announce post not found in inbox or outbox')
             print(messageJson['object'])
         return True
-    updateAnnounceCollection(baseDir,postFilename,messageJson['actor'],domain,debug)
+    updateAnnounceCollection(recentPostsCache,baseDir,postFilename, \
+                             messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: Downloading announce post '+messageJson['actor']+' -> '+messageJson['object'])
     postJsonObject=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,messageJson,__version__)
@@ -1681,7 +1683,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
             print('DEBUG: Undo bookmark accepted from '+actor)
         return False
     
-    if receiveAnnounce(session,handle,isGroup, \
+    if receiveAnnounce(recentPostsCache, \
+                       session,handle,isGroup, \
                        baseDir,httpPrefix, \
                        domain,port, \
                        sendThreads,postLog, \
