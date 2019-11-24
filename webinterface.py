@@ -2588,7 +2588,7 @@ def htmlTimeline(recentPostsCache: {}, \
                             currTlStr=recentPostsCache['html'][postId]
                             currTlStr= \
                                 preparePostFromHtmlCache(currTlStr,boxName,pageNumber)                            
-                            print('Post obtained from recent cache ('+str(len(recentPostsCache['index']))+'): '+postId)
+                            #print('Post obtained from recent cache ('+str(len(recentPostsCache['index']))+'): '+postId)
                 if not currTlStr:
                     currTlStr= \
                         individualPostAsHtml(iconsDir,translate,pageNumber, \
