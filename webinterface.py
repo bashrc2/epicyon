@@ -1923,7 +1923,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
                                               postJsonObject)
         if postHtml:
-            return preparePostFromHtmlCache(postHtml,boxName,pageNumber)
+            postHtml=preparePostFromHtmlCache(postHtml,boxName,pageNumber)
+            updateRecentPostsCache(recentPostsCache,maxRecentPosts, \
+                                   postJsonObject,postHtml)
+            return postHtml
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
