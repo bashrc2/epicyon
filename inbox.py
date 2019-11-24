@@ -856,7 +856,8 @@ def receiveLike(recentPostsCache: {}, \
                           messageJson['actor'],domain,debug)
     return True
 
-def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
+def receiveUndoLike(recentPostsCache: {}, \
+                    session,handle: str,isGroup: bool,baseDir: str, \
                     httpPrefix: str,domain :str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
@@ -904,7 +905,8 @@ def receiveUndoLike(session,handle: str,isGroup: bool,baseDir: str, \
         return True
     if debug:
         print('DEBUG: liked post found in inbox. Now undoing.')
-    undoLikesCollectionEntry(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
+    undoLikesCollectionEntry(recentPostsCache,baseDir,postFilename, \
+                             messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
 def receiveBookmark(session,handle: str,isGroup: bool,baseDir: str, \
@@ -1644,7 +1646,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
             print('DEBUG: Like accepted from '+actor)
         return False
 
-    if receiveUndoLike(session,handle,isGroup, \
+    if receiveUndoLike(recentPostsCache, \
+                       session,handle,isGroup, \
                        baseDir,httpPrefix, \
                        domain,port, \
                        sendThreads,postLog, \
@@ -1657,7 +1660,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
             print('DEBUG: Undo like accepted from '+actor)
         return False
 
-    if receiveBookmark(session,handle,isGroup, \
+    if receiveBookmark(recentPostsCache, \
+                       session,handle,isGroup, \
                        baseDir,httpPrefix, \
                        domain,port, \
                        sendThreads,postLog, \
@@ -1670,7 +1674,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
             print('DEBUG: Bookmark accepted from '+actor)
         return False
 
-    if receiveUndoBookmark(session,handle,isGroup, \
+    if receiveUndoBookmark(recentPostsCache, \
+                           session,handle,isGroup, \
                            baseDir,httpPrefix, \
                            domain,port, \
                            sendThreads,postLog, \

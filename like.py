@@ -24,7 +24,8 @@ from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
 
-def undoLikesCollectionEntry(baseDir: str,postFilename: str,objectUrl: str, \
+def undoLikesCollectionEntry(recentPostsCache: {}, \
+                             baseDir: str,postFilename: str,objectUrl: str, \
                              actor: str,domain: str,debug: bool) -> None:
     """Undoes a like for a particular actor
     """

@@ -671,12 +671,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print('DEBUG: handle any bookmark requests')
-        outboxBookmark(self.server.baseDir,self.server.httpPrefix, \
+        outboxBookmark(self.server.recentPostsCache, \
+                       self.server.baseDir,self.server.httpPrefix, \
                        self.postToNickname,self.server.domain,self.server.port, \
                        messageJson,self.server.debug)
         if self.server.debug:
             print('DEBUG: handle any undo bookmark requests')
-        outboxUndoBookmark(self.server.baseDir,self.server.httpPrefix, \
+        outboxUndoBookmark(self.server.recentPostsCache, \
+                           self.server.baseDir,self.server.httpPrefix, \
                            self.postToNickname,self.server.domain,self.server.port, \
                            messageJson,self.server.debug)
 
