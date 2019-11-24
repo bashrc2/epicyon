@@ -1032,7 +1032,7 @@ def receiveUndoBookmark(recentPostsCache: {}, \
         return True
     if debug:
         print('DEBUG: bookmarked post found. Now undoing.')
-    undoBookmarksCollectionEntry(recentPostsCache: {},baseDir,postFilename, \
+    undoBookmarksCollectionEntry(recentPostsCache,baseDir,postFilename, \
                                  messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
