@@ -404,7 +404,8 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     #    personJson={"user": "unknown"}
     return personJson
 
-def personBoxJson(session,baseDir: str,domain: str,port: int,path: str, \
+def personBoxJson(recentPostsCache: {}, \
+                  session,baseDir: str,domain: str,port: int,path: str, \
                   httpPrefix: str,noOfItems: int,boxname: str, \
                   authorized: bool,ocapAlways: bool) -> []:
     """Obtain the inbox/outbox/moderation feed for the given person
@@ -447,7 +448,8 @@ def personBoxJson(session,baseDir: str,domain: str,port: int,path: str, \
     if not validNickname(domain,nickname):
         return None
     if boxname=='inbox':
-        return createInbox(session,baseDir,nickname,domain,port,httpPrefix, \
+        return createInbox(recentPostsCache, \
+                           session,baseDir,nickname,domain,port,httpPrefix, \
                            noOfItems,headerOnly,ocapAlways,pageNumber)
     elif boxname=='dm':
         return createDMTimeline(session,baseDir,nickname,domain,port,httpPrefix, \
@@ -469,7 +471,8 @@ def personBoxJson(session,baseDir: str,domain: str,port: int,path: str, \
                                 noOfItems,headerOnly,authorized,pageNumber)
     return None
 
-def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
+def personInboxJson(recentPostsCache: {}, \
+                    baseDir: str,domain: str,port: int,path: str, \
                     httpPrefix: str,noOfItems: int,ocapAlways: bool) -> []:
     """Obtain the inbox feed for the given person
     Authentication is expected to have already happened
@@ -505,7 +508,7 @@ def personInboxJson(baseDir: str,domain: str,port: int,path: str, \
         return None
     if not validNickname(domain,nickname):
         return None
-    return createInbox(baseDir,nickname,domain,port,httpPrefix, \
+    return createInbox(recentPostsCache,baseDir,nickname,domain,port,httpPrefix, \
                        noOfItems,headerOnly,ocapAlways,pageNumber)
 
 def setDisplayNickname(baseDir: str,nickname: str, domain: str, \

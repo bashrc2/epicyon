@@ -64,7 +64,7 @@ def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
     postId=postJsonObject['id'].replace('/activity','').replace('/','#')
     if recentPostsCache.get('index'):    
         recentPostsCache['index'].append(postId)
-        recentPostsCache['json'][postId]=postJsonObject.copy()
+        recentPostsCache['json'][postId]=json.dumps(postJsonObject)
         recentPostsCache['html'][postId]=htmlStr
 
         while len(recentPostsCache['html'].items())>maxRecentPosts:
@@ -75,7 +75,7 @@ def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
         recentPostsCache['index']=[postId]
         recentPostsCache['json']={}
         recentPostsCache['html']={}
-        recentPostsCache['json'][postId]=postJsonObject.copy()
+        recentPostsCache['json'][postId]=json.dumps(postJsonObject)
         recentPostsCache['html'][postId]=htmlStr
 
 def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \

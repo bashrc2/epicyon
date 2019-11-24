@@ -1782,34 +1782,36 @@ def sendToFollowersThread(session,baseDir: str, \
     sendThread.start()
     return sendThread
 
-def createInbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                 itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
+def createInbox(recentPostsCache: {}, \
+                session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxIndexed(recentPostsCache, \
+                            session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createBookmarksTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                             itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
+    return createBoxIndexed({},session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createDMTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(session,baseDir,'dm',nickname,domain,port,httpPrefix, \
+    return createBoxIndexed({},session,baseDir,'dm',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createRepliesTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                           itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(session,baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
+    return createBoxIndexed({},session,baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createMediaTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                         itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(session,baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
+    return createBoxIndexed({},session,baseDir,'tlmedia',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createOutbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                  itemsPerPage: int,headerOnly: bool,authorized: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(session,baseDir,'outbox',nickname,domain,port,httpPrefix, \
+    return createBoxIndexed({},session,baseDir,'outbox',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,authorized,False,pageNumber)
 
 def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
@@ -2045,31 +2047,38 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
             postsCtr+=1
     return postsCtr
 
-def addPostToTimeline(filePath: str,boxname: str,postsInBox: [],boxActor: str) -> bool:
+def addPostStringToTimeline(postStr: str,boxname: str,postsInBox: [],boxActor: str) -> bool:
     """ is this a valid timeline post?
     """
     # must be a "Note" or "Announce" type
-    with open(filePath, 'r') as postFile:
-        postStr = postFile.read()
-        if '"Note"' in postStr or '"Announce"' in postStr or \
-           ('"Question"' in postStr and '"Create"' in postStr):
+    if '"Note"' in postStr or '"Announce"' in postStr or \
+       ('"Question"' in postStr and '"Create"' in postStr):
 
-            if boxname=='dm':
-                if '#Public' in postStr or '/followers' in postStr:
+        if boxname=='dm':
+            if '#Public' in postStr or '/followers' in postStr:
+                return False
+        elif boxname=='tlreplies':
+            if boxActor not in postStr:
+                return False
+        elif boxname=='tlmedia':
+            if '"Create"' in postStr:
+                if 'mediaType' not in postStr or 'image/' not in postStr:
                     return False
-            elif boxname=='tlreplies':
-                if boxActor not in postStr:
-                    return False
-            elif boxname=='tlmedia':
-                if '"Create"' in postStr:
-                    if 'mediaType' not in postStr or 'image/' not in postStr:
-                        return False
-            # add the post to the dictionary
-            postsInBox.append(postStr)
-            return True
+        # add the post to the dictionary
+        postsInBox.append(postStr)
+        return True
     return False
 
-def createBoxIndexed(session,baseDir: str,boxname: str, \
+def addPostToTimeline(filePath: str,boxname: str,postsInBox: [],boxActor: str) -> bool:
+    """ Reads a post from file and decides whether it is valid
+    """
+    with open(filePath, 'r') as postFile:
+        postStr = postFile.read()
+        return addPostStringToTimeline(postStr,boxname,postsInBox,boxActor)
+    return False
+
+def createBoxIndexed(recentPostsCache: {}, \
+                     session,baseDir: str,boxname: str, \
                      nickname: str,domain: str,port: int,httpPrefix: str, \
                      itemsPerPage: int,headerOnly: bool,authorized :bool, \
                      ocapAlways: bool,pageNumber=None) -> {}:
@@ -2158,14 +2167,27 @@ def createBoxIndexed(session,baseDir: str,boxname: str, \
                     postFilename=postFilename.split('/')[-1]
 
                 # filename of the post without any extension or path
+                # This should also correspond to any index entry in the posts cache
                 postUrl=postFilename.replace('\n','').replace('.json','').strip()
-                # get the full path of the post
-                fullPostFilename= \
-                    locatePost(baseDir,nickname,domain,postUrl,False)
-                if fullPostFilename:
-                    addPostToTimeline(fullPostFilename,boxname,postsInBox,boxActor)
-                else:
-                    print('WARN: unable to locate post '+postUrl)
+
+                postAdded=False
+                if recentPostsCache.get('index'):
+                    if postUrl in recentPostsCache['index']:
+                        if recentPostsCache['json'].get(postUrl):
+                            addPostStringToTimeline(recentPostsCache['json'][postUrl], \
+                                                    boxname,postsInBox,boxActor)
+                            print('Json post added to timeline from cache')
+                            postAdded=True
+
+                if not postAdded:
+                    # get the full path of the post
+                    fullPostFilename= \
+                        locatePost(baseDir,nickname,domain,postUrl,False)
+                    if fullPostFilename:
+                        addPostToTimeline(fullPostFilename,boxname,postsInBox,boxActor)
+                    else:
+                        print('WARN: unable to locate post '+postUrl)
+
                 postsCtr+=1
 
     # Generate first and last entries within header
