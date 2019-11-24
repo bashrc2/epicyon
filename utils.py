@@ -465,8 +465,10 @@ def removePostFromCache(postJsonObject: {},recentPostsCache: {}):
     if postId not in recentPostsCache['index']:
         return
 
-    del recentPostsCache['json'][postId]
-    del recentPostsCache['html'][postId]
+    if recentPostsCache['json'].get(postId):
+        del recentPostsCache['json'][postId]
+    if recentPostsCache['html'].get(postId):
+        del recentPostsCache['html'][postId]
     recentPostsCache['index'].remove(postId)
 
 def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
