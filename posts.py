@@ -2176,7 +2176,7 @@ def createBoxIndexed(recentPostsCache: {}, \
                         if recentPostsCache['json'].get(postUrl):
                             addPostStringToTimeline(recentPostsCache['json'][postUrl], \
                                                     boxname,postsInBox,boxActor)
-                            print('Json post added to timeline from cache')
+                            print('Json post added to timeline from cache: '+postUrl)
                             postAdded=True
 
                 if not postAdded:
