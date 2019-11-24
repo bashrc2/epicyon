@@ -1045,7 +1045,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,10)
 
-        if htmlGET and self.path.startswith('/terms'):
+        if self.path.startswith('/terms'):
             msg=htmlTermsOfService(self.server.baseDir, \
                                    self.server.httpPrefix, \
                                    self.server.domainFull).encode()
@@ -1055,7 +1055,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,11)
 
-        if htmlGET and self.path.startswith('/about'):
+        if self.path.startswith('/about'):
             msg=htmlAbout(self.server.baseDir, \
                           self.server.httpPrefix, \
                           self.server.domainFull).encode()
@@ -1130,11 +1130,11 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,15)
 
         # image on login screen
-        if htmlGET and (self.path=='/login.png' or \
-                        self.path=='/login.gif' or \
-                        self.path=='/login.webp' or \
-                        self.path=='/login.jpeg' or \
-                        self.path=='/login.jpg'):
+        if self.path=='/login.png' or \
+           self.path=='/login.gif' or \
+           self.path=='/login.webp' or \
+           self.path=='/login.jpeg' or \
+           self.path=='/login.jpg':
             mediaFilename= \
                 self.server.baseDir+'/accounts'+self.path
             if os.path.isfile(mediaFilename):
@@ -1159,7 +1159,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,16)
 
         # login screen background image
-        if htmlGET and self.path=='/login-background.png':
+        if self.path=='/login-background.png':
             mediaFilename= \
                 self.server.baseDir+'/accounts/login-background.png'
             if os.path.isfile(mediaFilename):
@@ -1184,7 +1184,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,17)
 
         # follow screen background image
-        if htmlGET and self.path=='/follow-background.png':
+        if self.path=='/follow-background.png':
             mediaFilename= \
                 self.server.baseDir+'/accounts/follow-background.png'
             if os.path.isfile(mediaFilename):
@@ -1209,7 +1209,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,18)
 
         # emoji images
-        if htmlGET and '/emoji/' in self.path:
+        if '/emoji/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
                self.path.endswith('.gif'):
@@ -1238,7 +1238,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show media
         # Note that this comes before the busy flag to avoid conflicts
-        if htmlGET and '/media/' in self.path:
+        if '/media/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
                self.path.endswith('.gif') or \
@@ -1280,7 +1280,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
-        if htmlGET and '/sharefiles/' in self.path:
+        if '/sharefiles/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
                self.path.endswith('.webp') or \
@@ -1310,7 +1310,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
-        if htmlGET and self.path.startswith('/icons/'):
+        if self.path.startswith('/icons/'):
             if self.path.endswith('.png'):
                 mediaStr=self.path.split('/icons/')[1]
                 mediaFilename= \
@@ -1335,7 +1335,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # cached avatar images
         # Note that this comes before the busy flag to avoid conflicts
-        if htmlGET and self.path.startswith('/avatars/'):
+        if self.path.startswith('/avatars/'):
             mediaFilename= \
                 self.server.baseDir+'/cache/'+self.path
             if os.path.isfile(mediaFilename):
@@ -1361,7 +1361,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
-        if htmlGET and '/users/' in self.path:
+        if '/users/' in self.path:
             if self.path.endswith('.png') or \
                self.path.endswith('.jpg') or \
                self.path.endswith('.webp') or \
@@ -1422,7 +1422,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,26)
 
-        if htmlGET and self.path.startswith('/login') or \
+        if self.path.startswith('/login') or \
            (self.path=='/' and not authorized):
             # request basic auth
             msg=htmlLogin(self.server.translate, \
@@ -1435,7 +1435,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,27)
 
         # hashtag search
-        if htmlGET and self.path.startswith('/tags/'):
+        if self.path.startswith('/tags/'):
             pageNumber=1
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
@@ -1636,7 +1636,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,33)
 
         # send a follow request approval from the web interface
-        if htmlGET and authorized and '/followapprove=' in self.path and \
+        if authorized and '/followapprove=' in self.path and \
            self.path.startswith('/users/'):
             originPathStr=self.path.split('/followapprove=')[0]
             followerNickname=originPathStr.replace('/users/','')
@@ -1667,7 +1667,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,34)
 
         # deny a follow request from the web interface
-        if htmlGET and authorized and '/followdeny=' in self.path and \
+        if authorized and '/followdeny=' in self.path and \
            self.path.startswith('/users/'):
             originPathStr=self.path.split('/followdeny=')[0]
             followerNickname=originPathStr.replace('/users/','')
