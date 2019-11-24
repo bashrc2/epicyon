@@ -909,7 +909,8 @@ def receiveUndoLike(recentPostsCache: {}, \
                              messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
-def receiveBookmark(session,handle: str,isGroup: bool,baseDir: str, \
+def receiveBookmark(recentPostsCache: {}, \
+                    session,handle: str,isGroup: bool,baseDir: str, \
                     httpPrefix: str,domain :str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
@@ -967,10 +968,12 @@ def receiveBookmark(session,handle: str,isGroup: bool,baseDir: str, \
     if debug:
         print('DEBUG: bookmarked post was found')
 
-    updateBookmarksCollection(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
+    updateBookmarksCollection(recentPostsCache,baseDir,postFilename, \
+                              messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
-def receiveUndoBookmark(session,handle: str,isGroup: bool,baseDir: str, \
+def receiveUndoBookmark(recentPostsCache: {}, \
+                        session,handle: str,isGroup: bool,baseDir: str, \
                         httpPrefix: str,domain :str,port: int, \
                         sendThreads: [],postLog: [],cachedWebfingers: {}, \
                         personCache: {},messageJson: {},federationList: [], \
@@ -1029,7 +1032,8 @@ def receiveUndoBookmark(session,handle: str,isGroup: bool,baseDir: str, \
         return True
     if debug:
         print('DEBUG: bookmarked post found. Now undoing.')
-    undoBookmarksCollectionEntry(baseDir,postFilename,messageJson['object'],messageJson['actor'],domain,debug)
+    undoBookmarksCollectionEntry(recentPostsCache: {},baseDir,postFilename, \
+                                 messageJson['object'],messageJson['actor'],domain,debug)
     return True
 
 def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
