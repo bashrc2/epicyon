@@ -1209,7 +1209,8 @@ def receiveAnnounce(recentPostsCache: {}, \
         print('DEBUG: announced/repeated post arrived in inbox')
     return True
 
-def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
+def receiveUndoAnnounce(recentPostsCache: {}, \
+                        session,handle: str,isGroup: bool,baseDir: str, \
                         httpPrefix: str,domain :str,port: int, \
                         sendThreads: [],postLog: [],cachedWebfingers: {}, \
                         personCache: {},messageJson: {},federationList: [], \
@@ -1255,7 +1256,8 @@ def receiveUndoAnnounce(session,handle: str,isGroup: bool,baseDir: str, \
                 if debug:
                     print("DEBUG: Attempt to undo something which isn't an announcement")
                 return False        
-    undoAnnounceCollectionEntry(baseDir,postFilename,messageJson['actor'],domain,debug)
+    undoAnnounceCollectionEntry(recentPostsCache,baseDir,postFilename, \
+                                messageJson['actor'],domain,debug)
     if os.path.isfile(postFilename):
         os.remove(postFilename)
     return True
@@ -1705,7 +1707,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
         if debug:
             print('DEBUG: Announce accepted from '+actor)
 
-    if receiveUndoAnnounce(session,handle,isGroup, \
+    if receiveUndoAnnounce(recentPostsCache, \
+                           session,handle,isGroup, \
                            baseDir,httpPrefix, \
                            domain,port, \
                            sendThreads,postLog, \
