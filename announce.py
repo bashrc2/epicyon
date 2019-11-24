@@ -129,7 +129,8 @@ def undoAnnounceCollectionEntry(recentPostsCache: {}, \
                     len(postJsonObject['object']['shares']['items'])
             saveJson(postJsonObject,postFilename)
 
-def updateAnnounceCollection(baseDir: str,postFilename: str, \
+def updateAnnounceCollection(recentPostsCache: {}, \
+                             baseDir: str,postFilename: str, \
                              actor: str,domain: str,debug: bool) -> None:
     """Updates the announcements collection within a post
     Confusingly this is known as "shares", but isn't the
