@@ -2581,7 +2581,7 @@ def htmlTimeline(recentPostsCache: {}, \
             if item['type']=='Create' or item['type']=='Announce':
                 #avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
                 currTlStr=None
-                if recentPostsCache.get('index'):
+                if boxName!='tlmedia' and recentPostsCache.get('index'):
                     postId=item['id'].replace('/activity','').replace('/','#')
                     if postId in recentPostsCache['index']:
                         if recentPostsCache['html'].get(postId):
