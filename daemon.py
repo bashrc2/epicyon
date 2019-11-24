@@ -1319,7 +1319,6 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary=self.server.iconsCache[mediaStr]
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self._write(mediaBinary)
-                    self.server.iconsCache[mediaStr]=mediaBinary
                     return        
                 else:
                     if os.path.isfile(mediaFilename):
