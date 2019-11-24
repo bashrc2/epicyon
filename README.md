@@ -153,8 +153,8 @@ server {
         proxy_buffers 16 32k;
         proxy_busy_buffers_size 64k;
         proxy_redirect off;
-        proxy_request_buffering off;
-        proxy_buffering off;
+        proxy_request_buffering on;
+        proxy_buffering on;
         proxy_pass http://localhost:7156;
     }
 }
