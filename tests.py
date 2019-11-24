@@ -67,6 +67,7 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
+from inbox import updateRecentPostsCache
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -232,7 +233,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     maxMentions=10
     maxEmoji=10
     print('Server running: Alice')
-    runDaemon(True,True,'en',__version__, \
+    runDaemon(5,True,True,'en',__version__, \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
@@ -288,7 +289,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     maxMentions=10
     maxEmoji=10
     print('Server running: Bob')
-    runDaemon(True,True,'en',__version__, \
+    runDaemon(5,True,True,'en',__version__, \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
@@ -324,7 +325,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     maxMentions=10
     maxEmoji=10
     print('Server running: Eve')
-    runDaemon(True,True,'en',__version__, \
+    runDaemon(5,True,True,'en',__version__, \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
@@ -1663,8 +1664,23 @@ def testTheme():
     result=setCSSparam(css,'background-value','32px')
     assert result=='--background-value: 32px; --foreground-value: 24px;'
 
+def testRecentPostsCache():
+    print('testRecentPostsCache')
+    recentPostsCache={}
+    maxRecentPosts=3
+    htmlStr='<html></html>'
+    for i in range(5):
+        postJsonObject={
+            "id": "https://somesite.whatever/users/someuser/statuses/"+str(i)
+        }
+        updateRecentPostsCache(recentPostsCache,maxRecentPosts,postJsonObject,htmlStr)
+    assert len(recentPostsCache['index'])==maxRecentPosts
+    assert len(recentPostsCache['json'].items())==maxRecentPosts
+    assert len(recentPostsCache['html'].items())==maxRecentPosts
+
 def runAllTests():
     print('Running tests...')
+    testRecentPostsCache()
     testTheme()
     testSaveLoadJson()
     testCommentJson()

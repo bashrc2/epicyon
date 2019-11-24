@@ -2420,7 +2420,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'inbox', \
                                                   authorized,self.server.ocapAlways)
-                            msg=htmlInbox(self.server.translate, \
+                            msg=htmlInbox(self.server.recentPostsCache, \
+                                          self.server.translate, \
                                           pageNumber,maxPostsInFeed, \
                                           self.server.session, \
                                           self.server.baseDir, \
@@ -2494,7 +2495,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'dm', \
                                                   authorized,self.server.ocapAlways)
-                            msg=htmlInboxDMs(self.server.translate, \
+                            msg=htmlInboxDMs(self.server.recentPostsCache, \
+                                             self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
                                              self.server.session, \
                                              self.server.baseDir, \
@@ -2569,7 +2571,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.httpPrefix, \
                                               maxPostsInFeed, 'tlreplies', \
                                               True,self.server.ocapAlways)
-                        msg=htmlInboxReplies(self.server.translate, \
+                        msg=htmlInboxReplies(self.server.recentPostsCache, \
+                                             self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
                                              self.server.session, \
                                              self.server.baseDir, \
@@ -2644,7 +2647,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.httpPrefix, \
                                               maxPostsInMediaFeed, 'tlmedia', \
                                               True,self.server.ocapAlways)
-                        msg=htmlInboxMedia(self.server.translate, \
+                        msg=htmlInboxMedia(self.server.recentPostsCache, \
+                                           self.server.translate, \
                                            pageNumber,maxPostsInMediaFeed, \
                                            self.server.session, \
                                            self.server.baseDir, \
@@ -2697,7 +2701,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 pageNumber=int(pageNumber)
                             else:
                                 pageNumber=1
-                        msg=htmlShares(self.server.translate, \
+                        msg=htmlShares(self.server.recentPostsCache, \
+                                       self.server.translate, \
                                        pageNumber,maxPostsInFeed, \
                                        self.server.session, \
                                        self.server.baseDir, \
@@ -2756,7 +2761,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'tlbookmarks', \
                                                   authorized,self.server.ocapAlways)
-                            msg=htmlBookmarks(self.server.translate, \
+                            msg=htmlBookmarks(self.server.recentPostsCache, \
+                                              self.server.translate, \
                                               pageNumber,maxPostsInFeed, \
                                               self.server.session, \
                                               self.server.baseDir, \
@@ -2826,7 +2832,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       maxPostsInFeed, 'outbox', \
                                       authorized, \
                                       self.server.ocapAlways)
-                msg=htmlOutbox(self.server.translate, \
+                msg=htmlOutbox(self.server.recentPostsCache, \
+                               self.server.translate, \
                                pageNumber,maxPostsInFeed, \
                                self.server.session, \
                                self.server.baseDir, \
@@ -2890,7 +2897,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'moderation', \
                                                   True,self.server.ocapAlways)
-                            msg=htmlModeration(self.server.translate, \
+                            msg=htmlModeration(self.server.recentPostsCache, \
+                                               self.server.translate, \
                                                pageNumber,maxPostsInFeed, \
                                                self.server.session, \
                                                self.server.baseDir, \
@@ -5092,7 +5100,8 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 tokensDict[nickname]=token
                 tokensLookup[token]=nickname
 
-def runDaemon(enableSharedInbox: bool,registration: bool, \
+def runDaemon(maxRecentPosts: int, \
+              enableSharedInbox: bool,registration: bool, \
               language: str,projectVersion: str, \
               instanceId: str,clientToServer: bool, \
               baseDir: str,domain: str, \
@@ -5261,10 +5270,14 @@ def runDaemon(enableSharedInbox: bool,registration: bool, \
     else:
         httpd.thrSharesExpire.start()
 
+    httpd.recentPostsCache={}
+    httpd.maxRecentPosts=maxRecentPosts
+
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
         threadWithTrace(target=runInboxQueue, \
-                        args=(projectVersion, \
+                        args=(httpd.recentPostsCache,httpd.maxRecentPosts, \
+                              projectVersion, \
                               baseDir,httpPrefix,httpd.sendThreads, \
                               httpd.postLog,httpd.cachedWebfingers, \
                               httpd.personCache,httpd.inboxQueue, \

@@ -104,6 +104,8 @@ parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
 parser.add_argument('-p','--port', dest='port', type=int,default=None, \
                     help='Port number to run on')
+parser.add_argument('--postcache', dest='maxRecentPosts', type=int,default=100, \
+                    help='The maximum number of recent posts to store in RAM')
 parser.add_argument('--proxy', dest='proxyPort', type=int,default=None, \
                     help='Proxy port number to run on')
 parser.add_argument('--path', dest='baseDir', \
@@ -1484,7 +1486,7 @@ if not registration:
 if setTheme(baseDir,themeName):
     print('Theme set to '+themeName)
     
-runDaemon(not args.nosharedinbox, \
+runDaemon(args.maxRecentPosts,not args.nosharedinbox, \
           registration,args.language,__version__, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \

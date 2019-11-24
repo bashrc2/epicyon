@@ -55,7 +55,31 @@ from posts import sendSignedJson
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 
-def inboxStorePostToHtmlCache(translate: {}, \
+def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
+                           postJsonObject: {},htmlStr: str) -> None:
+    """Store recent posts in memory so that they can be quickly recalled
+    """
+    if not postJsonObject.get('id'):
+        return
+    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    if recentPostsCache.get('index'):    
+        recentPostsCache['index'].append(postId)
+        recentPostsCache['json'][postId]=postJsonObject.copy()
+        recentPostsCache['html'][postId]=htmlStr
+
+        while len(recentPostsCache['html'].items())>maxRecentPosts:
+            recentPostsCache['index'].pop(0)
+            del recentPostsCache['json'][postId]
+            del recentPostsCache['html'][postId]
+    else:
+        recentPostsCache['index']=[postId]
+        recentPostsCache['json']={}
+        recentPostsCache['html']={}
+        recentPostsCache['json'][postId]=postJsonObject.copy()
+        recentPostsCache['html'][postId]=htmlStr
+
+def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
+                              translate: {}, \
                               baseDir: str,httpPrefix: str, \
                               session,cachedWebfingers: {},personCache: {}, \
                               nickname: str,domain: str,port: int, \
@@ -68,13 +92,16 @@ def inboxStorePostToHtmlCache(translate: {}, \
     showAvatarOptions=True
     avatarUrl=None
     boxName='inbox'
-    individualPostAsHtml(getIconsDir(baseDir),translate,pageNumber, \
-                         baseDir,session,cachedWebfingers,personCache, \
-                         nickname,domain,port,postJsonObject, \
-                         avatarUrl,True,allowDeletion, \
-                         httpPrefix,__version__,boxName, \
-                         not isDM(postJsonObject), \
-                         True,True,False,True)
+    htmlStr= \
+        individualPostAsHtml(getIconsDir(baseDir),translate,pageNumber, \
+                             baseDir,session,cachedWebfingers,personCache, \
+                             nickname,domain,port,postJsonObject, \
+                             avatarUrl,True,allowDeletion, \
+                             httpPrefix,__version__,boxName, \
+                             not isDM(postJsonObject), \
+                             True,True,False,True)
+    updateRecentPostsCache(recentPostsCache,maxRecentPosts, \
+                           postJsonObject,htmlStr)
 
 def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
     """Checks whether files were correctly saved to the inbox
@@ -1603,7 +1630,8 @@ def inboxUpdateIndex(boxname: str,baseDir: str,handle: str,destinationFilename: 
 
     return False
 
-def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
+def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
+                           session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
                            queue: [],domain: str,port: int,useTor: bool, \
@@ -1787,7 +1815,8 @@ def inboxAfterCapabilities(session,keyId: str,handle: str,messageJson: {}, \
                 if debug:
                     print('DEBUG: saving inbox post as html to cache')
                 htmlCacheStartTime=time.time()
-                inboxStorePostToHtmlCache(translate,baseDir,httpPrefix, \
+                inboxStorePostToHtmlCache(recentPostsCache,maxRecentPosts, \
+                                          translate,baseDir,httpPrefix, \
                                           session,cachedWebfingers,personCache, \
                                           handle.split('@')[0],domain,port, \
                                           postJsonObject,allowDeletion)
@@ -1836,7 +1865,8 @@ def runInboxQueueWatchdog(projectVersion: str,httpd) -> None:
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
 
-def runInboxQueue(projectVersion: str, \
+def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
+                  projectVersion: str, \
                   baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \
                   domain: str,port: int,useTor: bool,federationList: [], \
@@ -2175,7 +2205,8 @@ def runInboxQueue(projectVersion: str, \
                     # Here the capability id begins with the handle, so this could also
                     # be matched separately, but it's probably not necessary
                     if capsId in capabilityIdList:
-                        inboxAfterCapabilities(session,keyId,handle, \
+                        inboxAfterCapabilities(recentPostsCache,maxRecentPosts, \
+                                               session,keyId,handle, \
                                                queueJson['post'], \
                                                baseDir,httpPrefix, \
                                                sendThreads,postLog, \
@@ -2194,7 +2225,8 @@ def runInboxQueue(projectVersion: str, \
                             pprint(queueJson['post'])
                 else:
                     if not ocapAlways:
-                        inboxAfterCapabilities(session,keyId,handle, \
+                        inboxAfterCapabilities(recentPostsCache,maxRecentPosts, \
+                                               session,keyId,handle, \
                                                queueJson['post'], \
                                                baseDir,httpPrefix, \
                                                sendThreads,postLog, \

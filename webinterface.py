@@ -1876,7 +1876,13 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,nickname: str,domain: str, \
     except Exception as e:
         print('ERROR: saving post to cache '+str(e))
     return False
-    
+
+def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
+    # if on the bookmarks timeline then remain there
+    if boxName=='tlbookmarks':
+        postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
+    return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
+
 def individualPostAsHtml(iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
                          session,wfRequest: {},personCache: {}, \
@@ -1908,10 +1914,7 @@ def individualPostAsHtml(iconsDir: str,translate: {}, \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
                                               postJsonObject)
         if postHtml:
-            # if on the bookmarks timeline then remain there
-            if boxName=='tlbookmarks':
-                postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
-            return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
+            return preparePostFromHtmlCache(postHtml,boxName,pageNumber)
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -2365,7 +2368,8 @@ def isQuestion(postObjectJson: {}) -> bool:
                             return True
     return False 
 
-def htmlTimeline(translate: {},pageNumber: int, \
+def htmlTimeline(recentPostsCache: {}, \
+                 translate: {},pageNumber: int, \
                  itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,timelineJson: {}, \
@@ -2576,16 +2580,26 @@ def htmlTimeline(translate: {},pageNumber: int, \
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
                 #avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
-                currTlStr= \
-                    individualPostAsHtml(iconsDir,translate,pageNumber, \
-                                         baseDir,session,wfRequest,personCache, \
-                                         nickname,domain,port,item,None,True, \
-                                         allowDeletion, \
-                                         httpPrefix,projectVersion,boxName, \
-                                         boxName!='dm', \
-                                         showIndividualPostIcons, \
-                                         manuallyApproveFollowers,False,True)
-                    
+                currTlStr=None
+                if recentPostsCache['index']:
+                    postId=item['id'].replace('/activity','').replace('/','#')
+                    if postId in recentPostsCache['index']:
+                        if recentPostsCache['html'].get(postId):
+                            currTlStr=recentPostsCache['html'][postId]
+                            currTlStr= \
+                                preparePostFromHtmlCache(currTlStr,boxName,pageNumber)                            
+                            print('Post obtained from recent cache ('+str(len(recentPostsCache['index']))+'): '+postId)
+                if not currTlStr:
+                    currTlStr= \
+                        individualPostAsHtml(iconsDir,translate,pageNumber, \
+                                             baseDir,session,wfRequest,personCache, \
+                                             nickname,domain,port,item,None,True, \
+                                             allowDeletion, \
+                                             httpPrefix,projectVersion,boxName, \
+                                             boxName!='dm', \
+                                             showIndividualPostIcons, \
+                                             manuallyApproveFollowers,False,True)
+
                 if currTlStr:
                     itemCtr+=1
                     tlStr+=currTlStr
@@ -2598,7 +2612,8 @@ def htmlTimeline(translate: {},pageNumber: int, \
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlShares(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlShares(recentPostsCache: {}, \
+               translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int, \
                allowDeletion: bool, \
@@ -2608,12 +2623,14 @@ def htmlShares(translate: {},pageNumber: int,itemsPerPage: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,None,'tlshares',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlInbox(recentPostsCache: {}, \
+              translate: {},pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}, \
               allowDeletion: bool, \
@@ -2623,12 +2640,14 @@ def htmlInbox(translate: {},pageNumber: int,itemsPerPage: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlBookmarks(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlBookmarks(recentPostsCache: {}, \
+                  translate: {},pageNumber: int,itemsPerPage: int, \
                   session,baseDir: str,wfRequest: {},personCache: {}, \
                   nickname: str,domain: str,port: int,bookmarksJson: {}, \
                   allowDeletion: bool, \
@@ -2638,60 +2657,70 @@ def htmlBookmarks(translate: {},pageNumber: int,itemsPerPage: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,bookmarksJson,'tlbookmarks',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInboxDMs(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlInboxDMs(recentPostsCache: {}, \
+                 translate: {},pageNumber: int,itemsPerPage: int, \
                  session,baseDir: str,wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,inboxJson: {}, \
                  allowDeletion: bool, \
                  httpPrefix: str,projectVersion: str) -> str:
     """Show the DM timeline as html
     """
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'dm',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlInboxReplies(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlInboxReplies(recentPostsCache: {}, \
+                     translate: {},pageNumber: int,itemsPerPage: int, \
                      session,baseDir: str,wfRequest: {},personCache: {}, \
                      nickname: str,domain: str,port: int,inboxJson: {}, \
                      allowDeletion: bool, \
                      httpPrefix: str,projectVersion: str) -> str:
     """Show the replies timeline as html
     """
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlreplies',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlInboxMedia(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlInboxMedia(recentPostsCache: {}, \
+                   translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
                    allowDeletion: bool, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the media timeline as html
     """
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlmedia',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlModeration(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlModeration(recentPostsCache: {}, \
+                   translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
                    allowDeletion: bool, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the moderation feed as html
     """
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'moderation',allowDeletion, \
                         httpPrefix,projectVersion,True)
 
-def htmlOutbox(translate: {},pageNumber: int,itemsPerPage: int, \
+def htmlOutbox(recentPostsCache: {}, \
+               translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int,outboxJson: {}, \
                allowDeletion: bool,
@@ -2700,7 +2729,8 @@ def htmlOutbox(translate: {},pageNumber: int,itemsPerPage: int, \
     """
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
-    return htmlTimeline(translate,pageNumber, \
+    return htmlTimeline(recentPostsCache, \
+                        translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
