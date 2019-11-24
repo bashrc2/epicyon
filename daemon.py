@@ -1315,12 +1315,19 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaStr=self.path.split('/icons/')[1]
                 mediaFilename= \
                     self.server.baseDir+'/img/icons/'+mediaStr
-                if os.path.isfile(mediaFilename):
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers('image/png',len(mediaBinary),cookie)
-                        self._write(mediaBinary)
+                if self.server.iconsCache.get(mediaStr):
+                    self._set_headers('image/png',len(mediaBinary),cookie)
+                    self._write(mediaBinary)
+                    self.server.iconsCache[mediaStr]=mediaBinary
                     return        
+                else:
+                    if os.path.isfile(mediaFilename):
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            self._set_headers('image/png',len(mediaBinary),cookie)
+                            self._write(mediaBinary)
+                            self.server.iconsCache[mediaStr]=mediaBinary
+                        return
             self._404()
             return
 
@@ -3868,6 +3875,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorChanged=True
                         if fields.get('themeDropdown'):
                             setTheme(self.server.baseDir,fields['themeDropdown'])
+                            #self.server.iconsCache={}
                         if fields.get('donateUrl'):
                             currentDonateUrl=getDonationUrl(actorJson)
                             if fields['donateUrl']!=currentDonateUrl:
@@ -5324,6 +5332,7 @@ def runDaemon(maxRecentPosts: int, \
 
     httpd.recentPostsCache={}
     httpd.maxRecentPosts=maxRecentPosts
+    httpd.iconsCache={}
 
     print('Creating inbox queue')
     httpd.thrInboxQueue= \
