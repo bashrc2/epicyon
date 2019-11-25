@@ -2593,17 +2593,21 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
             tlStr+='<div class="galleryContainer">\n'
         for item in timelineJson['orderedItems']:
             if item['type']=='Create' or item['type']=='Announce':
-                #avatarUrl=getPersonAvatarUrl(baseDir,item['actor'],personCache)
+                # is the actor who sent this post snoozed?
+                if isPersonSnoozed(baseDir,nickname,domain,item['actor']):
+                    continue
+
+                # is the post in the memory cache of recent ones?
                 currTlStr=None
                 if boxName!='tlmedia' and recentPostsCache.get('index'):
                     postId=item['id'].replace('/activity','').replace('/','#')
                     if postId in recentPostsCache['index']:
-                        if recentPostsCache['html'].get(postId):
+                        if recentPostsCache['html'].get(postId):                            
                             currTlStr=recentPostsCache['html'][postId]
                             currTlStr= \
-                                preparePostFromHtmlCache(currTlStr,boxName,pageNumber)                            
-                            #print('Post obtained from recent cache ('+str(len(recentPostsCache['index']))+'): '+postId)
+                                preparePostFromHtmlCache(currTlStr,boxName,pageNumber)
                 if not currTlStr:
+                    # read the post from disk
                     currTlStr= \
                         individualPostAsHtml(recentPostsCache,maxRecentPosts, \
                                              iconsDir,translate,pageNumber, \
