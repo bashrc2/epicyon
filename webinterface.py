@@ -2373,14 +2373,20 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 def isQuestion(postObjectJson: {}) -> bool:
     """ is the given post a question?
     """
-    if postObjectJson['type']=='Create':
-        if isinstance(postObjectJson['object'], dict):
-            if postObjectJson['object'].get('type'):
-                if postObjectJson['object']['type']=='Question':
-                    if postObjectJson['object'].get('oneOf'):
-                        if isinstance(postObjectJson['object']['oneOf'], list):
-                            return True
-    return False 
+    if postObjectJson['type']!='Create' and \
+       postObjectJson['type']!='Update':
+        return False
+    if not isinstance(postObjectJson['object'], dict):
+        return False
+    if not postObjectJson['object'].get('type'):
+        return False
+    if postObjectJson['object']['type']!='Question':
+        return False
+    if not postObjectJson['object'].get('oneOf'):
+        return False
+    if not isinstance(postObjectJson['object']['oneOf'], list):
+        return False
+    return True
 
 def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
                  translate: {},pageNumber: int, \
@@ -2592,7 +2598,7 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
                 tlStr+='<br>'
             tlStr+='<div class="galleryContainer">\n'
         for item in timelineJson['orderedItems']:
-            if item['type']=='Create' or item['type']=='Announce':
+            if item['type']=='Create' or item['type']=='Announce' or item['type']=='Update':
                 # is the actor who sent this post snoozed?
                 if isPersonSnoozed(baseDir,nickname,domain,item['actor']):
                     continue

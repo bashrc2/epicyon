@@ -2052,7 +2052,7 @@ def addPostStringToTimeline(postStr: str,boxname: str,postsInBox: [],boxActor: s
     """
     # must be a "Note" or "Announce" type
     if '"Note"' in postStr or '"Announce"' in postStr or \
-       ('"Question"' in postStr and '"Create"' in postStr):
+       ('"Question"' in postStr and ('"Create"' in postStr or '"Update"' in postStr)):
 
         if boxname=='dm':
             if '#Public' in postStr or '/followers' in postStr:
@@ -2171,16 +2171,16 @@ def createBoxIndexed(recentPostsCache: {}, \
                 postUrl=postFilename.replace('\n','').replace('.json','').strip()
 
                 postAdded=False
+                # is the post cached in memory?
                 if recentPostsCache.get('index'):
                     if postUrl in recentPostsCache['index']:
                         if recentPostsCache['json'].get(postUrl):
                             addPostStringToTimeline(recentPostsCache['json'][postUrl], \
                                                     boxname,postsInBox,boxActor)
-                            #print('Json post added to timeline from cache: '+postUrl)
                             postAdded=True
 
                 if not postAdded:
-                    # get the full path of the post
+                    # read the post from file
                     fullPostFilename= \
                         locatePost(baseDir,nickname,domain,postUrl,False)
                     if fullPostFilename:
