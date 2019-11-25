@@ -183,7 +183,33 @@ def readFollowList(filename: str) -> None:
 
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'        
-    
+
+    def _removePostInteractions(self,postJsonObject: {}) -> None:
+        """Removes potentially sensitive interactions from a post
+        This is the type of thing which would be of interest to marketers
+        or of saleable value to them. eg. Knowing who likes who or what.
+        """
+        if postJsonObject.get('likes'):
+            postJsonObject['likes']={'items': []}
+        if postJsonObject.get('shares'):
+            postJsonObject['shares']={}
+        if postJsonObject.get('replies'):
+            postJsonObject['replies']={}
+        if postJsonObject.get('bookmarks'):
+            postJsonObject['bookmarks']={}
+        if not postJsonObject.get('object'):
+            return
+        if not isinstance(postJsonObject['object'], dict):
+            return
+        if postJsonObject['object'].get('likes'):
+            postJsonObject['object']['likes']={'items': []}
+        if postJsonObject['object'].get('shares'):
+            postJsonObject['object']['shares']={}
+        if postJsonObject['object'].get('replies'):
+            postJsonObject['object']['replies']={}
+        if postJsonObject['object'].get('bookmarks'):
+            postJsonObject['object']['bookmarks']={}
+
     def _requestHTTP(self) -> bool:
         """Should a http response be given?
         """
@@ -2111,24 +2137,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
-                                    if postJsonObject.get('likes'):
-                                        postJsonObject['likes']={'items': []}
-                                    if postJsonObject.get('shares'):
-                                        postJsonObject['shares']={}
-                                    if postJsonObject.get('replies'):
-                                        postJsonObject['replies']={}
-                                    if postJsonObject.get('bookmarks'):
-                                        postJsonObject['bookmarks']={}
-                                    if postJsonObject.get('object'):
-                                        if isinstance(postJsonObject['object'], dict):
-                                            if postJsonObject['object'].get('likes'):
-                                                postJsonObject['object']['likes']={'items': []}
-                                            if postJsonObject['object'].get('shares'):
-                                                postJsonObject['object']['shares']={}
-                                            if postJsonObject['object'].get('replies'):
-                                                postJsonObject['object']['replies']={}
-                                            if postJsonObject['object'].get('bookmarks'):
-                                                postJsonObject['object']['bookmarks']={}
+                                    self._removePostInteractions(postJsonObject)
                                 if self._requestHTTP():
                                     msg= \
                                         htmlIndividualPost(self.server.recentPostsCache, \
@@ -2394,8 +2403,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
-                                    if postJsonObject.get('likes'):
-                                        postJsonObject['likes']={'items': []}                                    
+                                    self._removePostInteractions(postJsonObject)
+
                                 if self._requestHTTP():
                                     msg=htmlIndividualPost(self.server.recentPostsCache, \
                                                            self.server.maxRecentPosts, \
