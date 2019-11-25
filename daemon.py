@@ -132,6 +132,8 @@ from shares import outboxUndoShareUpload
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import getCachedPostFilename
+from utils import removePostFromCache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import getStatusNumber
