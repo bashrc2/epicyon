@@ -739,7 +739,7 @@ def personReceiveUpdate(baseDir: str, \
                 os.remove(avatarFilename)
     return True
 
-def receiveUpdate(session,baseDir: str, \
+def receiveUpdate(recentPostsCache: {},session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
                   personCache: {},messageJson: {},federationList: [], \
@@ -780,7 +780,7 @@ def receiveUpdate(session,baseDir: str, \
             if os.path.isfile(cachedPostFilename):
                 os.remove(cachedPostFilename)
         # remove from memory cache
-        removePostFromCache(messageJson,self.server.recentPostsCache)
+        removePostFromCache(messageJson,recentPostsCache)
         if debug:
             print('DEBUG: Question update was received')
         return True
@@ -2129,7 +2129,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     queue.pop(0)
                 continue
 
-            if receiveUpdate(session, \
+            if receiveUpdate(recentPostsCache,session, \
                              baseDir,httpPrefix, \
                              domain,port, \
                              sendThreads,postLog, \
