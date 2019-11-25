@@ -184,6 +184,48 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'        
 
+    def _sendVote(self,nickname: str,messageId: str,answer: str) -> None:
+        """Sends a vote
+        """
+        votesFilename= \
+            self.server.baseDir+'/accounts/'+ \
+            nickname+'@'+self.server.domain+'/votes.txt'
+
+        # have we already voted on this?
+        if messageId in open(votesFilename).read():
+            print('Already voted on message '+messageId)
+            return
+
+        print('Voting on message '+messageId)
+        print('Vote for: '+answer)
+        messageJson= \
+            createPublicPost(self.server.baseDir, \
+                             nickname, \
+                             self.server.domain,self.server.port, \
+                             self.server.httpPrefix, \
+                             answer,False,False,False, \
+                             None,None,None,True, \
+                             messageId,messageId,None, \
+                             None,None,None)
+        if messageJson:
+            self.postToNickname=nickname
+            if self._postToOutbox(messageJson,__version__):
+                populateReplies(self.server.baseDir, \
+                                self.server.httpPrefix, \
+                                self.server.domainFull, \
+                                messageJson, \
+                                self.server.maxReplies, \
+                                self.server.debug)
+                # record the vote
+                votesFile=open(votesFilename,'a+')
+                if votesFile:
+                    votesFile.write(messageId+'\n')
+                    votesFile.close()
+            else:
+                print('ERROR: unable to post vote to outbox')
+        else:
+            print('ERROR: unable to create vote')
+    
     def _removePostInteractions(self,postJsonObject: {}) -> None:
         """Removes potentially sensitive interactions from a post
         This is the type of thing which would be of interest to marketers
@@ -4235,42 +4277,7 @@ class PubServer(BaseHTTPRequestHandler):
                 answer=questionParams.split('answer=')[1]
                 if '&' in answer:
                     answer=answer.split('&')[0]
-            votesFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/votes.txt'
-            # have we already voted on this?
-            if messageId in open(votesFilename).read():
-                print('Already voted on message '+messageId)
-                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
-                self.server.POSTbusy=False
-                return                
-            print('Voting on message '+messageId)
-            print('Vote for: '+answer)
-            messageJson= \
-                createPublicPost(self.server.baseDir, \
-                                 nickname, \
-                                 self.server.domain,self.server.port, \
-                                 self.server.httpPrefix, \
-                                 answer,False,False,False, \
-                                 None,None,None,True, \
-                                 messageId,messageId,None, \
-                                 None,None,None)
-            if messageJson:
-                self.postToNickname=nickname
-                if self._postToOutbox(messageJson,__version__):
-                    populateReplies(self.server.baseDir, \
-                                    self.server.httpPrefix, \
-                                    self.server.domainFull, \
-                                    messageJson, \
-                                    self.server.maxReplies, \
-                                    self.server.debug)
-                    # record the vote
-                    votesFile=open(votesFilename,'a+')
-                    if votesFile:
-                        votesFile.write(messageId+'\n')
-                        votesFile.close()
-                else:
-                    print('ERROR: unable to post vote to outbox')
-            else:
-                print('ERROR: unable to create vote')
+            self._sendVote(nickname,messageId,answer)
             self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return                
