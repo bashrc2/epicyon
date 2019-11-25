@@ -449,7 +449,10 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
     """
     cachedPostFilename= \
         getCachedPostDirectory(baseDir,nickname,domain)+ \
-        '/'+postJsonObject['id'].replace('/activity','').replace('/','#')+'.html'
+        '/'+postJsonObject['id'].replace('/activity','')
+    if '#' in cachedPostFilename:
+        cachedPostFilename=cachedPostFilename.split('#',1)[0]
+    cachedPostFilename=cachedPostFilename.replace('/','#')+'.html'
     return cachedPostFilename
 
 def removePostFromCache(postJsonObject: {},recentPostsCache: {}):
