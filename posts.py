@@ -2227,7 +2227,7 @@ def createBoxIndexed(recentPostsCache: {}, \
             if p.get('object'):
                 if isinstance(p['object'], dict):                                
                     if p['object'].get('likes'):
-                        p['likes']={}
+                        p['likes']={'items': []}
                     if p['object'].get('replies'):
                         p['replies']={}
                     if p['object'].get('shares'):

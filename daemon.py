@@ -2113,6 +2113,22 @@ class PubServer(BaseHTTPRequestHandler):
                                 if not authorized:
                                     if postJsonObject.get('likes'):
                                         postJsonObject['likes']={'items': []}
+                                    if postJsonObject.get('shares'):
+                                        postJsonObject['shares']={}
+                                    if postJsonObject.get('replies'):
+                                        postJsonObject['replies']={}
+                                    if postJsonObject.get('bookmarks'):
+                                        postJsonObject['bookmarks']={}
+                                    if postJsonObject.get('object'):
+                                        if isinstance(postJsonObject['object'], dict):
+                                            if postJsonObject['object'].get('likes'):
+                                                postJsonObject['object']['likes']={'items': []}
+                                            if postJsonObject['object'].get('shares'):
+                                                postJsonObject['object']['shares']={}
+                                            if postJsonObject['object'].get('replies'):
+                                                postJsonObject['object']['replies']={}
+                                            if postJsonObject['object'].get('bookmarks'):
+                                                postJsonObject['object']['bookmarks']={}
                                 if self._requestHTTP():
                                     msg= \
                                         htmlIndividualPost(self.server.recentPostsCache, \
