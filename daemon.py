@@ -39,6 +39,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import createQuestionPost
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
@@ -2150,6 +2151,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/newfollowers') or \
                 self.path.endswith('/newdm') or \
                 self.path.endswith('/newreport') or \
+                self.path.endswith('/newquestion') or \
                 self.path.endswith('/newshare')):
                 msg=htmlNewPost(self.server.translate, \
                                 self.server.baseDir, \
@@ -3564,6 +3566,35 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1
+            elif postType=='newquestion':
+                if not fields.get('duration'):
+                    return -1
+                if not fields.get('message'):
+                    return -1
+                questionStr=fields['message']
+                qOptions=[]
+                for questionCtr in range(6):
+                    if fields.get('questionOption'+str(questionCtr)):
+                        qOptions.append(fields['questionOption'+str(questionCtr)])
+                if not qOptions:
+                    return -1
+                messageJson= \
+                    createQuestionPost(self.server.baseDir, \
+                                       nickname, \
+                                       self.server.domain,self.server.port, \
+                                       self.server.httpPrefix, \
+                                       fields['message'],qOptions, \
+                                       False,False,False, \
+                                       filename,attachmentMediaType, \
+                                       fields['imageDescription'],True, \
+                                       fields['subject'],int(fields['duration']))
+                if messageJson:
+                    self.postToNickname=nickname
+                    if self.server.debug:
+                        print('DEBUG: new Question')
+                    if self._postToOutbox(messageJson,__version__):
+                        return 1
+                return -1
             elif postType=='newshare':
                 if not fields.get('itemType'):
                     return -1

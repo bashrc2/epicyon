@@ -821,6 +821,49 @@ def createPublicPost(baseDir: str,
                           False,inReplyTo,inReplyToAtomUri,subject, \
                           eventDate,eventTime,location)
 
+def createQuestionPost(baseDir: str,
+                       nickname: str,domain: str,port: int,httpPrefix: str, \
+                       content: str,qOptions: [], \
+                       followersOnly: bool,saveToFile: bool,
+                       clientToServer: bool,\
+                       attachImageFilename: str,mediaType: str, \
+                       imageDescription: str,useBlurhash: bool, \
+                       subject: str,durationDays: int) -> {}:
+    """Question post with multiple choice options
+    """
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                domainFull=domain+':'+str(port)
+    messageJson= \
+        createPostBase(baseDir,nickname,domain,port, \
+                       'https://www.w3.org/ns/activitystreams#Public', \
+                       httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers', \
+                       httpPrefix,content,followersOnly,saveToFile, \
+                       clientToServer, \
+                       attachImageFilename,mediaType, \
+                       imageDescription,useBlurhash, \
+                       False,None,None,subject, \
+                       None,None,None)
+    messageJson['object']['type']='Question'
+    messageJson['object']['oneof']=[]
+    messageJson['object']['votersCount']=0
+    currTime=datetime.datetime.utcnow()
+    daysSinceEpoch=int((currTime - datetime.datetime(1970,1,1)).days + durationDays)
+    endTime=datetime.datetime(1970,1,1) + datetime.timedelta(daysSinceEpoch)
+    messageJson['object']['endTime']=endTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+    for questionOption in qOptions:
+        messageJson['object']['oneof'].append({
+            "type": "Note",
+            "name": questionOption,
+            "replies": {
+                "type": "Collection",
+                "totalItems": 0
+            }
+        })
+    return messageJson
+
 def createUnlistedPost(baseDir: str,
                        nickname: str,domain: str,port: int,httpPrefix: str, \
                        content: str,followersOnly: bool,saveToFile: bool,
