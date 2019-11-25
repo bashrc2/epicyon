@@ -1765,12 +1765,15 @@ def insertQuestion(translate: {}, \
         return content
     if len(postJsonObject['object']['oneOf'])==0:
         return content
+    messageId=postJsonObject['id'].replace('/activity','')
+    if '#' in messageId:
+        messageId=messageId.split('#',1)[0]
     pageNumberStr=''
     if pageNumber:
         pageNumberStr='?page='+str(pageNumber)
     content+='<div class="question">'
     content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
-    content+='<input type="hidden" name="messageId" value="'+postJsonObject['id']+'"><br>'
+    content+='<input type="hidden" name="messageId" value="'+messageId+'"><br>'
     for choice in postJsonObject['object']['oneOf']:
         if not choice.get('type'):
             continue

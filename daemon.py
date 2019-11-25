@@ -4235,6 +4235,13 @@ class PubServer(BaseHTTPRequestHandler):
                 answer=questionParams.split('answer=')[1]
                 if '&' in answer:
                     answer=answer.split('&')[0]
+            votesFilename=self.server.baseDir+'/accounts/'+nickname+'@'+self.server.domain+'/votes.txt'
+            # have we already voted on this?
+            if messageId in open(votesFilename).read():
+                print('Already voted on message '+messageId)
+                self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+                self.server.POSTbusy=False
+                return                
             print('Voting on message '+messageId)
             print('Vote for: '+answer)
             messageJson= \
@@ -4255,6 +4262,11 @@ class PubServer(BaseHTTPRequestHandler):
                                     messageJson, \
                                     self.server.maxReplies, \
                                     self.server.debug)
+                    # record the vote
+                    votesFile=open(votesFilename,'a+')
+                    if votesFile:
+                        votesFile.write(messageId+'\n')
+                        votesFile.close()
                 else:
                     print('ERROR: unable to post vote to outbox')
             else:
