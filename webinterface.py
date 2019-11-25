@@ -1756,7 +1756,8 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
     return manuallyApprovesFollowers
 
 def insertQuestion(translate: {}, \
-                   nickname: str,content: str, \
+                   nickname: str,domain: str,port: int, \
+                   content: str, \
                    postJsonObject: {},pageNumber: int) -> str:
     """ Inserts question selection into a post
     """
@@ -1886,6 +1887,8 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,nickname: str,domain: str, \
     return False
 
 def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
+    """Sets the page number on a cached html post
+    """
     # if on the bookmarks timeline then remain there
     if boxName=='tlbookmarks':
         postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
@@ -2328,7 +2331,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if not postJsonObject['object']['sensitive']:
         contentStr=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
-        contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
+        contentStr=insertQuestion(translate,nickname,domain,port, \
+                                  contentStr,postJsonObject,pageNumber)
     else:
         postID='post'+str(createPassword(8))
         contentStr=''
@@ -2340,7 +2344,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
-        contentStr=insertQuestion(translate,nickname,contentStr,postJsonObject,pageNumber)
+        contentStr=insertQuestion(translate,nickname,domain,port, \
+                                  contentStr,postJsonObject,pageNumber)
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
