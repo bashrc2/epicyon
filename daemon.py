@@ -221,6 +221,17 @@ class PubServer(BaseHTTPRequestHandler):
                 if votesFile:
                     votesFile.write(messageId+'\n')
                     votesFile.close()
+
+                # ensure that the cached post is removed if it exists, so
+                # that it then will be recreated
+                cachedPostFilename= \
+                    getCachedPostFilename(self.server.baseDir, \
+                                          nickname, \
+                                          self.server.domain,messageJson)
+                if os.path.isfile(cachedPostFilename):
+                    os.remove(cachedPostFilename)
+                # remove from memory cache
+                removePostFromCache(messageJson,self.server.recentPostsCache)                    
             else:
                 print('ERROR: unable to post vote to outbox')
         else:
