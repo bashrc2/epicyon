@@ -934,7 +934,10 @@ def htmlNewPost(translate: {},baseDir: str, \
             newPostText+='<p class="new-post-subtext">'+translate['This message only goes to moderators, even if it mentions other fediverse addresses.']+'</p><p class="new-post-subtext">'+translate['Also see']+' <a href="/terms">'+translate['Terms of Service']+'</a></p>'
     else:
         newPostText='<p class="new-post-text">'+translate['Enter the details for your shared item below.']+'</p>'
-        
+
+    if not path.endswith('/newquestion'):
+        newPostText='<p class="new-post-text">'+translate['Enter the choices for your question below.']+'</p>'
+
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
             newPostText = '<p class="new-post-text">'+file.read()+'</p>'    
@@ -971,6 +974,16 @@ def htmlNewPost(translate: {},baseDir: str, \
         scopeIcon='scope_report.png'
         scopeDescription=translate['Report']
         endpoint='newreport'
+    if path.endswith('/newquestion'):
+        scopeIcon='scope_question.png'
+        scopeDescription=translate['Question']
+        placeholderMessage=translate['Enter your question']+'...'
+        endpoint='newquestion'
+        extraFields='<div class="container">'
+        for questionCtr in range(6):
+            extraFields+='  <input type="text" class="questionOption" placeholder="'+str(questionCtr)+'" name="questionOption'+str(questionCtr)+'">'
+        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">'
+        extraFields+='</div>'
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
         scopeDescription=translate['Shared Item']
@@ -999,8 +1012,10 @@ def htmlNewPost(translate: {},baseDir: str, \
 
     # only show the share option if this is not a reply
     shareOptionOnDropdown=''
+    questionOptionOnDropdown=''
     if not replyStr:
-        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img loading="lazy" src="/'+iconsDir+'/scope_share.png"/><b>Share</b><br>'+translate['Describe a shared item']+'</a>'
+        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img loading="lazy" src="/'+iconsDir+'/scope_share.png"/><b>'+translate['Shares']+'</b><br>'+translate['Describe a shared item']+'</a>'
+        questionOptionOnDropdown='<a href="'+pathBase+'/newquestion"><img loading="lazy" src="/'+iconsDir+'/scope_question.png"/><b>'+translate['Question']+'</b><br>'+translate['Ask a question']+'</a>'
 
     mentionsStr=''
     for m in mentions:
@@ -1049,7 +1064,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         dropDownContent+='          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownReportSuffix+'"><img loading="lazy" src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'
-        dropDownContent+=shareOptionOnDropdown
+        dropDownContent+=questionOptionOnDropdown+shareOptionOnDropdown
         dropDownContent+='        </div>'
     else:
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr

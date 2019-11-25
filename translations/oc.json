@@ -182,5 +182,9 @@
     "Light": "Light",
     "Purple": "Purple",
     "Hacker": "Hacker",
-    "HighVis": "HighVis"
+    "HighVis": "HighVis",
+    "Question": "Question",
+    "Enter your question": "Enter your question",
+    "Enter the choices for your question below.": "Enter the choices for your question below.",
+    "Ask a question": "Ask a question"
 }
