@@ -12,6 +12,8 @@ import datetime
 import time
 import json
 from shutil import copyfile
+from utils import getCachedPostFilename
+from utils import removePostFromCache
 from utils import urlPermitted
 from utils import createInboxQueueDir
 from utils import getStatusNumber
@@ -741,7 +743,7 @@ def receiveUpdate(session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
                   personCache: {},messageJson: {},federationList: [], \
-                  debug : bool) -> bool:
+                  nickname: str,debug : bool) -> bool:
     """Receives an Update activity within the POST section of HTTPServer
     """
     if messageJson['type']!='Update':
@@ -768,6 +770,20 @@ def receiveUpdate(session,baseDir: str, \
         if debug:
             print('DEBUG: "users" or "profile" missing from actor in '+messageJson['type'])
         return False
+
+    if messageJson['object']['type']=='Question':
+        # ensure that the cached post is removed if it exists, so
+        # that it then will be recreated
+        cachedPostFilename= \
+            getCachedPostFilename(baseDir,nickname,domain,messageJson)
+        if cachedPostFilename:
+            if os.path.isfile(cachedPostFilename):
+                os.remove(cachedPostFilename)
+        # remove from memory cache
+        removePostFromCache(messageJson,self.server.recentPostsCache)
+        if debug:
+            print('DEBUG: Question update was received')
+        return True
 
     if messageJson['object']['type']=='Person' or \
        messageJson['object']['type']=='Application' or \
@@ -2121,6 +2137,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                              personCache, \
                              queueJson['post'], \
                              federationList, \
+                             queueJson['postNickname'], \
                              debug):
                 if debug:
                     print('DEBUG: Update accepted from '+keyId)

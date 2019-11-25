@@ -230,8 +230,9 @@ class PubServer(BaseHTTPRequestHandler):
                     getCachedPostFilename(self.server.baseDir, \
                                           nickname, \
                                           self.server.domain,messageJson)
-                if os.path.isfile(cachedPostFilename):
-                    os.remove(cachedPostFilename)
+                if cachedPostFilename:
+                    if os.path.isfile(cachedPostFilename):
+                        os.remove(cachedPostFilename)
                 # remove from memory cache
                 removePostFromCache(messageJson,self.server.recentPostsCache)                    
             else:
