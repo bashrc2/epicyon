@@ -184,12 +184,12 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'        
 
-    def _sendVote(self,nickname: str,messageId: str,answer: str) -> None:
-        """Sends a vote
+    def _sendReplyToQuestion(self,nickname: str,messageId: str,answer: str) -> None:
+        """Sends a reply to a question
         """
         votesFilename= \
             self.server.baseDir+'/accounts/'+ \
-            nickname+'@'+self.server.domain+'/votes.txt'
+            nickname+'@'+self.server.domain+'/questions.txt'
 
         # have we already voted on this?
         if messageId in open(votesFilename).read():
@@ -4277,7 +4277,7 @@ class PubServer(BaseHTTPRequestHandler):
                 answer=questionParams.split('answer=')[1]
                 if '&' in answer:
                     answer=answer.split('&')[0]
-            self._sendVote(nickname,messageId,answer)
+            self._sendReplyToQuestion(nickname,messageId,answer)
             self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return                

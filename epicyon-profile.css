@@ -780,6 +780,9 @@ div.gallery img {
     .question {
 	font-size: var(--font-size);
     }
+    .questionresult {
+	font-size: var(--font-size);
+    }
     input[type=radio] {
 	font-size: var(--font-size);
 	width: 32px;
@@ -1063,6 +1066,9 @@ div.gallery img {
         width: 20%;
     }
     .question {
+	font-size: var(--font-size3);
+    }
+    .questionresult {
 	font-size: var(--font-size3);
     }
     input[type=radio] {

@@ -1755,7 +1755,7 @@ def followerApprovalActive(baseDir: str,nickname: str,domain: str) -> bool:
                 manuallyApprovesFollowers=actorJson['manuallyApprovesFollowers']
     return manuallyApprovesFollowers
 
-def insertQuestion(translate: {}, \
+def insertQuestion(baseDir: str,translate: {}, \
                    nickname: str,domain: str,port: int, \
                    content: str, \
                    postJsonObject: {},pageNumber: int) -> str:
@@ -1771,17 +1771,55 @@ def insertQuestion(translate: {}, \
     pageNumberStr=''
     if pageNumber:
         pageNumberStr='?page='+str(pageNumber)
-    content+='<div class="question">'
-    content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
-    content+='<input type="hidden" name="messageId" value="'+messageId+'"><br>'
-    for choice in postJsonObject['object']['oneOf']:
-        if not choice.get('type'):
-            continue
-        if not choice.get('name'):
-            continue
-        content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br><br>'
-    content+='<input type="submit" value="'+translate['Vote']+'" class="vote"><br><br>'
-    content+='</form></div>'
+
+    votesFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/questions.txt'
+        
+    if messageId not in open(votesFilename).read():
+        # show the question options
+        content+='<div class="question">'
+        content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
+        content+='<input type="hidden" name="messageId" value="'+messageId+'"><br>'
+        for choice in postJsonObject['object']['oneOf']:
+            if not choice.get('type'):
+                continue
+            if not choice.get('name'):
+                continue
+            content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br><br>'
+        content+='<input type="submit" value="'+translate['Vote']+'" class="vote"><br><br>'
+        content+='</form></div>'
+    else:
+        # show the responses to a question
+        content+='<div class="questionresult">'
+
+        # get the maximum number of votes
+        maxVotes=1
+        for questionOption in postJsonObject['object']['oneOf']:
+            if not questionOption.get('name'):
+                continue
+            if not questionOption.get('replies'):
+                continue
+            if not questionOption['replies'].get('totalItems'):
+                continue
+            votes=int(questionOption['replies']['totalItems'])
+            if votes>maxVotes:
+                maxVotes=int(votes+1)
+
+        # show the votes as sliders
+        questionCtr=1
+        for questionOption in postJsonObject['object']['oneOf']:
+            if not questionOption.get('name'):
+                continue
+            if not questionOption.get('replies'):
+                continue
+            if not questionOption['replies'].get('totalItems'):
+                continue
+            votes=int(questionOption['replies']['totalItems'])
+            votesPercent=str(int(votes*100/maxVotes))
+            content+='<p><input type="text" placeholder="" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+'" style="width:40%">'
+            content+='<input type="range" min="1" max="100" class="slider" title="'+str(votes)+'" name="skillValue'+str(questionCtr)+'" value="'+votesPercent+'"></p>'
+            questionCtr+=1
+        content+='</div>'
     return content
 
 def addEmojiToDisplayName(baseDir: str,httpPrefix: str, \
@@ -2334,7 +2372,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if not postJsonObject['object']['sensitive']:
         contentStr=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
-        contentStr=insertQuestion(translate,nickname,domain,port, \
+        contentStr=insertQuestion(baseDir,translate,nickname,domain,port, \
                                   contentStr,postJsonObject,pageNumber)
     else:
         postID='post'+str(createPassword(8))
@@ -2347,7 +2385,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
-        contentStr=insertQuestion(translate,nickname,domain,port, \
+        contentStr=insertQuestion(baseDir,translate,nickname,domain,port, \
                                   contentStr,postJsonObject,pageNumber)
         contentStr+='</div>'
 
