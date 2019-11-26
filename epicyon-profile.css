@@ -551,6 +551,8 @@ input[type=checkbox]
     width: 3%;
     height: 3%;
     min-width: 40px;
+    -ms-transform: translateY(10%);
+    transform: translateY(10%);
 }
 
 .galleryContainer {
