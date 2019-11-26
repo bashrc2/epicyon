@@ -918,9 +918,9 @@ class PubServer(BaseHTTPRequestHandler):
         # token based authenticated used by the web interface
         if self.headers.get('Cookie'):
             if self.headers['Cookie'].startswith('epicyon='):
-                tokenStr=self.headers['Cookie'].split('=',1)[1]
+                tokenStr=self.headers['Cookie'].split('=',1)[1].strip()
                 if ';' in tokenStr:
-                    tokenStr=tokenStr.split(';')[0]
+                    tokenStr=tokenStr.split(';')[0].strip()
                 if self.server.tokensLookup.get(tokenStr):
                     nickname=self.server.tokensLookup[tokenStr]
                     # default to the inbox of the person
