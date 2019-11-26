@@ -1108,7 +1108,8 @@ class PubServer(BaseHTTPRequestHandler):
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
                    return
-               self._redirect_headers(originPathStr,cookie)
+               originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+               self._redirect_headers(originPathStrAbsolute,cookie)
                return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,9)
@@ -1553,7 +1554,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
             else:
                 originPathStr=self.path.split('/tags/')[0]
-                self._redirect_headers(originPathStr+'/search',cookie)                
+                originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+                self._redirect_headers(originPathStrAbsolute+'/search',cookie)                
             self.server.GETbusy=False
             return
 
@@ -1630,7 +1632,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/'+timelineStr+ \
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+                self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
@@ -1655,7 +1658,8 @@ class PubServer(BaseHTTPRequestHandler):
             if announceJson:
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+            self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
                                    timelineBookmark,cookie)
             return
@@ -1690,7 +1694,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+                self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                        str(pageNumber),cookie)
                 return                
             if not self.server.session:
@@ -1715,7 +1720,8 @@ class PubServer(BaseHTTPRequestHandler):
             }                
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr+'?page='+ \
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+            self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
                                    timelineBookmark,cookie)
             return
@@ -1747,7 +1753,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.acceptedCaps, \
                                            self.server.debug, \
                                            self.server.projectVersion)
-            self._redirect_headers(originPathStr,cookie)
+            originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+            self._redirect_headers(originPathStrAbsolute,cookie)
             self.server.GETbusy=False
             return
 
@@ -1774,7 +1781,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.personCache, \
                                         self.server.debug, \
                                         self.server.projectVersion)
-            self._redirect_headers(originPathStr,cookie)
+            originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+            self._redirect_headers(originPathStrAbsolute,cookie)
             self.server.GETbusy=False
             return
 
@@ -1809,7 +1817,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/'+timelineStr+ \
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber)+ \
                                        timelineBookmark,cookie)
                 return                
@@ -1831,7 +1840,8 @@ class PubServer(BaseHTTPRequestHandler):
             }    
             self._postToOutbox(likeJson,self.server.projectVersion)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr+ \
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
             return
@@ -1866,7 +1876,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/'+timelineStr+ \
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
@@ -1892,7 +1903,8 @@ class PubServer(BaseHTTPRequestHandler):
             }
             self._postToOutbox(undoLikeJson,self.server.projectVersion)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr+ \
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
             return
@@ -1928,7 +1940,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/'+timelineStr+ \
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
@@ -1946,7 +1959,8 @@ class PubServer(BaseHTTPRequestHandler):
             }    
             self._postToOutbox(bookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr+ \
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
             return
@@ -1979,7 +1993,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                self._redirect_headers(actor+'/'+timelineStr+ \
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return                
             if not self.server.session:
@@ -2002,7 +2017,8 @@ class PubServer(BaseHTTPRequestHandler):
             }
             self._postToOutbox(undoBookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr+ \
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
             return
@@ -2431,7 +2447,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.GETbusy=False
                             return
             actor=self.path.replace('/skills','')
-            self._redirect_headers(actor,cookie)
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            self._redirect_headers(actorAbsolute,cookie)
             self.server.GETbusy=False
             return
 
@@ -3789,7 +3806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.port, \
                                            loginNickname,loginPassword):
                         self.server.POSTbusy=False
-                        self._redirect_headers('/login',cookie)
+                        self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+'/login',cookie)
                         return
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+ \
@@ -3860,12 +3877,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
+            actorStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.replace('/profiledata','').replace('/editprofile','')
             if ' boundary=' in self.headers['Content-type']:
                 boundary=self.headers['Content-type'].split('boundary=')[1]
                 if ';' in boundary:
                     boundary=boundary.split(';')[0]
 
-                actorStr=self.path.replace('/profiledata','').replace('/editprofile','')
                 nickname=getNicknameFromActor(actorStr)
                 if not nickname:
                     print('WARN: nickname not found in '+actorStr)
@@ -4169,7 +4188,9 @@ class PubServer(BaseHTTPRequestHandler):
         # moderator action buttons
         if authorized and '/users/' in self.path and \
            self.path.endswith('/moderationaction'):
-            actorStr=self.path.replace('/moderationaction','')
+            actorStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.replace('/moderationaction','')
             length = int(self.headers['Content-length'])
             moderationParams=self.rfile.read(length).decode('utf-8')
             print('moderationParams: '+moderationParams)
@@ -4462,7 +4483,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # removes a shared item
         if authorized and self.path.endswith('/rmshare'):
-            originPathStr=self.path.split('/rmshare')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/rmshare')[0]
             length = int(self.headers['Content-length'])
             removeShareConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removeShareConfirmParams:
@@ -4488,7 +4511,9 @@ class PubServer(BaseHTTPRequestHandler):
         # removes a post
         if authorized and self.path.endswith('/rmpost'):
             pageNumber=1
-            originPathStr=self.path.split('/rmpost')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/rmpost')[0]
             length = int(self.headers['Content-length'])
             removePostConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removePostConfirmParams:
@@ -4530,7 +4555,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/followconfirm'):
-            originPathStr=self.path.split('/followconfirm')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/followconfirm')[0]
             followerNickname=getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -4581,7 +4608,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to unfollow in the web interface is confirmed
         if authorized and self.path.endswith('/unfollowconfirm'):
-            originPathStr=self.path.split('/unfollowconfirm')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/unfollowconfirm')[0]
             followerNickname=getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -4629,7 +4658,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to unblock in the web interface is confirmed
         if authorized and self.path.endswith('/unblockconfirm'):
-            originPathStr=self.path.split('/unblockconfirm')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/unblockconfirm')[0]
             blockerNickname=getNicknameFromActor(originPathStr)
             if not blockerNickname:
                 print('WARN: unable to find nickname in '+originPathStr)
@@ -4674,7 +4705,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to block in the web interface is confirmed
         if authorized and self.path.endswith('/blockconfirm'):
-            originPathStr=self.path.split('/blockconfirm')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/blockconfirm')[0]
             blockerNickname=getNicknameFromActor(originPathStr)
             if not blockerNickname:
                 print('WARN: unable to find nickname in '+originPathStr)
@@ -4724,7 +4757,9 @@ class PubServer(BaseHTTPRequestHandler):
         # view/follow/block/report
         if authorized and self.path.endswith('/personoptions'):
             pageNumber=1
-            originPathStr=self.path.split('/personoptions')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('/personoptions')[0]
             chooserNickname=getNicknameFromActor(originPathStr)
             if not chooserNickname:
                 print('WARN: unable to find nickname in '+originPathStr)
@@ -4837,7 +4872,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return            
             if '&submitSnooze=' in optionsConfirmParams:
-                thisActor=self.path.split('/personoptions')[0]
+                thisActor= \
+                    self.server.httpPrefix+'://'+self.server.domainFull+ \
+                    self.path.split('/personoptions')[0]
                 if self.server.debug:
                     print('Snoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
@@ -4848,7 +4885,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy=False
                     return
             if '&submitUnSnooze=' in optionsConfirmParams:
-                thisActor=self.path.split('/personoptions')[0]
+                thisActor= \
+                    self.server.httpPrefix+'://'+self.server.domainFull+ \
+                    self.path.split('/personoptions')[0]
                 if self.server.debug:
                     print('Unsnoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
@@ -4882,7 +4921,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+ \
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
@@ -4891,7 +4931,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+ \
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
@@ -4900,7 +4941,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+ \
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
@@ -4909,7 +4951,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+ \
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
@@ -4918,7 +4961,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+ \
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
                                    '/inbox?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
@@ -4927,7 +4971,8 @@ class PubServer(BaseHTTPRequestHandler):
             nickname=self.path.split('/users/')[1]
             if '/' in nickname:
                 nickname=nickname.split('/')[0]
-            self._redirect_headers('/users/'+nickname+ \
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
                                    '/shares?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
