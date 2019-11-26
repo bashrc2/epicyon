@@ -401,7 +401,6 @@ input[type=time] {
 input[type=submit] {
     background-color: var(--button-background);
     color: var(--button-text);
-    float: right;
     margin: 10px 10px;
     padding: 12px 10px;
     border: none;
@@ -596,7 +595,6 @@ div.gallery img {
         border-radius: 10%;
     }
     .container img.emojisearch {
-        float: right;
         max-width: 400px;
         width: 8%;
         padding: 0px 7px;
@@ -767,8 +765,8 @@ div.gallery img {
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: right;
         padding: var(--button-height-padding);
+	float: none;
         margin: 15px;
         border: none;
         border-radius: var(--button-corner-radius);
@@ -814,10 +812,10 @@ div.gallery img {
     .cancelbtn {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: right;
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
+	float: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
@@ -1055,7 +1053,7 @@ div.gallery img {
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: right;
+        float: none;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
@@ -1102,7 +1100,7 @@ div.gallery img {
     .cancelbtn {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: right;
+        float: none;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
