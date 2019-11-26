@@ -915,6 +915,11 @@ class PubServer(BaseHTTPRequestHandler):
         return 2
 
     def _isAuthorized(self) -> bool:
+        if self.path.startswith('/icons/') or \
+           self.path.startswith('/avatars/') or \
+           self.path.startswith('/favicon.ico'):
+            return False
+
         # token based authenticated used by the web interface
         if self.headers.get('Cookie'):
             if self.headers['Cookie'].startswith('epicyon='):
