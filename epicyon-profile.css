@@ -595,12 +595,9 @@ div.gallery img {
         border-radius: 10%;
     }
     .container img.emojisearch {
-        max-width: 400px;
-        width: 8%;
-        padding: 0px 7px;
-        margin-right: 20px;
-        border-radius: 10%;
-	float: right;
+        width: 10%;
+        float: right;
+        vertical-align: middle;
     }
     .container img.emojicalendar {
         float: left;
@@ -883,12 +880,9 @@ div.gallery img {
         border-radius: 10%;
     }
     .container img.emojisearch {
-        max-width: 400px;
-        width: 11%;
-        padding: 0px 7px;
-        margin-right: 0px;
-        border-radius: 10%;
-	float: right;
+        width: 12%;
+        float: right;
+        vertical-align: middle;
     }
     .container img.emojicalendar {
         float: left;
