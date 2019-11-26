@@ -940,7 +940,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
                     print('AUTH: nickname '+nickname+' was not found in path '+self.path)
                     return False
-                print('AUTH: epicyon cookie authorization failed, header='+self.headers['Cookie'].replace('epicyon=','')+' tokenStr='+tokenStr+' tokens='+str(self.server.tokensLookup))
+                if self.server.debug:
+                    print('AUTH: epicyon cookie authorization failed, header='+self.headers['Cookie'].replace('epicyon=','')+' tokenStr='+tokenStr+' tokens='+str(self.server.tokensLookup))
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
