@@ -1084,7 +1084,10 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+=replyStr
     newPostForm+='    <input type="text" placeholder="'+placeholderSubject+'" name="subject">'
     newPostForm+=''
-    newPostForm+='    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>'
+    if endpoint!='newquestion':
+        newPostForm+='    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>'
+    else:
+        newPostForm+='    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:100px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
     newPostForm+='    <div class="container">'
     newPostForm+='      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">'
