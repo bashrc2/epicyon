@@ -1075,7 +1075,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='    <label for="nickname"><b>'+newPostText+'</b></label>'
     newPostForm+='    <div class="container">'
     newPostForm+='      <div class="dropbtn" onclick="dropdown()">'
-    newPostForm+='        <img loading="lazy" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
+    newPostForm+='        <img loading="lazy" alt="" title="" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
     newPostForm+=dropDownContent
     newPostForm+='      </div>'
     newPostForm+='      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'
