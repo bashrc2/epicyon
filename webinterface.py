@@ -1078,10 +1078,10 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='        <img loading="lazy" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
     newPostForm+=dropDownContent
     newPostForm+='      </div></td>'
-    newPostForm+='      <td><input type="submit" name="submitPost" value="'+translate['Submit']+'"><br>'
-    newPostForm+='      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a><br>'
-    newPostForm+='      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'
-    newPostForm+='    </td></tr></table></div>'
+    newPostForm+='      <td><table><tr><td><input type="submit" name="submitPost" value="'+translate['Submit']+'"></td>'
+    newPostForm+='      <td><a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a></td>'
+    newPostForm+='      <td><a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a></td>'
+    newPostForm+='    </tr></table></td></tr></table></div>'
     newPostForm+=replyStr
     newPostForm+='    <input type="text" placeholder="'+placeholderSubject+'" name="subject">'
     newPostForm+=''
