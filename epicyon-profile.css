@@ -600,7 +600,7 @@ div.gallery img {
         padding: 0px 7px;
         margin-right: 20px;
         border-radius: 10%;
-	display: inline-block;
+	float: right;
     }
     .container img.emojicalendar {
         float: left;
@@ -888,7 +888,7 @@ div.gallery img {
         padding: 0px 7px;
         margin-right: 0px;
         border-radius: 10%;
-	display: inline-block;
+	float: right;
     }
     .container img.emojicalendar {
         float: left;

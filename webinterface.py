@@ -1078,11 +1078,11 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='        <img loading="lazy" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
     newPostForm+=dropDownContent
     newPostForm+='      </div>'
+    newPostForm+='      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'
     newPostForm+='    </div>'
     newPostForm+='    <div class="container"><center>'
     newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
     newPostForm+='      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
-    newPostForm+='      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'
     newPostForm+='    </center></div>'
     newPostForm+=replyStr
     newPostForm+='    <input type="text" placeholder="'+placeholderSubject+'" name="subject">'
