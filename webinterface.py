@@ -2117,7 +2117,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 containerClass='container darker'
                 #avatarPosition=' class="right"'
                 if postJsonObject['object']['inReplyTo'].startswith(postActor):
-                    titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
+                    titleStr+=' <img loading="lazy" title="'+translate['replying to themselves']+'" alt="'+translate['replying to themselves']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
                         replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
