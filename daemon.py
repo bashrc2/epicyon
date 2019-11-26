@@ -933,8 +933,10 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
                     if self.path.endswith('/'+nickname):
                         return True
-                    print('AUTH: nickname '+nickname+' did not match '+str(self.server.tokensLookup[tokenStr]))
+                    print('AUTH: nickname '+nickname+' was not found in path '+self.path)
+                    return False
                 print('AUTH: epicyon cookie authorization failed, header='+self.headers['Cookie'].replace('epicyon=','')+' tokenStr='+tokenStr+' tokens='+str(self.server.tokensLookup))
+                return False
             print('AUTH: Header cookie was not authorized')
             return False
         # basic auth
