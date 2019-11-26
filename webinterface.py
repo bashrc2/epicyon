@@ -1001,7 +1001,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     dateAndLocation=''
     if endpoint!='newshare' and endpoint!='newreport' and endpoint!='newquestion':
         dateAndLocation='<div class="container">'
-        dateAndLocation+='<p><img loading="lazy" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>'
+        dateAndLocation+='<p><img loading="lazy" alt="" title="" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>'
         dateAndLocation+='<label class="labels">'+translate['Date']+': </label>'
         dateAndLocation+='<input type="date" name="eventDate">'
         dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
