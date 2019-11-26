@@ -272,6 +272,8 @@ class PubServer(BaseHTTPRequestHandler):
         """
         if not self.headers.get('Accept'):
             return False
+        if self.server.debug:
+            print('ACCEPT: '+self.headers['Accept'])
         if 'image/' in self.headers['Accept']:
             return False
         if self.headers['Accept'].startswith('*'):
