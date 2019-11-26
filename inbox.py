@@ -739,6 +739,42 @@ def personReceiveUpdate(baseDir: str, \
                 os.remove(avatarFilename)
     return True
 
+def receiveUpdateToQuestion(recentPostsCache: {},messageJson: {}, \
+                            baseDir: str,nickname: str,domain: str) -> None:
+    """Updating a question as new votes arrive
+    """
+    # message url of the question
+    if not messageJson.get('id'):
+        return
+    if not messageJson.get('actor'):
+        return
+    messageId=messageJson['id'].replace('/activity','')
+    if '#' in messageId:
+        messageId=messageId.split('#',1)[0]
+    # find the question post
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
+    if not postFilename:
+        return
+    # load the json for the question
+    postJsonObject=loadJson(postFilename,1)
+    if not postJsonObject:
+        return
+    if not postJsonObject.get('actor'):
+        return
+    # does the actor match?
+    if postJsonObject['actor']!=messageJson['actor']:
+        return
+    saveJson(messageJson,postFilename)
+    # ensure that the cached post is removed if it exists, so
+    # that it then will be recreated
+    cachedPostFilename= \
+        getCachedPostFilename(baseDir,nickname,domain,messageJson)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+    # remove from memory cache
+    removePostFromCache(messageJson,recentPostsCache)
+                            
 def receiveUpdate(recentPostsCache: {},session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -772,15 +808,8 @@ def receiveUpdate(recentPostsCache: {},session,baseDir: str, \
         return False
 
     if messageJson['object']['type']=='Question':
-        # ensure that the cached post is removed if it exists, so
-        # that it then will be recreated
-        cachedPostFilename= \
-            getCachedPostFilename(baseDir,nickname,domain,messageJson)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        # remove from memory cache
-        removePostFromCache(messageJson,recentPostsCache)
+        receiveUpdateToQuestion(recentPostsCache,messageJson, \
+                                baseDir,nickname,domain)
         if debug:
             print('DEBUG: Question update was received')
         return True

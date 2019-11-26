@@ -464,7 +464,10 @@ def removePostFromCache(postJsonObject: {},recentPostsCache: {}):
     if not recentPostsCache.get('index'):
         return
 
-    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    postId=postJsonObject['id']
+    if '#' in postId:
+        postId=postId.split('#',1)[0]
+    postId=postId.replace('/activity','').replace('/','#')
     if postId not in recentPostsCache['index']:
         return
 
@@ -480,7 +483,10 @@ def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
     """
     if not postJsonObject.get('id'):
         return
-    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    postId=postJsonObject['id']
+    if '#' in postId:
+        postId=postId.split('#',1)[0]
+    postId=postId.replace('/activity','').replace('/','#')
     if recentPostsCache.get('index'):
         if postId in recentPostsCache['index']:
             return
