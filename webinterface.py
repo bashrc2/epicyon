@@ -989,7 +989,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         scopeDescription=translate['Shared Item']
         placeholderSubject=translate['Name of the shared item']+'...'
         placeholderMessage=translate['Description of the item being shared']+'...'
-        endpoint='newshare'
+        endpoint='newshare'        
         extraFields='<div class="container">'
         extraFields+='  <input type="text" class="itemType" placeholder="'+translate['Type of shared item. eg. hat']+'" name="itemType">'
         extraFields+='  <input type="text" class="category" placeholder="'+translate['Category of shared item. eg. clothing']+'" name="category">'
@@ -998,7 +998,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         extraFields+='<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
 
     dateAndLocation=''
-    if endpoint!='newshare' and endpoint!='newreport':
+    if endpoint!='newshare' and endpoint!='newreport' and endpoint!='newquestion':
         dateAndLocation='<div class="container">'
         dateAndLocation+='<p><img loading="lazy" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>'
         dateAndLocation+='<label class="labels">'+translate['Date']+': </label>'
