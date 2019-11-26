@@ -1795,8 +1795,13 @@ def insertQuestion(baseDir: str,translate: {}, \
 
     votesFilename= \
         baseDir+'/accounts/'+nickname+'@'+domain+'/questions.txt'
-        
-    if messageId not in open(votesFilename).read():
+
+    showQuestion=True
+    if os.path.isfile(votesFilename):
+        if messageId not in open(votesFilename).read():
+            showQuestion=False
+
+    if showQuestion:
         # show the question options
         content+='<div class="question">'
         content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
