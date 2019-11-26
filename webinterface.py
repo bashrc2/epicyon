@@ -1831,7 +1831,7 @@ def insertQuestion(baseDir: str,translate: {}, \
                 continue
             votes=int(questionOption['replies']['totalItems'])
             votesPercent=str(int(votes*100/maxVotes))
-            content+='<p><input type="text" placeholder="" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+'" style="width:40%">'
+            content+='<p><input type="text" placeholder="" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+' ('+str(votes)+')" style="width:40%">'
             content+='<input type="range" min="1" max="100" class="slider" title="'+str(votes)+'" name="skillValue'+str(questionCtr)+'" value="'+votesPercent+'"></p>'
             questionCtr+=1
         content+='</div>'
