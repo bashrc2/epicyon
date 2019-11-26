@@ -919,6 +919,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Cookie'):
             if self.headers['Cookie'].startswith('epicyon='):
                 tokenStr=self.headers['Cookie'].split('=',1)[1]
+                if ';' in tokenStr:
+                    tokenStr=tokenStr.split(';')[0]
                 if self.server.tokensLookup.get(tokenStr):
                     nickname=self.server.tokensLookup[tokenStr]
                     # default to the inbox of the person
