@@ -2076,7 +2076,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
                 if postJsonObject['object']['attributedTo'].startswith(postActor):
-                    titleStr+=' <img loading="lazy" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
+                    titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
                 else:
                     announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
                     if announceNickname:
@@ -2089,7 +2089,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                     addEmojiToDisplayName(baseDir,httpPrefix, \
                                                           nickname,domain, \
                                                           announceDisplayName,False)
-                            titleStr+=' <img loading="lazy" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
                             # show avatar of person replied to
                             announceActor=postJsonObject['object']['attributedTo']
                             announceAvatarUrl=getPersonAvatarUrl(baseDir,announceActor,personCache)
@@ -2101,18 +2101,18 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                     'title="'+translate['Show options for this person']+ \
                                     '" alt=" "'+avatarPosition+'/></a></div>'
                         else:
-                            titleStr+=' <img loading="lazy" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
                     else:
-                        titleStr+=' <img loading="lazy" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                        titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
             else:
-                titleStr+=' <img loading="lazy" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
         else:
             if postJsonObject['object'].get('inReplyTo'):
                 containerClassIcons='containericons darker'
                 containerClass='container darker'
                 #avatarPosition=' class="right"'
                 if postJsonObject['object']['inReplyTo'].startswith(postActor):
-                    titleStr+=' <img loading="lazy" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
+                    titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
                         replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
@@ -2128,7 +2128,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                             addEmojiToDisplayName(baseDir,httpPrefix, \
                                                                   nickname,domain, \
                                                                   replyDisplayName,False)
-                                    titleStr+=' <img loading="lazy" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
+                                    titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
 
                                     # show avatar of person replied to
                                     replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
@@ -2139,15 +2139,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                         replyAvatarImageInPost+='title="'+translate['Show profile']
                                         replyAvatarImageInPost+='" alt=" "'+avatarPosition+'/></a></div>'
                                 else:
-                                    titleStr+=' <img loading="lazy" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+                                    titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
                         else:
-                            titleStr+=' <img loading="lazy" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
+                            titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
                     else:
                         postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
                         if '/' in postDomain:
                             postDomain=postDomain.split('/',1)[0]
                         if postDomain:
-                            titleStr+=' <img loading="lazy" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+                            titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object'].get('attachment'):
         if isinstance(postJsonObject['object']['attachment'], list):
@@ -2298,7 +2298,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+announceTitle+'">'
-        announceStr+='<img loading="lazy" alt="'+translate['Repeat this post']+'" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
+        announceStr+='<img loading="lazy" title="'+translate['Repeat this post']+'" alt="'+translate['Repeat this post']+'" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
     if not isModerationPost:
@@ -2316,7 +2316,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+likeTitle+'">'
-        likeStr+='<img loading="lazy" alt="'+likeTitle+'" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
+        likeStr+='<img loading="lazy" title="'+likeTitle+'" alt="'+likeTitle+'" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     bookmarkStr=''
     if not isModerationPost:
@@ -2333,7 +2333,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
-        bookmarkStr+='<img loading="lazy" alt="'+bookmarkTitle+'" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
+        bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+'" alt="'+bookmarkTitle+'" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
 
     deleteStr=''
     if allowDeletion or \
@@ -2379,7 +2379,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
                 '?actor='+postJsonObject['actor']+ \
                 '" title="'+translate['Reply to this post']+'">'
-        footerStr+='<img loading="lazy" alt="'+translate['Reply to this post']+'" src="/'+iconsDir+'/reply.png"/></a>'
+        footerStr+='<img loading="lazy" title="'+translate['Reply to this post']+'" alt="'+translate['Reply to this post']+'" src="/'+iconsDir+'/reply.png"/></a>'
         footerStr+=announceStr+likeStr+bookmarkStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
