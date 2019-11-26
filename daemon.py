@@ -3573,7 +3573,7 @@ class PubServer(BaseHTTPRequestHandler):
                     return -1
                 questionStr=fields['message']
                 qOptions=[]
-                for questionCtr in range(6):
+                for questionCtr in range(8):
                     if fields.get('questionOption'+str(questionCtr)):
                         qOptions.append(fields['questionOption'+str(questionCtr)])
                 if not qOptions:
