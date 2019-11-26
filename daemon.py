@@ -931,8 +931,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return True
                     if self.path.endswith('/'+nickname):
                         return True
-                    print('AUTH: nickname '+nickname+' did not match')
-                print('AUTH: epicyon cookie authorization failed')
+                    print('AUTH: nickname '+nickname+' did not match '+str(self.server.tokensLookup[tokenStr]))
+                print('AUTH: epicyon cookie authorization failed '+self.headers['Cookie'])
             print('AUTH: Header cookie was not authorized')
             return False
         # basic auth
@@ -941,7 +941,7 @@ class PubServer(BaseHTTPRequestHandler):
                          self.headers['Authorization'], \
                          self.server.debug):
                 return True
-            print('AUTH: Basic auth did not authorize')
+            print('AUTH: Basic auth did not authorize '+self.headers['Authorization'])
         return False
     
     def _clearLoginDetails(self,nickname: str):
