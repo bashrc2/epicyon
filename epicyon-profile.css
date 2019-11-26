@@ -600,6 +600,7 @@ div.gallery img {
         padding: 0px 7px;
         margin-right: 20px;
         border-radius: 10%;
+	display: inline-block;
     }
     .container img.emojicalendar {
         float: left;
@@ -766,7 +767,7 @@ div.gallery img {
         background-color: var(--button-background);
         color: var(--button-text);
         padding: var(--button-height-padding);
-	float: none;
+	display: inline-block;
         margin: 15px;
         border: none;
         border-radius: var(--button-corner-radius);
@@ -815,7 +816,7 @@ div.gallery img {
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
-	float: none;
+	display: inline-block;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
@@ -882,12 +883,12 @@ div.gallery img {
         border-radius: 10%;
     }
     .container img.emojisearch {
-        float: right;
         max-width: 400px;
         width: 11%;
         padding: 0px 7px;
         margin-right: 0px;
         border-radius: 10%;
+	display: inline-block;
     }
     .container img.emojicalendar {
         float: left;
@@ -1053,7 +1054,7 @@ div.gallery img {
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: none;
+	display: inline-block;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
@@ -1100,7 +1101,7 @@ div.gallery img {
     .cancelbtn {
         background-color: var(--button-background);
         color: var(--button-text);
-        float: none;
+	display: inline-block;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
