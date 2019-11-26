@@ -376,6 +376,8 @@ class PubServer(BaseHTTPRequestHandler):
         #self.send_header('Content-type', 'text/html')
         if cookie:
             self.send_header('Cookie', cookie)
+        if '://' not in redirect:
+            print('REDIRECT ERROR: redirect is not an absolute url '+redirect)
         self.send_header('Location', redirect)
         self.send_header('Host', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
@@ -948,7 +950,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_response(303)
         self.send_header('Content-Length', '0')
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Location', '/login')
+        self.send_header('Location', \
+                         self.server.httpPrefix+'://'+ \
+                         self.server.domainFull+'/login')
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
@@ -1186,7 +1190,9 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: authorized='+str(authorized))
                         print('DEBUG: path='+self.path)
                     self.send_response(303)
-                    self.send_header('Location', '/login')
+                    self.send_header('Location', \
+                                     self.server.httpPrefix+'://'+ \
+                                     self.server.domainFull+'/login')
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
@@ -3862,6 +3868,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('Set-Cookie', \
                                      'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
                     self.send_header('Location', \
+                                     self.server.httpPrefix+'://'+ \
+                                     self.server.domainFull+ \
                                      '/users/'+loginNickname+'/inbox')
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
