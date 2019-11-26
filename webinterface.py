@@ -1015,8 +1015,8 @@ def htmlNewPost(translate: {},baseDir: str, \
     shareOptionOnDropdown=''
     questionOptionOnDropdown=''
     if not replyStr:
-        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img loading="lazy" src="/'+iconsDir+'/scope_share.png"/><b>'+translate['Shares']+'</b><br>'+translate['Describe a shared item']+'</a>'
-        questionOptionOnDropdown='<a href="'+pathBase+'/newquestion"><img loading="lazy" src="/'+iconsDir+'/scope_question.png"/><b>'+translate['Question']+'</b><br>'+translate['Ask a question']+'</a>'
+        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_share.png"/><b>'+translate['Shares']+'</b><br>'+translate['Describe a shared item']+'</a>'
+        questionOptionOnDropdown='<a href="'+pathBase+'/newquestion"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_question.png"/><b>'+translate['Question']+'</b><br>'+translate['Ask a question']+'</a>'
 
     mentionsStr=''
     for m in mentions:
