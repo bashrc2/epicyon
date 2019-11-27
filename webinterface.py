@@ -1010,6 +1010,8 @@ def htmlNewPost(translate: {},baseDir: str, \
         dateAndLocation+='<input type="date" name="eventDate">'
         dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
         dateAndLocation+='<input type="time" name="eventTime"></label></p>'
+        dateAndLocation+='</div>'
+        dateAndLocation+='<div class="container">'
         dateAndLocation+='<br><label class="labels">'+translate['Location']+': </label>'
         dateAndLocation+='<input type="text" name="location">'
         dateAndLocation+='</div>'
