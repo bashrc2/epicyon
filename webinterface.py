@@ -1010,7 +1010,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         dateAndLocation+='<input type="date" name="eventDate">'
         dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
         dateAndLocation+='<input type="time" name="eventTime"></label></p>'
-        dateAndLocation+='<label class="labels">'+translate['Location']+': </label>'
+        dateAndLocation+='<br><label class="labels">'+translate['Location']+': </label>'
         dateAndLocation+='<input type="text" name="location">'
         dateAndLocation+='</div>'
 
@@ -1090,17 +1090,18 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
     newPostForm+='    </center></div>'
     newPostForm+=replyStr
-    newPostForm+='    <b>'+placeholderSubject+'</b><br>'
+    newPostForm+='    <label>'+placeholderSubject+'</label><br>'
     newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
-    newPostForm+='    <b>'+placeholderMessage+'</b><br>'
+    newPostForm+='    <label>'+placeholderMessage+'</label><br>'
     if endpoint!='newquestion':
         newPostForm+='    <textarea id="message" name="message" style="height:400px">'+mentionsStr+'</textarea>'
     else:
         newPostForm+='    <textarea id="message" name="message" style="height:100px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
     newPostForm+='    <div class="container">'
-    newPostForm+='      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">'
+    newPostForm+='      <label>'+translate['Image description']+'</label>'
+    newPostForm+='      <input type="text" name="imageDescription">'
     newPostForm+='      <input type="file" id="attachpic" name="attachpic"'
     newPostForm+='            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
     newPostForm+='    </div>'
