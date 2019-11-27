@@ -982,8 +982,8 @@ def htmlNewPost(translate: {},baseDir: str, \
         extraFields='<div class="container">'
         extraFields+='  <label class="labels">'+translate['Possible answers']+':</label>'
         for questionCtr in range(8):
-            extraFields+='  <input type="text" class="questionOption" placeholder="'+str(questionCtr+1)+'" name="questionOption'+str(questionCtr)+'">'
-        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">'
+            extraFields+='  <input type="text" class="questionOption" placeholder="'+str(questionCtr+1)+'" name="questionOption'+str(questionCtr)+'"><br>'
+        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14"><br>'
         extraFields+='</div>'
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
