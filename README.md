@@ -14,6 +14,8 @@ Includes emojis designed by [OpenMoji](https://openmoji.org) – the open-source
 
 ## Package Dependencies
 
+You will need python version 3.7 or later.
+
 On Arch/Parabola:
 
 ``` bash
