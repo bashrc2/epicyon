@@ -329,7 +329,7 @@ def htmlModerationInfo(translate: {},baseDir: str) -> str:
                 infoForm+='<div class="container">'
                 infoForm+='  <br><b>'+translate['Blocked accounts and hashtags']+'</b>'
                 infoForm+='  <br>'+translate['These are globally blocked for all accounts on this instance']
-                infoForm+='  <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>'
+                infoForm+='  <textarea id="message" name="blocked" style="height:400px">'+blockedStr+'</textarea>'
                 infoForm+='</div>'        
                 infoShown=True
         if not infoShown:
@@ -2638,7 +2638,7 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
     if moderator and boxName=='moderation':
         tlStr+='<form method="POST" action="/users/'+nickname+'/moderationaction">'
         tlStr+='<div class="container">\n'
-        tlStr+='    <p>'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'</p>\n'
+        tlStr+='    <b>'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'</b><br>\n'
         tlStr+='    <input type="text" placeholder="" name="moderationAction" value="" autofocus>'
         tlStr+='    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">'
         tlStr+='    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">'
