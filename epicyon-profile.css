@@ -379,6 +379,11 @@ input[type=number] {
     font-size: var(--font-size);
 }
 
+.transparent {
+    color: rgba(0, 0, 0, 0.0);
+    font-size: 0px;
+}
+
 .labelsright {
     float: right;
     font-size: var(--font-size);
