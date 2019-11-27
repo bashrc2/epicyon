@@ -1092,17 +1092,17 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
     newPostForm+='    </center></div>'
     newPostForm+=replyStr
-    newPostForm+='    <label>'+placeholderSubject+'</label><br>'
+    newPostForm+='    <label class="labels">'+placeholderSubject+'</label><br>'
     newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
-    newPostForm+='    <label>'+placeholderMessage+'</label><br>'
+    newPostForm+='    <label class="labels">'+placeholderMessage+'</label><br>'
     if endpoint!='newquestion':
         newPostForm+='    <textarea id="message" name="message" style="height:400px">'+mentionsStr+'</textarea>'
     else:
         newPostForm+='    <textarea id="message" name="message" style="height:100px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
     newPostForm+='    <div class="container">'
-    newPostForm+='      <label>'+translate['Image description']+'</label>'
+    newPostForm+='      <label class="labels">'+translate['Image description']+'</label>'
     newPostForm+='      <input type="text" name="imageDescription">'
     newPostForm+='      <input type="file" id="attachpic" name="attachpic"'
     newPostForm+='            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
