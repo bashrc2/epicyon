@@ -1405,14 +1405,16 @@
       Now you can navigate to your domain and register an account. The first account becomes the administrator.
     </p>
 
-    <p id="upgrade" class="siteheader">Upgrade</p>
+    <center>
+      <p id="upgrade" class="siteheader">Upgrade</p>
+    </center>
     <p class="intro">
       To subsequently upgrade:
     </p>
     <div class="shell">
-      cd /opt/epicyon
-      git pull
-      chown -R epicyon:epicyon *
+      cd /opt/epicyon<br>
+      git pull<br>
+      chown -R epicyon:epicyon *<br>
       systemctl restart epicyon
     </div>
   </body>
