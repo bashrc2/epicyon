@@ -655,7 +655,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
-    editProfileForm+='      <label class="labels">'+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'</label><br>'
+    editProfileForm+='      <label class="labels">'+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'</label><br><br>'
     editProfileForm+='      <label class="labels">'+translate['Avatar image']+'</label>'
     editProfileForm+='      <input type="file" id="avatar" name="avatar"'
     editProfileForm+='            accept="'+imageFormats+'">'
