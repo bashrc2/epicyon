@@ -1435,7 +1435,8 @@ def htmlProfile(recentPostsCache: {},maxRecentPosts: int, \
     else:
         editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>'+translate['Edit']+' </span></button></a>'
         logoutStr='<a href="/logout"><button class="button"><span>'+translate['Logout']+' </span></button></a>'
-        linkToTimelineStart='<a href="/users/'+nickname+'/inbox" title="'+translate['Switch to timeline view']+'" alt="'+translate['Switch to timeline view']+'">'
+        linkToTimelineStart='<a href="/users/'+nickname+'/inbox"><label class="transparent">'+translate['Switch to timeline view']+'</label></a>'
+        linkToTimelineStart+='<a href="/users/'+nickname+'/inbox" title="'+translate['Switch to timeline view']+'" alt="'+translate['Switch to timeline view']+'">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
         followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
