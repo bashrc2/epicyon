@@ -2629,11 +2629,12 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
     else:
         newPostButtonStr='<a href="'+actor+'/newdm"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
 
+    # This creates a link to the profile page when viewed in lynx, but should be invisible in a graphical web browser
+    tlStr+='<a href="/users/'+nickname+'"><label class="transparent">'+translate['Switch to profile view']+'</label></a>'
+    
     # banner and row of buttons
     tlStr+='<a href="/users/'+nickname+'" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'">'
     tlStr+='<div class="timeline-banner">'
-    # Note: this creates a link to the profile page when viewed in lynx, but should be invisible in a graphical web browser
-    tlStr+='<a href="/users/'+nickname+'"><label class="transparent">'+translate['Switch to profile view']+'</label></a>'
     tlStr+='</div></a>'
     tlStr+='<div class="container">\n'
     tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
