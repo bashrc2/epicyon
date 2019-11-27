@@ -1404,6 +1404,17 @@
     <p class="intro">
       Now you can navigate to your domain and register an account. The first account becomes the administrator.
     </p>
+
+    <p id="upgrade" class="siteheader">Upgrade</p>
+    <p class="intro">
+      To subsequently upgrade:
+    </p>
+    <div class="shell">
+      cd /opt/epicyon
+      git pull
+      chown -R epicyon:epicyon *
+      systemctl restart epicyon
+    </div>
   </body>
   <footer>
     <p>By: Bob Mottram <a href="mailto:bob@freedombone.net">bob@freedombone.net</a></p>
