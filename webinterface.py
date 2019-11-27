@@ -677,13 +677,13 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>'
     editProfileForm+='      <br><b>'+translate['Filtered words']+'</b>'
     editProfileForm+='      <br>'+translate['One per line']
-    editProfileForm+='      <textarea id="message" name="filteredWords" placeholder="" style="height:200px">'+filterStr+'</textarea>'
+    editProfileForm+='      <textarea id="message" name="filteredWords" style="height:200px">'+filterStr+'</textarea>'
     editProfileForm+='      <br><b>'+translate['Blocked accounts']+'</b>'
     editProfileForm+='      <br>'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']
-    editProfileForm+='      <textarea id="message" name="blocked" placeholder="" style="height:200px">'+blockedStr+'</textarea>'
+    editProfileForm+='      <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>'
     editProfileForm+='      <br><b>'+translate['Federation list']+'</b>'
     editProfileForm+='      <br>'+translate['Federate only with a defined set of instances. One domain name per line.']
-    editProfileForm+='      <textarea id="message" name="allowedInstances" placeholder="" style="height:200px">'+allowedInstancesStr+'</textarea>'
+    editProfileForm+='      <textarea id="message" name="allowedInstances" style="height:200px">'+allowedInstancesStr+'</textarea>'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <b>'+translate['Skills']+'</b><br>'
@@ -992,11 +992,15 @@ def htmlNewPost(translate: {},baseDir: str, \
         placeholderMessage=translate['Description of the item being shared']+'...'
         endpoint='newshare'        
         extraFields='<div class="container">'
-        extraFields+='  <input type="text" class="itemType" placeholder="'+translate['Type of shared item. eg. hat']+'" name="itemType">'
-        extraFields+='  <input type="text" class="category" placeholder="'+translate['Category of shared item. eg. clothing']+'" name="category">'
-        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14">'
+        extraFields+='  <label class="labels">'+translate['Type of shared item. eg. hat']+':</label>'
+        extraFields+='  <input type="text" class="itemType" name="itemType">'
+        extraFields+='  <label class="labels">'+translate['Category of shared item. eg. clothing']+':</label>'
+        extraFields+='  <input type="text" class="category" name="category">'
+        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label>'
+        extraFields+='  <input type="number" name="duration" min="1" max="365" step="1" value="14">'
         extraFields+='</div>'
-        extraFields+='<input type="text" placeholder="'+translate['City or location of the shared item']+'" name="location">'
+        extraFields+='<label class="labels">'+translate['City or location of the shared item']+':</label>'
+        extraFields+='<input type="text" name="location">'
 
     dateAndLocation=''
     if endpoint!='newshare' and endpoint!='newreport' and endpoint!='newquestion':
@@ -1006,7 +1010,8 @@ def htmlNewPost(translate: {},baseDir: str, \
         dateAndLocation+='<input type="date" name="eventDate">'
         dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
         dateAndLocation+='<input type="time" name="eventTime"></label></p>'
-        dateAndLocation+='<input type="text" placeholder="'+translate['Location']+'" name="location">'
+        dateAndLocation+='<label class="labels">'+translate['Location']+': </label>'
+        dateAndLocation+='<input type="text" name="location">'
         dateAndLocation+='</div>'
 
     newPostForm=htmlHeader(cssFilename,newPostCSS)
@@ -1085,12 +1090,14 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
     newPostForm+='    </center></div>'
     newPostForm+=replyStr
-    newPostForm+='    <input type="text" placeholder="'+placeholderSubject+'" name="subject">'
+    newPostForm+='    <b>'+placeholderSubject+'</b><br>'
+    newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
+    newPostForm+='    <b>'+placeholderMessage+'</b><br>'
     if endpoint!='newquestion':
-        newPostForm+='    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:400px">'+mentionsStr+'</textarea>'
+        newPostForm+='    <textarea id="message" name="message" style="height:400px">'+mentionsStr+'</textarea>'
     else:
-        newPostForm+='    <textarea id="message" name="message" placeholder="'+placeholderMessage+'" style="height:100px">'+mentionsStr+'</textarea>'
+        newPostForm+='    <textarea id="message" name="message" style="height:100px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
     newPostForm+='    <div class="container">'
     newPostForm+='      <input type="text" placeholder="'+translate['Image description']+'" name="imageDescription">'
@@ -1842,7 +1849,7 @@ def insertQuestion(baseDir: str,translate: {}, \
                 continue
             votes=int(questionOption['replies']['totalItems'])
             votesPercent=str(int(votes*100/maxVotes))
-            content+='<p><input type="text" placeholder="" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+' ('+str(votes)+')" style="width:40%">'
+            content+='<p><input type="text" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+' ('+str(votes)+')" style="width:40%">'
             content+='<input type="range" min="1" max="100" class="slider" title="'+str(votes)+'" name="skillValue'+str(questionCtr)+'" value="'+votesPercent+'"></p>'
             questionCtr+=1
         content+='</div>'
@@ -2639,7 +2646,7 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
         tlStr+='<form method="POST" action="/users/'+nickname+'/moderationaction">'
         tlStr+='<div class="container">\n'
         tlStr+='    <b>'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'</b><br>\n'
-        tlStr+='    <input type="text" placeholder="" name="moderationAction" value="" autofocus><br>\n'
+        tlStr+='    <input type="text" name="moderationAction" value="" autofocus><br>\n'
         tlStr+='    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">'
         tlStr+='    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">'
         tlStr+='    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">'
