@@ -2631,7 +2631,7 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
 
     # banner and row of buttons
     tlStr+='<a href="/users/'+nickname+'" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'">'
-    tlStr+='<div class="timeline-banner">'
+    tlStr+='<div class="timeline-banner" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'>'
     tlStr+='</div></a>'
     tlStr+='<div class="container">\n'
     tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
