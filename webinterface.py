@@ -2346,7 +2346,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         postJsonObject['object']['id'].startswith(postActor)):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr='<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">'
-            deleteStr+='<img loading="lazy" src="/'+iconsDir+'/delete.png"/></a>'
+            deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+'" title="'+translate['Delete this post']+'" src="/'+iconsDir+'/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
