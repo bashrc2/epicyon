@@ -382,6 +382,7 @@ input[type=number] {
 .transparent {
     color: rgba(0, 0, 0, 0.0);
     font-size: 0px;
+    line-height: 0;
 }
 
 .labelsright {
