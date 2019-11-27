@@ -805,7 +805,7 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
     loginForm+=registerButtonStr+loginButtonStr
     loginForm+='  </div>'
     loginForm+='</form>'
-    loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" src="/icons/agpl.png" /></a>'
+    loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" title="'+translate['Get the source code']+'" alt="'+translate['Get the source code']+'" src="/icons/agpl.png" /></a>'
     loginForm+=htmlFooter()
     return loginForm
 
@@ -1515,7 +1515,7 @@ def htmlProfile(recentPostsCache: {},maxRecentPosts: int, \
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read().replace('image.png',profileJson['image']['url'])
 
-        licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" src="/icons/agpl.png" /></a>'
+        licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" alt="'+translate['Get the source code']+'" title="'+translate['Get the source code']+'" src="/icons/agpl.png" /></a>'
 
         if selected=='posts':
             profileStr+= \
