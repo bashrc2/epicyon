@@ -2303,7 +2303,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+announceTitle+'">'
-        announceStr+='<img loading="lazy" title="'+translate['Repeat this post']+'" alt="'+translate['Repeat this post']+'" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
+        announceStr+='<img loading="lazy" title="'+translate['Repeat this post']+' |" alt="'+translate['Repeat this post']+' |" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
     if not isModerationPost:
@@ -2321,7 +2321,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+likeTitle+'">'
-        likeStr+='<img loading="lazy" title="'+likeTitle+'" alt="'+likeTitle+'" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
+        likeStr+='<img loading="lazy" title="'+likeTitle+' |" alt="'+likeTitle+' |" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     bookmarkStr=''
     if not isModerationPost:
@@ -2338,7 +2338,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
-        bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+'" alt="'+bookmarkTitle+'" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
+        bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
 
     deleteStr=''
     if allowDeletion or \
@@ -2384,7 +2384,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
                 '?actor='+postJsonObject['actor']+ \
                 '" title="'+translate['Reply to this post']+'">'
-        footerStr+='<img loading="lazy" title="'+translate['Reply to this post']+'" alt="'+translate['Reply to this post']+'" src="/'+iconsDir+'/reply.png"/></a>'
+        footerStr+='<img loading="lazy" title="'+translate['Reply to this post']+' |" alt="'+translate['Reply to this post']+' |" src="/'+iconsDir+'/reply.png"/></a>'
         footerStr+=announceStr+likeStr+bookmarkStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
