@@ -648,7 +648,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <label class="labels">'+translate['Nickname']+'</label>'
-    editProfileForm+='      <input type="text" name="displayNickname" value="'+displayNickname+'">'
+    editProfileForm+='      <input type="text" name="displayNickname" value="'+displayNickname+'"><br>'
     editProfileForm+='      <label class="labels">'+translate['Your bio']+'</label>'
     editProfileForm+='      <textarea id="message" name="bio" style="height:200px">'+bioStr+'</textarea>'
     editProfileForm+='<label class="labels">'+translate['Donations link']+'</label><br>'
