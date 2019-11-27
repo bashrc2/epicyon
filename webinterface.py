@@ -2638,7 +2638,8 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
     if moderator and boxName=='moderation':
         tlStr+='<form method="POST" action="/users/'+nickname+'/moderationaction">'
         tlStr+='<div class="container">\n'
-        tlStr+='    <input type="text" placeholder="'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'" name="moderationAction" value="" autofocus>'
+        tlStr+='    <p>'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'</p>\n'
+        tlStr+='    <input type="text" placeholder="" name="moderationAction" value="" autofocus>'
         tlStr+='    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">'
         tlStr+='    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">'
         tlStr+='    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">'
