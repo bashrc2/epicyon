@@ -661,6 +661,8 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
         if not filename.endswith(".txt"):
             continue
         tagFilename=os.path.join(baseDir+'/accounts/',filename)
+        if not os.path.isfile(tagFilename):
+            continue
         if matchStr not in open(tagFilename).read():
             continue
         with open(tagFilename, "r") as f:
