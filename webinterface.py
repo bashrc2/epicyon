@@ -604,9 +604,9 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         instanceTitle=getConfigParam(baseDir,'instanceTitle')
         instanceStr='<div class="container">'
         instanceStr+='  '+translate['Instance Title']
-        instanceStr+='  <input type="text" name="instanceTitle" value="'+instanceTitle+'">'
+        instanceStr+='  <input type="text" name="instanceTitle" value="'+instanceTitle+'"><br>'
         instanceStr+='  '+translate['Instance Short Description']
-        instanceStr+='  <input type="text" name="instanceDescriptionShort" value="'+instanceDescriptionShort+'">'
+        instanceStr+='  <input type="text" name="instanceDescriptionShort" value="'+instanceDescriptionShort+'"><br>'
         instanceStr+='  '+translate['Instance Description']
         instanceStr+='  <textarea id="message" name="instanceDescription" style="height:200px">'+instanceDescription+'</textarea>'
         instanceStr+='  '+translate['Instance Logo']
@@ -633,7 +633,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         themesDropdown+='    <option value="purple">'+translate['Purple']+'</option>'
         themesDropdown+='    <option value="hacker">'+translate['Hacker']+'</option>'
         themesDropdown+='    <option value="highvis">'+translate['HighVis']+'</option>'
-        themesDropdown+='  </select>'
+        themesDropdown+='  </select><br>'
         themesDropdown+='</div>'
         themeName=getConfigParam(baseDir,'theme')
         themesDropdown=themesDropdown.replace('<option value="'+themeName+'">','<option value="'+themeName+'" selected>')
@@ -647,8 +647,10 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <a href="'+pathOriginal+'"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
-    editProfileForm+='      <input type="text" placeholder="name" name="displayNickname" value="'+displayNickname+'">'
-    editProfileForm+='      <textarea id="message" name="bio" placeholder="'+translate['Your bio']+'..." style="height:200px">'+bioStr+'</textarea>'
+    editProfileForm+='      <label class="labels">'+translate['Nickname']+'</label>'
+    editProfileForm+='      <input type="text" name="displayNickname" value="'+displayNickname+'">'
+    editProfileForm+='      <label class="labels">'+translate['Your bio']+'</label>'
+    editProfileForm+='      <textarea id="message" name="bio" style="height:200px">'+bioStr+'</textarea>'
     editProfileForm+=translate['Donations link']+'<br>'
     editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
     editProfileForm+='    </div>'
@@ -666,7 +668,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+=translate['Change Password']+'<br>'
-    editProfileForm+='      <input type="text" name="password" value="">'
+    editProfileForm+='      <input type="text" name="password" value=""><br>'
     editProfileForm+=translate['Confirm Password']+'<br>'
     editProfileForm+='      <input type="text" name="passwordconfirm" value="">'
     editProfileForm+='    </div>'
