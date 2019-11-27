@@ -999,7 +999,7 @@ def htmlNewPost(translate: {},baseDir: str, \
         extraFields+='  <br><label class="labels">'+translate['Duration of listing in days']+':</label>'
         extraFields+='  <input type="number" name="duration" min="1" max="365" step="1" value="14">'
         extraFields+='</div>'
-        extraFields='<div class="container">'
+        extraFields+='<div class="container">'
         extraFields+='<label class="labels">'+translate['City or location of the shared item']+':</label>'
         extraFields+='<input type="text" name="location">'
         extraFields+='</div>'
