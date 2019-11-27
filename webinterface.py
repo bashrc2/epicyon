@@ -1095,7 +1095,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='    <label class="labels">'+placeholderSubject+'</label><br>'
     newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
-    newPostForm+='    <br><label class="labels">'+placeholderMessage+'</label><br>'
+    newPostForm+='    <br><label class="labels">'+placeholderMessage+'</label>'
     if endpoint!='newquestion':
         newPostForm+='    <textarea id="message" name="message" style="height:400px">'+mentionsStr+'</textarea>'
     else:
