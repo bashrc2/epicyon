@@ -194,10 +194,11 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.baseDir+'/accounts/'+ \
             nickname+'@'+self.server.domain+'/questions.txt'
 
-        # have we already voted on this?
-        if messageId in open(votesFilename).read():
-            print('Already voted on message '+messageId)
-            return
+        if os.path.isfile(votesFilename):
+            # have we already voted on this?
+            if messageId in open(votesFilename).read():
+                print('Already voted on message '+messageId)
+                return
 
         print('Voting on message '+messageId)
         print('Vote for: '+answer)
