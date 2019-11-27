@@ -603,13 +603,13 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         instanceDescriptionShort=getConfigParam(baseDir,'instanceDescriptionShort')
         instanceTitle=getConfigParam(baseDir,'instanceTitle')
         instanceStr='<div class="container">'
-        instanceStr+='  '+translate['Instance Title']
+        instanceStr+='  <label class="labels">'+translate['Instance Title']+'</label>'
         instanceStr+='  <input type="text" name="instanceTitle" value="'+instanceTitle+'"><br>'
-        instanceStr+='  '+translate['Instance Short Description']
+        instanceStr+='  <label class="labels">'+translate['Instance Short Description']+'</label>'
         instanceStr+='  <input type="text" name="instanceDescriptionShort" value="'+instanceDescriptionShort+'"><br>'
-        instanceStr+='  '+translate['Instance Description']
+        instanceStr+='  <label class="labels">'+translate['Instance Description']+'</label>'
         instanceStr+='  <textarea id="message" name="instanceDescription" style="height:200px">'+instanceDescription+'</textarea>'
-        instanceStr+='  '+translate['Instance Logo']
+        instanceStr+='  <label class="labels">'+translate['Instance Logo']+'</label>'
         instanceStr+='  <input type="file" id="instanceLogo" name="instanceLogo"'
         instanceStr+='      accept="'+imageFormats+'">'
         instanceStr+='</div>'
@@ -651,25 +651,25 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <input type="text" name="displayNickname" value="'+displayNickname+'">'
     editProfileForm+='      <label class="labels">'+translate['Your bio']+'</label>'
     editProfileForm+='      <textarea id="message" name="bio" style="height:200px">'+bioStr+'</textarea>'
-    editProfileForm+=translate['Donations link']+'<br>'
+    editProfileForm+='<label class="labels">'+translate['Donations link']+'</label><br>'
     editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
-    editProfileForm+='      '+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'<br>'
-    editProfileForm+='      '+translate['Avatar image']
+    editProfileForm+='      <label class="labels">'+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'</label><br>'
+    editProfileForm+='      <label class="labels">'+translate['Avatar image']+'</label>'
     editProfileForm+='      <input type="file" id="avatar" name="avatar"'
     editProfileForm+='            accept="'+imageFormats+'">'
-    editProfileForm+='      <br>'+translate['Background image']
+    editProfileForm+='      <br><label class="labels">'+translate['Background image']+'</label>'
     editProfileForm+='      <input type="file" id="image" name="image"'
     editProfileForm+='            accept="'+imageFormats+'">'
-    editProfileForm+='      <br>'+translate['Timeline banner image']
+    editProfileForm+='      <br><label class="labels">'+translate['Timeline banner image']+'</label>'
     editProfileForm+='      <input type="file" id="banner" name="banner"'
     editProfileForm+='            accept="'+imageFormats+'">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
-    editProfileForm+=translate['Change Password']+'<br>'
+    editProfileForm+='<label class="labels">'+translate['Change Password']+'</label><br>'
     editProfileForm+='      <input type="text" name="password" value=""><br>'
-    editProfileForm+=translate['Confirm Password']+'<br>'
+    editProfileForm+='<label class="labels">'+translate['Confirm Password']+'</label><br>'
     editProfileForm+='      <input type="text" name="passwordconfirm" value="">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
@@ -677,23 +677,23 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>'
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>'
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>'
-    editProfileForm+='      <br><b>'+translate['Filtered words']+'</b>'
-    editProfileForm+='      <br>'+translate['One per line']
+    editProfileForm+='      <br><b><label class="labels">'+translate['Filtered words']+'</label></b>'
+    editProfileForm+='      <br><label class="labels">'+translate['One per line']+'</label>'
     editProfileForm+='      <textarea id="message" name="filteredWords" style="height:200px">'+filterStr+'</textarea>'
-    editProfileForm+='      <br><b>'+translate['Blocked accounts']+'</b>'
-    editProfileForm+='      <br>'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']
+    editProfileForm+='      <br><b><label class="labels">'+translate['Blocked accounts']+'</label></b>'
+    editProfileForm+='      <br><label class="labels">'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']+'</label>'
     editProfileForm+='      <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>'
-    editProfileForm+='      <br><b>'+translate['Federation list']+'</b>'
-    editProfileForm+='      <br>'+translate['Federate only with a defined set of instances. One domain name per line.']
+    editProfileForm+='      <br><b><label class="labels">'+translate['Federation list']+'</label></b>'
+    editProfileForm+='      <br><label class="labels">'+translate['Federate only with a defined set of instances. One domain name per line.']+'</label>'
     editProfileForm+='      <textarea id="message" name="allowedInstances" style="height:200px">'+allowedInstancesStr+'</textarea>'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
-    editProfileForm+='      <b>'+translate['Skills']+'</b><br>'
-    editProfileForm+='      '+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']
+    editProfileForm+='      <b><label class="labels">'+translate['Skills']+'</label></b><br>'
+    editProfileForm+='      <label class="labels">'+translate['If you want to participate within organizations then you can indicate some skills that you have and approximate proficiency levels. This helps organizers to construct teams with an appropriate combination of skills.']+'</label>'
     editProfileForm+=skillsStr+themesDropdown+moderatorsStr
     editProfileForm+='    </div>'+instanceStr
     editProfileForm+='    <div class="container">'
-    editProfileForm+='      <b>'+translate['Danger Zone']+'</b><br>'
+    editProfileForm+='      <b><label class="labels">'+translate['Danger Zone']+'</label></b><br>'
     editProfileForm+='      <input type="checkbox" class=dangercheckbox" name="deactivateThisAccount">'+translate['Deactivate this account']+'<br>'
     editProfileForm+='    </div>'
     editProfileForm+='  </div>'
