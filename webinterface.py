@@ -2100,7 +2100,41 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     pageNumberParam=''
     if pageNumber:
         pageNumberParam='?page='+str(pageNumber)
-                
+
+    replyStr=''
+    if showIcons:
+        replyToLink=postJsonObject['object']['id']
+        if postJsonObject['object'].get('attributedTo'):
+            replyToLink+='?mention='+postJsonObject['object']['attributedTo']
+        if postJsonObject['object'].get('content'):
+            mentionedActors=getMentionsFromHtml(postJsonObject['object']['content'])
+            if mentionedActors:
+                for actorUrl in mentionedActors:
+                    if '?mention='+actorUrl not in replyToLink:
+                        replyToLink+='?mention='+actorUrl
+                        if len(replyToLink)>500:
+                            break
+        replyToLink+=pageNumberParam
+                        
+        replyStr=''
+        if not isModerationPost and showRepeatIcon:
+            if not manuallyApprovesFollowers:
+                replyStr+= \
+                    '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
+                    '?actor='+postJsonObject['actor']+ \
+                    '" title="'+translate['Reply to this post']+'">'
+            else:
+                replyStr+= \
+                    '<a href="/users/'+nickname+'?replyfollowers='+replyToLink+ \
+                    '?actor='+postJsonObject['actor']+ \
+                    '" title="'+translate['Reply to this post']+'">'
+        else:
+            replyStr+= \
+                '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
+                '?actor='+postJsonObject['actor']+ \
+                '" title="'+translate['Reply to this post']+'">'
+        replyStr+='<img loading="lazy" title="'+translate['Reply to this post']+' |" alt="'+translate['Reply to this post']+' |" src="/'+iconsDir+'/reply.png"/></a>'
+
     announceStr=''
     if not isModerationPost and showRepeatIcon:
         # don't allow announce/repeat of your own posts
@@ -2265,7 +2299,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="" width="600" height="400">\n'
                                 galleryStr+='  </a>\n'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 if postJsonObject['object'].get('url'):
                                     imagePostUrl=postJsonObject['object']['url']
@@ -2379,38 +2413,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         containerClass='container dm'
 
     if showIcons:
-        replyToLink=postJsonObject['object']['id']
-        if postJsonObject['object'].get('attributedTo'):
-            replyToLink+='?mention='+postJsonObject['object']['attributedTo']
-        if postJsonObject['object'].get('content'):
-            mentionedActors=getMentionsFromHtml(postJsonObject['object']['content'])
-            if mentionedActors:
-                for actorUrl in mentionedActors:
-                    if '?mention='+actorUrl not in replyToLink:
-                        replyToLink+='?mention='+actorUrl
-                        if len(replyToLink)>500:
-                            break
-        replyToLink+=pageNumberParam
-                        
         footerStr='<div class="'+containerClassIcons+'">'
-        if not isModerationPost and showRepeatIcon:
-            if not manuallyApprovesFollowers:
-                footerStr+= \
-                    '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
-                    '?actor='+postJsonObject['actor']+ \
-                    '" title="'+translate['Reply to this post']+'">'
-            else:
-                footerStr+= \
-                    '<a href="/users/'+nickname+'?replyfollowers='+replyToLink+ \
-                    '?actor='+postJsonObject['actor']+ \
-                    '" title="'+translate['Reply to this post']+'">'
-        else:
-            footerStr+= \
-                '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
-                '?actor='+postJsonObject['actor']+ \
-                '" title="'+translate['Reply to this post']+'">'
-        footerStr+='<img loading="lazy" title="'+translate['Reply to this post']+' |" alt="'+translate['Reply to this post']+' |" src="/'+iconsDir+'/reply.png"/></a>'
-        footerStr+=announceStr+likeStr+bookmarkStr+deleteStr
+        footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 
