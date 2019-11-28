@@ -1998,6 +1998,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if isPersonSnoozed(baseDir,nickname,domain,postActor):
         return ''
 
+    avatarPosition=''
     messageId=''
     if postJsonObject.get('id'):
         messageId=postJsonObject['id'].replace('/activity','')
@@ -2099,7 +2100,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     isModerationPost=False
     if postJsonObject['object'].get('moderationStatus'):
         isModerationPost=True
-    avatarPosition=''
     containerClass='container'
     containerClassIcons='containericons'
     timeClass='time-right'
