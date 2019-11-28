@@ -647,6 +647,13 @@ div.gallery img {
         margin: 0px 1%;
         border-radius: 0%;
     }
+    .mediaicons img {
+        float: right;
+        max-width: 200px;
+        width: 3%;
+        margin: 0px 1%;
+        border-radius: 0%;
+    }
     .timeline-avatar img {
         opacity: 1.0;
         width: 8%;
@@ -928,6 +935,13 @@ div.gallery img {
 	padding-right: 0px;
 	border-radius: 0px;
 	vertical-align: middle;
+    }
+    .mediaicons img {
+        float: right;
+        max-width: 200px;
+        width: 7%;
+        margin: 0px 1%;
+        border-radius: 0%;
     }
     .containericons img {
         float: right;
