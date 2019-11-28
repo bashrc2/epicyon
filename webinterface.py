@@ -2194,7 +2194,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
                                 galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n'
                                 galleryStr+='  </a>\n'
-                                galleryStr+='  <div class="gallerytext">'+contentStrMedia+'</div>\n'
+                                if imageDescription:
+                                    galleryStr+='  <div class="gallerytext">'+imageDescription+'</div>\n'
                                 galleryStr+='</div>\n'
 
                             attachmentStr+='<a href="'+attach['url']+'">'
