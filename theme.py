@@ -89,7 +89,7 @@ def setThemeHighVis(baseDir: str):
         "font-size4": "35px",
         "font-size5": "29px",
         "gallery-font-size": "35px",
-        "gallery-font-size-mobile": "45px"
+        "gallery-font-size-mobile": "55px"
     }
     setThemeFromDict(baseDir,'highvis',themeParams)
 
