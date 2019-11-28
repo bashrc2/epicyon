@@ -2192,10 +2192,14 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             if boxName=='tlmedia':
                                 galleryStr+='<div class="gallery">\n'
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
-                                galleryStr+='    <img loading="lazy" src="'+attach['url']+'" width="600" height="400">\n'
+                                galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="" width="600" height="400">\n'
                                 galleryStr+='  </a>\n'
+                                if postJsonObject['object'].get('url'):
+                                    imagePostUrl=postJsonObject['object']['url']
+                                else:
+                                    imagePostUrl=postJsonObject['object']['id']
                                 if imageDescription:
-                                    galleryStr+='  <div class="gallerytext">'+imageDescription+'</div>\n'
+                                    galleryStr+='  <a href="'+imagePostUrl+'"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 galleryStr+='</div>\n'
 
                             attachmentStr+='<a href="'+attach['url']+'">'
