@@ -937,7 +937,7 @@ def htmlNewPost(translate: {},baseDir: str, \
     else:
         newPostText='<p class="new-post-text">'+translate['Enter the details for your shared item below.']+'</p>'
 
-    if not path.endswith('/newquestion'):
+    if path.endswith('/newquestion'):
         newPostText='<p class="new-post-text">'+translate['Enter the choices for your question below.']+'</p>'
 
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
