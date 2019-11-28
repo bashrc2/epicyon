@@ -1998,6 +1998,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if isPersonSnoozed(baseDir,nickname,domain,postActor):
         return ''
 
+    messageId=''
+    if postJsonObject.get('id'):
+        messageId=postJsonObject['id'].replace('/activity','')
+
     messageIdStr=''
     if messageId:
         messageIdStr=';'+messageId
@@ -2104,9 +2108,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         # single user instance
         actorNickname='dev'
     actorDomain,actorPort=getDomainFromActor(postActor)
-    messageId=''
-    if postJsonObject.get('id'):
-        messageId=postJsonObject['id'].replace('/activity','')
 
     displayName=getDisplayName(baseDir,postActor,personCache)
     if displayName:
