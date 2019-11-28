@@ -647,10 +647,10 @@ div.gallery img {
         margin: 0px 1%;
         border-radius: 0%;
     }
-    .mediaicons img {
+    div.mediaicons img {
         float: right;
         max-width: 200px;
-        width: 3%;
+        width: 10%;
         margin: 0px 1%;
         border-radius: 0%;
     }
@@ -936,10 +936,10 @@ div.gallery img {
 	border-radius: 0px;
 	vertical-align: middle;
     }
-    .mediaicons img {
+    div.mediaicons img {
         float: right;
         max-width: 200px;
-        width: 7%;
+        width: 10%;
         margin: 0px 1%;
         border-radius: 0%;
     }
