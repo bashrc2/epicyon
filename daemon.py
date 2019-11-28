@@ -2397,7 +2397,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.path.replace('/roles',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    msg=htmlProfile(self.server.recentPostsCache, \
+                                    msg=htmlProfile(self.server.defaultTimeline, \
+                                                    self.server.recentPostsCache, \
                                                     self.server.maxRecentPosts, \
                                                     self.server.translate, \
                                                     self.server.projectVersion, \
@@ -2442,7 +2443,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                  self.path.replace('/skills',''), \
                                                  self.server.baseDir)
                                 if getPerson:
-                                    msg=htmlProfile(self.server.recentPostsCache, \
+                                    msg=htmlProfile(self.server.defaultTimeline, \
+                                                    self.server.recentPostsCache, \
                                                     self.server.maxRecentPosts, \
                                                     self.server.translate, \
                                                     self.server.projectVersion, \
@@ -3149,7 +3151,8 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.useTor)
-                    msg=htmlProfile(self.server.recentPostsCache, \
+                    msg=htmlProfile(self.server.defaultTimeline, \
+                                    self.server.recentPostsCache, \
                                     self.server.maxRecentPosts, \
                                     self.server.translate, \
                                     self.server.projectVersion, \
@@ -3208,7 +3211,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session= \
                             createSession(self.server.useTor)
 
-                    msg=htmlProfile(self.server.recentPostsCache, \
+                    msg=htmlProfile(self.server.defaultTimeline, \
+                                    self.server.recentPostsCache, \
                                     self.server.maxRecentPosts, \
                                     self.server.translate, \
                                     self.server.projectVersion, \
@@ -3268,7 +3272,8 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session= \
                             createSession(self.server.useTor)
-                    msg=htmlProfile(self.server.recentPostsCache, \
+                    msg=htmlProfile(self.server.defaultTimeline, \
+                                    self.server.recentPostsCache, \
                                     self.server.maxRecentPosts, \
                                     self.server.translate, \
                                     self.server.projectVersion, \
@@ -3308,7 +3313,8 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: creating new session')
                     self.server.session= \
                         createSession(self.server.useTor)
-                msg=htmlProfile(self.server.recentPostsCache, \
+                msg=htmlProfile(self.server.defaultTimeline, \
+                                self.server.recentPostsCache, \
                                 self.server.maxRecentPosts, \
                                 self.server.translate, \
                                 self.server.projectVersion, \
