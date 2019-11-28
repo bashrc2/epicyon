@@ -2091,6 +2091,12 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if messageId:
         messageIdStr=';'+messageId
 
+    fullDomain=domain
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
+
     announceStr=''
     if not isModerationPost and showRepeatIcon:
         # don't allow announce/repeat of your own posts
@@ -2325,12 +2331,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     if not avatarUrl:
         avatarUrl=postActor+'/avatar.png'
-
-    fullDomain=domain
-    if port:
-        if port!=80 and port!=443:
-            if ':' not in domain:
-                fullDomain=domain+':'+str(port)
         
     if fullDomain not in postActor:
         inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
