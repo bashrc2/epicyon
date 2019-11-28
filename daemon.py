@@ -1144,7 +1144,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.baseDir, \
                                      actor,shareName).encode()
             if not msg:
-               self._redirect_headers(actor+'/inbox',cookie)
+               self._redirect_headers(actor+'/tlshares',cookie)
                return                
             self._set_headers('text/html',len(msg),cookie)
             self._write(msg)
@@ -2069,13 +2069,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor not in deleteUrl:
                     # You can only delete your own posts
                     self.server.GETbusy=False
-                    self._redirect_headers(actor+'/inbox',cookie)
+                    self._redirect_headers(actor+'/'+self.server.defaultTimeline,cookie)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.postToNickname:
                     print('WARN: unable to find nickname in '+actor)
                     self.server.GETbusy=False
-                    self._redirect_headers(actor+'/inbox',cookie)
+                    self._redirect_headers(actor+'/'+self.server.defaultTimeline,cookie)
                     return                    
                 if not self.server.session:
                     self.server.session= \
@@ -2095,7 +2095,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/inbox',cookie)
+            self._redirect_headers(actor+'/'+self.server.defaultTimeline,cookie)
             return
 
         # reply from the web interface icon
@@ -2572,7 +2572,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'inbox', \
                                                   authorized,self.server.ocapAlways)
-                            msg=htmlInbox(self.server.recentPostsCache, \
+                            msg=htmlInbox(self.server.defaultTimeline, \
+                                          self.server.recentPostsCache, \
                                           self.server.maxRecentPosts, \
                                           self.server.translate, \
                                           pageNumber,maxPostsInFeed, \
@@ -2650,7 +2651,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'dm', \
                                                   authorized,self.server.ocapAlways)
-                            msg=htmlInboxDMs(self.server.recentPostsCache, \
+                            msg=htmlInboxDMs(self.server.defaultTimeline, \
+                                             self.server.recentPostsCache, \
                                              self.server.maxRecentPosts, \
                                              self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
@@ -2729,7 +2731,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.httpPrefix, \
                                               maxPostsInFeed, 'tlreplies', \
                                               True,self.server.ocapAlways)
-                        msg=htmlInboxReplies(self.server.recentPostsCache, \
+                        msg=htmlInboxReplies(self.server.defaultTimeline, \
+                                             self.server.recentPostsCache, \
                                              self.server.maxRecentPosts, \
                                              self.server.translate, \
                                              pageNumber,maxPostsInFeed, \
@@ -2808,7 +2811,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.httpPrefix, \
                                               maxPostsInMediaFeed, 'tlmedia', \
                                               True,self.server.ocapAlways)
-                        msg=htmlInboxMedia(self.server.recentPostsCache, \
+                        msg=htmlInboxMedia(self.server.defaultTimeline, \
+                                           self.server.recentPostsCache, \
                                            self.server.maxRecentPosts, \
                                            self.server.translate, \
                                            pageNumber,maxPostsInMediaFeed, \
@@ -2863,7 +2867,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 pageNumber=int(pageNumber)
                             else:
                                 pageNumber=1
-                        msg=htmlShares(self.server.recentPostsCache, \
+                        msg=htmlShares(self.server.defaultTimeline, \
+                                       self.server.recentPostsCache, \
                                        self.server.maxRecentPosts, \
                                        self.server.translate, \
                                        pageNumber,maxPostsInFeed, \
@@ -2926,7 +2931,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'tlbookmarks', \
                                                   authorized,self.server.ocapAlways)
-                            msg=htmlBookmarks(self.server.recentPostsCache, \
+                            msg=htmlBookmarks(self.server.defaultTimeline, \
+                                              self.server.recentPostsCache, \
                                               self.server.maxRecentPosts, \
                                               self.server.translate, \
                                               pageNumber,maxPostsInFeed, \
@@ -3000,7 +3006,8 @@ class PubServer(BaseHTTPRequestHandler):
                                       maxPostsInFeed, 'outbox', \
                                       authorized, \
                                       self.server.ocapAlways)
-                msg=htmlOutbox(self.server.recentPostsCache, \
+                msg=htmlOutbox(self.server.defaultTimeline, \
+                               self.server.recentPostsCache, \
                                self.server.maxRecentPosts, \
                                self.server.translate, \
                                pageNumber,maxPostsInFeed, \
@@ -3068,7 +3075,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                   self.server.httpPrefix, \
                                                   maxPostsInFeed, 'moderation', \
                                                   True,self.server.ocapAlways)
-                            msg=htmlModeration(self.server.recentPostsCache, \
+                            msg=htmlModeration(self.server.defaultTimeline, \
+                                               self.server.recentPostsCache, \
                                                self.server.maxRecentPosts, \
                                                self.server.translate, \
                                                pageNumber,maxPostsInFeed, \
@@ -3885,7 +3893,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_header('Location', \
                                      self.server.httpPrefix+'://'+ \
                                      self.server.domainFull+ \
-                                     '/users/'+loginNickname+'/inbox')
+                                     '/users/'+loginNickname+'/'+self.server.defaultTimeline)
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
@@ -4348,7 +4356,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull+self.path.replace('/question','')
             nickname=getNicknameFromActor(actor)
             if not nickname:
-                self._redirect_headers(actor+'/inbox?page='+ \
+                self._redirect_headers(actor+'/'+self.server.defaultTimeline+'?page='+ \
                                        str(pageNumber),cookie)
                 self.server.POSTbusy=False
                 return
@@ -4369,7 +4377,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in answer:
                     answer=answer.split('&')[0]
             self._sendReplyToQuestion(nickname,messageId,answer)
-            self._redirect_headers(actor+'/inbox?page='+str(pageNumber),cookie)
+            self._redirect_headers(actor+'/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return                
 
@@ -4498,7 +4507,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
-            self._redirect_headers(actorStr+'/inbox',cookie)
+            self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
             self.server.POSTbusy=False
             return
 
@@ -4904,7 +4913,8 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname=thisActor.split('/users/')[1]
                     personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
                     self._redirect_headers(thisActor+ \
-                                           '/inbox?page='+str(pageNumber),cookie)
+                                           '/'+self.server.defaultTimeline+ \
+                                           '?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
                     return
             if '&submitUnSnooze=' in optionsConfirmParams:
@@ -4917,7 +4927,8 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname=thisActor.split('/users/')[1]
                     personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
                     self._redirect_headers(thisActor+ \
-                                           '/inbox?page='+str(pageNumber),cookie)
+                                           '/'+self.server.defaultTimeline+ \
+                                           '?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
                     return
             if '&submitReport=' in optionsConfirmParams:
@@ -4946,7 +4957,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=nickname.split('/')[0]
             self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                    '/users/'+nickname+ \
-                                   '/inbox?page='+str(pageNumber),cookie)
+                                   '/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
         pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path)
@@ -4956,7 +4968,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=nickname.split('/')[0]
             self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                    '/users/'+nickname+ \
-                                   '/inbox?page='+str(pageNumber),cookie)
+                                   '/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
         pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path)
@@ -4966,7 +4979,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=nickname.split('/')[0]
             self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                    '/users/'+nickname+ \
-                                   '/inbox?page='+str(pageNumber),cookie)
+                                   '/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
         pageNumber=self._receiveNewPost(authorized,'newdm',self.path)
@@ -4976,7 +4990,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=nickname.split('/')[0]
             self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                    '/users/'+nickname+ \
-                                   '/inbox?page='+str(pageNumber),cookie)
+                                   '/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
         pageNumber=self._receiveNewPost(authorized,'newreport',self.path)
@@ -4986,7 +5001,8 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=nickname.split('/')[0]
             self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                    '/users/'+nickname+ \
-                                   '/inbox?page='+str(pageNumber),cookie)
+                                   '/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
         pageNumber=self._receiveNewPost(authorized,'newshare',self.path)
@@ -5321,7 +5337,7 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 tokensDict[nickname]=token
                 tokensLookup[token]=nickname
 
-def runDaemon(maxRecentPosts: int, \
+def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
               enableSharedInbox: bool,registration: bool, \
               language: str,projectVersion: str, \
               instanceId: str,clientToServer: bool, \
@@ -5347,6 +5363,11 @@ def runDaemon(maxRecentPosts: int, \
         httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
     else:
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
+
+    httpd.mediaInstance=mediaInstance
+    httpd.defaultTimeline='inbox'
+    if mediaInstance:
+        httpd.defaultTimeline='tlmedia'
 
     # load translations dictionary
     httpd.translate={}

@@ -148,6 +148,9 @@ parser.add_argument('--json', dest='json', type=str,default=None, \
                     help='Show the json for a given activitypub url')
 parser.add_argument('-f','--federate', nargs='+',dest='federationList', \
                     help='Specify federation list separated by spaces')
+parser.add_argument("--mediainstance", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Media Instance - favor media over text")
 parser.add_argument("--debug", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Show debug messages")
@@ -376,6 +379,11 @@ if not themeName:
     setConfigParam(baseDir,'theme','default')
     themeName='default'
 
+if not args.mediainstance:
+    mediaInstance=getConfigParam(baseDir,'mediaInstance')
+    if mediaInstance!=None:
+        args.mediainstance=mediaInstance
+    
 # set the instance title in config.json
 title=getConfigParam(baseDir,'instanceTitle')
 if not title:
@@ -1486,7 +1494,8 @@ if not registration:
 if setTheme(baseDir,themeName):
     print('Theme set to '+themeName)
     
-runDaemon(args.maxRecentPosts,not args.nosharedinbox, \
+runDaemon(args.mediainstance,args.maxRecentPosts, \
+          not args.nosharedinbox, \
           registration,args.language,__version__, \
           instanceId,args.client,baseDir, \
           domain,port,proxyPort,httpPrefix, \

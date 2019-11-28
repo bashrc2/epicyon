@@ -2494,7 +2494,8 @@ def isQuestion(postObjectJson: {}) -> bool:
         return False
     return True
 
-def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
+def htmlTimeline(defaultTimeline: str, \
+                 recentPostsCache: {},maxRecentPosts: int, \
                  translate: {},pageNumber: int, \
                  itemsPerPage: int,session,baseDir: str, \
                  wfRequest: {},personCache: {}, \
@@ -2659,10 +2660,16 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
     tlStr+='<div class="timeline-banner">'
     tlStr+='</div></a>'
     tlStr+='<div class="container">\n'
-    tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
+    if defaultTimeline!='tlmedia':
+        tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
+    else:
+        tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
     tlStr+='    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>'
     tlStr+='    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>'
-    tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
+    if defaultTimeline!='tlmedia':
+        tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
+    else:
+        tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
     tlStr+='    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'
     tlStr+=sharesButtonStr+bookmarksButtonStr+moderationButtonStr+newPostButtonStr
     tlStr+='    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'
@@ -2747,7 +2754,8 @@ def htmlTimeline(recentPostsCache: {},maxRecentPosts: int,
     tlStr+=htmlFooter()
     return tlStr
 
-def htmlShares(recentPostsCache: {},maxRecentPosts: int, \
+def htmlShares(defaultTimeline: str, \
+               recentPostsCache: {},maxRecentPosts: int, \
                translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int, \
@@ -2758,13 +2766,14 @@ def htmlShares(recentPostsCache: {},maxRecentPosts: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,None,'tlshares',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInbox(recentPostsCache: {},maxRecentPosts: int, \
+def htmlInbox(defaultTimeline: str, \
+              recentPostsCache: {},maxRecentPosts: int, \
               translate: {},pageNumber: int,itemsPerPage: int, \
               session,baseDir: str,wfRequest: {},personCache: {}, \
               nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2775,13 +2784,14 @@ def htmlInbox(recentPostsCache: {},maxRecentPosts: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'inbox',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlBookmarks(recentPostsCache: {},maxRecentPosts: int, \
+def htmlBookmarks(defaultTimeline: str, \
+                  recentPostsCache: {},maxRecentPosts: int, \
                   translate: {},pageNumber: int,itemsPerPage: int, \
                   session,baseDir: str,wfRequest: {},personCache: {}, \
                   nickname: str,domain: str,port: int,bookmarksJson: {}, \
@@ -2792,13 +2802,14 @@ def htmlBookmarks(recentPostsCache: {},maxRecentPosts: int, \
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
 
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,bookmarksJson,'tlbookmarks',allowDeletion, \
                         httpPrefix,projectVersion,manuallyApproveFollowers)
 
-def htmlInboxDMs(recentPostsCache: {},maxRecentPosts: int, \
+def htmlInboxDMs(defaultTimeline: str, \
+                 recentPostsCache: {},maxRecentPosts: int, \
                  translate: {},pageNumber: int,itemsPerPage: int, \
                  session,baseDir: str,wfRequest: {},personCache: {}, \
                  nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2806,13 +2817,14 @@ def htmlInboxDMs(recentPostsCache: {},maxRecentPosts: int, \
                  httpPrefix: str,projectVersion: str) -> str:
     """Show the DM timeline as html
     """
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'dm',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlInboxReplies(recentPostsCache: {},maxRecentPosts: int, \
+def htmlInboxReplies(defaultTimeline: str, \
+                     recentPostsCache: {},maxRecentPosts: int, \
                      translate: {},pageNumber: int,itemsPerPage: int, \
                      session,baseDir: str,wfRequest: {},personCache: {}, \
                      nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2820,13 +2832,14 @@ def htmlInboxReplies(recentPostsCache: {},maxRecentPosts: int, \
                      httpPrefix: str,projectVersion: str) -> str:
     """Show the replies timeline as html
     """
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlreplies',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlInboxMedia(recentPostsCache: {},maxRecentPosts: int, \
+def htmlInboxMedia(defaultTimeline: str, \
+                   recentPostsCache: {},maxRecentPosts: int, \
                    translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2834,13 +2847,14 @@ def htmlInboxMedia(recentPostsCache: {},maxRecentPosts: int, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the media timeline as html
     """
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlmedia',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
-def htmlModeration(recentPostsCache: {},maxRecentPosts: int, \
+def htmlModeration(defaultTimeline: str, \
+                   recentPostsCache: {},maxRecentPosts: int, \
                    translate: {},pageNumber: int,itemsPerPage: int, \
                    session,baseDir: str,wfRequest: {},personCache: {}, \
                    nickname: str,domain: str,port: int,inboxJson: {}, \
@@ -2848,13 +2862,14 @@ def htmlModeration(recentPostsCache: {},maxRecentPosts: int, \
                    httpPrefix: str,projectVersion: str) -> str:
     """Show the moderation feed as html
     """
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'moderation',allowDeletion, \
                         httpPrefix,projectVersion,True)
 
-def htmlOutbox(recentPostsCache: {},maxRecentPosts: int, \
+def htmlOutbox(defaultTimeline: str, \
+               recentPostsCache: {},maxRecentPosts: int, \
                translate: {},pageNumber: int,itemsPerPage: int, \
                session,baseDir: str,wfRequest: {},personCache: {}, \
                nickname: str,domain: str,port: int,outboxJson: {}, \
@@ -2864,7 +2879,7 @@ def htmlOutbox(recentPostsCache: {},maxRecentPosts: int, \
     """
     manuallyApproveFollowers= \
         followerApprovalActive(baseDir,nickname,domain)
-    return htmlTimeline(recentPostsCache,maxRecentPosts, \
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,outboxJson,'outbox',allowDeletion, \
