@@ -962,6 +962,13 @@ def htmlNewPost(mediaInstance: bool,translate: {},baseDir: str, \
         path=path.split('?')[0]
     pathBase=path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
 
+    newPostImageSection ='    <div class="container">'
+    newPostImageSection+='      <label class="labels">'+translate['Image description']+'</label>'
+    newPostImageSection+='      <input type="text" name="imageDescription">'
+    newPostImageSection+='      <input type="file" id="attachpic" name="attachpic"'
+    newPostImageSection+='            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
+    newPostImageSection+='    </div>'
+    
     scopeIcon='scope_public.png'
     scopeDescription=translate['Public']
     placeholderSubject=translate['Subject or Content Warning (optional)']+'...'
@@ -1104,6 +1111,8 @@ def htmlNewPost(mediaInstance: bool,translate: {},baseDir: str, \
     newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
     newPostForm+='    </center></div>'
     newPostForm+=replyStr
+    if mediaInstance and not replyStr:
+        newPostForm+=newPostImageSection
     newPostForm+='    <label class="labels">'+placeholderSubject+'</label><br>'
     newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
@@ -1115,12 +1124,8 @@ def htmlNewPost(mediaInstance: bool,translate: {},baseDir: str, \
         messageBoxHeight=100
     newPostForm+='    <textarea id="message" name="message" style="height:'+str(messageBoxHeight)+'px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
-    newPostForm+='    <div class="container">'
-    newPostForm+='      <label class="labels">'+translate['Image description']+'</label>'
-    newPostForm+='      <input type="text" name="imageDescription">'
-    newPostForm+='      <input type="file" id="attachpic" name="attachpic"'
-    newPostForm+='            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
-    newPostForm+='    </div>'
+    if not mediaInstance or replyStr:
+        newPostForm+=newPostImageSection
     newPostForm+='  </div>'
     newPostForm+='</form>'
 
