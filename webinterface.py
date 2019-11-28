@@ -2193,7 +2193,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='<div class="gallery">\n'
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
                                 galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n'
-                                galleryStr+='  </a>\n</div>\n'
+                                galleryStr+='  </a>\n'
+                                galleryStr+='  <div class="gallerytext">'+contentStrMedia+'</div>\n'
+                                galleryStr+='</div>\n'
 
                             attachmentStr+='<a href="'+attach['url']+'">'
                             attachmentStr+='<img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
@@ -2435,6 +2437,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     # replace 's
     contentStr=contentStr.replace("\ufffd\ufffd\ufffds","'s")
+
+    contentStrMedia=contentStr
 
     contentStr='<div class="message">'+contentStr+'</div>'
 

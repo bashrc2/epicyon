@@ -35,6 +35,8 @@
     --button-height-padding: 10px;
     --gallery-border: #ccc;
     --gallery-hover: #777;
+    --gallery-font-size: 22px;
+    --gallery-font-size-mobile: 30px;
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
 }
@@ -582,6 +584,10 @@ div.gallery img {
     body, html {
         font-size: var(--font-size4);
     }
+    div.gallerytext {
+	color: var(--main-fg-color);
+	font-size: var(--gallery-font-size);
+    }
     div.gallery {
 	margin: 5px;
 	border: 1px solid var(--gallery-border);
@@ -866,6 +872,10 @@ div.gallery img {
 @media screen and (max-width: 1000px) {
     body, html {
         font-size: var(--font-size3);
+    }
+    div.gallerytext {
+	color: var(--main-fg-color);
+	font-size: var(--gallery-font-size-mobile);
     }
     div.gallery {
 	margin: 5px;
