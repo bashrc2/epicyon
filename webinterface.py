@@ -532,6 +532,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     isBot=''
     isGroup=''
     followDMs=''
+    mediaInstanceStr=''
     displayNickname=nickname
     bioStr=''
     donateUrl=''
@@ -557,6 +558,11 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
                 isBot=''
     if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'):
         followDMs='checked'
+
+    mediaInstance=getConfigParam(baseDir,"mediaInstance")
+    if mediaInstance:
+        if mediaInstance==True:
+            mediaInstanceStr='checked'
                 
     filterStr=''
     filterFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/filters.txt'
@@ -677,6 +683,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>'
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>'
     editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>'
+    if path.startswith('/users/'+adminNickname+'/'):
+        editProfileForm+='      <input type="checkbox" class=profilecheckbox" name="mediaInstance" '+mediaInstanceStr+'>'+translate['This is a media instance']+'<br>'
     editProfileForm+='      <br><b><label class="labels">'+translate['Filtered words']+'</label></b>'
     editProfileForm+='      <br><label class="labels">'+translate['One per line']+'</label>'
     editProfileForm+='      <textarea id="message" name="filteredWords" style="height:200px">'+filterStr+'</textarea>'

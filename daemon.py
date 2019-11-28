@@ -4121,7 +4121,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 approveFollowers=True
                         if approveFollowers!=actorJson['manuallyApprovesFollowers']:
                             actorJson['manuallyApprovesFollowers']=approveFollowers
-                            actorChanged=True                                
+                            actorChanged=True
+                        if fields.get('mediaInstance'):
+                            self.server.mediaInstance=False
+                            self.server.defaultTimeline='inbox'
+                            if fields['mediaInstance']=='on':
+                                self.server.mediaInstance=True
+                                self.server.defaultTimeline='tlmedia'
+                            setConfigParam(self.server.baseDir,"mediaInstance",self.server.mediaInstance)
                         # only receive DMs from accounts you follow
                         followDMsFilename= \
                             self.server.baseDir+'/accounts/'+ \
