@@ -2091,6 +2091,66 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if messageId:
         messageIdStr=';'+messageId
 
+    announceStr=''
+    if not isModerationPost and showRepeatIcon:
+        # don't allow announce/repeat of your own posts
+        announceIcon='repeat_inactive.png'
+        announceLink='repeat'
+        announceTitle=translate['Repeat this post']
+        if announcedByPerson(postJsonObject,nickname,fullDomain):
+            announceIcon='repeat.png'
+            announceLink='unrepeat'
+            announceTitle=translate['Undo the repeat']
+        announceStr= \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \
+            '?actor='+postJsonObject['actor']+ \
+            '?bm='+timelinePostBookmark+ \
+            '?tl='+boxName+'" title="'+announceTitle+'">'
+        announceStr+='<img loading="lazy" title="'+translate['Repeat this post']+' |" alt="'+translate['Repeat this post']+' |" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
+
+    likeStr=''
+    if not isModerationPost:
+        likeIcon='like_inactive.png'
+        likeLink='like'
+        likeTitle=translate['Like this post']
+        if noOfLikes(postJsonObject)>0:
+            likeIcon='like.png'
+            if likedByPerson(postJsonObject,nickname,fullDomain):
+                likeLink='unlike'
+                likeTitle=translate['Undo the like']
+        likeStr= \
+            '<a href="/users/' + nickname + '?' + \
+            likeLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            '?actor='+postJsonObject['actor']+ \
+            '?bm='+timelinePostBookmark+ \
+            '?tl='+boxName+'" title="'+likeTitle+'">'
+        likeStr+='<img loading="lazy" title="'+likeTitle+' |" alt="'+likeTitle+' |" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
+
+    bookmarkStr=''
+    if not isModerationPost:
+        bookmarkIcon='bookmark_inactive.png'
+        bookmarkLink='bookmark'
+        bookmarkTitle=translate['Bookmark this post']
+        if bookmarkedByPerson(postJsonObject,nickname,fullDomain):
+            bookmarkIcon='bookmark.png'
+            bookmarkLink='unbookmark'
+            bookmarkTitle=translate['Undo the bookmark']
+        bookmarkStr= \
+            '<a href="/users/' + nickname + '?' + \
+            bookmarkLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            '?actor='+postJsonObject['actor']+ \
+            '?bm='+timelinePostBookmark+ \
+            '?tl='+boxName+'" title="'+bookmarkTitle+'">'
+        bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
+
+    deleteStr=''
+    if allowDeletion or \
+       ('/'+fullDomain+'/' in postActor and \
+        postJsonObject['object']['id'].startswith(postActor)):
+        if '/users/'+nickname+'/' in postJsonObject['object']['id']:
+            deleteStr='<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">'
+            deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+'" title="'+translate['Delete this post']+'" src="/'+iconsDir+'/delete.png"/></a>'
+        
     replyAvatarImageInPost=''
     if showRepeatIcon:
         if isAnnounced:
@@ -2309,66 +2369,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     pageNumberParam=''
     if pageNumber:
         pageNumberParam='?page='+str(pageNumber)
-
-    announceStr=''
-    if not isModerationPost and showRepeatIcon:
-        # don't allow announce/repeat of your own posts
-        announceIcon='repeat_inactive.png'
-        announceLink='repeat'
-        announceTitle=translate['Repeat this post']
-        if announcedByPerson(postJsonObject,nickname,fullDomain):
-            announceIcon='repeat.png'
-            announceLink='unrepeat'
-            announceTitle=translate['Undo the repeat']
-        announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \
-            '?actor='+postJsonObject['actor']+ \
-            '?bm='+timelinePostBookmark+ \
-            '?tl='+boxName+'" title="'+announceTitle+'">'
-        announceStr+='<img loading="lazy" title="'+translate['Repeat this post']+' |" alt="'+translate['Repeat this post']+' |" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
-
-    likeStr=''
-    if not isModerationPost:
-        likeIcon='like_inactive.png'
-        likeLink='like'
-        likeTitle=translate['Like this post']
-        if noOfLikes(postJsonObject)>0:
-            likeIcon='like.png'
-            if likedByPerson(postJsonObject,nickname,fullDomain):
-                likeLink='unlike'
-                likeTitle=translate['Undo the like']
-        likeStr= \
-            '<a href="/users/' + nickname + '?' + \
-            likeLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
-            '?actor='+postJsonObject['actor']+ \
-            '?bm='+timelinePostBookmark+ \
-            '?tl='+boxName+'" title="'+likeTitle+'">'
-        likeStr+='<img loading="lazy" title="'+likeTitle+' |" alt="'+likeTitle+' |" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
-
-    bookmarkStr=''
-    if not isModerationPost:
-        bookmarkIcon='bookmark_inactive.png'
-        bookmarkLink='bookmark'
-        bookmarkTitle=translate['Bookmark this post']
-        if bookmarkedByPerson(postJsonObject,nickname,fullDomain):
-            bookmarkIcon='bookmark.png'
-            bookmarkLink='unbookmark'
-            bookmarkTitle=translate['Undo the bookmark']
-        bookmarkStr= \
-            '<a href="/users/' + nickname + '?' + \
-            bookmarkLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
-            '?actor='+postJsonObject['actor']+ \
-            '?bm='+timelinePostBookmark+ \
-            '?tl='+boxName+'" title="'+bookmarkTitle+'">'
-        bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
-
-    deleteStr=''
-    if allowDeletion or \
-       ('/'+fullDomain+'/' in postActor and \
-        postJsonObject['object']['id'].startswith(postActor)):
-        if '/users/'+nickname+'/' in postJsonObject['object']['id']:
-            deleteStr='<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">'
-            deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+'" title="'+translate['Delete this post']+'" src="/'+iconsDir+'/delete.png"/></a>'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
