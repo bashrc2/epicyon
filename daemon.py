@@ -4134,7 +4134,14 @@ class PubServer(BaseHTTPRequestHandler):
                             if fields['mediaInstance']=='on':
                                 self.server.mediaInstance=True
                                 self.server.defaultTimeline='tlmedia'
-                            setConfigParam(self.server.baseDir,"mediaInstance",self.server.mediaInstance)
+                            setConfigParam(self.server.baseDir,"mediaInstance", \
+                                           self.server.mediaInstance)
+                        else:
+                            if self.server.mediaInstance:
+                                self.server.mediaInstance=False
+                                self.server.defaultTimeline='inbox'
+                                setConfigParam(self.server.baseDir,"mediaInstance", \
+                                               self.server.mediaInstance)
                         # only receive DMs from accounts you follow
                         followDMsFilename= \
                             self.server.baseDir+'/accounts/'+ \
