@@ -2192,7 +2192,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/newreport') or \
                 self.path.endswith('/newquestion') or \
                 self.path.endswith('/newshare')):
-                msg=htmlNewPost(self.server.translate, \
+                msg=htmlNewPost(self.server.mediaInstance, \
+                                self.server.translate, \
                                 self.server.baseDir, \
                                 self.path,inReplyToUrl, \
                                 replyToList, \
@@ -4914,7 +4915,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Sending DM to '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newdm'
-                msg=htmlNewPost(self.server.translate, \
+                msg=htmlNewPost(False,self.server.translate, \
                                 self.server.baseDir, \
                                 reportPath,None, \
                                 [optionsActor],None, \
@@ -4955,7 +4956,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if self.server.debug:
                     print('Reporting '+optionsActor)
                 reportPath=self.path.replace('/personoptions','')+'/newreport'
-                msg=htmlNewPost(self.server.translate, \
+                msg=htmlNewPost(False,self.server.translate, \
                                 self.server.baseDir, \
                                 reportPath,None,[], \
                                 postUrl,pageNumber).encode()

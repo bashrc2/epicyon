@@ -913,7 +913,7 @@ def htmlSuspended(baseDir: str) -> str:
         suspendedForm+=htmlFooter()
     return suspendedForm
 
-def htmlNewPost(translate: {},baseDir: str, \
+def htmlNewPost(mediaInstance: bool,translate: {},baseDir: str, \
                 path: str,inReplyTo: str, \
                 mentions: [], \
                 reportUrl: str,pageNumber: int) -> str:
@@ -1108,10 +1108,12 @@ def htmlNewPost(translate: {},baseDir: str, \
     newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
     newPostForm+='    <br><label class="labels">'+placeholderMessage+'</label>'
-    if endpoint!='newquestion':
-        newPostForm+='    <textarea id="message" name="message" style="height:400px">'+mentionsStr+'</textarea>'
-    else:
-        newPostForm+='    <textarea id="message" name="message" style="height:100px">'+mentionsStr+'</textarea>'
+    messageBoxHeight=400
+    if mediaInstance:
+        messageBoxHeight=200
+    if endpoint=='newquestion':
+        messageBoxHeight=100
+    newPostForm+='    <textarea id="message" name="message" style="height:'+str(messageBoxHeight)+'px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
     newPostForm+='    <div class="container">'
     newPostForm+='      <label class="labels">'+translate['Image description']+'</label>'
