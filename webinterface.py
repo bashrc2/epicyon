@@ -2192,7 +2192,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             if boxName=='tlmedia':
                                 galleryStr+='<div class="gallery">\n'
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
-                                galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" width="600" height="400">\n'
+                                galleryStr+='    <img loading="lazy" src="'+attach['url']+'" width="600" height="400">\n'
                                 galleryStr+='  </a>\n'
                                 if imageDescription:
                                     galleryStr+='  <div class="gallerytext">'+imageDescription+'</div>\n'
