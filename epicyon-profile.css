@@ -580,12 +580,15 @@ div.gallery img {
     font-size: 0;
 }
 
+.gallerytext {
+    text-decoration: none;
+}
+
 @media screen and (min-width: 400px) {
     body, html {
         font-size: var(--font-size4);
     }
     div.gallerytext {
-	text-decoration: none;
 	color: var(--main-fg-color);
 	font-size: var(--gallery-font-size);
     }
@@ -875,7 +878,6 @@ div.gallery img {
         font-size: var(--font-size3);
     }
     div.gallerytext {
-	text-decoration: none;
 	color: var(--main-fg-color);
 	font-size: var(--gallery-font-size-mobile);
     }
