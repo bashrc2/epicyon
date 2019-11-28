@@ -2339,7 +2339,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+avatarLink+'\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='  </div>\n'
+                                galleryStr+='  <div class="mediaavatar">\n'
+                                galleryStr+='    '+avatarLink+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='</div>\n'
 
