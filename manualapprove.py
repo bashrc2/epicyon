@@ -45,8 +45,8 @@ def manualDenyFollowRequest(session,baseDir: str, \
     rejectsFile.close()
     
     denyNickname=denyHandle.split('@')[0]
-    approveDomain=denyHandle.split('@')[1].replace('\n','')
-    approvePort=port
+    denyDomain=denyHandle.split('@')[1].replace('\n','')
+    denyPort=port
     if ':' in denyDomain:
         denyPort=denyDomain.split(':')[1]
         denyDomain=denyDomain.split(':')[0]
