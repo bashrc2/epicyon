@@ -2199,7 +2199,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     imagePostUrl=postJsonObject['object']['id']
                                 if imageDescription:
-                                    galleryStr+='  <a href="'+imagePostUrl+'"><div class="gallerytext">'+imageDescription+'</div></a>\n'
+                                    galleryStr+='  <a href="'+imagePostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 galleryStr+='</div>\n'
 
                             attachmentStr+='<a href="'+attach['url']+'">'
