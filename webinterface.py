@@ -2254,6 +2254,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
                                 galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="" width="600" height="400">\n'
                                 galleryStr+='  </a>\n'
+                                galleryStr+='  <div class="'+containerClassIcons+'">\n'
+                                galleryStr+='    '+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='  </div>\n'
                                 if postJsonObject['object'].get('url'):
                                     imagePostUrl=postJsonObject['object']['url']
                                 else:
