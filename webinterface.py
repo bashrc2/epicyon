@@ -2383,12 +2383,27 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
                                 galleryStr+=translate['Your browser does not support the video tag.']
                                 galleryStr+='    </video>\n'
-                                galleryStr+='  </a>\n</div>\n'
+                                galleryStr+='  </a>\n'
+                                if postJsonObject['object'].get('url'):
+                                    videoPostUrl=postJsonObject['object']['url']
+                                else:
+                                    videoPostUrl=postJsonObject['object']['id']
+                                if imageDescription:
+                                    galleryStr+='  <a href="'+videoPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
+                                else:
+                                    galleryStr+='<label class="transparent">---</label><br>'
+                                galleryStr+='  <div class="mediaicons">\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='  </div>\n'
+                                galleryStr+='  <div class="mediaavatar">\n'
+                                galleryStr+='    '+avatarLink+'\n'
+                                galleryStr+='  </div>\n'
+                                galleryStr+='</div>\n'
 
-                                attachmentStr+='<center><video width="400" height="300" controls>'
-                                attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
-                                attachmentStr+=translate['Your browser does not support the video tag.']
-                                attachmentStr+='</video></center>'
+                            attachmentStr+='<center><video width="400" height="300" controls>'
+                            attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
+                            attachmentStr+=translate['Your browser does not support the video tag.']
+                            attachmentStr+='</video></center>'
                             attachmentCtr+=1
                     elif mediaType=='audio/mpeg' or \
                          mediaType=='audio/ogg':
@@ -2405,7 +2420,22 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
                                 galleryStr+=translate['Your browser does not support the audio tag.']
                                 galleryStr+='    </audio>\n'
-                                galleryStr+='  </a>\n</div>\n'
+                                galleryStr+='  </a>\n'
+                                if postJsonObject['object'].get('url'):
+                                    audioPostUrl=postJsonObject['object']['url']
+                                else:
+                                    audioPostUrl=postJsonObject['object']['id']
+                                if imageDescription:
+                                    galleryStr+='  <a href="'+audioPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
+                                else:
+                                    galleryStr+='<label class="transparent">---</label><br>'
+                                galleryStr+='  <div class="mediaicons">\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='  </div>\n'
+                                galleryStr+='  <div class="mediaavatar">\n'
+                                galleryStr+='    '+avatarLink+'\n'
+                                galleryStr+='  </div>\n'
+                                galleryStr+='</div>\n'
 
                             attachmentStr+='<center><audio controls>'
                             attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
