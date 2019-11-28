@@ -87,7 +87,9 @@ def setThemeHighVis(baseDir: str):
         "font-size2": "45px",
         "font-size3": "45px",
         "font-size4": "35px",
-        "font-size5": "29px"
+        "font-size5": "29px",
+        "gallery-font-size": "35px",
+        "gallery-font-size-mobile": "45px"
     }
     setThemeFromDict(baseDir,'highvis',themeParams)
 
@@ -119,7 +121,8 @@ def setThemePurple(baseDir: str):
         "event-background": "yellow",
         "event-foreground": "white",
         "title-text": "white",
-        "title-background": "#ff42a0"
+        "title-background": "#ff42a0",
+        "gallery-text-color": "#ccc"
     }
     setThemeFromDict(baseDir,'purple',themeParams)
 
@@ -154,7 +157,8 @@ def setThemeHacker(baseDir: str):
         "event-background": "lightgreen",
         "event-foreground": "black",
         "title-text": "black",
-        "title-background": "darkgreen"
+        "title-background": "darkgreen",
+        "gallery-text-color": "green"
     }
     setThemeFromDict(baseDir,'hacker',themeParams)
 
@@ -189,7 +193,8 @@ def setThemeLight(baseDir: str):
         "event-background": "lightblue",
         "event-foreground": "white",
         "title-text": "#282c37",
-        "title-background": "#ccc"
+        "title-background": "#ccc",
+        "gallery-text-color": "black"
     }
     setThemeFromDict(baseDir,'light',themeParams)
     
