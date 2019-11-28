@@ -2097,6 +2097,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
 
+    pageNumberParam=''
+    if pageNumber:
+        pageNumberParam='?page='+str(pageNumber)
+                
     announceStr=''
     if not isModerationPost and showRepeatIcon:
         # don't allow announce/repeat of your own posts
@@ -2368,10 +2372,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         datetimeObject = parse(publishedStr)
     publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
-
-    pageNumberParam=''
-    if pageNumber:
-        pageNumberParam='?page='+str(pageNumber)
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
