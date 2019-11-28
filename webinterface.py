@@ -1998,6 +1998,20 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if isPersonSnoozed(baseDir,nickname,domain,postActor):
         return ''
 
+    messageIdStr=''
+    if messageId:
+        messageIdStr=';'+messageId
+
+    fullDomain=domain
+    if port:
+        if port!=80 and port!=443:
+            if ':' not in domain:
+                fullDomain=domain+':'+str(port)
+
+    pageNumberParam=''
+    if pageNumber:
+        pageNumberParam='?page='+str(pageNumber)
+
     if not showPublicOnly and storeToCache and boxName!='tlmedia':
         # update avatar if needed
         if not avatarUrl:
@@ -2012,6 +2026,37 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             updateRecentPostsCache(recentPostsCache,maxRecentPosts, \
                                    postJsonObject,postHtml)
             return postHtml
+
+    if not avatarUrl:
+        avatarUrl=getPersonAvatarUrl(baseDir,postActor,personCache)
+        avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
+    else:
+        updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
+
+    if not avatarUrl:
+        avatarUrl=postActor+'/avatar.png'
+
+    if fullDomain not in postActor:
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
+            getPersonBox(baseDir,session,wfRequest,personCache, \
+                         projectVersion,httpPrefix,nickname,domain,'outbox')
+        if avatarUrl2:
+            avatarUrl=avatarUrl2
+        if displayName:
+            if ':' in displayName:
+                displayName= \
+                    addEmojiToDisplayName(baseDir,httpPrefix, \
+                                          nickname,domain, \
+                                          displayName,False)
+            titleStr=displayName+' '+titleStr
+
+    avatarLink='    <a href="'+postActor+'">'
+    avatarLink+='    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt=" "'+avatarPosition+'/></a>'
+    
+    if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
+        avatarLink='    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'
+        avatarLink+='    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>'
+    avatarImageInPost= '  <div class="timeline-avatar">'+avatarLink+'</div>'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -2086,20 +2131,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
         titleStr=titleStr+' <img loading="lazy" src="/'+iconsDir+'/dm.png" class="DMicon"/>'
-
-    messageIdStr=''
-    if messageId:
-        messageIdStr=';'+messageId
-
-    fullDomain=domain
-    if port:
-        if port!=80 and port!=443:
-            if ':' not in domain:
-                fullDomain=domain+':'+str(port)
-
-    pageNumberParam=''
-    if pageNumber:
-        pageNumberParam='?page='+str(pageNumber)
 
     replyStr=''
     if showIcons:
@@ -2307,7 +2338,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+avatarLink+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='</div>\n'
 
@@ -2362,40 +2393,6 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             attachmentStr+='</audio></center>'
                             attachmentCtr+=1
             attachmentStr+='</div>'
-
-    if not avatarUrl:
-        avatarUrl=getPersonAvatarUrl(baseDir,postActor,personCache)
-        avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
-    else:
-        updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
-
-    if not avatarUrl:
-        avatarUrl=postActor+'/avatar.png'
-        
-    if fullDomain not in postActor:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
-            getPersonBox(baseDir,session,wfRequest,personCache, \
-                         projectVersion,httpPrefix,nickname,domain,'outbox')
-        if avatarUrl2:
-            avatarUrl=avatarUrl2
-        if displayName:
-            if ':' in displayName:
-                displayName= \
-                    addEmojiToDisplayName(baseDir,httpPrefix, \
-                                          nickname,domain, \
-                                          displayName,False)
-            titleStr=displayName+' '+titleStr
-
-    avatarImageInPost='  <div class="timeline-avatar">'
-    avatarImageInPost+='    <a href="'+postActor+'">'
-    avatarImageInPost+='    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt=" "'+avatarPosition+'/></a>'
-    avatarImageInPost+='  </div>'
-    
-    if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
-        avatarImageInPost='  <div class="timeline-avatar">'
-        avatarImageInPost+='    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'
-        avatarImageInPost+='    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>'
-        avatarImageInPost+='  </div>'
 
     publishedStr=postJsonObject['object']['published']
     if '.' not in publishedStr:
