@@ -1795,8 +1795,10 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
     if validPostContent(postJsonObject,maxMentions,maxEmoji):
         # list of indexes to be updated
         updateIndexList=['inbox']
-        populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
-        questionUpdateVotes(baseDir,nickname,domain,messageJson)
+        populateReplies(baseDir,httpPrefix,domain,postJsonObject,maxReplies,debug)
+
+        questionUpdateVotes(baseDir,nickname,domain,postJsonObject)
+
         if not isGroup:
             # create a DM notification file if needed
             if isDM(postJsonObject):

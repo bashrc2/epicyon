@@ -11,40 +11,41 @@ from utils import locatePost
 from utils import loadJson
 from utils import saveJson
 
-def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}):
+def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}) -> {}:
     """ For a given reply update the votes on a question
+    Returns the question json object if the vote totals were changed
     """
     if not replyJson.get('object'):
-        return
+        return None
     if not isinstance(replyJson['object'], dict):
-        return
+        return None
     if not replyJson['object'].get('inReplyTo'):
-        return
+        return None
     if not replyJson['object']['inReplyTo']:
-        return
+        return None
     if not replyJson['object'].get('content'):
-        return
+        return None
     inReplyTo=replyJson['object']['inReplyTo']
     questionPostFilename=locatePost(baseDir,nickname,domain,inReplyTo)
     if not questionPostFilename:
-        return
+        return None
     questionJson=loadJson(questionPostFilename)
     if not questionJson:
-        return
+        return None
     if not questionJson.get('object'):
-        return
+        return None
     if not isinstance(questionJson['object'], dict):
-        return
+        return None
     if not questionJson['object'].get('type'):
-        return
+        return None
     if questionJson['type']!='Question':
-        return
+        return None
     if not questionJson['object'].get('oneOf'):
-        return
+        return None
     if not isinstance(questionJson['object']['oneOf'], list):
-        return
+        return None
     if not questionJson['object'].get('content'):
-        return
+        return None
     content=replyJson['object']['content']
     # does the reply content match any possible question option?
     foundAnswer=None
@@ -55,7 +56,7 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}):
             foundAnswer=possibleAnswer
             break
     if not foundAnswer:
-        return
+        return None
     # update the voters file
     votersFileSeparator=';;;'
     votersFilename=questionPostFilename.replace('.json','.voters')
@@ -76,12 +77,23 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}):
             # change an entry in the voters file
             with open(votersFilename, "r") as votersFile:
                 lines = votersFile.readlines()
-                with open(votersFilename, "w") as votersFile:
-                    for voteLine in lines:
-                        if voteLine.startswith(replyJson['actor']+votersFileSeparator):
-                            votersFile.write(replyJson['actor']+votersFileSeparator+foundAnswer+'\n')
+                newlines=[]
+                saveVotersFile=False
+                for voteLine in lines:
+                    if voteLine.startswith(replyJson['actor']+votersFileSeparator):
+                        newVoteLine=replyJson['actor']+votersFileSeparator+foundAnswer+'\n'
+                        if voteLine==newVoteLine:
                             break
-                        votersFile.write(voteLine)
+                        saveVotersFile=True
+                        newlines.append(newVoteLine)
+                    else:
+                        newlines.append(voteLine)
+                if saveVotersFile:
+                    with open(votersFilename, "w") as votersFile:
+                        for voteLine in newlines:
+                            votersFile.write(voteLine)
+                else:
+                    return None
     # update the vote counts
     questionTotalsChanged=False
     for possibleAnswer in questionJson['object']['oneOf']:
@@ -96,6 +108,8 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}):
         if possibleAnswer['replies']['totalItems']!=totalItems:
             possibleAnswer['replies']['totalItems']=totalItems
             questionTotalsChanged=True
-    if questionTotalsChanged:
-        # save the question with altered totals
-        saveJson(questionJson,questionPostFilename)
+    if not questionTotalsChanged:
+        return None
+    # save the question with altered totals
+    saveJson(questionJson,questionPostFilename)
+    return questionJson
