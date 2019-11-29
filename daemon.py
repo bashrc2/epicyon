@@ -3457,7 +3457,7 @@ class PubServer(BaseHTTPRequestHandler):
             fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
             #debug
             if postType=='newquestion':
-                print("QUESTION: fields "str(fields))
+                print("QUESTION: fields "+str(fields))
             if self.server.debug:
                 if fields:
                     print('DEBUG: text field extracted from POST '+str(fields))
