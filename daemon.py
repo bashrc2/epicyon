@@ -3389,11 +3389,6 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: receiving POST')
 
-        #debug
-        if postType=='newquestion':
-            print('QUESTION: headers '+headers['Content-Type'])
-            print('QUESTION: content-length '+headers['Content-Length'])
-
         if ' boundary=' in headers['Content-Type']:
             if self.server.debug:
                 print('DEBUG: receiving POST headers '+headers['Content-Type'])
@@ -3455,9 +3450,6 @@ class PubServer(BaseHTTPRequestHandler):
                         os.rename(filename,filename.replace('.temp',''))
 
             fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
-            #debug
-            if postType=='newquestion':
-                print("QUESTION: fields "+str(fields))
             if self.server.debug:
                 if fields:
                     print('DEBUG: text field extracted from POST '+str(fields))
