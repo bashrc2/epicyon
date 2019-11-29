@@ -43,6 +43,8 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}):
         return
     if not isinstance(questionJson['object']['oneOf'], list):
         return
+    if not questionJson['object'].get('content'):
+        return
     content=replyJson['object']['content']
     # does the reply content match any possible question option?
     foundAnswer=None
