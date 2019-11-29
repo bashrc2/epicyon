@@ -120,7 +120,7 @@ def getDisplayName(baseDir: str,actor: str,personCache: {}) -> str:
             return personCache[actor]['actor']['name']
     else:
         # Try to obtain from the cached actors
-        cachedActorFilename=baseDir+'/cache/actors/'+actor.replace('/','#')+'.json'
+        cachedActorFilename=baseDir+'/cache/actors/'+(actor.replace('/','#'))+'.json'
         if os.path.isfile(cachedActorFilename):
             actorJson=loadJson(cachedActorFilename,1)
             if actorJson:
@@ -456,11 +456,9 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
         return None
     cachedPostFilename= \
         cachedPostDir+ \
-        '/'+postJsonObject['id'].replace('/activity','')
+        '/'+postJsonObject['id'].replace('/activity','').replace('/','#')
     print('CACHE: 1 '+nickname+' '+domain+' '+cachedPostFilename)
-    if '#' in cachedPostFilename:
-        cachedPostFilename=cachedPostFilename.split('#',1)[0]
-    cachedPostFilename=cachedPostFilename.replace('/','#')+'.html'
+    cachedPostFilename=cachedPostFilename+'.html'
     print('CACHE: 2'+cachedPostFilename)
     return cachedPostFilename
 
