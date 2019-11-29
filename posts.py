@@ -2406,7 +2406,6 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
 
         # remove cached html posts
         postCacheFilename=os.path.join(postCacheDir,postFilename).replace('.json','.html')
-        print('CACHE: '+postCacheFilename)
         if os.path.isfile(postCacheFilename):
             os.remove(postCacheFilename)
 
