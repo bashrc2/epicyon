@@ -5429,7 +5429,7 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     # max POST size of 30M
     httpd.maxPostLength=1024*1024*30
     httpd.maxMediaSize=httpd.maxPostLength
-    httpd.maxMessageLength=5000
+    httpd.maxMessageLength=8000
     httpd.maxPostsInBox=32000
     httpd.domain=domain
     httpd.port=port
