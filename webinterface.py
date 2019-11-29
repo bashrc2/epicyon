@@ -2474,6 +2474,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary']=''
 
+    if not postJsonObject['object'].get('content'):
+        return ''
     objectContent=removeLongWords(postJsonObject['object']['content'],40,[])
     if not postJsonObject['object']['sensitive']:
         contentStr=objectContent+attachmentStr
