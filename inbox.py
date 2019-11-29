@@ -1387,6 +1387,13 @@ def validPostContent(messageJson: {},maxMentions: int,maxEmoji: int) -> bool:
         return True
     if not messageJson['object'].get('content'):
         return True
+
+    if not messageJson['object'].get('published'):
+        return False
+    if 'T' not in messageJson['object']['published']:
+        return False
+    if 'Z' not in messageJson['object']['published']:
+        return False
     # check for bad html
     invalidStrings=['<script>','<canvas>','<style>','</html>','</body>','<br>','<hr>']    
     for badStr in invalidStrings:

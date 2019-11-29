@@ -2444,16 +2444,18 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             attachmentCtr+=1
             attachmentStr+='</div>'
 
-    publishedStr=postJsonObject['object']['published']
-    if '.' not in publishedStr:
-        if '+' not in publishedStr:
-            datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+    publishedStr=''
+    if postJsonObject['object'].get('published'):
+        publishedStr=postJsonObject['object']['published']
+        if '.' not in publishedStr:
+            if '+' not in publishedStr:
+                datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+            else:
+                datetimeObject = datetime.strptime(publishedStr.split('+')[0]+'Z',"%Y-%m-%dT%H:%M:%SZ")
         else:
-            datetimeObject = datetime.strptime(publishedStr.split('+')[0]+'Z',"%Y-%m-%dT%H:%M:%SZ")
-    else:
-        publishedStr=publishedStr.replace('T',' ').split('.')[0]
-        datetimeObject = parse(publishedStr)
-    publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
+            publishedStr=publishedStr.replace('T',' ').split('.')[0]
+            datetimeObject = parse(publishedStr)
+        publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
     footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
 
     # change the background color for DMs in inbox timeline
