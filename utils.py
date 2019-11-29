@@ -450,7 +450,7 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
     cachedPostFilename= \
         getCachedPostDirectory(baseDir,nickname,domain)+ \
         '/'+postJsonObject['id'].replace('/activity','')
-    print('CACHE: 1'+cachedPostFilename)
+    print('CACHE: 1 '+nickname+' '+domain+' '+cachedPostFilename)
     if '#' in cachedPostFilename:
         cachedPostFilename=cachedPostFilename.split('#',1)[0]
     cachedPostFilename=cachedPostFilename.replace('/','#')+'.html'
