@@ -845,7 +845,7 @@ class PubServer(BaseHTTPRequestHandler):
         """ Check if the queue is full and remove oldest items if it is
         """
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
-            print('Inbox queue is full. Removing oldest items.')
+            print('Inbox queue is full ('+str(self.server.maxQueueLength)+' items). Removing oldest items.')
             cleardownStartTime=time.time()
             while len(self.server.inboxQueue) >= self.server.maxQueueLength-4:
                 queueFilename=self.server.inboxQueue[0]
