@@ -56,6 +56,7 @@ from posts import isImageMedia
 from posts import sendSignedJson
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
+from question import questionUpdateVotes
 
 def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
                               translate: {}, \
@@ -1795,6 +1796,7 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
         # list of indexes to be updated
         updateIndexList=['inbox']
         populateReplies(baseDir,httpPrefix,domain,messageJson,maxReplies,debug)
+        questionUpdateVotes(baseDir,nickname,domain,messageJson)
         if not isGroup:
             # create a DM notification file if needed
             if isDM(postJsonObject):
