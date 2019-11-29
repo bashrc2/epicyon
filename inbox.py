@@ -54,6 +54,7 @@ from posts import isDM
 from posts import isReply
 from posts import isImageMedia
 from posts import sendSignedJson
+from posts import sendToFollowersThread
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 from question import questionUpdateVotes
@@ -1798,7 +1799,21 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
         populateReplies(baseDir,httpPrefix,domain,postJsonObject,maxReplies,debug)
 
         nickname=handle.split('@')[0]
-        questionUpdateVotes(baseDir,nickname,domain,postJsonObject)
+
+        # if this is a reply to a question then update the votes
+        questionJson=questionUpdateVotes(baseDir,nickname,domain,postJsonObject)
+        if questionJson:
+            # Is this a question created by this instance?
+            if questionJson['object']['id'].startswith(httpPrefix+'://'+domain):
+                # if the votes on a question have changed then send out an update
+                questionJson['type']='Update'
+                sendToFollowersThread(session,baseDir, \
+                                      nickname,domain,port, \
+                                      httpPrefix,federationList, \
+                                      sendThreads,postLog, \
+                                      cachedWebfingers,personCache, \
+                                      postJsonObject,debug, \
+                                      __version__)
 
         if not isGroup:
             # create a DM notification file if needed

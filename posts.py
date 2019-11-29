@@ -1805,7 +1805,7 @@ def sendToFollowers(session,baseDir: str, \
         print('DEBUG: End of sendToFollowers')
 
 def sendToFollowersThread(session,baseDir: str, \
-                          nickname: str, domain: str, port: int, \
+                          nickname: str,domain: str,port: int, \
                           httpPrefix: str,federationList: [], \
                           sendThreads: [],postLog: [], \
                           cachedWebfingers: {},personCache: {}, \
