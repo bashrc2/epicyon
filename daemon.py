@@ -5044,6 +5044,17 @@ class PubServer(BaseHTTPRequestHandler):
                                    '/shares?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
             return
+        pageNumber=self._receiveNewPost(authorized,'newquestion',self.path)
+        if pageNumber:
+            nickname=self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
+            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                   '/users/'+nickname+ \
+                                   '/'+self.server.defaultTimeline+ \
+                                   '?page='+str(pageNumber),cookie)
+            self.server.POSTbusy=False
+            return
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,15)
 
