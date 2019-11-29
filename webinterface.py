@@ -1948,6 +1948,9 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
     cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
 
     postHtml=''
+    if not cachedPostFilename:
+        return postHtml
+        
     if not os.path.isfile(cachedPostFilename):
         return postHtml
     

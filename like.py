@@ -35,8 +35,9 @@ def undoLikesCollectionEntry(recentPostsCache: {}, \
         nickname=getNicknameFromActor(actor)
         cachedPostFilename= \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+        if cachedPostFilename:
+            if os.path.isfile(cachedPostFilename):
+                os.remove(cachedPostFilename)
         removePostFromCache(postJsonObject,recentPostsCache)
 
         if not postJsonObject.get('type'):
@@ -117,8 +118,9 @@ def updateLikesCollection(recentPostsCache: {}, \
         nickname=getNicknameFromActor(actor)
         cachedPostFilename= \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
-        if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)
+        if cachedPostFilename:
+            if os.path.isfile(cachedPostFilename):
+                os.remove(cachedPostFilename)
         removePostFromCache(postJsonObject,recentPostsCache)
 
         if not postJsonObject.get('object'):

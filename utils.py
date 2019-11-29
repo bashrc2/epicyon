@@ -447,8 +447,15 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
                           postJsonObject: {}) -> str:
     """Returns the html cache filename for the given post
     """
+    cachedPostDir=getCachedPostDirectory(baseDir,nickname,domain)
+    if not os.path.isdir(cachedPostDir):
+        print('ERROR: invalid html cache directory '+cachedPostDir)
+        return None
+    if '@' not in cachedPostDir:
+        print('ERROR: invalid html cache directory '+cachedPostDir)
+        return None
     cachedPostFilename= \
-        getCachedPostDirectory(baseDir,nickname,domain)+ \
+        cachedPostDir+ \
         '/'+postJsonObject['id'].replace('/activity','')
     print('CACHE: 1 '+nickname+' '+domain+' '+cachedPostFilename)
     if '#' in cachedPostFilename:
