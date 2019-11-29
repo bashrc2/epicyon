@@ -4972,7 +4972,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,14)
 
         # receive different types of post created by htmlNewPost
-        postTypes=["newpost","newunlisted","newfollowers","newdm","newreport","newshare"]
+        postTypes=["newpost","newunlisted","newfollowers","newdm","newreport","newshare","newquestion"]
         for currPostType in postTypes:
             if currPostType!='newshare':
                 postRedirect=self.server.defaultTimeline
