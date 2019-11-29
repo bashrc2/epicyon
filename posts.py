@@ -847,14 +847,14 @@ def createQuestionPost(baseDir: str,
                        False,None,None,subject, \
                        None,None,None)
     messageJson['object']['type']='Question'
-    messageJson['object']['oneof']=[]
+    messageJson['object']['oneOf']=[]
     messageJson['object']['votersCount']=0
     currTime=datetime.datetime.utcnow()
     daysSinceEpoch=int((currTime - datetime.datetime(1970,1,1)).days + durationDays)
     endTime=datetime.datetime(1970,1,1) + datetime.timedelta(daysSinceEpoch)
     messageJson['object']['endTime']=endTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     for questionOption in qOptions:
-        messageJson['object']['oneof'].append({
+        messageJson['object']['oneOf'].append({
             "type": "Note",
             "name": questionOption,
             "replies": {
