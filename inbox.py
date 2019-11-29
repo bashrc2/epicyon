@@ -1797,12 +1797,12 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
         updateIndexList=['inbox']
         populateReplies(baseDir,httpPrefix,domain,postJsonObject,maxReplies,debug)
 
+        nickname=handle.split('@')[0]
         questionUpdateVotes(baseDir,nickname,domain,postJsonObject)
 
         if not isGroup:
             # create a DM notification file if needed
             if isDM(postJsonObject):
-                nickname=handle.split('@')[0]
                 if nickname!='inbox':
                     followDMsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'
                     if os.path.isfile(followDMsFilename):
@@ -1832,7 +1832,6 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
             actor=httpPrefix+'://'+domainFull+'/users/'+handle.split('@')[0]
 
             # create a reply notification file if needed
-            nickname=handle.split('@')[0]
             if isReply(postJsonObject,actor):
                 if nickname!='inbox':
                     # replies index will be updated
