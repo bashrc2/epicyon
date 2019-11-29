@@ -4979,82 +4979,25 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,14)
 
-        pageNumber=self._receiveNewPost(authorized,'newpost',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
-        pageNumber=self._receiveNewPost(authorized,'newunlisted',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
-        pageNumber=self._receiveNewPost(authorized,'newfollowers',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
-        pageNumber=self._receiveNewPost(authorized,'newdm',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
-        pageNumber=self._receiveNewPost(authorized,'newreport',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
-        pageNumber=self._receiveNewPost(authorized,'newshare',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/shares?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
-        pageNumber=self._receiveNewPost(authorized,'newquestion',self.path)
-        if pageNumber:
-            nickname=self.path.split('/users/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                   '/users/'+nickname+ \
-                                   '/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
-            self.server.POSTbusy=False
-            return
+        # receive different types of post created by htmlNewPost
+        postTypes=["newpost","newunlisted","newfollowers","newdm","newreport","newshare"]
+        for currPostType in postTypes:
+            if currPostType!='newshare':
+                postRedirect=self.server.defaultTimeline
+            else:
+                postRedirect='shares'
+
+            pageNumber=self._receiveNewPost(authorized,currPostType,self.path)
+            if pageNumber:
+                nickname=self.path.split('/users/')[1]
+                if '/' in nickname:
+                    nickname=nickname.split('/')[0]
+                self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                       '/users/'+nickname+ \
+                                       '/'+postRedirect+ \
+                                       '?page='+str(pageNumber),cookie)
+                self.server.POSTbusy=False
+                return
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,15)
 
