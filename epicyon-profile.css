@@ -891,6 +891,15 @@ div.gallery img {
     }
 }
 
+@media screen and (min-width: 1500px) {
+    .galleryContainer {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	grid-column-gap: 5px;
+	background-color: var(--main-bg-color);
+    }
+}
+
 @media screen and (max-width: 1000px) {
     body, html {
         font-size: var(--font-size3);
