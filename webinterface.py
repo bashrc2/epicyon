@@ -2345,7 +2345,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
-                                galleryStr+='<div class="gallery">\n'
+                                galleryStr+='<div id="'+timelinePostBookmark+' class="gallery">\n'
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
                                 galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="" width="600" height="400">\n'
                                 galleryStr+='  </a>\n'
@@ -2380,7 +2380,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
-                                galleryStr+='<div class="gallery">\n'
+                                galleryStr+='<div id="'+timelinePostBookmark+' class="gallery">\n'
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
                                 galleryStr+='    <video width="600" height="400" controls>\n'
                                 galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
@@ -2417,7 +2417,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             if attachmentCtr>0:
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
-                                galleryStr+='<div class="gallery">\n'
+                                galleryStr+='<div id="'+timelinePostBookmark+' class="gallery">\n'
                                 galleryStr+='  <a href="'+attach['url']+'">\n'
                                 galleryStr+='    <audio controls>\n'
                                 galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
