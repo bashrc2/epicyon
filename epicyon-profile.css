@@ -900,6 +900,8 @@ div.gallery img {
 	font-size: var(--gallery-font-size-mobile);
     }
     .galleryContainer {
+	display: grid;
+	grid-template-columns: auto;
 	background-color: var(--main-bg-color);
     }
     div.gallery {
