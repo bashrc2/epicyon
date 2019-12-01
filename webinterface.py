@@ -2005,6 +2005,9 @@ def postIsMuted(baseDir: str,nickname: str,domain: str, messageId: str) -> bool:
     muteFilename=postDir+'/outbox/'+messageId.replace('/','#')+'.json.muted'
     if os.path.isfile(muteFilename):
         return True
+    muteFilename=baseDir+'/accounts/cache/announce/'+nickname+'/'+messageId.replace('/','#')+'.json.muted'
+    if os.path.isfile(muteFilename):
+        return True
     return False
 
 def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
