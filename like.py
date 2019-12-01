@@ -128,6 +128,8 @@ def updateLikesCollection(recentPostsCache: {}, \
                 pprint(postJsonObject)
                 print('DEBUG: post '+objectUrl+' has no object')
             return
+        if not isinstance(postJsonObject['object'], dict):
+            return
         if not objectUrl.endswith('/likes'):
             objectUrl=objectUrl+'/likes'
         if not postJsonObject['object'].get('likes'):
