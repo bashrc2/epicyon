@@ -39,6 +39,7 @@ from person import removeAccount
 from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
+from posts import mutePost
 from posts import createQuestionPost
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
@@ -2058,6 +2059,11 @@ class PubServer(BaseHTTPRequestHandler):
             deleteUrl=self.path.split('?delete=')[1]
             if '?' in deleteUrl:                
                 deleteUrl=deleteUrl.split('?')[0]
+            timelineStr=self.server.defaultTimeline
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
             actor= \
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+self.path.split('?delete=')[0]
@@ -2069,13 +2075,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor not in deleteUrl:
                     # You can only delete your own posts
                     self.server.GETbusy=False
-                    self._redirect_headers(actor+'/'+self.server.defaultTimeline,cookie)
+                    self._redirect_headers(actor+'/'+timelineStr,cookie)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.postToNickname:
                     print('WARN: unable to find nickname in '+actor)
                     self.server.GETbusy=False
-                    self._redirect_headers(actor+'/'+self.server.defaultTimeline,cookie)
+                    self._redirect_headers(actor+'/'+timelineStr,cookie)
                     return                    
                 if not self.server.session:
                     self.server.session= \
@@ -2095,7 +2101,61 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+self.server.defaultTimeline,cookie)
+            self._redirect_headers(actor+'/'+timelineStr,cookie)
+            return
+
+        # mute a post from the web interface icon
+        if htmlGET and '?mute=' in self.path:
+            pageNumber=1
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:                
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+            muteUrl=self.path.split('?mute=')[1]
+            if '?' in muteUrl:                
+                muteUrl=muteUrl.split('?')[0]
+            timelineStr=self.server.defaultTimeline
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
+            actor= \
+                self.server.httpPrefix+'://'+ \
+                self.server.domainFull+self.path.split('?mute=')[0]
+            nickname=getNicknameFromActor(actor)
+            mutePost(self.server.baseDir,nickname,self.server.domain, \
+                     muteUrl,self.server.recentPostsCache)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/'+timelineStr,cookie)
+            return
+
+        # unmute a post from the web interface icon
+        if htmlGET and '?unmute=' in self.path:
+            pageNumber=1
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:                
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+            muteUrl=self.path.split('?unmute=')[1]
+            if '?' in muteUrl:                
+                muteUrl=muteUrl.split('?')[0]
+            timelineStr=self.server.defaultTimeline
+            if '?tl=' in self.path:
+                timelineStr=self.path.split('?tl=')[1]
+                if '?' in timelineStr:
+                    timelineStr=timelineStr.split('?')[0]
+            actor= \
+                self.server.httpPrefix+'://'+ \
+                self.server.domainFull+self.path.split('?mute=')[0]
+            nickname=getNicknameFromActor(actor)
+            unmutePost(self.server.baseDir,nickname,self.server.domain, \
+                       muteUrl,self.server.recentPostsCache)
+            self.server.GETbusy=False
+            self._redirect_headers(actor+'/'+timelineStr,cookie)
             return
 
         # reply from the web interface icon

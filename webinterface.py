@@ -1995,6 +1995,18 @@ def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
         postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
     return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
+def postIsMuted(baseDir: str,nickname: str,domain: str, messageId: str) -> bool:
+    """ Returns true if the given post is muted
+    """
+    postDir=baseDir+'/accounts/'+nickname+'@'+domain
+    muteFilename=postDir+'/inbox/'+messageId.replace('/','#')+'.json.muted'
+    if os.path.isfile(muteFilename):
+        return True
+    muteFilename=postDir+'/outbox/'+messageId.replace('/','#')+'.json.muted'
+    if os.path.isfile(muteFilename):
+        return True
+    return False
+
 def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                          iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
@@ -2238,14 +2250,24 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
         bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
 
+    isMuted=postIsMuted(baseDir,nickname,domain,messageId)
+
     deleteStr=''
+    muteStr=''
     if allowDeletion or \
        ('/'+fullDomain+'/' in postActor and \
         postJsonObject['object']['id'].startswith(postActor)):
         if '/users/'+nickname+'/' in postJsonObject['object']['id']:
             deleteStr='<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">'
             deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+'" title="'+translate['Delete this post']+'" src="/'+iconsDir+'/delete.png"/></a>'
-        
+    else:
+        if not isMuted:
+            muteStr='<a href="/users/'+nickname+'?mute='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Mute this post']+'">'
+            muteStr+='<img loading="lazy" alt="'+translate['Mute this post']+'" title="'+translate['Mute this post']+'" src="/'+iconsDir+'/mute.png"/></a>'
+        else:
+            muteStr='<a href="/users/'+nickname+'?unmute='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Undo mute']+'">'
+            muteStr+='<img loading="lazy" alt="'+translate['Undo mute']+'" title="'+translate['Undo mute']+'" src="/'+iconsDir+'/mute.png"/></a>'
+            
     replyAvatarImageInPost=''
     if showRepeatIcon:
         if isAnnounced:
@@ -2468,7 +2490,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
-        footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr
+        footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr
         footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
         footerStr+='</div>'
 
@@ -2503,12 +2525,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if postJsonObject['object'].get('tag'):
         contentStr=replaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],'content')
 
-    # replace 's
-    contentStr=contentStr.replace("\ufffd\ufffd\ufffds","'s")
-
-    contentStrMedia=contentStr
-
-    contentStr='<div class="message">'+contentStr+'</div>'
+    if isMuted:
+        contentStr=''
+    else:
+        contentStr='<div class="message">'+contentStr+'</div>'
 
     postHtml=''
     if boxName!='tlmedia':

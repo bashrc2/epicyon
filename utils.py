@@ -312,6 +312,19 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
         # remove any attachment
         removeAttachment(baseDir,httpPrefix,domain,postJsonObject)
 
+        # remove any mute file
+        muteFilename=postFilename+'.muted'
+        if os.path.isfile(muteFilename):
+            os.remove(muteFilename)
+
+        # remove cached html version of the post
+        cachedPostFilename= \
+            getCachedPostFilename(baseDir,nickname,postJsonObject)
+        if cachedPostFilename:
+            if os.path.isfile(cachedPostFilename):
+                os.remove(cachedPostFilename)    
+        #removePostFromCache(postJsonObject,recentPostsCache)
+        
         hasObject=False
         if postJsonObject.get('object'):
             hasObject=True

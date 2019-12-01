@@ -198,5 +198,7 @@
     "Previous month": "前月",
     "Next month": "来月",
     "Get the source code": "ソースコードを入手する",
-    "This is a media instance": "This is a media instance"
+    "This is a media instance": "This is a media instance",
+    "Mute this post": "Mute this post",
+    "Undo mute": "Undo mute"
 }

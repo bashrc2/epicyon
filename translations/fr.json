@@ -198,5 +198,7 @@
     "Previous month": "Le mois précédent",
     "Next month": "Le mois prochain",
     "Get the source code": "Obtenir le code source",
-    "This is a media instance": "This is a media instance"
+    "This is a media instance": "This is a media instance",
+    "Mute this post": "Mute this post",
+    "Undo mute": "Undo mute"
 }

@@ -2635,3 +2635,49 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
         if saveJson(postJsonObject,announceFilename):
             return postJsonObject
     return None
+
+def mutePost(baseDir: str,nickname: str,domain: str,postId: str, \
+             recentPostsCache: {}) -> None:
+    """ Mutes the given post
+    """
+    postFilename=locatePost(baseDir,nickname,domain,postId)
+    if not postFilename:
+        return
+    postJsonObject=loadJson(postFilename)
+    if not postJsonObject:
+        return
+
+    muteFile=open(postFilename+'.muted', "w")
+    muteFile.write('\n')
+    muteFile.close()
+
+    # remove cached posts so that the muted version gets created
+    cachedPostFilename= \
+        getCachedPostFilename(baseDir,nickname,postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)    
+    removePostFromCache(postJsonObject,recentPostsCache)
+
+def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
+               recentPostsCache: {}) -> None:
+    """ Unmutes the given post
+    """
+    postFilename=locatePost(baseDir,nickname,domain,postId)
+    if not postFilename:
+        return
+    postJsonObject=loadJson(postFilename)
+    if not postJsonObject:
+        return
+
+    muteFilename=postFilename+'.muted'
+    if os.path.isfile(muteFilename):
+        os.remove(muteFilename)
+
+    # remove cached posts so that it gets recreated
+    cachedPostFilename= \
+        getCachedPostFilename(baseDir,nickname,postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)    
+    removePostFromCache(postJsonObject,recentPostsCache)
