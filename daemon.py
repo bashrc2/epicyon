@@ -40,6 +40,7 @@ from person import canRemovePost
 from person import personSnooze
 from person import personUnsnooze
 from posts import mutePost
+from posts import unmutePost
 from posts import createQuestionPost
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
