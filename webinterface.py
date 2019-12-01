@@ -2172,7 +2172,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     replyStr=''
     if showIcons:
-        replyToLink=postJsonObject['object']['id']
+        replyToLink=messageId
         if postJsonObject['object'].get('attributedTo'):
             replyToLink+='?mention='+postJsonObject['object']['attributedTo']
         if postJsonObject['object'].get('content'):
@@ -2215,7 +2215,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             announceLink='unrepeat'
             announceTitle=translate['Undo the repeat']
         announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \
+            '<a href="/users/'+nickname+'?'+announceLink+'='+messageId+pageNumberParam+ \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+announceTitle+'">'
@@ -2233,7 +2233,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 likeTitle=translate['Undo the like']
         likeStr= \
             '<a href="/users/' + nickname + '?' + \
-            likeLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            likeLink + '=' + messageId + pageNumberParam + \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+likeTitle+'">'
@@ -2250,7 +2250,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             bookmarkTitle=translate['Undo the bookmark']
         bookmarkStr= \
             '<a href="/users/' + nickname + '?' + \
-            bookmarkLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
+            bookmarkLink + '=' + messageId + pageNumberParam + \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
@@ -2262,16 +2262,16 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     muteStr=''
     if allowDeletion or \
        ('/'+fullDomain+'/' in postActor and \
-        postJsonObject['object']['id'].startswith(postActor)):
-        if '/users/'+nickname+'/' in postJsonObject['object']['id']:
-            deleteStr='<a href="/users/'+nickname+'?delete='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Delete this post']+'">'
+        messageId.startswith(postActor)):
+        if '/users/'+nickname+'/' in messageId:
+            deleteStr='<a href="/users/'+nickname+'?delete='+messageId+pageNumberParam+'" title="'+translate['Delete this post']+'">'
             deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+' |" title="'+translate['Delete this post']+' |" src="/'+iconsDir+'/delete.png"/></a>'
     else:
         if not isMuted:
-            muteStr='<a href="/users/'+nickname+'?mute='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Mute this post']+'">'
+            muteStr='<a href="/users/'+nickname+'?mute='+messageId+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Mute this post']+'">'
             muteStr+='<img loading="lazy" alt="'+translate['Mute this post']+' |" title="'+translate['Mute this post']+' |" src="/'+iconsDir+'/mute.png"/></a>'
         else:
-            muteStr='<a href="/users/'+nickname+'?unmute='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Undo mute']+'">'
+            muteStr='<a href="/users/'+nickname+'?unmute='+messageId+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Undo mute']+'">'
             muteStr+='<img loading="lazy" alt="'+translate['Undo mute']+' |" title="'+translate['Undo mute']+' |" src="/'+iconsDir+'/unmute.png"/></a>'
             
     replyAvatarImageInPost=''
@@ -2292,7 +2292,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                     addEmojiToDisplayName(baseDir,httpPrefix, \
                                                           nickname,domain, \
                                                           announceDisplayName,False)
-                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+messageId+'">'+announceDisplayName+'</a>'
                             # show avatar of person replied to
                             announceActor=postJsonObject['object']['attributedTo']
                             announceAvatarUrl=getPersonAvatarUrl(baseDir,announceActor,personCache)
@@ -2304,11 +2304,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                     'title="'+translate['Show options for this person']+ \
                                     '" alt=" "'+avatarPosition+'/></a></div>'
                         else:
-                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+messageId+'">@'+announceNickname+'@'+announceDomain+'</a>'
                     else:
-                        titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                        titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+messageId+'">@unattributed</a>'
             else:
-                titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+messageId+'">@unattributed</a>'
         else:
             if postJsonObject['object'].get('inReplyTo'):
                 containerClassIcons='containericons darker'
@@ -2380,7 +2380,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 if postJsonObject['object'].get('url'):
                                     imagePostUrl=postJsonObject['object']['url']
                                 else:
-                                    imagePostUrl=postJsonObject['object']['id']
+                                    imagePostUrl=messageId
                                 if imageDescription:
                                     galleryStr+='  <a href="'+imagePostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 else:
@@ -2418,7 +2418,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 if postJsonObject['object'].get('url'):
                                     videoPostUrl=postJsonObject['object']['url']
                                 else:
-                                    videoPostUrl=postJsonObject['object']['id']
+                                    videoPostUrl=messageId
                                 if imageDescription:
                                     galleryStr+='  <a href="'+videoPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 else:
@@ -2455,7 +2455,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 if postJsonObject['object'].get('url'):
                                     audioPostUrl=postJsonObject['object']['url']
                                 else:
-                                    audioPostUrl=postJsonObject['object']['id']
+                                    audioPostUrl=messageId
                                 if imageDescription:
                                     galleryStr+='  <a href="'+audioPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 else:
