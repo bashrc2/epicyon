@@ -2272,7 +2272,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             muteStr+='<img loading="lazy" alt="'+translate['Mute this post']+'" title="'+translate['Mute this post']+'" src="/'+iconsDir+'/mute.png"/></a>'
         else:
             muteStr='<a href="/users/'+nickname+'?unmute='+postJsonObject['object']['id']+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Undo mute']+'">'
-            muteStr+='<img loading="lazy" alt="'+translate['Undo mute']+'" title="'+translate['Undo mute']+'" src="/'+iconsDir+'/mute.png"/></a>'
+            muteStr+='<img loading="lazy" alt="'+translate['Undo mute']+'" title="'+translate['Undo mute']+'" src="/'+iconsDir+'/unmute.png"/></a>'
             
     replyAvatarImageInPost=''
     if showRepeatIcon:
