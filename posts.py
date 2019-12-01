@@ -2654,7 +2654,7 @@ def mutePost(baseDir: str,nickname: str,domain: str,postId: str, \
 
     # remove cached posts so that the muted version gets created
     cachedPostFilename= \
-        getCachedPostFilename(baseDir,nickname,postJsonObject)
+        getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)    
@@ -2677,7 +2677,7 @@ def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
 
     # remove cached posts so that it gets recreated
     cachedPostFilename= \
-        getCachedPostFilename(baseDir,nickname,postJsonObject)
+        getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)    

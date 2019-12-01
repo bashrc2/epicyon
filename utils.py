@@ -319,7 +319,7 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
 
         # remove cached html version of the post
         cachedPostFilename= \
-            getCachedPostFilename(baseDir,nickname,postJsonObject)
+            getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
                 os.remove(cachedPostFilename)    
