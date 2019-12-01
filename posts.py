@@ -2693,13 +2693,5 @@ def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
         getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)    
-    # if the post is in the recent posts cache then mark it as not muted
-    if recentPostsCache.get('index'):
-        postId=postJsonObject['id'].replace('/activity','').replace('/','#')
-        if postId in recentPostsCache['index']:
-            print('UNMUTE: '+postId+' is in recent posts cache')
-            if recentPostsCache['json'].get(postId):
-                postJsonObject['muted']=False
-                recentPostsCache['json'][postId]=json.dumps(postJsonObject)
-                print('UNMUTE: '+postId+' marked as not muted in recent posts cache')
+            os.remove(cachedPostFilename)
+    removePostFromCache(postJsonObject,recentPostsCache)
