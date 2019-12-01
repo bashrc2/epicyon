@@ -1995,20 +1995,19 @@ def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
         postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
     return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
-def postIsMuted(baseDir: str,nickname: str,domain: str, messageId: str) -> bool:
+def postIsMuted(baseDir: str,nickname: str,domain: str, postJsonObject: {},messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
+    if postJsonObject.get('muted'):
+        return True
     postDir=baseDir+'/accounts/'+nickname+'@'+domain
     muteFilename=postDir+'/inbox/'+messageId.replace('/','#')+'.json.muted'
-    print('TEST MUTE: '+muteFilename)
     if os.path.isfile(muteFilename):
         return True
     muteFilename=postDir+'/outbox/'+messageId.replace('/','#')+'.json.muted'
-    print('TEST MUTE: '+muteFilename)
     if os.path.isfile(muteFilename):
         return True
     muteFilename=baseDir+'/accounts/cache/announce/'+nickname+'/'+messageId.replace('/','#')+'.json.muted'
-    print('TEST MUTE: '+muteFilename)
     if os.path.isfile(muteFilename):
         return True
     return False
@@ -2256,7 +2255,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
         bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
 
-    isMuted=postIsMuted(baseDir,nickname,domain,messageId)
+    isMuted=postIsMuted(baseDir,nickname,domain,postJsonObject,messageId)
 
     deleteStr=''
     muteStr=''
@@ -2804,10 +2803,11 @@ def htmlTimeline(defaultTimeline: str, \
                 if boxName!='tlmedia' and recentPostsCache.get('index'):
                     postId=item['id'].replace('/activity','').replace('/','#')
                     if postId in recentPostsCache['index']:
-                        if recentPostsCache['html'].get(postId):                            
-                            currTlStr=recentPostsCache['html'][postId]
-                            currTlStr= \
-                                preparePostFromHtmlCache(currTlStr,boxName,pageNumber)
+                        if not item.get('muted'):
+                            if recentPostsCache['html'].get(postId):                            
+                                currTlStr=recentPostsCache['html'][postId]
+                                currTlStr= \
+                                    preparePostFromHtmlCache(currTlStr,boxName,pageNumber)
                 if not currTlStr:
                     # read the post from disk
                     currTlStr= \

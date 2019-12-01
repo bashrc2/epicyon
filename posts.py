@@ -2660,8 +2660,15 @@ def mutePost(baseDir: str,nickname: str,domain: str,postId: str, \
         getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
-            os.remove(cachedPostFilename)    
-    removePostFromCache(postJsonObject,recentPostsCache)
+            os.remove(cachedPostFilename)
+
+    # if the post is in the recent posts cache then mark it as muted
+    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    if postId in recentPostsCache['index']:
+        print('MUTE: '+postId+' is in recent posts cache')
+        if recentPostsCache['json'].get(postId):
+            recentPostsCache['json'][postId]['muted']=True
+            print('MUTE: '+postId+' marked as muted in recent posts cache')
 
 def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
                recentPostsCache: {}) -> None:
@@ -2685,4 +2692,10 @@ def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
     if cachedPostFilename:
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)    
-    removePostFromCache(postJsonObject,recentPostsCache)
+    # if the post is in the recent posts cache then mark it as not muted
+    postId=postJsonObject['id'].replace('/activity','').replace('/','#')
+    if postId in recentPostsCache['index']:
+        print('UNMUTE: '+postId+' is in recent posts cache')
+        if recentPostsCache['json'].get(postId):
+            recentPostsCache['json'][postId]['muted']=False
+            print('UNMUTE: '+postId+' marked as not muted in recent posts cache')
