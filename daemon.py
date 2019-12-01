@@ -2117,6 +2117,12 @@ class PubServer(BaseHTTPRequestHandler):
             muteUrl=self.path.split('?mute=')[1]
             if '?' in muteUrl:                
                 muteUrl=muteUrl.split('?')[0]
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             timelineStr=self.server.defaultTimeline
             if '?tl=' in self.path:
                 timelineStr=self.path.split('?tl=')[1]
@@ -2129,7 +2135,7 @@ class PubServer(BaseHTTPRequestHandler):
             mutePost(self.server.baseDir,nickname,self.server.domain, \
                      muteUrl,self.server.recentPostsCache)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr,cookie)
+            self._redirect_headers(actor+'/'+timelineStr+timelineBookmark,cookie)
             return
 
         # unmute a post from the web interface icon
@@ -2144,6 +2150,12 @@ class PubServer(BaseHTTPRequestHandler):
             muteUrl=self.path.split('?unmute=')[1]
             if '?' in muteUrl:                
                 muteUrl=muteUrl.split('?')[0]
+            timelineBookmark=''
+            if '?bm=' in self.path:
+                timelineBookmark=self.path.split('?bm=')[1]
+                if '?' in timelineBookmark:
+                    timelineBookmark=timelineBookmark.split('?')[0]
+                timelineBookmark='#'+timelineBookmark
             timelineStr=self.server.defaultTimeline
             if '?tl=' in self.path:
                 timelineStr=self.path.split('?tl=')[1]
@@ -2156,7 +2168,7 @@ class PubServer(BaseHTTPRequestHandler):
             unmutePost(self.server.baseDir,nickname,self.server.domain, \
                        muteUrl,self.server.recentPostsCache)
             self.server.GETbusy=False
-            self._redirect_headers(actor+'/'+timelineStr,cookie)
+            self._redirect_headers(actor+'/'+timelineStr+timelineBookmark,cookie)
             return
 
         # reply from the web interface icon

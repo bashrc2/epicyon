@@ -2267,10 +2267,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+'" title="'+translate['Delete this post']+'" src="/'+iconsDir+'/delete.png"/></a>'
     else:
         if not isMuted:
-            muteStr='<a href="/users/'+nickname+'?mute='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Mute this post']+'">'
+            muteStr='<a href="/users/'+nickname+'?mute='+postJsonObject['object']['id']+pageNumberParam+'?bm='+timelinePostBookmark+'" title="'+translate['Mute this post']+'">'
             muteStr+='<img loading="lazy" alt="'+translate['Mute this post']+'" title="'+translate['Mute this post']+'" src="/'+iconsDir+'/mute.png"/></a>'
         else:
-            muteStr='<a href="/users/'+nickname+'?unmute='+postJsonObject['object']['id']+pageNumberParam+'" title="'+translate['Undo mute']+'">'
+            muteStr='<a href="/users/'+nickname+'?unmute='+postJsonObject['object']['id']+pageNumberParam+'?bm='+timelinePostBookmark+'" title="'+translate['Undo mute']+'">'
             muteStr+='<img loading="lazy" alt="'+translate['Undo mute']+'" title="'+translate['Undo mute']+'" src="/'+iconsDir+'/mute.png"/></a>'
             
     replyAvatarImageInPost=''
