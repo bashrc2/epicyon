@@ -509,6 +509,7 @@ def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
         if postId in recentPostsCache['index']:
             return
         recentPostsCache['index'].append(postId)
+        postJsonObject['muted']=False
         recentPostsCache['json'][postId]=json.dumps(postJsonObject)
         recentPostsCache['html'][postId]=htmlStr
 

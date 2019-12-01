@@ -1998,8 +1998,9 @@ def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
 def postIsMuted(baseDir: str,nickname: str,domain: str, postJsonObject: {},messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
-    if postJsonObject.get('muted'):
-        return True
+    isMuted=postJsonObject.get('muted')
+    if isMuted==True or isMuted==False:
+        return isMuted
     postDir=baseDir+'/accounts/'+nickname+'@'+domain
     muteFilename=postDir+'/inbox/'+messageId.replace('/','#')+'.json.muted'
     if os.path.isfile(muteFilename):
