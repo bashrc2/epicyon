@@ -2233,7 +2233,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 likeTitle=translate['Undo the like']
         likeStr= \
             '<a href="/users/' + nickname + '?' + \
-            likeLink + '=' + messageId + pageNumberParam + \
+            likeLink + '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+likeTitle+'">'
