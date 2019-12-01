@@ -2649,9 +2649,11 @@ def mutePost(baseDir: str,nickname: str,domain: str,postId: str, \
     if not postJsonObject:
         return
 
+    print('MUTE: '+postFilename)
     muteFile=open(postFilename+'.muted', "w")
-    muteFile.write('\n')
-    muteFile.close()
+    if muteFile:
+        muteFile.write('\n')
+        muteFile.close()
 
     # remove cached posts so that the muted version gets created
     cachedPostFilename= \
@@ -2672,6 +2674,7 @@ def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
     if not postJsonObject:
         return
 
+    print('UNMUTE: '+postFilename)
     muteFilename=postFilename+'.muted'
     if os.path.isfile(muteFilename):
         os.remove(muteFilename)
