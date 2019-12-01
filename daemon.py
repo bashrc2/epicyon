@@ -2151,7 +2151,7 @@ class PubServer(BaseHTTPRequestHandler):
                     timelineStr=timelineStr.split('?')[0]
             actor= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+self.path.split('?mute=')[0]
+                self.server.domainFull+self.path.split('?unmute=')[0]
             nickname=getNicknameFromActor(actor)
             unmutePost(self.server.baseDir,nickname,self.server.domain, \
                        muteUrl,self.server.recentPostsCache)
