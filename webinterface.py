@@ -2000,12 +2000,15 @@ def postIsMuted(baseDir: str,nickname: str,domain: str, messageId: str) -> bool:
     """
     postDir=baseDir+'/accounts/'+nickname+'@'+domain
     muteFilename=postDir+'/inbox/'+messageId.replace('/','#')+'.json.muted'
+    print('TEST MUTE: '+muteFilename)
     if os.path.isfile(muteFilename):
         return True
     muteFilename=postDir+'/outbox/'+messageId.replace('/','#')+'.json.muted'
+    print('TEST MUTE: '+muteFilename)
     if os.path.isfile(muteFilename):
         return True
     muteFilename=baseDir+'/accounts/cache/announce/'+nickname+'/'+messageId.replace('/','#')+'.json.muted'
+    print('TEST MUTE: '+muteFilename)
     if os.path.isfile(muteFilename):
         return True
     return False
