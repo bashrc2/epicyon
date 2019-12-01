@@ -30,6 +30,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import getCachedPostFilename
 from utils import getStatusNumber
 from utils import createPersonDir
 from utils import urlPermitted
