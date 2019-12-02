@@ -240,7 +240,8 @@ def like(recentPostsCache: {}, \
 
     return newLikeJson
 
-def likePost(session,baseDir: str,federationList: [], \
+def likePost(recentPostsCache: {}, \
+             session,baseDir: str,federationList: [], \
              nickname: str,domain: str,port: int,httpPrefix: str, \
              likeNickname: str,likeDomain: str,likePort: int, \
              ccList: [], \
