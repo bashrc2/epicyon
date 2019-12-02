@@ -331,10 +331,11 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
 
         # remove from moderation index file
         if hasObject:
-            if postJsonObject['object'].get('moderationStatus'):
-                if postJsonObject.get('id'):
-                    postId=postJsonObject['id'].replace('/activity','')
-                    removeModerationPostFromIndex(baseDir,postId,debug)
+            if isinstance(postJsonObject['object'], dict):
+                if postJsonObject['object'].get('moderationStatus'):
+                    if postJsonObject.get('id'):
+                        postId=postJsonObject['id'].replace('/activity','')
+                        removeModerationPostFromIndex(baseDir,postId,debug)
 
         # remove any hashtags index entries
         removeHashtagIndex=False
