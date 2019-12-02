@@ -373,7 +373,7 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
                 replyFile=locatePost(baseDir,nickname,domain,replyId)
                 if replyFile:
                     if os.path.isfile(replyFile):
-                        deletePost(baseDir,nickname,domain,replyFile,debug)
+                        deletePost(baseDir,httpPrefix,nickname,domain,replyFile,debug)
         # remove the replies file
         os.remove(repliesFilename)
     # finally, remove the post itself
