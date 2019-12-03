@@ -313,6 +313,8 @@ if args.tests:
     runAllTests()
     sys.exit()
 
+args.blurhash=True
+
 if args.testsnetwork:
     print('Network Tests')
     testPostMessageBetweenServers()
