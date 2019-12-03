@@ -587,7 +587,7 @@ div.gallery img {
     }
     .galleryContainer {
 	display: grid;
-	grid-template-columns: auto auto;
+	grid-template-columns: 50% 50%;
 	grid-column-gap: 5px;	
 	background-color: var(--main-bg-color);
     }
@@ -894,7 +894,7 @@ div.gallery img {
 @media screen and (min-width: 2200px) {
     .galleryContainer {
 	display: grid;
-	grid-template-columns: auto auto auto;
+	grid-template-columns: 33% 33% 33%;
 	grid-column-gap: 5px;
 	background-color: var(--main-bg-color);
     }
