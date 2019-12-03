@@ -2374,14 +2374,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
                                 galleryStr+='<div class="gallery">\n'
-                                galleryStr+='  <a href="'+attach['url']+'">\n'
-                                galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="">\n'
-                                galleryStr+='  </a>\n'
+                                if not isMuted:
+                                    galleryStr+='  <a href="'+attach['url']+'">\n'
+                                    galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="">\n'
+                                    galleryStr+='  </a>\n'
                                 if postJsonObject['object'].get('url'):
                                     imagePostUrl=postJsonObject['object']['url']
                                 else:
                                     imagePostUrl=postJsonObject['object']['id']
-                                if imageDescription:
+                                if imageDescription and not isMuted:
                                     galleryStr+='  <a href="'+imagePostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
@@ -2409,17 +2410,18 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
                                 galleryStr+='<div class="gallery">\n'
-                                galleryStr+='  <a href="'+attach['url']+'">\n'
-                                galleryStr+='    <video width="600" height="400" controls>\n'
-                                galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
-                                galleryStr+=translate['Your browser does not support the video tag.']
-                                galleryStr+='    </video>\n'
-                                galleryStr+='  </a>\n'
+                                if not isMuted:
+                                    galleryStr+='  <a href="'+attach['url']+'">\n'
+                                    galleryStr+='    <video width="600" height="400" controls>\n'
+                                    galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
+                                    galleryStr+=translate['Your browser does not support the video tag.']
+                                    galleryStr+='    </video>\n'
+                                    galleryStr+='  </a>\n'
                                 if postJsonObject['object'].get('url'):
                                     videoPostUrl=postJsonObject['object']['url']
                                 else:
                                     videoPostUrl=postJsonObject['object']['id']
-                                if imageDescription:
+                                if imageDescription and not isMuted:
                                     galleryStr+='  <a href="'+videoPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
@@ -2446,17 +2448,18 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 attachmentStr+='<br>'
                             if boxName=='tlmedia':
                                 galleryStr+='<div class="gallery">\n'
-                                galleryStr+='  <a href="'+attach['url']+'">\n'
-                                galleryStr+='    <audio controls>\n'
-                                galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
-                                galleryStr+=translate['Your browser does not support the audio tag.']
-                                galleryStr+='    </audio>\n'
-                                galleryStr+='  </a>\n'
+                                if not isMuted:
+                                    galleryStr+='  <a href="'+attach['url']+'">\n'
+                                    galleryStr+='    <audio controls>\n'
+                                    galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
+                                    galleryStr+=translate['Your browser does not support the audio tag.']
+                                    galleryStr+='    </audio>\n'
+                                    galleryStr+='  </a>\n'
                                 if postJsonObject['object'].get('url'):
                                     audioPostUrl=postJsonObject['object']['url']
                                 else:
                                     audioPostUrl=postJsonObject['object']['id']
-                                if imageDescription:
+                                if imageDescription and not isMuted:
                                     galleryStr+='  <a href="'+audioPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
