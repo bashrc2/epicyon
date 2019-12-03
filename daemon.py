@@ -3453,7 +3453,31 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,55)
 
     def do_HEAD(self):
-        self._set_headers('application/json',0,None)
+        if self.path.endswith('.png'):
+            self._set_headers('image/png',0,None)
+            return
+        if self.path.endswith('.jpg') or self.path.endswith('.jpeg'):
+            self._set_headers('image/jpeg',0,None)
+            return
+        if self.path.endswith('.gif'):
+            self._set_headers('image/gif',0,None)
+            return
+        if self.path.endswith('.webp'):
+            self._set_headers('image/webp',0,None)
+            return
+        if self.path.endswith('.mp4'):
+            self._set_headers('video/mp4',0,None)
+            return
+        if self.path.endswith('.ogv'):
+            self._set_headers('video/ogv',0,None)
+            return
+        if self.path.endswith('.mp3'):
+            self._set_headers('audio/mpeg',0,None)
+            return
+        if self.path.endswith('.ogg'):
+            self._set_headers('audio/ogg',0,None)
+            return        
+        self._set_headers('application/json',0,None)        
 
     def _receiveNewPostProcess(self,authorized: bool, \
                                postType: str,path: str,headers: {},
