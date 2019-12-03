@@ -376,7 +376,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('Cookie', cookie)
         self.send_header('Host', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
-        self.send_header('X-Robots-Tag','noindex')
+        #self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
