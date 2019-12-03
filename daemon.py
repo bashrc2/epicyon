@@ -370,7 +370,8 @@ class PubServer(BaseHTTPRequestHandler):
     def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
-        self.send_header('Content-Length', str(length))
+        if length>-1:
+            self.send_header('Content-Length', str(length))
         if cookie:
             self.send_header('Cookie', cookie)
         self.send_header('Host', self.server.domainFull)
@@ -3454,30 +3455,30 @@ class PubServer(BaseHTTPRequestHandler):
 
     def do_HEAD(self):
         if self.path.endswith('.png'):
-            self._set_headers('image/png',0,None)
+            self._set_headers('image/png',-1,None)
             return
         if self.path.endswith('.jpg') or self.path.endswith('.jpeg'):
-            self._set_headers('image/jpeg',0,None)
+            self._set_headers('image/jpeg',-1,None)
             return
         if self.path.endswith('.gif'):
-            self._set_headers('image/gif',0,None)
+            self._set_headers('image/gif',-1,None)
             return
         if self.path.endswith('.webp'):
-            self._set_headers('image/webp',0,None)
+            self._set_headers('image/webp',-1,None)
             return
         if self.path.endswith('.mp4'):
-            self._set_headers('video/mp4',0,None)
+            self._set_headers('video/mp4',-1,None)
             return
         if self.path.endswith('.ogv'):
-            self._set_headers('video/ogv',0,None)
+            self._set_headers('video/ogv',-1,None)
             return
         if self.path.endswith('.mp3'):
-            self._set_headers('audio/mpeg',0,None)
+            self._set_headers('audio/mpeg',-1,None)
             return
         if self.path.endswith('.ogg'):
-            self._set_headers('audio/ogg',0,None)
+            self._set_headers('audio/ogg',-1,None)
             return        
-        self._set_headers('application/json',0,None)        
+        self._set_headers('application/json',-1,None)        
 
     def _receiveNewPostProcess(self,authorized: bool, \
                                postType: str,path: str,headers: {},
