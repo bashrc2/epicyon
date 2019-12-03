@@ -2386,7 +2386,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='  <div class="mediaavatar">\n'
                                 galleryStr+='    '+avatarLink+'\n'
@@ -2424,7 +2424,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='  <div class="mediaavatar">\n'
                                 galleryStr+='    '+avatarLink+'\n'
@@ -2461,7 +2461,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+'\n'
+                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='  <div class="mediaavatar">\n'
                                 galleryStr+='    '+avatarLink+'\n'
