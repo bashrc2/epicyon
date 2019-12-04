@@ -4625,7 +4625,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in searchStr:
                     searchStr=searchStr.split('&')[0]
                 searchStr= \
-                    searchStr.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#')
+                    searchStr.replace('+',' ').replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#')
                 searchStr=searchStr.strip()
                 if self.server.debug:
                     print('searchStr: '+searchStr)
