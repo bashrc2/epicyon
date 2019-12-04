@@ -386,6 +386,12 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_base(fileFormat,length,cookie)
         self.end_headers()
 
+    def _set_headers_head(self,fileFormat: str,length: int,etag: str) -> None:
+        self._set_headers_base(fileFormat,length,None)
+        if etag:
+            self.send_header('ETag',etag)
+        self.end_headers()
+
     def _set_headers_etag(self,mediaFilename: str,fileFormat: str, \
                           data,cookie: str) -> None:
         self._set_headers_base(fileFormat,len(data),cookie)
@@ -3507,31 +3513,60 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,55)
 
     def do_HEAD(self):
-        if self.path.endswith('.png'):
-            self._set_headers('image/png',-1,None)
-            return
-        if self.path.endswith('.jpg') or self.path.endswith('.jpeg'):
-            self._set_headers('image/jpeg',-1,None)
-            return
-        if self.path.endswith('.gif'):
-            self._set_headers('image/gif',-1,None)
-            return
-        if self.path.endswith('.webp'):
-            self._set_headers('image/webp',-1,None)
-            return
-        if self.path.endswith('.mp4'):
-            self._set_headers('video/mp4',-1,None)
-            return
-        if self.path.endswith('.ogv'):
-            self._set_headers('video/ogv',-1,None)
-            return
-        if self.path.endswith('.mp3'):
-            self._set_headers('audio/mpeg',-1,None)
-            return
-        if self.path.endswith('.ogg'):
-            self._set_headers('audio/ogg',-1,None)
-            return        
-        self._set_headers('application/json',-1,None)        
+        checkPath=self.path
+        etag=None
+        fileLength=-1
+
+        if '/media/' in self.path:
+            if self.path.endswith('.png') or \
+               self.path.endswith('.jpg') or \
+               self.path.endswith('.gif') or \
+               self.path.endswith('.webp') or \
+               self.path.endswith('.mp4') or \
+               self.path.endswith('.ogv') or \
+               self.path.endswith('.mp3') or \
+               self.path.endswith('.ogg'):
+                mediaStr=self.path.split('/media/')[1]
+                mediaFilename= \
+                    self.server.baseDir+'/media/'+mediaStr
+                if os.path.isfile(mediaFilename):
+                    checkPath=mediaFilename
+                    fileLength=os.path.getsize(mediaFilename)
+                    if os.path.isfile(mediaFilename+'.etag'):
+                        try:
+                            with open(mediaFilename+'.etag', 'r') as etagFile:
+                                etag = etagFile.read()
+                        except:
+                            pass
+                    else:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            etag=sha1(data).hexdigest()
+                            try:
+                                with open(mediaFilename+'.etag', 'w') as etagFile:
+                                    etagFile.write(etag)
+                            except:
+                                pass
+
+        mediaFileType='application/json'
+        if checkPath.endswith('.png'):
+            mediaFileType='image/png'
+        elif checkPath.endswith('.jpg'):
+            mediaFileType='image/jpeg'
+        elif checkPath.endswith('.gif'):
+            mediaFileType='image/gif'
+        elif checkPath.endswith('.webp'):
+            mediaFileType='image/webp'
+        elif checkPath.endswith('.mp4'):
+            mediaFileType='video/mp4'
+        elif checkPath.endswith('.ogv'):
+            mediaFileType='video/ogv'
+        elif checkPath.endswith('.mp3'):
+            mediaFileType='audio/mpeg'
+        elif checkPath.endswith('.ogg'):
+            mediaFileType='audio/ogg'
+
+        self._set_headers_head(mediaFileType,fileLength,etag)
 
     def _receiveNewPostProcess(self,authorized: bool, \
                                postType: str,path: str,headers: {},
