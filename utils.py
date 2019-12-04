@@ -277,6 +277,9 @@ def removeAttachment(baseDir: str,httpPrefix: str,domain: str,postJson: {}):
     mediaFilename=baseDir+'/'+attachmentUrl.replace(httpPrefix+'://'+domain+'/','')
     if os.path.isfile(mediaFilename):
         os.remove(mediaFilename)
+    etagFilename=mediaFilename+'.etag'
+    if os.path.isfile(etagFilename):
+        os.remove(etagFilename)
     postJson['attachment']=[]
 
 def removeModerationPostFromIndex(baseDir: str,postUrl: str,debug: bool) -> None:
