@@ -1411,6 +1411,29 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaFileType='audio/mpeg'
                     elif mediaFilename.endswith('.ogg'):
                         mediaFileType='audio/ogg'
+
+                    # does an etag header exist?
+                    etagHeader='If-None-Match'
+                    if not self.headers.get(etagHeader):
+                        etagHeader='if-none-match'
+                        if not self.headers.get(etagHeader):
+                            etagHeader='If-none-match'
+                        
+                    if self.headers.get(etagHeader):
+                        oldEtag=self.headers['If-None-Match']
+                        if os.path.isfile(mediaFilename+'.etag'):
+                            # load the etag from file
+                            currEtag=''
+                            try:
+                                with open(mediaFilename, 'r') as etagFile:
+                                    currEtag = etagFile.read()
+                            except:
+                                pass
+                            if oldEtag==currEtag:
+                                # if the etags are the same then only return the header
+                                # not the media
+                                self._set_headers(mediaFileType,mediaBinary,cookie)
+                                return
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self._set_headers_etag(mediaFilename,mediaFileType,mediaBinary,cookie)
