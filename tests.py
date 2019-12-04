@@ -239,7 +239,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-              allowDeletion,True,True,False,sendThreads)
+              allowDeletion,True,True,False,sendThreads,False)
 
 def createServerBob(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool,sendThreads: []):
@@ -295,7 +295,7 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
               useTor,maxReplies, \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
-              allowDeletion,True,True,False,sendThreads)
+              allowDeletion,True,True,False,sendThreads,False)
 
 def createServerEve(path: str,domain: str,port: int,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool,sendThreads: []):
@@ -329,7 +329,8 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
-              useTor,maxReplies,allowDeletion,True,True,False,sendThreads)
+              useTor,maxReplies,allowDeletion,True,True,False, \
+              sendThreads,False)
 
 def testPostMessageBetweenServers():
     print('Testing sending message from one server to the inbox of another')

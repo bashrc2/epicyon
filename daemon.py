@@ -3605,7 +3605,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix, \
                                      fields['message'],False,False,False, \
                                      filename,attachmentMediaType, \
-                                     fields['imageDescription'],True, \
+                                     fields['imageDescription'], \
+                                     self.server.useBlurHash, \
                                      fields['replyTo'],fields['replyTo'], \
                                      fields['subject'], \
                                      fields['eventDate'],fields['eventTime'], \
@@ -3630,7 +3631,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix, \
                                        fields['message'],False,False,False, \
                                        filename,attachmentMediaType, \
-                                       fields['imageDescription'],True, \
+                                       fields['imageDescription'], \
+                                       self.server.useBlurHash, \
                                        fields['replyTo'], fields['replyTo'], \
                                        fields['subject'], \
                                        fields['eventDate'],fields['eventTime'], \
@@ -3655,7 +3657,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.httpPrefix, \
                                             fields['message'],True,False,False, \
                                             filename,attachmentMediaType, \
-                                            fields['imageDescription'],True, \
+                                            fields['imageDescription'], \
+                                            self.server.useBlurHash, \
                                             fields['replyTo'], fields['replyTo'], \
                                             fields['subject'], \
                                             fields['eventDate'],fields['eventTime'], \
@@ -3682,7 +3685,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.httpPrefix, \
                                                 fields['message'],True,False,False, \
                                                 filename,attachmentMediaType, \
-                                                fields['imageDescription'],True, \
+                                                fields['imageDescription'], \
+                                                self.server.useBlurHash, \
                                                 fields['replyTo'],fields['replyTo'], \
                                                 fields['subject'], \
                                                 self.server.debug, \
@@ -3718,7 +3722,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix, \
                                      fields['message'],True,False,False, \
                                      filename,attachmentMediaType, \
-                                     fields['imageDescription'],True, \
+                                     fields['imageDescription'], \
+                                     self.server.useBlurHash, \
                                      self.server.debug,fields['subject'])
                 if messageJson:
                     self.postToNickname=nickname
@@ -3746,7 +3751,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['message'],qOptions, \
                                        False,False,False, \
                                        filename,attachmentMediaType, \
-                                       fields['imageDescription'],True, \
+                                       fields['imageDescription'], \
+                                       self.server.useBlurHash, \
                                        fields['subject'],int(fields['duration']))
                 if messageJson:
                     self.postToNickname=nickname
@@ -5430,7 +5436,8 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
               useTor=False,maxReplies=64, \
               domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
               allowDeletion=False,debug=False,unitTest=False, \
-              instanceOnlySkillsSearch=False,sendThreads=[]) -> None:
+              instanceOnlySkillsSearch=False,sendThreads=[], \
+              useBlurHash=False) -> None:
     if len(domain)==0:
         domain='localhost'
     if '.' not in domain:
@@ -5444,6 +5451,7 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     else:
         httpd = ThreadingHTTPServer(serverAddress, PubServer)
 
+    httpd.useBlurHash=useBlurHash
     httpd.mediaInstance=mediaInstance
     httpd.defaultTimeline='inbox'
     if mediaInstance:

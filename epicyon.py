@@ -1506,4 +1506,5 @@ runDaemon(args.mediainstance,args.maxRecentPosts, \
           useTor,args.maxReplies, \
           args.domainMaxPostsPerDay,args.accountMaxPostsPerDay, \
           args.allowdeletion,debug,False, \
-          args.instanceOnlySkillsSearch)
+          args.instanceOnlySkillsSearch,[], \
+          args.blurhash)
