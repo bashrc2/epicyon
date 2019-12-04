@@ -86,7 +86,7 @@ def updateEtag(mediaFilename: str) -> None:
     # read the binary data
     data=None
     try:
-        with open(mediaFilename+, 'rb') as mediaFile:
+        with open(mediaFilename, 'rb') as mediaFile:
             data=mediaFile.read()                
     except:
         pass
