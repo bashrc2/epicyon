@@ -438,6 +438,9 @@ class PubServer(BaseHTTPRequestHandler):
     def _404(self) -> None:
         self._httpReturnCode(404,'Not Found')
 
+    def _304(self) -> None:
+        self._httpReturnCode(304,'Resource has not changed')
+
     def _400(self) -> None:
         self._httpReturnCode(400,'Bad Request')
 
@@ -1431,9 +1434,8 @@ class PubServer(BaseHTTPRequestHandler):
                             except:
                                 pass
                             if oldEtag==currEtag:
-                                # if the etags are the same then only return the header
-                                # not the media
-                                self._set_headers(mediaFileType,mediaBinary,cookie)
+                                # The file has not changed
+                                self._304()
                                 return
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
