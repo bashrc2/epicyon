@@ -115,7 +115,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
     attachmentJson={
         'mediaType': mediaType,
         'name': description,
-        'type': mediaType.split('/')[0],
+        'type': 'Document',
         'url': httpPrefix+'://'+domain+'/'+mediaPath
     }
     if useBlurhash and mediaType.startswith('image/'):
