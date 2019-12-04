@@ -13,6 +13,7 @@ import os
 import sys
 import json
 import datetime
+from hashlib import sha1
 from auth import createPassword
 from shutil import copyfile
 from shutil import rmtree
@@ -71,6 +72,36 @@ def getAttachmentMediaType(filename: str) -> str:
             return 'audio'
     return mediaType
 
+def updateEtag(mediaFilename: str) -> None:
+    """ calculate the etag, which is a sha1 of the data
+    """
+    # only create etags for media
+    if '/media/' not in mediaFilename:
+        return
+
+    # check that the media exists
+    if not os.path.isfile(mediaFilename):
+        return
+
+    # read the binary data
+    data=None
+    try:
+        with open(mediaFilename+, 'rb') as mediaFile:
+            data=mediaFile.read()                
+    except:
+        pass
+
+    if not data:
+        return
+    # calculate hash
+    etag=sha1(data).hexdigest()
+    # save the hash
+    try:
+        with open(mediaFilename+'.etag', 'w') as etagFile:
+            etagFile.write(etag)
+    except:
+        pass
+
 def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
                 postJson: {},imageFilename: str, \
                 mediaType: str,description: str, \
@@ -127,7 +158,8 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
             removeMetaData(imageFilename,mediaFilename)
         else:
             copyfile(imageFilename,mediaFilename)
-             
+        updateEtag(mediaFilename)
+
     return postJson
 
 def archiveMedia(baseDir: str,archiveDirectory: str,maxWeeks=4) -> None:

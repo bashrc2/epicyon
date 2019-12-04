@@ -471,6 +471,7 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
     fd = open(filename, 'wb')
     fd.write(mediaBytes[startPos:])
     fd.close()
+
     return filename,attachmentMediaType
 
 def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:

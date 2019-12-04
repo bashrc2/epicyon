@@ -3626,6 +3626,7 @@ class PubServer(BaseHTTPRequestHandler):
             if filename:
                 if filename.endswith('.png') or \
                    filename.endswith('.jpg') or \
+                   filename.endswith('.webp') or \
                    filename.endswith('.gif'):
                     if self.server.debug:
                         print('DEBUG: POST media removing metadata')
