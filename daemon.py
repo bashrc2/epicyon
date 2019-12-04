@@ -3541,7 +3541,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            etag=sha1(data).hexdigest()
+                            etag=sha1(mediaBinary).hexdigest()
                             try:
                                 with open(mediaFilename+'.etag', 'w') as etagFile:
                                     etagFile.write(etag)
