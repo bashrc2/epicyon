@@ -17,6 +17,7 @@ import email.parser
 # for saving images
 from binascii import a2b_base64
 from hashlib import sha256
+from hashlib import sha1
 from session import createSession
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
@@ -396,7 +397,7 @@ class PubServer(BaseHTTPRequestHandler):
             except:
                 pass
         if not etag:
-            etag=sha256(data).hexdigest()
+            etag=sha1(data).hexdigest()
             try:
                 with open(mediaFilename+'.etag', 'w') as etagFile:
                     etagFile.write(etag)
