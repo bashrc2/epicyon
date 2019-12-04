@@ -377,10 +377,9 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Host', self.server.domainFull)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Robots-Tag','noindex')
-        self.send_header('cache-control','public, max-age=315576000, immutable')
-        self.send_header('x-clacks-overhead','GNU Natalie Nguyen')
-        self.send_header('access-control-allow-origin','*')
-        self.send_header('accept-ranges','bytes')
+        self.send_header('Cache-Control','public, max-age=0')
+        self.send_header('X-Clacks-Overhead','GNU Natalie Nguyen')
+        self.send_header('Accept-Ranges','none')
         self.end_headers()
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
