@@ -2588,7 +2588,10 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
                         
         if not announcedJson:
             return None
-        
+
+        if not isinstance(announcedJson, dict):
+            print('WARN: announce json is not a dict - '+postJsonObject['object'])
+            return None        
         if not announcedJson.get('id'):
             rejectAnnounce(announceFilename)
             #pprint(announcedJson)
