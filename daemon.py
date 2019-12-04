@@ -367,7 +367,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
     
-    def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
+    def _set_headers_base(self,fileFormat: str,length: int,cookie: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         if length>-1:
@@ -380,6 +380,30 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Cache-Control','public, max-age=0')
         self.send_header('X-Clacks-Overhead','GNU Natalie Nguyen')
         self.send_header('Accept-Ranges','none')
+
+    def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
+        self._set_headers_base(fileFormat,length,cookie)
+        self.end_headers()
+
+    def _set_headers_etag(self,mediaFilename: str,fileFormat: str, \
+                          data,cookie: str) -> None:
+        self._set_headers_base(fileFormat,len(data),cookie)
+        etag=None
+        if os.path.isfile(mediaFilename+'.etag'):
+            try:
+                with open(mediaFilename+'.etag', 'r') as etagFile:
+                    etag = etagFile.read()
+            except:
+                pass
+        if not etag:
+            etag=sha256(data).hexdigest()
+            try:
+                with open(mediaFilename+'.etag', 'w') as etagFile:
+                    etagFile.write(etag)
+            except:
+                pass
+        if etag:
+            self.send_header('ETag',etag)
         self.end_headers()
 
     def _redirect_headers(self,redirect: str,cookie: str) -> None:
@@ -1389,7 +1413,7 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaFileType='audio/ogg'
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
-                        self._set_headers(mediaFileType,len(mediaBinary),cookie)
+                        self._set_headers_etag(mediaFilename,mediaFileType,mediaBinary,cookie)
                         self._write(mediaBinary)
                     return        
             self._404()
