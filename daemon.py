@@ -4540,7 +4540,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  moderationText):                                
                                     deletePost(self.server.baseDir, \
                                                self.server.httpPrefix, \
-                                               nickname,self.server.omain, \
+                                               nickname,self.server.domain, \
                                                postFilename, \
                                                self.server.debug)
             self._redirect_headers(actorStr+'/moderation',cookie)
