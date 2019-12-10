@@ -425,6 +425,17 @@ def noOfActiveAccountsMonthly(baseDir: str,months: int) -> bool:
                                     accountCtr+=1
     return accountCtr
 
+def isPublicPostFromUrl(baseDir: str,nickname: str,domain: str,postUrl: str) -> bool:
+    """Returns whether the given url is a public post
+    """
+    postFilename=locatePost(baseDir,nickname,domain,postUrl)
+    if not postFilename:
+        return False
+    postJsonObject=loadJson(postFilename,1)
+    if not postJsonObject:
+        return False
+    return isPublicPost(postJsonObject)
+
 def isPublicPost(postJsonObject: {}) -> bool:
     """Returns true if the given post is public
     """

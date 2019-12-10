@@ -25,6 +25,7 @@ from utils import getDomainFromActor
 from utils import locatePost
 from utils import noOfAccounts
 from utils import isPublicPost
+from utils import isPublicPostFromUrl
 from utils import getDisplayName
 from utils import getCachedPostDirectory
 from utils import getCachedPostFilename
@@ -934,11 +935,15 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
                 baseDir: str,httpPrefix: str, \
                 path: str,inReplyTo: str, \
                 mentions: [], \
-                reportUrl: str,pageNumber: int) -> str:
+                reportUrl: str,pageNumber: int, \
+                nickname: str,domain: str) -> str:
     """New post screen
-    """    
+    """
     iconsDir=getIconsDir(baseDir)
     replyStr=''
+
+    showPublicOnDropdown=True
+
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
             if not inReplyTo:
@@ -946,6 +951,17 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
             else:
                 newPostText='<p class="new-post-text">'+translate['Write your reply to']+' <a href="'+inReplyTo+'">'+translate['this post']+'</a></p>'
                 replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
+
+                # if replying to a non-public post then also make this post non-public
+                if not isPublicPostFromUrl(baseDir,nickname,domain,inReplyTo):
+                    newPostPath=path
+                    if '?' in newPostPath:
+                        newPostPath=newPostPath.split('?')[0]
+                    if newPostPath.endswith('/newpost'):
+                        path=path.replace('/newpost','/newfollowers')
+                    elif newPostPath.endswith('/newunlisted'):
+                        path=path.replace('/newunlisted','/newfollowers')
+                    showPublicOnDropdown=False
         else:
             newPostText= \
                 '<p class="new-post-text">'+translate['Write your report below.']+'</p>'
@@ -1106,7 +1122,8 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     dropDownContent=''
     if not reportUrl:
         dropDownContent+='        <div id="myDropdown" class="dropdown-content">'
-        dropDownContent+='          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>'
+        if showPublicOnDropdown:
+            dropDownContent+='          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>'
