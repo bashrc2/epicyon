@@ -2314,7 +2314,8 @@ class PubServer(BaseHTTPRequestHandler):
                 msg=htmlEditProfile(self.server.translate, \
                                     self.server.baseDir, \
                                     self.path,self.server.domain, \
-                                    self.server.port).encode()
+                                    self.server.port, \
+                                    self.server.httpPrefix).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.GETbusy=False
@@ -4456,7 +4457,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 moderationText.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').strip()
                     elif moderationStr.startswith('submitInfo'):
                         msg=htmlModerationInfo(self.server.translate, \
-                                               self.server.baseDir).encode('utf-8')
+                                               self.server.baseDir, \
+                                               self.server.httpPrefix).encode('utf-8')
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
@@ -4654,7 +4656,9 @@ class PubServer(BaseHTTPRequestHandler):
                     searchStr=searchStr.replace('*','').strip()
                     skillStr= \
                         htmlSkillsSearch(self.server.translate, \
-                                         self.server.baseDir,searchStr, \
+                                         self.server.baseDir, \
+                                         self.server.httpPrefix, \
+                                         searchStr, \
                                          self.server.instanceOnlySkillsSearch, \
                                          64)
                     if skillStr:
@@ -4703,7 +4707,9 @@ class PubServer(BaseHTTPRequestHandler):
                     # emoji search
                     emojiStr= \
                         htmlSearchEmoji(self.server.translate, \
-                                        self.server.baseDir,searchStr)
+                                        self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        searchStr)
                     if emojiStr:
                         msg=emojiStr.encode('utf-8')
                         self._login_headers('text/html',len(msg))

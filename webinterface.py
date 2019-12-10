@@ -144,7 +144,7 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
             return personJson['icon']['url']
     return None
 
-def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
+def htmlSearchEmoji(translate: {},baseDir: str,httpPrefix: str,searchStr: str) -> str:
     """Search results for emoji
     """
 
@@ -159,6 +159,8 @@ def htmlSearchEmoji(translate: {},baseDir: str,searchStr: str) -> str:
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         emojiCSS=cssFile.read()
+        if httpPrefix!='https':
+            emojiCSS=emojiCSS.replace('https://',httpPrefix+'://')
         emojiLookupFilename=baseDir+'/emoji/emoji.json'
 
         # create header
@@ -219,9 +221,12 @@ def htmlSearchSharedItems(translate: {}, \
     searchStrLowerList=searchStrLower.split('+')
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
-        cssFilename=baseDir+'/epicyon.css'        
+        cssFilename=baseDir+'/epicyon.css'
+
     with open(cssFilename, 'r') as cssFile:
         sharedItemsCSS=cssFile.read()
+        if httpPrefix!='https':
+            sharedItemsCSS=sharedItemsCSS.replace('https://',httpPrefix+'://')
         sharedItemsForm=htmlHeader(cssFilename,sharedItemsCSS)
         sharedItemsForm+='<center><h1>'+translate['Shared Items Search']+'</h1></center>'
         resultsExist=False
@@ -299,13 +304,15 @@ def htmlSearchSharedItems(translate: {}, \
         sharedItemsForm+=htmlFooter()
     return sharedItemsForm    
 
-def htmlModerationInfo(translate: {},baseDir: str) -> str:
+def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
     infoForm=''
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         infoCSS=cssFile.read()
+        if httpPrefix!='https':
+            infoCSS=infoCSS.replace('https://',httpPrefix+'://')
         infoForm=htmlHeader(cssFilename,infoCSS)
 
         infoForm+='<center><h1>'+translate['Moderation Information']+'</h1></center>'
@@ -359,6 +366,8 @@ def htmlHashtagSearch(recentPostsCache: {},maxRecentPosts: int, \
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         hashtagSearchCSS = cssFile.read()
+        if httpPrefix!='https':
+            hashtagSearchCSS=hashtagSearchCSS.replace('https://',httpPrefix+'://')
 
     startIndex=len(lines)-1-int(pageNumber*postsPerPage)
     if startIndex<0:
@@ -409,6 +418,7 @@ def htmlHashtagSearch(recentPostsCache: {},maxRecentPosts: int, \
     return hashtagSearchForm
 
 def htmlSkillsSearch(translate: {},baseDir: str, \
+                     httpPrefix: str, \
                      skillsearch: str,instanceOnly: bool, \
                      postsPerPage: int) -> str:
     """Show a page containing search results for a skill
@@ -486,7 +496,8 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         skillSearchCSS = cssFile.read()
-        
+        if httpPrefix!='https':
+            skillSearchCSS=skillSearchCSS.replace('https://',httpPrefix+'://')
     skillSearchForm=htmlHeader(cssFilename,skillSearchCSS)
     skillSearchForm+='<center><h1>'+translate['Skills search']+': '+skillsearch+'</h1></center>'
 
@@ -510,7 +521,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
     skillSearchForm+=htmlFooter()
     return skillSearchForm
 
-def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) -> str:
+def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,httpPrefix: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats='.png, .jpg, .jpeg, .gif, .webp'
@@ -599,6 +610,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int) 
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         editProfileCSS = cssFile.read()
+        if httpPrefix!='https':
+            editProfileCSS=editProfileCSS.replace('https://',httpPrefix+'://')
 
     instanceStr=''
     moderatorsStr=''
@@ -840,6 +853,8 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         termsCSS = cssFile.read()
+        if httpPrefix!='https':
+            termsCSS=termsCSS.replace('https://',httpPrefix+'://')
             
         TOSForm=htmlHeader(cssFilename,termsCSS)
         TOSForm+='<div class="container">'+TOSText+'</div>'
@@ -870,7 +885,9 @@ def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         termsCSS = cssFile.read()
-            
+        if httpPrefix!='http':
+            termsCSS=termsCSS.replace('https://',httpPrefix+'://')
+
         aboutForm=htmlHeader(cssFilename,termsCSS)
         aboutForm+='<div class="container">'+aboutText+'</div>'
         if adminNickname:
@@ -957,6 +974,8 @@ def htmlNewPost(mediaInstance: bool,translate: {},baseDir: str, \
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         newPostCSS = cssFile.read()
+        if httpPrefix!='https':
+            newPostCSS=newPostCSS.replace('https://',httpPrefix+'://')
 
     if '?' in path:
         path=path.split('?')[0]
@@ -2646,10 +2665,12 @@ def htmlTimeline(defaultTimeline: str, \
     if not os.path.isfile(bannerFilename):
         bannerFile='banner.webp'
     
-    with open(cssFilename, 'r') as cssFile:
+    with open(cssFilename, 'r') as cssFile:        
         profileStyle = \
             cssFile.read().replace('banner.png', \
                                    '/users/'+nickname+'/'+bannerFile)
+        if httpPrefix!='https':
+            profileStyle=profileStyle.replace('https://',httpPrefix+'://')
 
     moderator=isModerator(baseDir,nickname)
 
@@ -3025,6 +3046,8 @@ def htmlIndividualPost(recentPostsCache: {},maxRecentPosts: int, \
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         postsCSS=cssFile.read()
+        if httpPrefix!='https':
+            postsCSS=postsCSS.replace('https://',httpPrefix+'://')
     return htmlHeader(cssFilename,postsCSS)+postStr+htmlFooter()
 
 def htmlPostReplies(recentPostsCache: {},maxRecentPosts: int, \
@@ -3051,6 +3074,8 @@ def htmlPostReplies(recentPostsCache: {},maxRecentPosts: int, \
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         postsCSS=cssFile.read()
+        if httpPrefix!='https':
+            postsCSS=postsCSS.replace('https://',httpPrefix+'://')
     return htmlHeader(cssFilename,postsCSS)+repliesStr+htmlFooter()
 
 def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -> str:
@@ -3136,6 +3161,8 @@ def htmlDeletePost(recentPostsCache: {},maxRecentPosts: int, \
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
+        if httpPrefix!='https':
+            profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         deletePostStr=htmlHeader(cssFilename,profileStyle)
         deletePostStr+='<script>'+contentWarningScript()+'</script>'
         deletePostStr+= \
@@ -3814,7 +3841,8 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
                 profileBackgroundImage=profileJson['image']['url']
 
         profileStyle = cssFile.read().replace('image.png',profileBackgroundImage)
-
+        if httpPrefix!='https':
+            profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         # url to return to
         backUrl=path
         if not backUrl.endswith('/inbox'):

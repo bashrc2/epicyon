@@ -1493,7 +1493,7 @@ if not registration:
 
 if setTheme(baseDir,themeName):
     print('Theme set to '+themeName)
-    
+
 runDaemon(args.mediainstance,args.maxRecentPosts, \
           not args.nosharedinbox, \
           registration,args.language,__version__, \
