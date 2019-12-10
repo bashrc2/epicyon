@@ -1124,7 +1124,7 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
         dropDownContent+='        <div id="myDropdown" class="dropdown-content">'
         if showPublicOnDropdown:
             dropDownContent+='          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>'
-        dropDownContent+='          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>'
+            dropDownContent+='          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>'
         dropDownContent+='          <a href="'+pathBase+dropdownReportSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'
