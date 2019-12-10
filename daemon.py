@@ -2330,6 +2330,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/newreport') or \
                 self.path.endswith('/newquestion') or \
                 self.path.endswith('/newshare')):
+                nickname=getNicknameFromActor(self.path)
                 msg=htmlNewPost(self.server.mediaInstance, \
                                 self.server.translate, \
                                 self.server.baseDir, \
@@ -2337,7 +2338,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.path,inReplyToUrl, \
                                 replyToList, \
                                 shareDescription, \
-                                replyPageNumber).encode()
+                                replyPageNumber, \
+                                nickname,self.server.domain).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.GETbusy=False
@@ -5125,7 +5127,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.httpPrefix, \
                                 reportPath,None, \
                                 [optionsActor],None, \
-                                pageNumber).encode()
+                                pageNumber, \
+                                chooserNickname,self.server.domain).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
@@ -5166,7 +5169,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.baseDir, \
                                 self.server.httpPrefix, \
                                 reportPath,None,[], \
-                                postUrl,pageNumber).encode()
+                                postUrl,pageNumber, \
+                                chooserNickname,self.server.domain).encode()
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
