@@ -2333,6 +2333,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg=htmlNewPost(self.server.mediaInstance, \
                                 self.server.translate, \
                                 self.server.baseDir, \
+                                self.server.httpPrefix, \
                                 self.path,inReplyToUrl, \
                                 replyToList, \
                                 shareDescription, \
@@ -5121,6 +5122,7 @@ class PubServer(BaseHTTPRequestHandler):
                 reportPath=self.path.replace('/personoptions','')+'/newdm'
                 msg=htmlNewPost(False,self.server.translate, \
                                 self.server.baseDir, \
+                                self.server.httpPrefix, \
                                 reportPath,None, \
                                 [optionsActor],None, \
                                 pageNumber).encode()
@@ -5162,6 +5164,7 @@ class PubServer(BaseHTTPRequestHandler):
                 reportPath=self.path.replace('/personoptions','')+'/newreport'
                 msg=htmlNewPost(False,self.server.translate, \
                                 self.server.baseDir, \
+                                self.server.httpPrefix, \
                                 reportPath,None,[], \
                                 postUrl,pageNumber).encode()
                 self._set_headers('text/html',len(msg),cookie)

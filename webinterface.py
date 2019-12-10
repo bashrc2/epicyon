@@ -930,7 +930,8 @@ def htmlSuspended(baseDir: str) -> str:
         suspendedForm+=htmlFooter()
     return suspendedForm
 
-def htmlNewPost(mediaInstance: bool,translate: {},baseDir: str, \
+def htmlNewPost(mediaInstance: bool,translate: {}, \
+                baseDir: str,httpPrefix: str, \
                 path: str,inReplyTo: str, \
                 mentions: [], \
                 reportUrl: str,pageNumber: int) -> str:
