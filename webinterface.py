@@ -1893,9 +1893,11 @@ def insertQuestion(baseDir: str,translate: {}, \
                 continue
             if not questionOption.get('replies'):
                 continue
-            if not questionOption['replies'].get('totalItems'):
-                continue
-            votes=int(questionOption['replies']['totalItems'])
+            votes=0
+            try:
+                votes=int(questionOption['replies']['totalItems'])
+            except:
+                pass
             if votes>maxVotes:
                 maxVotes=int(votes+1)
 
@@ -1906,9 +1908,11 @@ def insertQuestion(baseDir: str,translate: {}, \
                 continue
             if not questionOption.get('replies'):
                 continue
-            if not questionOption['replies'].get('totalItems'):
-                continue
-            votes=int(questionOption['replies']['totalItems'])
+            votes=0
+            try:
+                votes=int(questionOption['replies']['totalItems'])
+            except:
+                pass
             votesPercent=str(int(votes*100/maxVotes))
             content+='<p><input type="text" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+' ('+str(votes)+')" style="width:40%">'
             content+='<input type="range" min="1" max="100" class="slider" title="'+str(votes)+'" name="skillValue'+str(questionCtr)+'" value="'+votesPercent+'"></p>'
