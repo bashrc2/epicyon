@@ -217,29 +217,37 @@ class PubServer(BaseHTTPRequestHandler):
         if messageJson:
             self.postToNickname=nickname
             if self._postToOutbox(messageJson,__version__):
-                populateReplies(self.server.baseDir, \
-                                self.server.httpPrefix, \
-                                self.server.domainFull, \
-                                messageJson, \
-                                self.server.maxReplies, \
-                                self.server.debug)
-                # record the vote
-                votesFile=open(votesFilename,'a+')
-                if votesFile:
-                    votesFile.write(messageId+'\n')
-                    votesFile.close()
+                postFilename= \
+                    locatePost(self.server.baseDir,nickname, \
+                               self.server.domain,messageId)
+                if postFilename:
+                    postJsonObject=loadJson(postFilename)
+                    if postJsonObject:
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domainFull, \
+                                        postJsonObject, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        # record the vote
+                        votesFile=open(votesFilename,'a+')
+                        if votesFile:
+                            votesFile.write(messageId+'\n')
+                            votesFile.close()
 
-                # ensure that the cached post is removed if it exists, so
-                # that it then will be recreated
-                cachedPostFilename= \
-                    getCachedPostFilename(self.server.baseDir, \
-                                          nickname, \
-                                          self.server.domain,messageJson)
-                if cachedPostFilename:
-                    if os.path.isfile(cachedPostFilename):
-                        os.remove(cachedPostFilename)
-                # remove from memory cache
-                removePostFromCache(messageJson,self.server.recentPostsCache)                    
+                        # ensure that the cached post is removed if it exists,
+                        # so that it then will be recreated
+                        cachedPostFilename= \
+                            getCachedPostFilename(self.server.baseDir, \
+                                                  nickname, \
+                                                  self.server.domain, \
+                                                  postJsonObject)
+                        if cachedPostFilename:
+                            if os.path.isfile(cachedPostFilename):
+                                os.remove(cachedPostFilename)
+                        # remove from memory cache
+                        removePostFromCache(postJsonObject, \
+                                            self.server.recentPostsCache)
             else:
                 print('ERROR: unable to post vote to outbox')
         else:
@@ -4587,7 +4595,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             questionParams=self.rfile.read(length).decode('utf-8')
             questionParams= \
-                questionParams.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','#').strip()
+                questionParams.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').strip()
             # post being voted on
             messageId=None
             if 'messageId=' in questionParams:
