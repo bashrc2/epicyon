@@ -60,7 +60,7 @@ from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 from question import questionUpdateVotes
 
-def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
+def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
     """
@@ -90,7 +90,7 @@ def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
         if not os.path.isfile(tagsFilename):
             tagsFile=open(tagsFilename, "w+")
             if tagsFile:
-                tagsFile.write(postUrl+'\n')
+                tagsFile.write(nickname+'  '+postUrl+'\n')
                 tagsFile.close()
         else:
             if postUrl not in open(tagsFilename).read():
@@ -98,7 +98,7 @@ def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
                     with open(tagsFilename, 'r+') as tagsFile:
                         content = tagsFile.read()
                         tagsFile.seek(0, 0)
-                        tagsFile.write(postUrl+'\n'+content)
+                        tagsFile.write(nickname+'  '+postUrl+'\n'+content)
                 except Exception as e:
                     print('WARN: Failed to write entry to tags file '+ \
                           tagsFilename+' '+str(e))
@@ -1920,7 +1920,7 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
 
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
 
-            storeHashTags(baseDir,postJsonObject)
+            storeHashTags(baseDir,handle.split('@')[0],postJsonObject)
 
             if not unitTest:
                 if debug:

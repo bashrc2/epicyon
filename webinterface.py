@@ -345,9 +345,11 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
         infoForm+=htmlFooter()
     return infoForm    
 
-def htmlHashtagSearch(recentPostsCache: {},maxRecentPosts: int, \
+def htmlHashtagSearch(domain: str, \
+                      recentPostsCache: {},maxRecentPosts: int, \
                       translate: {}, \
-                      baseDir: str,hashtag: str,pageNumber: int,postsPerPage: int, \
+                      baseDir: str,hashtag: str,pageNumber: int, \
+                      postsPerPage: int, \
                       session,wfRequest: {},personCache: {}, \
                       httpPrefix: str,projectVersion: str) -> str:
     """Show a page containing search results for a hashtag
@@ -381,18 +383,22 @@ def htmlHashtagSearch(recentPostsCache: {},maxRecentPosts: int, \
     hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
     if startIndex!=len(lines)-1:
         # previous page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+        hashtagSearchForm+= \
+            '<center><a href="/tags/'+hashtag+'?page='+ \
+            str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+ \
+            iconsDir+'/pageup.png" title="'+translate['Page up']+ \
+            '" alt="'+translate['Page up']+'"></a></center>'
     index=startIndex
     while index>=endIndex:
         postId=lines[index].strip('\n')
-        nickname=getNicknameFromActor(postId)
-        if not nickname:
-            index-=1
-            continue
-        domain,port=getDomainFromActor(postId)
-        if not domain:
-            index-=1
-            continue
+        if '  ' not in postId:
+            nickname=getNicknameFromActor(postId)
+            if not nickname:
+                index-=1
+                continue
+        else:
+            nickname=postId.split('  ')[0]
+            postId=postId.split('  ')[1]
         postFilename=locatePost(baseDir,nickname,domain,postId)
         if not postFilename:
             index-=1
@@ -414,7 +420,11 @@ def htmlHashtagSearch(recentPostsCache: {},maxRecentPosts: int, \
 
     if endIndex>0:
         # next page link
-        hashtagSearchForm+='<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+        hashtagSearchForm+= \
+            '<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+ \
+            '"><img loading="lazy" class="pageicon" src="/'+iconsDir+ \
+            '/pagedown.png" title="'+translate['Page down']+ \
+            '" alt="'+translate['Page down']+'"></a></center>'
     hashtagSearchForm+=htmlFooter()
     return hashtagSearchForm
 
