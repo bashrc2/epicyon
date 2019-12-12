@@ -3776,7 +3776,7 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
     tagCloudHtml='<center>\n'
     tagCloudStr=''
     for tagName in tagCloud:
-        tagCloudStr+='<a href="/tags/'+tagName'">'+tagName+'</a> '
+        tagCloudStr+='<a href="/tags/'+tagName+'">'+tagName+'</a> '
     tagCloudHtml+=tagCloudStr.strip()+'\n</center>\n'
     return tagCloudHtml
 
