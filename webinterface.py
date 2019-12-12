@@ -3809,7 +3809,7 @@ def htmlSearch(translate: {}, \
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
     followStr+='  </center>'
-    followStr+='  <br><br><p class="followText">'+htmlHashTagCloud(baseDir,path)+'</p>'
+    followStr+='  <br><br><h2>'+htmlHashTagCloud(baseDir,path)+'</h2>'
     followStr+='  </div>'
     followStr+='</div>'
     followStr+=htmlFooter()
