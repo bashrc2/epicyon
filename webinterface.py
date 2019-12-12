@@ -3744,6 +3744,42 @@ def htmlCalendar(translate: {}, \
     calendarStr+=htmlFooter()
     return calendarStr
 
+def htmlHashTagCloud(baseDir: str,path: str) -> str:
+    """Returns a tag cloud of today's hashtags
+    """
+    daysSinceEpoch=str((datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).days)+' '
+    nickname=getNicknameFromActor(path)
+    tagCloud=[]
+    for subdir, dirs, files in os.walk(baseDir+'/tags'):
+        for f in files:
+            tagsFilename=os.path.join(baseDir+'/tags',f)
+            if not os.path.isfile(tagsFilename):
+                continue
+            if daysSinceEpoch not in open(tagsFilename).read():
+                continue
+            with open(tagsFilename, 'r') as tagsFile:
+                lines=tagsFile.readlines()
+                for l in lines:
+                    if '  ' not in l:
+                        continue
+                    postDaysSinceEpochStr=l.split('  ')[0]
+                    if not postDaysSinceEpochStr.isdigit():
+                        continue
+                    postDaysSinceEpoch=int(postDaysSinceEpochStr)
+                    if postDaysSinceEpoch<daysSinceEpoch:
+                        break
+                    if postDaysSinceEpoch==daysSinceEpoch:
+                        tagCloud.append(f.split('.')[0])
+                        break
+    if not tagCloud:
+        return ''
+    tagCloudHtml='<center>\n'
+    tagCloudStr=''
+    for tagName in tagCloud:
+        tagCloudStr+='<a href="/tags/'+tagName'">'+tagName+'</a> '
+    tagCloudHtml+=tagCloudStr.strip()+'\n</center>\n'
+    return tagCloudHtml
+
 def htmlSearch(translate: {}, \
                baseDir: str,path: str) -> str:
     """Search called from the timeline icon
@@ -3772,6 +3808,7 @@ def htmlSearch(translate: {}, \
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
     followStr+='  </center>'
+    followStr+=htmlHashTagCloud(baseDir,path)
     followStr+='  </div>'
     followStr+='</div>'
     followStr+=htmlFooter()
