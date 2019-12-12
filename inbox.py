@@ -99,8 +99,9 @@ def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
                         content = tagsFile.read()
                         tagsFile.seek(0, 0)
                         tagsFile.write(postUrl+'\n'+content)
-                except:
-                    pass
+                except Exception as e:
+                    print('WARN: Failed to write entry to tags file '+ \
+                          tagsFilename+' '+str(e))
 
 def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
                               translate: {}, \
