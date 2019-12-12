@@ -125,8 +125,8 @@ input[type=text] {
 
 @media screen and (min-width: 400px) {
     .hashtagcloud {
-        font-size: var(--font-size4);
-	word-spacing: 30px;
+	font-size: 30px;
+	padding: 30px;
     }
     .followText {
         font-size: 24px;
@@ -157,8 +157,8 @@ input[type=text] {
 
 @media screen and (max-width: 1000px) {
     .hashtagcloud {
-        font-size: var(--font-size3);
-	word-spacing: 30px;
+	font-size: 40px;
+	padding: 40px;
     }
     .followText {
         font-size: 40px;
