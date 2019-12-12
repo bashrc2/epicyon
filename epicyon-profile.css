@@ -585,6 +585,10 @@ div.gallery img {
     body, html {
         font-size: var(--font-size4);
     }
+    .hashtagcloud {
+        font-size: var(--font-size4);
+	word-spacing: 30px;
+    }
     .galleryContainer {
 	display: grid;
 	grid-template-columns: 50% 50%;
@@ -903,6 +907,10 @@ div.gallery img {
 @media screen and (max-width: 1000px) {
     body, html {
         font-size: var(--font-size3);
+    }
+    .hashtagcloud {
+        font-size: var(--font-size3);
+	word-spacing: 30px;
     }
     div.gallerytext {
 	color: var(--gallery-text-color);

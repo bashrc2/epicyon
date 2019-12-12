@@ -3778,7 +3778,7 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
     tagCloudHtml='<center>\n'
     tagCloudStr=''
     for tagName in tagCloud:
-        tagCloudStr+='<a href="/tags/'+tagName+'">'+tagName+'</a>   '
+        tagCloudStr+='<a href="/tags/'+tagName+'">'+tagName+'</a> '
     tagCloudHtml+=tagCloudStr.strip()+'\n</center>\n'
     return tagCloudHtml
 
@@ -3810,7 +3810,7 @@ def htmlSearch(translate: {}, \
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
     followStr+='  </center>'
-    followStr+='  <br><br><h1>'+htmlHashTagCloud(baseDir,path)+'</h1>'
+    followStr+='  <br><br><p class="hashtagcloud">'+htmlHashTagCloud(baseDir,path)+'</p>'
     followStr+='  </div>'
     followStr+='</div>'
     followStr+=htmlFooter()
