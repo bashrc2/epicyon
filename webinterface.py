@@ -3775,11 +3775,10 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
     if not tagCloud:
         return ''
     tagCloud.sort()
-    tagCloudHtml='<center>\n'
     tagCloudStr=''
     for tagName in tagCloud:
         tagCloudStr+='<a href="/tags/'+tagName+'" class="hashtagcloud">'+tagName+'</a> '
-    tagCloudHtml+=tagCloudStr.strip()+'\n</center>\n'
+    tagCloudHtml=tagCloudStr.strip()+'\n'
     return tagCloudHtml
 
 def htmlSearch(translate: {}, \
@@ -3809,9 +3808,9 @@ def htmlSearch(translate: {}, \
     followStr+='    <input type="text" name="searchtext" autofocus><br>'
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
+    followStr+='  <p class="hashtagcloud">'+htmlHashTagCloud(baseDir,path)+'</p>'
     followStr+='  </center>'
     followStr+='  </div>'
-    followStr+='  <p class="hashtagcloud">'+htmlHashTagCloud(baseDir,path)+'</p>'
     followStr+='</div>'
     followStr+=htmlFooter()
     return followStr
