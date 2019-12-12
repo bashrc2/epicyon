@@ -360,11 +360,15 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
                         continue
                     # remove postId from the tag index file
                     with open(tagIndexFilename, "r") as f:
-                        lines = f.readlines()
-                    with open(tagIndexFilename, "w+") as f:
-                        for line in lines:
-                            if line.strip("\n") != postId:
-                                f.write(line)
+                        lines=f.readlines()
+                        newlines=lines.replace(postId+'\n','')
+                        if newlines!=lines:
+                            if not newlines.strip():
+                                # if there are no lines then remove the hashtag file
+                                os.remove(tagIndexFilename)
+                            else:
+                                with open(tagIndexFilename, "w+") as f:
+                                    f.write(newlines)
 
     # remove any replies
     repliesFilename=postFilename.replace('.json','.replies')
