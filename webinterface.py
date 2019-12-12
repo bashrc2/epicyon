@@ -3811,7 +3811,7 @@ def htmlSearch(translate: {}, \
     followStr+='  </form>'
     followStr+='  </center>'
     followStr+='  </div>'
-    followStr+='  <br><br><p class="hashtagcloud">'+htmlHashTagCloud(baseDir,path)+'</p>'
+    followStr+='  <p class="hashtagcloud">'+htmlHashTagCloud(baseDir,path)+'</p>'
     followStr+='</div>'
     followStr+=htmlFooter()
     return followStr
