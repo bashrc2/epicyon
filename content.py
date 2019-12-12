@@ -97,7 +97,8 @@ def validHashTag(hashtag: str) -> bool:
         return True
     return False
 
-def addHashTags(wordStr: str,httpPrefix: str,domain: str,replaceHashTags: {},postHashtags: {}) -> bool:
+def addHashTags(wordStr: str,httpPrefix: str,domain: str, \
+                replaceHashTags: {},postHashtags: {}) -> bool:
     """Detects hashtags and adds them to the replacements dict
     Also updates the hashtags list to be added to the post
     """
