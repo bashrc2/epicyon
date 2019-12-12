@@ -12,6 +12,7 @@ import datetime
 import time
 import json
 from shutil import copyfile
+from utils import isPublicPost
 from utils import getCachedPostFilename
 from utils import removePostFromCache
 from utils import urlPermitted
@@ -58,6 +59,45 @@ from posts import sendToFollowersThread
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 from question import questionUpdateVotes
+
+def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
+    """Extracts hashtags from an incoming post and updates the
+    relevant tags files.
+    """
+    if not isPublicPost(postJsonObject):
+        return
+    if not postJsonObject.get('object'):
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('tag'):
+        return
+    if not postJsonObject.get('id'):
+        return
+    if not isinstance(postJsonObject['object']['tag'], list):
+        return
+    tagsDir=baseDir+'/tags'    
+    for tag in postJsonObject['object']['tag']:
+        if not tag.get('type'):
+            continue
+        if tag['type']!='Hashtag':
+            continue
+        if not tag.get('name'):
+            continue
+        tagName=tag['name'].replace('#','')
+        tagsFilename=tagsDir+'/'+tag['name']+'.txt'
+        postUrl=postJsonObject['id'].replace('/activity','').replace('/','#')
+        if not os.path.isfile(tagsFilename):
+            tagsFile=open(tagsFilename, "w+")
+            if tagsFile:
+                tagsFile.write(postUrl+'\n')
+                tagsFile.close()
+        else:
+            if postUrl not in open(tagsFilename).read():
+                tagsFile=open(tagsFilename, "a+")
+                if tagsFile:
+                    tagsFile.write(postUrl+'\n')
+                    tagsFile.close()
 
 def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
                               translate: {}, \
@@ -1875,6 +1915,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
                     print('ERROR: unable to update '+boxname+' index')
 
             inboxUpdateCalendar(baseDir,handle,postJsonObject)
+
+            storeHashTags(baseDir,postJsonObject)
 
             if not unitTest:
                 if debug:
