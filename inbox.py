@@ -94,10 +94,13 @@ def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
                 tagsFile.close()
         else:
             if postUrl not in open(tagsFilename).read():
-                tagsFile=open(tagsFilename, "a+")
-                if tagsFile:
-                    tagsFile.write(postUrl+'\n')
-                    tagsFile.close()
+                try:
+                    with open(tagsFilename, 'r+') as tagsFile:
+                        content = tagsFile.read()
+                        tagsFile.seek(0, 0)
+                        tagsFile.write(postUrl+'\n'+content)
+                except:
+                    pass
 
 def inboxStorePostToHtmlCache(recentPostsCache: {},maxRecentPosts: int, \
                               translate: {}, \
