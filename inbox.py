@@ -1264,6 +1264,7 @@ def receiveAnnounce(recentPostsCache: {}, \
     if postJsonObject:
         if debug:
             print('DEBUG: Announce post downloaded for '+messageJson['actor']+' -> '+messageJson['object'])
+        storeHashTags(baseDir,nickname,postJsonObject)
         # Try to obtain the actor for this person
         # so that their avatar can be shown
         lookupActor=None
