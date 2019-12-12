@@ -345,7 +345,7 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
         infoForm+=htmlFooter()
     return infoForm    
 
-def htmlHashtagSearch(domain: str, \
+def htmlHashtagSearch(domain: str,port: int, \
                       recentPostsCache: {},maxRecentPosts: int, \
                       translate: {}, \
                       baseDir: str,hashtag: str,pageNumber: int, \

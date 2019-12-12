@@ -1635,7 +1635,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 return
             hashtagStr= \
-                htmlHashtagSearch(self.server.domain, \
+                htmlHashtagSearch(self.server.domain,self.server.port, \
                                   self.server.recentPostsCache, \
                                   self.server.maxRecentPosts, \
                                   self.server.translate, \
@@ -4649,7 +4649,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchStr.startswith('#'):      
                     # hashtag search
                     hashtagStr= \
-                        htmlHashtagSearch(self.server.domain, \
+                        htmlHashtagSearch(self.server.domain,self.server.port, \
                                           self.server.recentPostsCache, \
                                           self.server.maxRecentPosts, \
                                           self.server.translate, \
