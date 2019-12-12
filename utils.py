@@ -354,6 +354,8 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
                 for tag in postJsonObject['object']['tag']:
                     if tag['type']!='Hashtag':
                         continue
+                    if not tag.get('name'):
+                        continue
                     # find the index file for this tag
                     tagIndexFilename=baseDir+'/tags/'+tag['name'][1:]+'.txt'
                     if not os.path.isfile(tagIndexFilename):
