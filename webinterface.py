@@ -380,6 +380,7 @@ def htmlHashtagSearch(domain: str,port: int, \
         endIndex=0
         
     hashtagSearchForm=htmlHeader(cssFilename,hashtagSearchCSS)
+    hashtagSearchForm+='<script>'+contentWarningScript()+'</script>'
     hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
     if startIndex!=len(lines)-1:
         # previous page link
