@@ -461,7 +461,8 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
 def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                    toUrl: str,ccUrl: str,httpPrefix: str,content: str, \
                    followersOnly: bool,saveToFile: bool,clientToServer: bool, \
-                   attachImageFilename: str,mediaType: str,imageDescription: str, \
+                   attachImageFilename: str, \
+                   mediaType: str,imageDescription: str, \
                    useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
                    inReplyToAtomUri=None,subject=None, \
                    eventDate=None,eventTime=None,location=None) -> {}:
@@ -742,7 +743,8 @@ def outboxMessageCreateWrap(httpPrefix: str, \
     return newPost
 
 def postIsAddressedToFollowers(baseDir: str,
-                               nickname: str,domain: str,port: int,httpPrefix: str,
+                               nickname: str,domain: str,port: int, \
+                               httpPrefix: str,
                                postJsonObject: {}) -> bool:
     """Returns true if the given post is addressed to followers of the nickname
     """
@@ -798,7 +800,7 @@ def postIsAddressedToPublic(baseDir: str,postJsonObject: {}) -> bool:
             addressedToPublic=True
     return addressedToPublic
 
-def createPublicPost(baseDir: str,
+def createPublicPost(baseDir: str, \
                      nickname: str,domain: str,port: int,httpPrefix: str, \
                      content: str,followersOnly: bool,saveToFile: bool,
                      clientToServer: bool,\
@@ -943,7 +945,9 @@ def getMentionedPeople(baseDir: str,httpPrefix: str, \
                 mentionedDomain=mentionedDomain.split(':')[0]
             if not validNickname(mentionedDomain,mentionedNickname):
                 continue
-            actor=httpPrefix+'://'+handle.split('@')[1]+'/users/'+mentionedNickname
+            actor= \
+                httpPrefix+'://'+handle.split('@')[1]+ \
+                '/users/'+mentionedNickname
             mentions.append(actor)
     return mentions
 
@@ -953,7 +957,8 @@ def createDirectMessagePost(baseDir: str,
                             clientToServer: bool,\
                             attachImageFilename: str,mediaType: str, \
                             imageDescription: str,useBlurhash: bool, \
-                            inReplyTo=None,inReplyToAtomUri=None,subject=None,debug=False, \
+                            inReplyTo=None,inReplyToAtomUri=None, \
+                            subject=None,debug=False, \
                             eventDate=None,eventTime=None,location=None) -> {}:
     """Direct Message post
     """
@@ -1035,7 +1040,8 @@ def createReportPost(baseDir: str,
         # if there are no moderators then the admin becomes the moderator
         adminNickname=getConfigParam(baseDir,'admin')
         if adminNickname:
-            moderatorsList.append(httpPrefix+'://'+domainFull+'/users/'+adminNickname)            
+            moderatorsList.append(httpPrefix+'://'+domainFull+ \
+                                  '/users/'+adminNickname)
     if not moderatorsList:
         return None
     if debug:
@@ -1085,7 +1091,8 @@ def createReportPost(baseDir: str,
     return postJsonObject
 
 def threadSendPost(session,postJsonStr: str,federationList: [],\
-                   inboxUrl: str, baseDir: str,signatureHeaderJson: {},postLog: [],
+                   inboxUrl: str, baseDir: str, \
+                   signatureHeaderJson: {},postLog: [], \
                    debug :bool) -> None:
     """Sends a with retries
     """
@@ -1224,13 +1231,15 @@ def sendPost(projectVersion: str, \
         sendThreads[0].kill()
         sendThreads.pop(0)
         print('WARN: thread killed')
-    thr = threadWithTrace(target=threadSendPost,args=(session, \
-                                                      postJsonStr, \
-                                                      federationList, \
-                                                      inboxUrl,baseDir, \
-                                                      signatureHeaderJson.copy(), \
-                                                      postLog,
-                                                      debug),daemon=True)
+    thr = \
+        threadWithTrace(target=threadSendPost, \
+                        args=(session, \
+                              postJsonStr, \
+                              federationList, \
+                              inboxUrl,baseDir, \
+                              signatureHeaderJson.copy(), \
+                              postLog,
+                              debug),daemon=True)
     sendThreads.append(thr)
     thr.start()
     return 0
@@ -1243,7 +1252,8 @@ def sendPostViaServer(projectVersion: str, \
                       attachImageFilename: str,mediaType: str, \
                       imageDescription: str,useBlurhash: bool, \
                       cachedWebfingers: {},personCache: {}, \
-                      debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
+                      debug=False,inReplyTo=None, \
+                      inReplyToAtomUri=None,subject=None) -> int:
     """Send a post via a proxy (c2s)
     """
     if not session:
@@ -1259,8 +1269,9 @@ def sendPostViaServer(projectVersion: str, \
     handle=httpPrefix+'://'+fromDomain+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest = \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger failed for '+handle)
@@ -1298,7 +1309,9 @@ def sendPostViaServer(projectVersion: str, \
     else:
         if toDomain.lower().endswith('followers') or \
            toDomain.lower().endswith('followersonly'):
-            toPersonId=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+            toPersonId= \
+                httpPrefix+'://'+ \
+                fromDomainFull+'/users/'+fromNickname+'/followers'
         else:
             toDomainFull=toDomain
             if toPort:
@@ -1322,7 +1335,8 @@ def sendPostViaServer(projectVersion: str, \
         headers = {'host': fromDomain, \
                    'Authorization': authHeader}
         postResult = \
-            postImage(session,attachImageFilename,[],inboxUrl,headers,"inbox:write")
+            postImage(session,attachImageFilename,[], \
+                      inboxUrl,headers,"inbox:write")
         #if not postResult:
         #    if debug:
         #        print('DEBUG: Failed to upload image')
@@ -1332,7 +1346,8 @@ def sendPostViaServer(projectVersion: str, \
                'Content-type': 'application/json', \
                'Authorization': authHeader}
     postResult = \
-        postJsonString(session,json.dumps(postJsonObject),[],inboxUrl,headers,"inbox:write",debug)
+        postJsonString(session,json.dumps(postJsonObject),[], \
+                       inboxUrl,headers,"inbox:write",debug)
     #if not postResult:
     #    if debug:
     #        print('DEBUG: POST failed for c2s to '+inboxUrl)
@@ -1486,7 +1501,8 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     privateKeyPem=getPersonKey(nickname,domain,baseDir,'private',debug)
     if len(privateKeyPem)==0:
         if debug:
-            print('DEBUG: Private key not found for '+nickname+'@'+domain+' in '+baseDir+'/keys/private')
+            print('DEBUG: Private key not found for '+ \
+                  nickname+'@'+domain+' in '+baseDir+'/keys/private')
         return 6
 
     if toDomain not in inboxUrl:
@@ -1566,7 +1582,8 @@ def addToField(activityType: str,postJsonObject: {},debug: bool) -> ({},bool):
                         if '/statuses/' in toAddress:
                             toAddress=toAddress.split('/statuses/')[0]
                         postJsonObject['object']['to']=[toAddress]
-                        postJsonObject['to']=[postJsonObject['object']['object']]
+                        postJsonObject['to']= \
+                            [postJsonObject['object']['object']]
                         toFieldAdded=True
 
     if not isSameType:
@@ -1612,7 +1629,8 @@ def sendToNamedAddresses(session,baseDir: str, \
                         if isinstance(postJsonObject['object']['object'], str):
                             if debug:
                                 print('DEBUG: "to" field assigned to Follow')
-                            postJsonObject['object']['to']=[postJsonObject['object']['object']]
+                            postJsonObject['object']['to']= \
+                                [postJsonObject['object']['object']]
                 if not postJsonObject['object'].get('to'):
                     return
             recipientsObject=postJsonObject['object']
@@ -1679,7 +1697,8 @@ def sendToNamedAddresses(session,baseDir: str, \
                 if toPort!=80 and toPort!=443:
                     if ':' not in toDomain:
                         toDomainFull=toDomain+':'+str(toPort)
-            print('DEBUG: Post sending s2s: '+nickname+'@'+domainFull+' to '+toNickname+'@'+toDomainFull)
+            print('DEBUG: Post sending s2s: '+nickname+'@'+domainFull+ \
+                  ' to '+toNickname+'@'+toDomainFull)
         cc=[]
         sendSignedJson(postJsonObject,session,baseDir, \
                        nickname,domain,port, \
@@ -1772,7 +1791,8 @@ def sendToFollowers(session,baseDir: str, \
                                     toNickname='inbox'
             
             if debug:
-                print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                print('DEBUG: Sending from '+nickname+'@'+domain+ \
+                      ' to '+toNickname+'@'+toDomain)
             sendSignedJson(postJsonObject,session,baseDir, \
                            nickname,domain,port, \
                            toNickname,toDomain,toPort, \
@@ -1789,9 +1809,13 @@ def sendToFollowers(session,baseDir: str, \
                 
                 if debug:
                     if postJsonObject['type']!='Update':
-                        print('DEBUG: Sending from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                        print('DEBUG: Sending from '+ \
+                              nickname+'@'+domain+' to '+ \
+                              toNickname+'@'+toDomain)
                     else:
-                        print('DEBUG: Sending profile update from '+nickname+'@'+domain+' to '+toNickname+'@'+toDomain)
+                        print('DEBUG: Sending profile update from '+ \
+                              nickname+'@'+domain+' to '+ \
+                              toNickname+'@'+toDomain)
 
                 sendSignedJson(postJsonObject,session,baseDir, \
                                nickname,domain,port, \
@@ -1859,8 +1883,10 @@ def createOutbox(session,baseDir: str,nickname: str,domain: str,port: int,httpPr
     return createBoxIndexed({},session,baseDir,'outbox',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,authorized,False,pageNumber)
 
-def createModeration(baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                     itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+def createModeration(baseDir: str,nickname: str,domain: str,port: int, \
+                     httpPrefix: str, \
+                     itemsPerPage: int,headerOnly: bool, \
+                     ocapAlways: bool,pageNumber=None) -> {}:
     boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
     boxname='moderation'
 
@@ -1952,11 +1978,14 @@ def isDM(postJsonObject: {}) -> bool:
                 return False
     return True
 
-def isImageMedia(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,postJsonObject: {}) -> bool:
+def isImageMedia(session,baseDir: str,httpPrefix: str, \
+                 nickname: str,domain: str,postJsonObject: {}) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type']=='Announce':
-        postJsonAnnounce=downloadAnnounce(session,baseDir,httpPrefix,nickname,domain,postJsonObject,__version__)
+        postJsonAnnounce= \
+            downloadAnnounce(session,baseDir,httpPrefix, \
+                             nickname,domain,postJsonObject,__version__)
         if postJsonAnnounce:
             postJsonObject=postJsonAnnounce
     if postJsonObject['type']!='Create':
@@ -2074,7 +2103,9 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
                     capsList=postJsonObject['capability']
 
             # Have capabilities been granted for the sender?
-            ocapFilename=baseDir+'/accounts/'+handle+'/ocap/granted/'+postJsonObject['actor'].replace('/','#')+'.json'
+            ocapFilename= \
+                baseDir+'/accounts/'+handle+'/ocap/granted/'+ \
+                postJsonObject['actor'].replace('/','#')+'.json'
             if not os.path.isfile(ocapFilename):
                 continue
 
@@ -2092,7 +2123,8 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
             postsCtr+=1
     return postsCtr
 
-def addPostStringToTimeline(postStr: str,boxname: str,postsInBox: [],boxActor: str) -> bool:
+def addPostStringToTimeline(postStr: str,boxname: str, \
+                            postsInBox: [],boxActor: str) -> bool:
     """ is this a valid timeline post?
     """
     # must be a "Note" or "Announce" type
@@ -2114,7 +2146,8 @@ def addPostStringToTimeline(postStr: str,boxname: str,postsInBox: [],boxActor: s
         return True
     return False
 
-def addPostToTimeline(filePath: str,boxname: str,postsInBox: [],boxActor: str) -> bool:
+def addPostToTimeline(filePath: str,boxname: str, \
+                      postsInBox: [],boxActor: str) -> bool:
     """ Reads a post from file and decides whether it is valid
     """
     with open(filePath, 'r') as postFile:
@@ -2284,7 +2317,8 @@ def createBoxIndexed(recentPostsCache: {}, \
 
     return boxItems
 
-def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,maxPostsInBox=32000):
+def expireCache(baseDir: str,personCache: {}, \
+                httpPrefix: str,archiveDir: str,maxPostsInBox=32000):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
@@ -2293,7 +2327,8 @@ def expireCache(baseDir: str,personCache: {},httpPrefix: str,archiveDir: str,max
         expirePersonCache(basedir,personCache)
         archivePosts(baseDir,httpPrefix,archiveDir,maxPostsInBox)
 
-def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str,maxPostsInBox=32000) -> None:
+def archivePosts(baseDir: str,httpPrefix: str,archiveDir: str, \
+                 maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
     """
     if archiveDir:
@@ -2388,7 +2423,8 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
         return
 
     # sort the list in ascending order of date
-    postsInBoxSorted=OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
+    postsInBoxSorted= \
+        OrderedDict(sorted(postsInBoxDict.items(),reverse=False))
 
     # directory containing cached html posts
     postCacheDir=boxDir.replace('/'+boxname,'/postcache')
@@ -2407,7 +2443,8 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
             deletePost(baseDir,httpPrefix,nickname,domain,filePath,False)
 
         # remove cached html posts
-        postCacheFilename=os.path.join(postCacheDir,postFilename).replace('.json','.html')
+        postCacheFilename= \
+            os.path.join(postCacheDir,postFilename).replace('.json','.html')
         if os.path.isfile(postCacheFilename):
             os.remove(postCacheFilename)
 
@@ -2446,10 +2483,11 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
     maxMentions=10
     maxEmoji=10
     maxAttachments=5
-    userPosts = getPosts(session,personUrl,30,maxMentions,maxEmoji, \
-                         maxAttachments,federationList, \
-                         personCache,raw,simple,debug, \
-                         projectVersion,httpPrefix,domain)
+    userPosts = \
+        getPosts(session,personUrl,30,maxMentions,maxEmoji, \
+                 maxAttachments,federationList, \
+                 personCache,raw,simple,debug, \
+                 projectVersion,httpPrefix,domain)
     #print(str(userPosts))
 
 def sendCapabilitiesUpdate(session,baseDir: str,httpPrefix: str, \
@@ -2554,7 +2592,9 @@ def rejectAnnounce(announceFilename: str):
         rejectAnnounceFile.write('\n')
         rejectAnnounceFile.close()
 
-def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: str,postJsonObject: {},projectVersion: str) -> {}:
+def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
+                     nickname: str,domain: str, \
+                     postJsonObject: {},projectVersion: str) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -2566,7 +2606,8 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
     announceCacheDir=baseDir+'/cache/announce/'+nickname
     if not os.path.isdir(announceCacheDir):
         os.mkdir(announceCacheDir)
-    announceFilename=announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
+    announceFilename= \
+        announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
     print('announceFilename: '+announceFilename)
 
     if os.path.isfile(announceFilename+'.reject'):
@@ -2584,7 +2625,9 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
             asHeader={'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
-        announcedJson=getJson(session,postJsonObject['object'],asHeader,None,projectVersion,httpPrefix,domain)
+        announcedJson= \
+            getJson(session,postJsonObject['object'],asHeader, \
+                    None,projectVersion,httpPrefix,domain)
                         
         if not announcedJson:
             return None
@@ -2627,13 +2670,16 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str,nickname: str,domain: 
         announcedJson['id']=postJsonObject['object']
         announcedJson['object']['id']=postJsonObject['object']
         # check that the repeat isn't for a blocked account
-        attributedNickname=getNicknameFromActor(announcedJson['object']['id'])
-        attributedDomain,attributedPort=getDomainFromActor(announcedJson['object']['id'])
+        attributedNickname= \
+            getNicknameFromActor(announcedJson['object']['id'])
+        attributedDomain,attributedPort= \
+            getDomainFromActor(announcedJson['object']['id'])
         if attributedNickname and attributedDomain:
             if attributedPort:
                 if attributedPort!=80 and attributedPort!=443:
                     attributedDomain=attributedDomain+':'+str(attributedPort)
-            if isBlocked(baseDir,nickname,domain,attributedNickname,attributedDomain):
+            if isBlocked(baseDir,nickname,domain, \
+                         attributedNickname,attributedDomain):
                 rejectAnnounce(announceFilename)
                 return None
         postJsonObject=announcedJson
