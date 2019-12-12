@@ -84,7 +84,7 @@ def storeHashTags(baseDir: str,postJsonObject: {}) -> None:
             continue
         if not tag.get('name'):
             continue
-        tagName=tag['name'].replace('#','').replace("'",'')
+        tagName=tag['name'].replace('#','').strip()
         tagsFilename=tagsDir+'/'+tagName+'.txt'
         postUrl=postJsonObject['id'].replace('/activity','').replace('/','#')
         if not os.path.isfile(tagsFilename):
