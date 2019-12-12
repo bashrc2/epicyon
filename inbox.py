@@ -87,10 +87,11 @@ def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
         tagName=tag['name'].replace('#','').strip()
         tagsFilename=tagsDir+'/'+tagName+'.txt'
         postUrl=postJsonObject['id'].replace('/activity','').replace('/','#')
+        tagline=nickname+'  '+postUrl+'\n'
         if not os.path.isfile(tagsFilename):
             tagsFile=open(tagsFilename, "w+")
             if tagsFile:
-                tagsFile.write(nickname+'  '+postUrl+'\n')
+                tagsFile.write(tagline)
                 tagsFile.close()
         else:
             if postUrl not in open(tagsFilename).read():
@@ -98,7 +99,7 @@ def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
                     with open(tagsFilename, 'r+') as tagsFile:
                         content = tagsFile.read()
                         tagsFile.seek(0, 0)
-                        tagsFile.write(nickname+'  '+postUrl+'\n'+content)
+                        tagsFile.write(tagline+content)
                 except Exception as e:
                     print('WARN: Failed to write entry to tags file '+ \
                           tagsFilename+' '+str(e))
