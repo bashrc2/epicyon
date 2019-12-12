@@ -9,6 +9,10 @@
     --font-size-header: 18px;
     --font-color-header: #ccc;
     --font-size: 40px;
+    --font-size2: 24px;
+    --font-size3: 38px;
+    --font-size4: 22px; 
+    --font-size5: 20px; 
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -73,7 +77,7 @@ a:link {
     color: var(--button-text);
     text-align: center;
     padding: 10px;
-        font-size: var(--font-size);
+    font-size: var(--font-size);
     width: 20%;
     max-width: 200px;
     min-width: 100px;
@@ -120,57 +124,65 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
-        .followText {
-                font-size: 24px;
-        }
-        input[type=text] {
-                width: 90%;
-                clear: both;
-                font-size: 24px;
-                text-align: center;
-                color: var(--text-entry-foreground);
-                background-color: var(--text-entry-background);
-        }
-        .button {
-                border-radius: 4px;
-                background-color: var(--button-background);
-                border: none;
-                color: var(--button-text);
-                text-align: center;
-                padding: 10px;
-                font-size: 24px;
-                width: 20%;
-                max-width: 200px;
-                min-width: 100px;
-                cursor: pointer;
-                margin: 30px;
-        }
+    .hashtagcloud {
+        font-size: var(--font-size4);
+	word-spacing: 30px;
+    }
+    .followText {
+        font-size: 24px;
+    }
+    input[type=text] {
+        width: 90%;
+        clear: both;
+        font-size: 24px;
+        text-align: center;
+        color: var(--text-entry-foreground);
+        background-color: var(--text-entry-background);
+    }
+    .button {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 24px;
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
 }
 
 @media screen and (max-width: 1000px) {
-        .followText {
-                font-size: 40px;
-        }
-        input[type=text] {
-                width: 90%;
-                clear: both;
-                font-size: 40px;
-                text-align: center;
-                color: var(--text-entry-foreground);
-                background-color: var(--text-entry-background);
-        }
-        .button {
-                border-radius: 4px;
-                background-color: var(--button-background);
-                border: none;
-                color: var(--button-text);
-                text-align: center;
-                padding: 10px;
-                font-size: 40px;
-                width: 20%;
-                max-width: 200px;
-                min-width: 100px;
-                cursor: pointer;
-                margin: 30px;
-        }
+    .hashtagcloud {
+        font-size: var(--font-size3);
+	word-spacing: 30px;
+    }
+    .followText {
+        font-size: 40px;
+    }
+    input[type=text] {
+        width: 90%;
+        clear: both;
+        font-size: 40px;
+        text-align: center;
+        color: var(--text-entry-foreground);
+        background-color: var(--text-entry-background);
+    }
+    .button {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 40px;
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
 }
