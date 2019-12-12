@@ -3774,7 +3774,7 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
                         break
     if not tagCloud:
         return ''
-    tagCloud=tagCloud.sort()
+    tagCloud.sort()
     tagCloudHtml='<center>\n'
     tagCloudStr=''
     for tagName in tagCloud:
