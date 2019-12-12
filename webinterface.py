@@ -397,8 +397,13 @@ def htmlHashtagSearch(domain: str,port: int, \
                 index-=1
                 continue
         else:
-            nickname=postId.split('  ')[0]
-            postId=postId.split('  ')[1]
+            postFields=postId.split('  ')
+            if len(postFields)!=3:
+                index=-1
+                continue
+            postDaysSinceEposh=int(postFields[0])
+            nickname=postFields[1]
+            postId=postFields[2]
         postFilename=locatePost(baseDir,nickname,domain,postId)
         if not postFilename:
             index-=1

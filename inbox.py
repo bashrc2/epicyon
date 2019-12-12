@@ -87,7 +87,8 @@ def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
         tagName=tag['name'].replace('#','').strip()
         tagsFilename=tagsDir+'/'+tagName+'.txt'
         postUrl=postJsonObject['id'].replace('/activity','').replace('/','#')
-        tagline=nickname+'  '+postUrl+'\n'
+        daysSinceEpoch=(datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).days
+        tagline=str(daysSinceEpoch)+'  '+nickname+'  '+postUrl+'\n'
         if not os.path.isfile(tagsFilename):
             tagsFile=open(tagsFilename, "w+")
             if tagsFile:
