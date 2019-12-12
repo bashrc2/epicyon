@@ -3747,7 +3747,7 @@ def htmlCalendar(translate: {}, \
 def htmlHashTagCloud(baseDir: str,path: str) -> str:
     """Returns a tag cloud of today's hashtags
     """
-    daysSinceEpoch=str((datetime.datetime.utcnow() - datetime.datetime(1970,1,1)).days)+' '
+    daysSinceEpoch=str((datetime.utcnow() - datetime(1970,1,1)).days)+' '
     nickname=getNicknameFromActor(path)
     tagCloud=[]
     for subdir, dirs, files in os.walk(baseDir+'/tags'):
