@@ -1670,6 +1670,8 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '/users/' in self.path:
            if self.path.endswith('/search') or \
               '/search?' in self.path:
+               if '?' in self.path:
+                   self.path=self.path.split('?')[0]
                # show the search screen
                msg=htmlSearch(self.server.translate, \
                               self.server.baseDir,self.path).encode()
