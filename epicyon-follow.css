@@ -124,7 +124,7 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
-    .hashtagcloud {
+    .hashtagswarm {
 	font-size: 30px;
 	padding: 30px;
 	line-height: 60px;
@@ -157,7 +157,7 @@ input[type=text] {
 }
 
 @media screen and (max-width: 1000px) {
-    .hashtagcloud {
+    .hashtagswarm {
 	font-size: 40px;
 	padding: 40px;
 	line-height: 70px;

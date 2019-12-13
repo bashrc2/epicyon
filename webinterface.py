@@ -3755,13 +3755,13 @@ def htmlCalendar(translate: {}, \
     calendarStr+=htmlFooter()
     return calendarStr
 
-def htmlHashTagCloud(baseDir: str,actor: str) -> str:
-    """Returns a tag cloud of today's hashtags
+def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
+    """Returns a tag swarm of today's hashtags
     """
     daysSinceEpoch=(datetime.utcnow() - datetime(1970,1,1)).days
     daysSinceEpochStr=str(daysSinceEpoch)+' '
     nickname=getNicknameFromActor(actor)
-    tagCloud=[]
+    tagSwarm=[]
     for subdir, dirs, files in os.walk(baseDir+'/tags'):
         for f in files:
             tagsFilename=os.path.join(baseDir+'/tags',f)
@@ -3784,16 +3784,16 @@ def htmlHashTagCloud(baseDir: str,actor: str) -> str:
                     if postDaysSinceEpoch<daysSinceEpoch:
                         break
                     if postDaysSinceEpoch==daysSinceEpoch:
-                        tagCloud.append(hashTagName)
+                        tagSwarm.append(hashTagName)
                         break
-    if not tagCloud:
+    if not tagSwarm:
         return ''
-    tagCloud.sort()
-    tagCloudStr=''
-    for tagName in tagCloud:
-        tagCloudStr+='<a href="'+actor+'/tags/'+tagName+'" class="hashtagcloud">'+tagName+'</a> '
-    tagCloudHtml=tagCloudStr.strip()+'\n'
-    return tagCloudHtml
+    tagSwarm.sort()
+    tagSwarmStr=''
+    for tagName in tagSwarm:
+        tagSwarmStr+='<a href="'+actor+'/tags/'+tagName+'" class="hashtagswarm">'+tagName+'</a> '
+    tagSwarmHtml=tagSwarmStr.strip()+'\n'
+    return tagSwarmHtml
 
 def htmlSearch(translate: {}, \
                baseDir: str,path: str) -> str:
@@ -3822,7 +3822,7 @@ def htmlSearch(translate: {}, \
     followStr+='    <input type="text" name="searchtext" autofocus><br>'
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
-    followStr+='  <p class="hashtagcloud">'+htmlHashTagCloud(baseDir,actor)+'</p>'
+    followStr+='  <p class="hashtagswarm">'+htmlHashTagSwarm(baseDir,actor)+'</p>'
     followStr+='  </center>'
     followStr+='  </div>'
     followStr+='</div>'
