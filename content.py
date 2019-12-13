@@ -241,6 +241,16 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
 def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't disrupt the layout
     """
+    if ' ' not in content:
+        # handle a single very long string with no spaces
+        contentStr=content.replace('<p>','').replace('<\p>','')
+        if '://' not in contentStr:
+            if len(contentStr)>maxWordLength:
+                if '<p>' in content:
+                    content='<p>'+contentStr[:maxWordLength]+'<\p>'
+                else:
+                    content=content[:maxWordLength]
+                return content
     words=content.split(' ')
     if not longWordsList:
         longWordsList=[]
