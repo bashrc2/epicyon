@@ -48,6 +48,7 @@ from like import noOfLikes
 from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
+from blocking import isBlockedHashtag
 from content import getMentionsFromHtml
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -3757,6 +3758,9 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
             tagsFilename=os.path.join(baseDir+'/tags',f)
             if not os.path.isfile(tagsFilename):
                 continue
+            hashTagName=f.split('.')[0]
+            if isBlockedHashtag(baseDir,hashTagName):
+                continue
             if daysSinceEpochStr not in open(tagsFilename).read():
                 continue
             with open(tagsFilename, 'r') as tagsFile:
@@ -3771,7 +3775,7 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
                     if postDaysSinceEpoch<daysSinceEpoch:
                         break
                     if postDaysSinceEpoch==daysSinceEpoch:
-                        tagCloud.append(f.split('.')[0])
+                        tagCloud.append(hashTagName)
                         break
     if not tagCloud:
         return ''
