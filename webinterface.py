@@ -430,7 +430,7 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
                                      None,True,allowDeletion, \
-                                     httpPrefix,projectVersion,'inbox', \
+                                     httpPrefix,projectVersion,'search', \
                                      False,showIndividualPostIcons,False,False,False)
         index-=1
 
