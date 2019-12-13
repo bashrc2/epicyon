@@ -346,7 +346,7 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
         infoForm+=htmlFooter()
     return infoForm    
 
-def htmlHashtagSearch(domain: str,port: int, \
+def htmlHashtagSearch(nickname: str,domain: str,port: int, \
                       recentPostsCache: {},maxRecentPosts: int, \
                       translate: {}, \
                       baseDir: str,hashtag: str,pageNumber: int, \
@@ -361,6 +361,11 @@ def htmlHashtagSearch(domain: str,port: int, \
     hashtagIndexFile=baseDir+'/tags/'+hashtag+'.txt'
     if not os.path.isfile(hashtagIndexFile):
         return None
+
+    # check that the directory for the nickname exists
+    if nickname:
+        if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
+            nickname=None
 
     # read the index
     with open(hashtagIndexFile, "r") as f:
@@ -414,15 +419,19 @@ def htmlHashtagSearch(domain: str,port: int, \
         if postJsonObject:
             if not isPublicPost(postJsonObject):
                 index-=1
-                continue
+                continue            
+            showIndividualPostIcons=False
+            if nickname:
+                showIndividualPostIcons=True
+            allowDeletion=False
             hashtagSearchForm+= \
                 individualPostAsHtml(recentPostsCache,maxRecentPosts, \
                                      iconsDir,translate,None, \
                                      baseDir,session,wfRequest,personCache, \
                                      nickname,domain,port,postJsonObject, \
-                                     None,True,False, \
+                                     None,True,allowDeletion, \
                                      httpPrefix,projectVersion,'inbox', \
-                                     False,False,False,False,False)
+                                     False,showIndividualPostIcons,False,False,False)
         index-=1
 
     if endIndex>0:
@@ -3746,12 +3755,12 @@ def htmlCalendar(translate: {}, \
     calendarStr+=htmlFooter()
     return calendarStr
 
-def htmlHashTagCloud(baseDir: str,path: str) -> str:
+def htmlHashTagCloud(baseDir: str,actor: str) -> str:
     """Returns a tag cloud of today's hashtags
     """
     daysSinceEpoch=(datetime.utcnow() - datetime(1970,1,1)).days
     daysSinceEpochStr=str(daysSinceEpoch)+' '
-    nickname=getNicknameFromActor(path)
+    nickname=getNicknameFromActor(actor)
     tagCloud=[]
     for subdir, dirs, files in os.walk(baseDir+'/tags'):
         for f in files:
@@ -3782,7 +3791,7 @@ def htmlHashTagCloud(baseDir: str,path: str) -> str:
     tagCloud.sort()
     tagCloudStr=''
     for tagName in tagCloud:
-        tagCloudStr+='<a href="/tags/'+tagName+'" class="hashtagcloud">'+tagName+'</a> '
+        tagCloudStr+='<a href="'+actor+'/tags/'+tagName+'" class="hashtagcloud">'+tagName+'</a> '
     tagCloudHtml=tagCloudStr.strip()+'\n'
     return tagCloudHtml
 
@@ -3813,7 +3822,7 @@ def htmlSearch(translate: {}, \
     followStr+='    <input type="text" name="searchtext" autofocus><br>'
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
-    followStr+='  <p class="hashtagcloud">'+htmlHashTagCloud(baseDir,path)+'</p>'
+    followStr+='  <p class="hashtagcloud">'+htmlHashTagCloud(baseDir,actor)+'</p>'
     followStr+='  </center>'
     followStr+='  </div>'
     followStr+='</div>'

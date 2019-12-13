@@ -1619,7 +1619,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,27)
 
         # hashtag search
-        if self.path.startswith('/tags/'):
+        if self.path.startswith('/tags/') or \
+           (authorized and '/tags/' in self.path):
             pageNumber=1
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
@@ -1634,8 +1635,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._write(msg)
                 self.server.GETbusy=False
                 return
+            nickname=None
+            if '/users/' in self.path:
+                actor=self.server.httpPrefix+'://'+self.server.domainFull+self.path
+                nickname= \
+                    getNicknameFromActor(actor)
             hashtagStr= \
-                htmlHashtagSearch(self.server.domain,self.server.port, \
+                htmlHashtagSearch(nickname, \
+                                  self.server.domain,self.server.port, \
                                   self.server.recentPostsCache, \
                                   self.server.maxRecentPosts, \
                                   self.server.translate, \
@@ -4647,9 +4654,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if searchForEmoji:
                     searchStr=':'+searchStr+':'
                 if searchStr.startswith('#'):      
+                    nickname=getNicknameFromActor(actorStr)
                     # hashtag search
                     hashtagStr= \
-                        htmlHashtagSearch(self.server.domain,self.server.port, \
+                        htmlHashtagSearch(nickname, \
+                                          self.server.domain,self.server.port, \
                                           self.server.recentPostsCache, \
                                           self.server.maxRecentPosts, \
                                           self.server.translate, \
@@ -4683,7 +4692,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                 elif '@' in searchStr:
                     # profile search
-                    nickname=getNicknameFromActor(self.path)
+                    nickname=getNicknameFromActor(actorStr)
                     if not self.server.session:
                         self.server.session= \
                             createSession(self.server.useTor)
