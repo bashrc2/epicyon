@@ -1668,7 +1668,8 @@ class PubServer(BaseHTTPRequestHandler):
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
         if htmlGET and '/users/' in self.path:
-           if self.path.endswith('/search'):
+           if self.path.endswith('/search') or \
+              '/search?' in self.path:
                # show the search screen
                msg=htmlSearch(self.server.translate, \
                               self.server.baseDir,self.path).encode()
