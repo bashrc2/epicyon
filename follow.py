@@ -565,8 +565,7 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
 def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
                            nicknameToFollow: str,domainToFollow: str,port: int, \
                            nickname: str,domain: str,fromPort: int, \
-                           personUrl: str,federationList: [], \
-                           followJson: {}, \
+                           federationList: [], \
                            sendThreads: [],postLog: [], \
                            cachedWebfingers: {},personCache: {}, \
                            debug: bool,projectVersion: str):
@@ -577,9 +576,22 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
     if debug:
         print('DEBUG: sending Reject activity for follow request which arrived at '+ \
               nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
-    rejectJson=createReject(baseDir,federationList, \
-                            nicknameToFollow,domainToFollow,port, \
-                            personUrl,'',httpPrefix,followJson)
+
+    followRequestJsonFilename= \
+        baseDir+'/accounts/'+ \
+        nicknameToFollow+'@'+domainToFollow+'/requests/'+ \
+        nickname+'@'+domain+'.follow'
+    followJson=loadJson(followRequestJsonFilename)
+    if not followJson:
+        print('No follow request json was found for '+ \
+              followRequestJsonFilename)
+        return None
+    personUrl=followJson['actor']
+
+    rejectJson= \
+        createReject(baseDir,federationList, \
+                     nicknameToFollow,domainToFollow,port, \
+                     personUrl,'',httpPrefix,followJson)
     if debug:
         pprint(rejectJson)
         print('DEBUG: sending follow Reject from '+ \
