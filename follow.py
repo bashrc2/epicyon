@@ -554,6 +554,18 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
               ' port '+str(port)+' to '+ \
               acceptHandle+' port '+ str(fromPort))
     clientToServer=False
+
+    # remove the follow request json
+    followActivityfilename= \
+        baseDir+'/accounts/'+ \
+        nicknameToFollow+'@'+domainToFollow+'/requests/'+ \
+        nickname+'@'+domain+'.follow'
+    if os.path.isfile(followActivityfilename):
+        try:
+            os.remove(followActivityfilename)
+        except:
+            pass
+
     return sendSignedJson(acceptJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
@@ -578,14 +590,14 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
               nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
 
     # get the json for the original follow request
-    followRequestJsonFilename= \
+    followActivityfilename= \
         baseDir+'/accounts/'+ \
         nicknameToFollow+'@'+domainToFollow+'/requests/'+ \
         nickname+'@'+domain+'.follow'
-    followJson=loadJson(followRequestJsonFilename)
+    followJson=loadJson(followActivityfilename)
     if not followJson:
         print('No follow request json was found for '+ \
-              followRequestJsonFilename)
+              followActivityfilename)
         return None
     # actor who made the follow request
     personUrl=followJson['actor']
@@ -610,7 +622,7 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
     removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,denyHandle,debug)
     # remove the follow request json
     try:
-        os.remove(followRequestJsonFilename)
+        os.remove(followActivityfilename)
     except:
         pass
     # send the reject activity
