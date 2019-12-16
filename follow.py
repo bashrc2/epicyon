@@ -577,6 +577,7 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
         print('DEBUG: sending Reject activity for follow request which arrived at '+ \
               nicknameToFollow+'@'+domainToFollow+' back to '+nickname+'@'+domain)
 
+    # get the json for the original follow request
     followRequestJsonFilename= \
         baseDir+'/accounts/'+ \
         nicknameToFollow+'@'+domainToFollow+'/requests/'+ \
@@ -586,8 +587,10 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
         print('No follow request json was found for '+ \
               followRequestJsonFilename)
         return None
+    # actor who made the follow request
     personUrl=followJson['actor']
 
+    # create the reject activity
     rejectJson= \
         createReject(baseDir,federationList, \
                      nicknameToFollow,domainToFollow,port, \
@@ -603,7 +606,14 @@ def followedAccountRejects(session,baseDir: str,httpPrefix: str, \
     if fromPort:
         if fromPort!=80 and fromPort!=443:
             denyHandle=denyHandle+':'+str(fromPort)
+    # remove from the follow requests file
     removeFromFollowRequests(baseDir,nicknameToFollow,domainToFollow,denyHandle,debug)
+    # remove the follow request json
+    try:
+        os.remove(followRequestJsonFilename)
+    except:
+        pass
+    # send the reject activity
     return sendSignedJson(rejectJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
                           nickname,domain,fromPort, '', \
