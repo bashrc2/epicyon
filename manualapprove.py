@@ -50,14 +50,16 @@ def manualDenyFollowRequest(session,baseDir: str, \
     if ':' in denyDomain:
         denyPort=denyDomain.split(':')[1]
         denyDomain=denyDomain.split(':')[0]
-    followedAccountRejects(session,baseDir,httpPrefix, \
-                           nickname,domain,port, \
-                           denyNickname,denyDomain,denyPort, \
-                           followJson['actor'],federationList, \
-                           followJson, \
-                           sendThreads,postLog, \
-                           cachedWebfingers,personCache, \
-                           debug,projectVersion)
+    # TODO
+    #followJson=
+    #followedAccountRejects(session,baseDir,httpPrefix, \
+    #                       nickname,domain,port, \
+    #                       denyNickname,denyDomain,denyPort, \
+    #                       followJson['actor'],federationList, \
+    #                       followJson, \
+    #                       sendThreads,postLog, \
+    #                       cachedWebfingers,personCache, \
+    #                       debug,projectVersion)
 
     print('Follow request from '+denyHandle+' was denied.')
     
