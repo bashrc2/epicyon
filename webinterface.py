@@ -1526,9 +1526,9 @@ def htmlProfile(defaultTimeline: str, \
         donateSection='<div class="container">\n'
         donateSection+='  <center>\n'
         if donateUrl:
-            donateSection+='    <a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a>\n'
+            donateSection+='    <p><a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a></p>\n'
         if xmppAddress:
-            donateSection+='<br>XMPP: '+xmppAddress+'\n'
+            donateSection+='<p>XMPP: '+xmppAddress+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 
