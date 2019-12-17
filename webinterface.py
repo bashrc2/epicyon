@@ -3808,15 +3808,12 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
     return tagSwarmHtml
 
 def htmlSearch(translate: {}, \
-               baseDir: str,path: str, \
-               defaultTimeline:str) -> str:
+               baseDir: str,path: str) -> str:
     """Search called from the timeline icon
     """
     actor=path.replace('/search','')
     nickname=getNicknameFromActor(actor)
     domain,port=getDomainFromActor(actor)
-
-    backUrl=actor+'/'+defaultTimeline
 
     if os.path.isfile(baseDir+'/img/search-background.png'):
         if not os.path.isfile(baseDir+'/accounts/search-background.png'):
@@ -3824,7 +3821,7 @@ def htmlSearch(translate: {}, \
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
-        cssFilename=baseDir+'/follow.css'        
+        cssFilename=baseDir+'/follow.css'
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
     followStr=htmlHeader(cssFilename,profileStyle)
@@ -3835,7 +3832,7 @@ def htmlSearch(translate: {}, \
     followStr+='  <form method="POST" accept-charset="UTF-8" action="'+actor+'/searchhandle">'
     followStr+='    <input type="hidden" name="actor" value="'+actor+'">'
     followStr+='    <input type="text" name="searchtext" autofocus><br>'
-    followStr+='    <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>'
+    followStr+='    <button type="submit" class="button" name="submitBack">'+translate['Go Back']+'</button>'
     followStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
     followStr+='  </form>'
     followStr+='  <p class="hashtagswarm">'+htmlHashTagSwarm(baseDir,actor)+'</p>'

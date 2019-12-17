@@ -1674,8 +1674,7 @@ class PubServer(BaseHTTPRequestHandler):
                    self.path=self.path.split('?')[0]
                # show the search screen
                msg=htmlSearch(self.server.translate, \
-                              self.server.baseDir,self.path, \
-                              self.server.defaultTimeline).encode()
+                              self.server.baseDir,self.path).encode()
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False
@@ -4646,6 +4645,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.replace('/searchhandle','')
             length = int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
+            if 'submitBack=' in searchParams:
+                # go back on search screen
+                self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
+                self.server.POSTbusy=False
+                return                
             if 'searchtext=' in searchParams:
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
