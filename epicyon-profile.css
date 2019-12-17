@@ -284,6 +284,17 @@ a:link {
     color: var(--main-fg-color);
 }
 
+.imText {
+    font-size: var(--font-size4);
+    color: var(--main-link-color);
+}
+
+.pgp {
+    font-size: var(--font-size4);
+    color: var(--main-link-color);
+    font-family: 'monospace';
+}
+
 .container img.announceOrReply {
     float: none;
     width: 30px;

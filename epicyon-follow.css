@@ -75,6 +75,12 @@ a:link {
     color: var(--main-link-color);
 }
 
+.pgp {
+    font-size: var(--font-size4);
+    color: var(--main-link-color);
+    font-family: 'monospace';
+}
+
 .button {
     border-radius: 4px;
     background-color: var(--button-background);

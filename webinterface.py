@@ -1552,7 +1552,7 @@ def htmlProfile(defaultTimeline: str, \
         if matrixAddress:
             donateSection+='<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
         if PGPpubKey:
-            donateSection+='<p>'+translate['PGP']+': '+PGPpubKey+'</p>\n'
+            donateSection+='<p class="pgp">'+translate['PGP']+': '+PGPpubKey.replace('\n','<br>')+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 
@@ -3422,7 +3422,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     if matrixAddress:
         optionsStr+='<p class="imText">Matrix: '+matrixAddress+'</p>'
     if PGPpubKey:
-        optionsStr+='<p class="imText">PGP: '+PGPpubKey+'</p>'
+        optionsStr+='<p class="pgp">PGP: '+PGPpubKey.replace('\n','<br>')+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
     optionsStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'
