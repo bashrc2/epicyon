@@ -3398,9 +3398,9 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     if xmppAddress:
-        optionsStr+='<p>XMPP: '+xmppAddress+'</p>'
+        optionsStr+='<p class="imText">XMPP: '+xmppAddress+'</p>'
     if matrixAddress:
-        optionsStr+='<p>Matrix: '+matrixAddress+'</p>'
+        optionsStr+='<p class="imText">Matrix: '+matrixAddress+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
     optionsStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'

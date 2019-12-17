@@ -70,6 +70,11 @@ a:link {
     font-size: var(--font-size);
 }
 
+.imText {
+    font-size: var(--font-size4);
+    color: var(--main-link-color);
+}
+
 .button {
     border-radius: 4px;
     background-color: var(--button-background);
