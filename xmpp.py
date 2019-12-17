@@ -28,7 +28,7 @@ def getXmppAddress(actorJson: {}) -> str:
             continue
         if '@' not in propertyValue['value']:
             continue
-        if '"' not in propertyValue['value']:
+        if '"' in propertyValue['value']:
             continue
         return propertyValue['value']
     return ''
