@@ -446,17 +446,32 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
     """
     if tag['type']!='Hashtag':
         return
+
     # create hashtags directory    
     tagsDir=baseDir+'/tags'
     if not os.path.isdir(tagsDir):
         os.mkdir(tagsDir)
     tagName=tag['name']
     tagsFilename=tagsDir+'/'+tagName[1:]+'.txt'
-    tagFile=open(tagsFilename, "a+")
-    if not tagFile:
-        return
-    tagFile.write(newPostId+'\n')
-    tagFile.close()
+    tagline=newPostId+'\n'
+
+    if not os.path.isfile(tagsFilename):
+        # create a new tags index file
+        tagsFile=open(tagsFilename, "w+")
+        if tagsFile:
+            tagsFile.write(tagline)
+            tagsFile.close()
+    else:
+        # prepend to tags index file
+        if tagline not in open(tagsFilename).read():
+            try:
+                with open(tagsFilename, 'r+') as tagsFile:
+                    content = tagsFile.read()
+                    tagsFile.seek(0, 0)
+                    tagsFile.write(tagline+content)
+            except Exception as e:
+                print('WARN: Failed to write entry to tags file '+ \
+                      tagsFilename+' '+str(e))
 
 def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                    toUrl: str,ccUrl: str,httpPrefix: str,content: str, \
