@@ -51,6 +51,20 @@ def setDonationUrl(actorJson: {},donateUrl: str) -> None:
     if not donateName:
         return
 
+    # remove any existing value
+    propertyFound=None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower()!=donateName:
+            continue
+        propertyFound=propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyFound)
+
     donateValue='<a href="'+donateUrl+'" rel="me nofollow noopener noreferrer" target="_blank">'+donateUrl+'</a>'
 
     for propertyValue in actorJson['attachment']:

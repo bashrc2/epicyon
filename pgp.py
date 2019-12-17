@@ -58,6 +58,20 @@ def setEmailAddress(actorJson: {},emailAddress: str) -> None:
     if not actorJson.get('attachment'):
         actorJson['attachment']=[]
 
+    # remove any existing value
+    propertyFound=None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower().startswith('email'):
+            continue
+        propertyFound=propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyFound)
+
     if '@' not in emailAddress:
         return
     if '.' not in emailAddress:
@@ -89,6 +103,20 @@ def setPGPpubKey(actorJson: {},PGPpubKey: str) -> None:
     """
     if not actorJson.get('attachment'):
         actorJson['attachment']=[]
+
+    # remove any existing value
+    propertyFound=None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower().startswith('pgp'):
+            continue
+        propertyFound=propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyValue)
 
     if '--BEGIN PGP PUBLIC KEY' not in PGPpubKey:
         return

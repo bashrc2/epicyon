@@ -39,6 +39,21 @@ def setXmppAddress(actorJson: {},xmppAddress: str) -> None:
     if not actorJson.get('attachment'):
         actorJson['attachment']=[]
 
+    # remove any existing value
+    propertyFound=None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not (propertyValue['name'].lower().startswith('xmpp') or \
+                propertyValue['name'].lower().startswith('jabber')):
+            continue
+        propertyFound=propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyFound)
+
     if '@' not in xmppAddress:
         return
     if '.' not in xmppAddress:
