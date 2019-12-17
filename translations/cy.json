@@ -200,5 +200,9 @@
     "Get the source code": "Sicrhewch y cod ffynhonnell",
     "This is a media instance": "Mae hyn yn enghraifft cyfryngau",
     "Mute this post": "Treiglo'r swydd hon",
-    "Undo mute": "Dadwneud yn fud"
+    "Undo mute": "Dadwneud yn fud",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

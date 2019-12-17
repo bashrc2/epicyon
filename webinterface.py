@@ -723,13 +723,13 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <textarea id="message" name="bio" style="height:200px">'+bioStr+'</textarea>'
     editProfileForm+='<label class="labels">'+translate['Donations link']+'</label><br>'
     editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
-    editProfileForm+='<label class="labels">XMPP</label><br>'
+    editProfileForm+='<label class="labels">'+translate['XMPP']+'</label><br>'
     editProfileForm+='      <input type="text" name="xmppAddress" value="'+xmppAddress+'">'
-    editProfileForm+='<label class="labels">Matrix</label><br>'
+    editProfileForm+='<label class="labels">'+translate['Matrix']+'</label><br>'
     editProfileForm+='      <input type="text" name="matrixAddress" value="'+matrixAddress+'">'
-    editProfileForm+='<label class="labels">Email</label><br>'
+    editProfileForm+='<label class="labels">'+translate['Email']+'</label><br>'
     editProfileForm+='      <input type="text" name="email" value="'+emailAddress+'">'
-    editProfileForm+='<label class="labels">PGP</label><br>'
+    editProfileForm+='<label class="labels">'+translate['PGP']+'</label><br>'
     editProfileForm+='      <textarea id="message" name="pgp" style="height:100px">'+PGPpubKey+'</textarea>'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
@@ -1546,13 +1546,13 @@ def htmlProfile(defaultTimeline: str, \
         if donateUrl:
             donateSection+='    <p><a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a></p>\n'
         if emailAddress:
-            donateSection+='<p>Email: '+emailAddress+'</p>\n'
+            donateSection+='<p>'+translate['Email']+': '+emailAddress+'</p>\n'
         if xmppAddress:
-            donateSection+='<p>XMPP: '+xmppAddress+'</p>\n'
+            donateSection+='<p>'+translate['XMPP']+': '+xmppAddress+'</p>\n'
         if matrixAddress:
-            donateSection+='<p>Matrix: '+matrixAddress+'</p>\n'
+            donateSection+='<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
         if PGPpubKey:
-            donateSection+='<p>PGP: '+PGPpubKey+'</p>\n'
+            donateSection+='<p>'+translate['PGP']+': '+PGPpubKey+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 

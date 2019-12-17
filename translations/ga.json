@@ -200,5 +200,9 @@
     "Get the source code": "Faigh an cód foinse",
     "This is a media instance": "Is cás na meán é seo",
     "Mute this post": "Cuir an post seo i leataobh",
-    "Undo mute": "Cealaigh toit"
+    "Undo mute": "Cealaigh toit",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

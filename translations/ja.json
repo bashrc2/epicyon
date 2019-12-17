@@ -200,5 +200,9 @@
     "Get the source code": "ソースコードを入手する",
     "This is a media instance": "これはメディアインスタンスです",
     "Mute this post": "この投稿をミュート",
-    "Undo mute": "ミュートを元に戻す"
+    "Undo mute": "ミュートを元に戻す",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

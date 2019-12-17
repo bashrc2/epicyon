@@ -200,5 +200,9 @@
     "Get the source code": "الحصول على شفرة المصدر",
     "This is a media instance": "هذا هو مثيل الوسائط",
     "Mute this post": "كتم هذا المنصب",
-    "Undo mute": "التراجع عن كتم الصوت"
+    "Undo mute": "التراجع عن كتم الصوت",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

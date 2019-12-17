@@ -200,5 +200,9 @@
     "Get the source code": "Получить исходный код",
     "This is a media instance": "Это экземпляр СМИ",
     "Mute this post": "Отключить этот пост",
-    "Undo mute": "Отменить отключение звука"
+    "Undo mute": "Отменить отключение звука",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

@@ -200,5 +200,9 @@
     "Get the source code": "Holen Sie sich den Quellcode",
     "This is a media instance": "Dies ist eine Medieninstanz",
     "Mute this post": "Diesen Beitrag stumm schalten",
-    "Undo mute": "Stummschaltung aufheben"
+    "Undo mute": "Stummschaltung aufheben",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

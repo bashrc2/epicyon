@@ -200,5 +200,9 @@
     "Get the source code": "Obter o código fonte",
     "This is a media instance": "Esta é uma instância de mídia",
     "Mute this post": "Ignorar esta postagem",
-    "Undo mute": "Desfazer mudo"
+    "Undo mute": "Desfazer mudo",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

@@ -200,5 +200,9 @@
     "Get the source code": "获取源代码",
     "This is a media instance": "这是一个媒体实例",
     "Mute this post": "将此帖子静音",
-    "Undo mute": "撤消静音"
+    "Undo mute": "撤消静音",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

@@ -200,5 +200,9 @@
     "Get the source code": "स्रोत कोड प्राप्त करें",
     "This is a media instance": "यह एक मीडिया उदाहरण है",
     "Mute this post": "इस पोस्ट को म्यूट करें",
-    "Undo mute": "पूर्ववत करें"
+    "Undo mute": "पूर्ववत करें",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }

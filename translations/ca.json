@@ -200,5 +200,9 @@
     "Get the source code": "Obteniu el codi font",
     "This is a media instance": "Es tracta d’una instància de mitjans de comunicació",
     "Mute this post": "Silencia aquesta publicació",
-    "Undo mute": "Desfés silenci"
+    "Undo mute": "Desfés silenci",
+    "XMPP": "XMPP",
+    "Matrix": "Matrix",
+    "Email": "Email",
+    "PGP": "PGP"
 }
