@@ -16,8 +16,9 @@ def getXmppAddress(actorJson: {}) -> str:
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
-        if not (propertyValue['name'].lower().startswith('xmpp') or \
-                propertyValue['name'].lower().startswith('jabber')):
+        nameLower=propertyValue['name'].lower()
+        if not (nameLower.startswith('xmpp') or \
+                nameLower.startswith('jabber')):
             continue
         if not propertyValue.get('type'):
             continue
@@ -50,8 +51,9 @@ def setXmppAddress(actorJson: {},xmppAddress: str) -> None:
             continue
         if not propertyValue.get('type'):
             continue
-        if not (propertyValue['name'].lower().startswith('xmpp') or \
-                propertyValue['name'].lower().startswith('jabber')):
+        nameLower=propertyValue['name'].lower()
+        if not (nameLower.startswith('xmpp') or \
+                nameLower.startswith('jabber')):
             continue
         if propertyValue['type']!='PropertyValue':
             continue
