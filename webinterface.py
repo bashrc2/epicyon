@@ -411,24 +411,24 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
         if '  ' not in postId:
             nickname=getNicknameFromActor(postId)
             if not nickname:
-                index-=1
+                index+=1
                 continue
         else:
             postFields=postId.split('  ')
             if len(postFields)!=3:
-                index=-1
+                index=+1
                 continue
             postDaysSinceEposh=int(postFields[0])
             nickname=postFields[1]
             postId=postFields[2]
         postFilename=locatePost(baseDir,nickname,domain,postId)
         if not postFilename:
-            index-=1
+            index+=1
             continue
         postJsonObject=loadJson(postFilename)
         if postJsonObject:
             if not isPublicPost(postJsonObject):
-                index-=1
+                index+=1
                 continue            
             showIndividualPostIcons=False
             if nickname:
