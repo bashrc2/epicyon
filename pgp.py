@@ -47,7 +47,7 @@ def getPGPpubKey(actorJson: {}) -> str:
             continue
         if propertyValue['type']!='PropertyValue':
             continue
-        if '-BEGIN PUBLIC KEY-' not in propertyValue['value']:
+        if '--BEGIN PGP PUBLIC KEY' not in propertyValue['value']:
             continue
         return propertyValue['value']
     return ''
@@ -90,7 +90,7 @@ def setPGPpubKey(actorJson: {},PGPpubKey: str) -> None:
     if not actorJson.get('attachment'):
         actorJson['attachment']=[]
 
-    if '-BEGIN PUBLIC KEY-' not in PGPpubKey:
+    if '--BEGIN PGP PUBLIC KEY' not in PGPpubKey:
         return
 
     for propertyValue in actorJson['attachment']:
