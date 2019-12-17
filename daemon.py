@@ -4287,43 +4287,69 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('themeDropdown'):
                             setTheme(self.server.baseDir,fields['themeDropdown'])
                             #self.server.iconsCache={}
+                        currentEmailAddress=getEmailAddress(actorJson)
                         if fields.get('email'):
-                            currentEmailAddress=getEmailAddress(actorJson)
                             if fields['email']!=currentEmailAddress:
                                 setEmailAddress(actorJson,fields['email'])
                                 actorChanged=True
+                        else:
+                            if currentEmailAddress:
+                                setEmailAddress(actorJson,'')
+                                actorChanged=True
+                        currentXmppAddress=getXmppAddress(actorJson)
                         if fields.get('xmppAddress'):
-                            currentXmppAddress=getXmppAddress(actorJson)
                             if fields['xmppAddress']!=currentXmppAddress:
                                 setXmppAddress(actorJson,fields['xmppAddress'])
                                 actorChanged=True
+                        else:
+                            if currentXmppAddress:
+                                setXmppAddress(actorJson,'')
+                                actorChanged=True
+                        currentMatrixAddress=getMatrixAddress(actorJson)
                         if fields.get('matrixAddress'):
-                            currentMatrixAddress=getMatrixAddress(actorJson)
                             if fields['matrixAddress']!=currentMatrixAddress:
                                 setMatrixAddress(actorJson,fields['matrixAddress'])
                                 actorChanged=True
+                        else:
+                            if currentMatrixAddress:
+                                setMatrixAddress(actorJson,'')
+                                actorChanged=True                                
+                        currentPGPpubKey=getPGPpubKey(actorJson)
                         if fields.get('pgp'):
-                            currentPGPpubKey=getPGPpubKey(actorJson)
                             if fields['pgp']!=currentPGPpubKey:
                                 setPGPpubKey(actorJson,fields['pgp'])
                                 actorChanged=True
+                        else:
+                            if currentPGPpubKey:
+                                setPGPpubKey(actorJson,'')
+                                actorChanged=True
+                        currentDonateUrl=getDonationUrl(actorJson)
                         if fields.get('donateUrl'):
-                            currentDonateUrl=getDonationUrl(actorJson)
                             if fields['donateUrl']!=currentDonateUrl:
                                 setDonationUrl(actorJson,fields['donateUrl'])
+                                actorChanged=True
+                        else:
+                            if currentDonateUrl:
+                                setDonationUrl(actorJson,'')
                                 actorChanged=True
                         if fields.get('instanceTitle'):
                             currInstanceTitle=getConfigParam(self.server.baseDir,'instanceTitle')
                             if fields['instanceTitle']!=currInstanceTitle:
                                 setConfigParam(self.server.baseDir,'instanceTitle',fields['instanceTitle'])
+                        currInstanceDescriptionShort=getConfigParam(self.server.baseDir,'instanceDescriptionShort')
                         if fields.get('instanceDescriptionShort'):
-                            currInstanceDescriptionShort=getConfigParam(self.server.baseDir,'instanceDescriptionShort')
                             if fields['instanceDescriptionShort']!=currInstanceDescriptionShort:
                                 setConfigParam(self.server.baseDir,'instanceDescriptionShort',fields['instanceDescriptionShort'])
+                        else:
+                            if currInstanceDescriptionShort:
+                                setConfigParam(self.server.baseDir,'instanceDescriptionShort','')
+                        currInstanceDescription=getConfigParam(self.server.baseDir,'instanceDescription')
                         if fields.get('instanceDescription'):
-                            currInstanceDescription=getConfigParam(self.server.baseDir,'instanceDescription')
                             if fields['instanceDescription']!=currInstanceDescription:
                                 setConfigParam(self.server.baseDir,'instanceDescription',fields['instanceDescription'])
+                        else:
+                            if currInstanceDescription:
+                                setConfigParam(self.server.baseDir,'instanceDescription','')
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:
                                 actorTags={}
@@ -4337,6 +4363,10 @@ class PubServer(BaseHTTPRequestHandler):
                                     actorJson['tag']=[]
                                     for tagName,tag in actorTags.items():
                                         actorJson['tag'].append(tag)
+                                actorChanged=True
+                        else:
+                            if actorJson['summary']:
+                                actorJson['summary']=''
                                 actorChanged=True
                         if fields.get('moderators'):
                             adminNickname=getConfigParam(self.server.baseDir,'admin')
