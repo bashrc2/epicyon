@@ -25,6 +25,10 @@ from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from metadata import metaDataNodeInfo
 from metadata import metaDataInstance
+from pgp import getEmailAddress
+from pgp import setEmailAddress
+from pgp import getPGPpubKey
+from pgp import setPGPpubKey
 from xmpp import getXmppAddress
 from xmpp import setXmppAddress
 from matrix import getMatrixAddress
@@ -1170,6 +1174,7 @@ class PubServer(BaseHTTPRequestHandler):
                    if len(optionsList)>3:
                        optionsLink=optionsList[3]
                    donateUrl=None
+                   PGPpubKey=None
                    xmppAddress=None
                    matrixAddress=None
                    actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
@@ -1177,6 +1182,8 @@ class PubServer(BaseHTTPRequestHandler):
                        donateUrl=getDonationUrl(actorJson)
                        xmppAddress=getXmppAddress(actorJson)
                        matrixAddress=getMatrixAddress(actorJson)
+                       emailAddress=getEmailAddress(actorJson)
+                       PGPpubKey=getPGPpubKey(actorJson)
                    msg=htmlPersonOptions(self.server.translate, \
                                          self.server.baseDir, \
                                          self.server.domain, \
@@ -1185,7 +1192,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          optionsProfileUrl, \
                                          optionsLink, \
                                          pageNumber,donateUrl, \
-                                         xmppAddress,matrixAddress).encode()
+                                         xmppAddress,matrixAddress, \
+                                         PGPpubKey,emailAddress).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
                    return
@@ -4279,6 +4287,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('themeDropdown'):
                             setTheme(self.server.baseDir,fields['themeDropdown'])
                             #self.server.iconsCache={}
+                        if fields.get('email'):
+                            currentEmailAddress=getEmailAddress(actorJson)
+                            if fields['emailAddress']!=currentEmailAddress:
+                                setEmailAddress(actorJson,fields['email'])
+                                actorChanged=True
                         if fields.get('xmppAddress'):
                             currentXmppAddress=getXmppAddress(actorJson)
                             if fields['xmppAddress']!=currentXmppAddress:
@@ -4288,6 +4301,11 @@ class PubServer(BaseHTTPRequestHandler):
                             currentMatrixAddress=getMatrixAddress(actorJson)
                             if fields['matrixAddress']!=currentMatrixAddress:
                                 setMatrixAddress(actorJson,fields['matrixAddress'])
+                                actorChanged=True
+                        if fields.get('pgp'):
+                            currentPGPpubKey=getPGPpubKey(actorJson)
+                            if fields['pgp']!=currentPGPpubKey:
+                                setPGPpubKey(actorJson,fields['pgp'])
                                 actorChanged=True
                         if fields.get('donateUrl'):
                             currentDonateUrl=getDonationUrl(actorJson)

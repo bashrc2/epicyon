@@ -18,6 +18,8 @@ from shutil import copyfileobj
 from pprint import pprint
 from person import personBoxJson
 from person import isPersonSnoozed
+from pgp import getEmailAddress
+from pgp import getPGPpubKey
 from xmpp import getXmppAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
@@ -588,6 +590,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     displayNickname=nickname
     bioStr=''
     donateUrl=''
+    emailAddress=''
+    PGPpubKey=''
     xmppAddress=''
     matrixAddress=''
     manuallyApprovesFollowers=''
@@ -596,6 +600,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
         donateUrl=getDonationUrl(actorJson)
         xmppAddress=getXmppAddress(actorJson)
         matrixAddress=getMatrixAddress(actorJson)
+        emailAddress=getEmailAddress(actorJson)
+        PGPpubKey=getPGPpubKey(actorJson)
         if actorJson.get('name'):
             displayNickname=actorJson['name']
         if actorJson.get('summary'):
@@ -721,6 +727,10 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <input type="text" name="xmppAddress" value="'+xmppAddress+'">'
     editProfileForm+='<label class="labels">Matrix</label><br>'
     editProfileForm+='      <input type="text" name="matrixAddress" value="'+matrixAddress+'">'
+    editProfileForm+='<label class="labels">Email</label><br>'
+    editProfileForm+='      <input type="text" name="email" value="'+emailAddress+'">'
+    editProfileForm+='<label class="labels">PGP</label><br>'
+    editProfileForm+='      <textarea id="message" name="pgp" style="height:100px">'+PGPpubKey+'</textarea>'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <label class="labels">'+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'</label><br><br>'
@@ -1526,17 +1536,23 @@ def htmlProfile(defaultTimeline: str, \
 
     donateSection=''
     donateUrl=getDonationUrl(profileJson)
+    PGPpubKey=getPGPpubKey(profileJson)
+    emailAddress=getEmailAddress(profileJson)
     xmppAddress=getXmppAddress(profileJson)
     matrixAddress=getMatrixAddress(profileJson)
-    if donateUrl or xmppAddress or matrixAddress:
+    if donateUrl or xmppAddress or matrixAddress or PGPpubKey or emailAddress:
         donateSection='<div class="container">\n'
         donateSection+='  <center>\n'
         if donateUrl:
             donateSection+='    <p><a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a></p>\n'
+        if emailAddress:
+            donateSection+='<p>Email: '+emailAddress+'</p>\n'
         if xmppAddress:
             donateSection+='<p>XMPP: '+xmppAddress+'</p>\n'
         if matrixAddress:
             donateSection+='<p>Matrix: '+matrixAddress+'</p>\n'
+        if PGPpubKey:
+            donateSection+='<p>PGP: '+PGPpubKey+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 
@@ -3340,7 +3356,9 @@ def htmlPersonOptions(translate: {},baseDir: str, \
                       pageNumber: int, \
                       donateUrl: str, \
                       xmppAddress: str, \
-                      matrixAddress: str) -> str:
+                      matrixAddress: str, \
+                      PGPpubKey: str, \
+                      emailAddress) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain,optionsPort=getDomainFromActor(optionsActor)
@@ -3397,10 +3415,14 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <a href="'+optionsActor+'">'
     optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
+    if emailAddress:
+        optionsStr+='<p class="imText">Email: '+emailAddress+'</p>'
     if xmppAddress:
         optionsStr+='<p class="imText">XMPP: '+xmppAddress+'</p>'
     if matrixAddress:
         optionsStr+='<p class="imText">Matrix: '+matrixAddress+'</p>'
+    if PGPpubKey:
+        optionsStr+='<p class="imText">PGP: '+PGPpubKey+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
     optionsStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'
