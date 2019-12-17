@@ -1553,7 +1553,9 @@ def htmlProfile(defaultTimeline: str, \
             donateSection+='<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
         donateSection+='  </center>\n'
         if PGPpubKey:
+            donateSection+='<div style="text-align: center;">'
             donateSection+='<p class="pgp">'+translate['PGP']+': '+PGPpubKey.replace('\n','<br>')+'</p>\n'
+            donateSection+='</div>'
         donateSection+='</div>\n'
 
     if not authorized:

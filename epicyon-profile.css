@@ -291,8 +291,7 @@ a:link {
 
 .pgp {
     float: left;
-    margin: 0% 20%;
-    font-size: var(--font-size4);
+    font-size: var(--font-size5);
     color: var(--main-link-color);
     font-family: 'monospace';
 }

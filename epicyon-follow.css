@@ -76,7 +76,8 @@ a:link {
 }
 
 .pgp {
-    font-size: var(--font-size4);
+    float: left;
+    font-size: var(--font-size5);
     color: var(--main-link-color);
     font-family: 'monospace';
 }
