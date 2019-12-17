@@ -730,7 +730,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='<label class="labels">'+translate['Email']+'</label><br>'
     editProfileForm+='      <input type="text" name="email" value="'+emailAddress+'">'
     editProfileForm+='<label class="labels">'+translate['PGP']+'</label><br>'
-    editProfileForm+='      <textarea id="message" name="pgp" style="height:100px">'+PGPpubKey+'</textarea>'
+    editProfileForm+='      <textarea id="message" placeholder="-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" style="height:100px">'+PGPpubKey+'</textarea>'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <label class="labels">'+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'</label><br><br>'
