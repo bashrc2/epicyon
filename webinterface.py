@@ -19,6 +19,7 @@ from pprint import pprint
 from person import personBoxJson
 from person import isPersonSnoozed
 from xmpp import getXmppAddress
+from matrix import getMatrixAddress
 from donate import getDonationUrl
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
@@ -588,11 +589,13 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     bioStr=''
     donateUrl=''
     xmppAddress=''
+    matrixAddress=''
     manuallyApprovesFollowers=''
     actorJson=loadJson(actorFilename)
     if actorJson:
         donateUrl=getDonationUrl(actorJson)
         xmppAddress=getXmppAddress(actorJson)
+        matrixAddress=getMatrixAddress(actorJson)
         if actorJson.get('name'):
             displayNickname=actorJson['name']
         if actorJson.get('summary'):
@@ -716,6 +719,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
     editProfileForm+='<label class="labels">XMPP</label><br>'
     editProfileForm+='      <input type="text" name="xmppAddress" value="'+xmppAddress+'">'
+    editProfileForm+='<label class="labels">Matrix</label><br>'
+    editProfileForm+='      <input type="text" name="matrixAddress" value="'+matrixAddress+'">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <label class="labels">'+translate['The files attached below should be no larger than 10MB in total uploaded at once.']+'</label><br><br>'
@@ -1522,13 +1527,16 @@ def htmlProfile(defaultTimeline: str, \
     donateSection=''
     donateUrl=getDonationUrl(profileJson)
     xmppAddress=getXmppAddress(profileJson)
-    if donateUrl or xmppAddress:
+    matrixAddress=getMatrixAddress(profileJson)
+    if donateUrl or xmppAddress or matrixAddress:
         donateSection='<div class="container">\n'
         donateSection+='  <center>\n'
         if donateUrl:
             donateSection+='    <p><a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a></p>\n'
         if xmppAddress:
             donateSection+='<p>XMPP: '+xmppAddress+'</p>\n'
+        if matrixAddress:
+            donateSection+='<p>Matrix: '+matrixAddress+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 
@@ -3331,7 +3339,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
                       optionsLink: str, \
                       pageNumber: int, \
                       donateUrl: str, \
-                      xmppAddress: str) -> str:
+                      xmppAddress: str, \
+                      matrixAddress: str) -> str:
     """Show options for a person: view/follow/block/report
     """
     optionsDomain,optionsPort=getDomainFromActor(optionsActor)
@@ -3390,6 +3399,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     if xmppAddress:
         optionsStr+='<p>XMPP: '+xmppAddress+'</p>'
+    if matrixAddress:
+        optionsStr+='<p>Matrix: '+matrixAddress+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
     optionsStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'

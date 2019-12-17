@@ -27,6 +27,8 @@ from metadata import metaDataNodeInfo
 from metadata import metaDataInstance
 from xmpp import getXmppAddress
 from xmpp import setXmppAddress
+from matrix import getMatrixAddress
+from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
 from person import activateAccount
@@ -1169,10 +1171,12 @@ class PubServer(BaseHTTPRequestHandler):
                        optionsLink=optionsList[3]
                    donateUrl=None
                    xmppAddress=None
+                   matrixAddress=None
                    actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
                    if actorJson:
                        donateUrl=getDonationUrl(actorJson)
                        xmppAddress=getXmppAddress(actorJson)
+                       matrixAddress=getMatrixAddress(actorJson)
                    msg=htmlPersonOptions(self.server.translate, \
                                          self.server.baseDir, \
                                          self.server.domain, \
@@ -1181,7 +1185,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          optionsProfileUrl, \
                                          optionsLink, \
                                          pageNumber,donateUrl, \
-                                         xmppAddress).encode()
+                                         xmppAddress,matrixAddress).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
                    return
@@ -4279,6 +4283,11 @@ class PubServer(BaseHTTPRequestHandler):
                             currentXmppAddress=getXmppAddress(actorJson)
                             if fields['xmppAddress']!=currentXmppAddress:
                                 setXmppAddress(actorJson,fields['xmppAddress'])
+                                actorChanged=True
+                        if fields.get('matrixAddress'):
+                            currentMatrixAddress=getMatrixAddress(actorJson)
+                            if fields['matrixAddress']!=currentMatrixAddress:
+                                setMatrixAddress(actorJson,fields['matrixAddress'])
                                 actorChanged=True
                         if fields.get('donateUrl'):
                             currentDonateUrl=getDonationUrl(actorJson)
