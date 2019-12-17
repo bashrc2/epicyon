@@ -714,7 +714,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <textarea id="message" name="bio" style="height:200px">'+bioStr+'</textarea>'
     editProfileForm+='<label class="labels">'+translate['Donations link']+'</label><br>'
     editProfileForm+='      <input type="text" placeholder="https://..." name="donateUrl" value="'+donateUrl+'">'
-    editProfileForm+='<label class="labels">'+translate['XMPP']+'</label><br>'
+    editProfileForm+='<label class="labels">XMPP</label><br>'
     editProfileForm+='      <input type="text" name="xmppAddress" value="'+xmppAddress+'">'
     editProfileForm+='    </div>'
     editProfileForm+='    <div class="container">'
