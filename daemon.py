@@ -1674,7 +1674,8 @@ class PubServer(BaseHTTPRequestHandler):
                    self.path=self.path.split('?')[0]
                # show the search screen
                msg=htmlSearch(self.server.translate, \
-                              self.server.baseDir,self.path).encode()
+                              self.server.baseDir,self.path, \
+                              self.server.defaultTimeline).encode()
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False
