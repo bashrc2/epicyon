@@ -4289,7 +4289,7 @@ class PubServer(BaseHTTPRequestHandler):
                             #self.server.iconsCache={}
                         if fields.get('email'):
                             currentEmailAddress=getEmailAddress(actorJson)
-                            if fields['emailAddress']!=currentEmailAddress:
+                            if fields['email']!=currentEmailAddress:
                                 setEmailAddress(actorJson,fields['email'])
                                 actorChanged=True
                         if fields.get('xmppAddress'):
