@@ -25,6 +25,8 @@ from webfinger import webfingerLookup
 from webfinger import webfingerHandle
 from metadata import metaDataNodeInfo
 from metadata import metaDataInstance
+from xmpp import getXmppAddress
+from xmpp import setXmppAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
 from person import activateAccount
@@ -1166,9 +1168,11 @@ class PubServer(BaseHTTPRequestHandler):
                    if len(optionsList)>3:
                        optionsLink=optionsList[3]
                    donateUrl=None
+                   xmppAddress=None
                    actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
                    if actorJson:
                        donateUrl=getDonationUrl(actorJson)
+                       xmppAddress=getXmppAddress(actorJson)
                    msg=htmlPersonOptions(self.server.translate, \
                                          self.server.baseDir, \
                                          self.server.domain, \
@@ -1176,7 +1180,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          optionsActor, \
                                          optionsProfileUrl, \
                                          optionsLink, \
-                                         pageNumber,donateUrl).encode()
+                                         pageNumber,donateUrl, \
+                                         xmppAddress).encode()
                    self._set_headers('text/html',len(msg),cookie)
                    self._write(msg)
                    return
@@ -4270,6 +4275,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if fields.get('themeDropdown'):
                             setTheme(self.server.baseDir,fields['themeDropdown'])
                             #self.server.iconsCache={}
+                        if fields.get('xmppAddress'):
+                            currentXmppAddress=getXmppAddress(actorJson)
+                            if fields['xmppAddress']!=currentXmppAddress:
+                                setXmppAddress(actorJson,fields['xmppAddress'])
+                                actorChanged=True
                         if fields.get('donateUrl'):
                             currentDonateUrl=getDonationUrl(actorJson)
                             if fields['donateUrl']!=currentDonateUrl:
