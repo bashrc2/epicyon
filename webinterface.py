@@ -406,7 +406,7 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
             iconsDir+'/pageup.png" title="'+translate['Page up']+ \
             '" alt="'+translate['Page up']+'"></a></center>'
     index=startIndex
-    while index>=endIndex:
+    while index<endIndex:
         postId=lines[index].strip('\n')
         if '  ' not in postId:
             nickname=getNicknameFromActor(postId)
