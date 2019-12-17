@@ -1552,7 +1552,7 @@ def htmlProfile(defaultTimeline: str, \
         if matrixAddress:
             donateSection+='<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
         if PGPpubKey:
-            donateSection+='<p class="pgp">'+translate['PGP']+': '+PGPpubKey.replace('\n','<br>')+'</p>\n'
+            donateSection+='<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 
@@ -3416,13 +3416,13 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     if emailAddress:
-        optionsStr+='<p class="imText">Email: '+emailAddress+'</p>'
+        optionsStr+='<p class="imText">'+translate['Email']+': '+emailAddress+'</p>'
     if xmppAddress:
-        optionsStr+='<p class="imText">XMPP: '+xmppAddress+'</p>'
+        optionsStr+='<p class="imText">'+translate['XMPP']+': '+xmppAddress+'</p>'
     if matrixAddress:
-        optionsStr+='<p class="imText">Matrix: '+matrixAddress+'</p>'
+        optionsStr+='<p class="imText">'+translate['Matrix']+': '+matrixAddress+'</p>'
     if PGPpubKey:
-        optionsStr+='<p class="pgp">PGP: '+PGPpubKey.replace('\n','<br>')+'</p>'
+        optionsStr+='<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
     optionsStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'
