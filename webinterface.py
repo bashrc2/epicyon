@@ -1554,7 +1554,7 @@ def htmlProfile(defaultTimeline: str, \
         donateSection+='  </center>\n'
         if PGPpubKey:
             donateSection+='<div style="text-align: center;">'
-            donateSection+='<p class="pgp">'+translate['PGP']+': '+PGPpubKey.replace('\n','<br>')+'</p>\n'
+            donateSection+='<p id="pgp">'+translate['PGP']+': '+PGPpubKey.replace('\n','<br>')+'</p>\n'
             donateSection+='</div>'
         donateSection+='</div>\n'
 
