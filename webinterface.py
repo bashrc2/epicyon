@@ -370,6 +370,8 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
     # read the index
     with open(hashtagIndexFile, "r") as f:
         lines = f.readlines()
+
+    # read the css
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
@@ -378,17 +380,25 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
         if httpPrefix!='https':
             hashtagSearchCSS=hashtagSearchCSS.replace('https://',httpPrefix+'://')
 
-    startIndex=len(lines)-1-int(pageNumber*postsPerPage)
-    if startIndex<0:
-        startIndex=len(lines)-1
-    endIndex=startIndex-postsPerPage
-    if endIndex<0:
-        endIndex=0
-        
+    # ensure that the page number is in bounds
+    if not pageNumber:
+        pageNumber=1
+    elif pageNumber<1:
+        pageNumber=1
+
+    # get the start end end within the index file
+    startIndex=int((pageNumber-1)*postsPerPage)
+    endIndex=startIndex+postsPerPage
+    noOfLines=len(lines)
+    if endIndex>=noOfLines and noOfLines>0:        
+        endIndex=noOfLines-1
+
+    # add the page title
     hashtagSearchForm=htmlHeader(cssFilename,hashtagSearchCSS)
     hashtagSearchForm+='<script>'+contentWarningScript()+'</script>'
     hashtagSearchForm+='<center><h1>#'+hashtag+'</h1></center>'
-    if startIndex!=len(lines)-1:
+
+    if startIndex>0:
         # previous page link
         hashtagSearchForm+= \
             '<center><a href="/tags/'+hashtag+'?page='+ \
@@ -432,9 +442,9 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
                                      None,True,allowDeletion, \
                                      httpPrefix,projectVersion,'search', \
                                      False,showIndividualPostIcons,False,False,False)
-        index-=1
+        index+=1
 
-    if endIndex>0:
+    if endIndex<noOfLines-1:
         # next page link
         hashtagSearchForm+= \
             '<center><a href="/tags/'+hashtag+'?page='+str(pageNumber+1)+ \

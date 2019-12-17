@@ -114,7 +114,6 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                sendThreads,postLog, \
                                                cachedWebfingers,personCache, \
                                                debug,projectVersion)
-                        os.remove(followActivityfilename)
                         updateApprovedFollowers=True
             else:
                 approvefilenew.write(handle)
