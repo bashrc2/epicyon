@@ -77,13 +77,11 @@ def manualApproveFollowRequest(session,baseDir: str, \
     accountDir=baseDir+'/accounts/'+handle
     approveFollowsFilename=accountDir+'/followrequests.txt'
     if not os.path.isfile(approveFollowsFilename):
-        if debug:
-            print('Manual follow accept: follow requests file '+approveFollowsFilename+' not found')
+        print('Manual follow accept: follow requests file '+approveFollowsFilename+' not found')
         return
     # is the handle in the requests file?
     if approveHandle not in open(approveFollowsFilename).read():
-        if debug:
-            print('Manual follow accept: '+approveHandle+' not in requests file '+approveFollowsFilename)
+        print('Manual follow accept: '+approveHandle+' not in requests file '+approveFollowsFilename)
         return
     
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
