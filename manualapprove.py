@@ -86,6 +86,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
     
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
     updateApprovedFollowers=False
+    followActivityfilename=None
     with open(approveFollowsFilename, 'r') as approvefile:
         for handleOfFollowRequester in approvefile:
             # is this the approved follow?
@@ -113,8 +114,8 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                followJson,acceptedCaps, \
                                                sendThreads,postLog, \
                                                cachedWebfingers,personCache, \
-                                               debug,projectVersion)
-                        updateApprovedFollowers=True
+                                               debug,projectVersion,False)
+                updateApprovedFollowers=True
             else:
                 # this isn't the approved follow so it will remain
                 # in the requests file
@@ -147,5 +148,9 @@ def manualApproveFollowRequest(session,baseDir: str, \
     if approveHandle in open(followersFilename).read():
         # update the follow requests with the handles not yet approved
         os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+        # remove the .follow file
+        if followActivityfilename:
+            if os.path.isfile(followActivityfilename):
+                os.remove(followActivityfilename)
     else:
         os.remove(approveFollowsFilename+'.new')

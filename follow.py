@@ -525,7 +525,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                                   messageJson,acceptedCaps, \
                                   sendThreads,postLog, \
                                   cachedWebfingers,personCache, \
-                                  debug,projectVersion)
+                                  debug,projectVersion,True)
 
 def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
                            nicknameToFollow: str,domainToFollow: str,port: int, \
@@ -534,7 +534,8 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
                            followJson: {},acceptedCaps: [], \
                            sendThreads: [],postLog: [], \
                            cachedWebfingers: {},personCache: {}, \
-                           debug: bool,projectVersion: str):
+                           debug: bool,projectVersion: str, \
+                           removeFollowActivity: bool):
     """The person receiving a follow request accepts the new follower
     and sends back an Accept activity
     """
@@ -555,16 +556,17 @@ def followedAccountAccepts(session,baseDir: str,httpPrefix: str, \
               acceptHandle+' port '+ str(fromPort))
     clientToServer=False
 
-    # remove the follow request json
-    followActivityfilename= \
-        baseDir+'/accounts/'+ \
-        nicknameToFollow+'@'+domainToFollow+'/requests/'+ \
-        nickname+'@'+domain+'.follow'
-    if os.path.isfile(followActivityfilename):
-        try:
-            os.remove(followActivityfilename)
-        except:
-            pass
+    if removeFollowActivity:
+        # remove the follow request json
+        followActivityfilename= \
+            baseDir+'/accounts/'+ \
+            nicknameToFollow+'@'+domainToFollow+'/requests/'+ \
+            nickname+'@'+domain+'.follow'
+        if os.path.isfile(followActivityfilename):
+            try:
+                os.remove(followActivityfilename)
+            except:
+                pass
 
     return sendSignedJson(acceptJson,session,baseDir, \
                           nicknameToFollow,domainToFollow,port, \
