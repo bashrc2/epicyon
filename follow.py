@@ -395,7 +395,7 @@ def storeFollowRequest(baseDir: str, \
             if debug:
                 print('DEBUG: '+approveHandle+' is already awaiting approval')
     else:
-        with open(approveFollowsFilename, "w") as fp:
+        with open(approveFollowsFilename, "w+") as fp:
             fp.write(approveHandle+'\n')
 
     # store the follow request in its own directory

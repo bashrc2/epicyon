@@ -488,10 +488,10 @@ def getCachedPostFilename(baseDir: str,nickname: str,domain: str, \
     """
     cachedPostDir=getCachedPostDirectory(baseDir,nickname,domain)
     if not os.path.isdir(cachedPostDir):
-        print('ERROR: invalid html cache directory '+cachedPostDir)
+        #print('ERROR: invalid html cache directory '+cachedPostDir)
         return None
     if '@' not in cachedPostDir:
-        print('ERROR: invalid html cache directory '+cachedPostDir)
+        #print('ERROR: invalid html cache directory '+cachedPostDir)
         return None
     cachedPostFilename= \
         cachedPostDir+ \

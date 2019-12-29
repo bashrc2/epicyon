@@ -72,30 +72,32 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                projectVersion: str) -> None:
     """Manually approve a follow request
     """
-    print('Manually approving follow request from '+approveHandle)
     handle=nickname+'@'+domain
-    accountsDir=baseDir+'/accounts/'+handle
-    approveFollowsFilename=accountsDir+'/followrequests.txt'
+    print('Manual follow accept: '+handle+' approving follow request from '+approveHandle)
+    accountDir=baseDir+'/accounts/'+handle
+    approveFollowsFilename=accountDir+'/followrequests.txt'
     if not os.path.isfile(approveFollowsFilename):
         if debug:
-            print('WARN: Follow requests file '+approveFollowsFilename+' not found')
+            print('Manual follow accept: follow requests file '+approveFollowsFilename+' not found')
         return
+    # is the handle in the requests file?
     if approveHandle not in open(approveFollowsFilename).read():
         if debug:
-            print(handle+' not in '+approveFollowsFilename)
+            print('Manual follow accept: '+approveHandle+' not in requests file '+approveFollowsFilename)
         return
     
     approvefilenew = open(approveFollowsFilename+'.new', 'w+')
     updateApprovedFollowers=False
     with open(approveFollowsFilename, 'r') as approvefile:
-        for handle in approvefile:
-            if handle.startswith(approveHandle):
-                handle=handle.replace('\n','')
+        for handleOfFollowRequester in approvefile:
+            # is this the approved follow?
+            if handleOfFollowRequester.startswith(approveHandle):
+                handleOfFollowRequester=handleOfFollowRequester.replace('\n','')
                 port2=port
-                if ':' in handle:
-                    port2=int(handle.split(':')[1])
-                requestsDir=accountsDir+'/requests'
-                followActivityfilename=requestsDir+'/'+handle+'.follow'
+                if ':' in handleOfFollowRequester:
+                    port2=int(handleOfFollowRequester.split(':')[1])
+                requestsDir=accountDir+'/requests'
+                followActivityfilename=requestsDir+'/'+handleOfFollowRequester+'.follow'
                 if os.path.isfile(followActivityfilename):
                     followJson=loadJson(followActivityfilename)
                     if followJson:
@@ -105,7 +107,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
                         if ':' in approveDomain:
                             approvePort=approveDomain.split(':')[1]
                             approveDomain=approveDomain.split(':')[0]
-                        print('Sending Accept for '+handle+' follow request from '+approveHandle)
+                        print('Manual follow accept: Sending Accept for '+handle+' follow request from '+approveNickname+'@'+approveDomain)
                         followedAccountAccepts(session,baseDir,httpPrefix, \
                                                nickname,domain,port, \
                                                approveNickname,approveDomain,approvePort, \
@@ -116,13 +118,15 @@ def manualApproveFollowRequest(session,baseDir: str, \
                                                debug,projectVersion)
                         updateApprovedFollowers=True
             else:
-                approvefilenew.write(handle)
+                # this isn't the approved follow so it will remain
+                # in the requests file
+                approvefilenew.write(handleOfFollowRequester)
     approvefilenew.close()
-    os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
 
+    followersFilename=accountDir+'/followers.txt'
     if updateApprovedFollowers:
         # update the followers
-        followersFilename=accountsDir+'/followers.txt'
+        print('Manual follow accept: updating '+followersFilename)
         if os.path.isfile(followersFilename):
             if approveHandle not in open(followersFilename).read():
                 try:
@@ -131,8 +135,19 @@ def manualApproveFollowRequest(session,baseDir: str, \
                         followersFile.seek(0, 0)
                         followersFile.write(approveHandle+'\n'+content)
                 except Exception as e:
-                    print('WARN: Failed to write entry to followers file '+str(e))
+                    print('WARN: Manual follow accept. Failed to write entry to followers file '+str(e))
+            else:
+                print('WARN: Manual follow accept: '+approveHandle+' already exists in '+followersFilename)
         else:
+            print('Manual follow accept: first follower accepted for '+handle+' is '+approveHandle)
             followersFile=open(followersFilename, "w+")
             followersFile.write(approveHandle+'\n')
             followersFile.close()
+
+    # only update the follow requests file if the follow is confirmed to be
+    # in followers.txt
+    if approveHandle in open(followersFilename).read():
+        # update the follow requests with the handles not yet approved
+        os.rename(approveFollowsFilename+'.new',approveFollowsFilename)
+    else:
+        os.remove(approveFollowsFilename+'.new')
