@@ -28,6 +28,19 @@ from auth import createBasicAuthHeader
 from auth import createPassword
 from session import postJson
 
+def preApprovedFollower(baseDir: str, \
+                        nickname: str,domain: str, \
+                        approveHandle: str) -> bool:
+    """Is the given handle an already manually approved follower?
+    """
+    handle=nickname+'@'+domain
+    accountDir=baseDir+'/accounts/'+handle
+    approvedFilename=accountDir+'/approved.txt'
+    if os.path.isfile(approvedFilename):
+        if approveHandle in open(approvedFilename).read():
+            return True
+    return False
+
 def removeFromFollowBase(baseDir: str, \
                          nickname: str,domain: str, \
                          acceptOrDenyHandle: str,followFile: str, \
@@ -331,9 +344,14 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
     return following
 
 def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
-                           domainToFollow: str,debug: bool) -> bool:
+                           domainToFollow: str,debug: bool, \
+                           followRequestHandle: str) -> bool:
     """ Returns the policy for follower approvals
     """
+    if preApprovedFollower(baseDir,nicknameToFollow,domainToFollow, \
+                           followRequestHandle):
+        return False
+
     manuallyApproveFollows=False
     if ':' in domainToFollow:
         domainToFollow=domainToFollow.split(':')[0]
@@ -487,8 +505,9 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         return True
     
     # what is the followers policy?
+    approveHandle=nickname+'@'+domainFull
     if followApprovalRequired(baseDir,nicknameToFollow, \
-                              domainToFollow,debug):
+                              domainToFollow,debug,approveHandle):
         print('Storing follow request for approval')
         return storeFollowRequest(baseDir, \
                                   nicknameToFollow,domainToFollow,port, \
@@ -499,9 +518,6 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         # update the followers
         if os.path.isdir(baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow):
             followersFilename=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow+'/followers.txt'
-            approveHandle=nickname+'@'+domain
-            if fromPort:
-                approveHandle=approveHandle+':'+str(fromPort)
             print('Updating followers file: '+followersFilename+' adding '+approveHandle)
             if os.path.isfile(followersFilename):
                 if approveHandle not in open(followersFilename).read():
