@@ -2210,7 +2210,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
         avatarLink='    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'
         avatarLink+='    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>'
-    avatarImageInPost= '  <div class="timeline-avatar">'+avatarLink+'</div>'
+    avatarImageInPost='  <div class="timeline-avatar">'+avatarLink+'</div>'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -2265,7 +2265,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 addEmojiToDisplayName(baseDir,httpPrefix, \
                                       nickname,domain, \
                                       displayName,False)
-        titleStr+='<a href="'+messageId+'">'+displayName+'</a>'
+        titleStr+='<a href="'+avatarLink+'">'+displayName+'</a>'
     else:
         if not messageId:
             #pprint(postJsonObject)
@@ -2276,7 +2276,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if not actorDomain:
             #pprint(postJsonObject)
             print('ERROR: no actorDomain')
-        titleStr+='<a href="'+messageId+'">@'+actorNickname+'@'+actorDomain+'</a>'
+        titleStr+='<a href="'+avatarLink+'">@'+actorNickname+'@'+actorDomain+'</a>'
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
