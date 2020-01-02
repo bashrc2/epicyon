@@ -2612,7 +2612,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
         footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr
-        footerStr+='<span class="'+timeClass+'">'+publishedStr+'</span>'
+        footerStr+='<a href="'+messageId+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
         footerStr+='</div>'
 
     if not postJsonObject['object'].get('sensitive'):
