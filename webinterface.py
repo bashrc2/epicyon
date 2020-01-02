@@ -2265,7 +2265,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 addEmojiToDisplayName(baseDir,httpPrefix, \
                                       nickname,domain, \
                                       displayName,False)
-        titleStr+='<a href="'+postActor+'">'+displayName+'</a>'
+        titleStr+='<a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'+displayName+'</a>'
     else:
         if not messageId:
             #pprint(postJsonObject)
@@ -2276,7 +2276,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if not actorDomain:
             #pprint(postJsonObject)
             print('ERROR: no actorDomain')
-        titleStr+='<a href="'+postActor+'">@'+actorNickname+'@'+actorDomain+'</a>'
+        titleStr+='<a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">@'+actorNickname+'@'+actorDomain+'</a>'
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
