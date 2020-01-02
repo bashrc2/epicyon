@@ -348,6 +348,7 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
                            followRequestHandle: str) -> bool:
     """ Returns the policy for follower approvals
     """
+    # has this handle already been manually approved?
     if preApprovedFollower(baseDir,nicknameToFollow,domainToFollow, \
                            followRequestHandle):
         return False

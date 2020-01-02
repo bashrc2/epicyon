@@ -2602,7 +2602,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             publishedStr=publishedStr.replace('T',' ').split('.')[0]
             datetimeObject = parse(publishedStr)
         publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
-    footerStr='<span class="'+timeClass+'">'+publishedStr+'</span>\n'
+    footerStr='<a href="'+messageId+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:
