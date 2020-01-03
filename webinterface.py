@@ -2588,7 +2588,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             attachmentStr+=translate['Your browser does not support the audio tag.']
                             attachmentStr+='</audio></center>'
                             attachmentCtr+=1
-            attachmentStr+='</div><br><br>'
+            attachmentStr+='<br></div>'
 
     publishedStr=''
     if postJsonObject['object'].get('published'):
