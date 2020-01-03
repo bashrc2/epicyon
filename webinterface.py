@@ -2617,6 +2617,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     if not postJsonObject['object'].get('sensitive'):
         postJsonObject['object']['sensitive']=False
+
+    # add an extra line if there is a content warning, for better vertical spacing on mobile
+    if postJsonObject['object']['sensitive']:        
+        footerStr='<br>'+footerStr
+
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary']=''
 
