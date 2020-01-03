@@ -2588,7 +2588,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                             attachmentStr+=translate['Your browser does not support the audio tag.']
                             attachmentStr+='</audio></center>'
                             attachmentCtr+=1
-            attachmentStr+='<br></div>'
+            attachmentStr+='</div>'
 
     publishedStr=''
     if postJsonObject['object'].get('published'):
@@ -2619,7 +2619,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         postJsonObject['object']['sensitive']=False
 
     # add an extra line if there is a content warning, for better vertical spacing on mobile
-    if postJsonObject['object']['sensitive']:        
+    if postJsonObject['object']['sensitive'] or attachmentStr:
         footerStr='<br>'+footerStr
 
     if not postJsonObject['object'].get('summary'):
