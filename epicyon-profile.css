@@ -328,9 +328,9 @@ a:link {
 
 .container img.attachment {
     max-width: 100%;
-    margin-left: 10%;
-    width: 80%;
-    border-radius: 10%;
+    margin-left: 5%;
+    width: 90%;
+    border-radius: 5%;
 }
 .container img.right {
     float: right;
