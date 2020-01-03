@@ -330,7 +330,7 @@ a:link {
     max-width: 120%;
     margin-left: 5%;
     width: 120%;
-    border-radius: 5%;
+    padding-bottom: 3%;
 }
 .container img.right {
     float: right;
