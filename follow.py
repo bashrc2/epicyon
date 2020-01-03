@@ -370,6 +370,26 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
             print('DEBUG: Actor file not found: '+actorFilename)
     return manuallyApproveFollows
 
+def noOfFollowRequests(baseDir: str, \
+                       nicknameToFollow: str,domainToFollow: str, \
+                       nickname: str,domain: str,fromPort: int, \
+                       followType: str) -> int:
+    """Returns the current number of follow requests
+    """
+    accountsDir=baseDir+'/accounts/'+nicknameToFollow+'@'+domainToFollow
+    approveFollowsFilename=accountsDir+'/followrequests.txt'
+    if not os.path.isfile(approveFollowsFilename):
+        return 0
+    ctr=0
+    with open(approveFollowsFilename, "r") as f:
+        lines = f.readlines()
+        if followType != "onion":
+            return len(lines)
+        for l in lines:
+            if '.onion' in l:
+                ctr+=1
+    return ctr
+
 def storeFollowRequest(baseDir: str, \
                        nicknameToFollow: str,domainToFollow: str,port: int, \
                        nickname: str,domain: str,fromPort: int, \
@@ -509,6 +529,19 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     approveHandle=nickname+'@'+domainFull
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug,approveHandle):
+        if not domain.endswith('.onion'):
+            if noOfFollowRequests(baseDir, \
+                                  nicknameToFollow, \
+                                  domainToFollow,'') > 10:
+                print('Too many follow requests')
+                return False
+        else:
+            if noOfFollowRequests(baseDir, \
+                                  nicknameToFollow, \
+                                  domainToFollow,'onion') > 5:
+                print('Too many follow requests from onion addresses')
+                return False
+
         print('Storing follow request for approval')
         return storeFollowRequest(baseDir, \
                                   nicknameToFollow,domainToFollow,port, \
