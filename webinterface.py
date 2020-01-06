@@ -3716,7 +3716,7 @@ def htmlCalendar(translate: {}, \
     nickname=getNicknameFromActor(actor)
     events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
 
-    months=('Jaruary','February','March','April','May','June','July','August','September','October','November','December')
+    months=('January','February','March','April','May','June','July','August','September','October','November','December')
     monthName=translate[months[monthNumber-1]]
 
     if os.path.isfile(baseDir+'/img/calendar-background.png'):
