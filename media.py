@@ -20,16 +20,21 @@ from shutil import rmtree
 from shutil import move
 
 def removeMetaData(imageFilename: str,outputFilename: str) -> None:
-    imageFile = open(imageFilename)
-    image = Image.open(imageFilename)
-    if not image:
-        return
-    data = list(image.getdata())
-    if not data:
-        return
-    imageWithoutExif = Image.new(image.mode, image.size)
-    imageWithoutExif.putdata(data)
-    imageWithoutExif.save(outputFilename)
+    """TODO At present metadata removal results in garbled images
+    so this is a simple copy for now
+    """
+    copyfile(imageFilename,outputFilename)
+    return
+    #imageFile = open(imageFilename)
+    #image = Image.open(imageFilename)
+    #if not image:
+    #    return
+    #data = list(image.getdata())
+    #if not data:
+    #    return
+    #imageWithoutExif = Image.new(image.mode, image.size)
+    #imageWithoutExif.putdata(data)
+    #imageWithoutExif.save(outputFilename)
 
 def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
