@@ -20,21 +20,16 @@ from shutil import rmtree
 from shutil import move
 
 def removeMetaData(imageFilename: str,outputFilename: str) -> None:
-    """TODO At present metadata removal results in garbled images
-    so this is a simple copy for now
+    """Attempts to do this with pure python didn't work well,
+    so better to use a dedicated tool if one is installed
     """
     copyfile(imageFilename,outputFilename)
-    return
-    #imageFile = open(imageFilename)
-    #image = Image.open(imageFilename)
-    #if not image:
-    #    return
-    #data = list(image.getdata())
-    #if not data:
-    #    return
-    #imageWithoutExif = Image.new(image.mode, image.size)
-    #imageWithoutExif.putdata(data)
-    #imageWithoutExif.save(outputFilename)
+    if os.path.isfile('/usr/bin/exiftool'):
+        print('Removing metadata from '+outputFilename+' using exiftool')
+        os.system('exiftool -all= '+outputFilename)
+    elif os.path.isfile('/usr/bin/mogrify'):
+        print('Removing metadata from '+outputFilename+' using mogrify')
+        os.system('/usr/bin/mogrify -strip '+outputFilename)
 
 def getImageHash(imageFilename: str) -> str:
     return blurencode(numpy.array(Image.open(imageFilename).convert("RGB")))
