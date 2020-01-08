@@ -529,16 +529,18 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     approveHandle=nickname+'@'+domainFull
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug,approveHandle):
-        if not domain.endswith('.onion'):
+        if not domain.endswith('.onion'):            
             if noOfFollowRequests(baseDir, \
-                                  nicknameToFollow, \
-                                  domainToFollow,'') > 10:
+                                  nicknameToFollow,domainToFollow, \
+                                  nickname,domain,fromPort, \
+                                  '') > 10:
                 print('Too many follow requests')
                 return False
         else:
             if noOfFollowRequests(baseDir, \
-                                  nicknameToFollow, \
-                                  domainToFollow,'onion') > 5:
+                                  nicknameToFollow,domainToFollow, \
+                                  nickname,domain,fromPort, \
+                                  'onion') > 5:
                 print('Too many follow requests from onion addresses')
                 return False
 
