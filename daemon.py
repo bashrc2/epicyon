@@ -296,11 +296,14 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('ACCEPT: '+self.headers['Accept'])
         if 'image/' in self.headers['Accept']:
-            return False
+            if 'text/html' not in self.headers['Accept']:
+                return False
         if 'video/' in self.headers['Accept']:
-            return False
+            if 'text/html' not in self.headers['Accept']:
+                return False
         if 'audio/' in self.headers['Accept']:
-            return False
+            if 'text/html' not in self.headers['Accept']:
+                return False
         if self.headers['Accept'].startswith('*'):
             return False
         if 'json' in self.headers['Accept']:
