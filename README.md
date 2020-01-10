@@ -21,7 +21,8 @@ On Arch/Parabola:
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
                python-beautifulsoup4 imagemagick python-pillow \
-			   perl-image-exiftool python-numpy python-dateutil certbot
+			   python-requests perl-image-exiftool python-numpy \
+			   python-dateutil certbot
 ```
 
 Or on Debian:
@@ -31,8 +32,8 @@ sudo apt install -y \
     tor python3-pip python3-socks imagemagick \
     python3-numpy python3-setuptools python3-crypto \
     python3-dateutil python3-pil.imagetk python3-idna \
-	libimage-exiftool-perl certbot nginx
-sudo pip3 install requests beautifulsoup4 pycryptodome
+	python3-requests libimage-exiftool-perl certbot nginx
+sudo pip3 install beautifulsoup4 pycryptodome
 ```
 
 ## Installation
