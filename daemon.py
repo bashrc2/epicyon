@@ -3712,9 +3712,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not fields.get('schedulePost'):
                 fields['schedulePost']=False
             else:
-                fields['schedulePost']=False
-                if fields['schedulePost']=='on':
-                    fields['schedulePost']=True
+                fields['schedulePost']=True
             print('DEBUG: shedulePost '+str(fields['schedulePost']))
             if not fields.get('eventDate'):
                 fields['eventDate']=None
