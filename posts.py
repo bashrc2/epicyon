@@ -720,7 +720,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
     if schedulePost:
         if eventDate and eventTime:    
             # add an item to the scheduled post index file
-            addSchedulePost(baseDir,nickname,domain,eventDateStr,postId)
+            addSchedulePost(baseDir,nickname,domain,eventDateStr,newPostId)
             savePostToBox(baseDir,httpPrefix,newPostId, \
                           nickname,domain,newPost,'scheduled')
         else:
