@@ -420,7 +420,7 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
     """Saves the give json to the give box
     Returns the filename
     """
-    if boxname!='inbox' and boxname!='outbox':
+    if boxname!='inbox' and boxname!='outbox' and boxname!='scheduled':
         return None
     originalDomain=domain    
     if ':' in domain:
@@ -480,6 +480,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                    mediaType: str,imageDescription: str, \
                    useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
                    inReplyToAtomUri=None,subject=None, \
+                   schedulePost=False, \
                    eventDate=None,eventTime=None,location=None) -> {}:
     """Creates a message
     """
@@ -715,8 +716,11 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
             modFile.close()
 
     if saveToFile:
+        outboxName='outbox'
+        if schedulePost:
+            outboxName='scheduled'
         savePostToBox(baseDir,httpPrefix,newPostId, \
-                      nickname,domain,newPost,'outbox')
+                      nickname,domain,newPost,outboxName)
     return newPost
 
 def outboxMessageCreateWrap(httpPrefix: str, \
@@ -822,6 +826,7 @@ def createPublicPost(baseDir: str, \
                      attachImageFilename: str,mediaType: str, \
                      imageDescription: str,useBlurhash: bool, \
                      inReplyTo=None,inReplyToAtomUri=None,subject=None, \
+                     schedulePost=False, \
                      eventDate=None,eventTime=None,location=None) -> {}:
     """Public post
     """
@@ -838,7 +843,7 @@ def createPublicPost(baseDir: str, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
                           False,inReplyTo,inReplyToAtomUri,subject, \
-                          eventDate,eventTime,location)
+                          schedulePost,eventDate,eventTime,location)
 
 def createQuestionPost(baseDir: str,
                        nickname: str,domain: str,port: int,httpPrefix: str, \
@@ -864,7 +869,7 @@ def createQuestionPost(baseDir: str,
                        attachImageFilename,mediaType, \
                        imageDescription,useBlurhash, \
                        False,None,None,subject, \
-                       None,None,None)
+                       False,None,None,None)
     messageJson['object']['type']='Question'
     messageJson['object']['oneOf']=[]
     messageJson['object']['votersCount']=0
@@ -890,6 +895,7 @@ def createUnlistedPost(baseDir: str,
                        attachImageFilename: str,mediaType: str, \
                        imageDescription: str,useBlurhash: bool, \
                        inReplyTo=None,inReplyToAtomUri=None,subject=None, \
+                       schedulePost=False, \
                        eventDate=None,eventTime=None,location=None) -> {}:
     """Unlisted post. This has the #Public and followers links inverted.
     """
@@ -906,7 +912,7 @@ def createUnlistedPost(baseDir: str,
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject, \
-                          eventDate,eventTime,location)
+                          schedulePost,eventDate,eventTime,location)
 
 def createFollowersOnlyPost(baseDir: str,
                             nickname: str,domain: str,port: int,httpPrefix: str, \
@@ -915,6 +921,7 @@ def createFollowersOnlyPost(baseDir: str,
                             attachImageFilename: str,mediaType: str, \
                             imageDescription: str,useBlurhash: bool, \
                             inReplyTo=None,inReplyToAtomUri=None,subject=None, \
+                            schedulePost=False, \
                             eventDate=None,eventTime=None,location=None) -> {}:
     """Followers only post
     """
@@ -931,7 +938,7 @@ def createFollowersOnlyPost(baseDir: str,
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
                           False,inReplyTo, inReplyToAtomUri, subject, \
-                          eventDate,eventTime,location)
+                          schedulePost,eventDate,eventTime,location)
 
 def getMentionedPeople(baseDir: str,httpPrefix: str, \
                        content: str,domain: str,debug: bool) -> []:
@@ -974,6 +981,7 @@ def createDirectMessagePost(baseDir: str,
                             imageDescription: str,useBlurhash: bool, \
                             inReplyTo=None,inReplyToAtomUri=None, \
                             subject=None,debug=False, \
+                            schedulePost=False, \
                             eventDate=None,eventTime=None,location=None) -> {}:
     """Direct Message post
     """
@@ -992,7 +1000,7 @@ def createDirectMessagePost(baseDir: str,
                        attachImageFilename,mediaType, \
                        imageDescription,useBlurhash, \
                        False,inReplyTo,inReplyToAtomUri,subject, \
-                       eventDate,eventTime,location)
+                       schedulePost,eventDate,eventTime,location)
     # mentioned recipients go into To rather than Cc
     messageJson['to']=messageJson['object']['cc']
     messageJson['object']['to']=messageJson['to']
@@ -1078,7 +1086,7 @@ def createReportPost(baseDir: str,
                            attachImageFilename,mediaType, \
                            imageDescription,useBlurhash, \
                            True,None,None,subject, \
-                           None,None,None)
+                           False,None,None,None)
         if not postJsonObject:
             continue
 
@@ -1219,7 +1227,7 @@ def sendPost(projectVersion: str, \
                            attachImageFilename,mediaType, \
                            imageDescription,useBlurhash, \
                            False,inReplyTo,inReplyToAtomUri,subject, \
-                           None,None,None)
+                           False,None,None,None)
 
     # get the senders private key
     privateKeyPem=getPersonKey(nickname,domain,baseDir,'private')
@@ -1342,7 +1350,7 @@ def sendPostViaServer(projectVersion: str, \
                            attachImageFilename,mediaType, \
                            imageDescription,useBlurhash, \
                            False,inReplyTo,inReplyToAtomUri,subject, \
-                           None,None,None)
+                           False,None,None,None)
     
     authHeader=createBasicAuthHeader(fromNickname,password)
 

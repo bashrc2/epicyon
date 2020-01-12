@@ -222,7 +222,7 @@ class PubServer(BaseHTTPRequestHandler):
                              answer,False,False,False, \
                              None,None,None,True, \
                              messageId,messageId,None, \
-                             None,None,None)
+                             False,None,None,None)
         if messageJson:
             self.postToNickname=nickname
             if self._postToOutbox(messageJson,__version__):
@@ -3706,6 +3706,8 @@ class PubServer(BaseHTTPRequestHandler):
                 fields['subject']=None
             if not fields.get('replyTo'):
                 fields['replyTo']=None
+            if not fields.get('schedulePost'):
+                fields['schedulePost']=False
             if not fields.get('eventDate'):
                 fields['eventDate']=None
             if not fields.get('eventTime'):
@@ -3738,7 +3740,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['imageDescription'], \
                                      self.server.useBlurHash, \
                                      fields['replyTo'],fields['replyTo'], \
-                                     fields['subject'], \
+                                     fields['subject'],fields['schedulePost'], \
                                      fields['eventDate'],fields['eventTime'], \
                                      fields['location'])
                 if messageJson:
@@ -3763,8 +3765,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        filename,attachmentMediaType, \
                                        fields['imageDescription'], \
                                        self.server.useBlurHash, \
-                                       fields['replyTo'], fields['replyTo'], \
-                                       fields['subject'], \
+                                       fields['replyTo'],fields['replyTo'], \
+                                       fields['subject'],fields['schedulePost'], \
                                        fields['eventDate'],fields['eventTime'], \
                                        fields['location'])
                 if messageJson:
@@ -3789,8 +3791,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             filename,attachmentMediaType, \
                                             fields['imageDescription'], \
                                             self.server.useBlurHash, \
-                                            fields['replyTo'], fields['replyTo'], \
-                                            fields['subject'], \
+                                            fields['replyTo'],fields['replyTo'], \
+                                            fields['subject'],fields['schedulePost'], \
                                             fields['eventDate'],fields['eventTime'], \
                                             fields['location'])
                 if messageJson:
@@ -3819,7 +3821,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.useBlurHash, \
                                                 fields['replyTo'],fields['replyTo'], \
                                                 fields['subject'], \
-                                                self.server.debug, \
+                                                self.server.debug,fields['schedulePost'], \
                                                 fields['eventDate'], \
                                                 fields['eventTime'], \
                                                 fields['location'])                    
