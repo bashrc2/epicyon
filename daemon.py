@@ -3744,6 +3744,8 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['eventDate'],fields['eventTime'], \
                                      fields['location'])
                 if messageJson:
+                    if fields['schedulePost']:
+                        return 1
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson,__version__):
                         populateReplies(self.server.baseDir, \
@@ -3770,6 +3772,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        fields['eventDate'],fields['eventTime'], \
                                        fields['location'])
                 if messageJson:
+                    if fields['schedulePost']:
+                        return 1
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson,__version__):
                         populateReplies(self.server.baseDir, \
@@ -3796,6 +3800,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             fields['eventDate'],fields['eventTime'], \
                                             fields['location'])
                 if messageJson:
+                    if fields['schedulePost']:
+                        return 1
                     self.postToNickname=nickname
                     if self._postToOutbox(messageJson,__version__):
                         populateReplies(self.server.baseDir, \
@@ -3826,6 +3832,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 fields['eventTime'], \
                                                 fields['location'])                    
                 if messageJson:
+                    if fields['schedulePost']:
+                        return 1
                     self.postToNickname=nickname
                     if self.server.debug:
                         print('DEBUG: new DM to '+str(messageJson['object']['to']))
