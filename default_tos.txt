@@ -28,7 +28,7 @@
 
 <h3>Use of Data for Research Purposes</h3>
 
-<p>Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts for any researcher publishing data obtained from this instance without consent.</p>
+<p>Data may not be "scraped" or otherwise obtained from this instance and used for academic research or cited within research publications without the prior written permission of the administrator. Financial remedy will be sought through the courts from any researcher publishing data obtained from this instance without consent.</p>
 
 <h3>Commercial Use</h3>
 
