@@ -57,7 +57,6 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             if ' ' not in line:
                 continue
             dateStr=line.split(' ')[0]
-            print('DEBUG: schedule date='+dateStr)
             if 'T' not in dateStr:
                 continue
             postId=line.split(' ',1)[1].replace('\n','')
@@ -71,10 +70,9 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             # create the new index file
             indexLines.append(line)
             # convert string date to int
-            if '+' in dateStr:
-                dateStr=dateStr.split('+')[0]+'Z'
+            print('DEBUG: schedule date='+dateStr)
             postTime= \
-                datetime.datetime.strptime(dateStr,"%Y-%m-%dT%H:%M:%S%z")
+                datetime.datetime.strptime(dateStr,"%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
             postDaysSinceEpoch= \
                 (postTime - datetime.datetime(1970,1,1)).days
             print('DEBUG: schedule postTime='+str(int(postTime)))
