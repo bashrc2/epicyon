@@ -75,8 +75,6 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                 datetime.datetime.strptime(dateStr,"%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
             postDaysSinceEpoch= \
                 (postTime - datetime.datetime(1970,1,1)).days
-            print('DEBUG: schedule postTime='+str(int(postTime)))
-            print('DEBUG: schedule postDaysSinceEpoch='+str(int(postDaysSinceEpoch)))
             print('DEBUG: schedule postTime hour='+str(postTime.time().hour))
             print('DEBUG: schedule postTime minute='+str(postTime.time().minute))
             if daysSinceEpoch < postDaysSinceEpoch:
