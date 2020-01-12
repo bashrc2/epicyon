@@ -584,12 +584,12 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                 "startTime": eventDateStr,
                 "endTime": eventDateStr
             })     
-        if location:
-            tags.append({
-                "@context": "https://www.w3.org/ns/activitystreams",
-                "type": "Place",
-                "name": location
-            })
+    if location:
+        tags.append({
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "type": "Place",
+            "name": location
+        })
 
     postContext=[
         'https://www.w3.org/ns/activitystreams',
