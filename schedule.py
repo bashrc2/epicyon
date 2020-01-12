@@ -53,13 +53,16 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
     nickname=handle.split('@')[0]
     with open(scheduleIndexFilename, 'r') as fp:
         for line in fp:
+            print('DEBUG: schedule line='+line)
             if ' ' not in line:
                 continue
             dateStr=line.split(' ')[0]
+            print('DEBUG: schedule date='+dateStr)
             if 'T' not in dateStr:
                 continue
             postId=line.split(' ',1)[1].replace('\n','')
             postFilename=scheduleDir+postId+'.json'
+            print('DEBUG: schedule postFilename '+postFilename)
             if deleteSchedulePost:
                 # delete extraneous scheduled posts
                 if os.path.isfile(postFilename):
@@ -72,6 +75,10 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                 datetime.datetime.strptime(dateStr,"%Y-%m-%dT%H:%M:%S%z")
             postDaysSinceEpoch= \
                 (postTime - datetime.datetime(1970,1,1)).days
+            print('DEBUG: schedule postTime='+str(int(postTime)))
+            print('DEBUG: schedule postDaysSinceEpoch='+str(int(postDaysSinceEpoch)))
+            print('DEBUG: schedule postTime hour='+str(postTime.time().hour))
+            print('DEBUG: schedule postTime minute='+str(postTime.time().minute))
             if daysSinceEpoch < postDaysSinceEpoch:
                 continue
             if currTime.time().hour < postTime.time().hour:
