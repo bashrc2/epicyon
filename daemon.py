@@ -5659,7 +5659,8 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     if unitTest: 
         httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
     else:
-        httpd = ThreadingHTTPServer(serverAddress, PubServer)
+        pubHandler = partial(PubServer)
+        httpd = ThreadingHTTPServer(serverAddress, pubHandler)
 
     httpd.useBlurHash=useBlurHash
     httpd.mediaInstance=mediaInstance
