@@ -17,7 +17,7 @@ def addSchedulePost(baseDir: str,nickname: str,domain: str, \
     handle=nickname+'@'+domain
     scheduleIndexFilename=baseDir+'/accounts/'+handle+'/schedule.index'
 
-    indexStr=eventDateStr+' '+postId
+    indexStr=eventDateStr+' '+postId.replace('/','#')
     if os.path.isfile(scheduleIndexFilename):
         if indexStr not in open(scheduleIndexFilename).read():
             try:
