@@ -12,6 +12,7 @@ import json
 import time
 import base64
 import locale
+from functools import partial
 # used for mime decoding of message POST
 import email.parser
 # for saving images
@@ -5657,10 +5658,10 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
 
     serverAddress = ('', proxyPort)
     if unitTest: 
-        httpd = ThreadingHTTPServer(serverAddress, PubServerUnitTest)
+        pubHandler = partial(PubServerUnitTest)
     else:
         pubHandler = partial(PubServer)
-        httpd = ThreadingHTTPServer(serverAddress, pubHandler)
+    httpd = ThreadingHTTPServer(serverAddress, pubHandler)
 
     httpd.useBlurHash=useBlurHash
     httpd.mediaInstance=mediaInstance
@@ -5832,7 +5833,7 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     print('Creating scheduled post thread')
     httpd.thrPostSchedule= \
         threadWithTrace(target=runPostSchedule, \
-                        args=(baseDir,httpd,20),daemon=True)    
+                        args=(baseDir,pubHandler,20),daemon=True)    
     if not unitTest: 
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog= \
