@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import time
 import datetime
+from utils import loadJson
 
 def addSchedulePost(baseDir: str,nickname: str,domain: str, \
                     eventDateStr: str,postId: str) -> None:
