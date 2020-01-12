@@ -564,7 +564,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                             sensitive=True
                             if replyToJson['object'].get('summary'):
                                 summary=replyToJson['object']['summary']
-
+    eventDateStr=None
     if eventDate:
         eventName=summary
         if not eventName:
@@ -720,6 +720,11 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
         if schedulePost:
             if eventDate and eventTime:
                 outboxName='scheduled'
+                scheduleIndexFile=baseDir+'/accounts/schedule.txt'
+                scheduleFile=open(scheduleIndexFile, "a+")
+                if scheduleFile:
+                    scheduleFile.write(eventDateStr+' '+newPostId+'\n')
+                    scheduleFile.close()
             else:
                 print('Unable to create scheduled post without date and time values')
                 return newPost
