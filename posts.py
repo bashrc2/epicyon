@@ -720,6 +720,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
         if schedulePost:
             if eventDate and eventTime:
                 outboxName='scheduled'
+                # add an item to the scheduled post index file
                 scheduleIndexFile=baseDir+'/accounts/schedule.txt'
                 scheduleFile=open(scheduleIndexFile, "a+")
                 if scheduleFile:
