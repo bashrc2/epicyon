@@ -50,6 +50,7 @@ from content import replaceEmojiFromTags
 from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
+from schedule import addSchedulePost
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -722,11 +723,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
             if eventDate and eventTime:
                 outboxName='scheduled'
                 # add an item to the scheduled post index file
-                scheduleIndexFile=baseDir+'/accounts/schedule.txt'
-                scheduleFile=open(scheduleIndexFile, "a+")
-                if scheduleFile:
-                    scheduleFile.write(eventDateStr+' '+newPostId+'\n')
-                    scheduleFile.close()
+                addSchedulePost(baseDir,nickname,domain,eventDateStr,postId)
             else:
                 print('Unable to create scheduled post without date and time values')
                 return newPost

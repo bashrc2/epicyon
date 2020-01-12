@@ -166,6 +166,8 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 from theme import setTheme
+from schedule import runPostSchedule
+from schedule import runPostScheduleWatchdog
 import os
 import sys
 
@@ -224,8 +226,7 @@ class PubServer(BaseHTTPRequestHandler):
                              messageId,messageId,None, \
                              False,None,None,None)
         if messageJson:
-            self.postToNickname=nickname
-            if self._postToOutbox(messageJson,__version__):
+            if self._postToOutbox(messageJson,__version__,nickname):
                 postFilename= \
                     locatePost(self.server.baseDir,nickname, \
                                self.server.domain,messageId)
@@ -639,7 +640,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         return True
         
-    def _postToOutbox(self,messageJson: {},version: str) -> bool:
+    def _postToOutbox(self,messageJson: {},version: str,postToNickname=None) -> bool:
         """post is received by the outbox
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -648,6 +649,8 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: POST to outbox has no "type" parameter')
             return False
+        if postToNickname:
+            self.postToNickname=postToNickname
         if not messageJson.get('object') and messageJson.get('content'):
             if messageJson['type']!='Create':
                 # https://www.w3.org/TR/activitypub/#object-without-create
@@ -3746,8 +3749,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    self.postToNickname=nickname
-                    if self._postToOutbox(messageJson,__version__):
+                    if self._postToOutbox(messageJson,__version__,nickname):
                         populateReplies(self.server.baseDir, \
                                         self.server.httpPrefix, \
                                         self.server.domainFull, \
@@ -3774,8 +3776,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    self.postToNickname=nickname
-                    if self._postToOutbox(messageJson,__version__):
+                    if self._postToOutbox(messageJson,__version__,nickname):
                         populateReplies(self.server.baseDir, \
                                         self.server.httpPrefix, \
                                         self.server.domain, \
@@ -3802,8 +3803,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    self.postToNickname=nickname
-                    if self._postToOutbox(messageJson,__version__):
+                    if self._postToOutbox(messageJson,__version__,nickname):
                         populateReplies(self.server.baseDir, \
                                         self.server.httpPrefix, \
                                         self.server.domain, \
@@ -3834,10 +3834,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    self.postToNickname=nickname
                     if self.server.debug:
                         print('DEBUG: new DM to '+str(messageJson['object']['to']))
-                    if self._postToOutbox(messageJson,__version__):
+                    if self._postToOutbox(messageJson,__version__,nickname):
                         populateReplies(self.server.baseDir, \
                                         self.server.httpPrefix, \
                                         self.server.domain, \
@@ -3866,8 +3865,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.useBlurHash, \
                                      self.server.debug,fields['subject'])
                 if messageJson:
-                    self.postToNickname=nickname
-                    if self._postToOutbox(messageJson,__version__):
+                    if self._postToOutbox(messageJson,__version__,nickname):
                         return 1
                     else:
                         return -1
@@ -3895,10 +3893,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.useBlurHash, \
                                        fields['subject'],int(fields['duration']))
                 if messageJson:
-                    self.postToNickname=nickname
                     if self.server.debug:
                         print('DEBUG: new Question')
-                    if self._postToOutbox(messageJson,__version__):
+                    if self._postToOutbox(messageJson,__version__,nickname):
                         return 1
                 return -1
             elif postType=='newshare':
@@ -4524,8 +4521,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 'cc': [],
                                 'object': actorJson
                             }
-                            self.postToNickname=nickname
-                            self._postToOutbox(updateActorJson,__version__)
+                            self._postToOutbox(updateActorJson,__version__,nickname)
                         if fields.get('deactivateThisAccount'):
                             if fields['deactivateThisAccount']=='on':
                                 deactivateAccount(self.server.baseDir,nickname,self.server.domain)
@@ -5826,13 +5822,25 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
                               allowDeletion,debug,maxMentions,maxEmoji, \
                               httpd.translate, \
                               unitTest,httpd.acceptedCaps),daemon=True)
+    print('Creating scheduled post thread')
+    httpd.thrPostSchedule= \
+        threadWithTrace(target=runPostSchedule, \
+                        args=(baseDir,httpd,20),daemon=True)    
     if not unitTest: 
+        print('Creating inbox queue watchdog')
         httpd.thrWatchdog= \
             threadWithTrace(target=runInboxQueueWatchdog, \
                             args=(projectVersion,httpd),daemon=True)        
         httpd.thrWatchdog.start()
+
+        print('Creating scheduled post watchdog')
+        httpd.thrWatchdogSchedule= \
+            threadWithTrace(target=runPostScheduleWatchdog, \
+                            args=(projectVersion,httpd),daemon=True)        
+        httpd.thrWatchdogSchedule.start()
     else:
         httpd.thrInboxQueue.start()
+        httpd.thrPostSchedule.start()
 
     if clientToServer:
         print('Running ActivityPub client on ' + domain + ' port ' + str(proxyPort))
