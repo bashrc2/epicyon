@@ -718,7 +718,11 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
     if saveToFile:
         outboxName='outbox'
         if schedulePost:
-            outboxName='scheduled'
+            if eventDate and eventTime:
+                outboxName='scheduled'
+            else:
+                print('Unable to create scheduled post without date and time values')
+                return newPost
         savePostToBox(baseDir,httpPrefix,newPostId, \
                       nickname,domain,newPost,outboxName)
     return newPost
