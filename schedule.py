@@ -95,7 +95,7 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
 
             print('Sending scheduled post '+postId)
 
-            if not httpd._postToOutbox(postJsonObject,__version__,nickname):
+            if not httpd.externalPostToOutbox(postJsonObject,nickname):
                 indexLines.remove(line)
                 continue
 

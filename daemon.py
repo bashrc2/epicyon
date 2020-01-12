@@ -884,6 +884,9 @@ class PubServer(BaseHTTPRequestHandler):
                              self.server.projectVersion)
         return True
 
+    def externalPostToOutbox(self,messageJson: {},postToNickname: str) -> bool:
+        return self._postToOutbox(messageJson,__version__,postToNickname)
+
     def _postToOutboxThread(self,messageJson: {}) -> bool:
         """Creates a thread to send a post
         """
