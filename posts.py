@@ -577,13 +577,14 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                 eventDateStr=eventDate+'T'+eventTime+':00'+strftime("%z", gmtime())
         else:
             eventDateStr=eventDate+'T12:00:00Z'
-        tags.append({
+        if not schedulePost:
+            tags.append({
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "type": "Event",
                 "name": eventName,
                 "startTime": eventDateStr,
                 "endTime": eventDateStr
-            })     
+            })
     if location:
         tags.append({
             "@context": "https://www.w3.org/ns/activitystreams",
