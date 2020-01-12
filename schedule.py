@@ -124,7 +124,7 @@ def runPostSchedule(baseDir: str,httpd,maxScheduledPosts: int):
                     continue
                 # scheduled posts index for this account
                 scheduleIndexFilename=baseDir+'/accounts/'+account+'/schedule.index'
-                if not os.path.isdir(scheduleIndexFilename):
+                if not os.path.isfile(scheduleIndexFilename):
                     continue
                 updatePostSchedule(baseDir,account,httpd,maxScheduledPosts)
 
