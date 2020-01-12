@@ -71,6 +71,8 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             # create the new index file
             indexLines.append(line)
             # convert string date to int
+            if '+' in dateStr:
+                dateStr=dateStr.split('+')[0]+'Z'
             postTime= \
                 datetime.datetime.strptime(dateStr,"%Y-%m-%dT%H:%M:%S%z")
             postDaysSinceEpoch= \
