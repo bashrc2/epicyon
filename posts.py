@@ -717,18 +717,18 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
             modFile.write(newPostId+'\n')
             modFile.close()
 
-    if saveToFile:
-        outboxName='outbox'
-        if schedulePost:
-            if eventDate and eventTime:
-                outboxName='scheduled'
-                # add an item to the scheduled post index file
-                addSchedulePost(baseDir,nickname,domain,eventDateStr,postId)
-            else:
-                print('Unable to create scheduled post without date and time values')
-                return newPost
+    if schedulePost:
+        if eventDate and eventTime:    
+            # add an item to the scheduled post index file
+            addSchedulePost(baseDir,nickname,domain,eventDateStr,postId)
+            savePostToBox(baseDir,httpPrefix,newPostId, \
+                          nickname,domain,newPost,'scheduled')
+        else:
+            print('Unable to create scheduled post without date and time values')
+            return newPost
+    elif saveToFile:
         savePostToBox(baseDir,httpPrefix,newPostId, \
-                      nickname,domain,newPost,outboxName)
+                      nickname,domain,newPost,'outbox')
     return newPost
 
 def outboxMessageCreateWrap(httpPrefix: str, \
