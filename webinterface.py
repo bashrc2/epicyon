@@ -1118,7 +1118,7 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     dateAndLocation=''
     if endpoint!='newshare' and endpoint!='newreport' and endpoint!='newquestion':
         dateAndLocation='<div class="container">'
-        dateAndLocation+='<p><input type="checkbox" class="profilecheckbox" name="schedulePost">'+translate['Schedule post for release at this date and time.']+'</p>'
+        dateAndLocation+='<p><input type="checkbox" class="profilecheckbox" name="schedulePost"><label class="labels">'+translate['Schedule post for release at this date and time.']+'</label></p>'
         dateAndLocation+='<p><img loading="lazy" alt="" title="" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>'
         dateAndLocation+='<label class="labels">'+translate['Date']+': </label>'
         dateAndLocation+='<input type="date" name="eventDate">'
