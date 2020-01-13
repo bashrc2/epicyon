@@ -12,32 +12,6 @@ import datetime
 from utils import loadJson
 from outbox import postMessageToOutbox
 
-def addSchedulePost(baseDir: str,nickname: str,domain: str, \
-                    eventDateStr: str,postId: str) -> None:
-    """Adds a scheduled post to the index
-    """
-    handle=nickname+'@'+domain
-    scheduleIndexFilename=baseDir+'/accounts/'+handle+'/schedule.index'
-
-    indexStr=eventDateStr+' '+postId.replace('/','#')
-    if os.path.isfile(scheduleIndexFilename):
-        if indexStr not in open(scheduleIndexFilename).read():
-            try:
-                with open(scheduleIndexFilename, 'r+') as scheduleFile:
-                    content = scheduleFile.read()
-                    scheduleFile.seek(0, 0)
-                    scheduleFile.write(indexStr+'\n'+content)
-                    if debug:
-                        print('DEBUG: scheduled post added to index')
-            except Exception as e:
-                print('WARN: Failed to write entry to scheduled posts index '+ \
-                      scheduleIndexFilename+' '+str(e))
-    else:
-        scheduleFile=open(scheduleIndexFilename,'w')
-        if scheduleFile:
-            scheduleFile.write(indexStr+'\n')
-            scheduleFile.close()        
-
 def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) -> None:
     """Checks if posts are due to be delivered and if so moves them to the outbox
     """
