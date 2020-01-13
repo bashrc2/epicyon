@@ -58,12 +58,13 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             if daysSinceEpoch < postDaysSinceEpoch:
                 print('DEBUG: schedule not yet date')
                 continue
-            if currTime.time().hour < postTime.time().hour:
-                print('DEBUG: schedule not yet hour')
-                continue
-            if currTime.time().minute < postTime.time().minute:
-                print('DEBUG: schedule not yet minute')
-                continue
+            if daysSinceEpoch == postDaysSinceEpoch:
+                if currTime.time().hour < postTime.time().hour:
+                    print('DEBUG: schedule not yet hour')
+                    continue
+                if currTime.time().minute < postTime.time().minute:
+                    print('DEBUG: schedule not yet minute')
+                    continue
             if not os.path.isfile(postFilename):
                 print('WARN: schedule postFilename='+postFilename)
                 indexLines.remove(line)
