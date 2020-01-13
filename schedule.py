@@ -53,18 +53,25 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                 (postTime - datetime.datetime(1970,1,1)).days
             print('DEBUG: schedule postTime hour='+str(postTime.time().hour))
             print('DEBUG: schedule postTime minute='+str(postTime.time().minute))
+            print('DEBUG: schedule daysSinceEpoch='+str(daysSinceEpoch))
+            print('DEBUG: schedule postDaysSinceEpoch='+str(postDaysSinceEpoch))
             if daysSinceEpoch < postDaysSinceEpoch:
+                print('DEBUG: schedule not yet date')
                 continue
             if currTime.time().hour < postTime.time().hour:
+                print('DEBUG: schedule not yet hour')
                 continue
             if currTime.time().minute < postTime.time().minute:
+                print('DEBUG: schedule not yet minute')
                 continue
             if not os.path.isfile(postFilename):
+                print('WARN: schedule postFilename='+postFilename)
                 indexLines.remove(line)
                 continue
             # load post
             postJsonObject=loadJson(postFilename)
             if not postJsonObject:
+                print('WARN: schedule json not loaded')
                 indexLines.remove(line)
                 continue
 
