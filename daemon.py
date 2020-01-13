@@ -647,7 +647,9 @@ class PubServer(BaseHTTPRequestHandler):
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
-        return postMessageToOutbox(messageJson,postToNickname, \
+        if postToNickname:
+            self.postToNickname=postToNickname
+        return postMessageToOutbox(messageJson,self.postToNickname, \
                                    self.server,self.server.baseDir,self.server.httpPrefix, \
                                    self.server.domain,self.server.domainFull,self.server.port, \
                                    self.server.recentPostsCache,self.server.followersThreads, \
