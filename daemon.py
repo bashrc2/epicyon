@@ -184,6 +184,254 @@ followsPerPage=12
 # number of item shares per page
 sharesPerPage=12
 
+def postMessageToOutbox(messageJson: {},postToNickname: str, \
+                        server,baseDir: str,httpPrefix: str, \
+                        domain: str,domainFull: str,port: int, \
+                        recentPostsCache: {},followersThreads: [], \
+                        federationList: [],sendThreads: [], \
+                        postLog: [],cachedWebfingers: {}, \
+                        personCache: {},allowDeletion: bool, \
+                        useTor: bool,version: str,debug: bool) -> bool:
+    """post is received by the outbox
+    Client to server message post
+    https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
+    """
+    if not messageJson.get('type'):
+        if debug:
+            print('DEBUG: POST to outbox has no "type" parameter')
+        return False
+    if not messageJson.get('object') and messageJson.get('content'):
+        if messageJson['type']!='Create':
+            # https://www.w3.org/TR/activitypub/#object-without-create
+            if debug:
+                print('DEBUG: POST to outbox - adding Create wrapper')
+            messageJson= \
+                outboxMessageCreateWrap(httpPrefix, \
+                                        postToNickname, \
+                                        domain,port, \
+                                        messageJson)
+    if messageJson['type']=='Create':
+        if not (messageJson.get('id') and \
+                messageJson.get('type') and \
+                messageJson.get('actor') and \
+                messageJson.get('object') and \
+                messageJson.get('to')):
+            if debug:
+                print('DEBUG: POST to outbox - Create does not have the required parameters')
+            return False
+        testDomain,testPort=getDomainFromActor(messageJson['actor'])
+        if testPort:
+            if testPort!=80 and testPort!=443:
+                testDomain=testDomain+':'+str(testPort)
+        if isBlockedDomain(baseDir,testDomain):
+            if debug:
+                print('DEBUG: domain is blocked: '+messageJson['actor'])
+            return False
+        # https://www.w3.org/TR/activitypub/#create-activity-outbox
+        messageJson['object']['attributedTo']=messageJson['actor']
+        if messageJson['object'].get('attachment'):
+            attachmentIndex=0
+            if messageJson['object']['attachment'][attachmentIndex].get('mediaType'):
+                fileExtension='png'
+                mediaTypeStr= \
+                    messageJson['object']['attachment'][attachmentIndex]['mediaType']
+                if mediaTypeStr.endswith('jpeg'):
+                    fileExtension='jpg'
+                elif mediaTypeStr.endswith('gif'):
+                    fileExtension='gif'
+                elif mediaTypeStr.endswith('webp'):
+                    fileExtension='webp'
+                elif mediaTypeStr.endswith('audio/mpeg'):
+                    fileExtension='mp3'
+                elif mediaTypeStr.endswith('ogg'):
+                    fileExtension='ogg'
+                elif mediaTypeStr.endswith('mp4'):
+                    fileExtension='mp4'
+                elif mediaTypeStr.endswith('webm'):
+                    fileExtension='webm'
+                elif mediaTypeStr.endswith('ogv'):
+                    fileExtension='ogv'
+                mediaDir= \
+                    baseDir+'/accounts/'+ \
+                    postToNickname+'@'+domain
+                uploadMediaFilename=mediaDir+'/upload.'+fileExtension
+                if not os.path.isfile(uploadMediaFilename):
+                    del messageJson['object']['attachment']
+                else:
+                    # generate a path for the uploaded image
+                    mPath=getMediaPath()
+                    mediaPath=mPath+'/'+createPassword(32)+'.'+fileExtension
+                    createMediaDirs(baseDir,mPath)
+                    mediaFilename=baseDir+'/'+mediaPath
+                    # move the uploaded image to its new path
+                    os.rename(uploadMediaFilename,mediaFilename)
+                    # change the url of the attachment
+                    messageJson['object']['attachment'][attachmentIndex]['url']= \
+                        httpPrefix+'://'+domainFull+ \
+                        '/'+mediaPath
+
+    permittedOutboxTypes=[
+        'Create','Announce','Like','Follow','Undo', \
+        'Update','Add','Remove','Block','Delete', \
+        'Delegate','Skill','Bookmark'
+    ]
+    if messageJson['type'] not in permittedOutboxTypes:
+        if debug:
+            print('DEBUG: POST to outbox - '+messageJson['type']+ \
+                  ' is not a permitted activity type')
+        return False
+    if messageJson.get('id'):
+        postId=messageJson['id'].replace('/activity','').replace('/undo','')
+        if debug:
+            print('DEBUG: id attribute exists within POST to outbox')
+    else:
+        if debug:
+            print('DEBUG: No id attribute within POST to outbox')
+        postId=None
+    if debug:
+        print('DEBUG: savePostToBox')
+    if messageJson['type']!='Upgrade':
+        savedFilename= \
+            savePostToBox(baseDir, \
+                          httpPrefix, \
+                          postId, \
+                          postToNickname, \
+                          domainFull,messageJson,'outbox')
+        if messageJson['type']=='Create' or \
+           messageJson['type']=='Question' or \
+           messageJson['type']=='Note' or \
+           messageJson['type']=='Announce':
+            inboxUpdateIndex('outbox',baseDir, \
+                             postToNickname+'@'+domain, \
+                             savedFilename,debug)            
+    if outboxAnnounce(recentPostsCache, \
+                      baseDir,messageJson,debug):
+        if debug:
+            print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
+    if not server.session:
+        if debug:
+            print('DEBUG: creating new session for c2s')
+        server.session= \
+            createSession(useTor)
+    if debug:
+        print('DEBUG: sending c2s post to followers')
+    # remove inactive threads
+    inactiveFollowerThreads=[]
+    for th in followersThreads:
+        if not th.is_alive():
+            inactiveFollowerThreads.append(th)
+    for th in inactiveFollowerThreads:
+        followersThreads.remove(th)
+    if debug:
+        print('DEBUG: '+str(len(followersThreads))+' followers threads active')
+    # retain up to 20 threads
+    if len(followersThreads)>20:
+        # kill the thread if it is still alive
+        if followersThreads[0].is_alive():
+            followersThreads[0].kill()
+        # remove it from the list
+        followersThreads.pop(0)
+    # create a thread to send the post to followers
+    followersThread= \
+        sendToFollowersThread(server.session, \
+                              baseDir, \
+                              postToNickname, \
+                              domain, \
+                              port, \
+                              httpPrefix, \
+                              federationList, \
+                              sendThreads, \
+                              postLog, \
+                              cachedWebfingers, \
+                              personCache, \
+                              messageJson,debug, \
+                              version)
+    followersThreads.append(followersThread)
+    if debug:
+        print('DEBUG: handle any unfollow requests')
+    outboxUndoFollow(baseDir,messageJson,debug)
+    if debug:
+        print('DEBUG: handle delegation requests')
+    outboxDelegate(baseDir,postToNickname,messageJson,debug)
+    if debug:
+        print('DEBUG: handle skills changes requests')
+    outboxSkills(baseDir,postToNickname,messageJson,debug)
+    if debug:
+        print('DEBUG: handle availability changes requests')
+    outboxAvailability(baseDir,postToNickname,messageJson,debug)
+
+    if debug:
+        print('DEBUG: handle any like requests')
+    outboxLike(recentPostsCache, \
+               baseDir,httpPrefix, \
+               postToNickname,domain,port, \
+               messageJson,debug)
+    if debug:
+        print('DEBUG: handle any undo like requests')
+    outboxUndoLike(baseDir,httpPrefix, \
+                   postToNickname,domain,port, \
+                   messageJson,debug)
+
+    if debug:
+        print('DEBUG: handle any bookmark requests')
+    outboxBookmark(recentPostsCache, \
+                   baseDir,httpPrefix, \
+                   postToNickname,domain,port, \
+                   messageJson,debug)
+    if debug:
+        print('DEBUG: handle any undo bookmark requests')
+    outboxUndoBookmark(recentPostsCache, \
+                       baseDir,httpPrefix, \
+                       postToNickname,domain,port, \
+                       messageJson,debug)
+
+    if debug:
+        print('DEBUG: handle delete requests')        
+    outboxDelete(baseDir,httpPrefix, \
+                 postToNickname,domain, \
+                 messageJson,debug, \
+                 allowDeletion)
+    if debug:
+        print('DEBUG: handle block requests')
+    outboxBlock(baseDir,httpPrefix, \
+                postToNickname,domain, \
+                port,
+                messageJson,debug)
+    if debug:
+        print('DEBUG: handle undo block requests')
+    outboxUndoBlock(baseDir,httpPrefix, \
+                    postToNickname,domain, \
+                    port,
+                    messageJson,debug)
+    if debug:
+        print('DEBUG: handle share uploads')
+    outboxShareUpload(baseDir,httpPrefix, \
+                      postToNickname,domain, \
+                      port,
+                      messageJson,debug)
+    if debug:
+        print('DEBUG: handle undo share uploads')
+    outboxUndoShareUpload(baseDir,httpPrefix, \
+                          postToNickname,domain, \
+                          port,
+                          messageJson,debug)
+    if debug:
+        print('DEBUG: sending c2s post to named addresses')
+        print('c2s sender: '+postToNickname+'@'+ \
+              domain+':'+str(port))
+    sendToNamedAddresses(server.session,baseDir, \
+                         postToNickname,domain, \
+                         port, \
+                         httpPrefix, \
+                         federationList, \
+                         sendThreads, \
+                         postLog, \
+                         cachedWebfingers, \
+                         personCache, \
+                         messageJson,debug, \
+                         version)
+    return True
+
 def readFollowList(filename: str) -> None:
     """Returns a list of ActivityPub addresses to follow
     """
@@ -646,244 +894,14 @@ class PubServer(BaseHTTPRequestHandler):
         Client to server message post
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
-        if not messageJson.get('type'):
-            if self.server.debug:
-                print('DEBUG: POST to outbox has no "type" parameter')
-            return False
-        if postToNickname:
-            self.postToNickname=postToNickname
-        if not messageJson.get('object') and messageJson.get('content'):
-            if messageJson['type']!='Create':
-                # https://www.w3.org/TR/activitypub/#object-without-create
-                if self.server.debug:
-                    print('DEBUG: POST to outbox - adding Create wrapper')
-                messageJson= \
-                    outboxMessageCreateWrap(self.server.httpPrefix, \
-                                            self.postToNickname, \
-                                            self.server.domain, \
-                                            self.server.port, \
-                                            messageJson)
-        if messageJson['type']=='Create':
-            if not (messageJson.get('id') and \
-                    messageJson.get('type') and \
-                    messageJson.get('actor') and \
-                    messageJson.get('object') and \
-                    messageJson.get('to')):
-                if self.server.debug:
-                    print('DEBUG: POST to outbox - Create does not have the required parameters')
-                return False
-            testDomain,testPort=getDomainFromActor(messageJson['actor'])
-            if testPort:
-                if testPort!=80 and testPort!=443:
-                    testDomain=testDomain+':'+str(testPort)
-            if isBlockedDomain(self.server.baseDir,testDomain):
-                if self.server.debug:
-                    print('DEBUG: domain is blocked: '+messageJson['actor'])
-                return False
-            # https://www.w3.org/TR/activitypub/#create-activity-outbox
-            messageJson['object']['attributedTo']=messageJson['actor']
-            if messageJson['object'].get('attachment'):
-                attachmentIndex=0
-                if messageJson['object']['attachment'][attachmentIndex].get('mediaType'):
-                    fileExtension='png'
-                    mediaTypeStr= \
-                        messageJson['object']['attachment'][attachmentIndex]['mediaType']
-                    if mediaTypeStr.endswith('jpeg'):
-                        fileExtension='jpg'
-                    elif mediaTypeStr.endswith('gif'):
-                        fileExtension='gif'
-                    elif mediaTypeStr.endswith('webp'):
-                        fileExtension='webp'
-                    elif mediaTypeStr.endswith('audio/mpeg'):
-                        fileExtension='mp3'
-                    elif mediaTypeStr.endswith('ogg'):
-                        fileExtension='ogg'
-                    elif mediaTypeStr.endswith('mp4'):
-                        fileExtension='mp4'
-                    elif mediaTypeStr.endswith('webm'):
-                        fileExtension='webm'
-                    elif mediaTypeStr.endswith('ogv'):
-                        fileExtension='ogv'
-                    mediaDir= \
-                        self.server.baseDir+'/accounts/'+ \
-                        self.postToNickname+'@'+self.server.domain
-                    uploadMediaFilename=mediaDir+'/upload.'+fileExtension
-                    if not os.path.isfile(uploadMediaFilename):
-                        del messageJson['object']['attachment']
-                    else:
-                        # generate a path for the uploaded image
-                        mPath=getMediaPath()
-                        mediaPath=mPath+'/'+createPassword(32)+'.'+fileExtension
-                        createMediaDirs(self.server.baseDir,mPath)
-                        mediaFilename=self.server.baseDir+'/'+mediaPath
-                        # move the uploaded image to its new path
-                        os.rename(uploadMediaFilename,mediaFilename)
-                        # change the url of the attachment
-                        messageJson['object']['attachment'][attachmentIndex]['url']= \
-                            self.server.httpPrefix+'://'+self.server.domainFull+ \
-                            '/'+mediaPath
-
-        permittedOutboxTypes=[
-            'Create','Announce','Like','Follow','Undo', \
-            'Update','Add','Remove','Block','Delete', \
-            'Delegate','Skill','Bookmark'
-        ]
-        if messageJson['type'] not in permittedOutboxTypes:
-            if self.server.debug:
-                print('DEBUG: POST to outbox - '+messageJson['type']+ \
-                      ' is not a permitted activity type')
-            return False
-        if messageJson.get('id'):
-            postId=messageJson['id'].replace('/activity','').replace('/undo','')
-            if self.server.debug:
-                print('DEBUG: id attribute exists within POST to outbox')
-        else:
-            if self.server.debug:
-                print('DEBUG: No id attribute within POST to outbox')
-            postId=None
-        if self.server.debug:
-            print('DEBUG: savePostToBox')
-        if messageJson['type']!='Upgrade':
-            savedFilename= \
-                savePostToBox(self.server.baseDir, \
-                              self.server.httpPrefix, \
-                              postId, \
-                              self.postToNickname, \
-                              self.server.domainFull,messageJson,'outbox')
-            if messageJson['type']=='Create' or \
-               messageJson['type']=='Question' or \
-               messageJson['type']=='Note' or \
-               messageJson['type']=='Announce':
-                inboxUpdateIndex('outbox',self.server.baseDir, \
-                                 self.postToNickname+'@'+self.server.domain, \
-                                 savedFilename,self.server.debug)            
-        if outboxAnnounce(self.server.recentPostsCache, \
-                          self.server.baseDir,messageJson,self.server.debug):
-            if self.server.debug:
-                print('DEBUG: Updated announcements (shares) collection for the post associated with the Announce activity')
-        if not self.server.session:
-            if self.server.debug:
-                print('DEBUG: creating new session for c2s')
-            self.server.session= \
-                createSession(self.server.useTor)
-        if self.server.debug:
-            print('DEBUG: sending c2s post to followers')
-        # remove inactive threads
-        inactiveFollowerThreads=[]
-        for th in self.server.followersThreads:
-            if not th.is_alive():
-                inactiveFollowerThreads.append(th)
-        for th in inactiveFollowerThreads:
-            self.server.followersThreads.remove(th)
-        if self.server.debug:
-            print('DEBUG: '+str(len(self.server.followersThreads))+' followers threads active')
-        # retain up to 20 threads
-        if len(self.server.followersThreads)>20:
-            # kill the thread if it is still alive
-            if self.server.followersThreads[0].is_alive():
-                self.server.followersThreads[0].kill()
-            # remove it from the list
-            self.server.followersThreads.pop(0)
-        # create a thread to send the post to followers
-        followersThread= \
-            sendToFollowersThread(self.server.session, \
-                                  self.server.baseDir, \
-                                  self.postToNickname, \
-                                  self.server.domain, \
-                                  self.server.port, \
-                                  self.server.httpPrefix, \
-                                  self.server.federationList, \
-                                  self.server.sendThreads, \
-                                  self.server.postLog, \
-                                  self.server.cachedWebfingers, \
-                                  self.server.personCache, \
-                                  messageJson,self.server.debug, \
-                                  self.server.projectVersion)
-        self.server.followersThreads.append(followersThread)
-        if self.server.debug:
-            print('DEBUG: handle any unfollow requests')
-        outboxUndoFollow(self.server.baseDir,messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle delegation requests')
-        outboxDelegate(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle skills changes requests')
-        outboxSkills(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle availability changes requests')
-        outboxAvailability(self.server.baseDir,self.postToNickname,messageJson,self.server.debug)
-
-        if self.server.debug:
-            print('DEBUG: handle any like requests')
-        outboxLike(self.server.recentPostsCache, \
-                   self.server.baseDir,self.server.httpPrefix, \
-                   self.postToNickname,self.server.domain,self.server.port, \
-                   messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle any undo like requests')
-        outboxUndoLike(self.server.baseDir,self.server.httpPrefix, \
-                       self.postToNickname,self.server.domain,self.server.port, \
-                       messageJson,self.server.debug)
-
-        if self.server.debug:
-            print('DEBUG: handle any bookmark requests')
-        outboxBookmark(self.server.recentPostsCache, \
-                       self.server.baseDir,self.server.httpPrefix, \
-                       self.postToNickname,self.server.domain,self.server.port, \
-                       messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle any undo bookmark requests')
-        outboxUndoBookmark(self.server.recentPostsCache, \
-                           self.server.baseDir,self.server.httpPrefix, \
-                           self.postToNickname,self.server.domain,self.server.port, \
-                           messageJson,self.server.debug)
-
-        if self.server.debug:
-            print('DEBUG: handle delete requests')        
-        outboxDelete(self.server.baseDir,self.server.httpPrefix, \
-                     self.postToNickname,self.server.domain, \
-                     messageJson,self.server.debug, \
-                     self.server.allowDeletion)
-        if self.server.debug:
-            print('DEBUG: handle block requests')
-        outboxBlock(self.server.baseDir,self.server.httpPrefix, \
-                    self.postToNickname,self.server.domain, \
-                    self.server.port,
-                    messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle undo block requests')
-        outboxUndoBlock(self.server.baseDir,self.server.httpPrefix, \
-                        self.postToNickname,self.server.domain, \
-                        self.server.port,
-                        messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle share uploads')
-        outboxShareUpload(self.server.baseDir,self.server.httpPrefix, \
-                          self.postToNickname,self.server.domain, \
-                          self.server.port,
-                          messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: handle undo share uploads')
-        outboxUndoShareUpload(self.server.baseDir,self.server.httpPrefix, \
-                              self.postToNickname,self.server.domain, \
-                              self.server.port,
-                              messageJson,self.server.debug)
-        if self.server.debug:
-            print('DEBUG: sending c2s post to named addresses')
-            print('c2s sender: '+self.postToNickname+'@'+ \
-                  self.server.domain+':'+str(self.server.port))
-        sendToNamedAddresses(self.server.session,self.server.baseDir, \
-                             self.postToNickname,self.server.domain, \
-                             self.server.port, \
-                             self.server.httpPrefix, \
-                             self.server.federationList, \
-                             self.server.sendThreads, \
-                             self.server.postLog, \
-                             self.server.cachedWebfingers, \
-                             self.server.personCache, \
-                             messageJson,self.server.debug, \
-                             self.server.projectVersion)
-        return True
+        return postMessageToOutbox(messageJson,postToNickname, \
+                                   self.server,self.server.baseDir,self.server.httpPrefix, \
+                                   self.server.domain,self.server.domainFull,self.server.port, \
+                                   self.server.recentPostsCache,self.server.followersThreads, \
+                                   self.server.federationList,self.server.sendThreads, \
+                                   self.server.postLog,self.server.cachedWebfingers, \
+                                   self.server.personCache,self.server.allowDeletion, \
+                                   self.server.useTor,version,self.server.debug)
 
     def externalPostToOutbox(self,messageJson: {},postToNickname: str) -> bool:
         return self._postToOutbox(messageJson,__version__,postToNickname)
