@@ -79,22 +79,22 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             print('Sending scheduled post '+postId)
 
             if not postMessageToOutbox(postJsonObject,nickname, \
-                                       httpd.server,baseDir, \
-                                       httpd.server.httpPrefix, \
-                                       httpd.server.domain, \
-                                       httpd.server.domainFull, \
-                                       httpd.server.port, \
-                                       httpd.server.recentPostsCache, \
-                                       httpd.server.followersThreads, \
-                                       httpd.server.federationList, \
-                                       httpd.server.sendThreads, \
-                                       httpd.server.postLog, \
-                                       httpd.server.cachedWebfingers, \
-                                       httpd.server.personCache, \
-                                       httpd.server.allowDeletion, \
-                                       httpd.server.useTor, \
-                                       httpd.server.projectVersion, \
-                                       httpd.server.debug):
+                                       httpd,baseDir, \
+                                       httpd.httpPrefix, \
+                                       httpd.domain, \
+                                       httpd.domainFull, \
+                                       httpd.port, \
+                                       httpd.recentPostsCache, \
+                                       httpd.followersThreads, \
+                                       httpd.federationList, \
+                                       httpd.sendThreads, \
+                                       httpd.postLog, \
+                                       httpd.cachedWebfingers, \
+                                       httpd.personCache, \
+                                       httpd.allowDeletion, \
+                                       httpd.useTor, \
+                                       httpd.projectVersion, \
+                                       httpd.debug):
                 indexLines.remove(line)
                 continue
 
