@@ -488,8 +488,7 @@ def addSchedulePost(baseDir: str,nickname: str,domain: str, \
                     content = scheduleFile.read()
                     scheduleFile.seek(0, 0)
                     scheduleFile.write(indexStr+'\n'+content)
-                    if debug:
-                        print('DEBUG: scheduled post added to index')
+                    print('DEBUG: scheduled post added to index')
             except Exception as e:
                 print('WARN: Failed to write entry to scheduled posts index '+ \
                       scheduleIndexFilename+' '+str(e))
