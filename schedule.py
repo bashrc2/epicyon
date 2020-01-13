@@ -30,7 +30,6 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
     nickname=handle.split('@')[0]
     with open(scheduleIndexFilename, 'r') as fp:
         for line in fp:
-            print('DEBUG: schedule line='+line)
             if ' ' not in line:
                 continue
             dateStr=line.split(' ')[0]
@@ -38,7 +37,6 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                 continue
             postId=line.split(' ',1)[1].replace('\n','')
             postFilename=scheduleDir+postId+'.json'
-            print('DEBUG: schedule postFilename '+postFilename)
             if deleteSchedulePost:
                 # delete extraneous scheduled posts
                 if os.path.isfile(postFilename):
@@ -47,27 +45,19 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             # create the new index file
             indexLines.append(line)
             # convert string date to int
-            print('DEBUG: schedule date='+dateStr)
             postTime= \
                 datetime.datetime.strptime(dateStr,"%Y-%m-%dT%H:%M:%S%z").replace(tzinfo=None)
             postDaysSinceEpoch= \
                 (postTime - datetime.datetime(1970,1,1)).days
-            print('DEBUG: schedule postTime hour='+str(postTime.time().hour))
-            print('DEBUG: schedule postTime minute='+str(postTime.time().minute))
-            print('DEBUG: schedule daysSinceEpoch='+str(daysSinceEpoch))
-            print('DEBUG: schedule postDaysSinceEpoch='+str(postDaysSinceEpoch))
             if daysSinceEpoch < postDaysSinceEpoch:
-                print('DEBUG: schedule not yet date')
                 continue
             if daysSinceEpoch == postDaysSinceEpoch:
                 if currTime.time().hour < postTime.time().hour:
-                    print('DEBUG: schedule not yet hour')
                     continue
                 if currTime.time().minute < postTime.time().minute:
-                    print('DEBUG: schedule not yet minute')
                     continue
             if not os.path.isfile(postFilename):
-                print('WARN: schedule postFilename='+postFilename)
+                print('WARN: schedule missing postFilename='+postFilename)
                 indexLines.remove(line)
                 continue
             # load post
