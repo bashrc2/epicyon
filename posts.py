@@ -1038,6 +1038,9 @@ def createDirectMessagePost(baseDir: str,
     messageJson['object']['to']=messageJson['to']
     messageJson['cc']=[]
     messageJson['object']['cc']=[]
+    if schedulePost:
+        savePostToBox(baseDir,httpPrefix,messageJson['object']['id'], \
+                      nickname,domain,messageJson,'scheduled')
     return messageJson
 
 def createReportPost(baseDir: str,
