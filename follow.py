@@ -107,6 +107,22 @@ def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
         return True
     return False
 
+def getMutualsOfPerson(baseDir: str, \
+                       nickname: str,domain: str, \
+                       followFile='following.txt') -> []:
+    """Returns the mutuals of a person
+    i.e. accounts which they follow and which also follow back
+    """
+    followers= \
+        getFollowersOfPerson(baseDir,nickname,domain,'followers')
+    following= \
+        getFollowersOfPerson(baseDir,nickname,domain,'following')
+    mutuals=[]
+    for handle in following:
+        if handle in followers:
+            mutuals.append(handle)
+    return mutuals
+
 def getFollowersOfPerson(baseDir: str, \
                          nickname: str,domain: str, \
                          followFile='following.txt') -> []:
