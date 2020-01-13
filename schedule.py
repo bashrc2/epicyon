@@ -82,6 +82,7 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
 
             if nickname:
                 httpd.postToNickname=nickname
+            httpd.debug=True
             if not postMessageToOutbox(postJsonObject,nickname, \
                                        httpd,baseDir, \
                                        httpd.httpPrefix, \
