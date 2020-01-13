@@ -65,8 +65,21 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                 messageJson.get('actor') and \
                 messageJson.get('object') and \
                 messageJson.get('to')):
-            if debug:
-                print('DEBUG: POST to outbox - Create does not have the required parameters')
+            if not messageJson.get('id'):
+                if debug:
+                    print('DEBUG: POST to outbox - Create does not have the id parameter '+str(messageJson))
+            elif not messageJson.get('id'):
+                if debug:
+                    print('DEBUG: POST to outbox - Create does not have the type parameter '+str(messageJson))
+            elif not messageJson.get('id'):
+                if debug:
+                    print('DEBUG: POST to outbox - Create does not have the actor parameter '+str(messageJson))
+            elif not messageJson.get('id'):
+                if debug:
+                    print('DEBUG: POST to outbox - Create does not have the object parameter '+str(messageJson))
+            else:
+                if debug:
+                    print('DEBUG: POST to outbox - Create does not have the "to" parameter '+str(messageJson))
             return False
         testDomain,testPort=getDomainFromActor(messageJson['actor'])
         if testPort:
