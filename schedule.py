@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import time
 import datetime
+from utils import getStatusNumber
 from utils import loadJson
 from outbox import postMessageToOutbox
 
@@ -76,6 +77,17 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                 indexLines.remove(line)
                 continue
 
+            # set the published time
+            # If this is not recent then http checks on the receiving side
+            # will reject it
+            statusNumber,published = getStatusNumber()
+            if postJsonObject.get('published'):
+                postJsonObject['published']=published
+            if postJsonObject.get('object'):
+                if isinstance(postJsonObject['object'], dict):
+                    if postJsonObject['object'].get('published'):
+                        postJsonObject['published']=published
+
             print('Sending scheduled post '+postId)
 
             if not postMessageToOutbox(postJsonObject,nickname, \
@@ -96,6 +108,7 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                                        httpd.projectVersion, \
                                        httpd.debug):
                 indexLines.remove(line)
+                os.remove(postFilename)
                 continue
 
             # move to the outbox
