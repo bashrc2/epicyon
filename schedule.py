@@ -10,6 +10,7 @@ import os
 import time
 import datetime
 from utils import loadJson
+from outbox import postMessageToOutbox
 
 def addSchedulePost(baseDir: str,nickname: str,domain: str, \
                     eventDateStr: str,postId: str) -> None:
@@ -95,7 +96,23 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
 
             print('Sending scheduled post '+postId)
 
-            if not httpd.externalPostToOutbox(postJsonObject,nickname):
+            if not postMessageToOutbox(postJsonObject,nickname, \
+                                       httpd.server,baseDir, \
+                                       httpd.server.httpPrefix, \
+                                       httpd.server.domain, \
+                                       httpd.server.domainFull, \
+                                       httpd.server.port, \
+                                       httpd.server.recentPostsCache, \
+                                       httpd.server.followersThreads, \
+                                       httpd.server.federationList, \
+                                       httpd.server.sendThreads, \
+                                       httpd.server.postLog, \
+                                       httpd.server.cachedWebfingers, \
+                                       httpd.server.personCache, \
+                                       httpd.server.allowDeletion, \
+                                       httpd.server.useTor, \
+                                       httpd.server.projectVersion, \
+                                       httpd.server.debug):
                 indexLines.remove(line)
                 continue
 

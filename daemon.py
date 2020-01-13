@@ -656,9 +656,6 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.personCache,self.server.allowDeletion, \
                                    self.server.useTor,version,self.server.debug)
 
-    def externalPostToOutbox(self,messageJson: {},postToNickname: str) -> bool:
-        return self._postToOutbox(messageJson,__version__,postToNickname)
-
     def _postToOutboxThread(self,messageJson: {}) -> bool:
         """Creates a thread to send a post
         """
@@ -5604,7 +5601,7 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     print('Creating scheduled post thread')
     httpd.thrPostSchedule= \
         threadWithTrace(target=runPostSchedule, \
-                        args=(baseDir,pubHandler,20),daemon=True)    
+                        args=(baseDir,httpd,20),daemon=True)    
     if not unitTest: 
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog= \
