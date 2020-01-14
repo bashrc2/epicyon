@@ -153,3 +153,22 @@ def runPostScheduleWatchdog(projectVersion: str,httpd) -> None:
                 postScheduleOriginal.clone(runPostSchedule)
             httpd.thrPostSchedule.start()
             print('Restarting scheduled posts...')
+
+def removeScheduledPosts(baseDir: str,nickname: str,domain: str) -> None:
+    """Removes any scheduled posts
+    """
+    # remove the index
+    scheduleIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/schedule.index'
+    if os.path.isfile(scheduleIndexFilename):
+        os.remove(scheduleIndexFilename)
+    # remove the scheduled posts
+    scheduledDir=baseDir+'/accounts/'+nickname+'@'+domain+'/scheduled'
+    if not os.path.isdir(scheduledDir):
+        return
+    for scheduledPostFilename in os.listdir(scheduledDir):
+        filePath=os.path.join(scheduledDir,scheduledPostFilename)
+        try:
+            if os.path.isfile(filePath):
+                os.remove(filePath)
+        except:
+            pass

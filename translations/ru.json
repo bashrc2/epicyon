@@ -205,5 +205,6 @@
     "Matrix": "Matrix",
     "Email": "Эл. адрес",
     "PGP": "PGP",
-    "This is a scheduled post.": "Это запланированный пост."
+    "This is a scheduled post.": "Это запланированный пост.",
+    "Remove scheduled posts": "Remove scheduled posts"
 }

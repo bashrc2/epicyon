@@ -564,6 +564,16 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
     skillSearchForm+=htmlFooter()
     return skillSearchForm
 
+def scheduledPostsExist(baseDir: str,nickname: str,domain: str) -> bool:
+    """Returns true if there are posts scheduled to be delivered
+    """
+    scheduleIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/schedule.index'
+    if not os.path.isfile(scheduleIndexFilename):
+        return False
+    if '#users#' in open(scheduleIndexFilename).read():
+        return True
+    return False
+
 def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,httpPrefix: str) -> str:
     """Shows the edit profile screen
     """
@@ -716,6 +726,12 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <input type="submit" name="submitProfile" value="'+translate['Submit']+'">'
     editProfileForm+='      <a href="'+pathOriginal+'"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
     editProfileForm+='    </div>'
+
+    if scheduledPostsExist(baseDir,nickname,domain):
+        editProfileForm+='    <div class="container">'
+        editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="removeScheduledPosts">'+translate['Remove scheduled posts']+'<br>'
+        editProfileForm+='    </div>'
+
     editProfileForm+='    <div class="container">'
     editProfileForm+='      <label class="labels">'+translate['Nickname']+'</label>'
     editProfileForm+='      <input type="text" name="displayNickname" value="'+displayNickname+'"><br>'

@@ -205,5 +205,6 @@
     "Matrix": "Matrix",
     "Email": "Email",
     "PGP": "PGP",
-    "This is a scheduled post.": "Il s'agit d'un article programmé."
+    "This is a scheduled post.": "Il s'agit d'un article programmé.",
+    "Remove scheduled posts": "Remove scheduled posts"
 }

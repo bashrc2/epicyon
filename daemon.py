@@ -169,6 +169,7 @@ from httpsig import verifyPostHeaders
 from theme import setTheme
 from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
+from schedule import removeScheduledPosts
 from outbox import postMessageToOutbox
 import os
 import sys
@@ -4197,6 +4198,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                     modNick,self.server.domain, \
                                                     'instance','moderator')
                                         
+                        if fields.get('removeScheduledPosts'):
+                            if fields['removeScheduledPosts']=='on':
+                                removeScheduledPosts(self.server.baseDir,nickname,self.server.domain)
                         approveFollowers=False
                         if fields.get('approveFollowers'):
                             if fields['approveFollowers']=='on':
