@@ -17,6 +17,7 @@ from utils import getDomainFromActor
 from blocking import isBlockedDomain
 from blocking import outboxBlock
 from blocking import outboxUndoBlock
+from media import replaceYouTube
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
@@ -89,6 +90,8 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
             if debug:
                 print('DEBUG: domain is blocked: '+messageJson['actor'])
             return False
+        # replace youtube, so that google gets less tracking data
+        replaceYouTube(messageJson)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo']=messageJson['actor']
         if messageJson['object'].get('attachment'):
