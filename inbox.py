@@ -59,6 +59,7 @@ from posts import sendToFollowersThread
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 from question import questionUpdateVotes
+from media import replaceYouTube
 
 def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
@@ -1848,6 +1849,9 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
         postJsonObject=messageJson
 
     if validPostContent(postJsonObject,maxMentions,maxEmoji):
+        # replace YouTube links, so they get less tracking data
+        replaceYouTube(postJsonObject)
+
         # list of indexes to be updated
         updateIndexList=['inbox']
         populateReplies(baseDir,httpPrefix,domain,postJsonObject,maxReplies,debug)

@@ -19,6 +19,19 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 
+def replaceYouTube(postJsonObject: {}):
+    """Replace YouTube with invidio.us
+    This denies Google some, but not all, tracking data
+    """
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not postJsonObject['object'].get('content'):
+        return
+    if 'www.youtube.com' not in postJsonObject['object']['content']:
+        return
+    postJsonObject['object']['content']= \
+        postJsonObject['object']['content'].replace('www.youtube.com','invidio.us')
+
 def removeMetaData(imageFilename: str,outputFilename: str) -> None:
     """Attempts to do this with pure python didn't work well,
     so better to use a dedicated tool if one is installed
