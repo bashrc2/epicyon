@@ -45,6 +45,7 @@ from utils import saveJson
 from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
+from media import replaceYouTube
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from auth import createBasicAuthHeader
@@ -2741,6 +2742,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
                 rejectAnnounce(announceFilename)
                 return None
         postJsonObject=announcedJson
+        replaceYouTube(postJsonObject)
         if saveJson(postJsonObject,announceFilename):
             return postJsonObject
     return None
