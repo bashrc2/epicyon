@@ -19,7 +19,7 @@ from shutil import copyfile
 from shutil import rmtree
 from shutil import move
 
-def replaceYouTube(postJsonObject: {}):
+def replaceYouTube(postJsonObject: {}) -> None:
     """Replace YouTube with invidio.us
     This denies Google some, but not all, tracking data
     """
