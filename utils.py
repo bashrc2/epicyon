@@ -61,6 +61,8 @@ def getStatusNumber() -> (str,str):
     return statusNumber,published
 
 def isEvil(domain: str) -> bool:
+    if not isinstance(domain, str):
+        return True
     # https://www.youtube.com/watch?v=5qw1hcevmdU
     evilDomains=('gab.com','gabfed.com','spinster.xyz','kiwifarms.cc','djitter.com')
     for concentratedEvil in evilDomains:
