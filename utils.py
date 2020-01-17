@@ -62,6 +62,7 @@ def getStatusNumber() -> (str,str):
 
 def isEvil(domain: str) -> bool:
     if not isinstance(domain, str):
+        print('WARN: Malformed domain '+str(domain))
         return True
     # https://www.youtube.com/watch?v=5qw1hcevmdU
     evilDomains=('gab.com','gabfed.com','spinster.xyz','kiwifarms.cc','djitter.com')
