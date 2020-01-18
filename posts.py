@@ -2667,7 +2667,6 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         os.mkdir(announceCacheDir)
     announceFilename= \
         announceCacheDir+'/'+postJsonObject['object'].replace('/','#')+'.json'
-    print('announceFilename: '+announceFilename)
 
     if os.path.isfile(announceFilename+'.reject'):
         return None
