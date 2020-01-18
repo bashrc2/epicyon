@@ -2678,12 +2678,15 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         if postJsonObject:
             return postJsonObject
     else:
-        print('Downloading Announce content for '+postJsonObject['object'])
         asHeader={'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
         if '/channel/' in postJsonObject['actor']:
             asHeader={'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+        if isBlocked(baseDir,nickname,domain,actorNickname,actorDomain):
+            print('Announce download blocked actor: '+actorNickname+'@'+actorDomain)
+            return None
+        print('Downloading Announce content for '+postJsonObject['object'])
         announcedJson= \
             getJson(session,postJsonObject['object'],asHeader, \
                     None,projectVersion,httpPrefix,domain)
