@@ -375,7 +375,10 @@ def createCapabilitiesInbox(baseDir: str,nickname: str,domain: str,port: int, \
 
 def personUpgradeActor(personJson: {},handle: str,filename: str) -> None:
     """Alter the actor to add any new properties
-    """    
+    """
+    if not os.path.isfile(filename):
+        print('WARN: actor file not found '+filename)
+        return
     if not personJson:        
         personJson=loadJson(filename)
     if not personJson.get('nomadicLocations'):
