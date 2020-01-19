@@ -373,9 +373,10 @@ def createCapabilitiesInbox(baseDir: str,nickname: str,domain: str,port: int, \
     """
     return createPersonBase(baseDir,nickname,domain,port,httpPrefix,True,None)
 
-def personUpgradeActor(personJson: {},handle: str,filename: str) -> None:
+def personUpgradeActor(baseDir: str,personJson: {},handle: str,filename: str) -> None:
     """Alter the actor to add any new properties
     """
+    updateActor=False
     if not os.path.isfile(filename):
         print('WARN: actor file not found '+filename)
         return
@@ -389,8 +390,25 @@ def personUpgradeActor(personJson: {},handle: str,filename: str) -> None:
             'locationPrimary':True,
             'locationDeleted':False
         }]
-        saveJson(personJson,filename)
         print('Nomadic locations added to to actor '+handle)        
+        updateActor=True
+
+    if updateActor:
+        saveJson(personJson,filename)
+
+        # also update the actor within the cache
+        actorCacheFilename= \
+            baseDir+'/accounts/cache/actors/'+ \
+            personJson['id'].replace('/','#')+'.json'
+        if os.path.isfile(actorCacheFilename):
+            saveJson(personJson,actorCacheFilename)
+
+        # update domain/@nickname in actors cache
+        actorCacheFilename= \
+            baseDir+'/accounts/cache/actors/'+ \
+            personJson['id'].replace('/users/','/@').replace('/','#')+'.json'
+        if os.path.isfile(actorCacheFilename):
+            saveJson(personJson,actorCacheFilename)
 
 def personLookup(domain: str,path: str,baseDir: str) -> {}:
     """Lookup the person for an given nickname
@@ -426,7 +444,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
     if not os.path.isfile(filename):
         return None
     personJson=loadJson(filename)
-    personUpgradeActor(personJson,handle,filename)
+    personUpgradeActor(baseDir,personJson,handle,filename)
     #if not personJson:
     #    personJson={"user": "unknown"}
     return personJson

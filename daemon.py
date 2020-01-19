@@ -3922,7 +3922,7 @@ class PubServer(BaseHTTPRequestHandler):
                     except Exception as e:
                         print('WARN: Unable to save token for '+loginNickname+' '+str(e))
 
-                    personUpgradeActor(None,loginHandle, \
+                    personUpgradeActor(self.server.baseDir,None,loginHandle, \
                                        self.server.baseDir+'/accounts/'+loginHandle+'.json')
 
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
