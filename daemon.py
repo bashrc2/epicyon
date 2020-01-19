@@ -36,6 +36,7 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import randomizeActorImages
 from person import personUpgradeActor
 from person import activateAccount
 from person import deactivateAccount
@@ -4295,6 +4296,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(allowedInstancesFilename)
                         # save actor json file within accounts
                         if actorChanged:
+                            randomizeActorImages(actorJson)
                             saveJson(actorJson,actorFilename)
                             # also copy to the actors cache and personCache in memory
                             storePersonInCache(self.server.baseDir, \

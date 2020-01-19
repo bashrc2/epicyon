@@ -12,6 +12,7 @@ import os
 import fileinput
 import subprocess
 import shutil
+from random import randint
 from pathlib import Path
 from Crypto.PublicKey import RSA
 from shutil import copyfile
@@ -34,7 +35,7 @@ from utils import loadJson
 from utils import saveJson
 from auth import createPassword
 from config import setConfigParam
-from config import getConfigParam
+from config import getConfigParam    
 
 def generateRSAKey() -> (str,str):
     key = RSA.generate(2048)
@@ -131,6 +132,14 @@ def accountExists(baseDir: str,nickname: str,domain: str) -> bool:
     return os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain) or \
         os.path.isdir(baseDir+'/deactivated/'+nickname+'@'+domain)
 
+def randomizeActorImages(personJson: {}) -> None:
+    """Randomizes the filenames for avatar image and background
+    This causes other instances to update their cached avatar image
+    """
+    personId=personJson['id']
+    personJson['icon']['url']=personId+'/avatar'+str(randint(10000000000000,99999999999999))+'.png'
+    personJson['image']['url']=personId+'/image'+str(randint(10000000000000,99999999999999))+'.png'
+
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
     """Returns the private key, public key, actor and webfinger endpoint
@@ -192,11 +201,11 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  'availability': None,
                  'icon': {'mediaType': 'image/png',
                           'type': 'Image',
-                          'url': personId+'/avatar.png'},
+                          'url': personId+'/avatar'+str(randint(10000000000000,99999999999999))+'.png'},
                  'id': personId,
                  'image': {'mediaType': 'image/png',
                            'type': 'Image',
-                           'url': personId+'/image.png'},
+                           'url': personId+'/image'+str(randint(10000000000000,99999999999999))+'.png'},
                  'inbox': inboxStr,
                  'manuallyApprovesFollowers': approveFollowers,
                  'name': personName,
