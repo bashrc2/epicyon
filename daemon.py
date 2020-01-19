@@ -36,6 +36,7 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import personUpgradeActor
 from person import activateAccount
 from person import deactivateAccount
 from person import registerAccount
@@ -3911,14 +3912,18 @@ class PubServer(BaseHTTPRequestHandler):
 
                     token=sha256((loginNickname+loginPassword+salt).encode('utf-8')).hexdigest()
                     self.server.tokens[loginNickname]=token
+                    loginHandle=loginNickname+'@'+self.server.domain
                     tokenFilename= \
                         self.server.baseDir+'/accounts/'+ \
-                        loginNickname+'@'+self.server.domain+'/.token'
+                        loginHandle+'/.token'
                     try:
                         with open(tokenFilename, 'w') as fp:
                             fp.write(token)
                     except Exception as e:
                         print('WARN: Unable to save token for '+loginNickname+' '+str(e))
+
+                    personUpgradeActor(None,loginHandle, \
+                                       self.server.baseDir+'/accounts/'+loginHandle+'.json')
 
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', \
