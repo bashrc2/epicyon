@@ -863,6 +863,21 @@ def receiveUpdate(recentPostsCache: {},session,baseDir: str, \
             print('DEBUG: Question update was received')
         return True
 
+    if messageJson['type']=='Person':
+        if messageJson.get('url') and messageJson.get('id'):
+            print('Request to update unwrapped actor: '+messageJson['id'])
+            updateNickname=getNicknameFromActor(messageJson['id'])
+            if updateNickname:
+                updateDomain,updatePort=getDomainFromActor(messageJson['id'])
+                if personReceiveUpdate(baseDir, \
+                                       domain,port, \
+                                       updateNickname,updateDomain,updatePort, \
+                                       messageJson, \
+                                       personCache,debug):
+                    if debug:
+                        print('DEBUG: Unwrapped profile update was received for '+messageJson['url'])
+                        return True
+    
     if messageJson['object']['type']=='Person' or \
        messageJson['object']['type']=='Application' or \
        messageJson['object']['type']=='Group' or \
