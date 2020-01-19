@@ -1355,11 +1355,9 @@ class PubServer(BaseHTTPRequestHandler):
                     avatarFile=avatarStr.split('/')[1]
                     # remove any numbers, eg. avatar123.png becomes avatar.png
                     if avatarFile.startswith('avatar'):
-                        if avatarFile.endswith('.png') or \
-                           avatarFile.endswith('.jpg') or \
-                           avatarFile.endswith('.gif') or \
-                           avatarFile.endswith('.webp'):
-                            avatarFile='avatar.'+avatarFile.split('.')[1]
+                        avatarFile='avatar.'+avatarFile.split('.')[1]
+                    elif avatarFile.startswith('image'):
+                        avatarFile='image.'+avatarFile.split('.')[1]
                     avatarFilename= \
                         self.server.baseDir+'/accounts/'+ \
                         avatarNickname+'@'+ \
