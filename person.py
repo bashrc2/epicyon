@@ -137,8 +137,12 @@ def randomizeActorImages(personJson: {}) -> None:
     This causes other instances to update their cached avatar image
     """
     personId=personJson['id']
-    personJson['icon']['url']=personId+'/avatar'+str(randint(10000000000000,99999999999999))+'.png'
-    personJson['image']['url']=personId+'/image'+str(randint(10000000000000,99999999999999))+'.png'
+    lastPartOfFilename=personJson['icon']['url'].split('/')[-1]
+    existingExtension=lastPartOfFilename.split('.')[1]
+    personJson['icon']['url']=personId+'/avatar'+str(randint(10000000000000,99999999999999))+'.'+existingExtension
+    lastPartOfFilename=personJson['image']['url'].split('/')[-1]
+    existingExtension=lastPartOfFilename.split('.')[1]
+    personJson['image']['url']=personId+'/image'+str(randint(10000000000000,99999999999999))+'.'+existingExtension
 
 def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, saveToFile: bool,password=None) -> (str,str,{},{}):
