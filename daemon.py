@@ -1353,6 +1353,13 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in avatarStr and '.temp.' not in self.path:
                     avatarNickname=avatarStr.split('/')[0]
                     avatarFile=avatarStr.split('/')[1]
+                    # remove any numbers, eg. avatar123.png becomes avatar.png
+                    if avatarFile.startswith('avatar'):
+                        if avatarFile.endswith('.png') or \
+                           avatarFile.endswith('.jpg') or \
+                           avatarFile.endswith('.gif') or \
+                           avatarFile.endswith('.webp'):
+                            avatarFile='avatar.'+avatarFile.split('.')[1]
                     avatarFilename= \
                         self.server.baseDir+'/accounts/'+ \
                         avatarNickname+'@'+ \
