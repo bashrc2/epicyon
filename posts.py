@@ -2260,7 +2260,7 @@ def createBoxIndexed(recentPostsCache: {}, \
                 domain=domain+':'+str(port)
 
     boxActor=httpPrefix+'://'+domain+'/users/'+nickname
-                
+
     pageStr='?page=true'
     if pageNumber:
         try:
@@ -2689,7 +2689,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         announcedJson= \
             getJson(session,postJsonObject['object'],asHeader, \
                     None,projectVersion,httpPrefix,domain)
-                        
+
         if not announcedJson:
             return None
 
@@ -2716,7 +2716,7 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
             rejectAnnounce(announceFilename)
             #pprint(announcedJson)
             return None
-                            
+
         # wrap in create to be consistent with other posts
         announcedJson= \
             outboxMessageCreateWrap(httpPrefix, \

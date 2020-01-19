@@ -210,7 +210,14 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
                  },
                  'tag': [],
                  'type': personType,
-                 'url': personUrl
+                 'url': personUrl,
+                 'nomadicLocations': [{
+                     'id': personId,
+                     'type': 'nomadicLocation',
+                     'locationAddress':'acct:'+nickname+'@'+domain,
+                     'locationPrimary':True,
+                     'locationDeleted':False
+                 }]
     }
 
     if nickname=='inbox':
