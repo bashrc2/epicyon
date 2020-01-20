@@ -188,8 +188,8 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
         followersThreads.remove(th)
     if debug:
         print('DEBUG: '+str(len(followersThreads))+' followers threads active')
-    # retain up to 20 threads
-    if len(followersThreads)>20:
+    # retain up to 200 threads
+    if len(followersThreads)>200:
         # kill the thread if it is still alive
         if followersThreads[0].is_alive():
             followersThreads[0].kill()
