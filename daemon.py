@@ -4302,6 +4302,19 @@ class PubServer(BaseHTTPRequestHandler):
                             storePersonInCache(self.server.baseDir, \
                                                actorJson['id'],actorJson, \
                                                self.server.personCache)
+                            # clear any cached images for this actor
+                            avatarCacheFilename= \
+                                self.server.baseDir+'/cache/avatars/'+ \
+                                actorJson['id'].replace('/','#')
+                            if os.path.isfile(avatarCacheFilename+'.png'):
+                                os.remove(avatarCacheFilename+'.png')
+                            if os.path.isfile(avatarCacheFilename+'.jpg'):
+                                os.remove(avatarCacheFilename+'.jpg')
+                            if os.path.isfile(avatarCacheFilename+'.gif'):
+                                os.remove(avatarCacheFilename+'.gif')
+                            if os.path.isfile(avatarCacheFilename+'.webp'):
+                                os.remove(avatarCacheFilename+'.webp')
+                            # save the actor to the cache
                             actorCacheFilename= \
                                 self.server.baseDir+'/cache/actors/'+ \
                                 actorJson['id'].replace('/','#')+'.json'
