@@ -1566,7 +1566,7 @@ def htmlProfile(defaultTimeline: str, \
         if donateUrl:
             donateSection+='    <p><a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a></p>\n'
         if emailAddress:
-            donateSection+='<p>'+translate['Email']+': <a href="email:'+emailAddress+'">'+emailAddress+'</a></p>\n'
+            donateSection+='<p>'+translate['Email']+': <a href="mailto:'+emailAddress+'">'+emailAddress+'</a></p>\n'
         if xmppAddress:
             donateSection+='<p>'+translate['XMPP']+': <a href="xmpp:'+xmppAddress+'">'+xmppAddress+'</a></p>\n'
         if matrixAddress:
@@ -3441,9 +3441,9 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
     optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     if emailAddress:
-        optionsStr+='<p class="imText">'+translate['Email']+': '+emailAddress+'</p>'
+        optionsStr+='<p class="imText">'+translate['Email']+': <a href="mailto:'+emailAddress+'">'+emailAddress+'</a></p>'
     if xmppAddress:
-        optionsStr+='<p class="imText">'+translate['XMPP']+': '+xmppAddress+'</p>'
+        optionsStr+='<p class="imText">'+translate['XMPP']+': <a href="xmpp:'+xmppAddress+'">'+xmppAddress+'</a></p>'
     if matrixAddress:
         optionsStr+='<p class="imText">'+translate['Matrix']+': '+matrixAddress+'</p>'
     if PGPpubKey:
