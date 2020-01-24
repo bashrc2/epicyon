@@ -1557,18 +1557,27 @@ def testActorParsing():
 
 def testWebLinks():
     print('testWebLinks')
+
     exampleText='This post has a web links https://somesite.net\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
     assert '<a href="https://somesite.net" rel="nofollow noopener" target="_blank"><span class="invisible">https://</span><span class="ellipsis">somesite.net</span></a' in linkedText
+
     exampleText='This post has a very long web link\n\nhttp://cbwebewuvfuftdiudbqd33dddbbyuef23fyug3bfhcyu2fct2cuyqbcbucuwvckiwyfgewfvqejbchevbhwevuevwbqebqekveqvuvjfkf.onion\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
     assert 'ellipsis' in linkedText
+
     exampleText='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAH</p>'
     resultText=removeLongWords(exampleText,40,[])
     assert resultText=='<p>1. HAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA</p>'
+
     exampleText='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABC</p>'
     resultText=removeLongWords(exampleText,40,[])
     assert resultText=='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
+
+    exampleText='<p>Some text.\n\nHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAH!</p>'
+    resultText=removeLongWords(exampleText,40,[])
+    assert resultText=='<p>Some text.\n\nHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH</p>'
+    
 
 def testAddEmoji():
     print('testAddEmoji')
