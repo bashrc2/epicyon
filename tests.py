@@ -1558,6 +1558,10 @@ def testActorParsing():
 def testWebLinks():
     print('testWebLinks')
 
+    exampleText='<p><span class=\"h-card\"><a href=\"https://something/@orother\" class=\"u-url mention\">@<span>foo</span></a></span> Some random text.</p><p>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</p>'
+    resultText=removeLongWords(exampleText,40,[])
+    assert resultText=='<p><span class="h-card"><a href="https://something/@orother" class="u-url mention">@<span>foo</span></a></span> Some random text.</p>'
+
     exampleText='This post has a web links https://somesite.net\n\nAnd some other text'
     linkedText=addWebLinks(exampleText)
     assert '<a href="https://somesite.net" rel="nofollow noopener" target="_blank"><span class="invisible">https://</span><span class="ellipsis">somesite.net</span></a' in linkedText
@@ -1574,10 +1578,6 @@ def testWebLinks():
     resultText=removeLongWords(exampleText,40,[])
     assert resultText=='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
 
-    exampleText='<p>Some text.\n\nHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHHAHAHAHAHAHAHAHAH!</p>'
-    resultText=removeLongWords(exampleText,40,[])
-    assert resultText=='<p>Some text.\n\nHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAH</p>'
-    
 
 def testAddEmoji():
     print('testAddEmoji')
@@ -1693,13 +1693,13 @@ def testRecentPostsCache():
 
 def runAllTests():
     print('Running tests...')
+    testWebLinks()
     testRecentPostsCache()
     testTheme()
     testSaveLoadJson()
     testCommentJson()
     testGetStatusNumber()
     testAddEmoji()
-    testWebLinks()
     testActorParsing()
     testHttpsig()
     testCache()

@@ -273,7 +273,10 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
         elif 'dat:' in wordStr:
             continue
         if '<' in wordStr:
-            wordStr=wordStr.split('<',1)[0]
+            replaceWord=wordStr.split('<',1)[0]
+            content= \
+                content.replace(wordStr,replaceWord)
+            wordStr=replaceWord
         if '/' in wordStr:
             continue
         if len(wordStr[maxWordLength:])<maxWordLength:
@@ -285,6 +288,9 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
             content= \
                 content.replace(wordStr, \
                                 wordStr[:maxWordLength])
+    if content.startswith('<p>'):
+        if not content.endswith('</p>'):
+            content=content.strip()+'</p>'
     return content
 
 def addHtmlTags(baseDir: str,httpPrefix: str, \
