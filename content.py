@@ -266,6 +266,12 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
         if '@' in wordStr:
             if '@@' not in wordStr:
                 continue
+        if '=.ed25519' in wordStr:
+            continue
+        if '.onion' in wordStr:
+            continue
+        if '.i2p' in wordStr:
+            continue
         if 'https:' in wordStr:
             continue
         elif 'http:' in wordStr:
