@@ -691,16 +691,19 @@ class PubServer(BaseHTTPRequestHandler):
         if len(self.server.inboxQueue)>=self.server.maxQueueLength:
             print('Inbox queue is full ('+str(self.server.maxQueueLength)+' items). Removing oldest items.')
             cleardownStartTime=time.time()
+            removals=0
             while len(self.server.inboxQueue) >= self.server.maxQueueLength-4:
                 queueFilename=self.server.inboxQueue[0]
                 if os.path.isfile(queueFilename):
                     try:
                         os.remove(queueFilename)
+                        removals+=1
                     except:
+                        print('WARN: unable to remove inbox queue file '+queueFilename)
                         pass
                 self.server.inboxQueue.pop(0)
             timeDiff=str(int((time.time()-cleardownStartTime)*1000))
-            print('Inbox cleardown took '+timeDiff+' mS')
+            print('Inbox cleardown took '+timeDiff+' mS. Removed '+str(removals)+' items.')
     
     def _updateInboxQueue(self,nickname: str,messageJson: {}, \
                           messageBytes: str) -> int:
