@@ -5537,7 +5537,7 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     httpd.inboxQueue=[]
     httpd.sendThreads=sendThreads
     httpd.postLog=[]
-    httpd.maxQueueLength=16
+    httpd.maxQueueLength=64
     httpd.ocapAlways=ocapAlways
     httpd.allowDeletion=allowDeletion
     httpd.lastLoginTime=0
