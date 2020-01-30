@@ -4494,7 +4494,7 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             questionParams=self.rfile.read(length).decode('utf-8')
             questionParams= \
-                questionParams.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').strip()
+                questionParams.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').replace('%3F','').strip()
             # post being voted on
             messageId=None
             if 'messageId=' in questionParams:
