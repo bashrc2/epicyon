@@ -231,6 +231,8 @@ class PubServer(BaseHTTPRequestHandler):
                              messageId,messageId,None, \
                              False,None,None,None)
         if messageJson:
+            # name field contains the answer
+            messageJson['object']['name']=answer
             if self._postToOutbox(messageJson,__version__,nickname):
                 postFilename= \
                     locatePost(self.server.baseDir,nickname, \

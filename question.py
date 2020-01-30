@@ -23,7 +23,7 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}) ->
         return None
     if not replyJson['object']['inReplyTo']:
         return None
-    if not replyJson['object'].get('content'):
+    if not replyJson['object'].get('name'):
         return None
     inReplyTo=replyJson['object']['inReplyTo']
     questionPostFilename=locatePost(baseDir,nickname,domain,inReplyTo)
@@ -46,13 +46,13 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}) ->
         return None
     if not questionJson['object'].get('content'):
         return None
-    content=replyJson['object']['content']
-    # does the reply content match any possible question option?
+    replyVote=replyJson['object']['name']
+    # does the reply name field match any possible question option?
     foundAnswer=None
     for possibleAnswer in questionJson['object']['oneOf']:
         if not possibleAnswer.get('name'):
             continue
-        if possibleAnswer['name'] in content:
+        if possibleAnswer['name'] == replyVote:
             foundAnswer=possibleAnswer
             break
     if not foundAnswer:
