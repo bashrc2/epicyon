@@ -147,6 +147,7 @@ from shares import outboxUndoShareUpload
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import removeAvatarFromCache
 from utils import locatePost
 from utils import getCachedPostFilename
 from utils import removePostFromCache
@@ -4308,17 +4309,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                actorJson['id'],actorJson, \
                                                self.server.personCache)
                             # clear any cached images for this actor
-                            avatarCacheFilename= \
-                                self.server.baseDir+'/cache/avatars/'+ \
-                                actorJson['id'].replace('/','#')
-                            if os.path.isfile(avatarCacheFilename+'.png'):
-                                os.remove(avatarCacheFilename+'.png')
-                            if os.path.isfile(avatarCacheFilename+'.jpg'):
-                                os.remove(avatarCacheFilename+'.jpg')
-                            if os.path.isfile(avatarCacheFilename+'.gif'):
-                                os.remove(avatarCacheFilename+'.gif')
-                            if os.path.isfile(avatarCacheFilename+'.webp'):
-                                os.remove(avatarCacheFilename+'.webp')
+                            removeAvatarFromCache(self.server.baseDir,actorJson['id'].replace('/','-'))
                             # save the actor to the cache
                             actorCacheFilename= \
                                 self.server.baseDir+'/cache/actors/'+ \

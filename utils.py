@@ -12,6 +12,16 @@ import shutil
 import datetime
 import json
 
+def removeAvatarFromCache(baseDir: str,actorStr: str) -> None:
+    """Removes any existing avatar entries from the cache
+    This avoids duplicate entries with differing extensions
+    """
+    avatarFilenameExtensions=('png','jpg','gif','webp')
+    for extension in avatarFilenameExtensions:
+        avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.'+extension
+        if os.path.isfile(avatarFilename):
+            os.remove(avatarFilename)
+
 def saveJson(jsonObject: {},filename: str) -> bool:
     """Saves json to a file
     """

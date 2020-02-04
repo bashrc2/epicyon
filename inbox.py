@@ -12,6 +12,7 @@ import datetime
 import time
 import json
 from shutil import copyfile
+from utils import removeAvatarFromCache
 from utils import isPublicPost
 from utils import getCachedPostFilename
 from utils import removePostFromCache
@@ -775,11 +776,7 @@ def personReceiveUpdate(baseDir: str, \
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
     actorStr=personJson['id'].replace('/','-')
-    avatarFilenameExtensions=('png','jpg','gif','webp')
-    for extension in avatarFilenameExtensions:
-        avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.'+extension
-        if os.path.isfile(avatarFilename):
-            os.remove(avatarFilename)
+    removeAvatarFromCache(baseDir,actorStr)
     return True
 
 def receiveUpdateToQuestion(recentPostsCache: {},messageJson: {}, \

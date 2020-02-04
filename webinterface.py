@@ -68,7 +68,8 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
     """
     if not avatarUrl:
         return None
-    avatarImagePath=baseDir+'/cache/avatars/'+actor.replace('/','-')
+    actorStr=actor.replace('/','-')
+    avatarImagePath=baseDir+'/cache/avatars/'+actorStr
     if avatarUrl.endswith('.png') or '.png?' in avatarUrl:
         sessionHeaders = {'Accept': 'image/png'}
         avatarImageFilename=avatarImagePath+'.png'
