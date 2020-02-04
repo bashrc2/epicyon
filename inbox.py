@@ -775,17 +775,11 @@ def personReceiveUpdate(baseDir: str, \
     # remove avatar if it exists so that it will be refreshed later
     # when a timeline is constructed
     actorStr=personJson['id'].replace('/','-')
-    avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.png'
-    if os.path.isfile(avatarFilename):
-        os.remove(avatarFilename)
-    else:
-        avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.jpg'
+    avatarFilenameExtensions=('png','jpg','gif','webp')
+    for extension in avatarFilenameExtensions:
+        avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.'+extension
         if os.path.isfile(avatarFilename):
             os.remove(avatarFilename)
-        else:
-            avatarFilename=baseDir+'/cache/avatars/'+actorStr+'.gif'
-            if os.path.isfile(avatarFilename):
-                os.remove(avatarFilename)
     return True
 
 def receiveUpdateToQuestion(recentPostsCache: {},messageJson: {}, \
