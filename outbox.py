@@ -211,15 +211,19 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                               messageJson,debug, \
                               version)
     followersThreads.append(followersThread)
+
     if debug:
         print('DEBUG: handle any unfollow requests')
     outboxUndoFollow(baseDir,messageJson,debug)
+
     if debug:
         print('DEBUG: handle delegation requests')
     outboxDelegate(baseDir,postToNickname,messageJson,debug)
+
     if debug:
         print('DEBUG: handle skills changes requests')
     outboxSkills(baseDir,postToNickname,messageJson,debug)
+
     if debug:
         print('DEBUG: handle availability changes requests')
     outboxAvailability(baseDir,postToNickname,messageJson,debug)
@@ -255,43 +259,50 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                  postToNickname,domain, \
                  messageJson,debug, \
                  allowDeletion)
+
     if debug:
         print('DEBUG: handle block requests')
     outboxBlock(baseDir,httpPrefix, \
                 postToNickname,domain, \
                 port,
                 messageJson,debug)
+
     if debug:
         print('DEBUG: handle undo block requests')
     outboxUndoBlock(baseDir,httpPrefix, \
                     postToNickname,domain, \
                     port,
                     messageJson,debug)
+
     if debug:
         print('DEBUG: handle share uploads')
     outboxShareUpload(baseDir,httpPrefix, \
                       postToNickname,domain, \
                       port,
                       messageJson,debug)
+
     if debug:
         print('DEBUG: handle undo share uploads')
     outboxUndoShareUpload(baseDir,httpPrefix, \
                           postToNickname,domain, \
                           port,
                           messageJson,debug)
+
     if debug:
         print('DEBUG: sending c2s post to named addresses')
-        print('c2s sender: '+postToNickname+'@'+ \
-              domain+':'+str(port))
-    sendToNamedAddresses(server.session,baseDir, \
-                         postToNickname,domain, \
-                         port, \
-                         httpPrefix, \
-                         federationList, \
-                         sendThreads, \
-                         postLog, \
-                         cachedWebfingers, \
-                         personCache, \
-                         messageJson,debug, \
-                         version)
+        if messageJson.get('to'):
+            print('c2s sender: '+postToNickname+'@'+domain+':'+str(port)+ \
+                  ' recipient: '+messageJson['to'])
+        else:
+            print('c2s sender: '+postToNickname+'@'+domain+':'+str(port))
+        sendToNamedAddresses(server.session,baseDir, \
+                             postToNickname,domain,port, \
+                             httpPrefix, \
+                             federationList, \
+                             sendThreads, \
+                             postLog, \
+                             cachedWebfingers, \
+                             personCache, \
+                             messageJson,debug, \
+                             version)
     return True
