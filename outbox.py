@@ -293,7 +293,7 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
         print('DEBUG: sending c2s post to named addresses')
         if messageJson.get('to'):
             print('c2s sender: '+postToNickname+'@'+domain+':'+str(port)+ \
-                  ' recipient: '+messageJson['to'])
+                  ' recipient: '+str(messageJson['to']))
         else:
             print('c2s sender: '+postToNickname+'@'+domain+':'+str(port))
         sendToNamedAddresses(server.session,baseDir, \
