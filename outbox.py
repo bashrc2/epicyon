@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 import json
 from session import createSession
+from auth import createPassword
 from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
