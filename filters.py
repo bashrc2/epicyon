@@ -41,9 +41,9 @@ def removeFilter(baseDir: str,nickname: str,domain: str, \
 def isTwitterPost(content: str) -> bool:
     """Returns true if the given post content is a retweet or twitter crosspost
     """
-    if content.contains('/twitter.com') or content.contains('@twitter.com'):
+    if '/twitter.com' in content or '@twitter.com' in content:
         return True
-    elif content.contains('RT:'):
+    elif 'RT:' in content:
         return True
     return False
 
