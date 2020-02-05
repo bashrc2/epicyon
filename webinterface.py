@@ -3131,20 +3131,21 @@ def htmlIndividualPost(recentPostsCache: {},maxRecentPosts: int, \
     messageId=postJsonObject['id'].replace('/activity','')
 
     # show the previous posts
-    while postJsonObject['object'].get('inReplyTo'):
-        postFilename=locatePost(baseDir,nickname,domain,postJsonObject['object']['inReplyTo'])
-        if not postFilename:
-            break
-        postJsonObject=loadJson(postFilename)
-        if postJsonObject:
-            postStr= \
-                individualPostAsHtml(recentPostsCache,maxRecentPosts, \
-                                     iconsDir,translate,None, \
-                                     baseDir,session,wfRequest,personCache, \
-                                     nickname,domain,port,postJsonObject, \
-                                     None,True,False, \
-                                     httpPrefix,projectVersion,'inbox', \
-                                     False,authorized,False,False,False)+postStr
+    if isinstance(postJsonObject['object'], dict):
+        while postJsonObject['object'].get('inReplyTo'):
+            postFilename=locatePost(baseDir,nickname,domain,postJsonObject['object']['inReplyTo'])
+            if not postFilename:
+                break
+            postJsonObject=loadJson(postFilename)
+            if postJsonObject:
+                postStr= \
+                    individualPostAsHtml(recentPostsCache,maxRecentPosts, \
+                                         iconsDir,translate,None, \
+                                         baseDir,session,wfRequest,personCache, \
+                                         nickname,domain,port,postJsonObject, \
+                                         None,True,False, \
+                                         httpPrefix,projectVersion,'inbox', \
+                                         False,authorized,False,False,False)+postStr
 
     # show the following posts
     postFilename=locatePost(baseDir,nickname,domain,messageId)
