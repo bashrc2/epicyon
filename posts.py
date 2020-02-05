@@ -1848,7 +1848,7 @@ def sendToFollowers(session,baseDir: str, \
                                    postJsonObject['object']['type']=='Service':
                                     print('Sending profile update to shared inbox of '+toDomain)
                                     toNickname='inbox'
-            
+
             if debug:
                 print('DEBUG: Sending from '+nickname+'@'+domain+ \
                       ' to '+toNickname+'@'+toDomain)
@@ -1883,7 +1883,7 @@ def sendToFollowers(session,baseDir: str, \
                                federationList, \
                                sendThreads,postLog,cachedWebfingers, \
                                personCache,debug,projectVersion)
-                
+
         time.sleep(4)
 
     if debug:
@@ -2684,6 +2684,11 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
         if isBlocked(baseDir,nickname,domain,actorNickname,actorDomain):
             print('Announce download blocked actor: '+actorNickname+'@'+actorDomain)
+            return None
+        objectNickname=getNicknameFromActor(postJsonObject['object'])
+        objectDomain,objectPort=getDomainFromActor(postJsonObject['object'])
+        if isBlocked(baseDir,nickname,domain,objectNickname,objectDomain):
+            print('Announce download blocked object: '+objectNickname+'@'+objectDomain)
             return None
         print('Downloading Announce content for '+postJsonObject['object'])
         announcedJson= \
