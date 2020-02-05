@@ -134,7 +134,7 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
     if os.path.isfile(globalBlockingFilename):
         if '*@'+blockDomain in open(globalBlockingFilename).read():
             return True
-        if blockNickname and blockDomain:
+        if blockNickname:
             blockHandle=blockNickname+'@'+blockDomain
             if blockHandle in open(globalBlockingFilename).read():
                 return True
@@ -148,7 +148,7 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
     if os.path.isfile(blockingFilename):
         if '*@'+blockDomain in open(blockingFilename).read():
             return True
-        if blockNickname and blockDomain:
+        if blockNickname:
             blockHandle=blockNickname+'@'+blockDomain
             if blockHandle in open(blockingFilename).read():
                 return True
