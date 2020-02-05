@@ -597,6 +597,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     isBot=''
     isGroup=''
     followDMs=''
+    removeTwitter=''
     mediaInstanceStr=''
     displayNickname=nickname
     bioStr=''
@@ -631,6 +632,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
                 isBot=''
     if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/.followDMs'):
         followDMs='checked'
+    if os.path.isfile(baseDir+'/accounts/'+nickname+'@'+domain+'/.removeTwitter'):
+        removeTwitter='checked'
 
     mediaInstance=getConfigParam(baseDir,"mediaInstance")
     if mediaInstance:
@@ -772,6 +775,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="isBot" '+isBot+'>'+translate['This is a bot account']+'<br>'
     editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="isGroup" '+isGroup+'>'+translate['This is a group account']+'<br>'
     editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="followDMs" '+followDMs+'>'+translate['Only people I follow can send me DMs']+'<br>'
+    editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="removeTwitter" '+removeTwitter+'>'+translate['Remove Twitter posts']+'<br>'
     if path.startswith('/users/'+adminNickname+'/'):
         editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="mediaInstance" '+mediaInstanceStr+'>'+translate['This is a media instance']+'<br>'
     editProfileForm+='      <br><b><label class="labels">'+translate['Filtered words']+'</label></b>'

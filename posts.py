@@ -51,6 +51,7 @@ from content import replaceEmojiFromTags
 from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
+from filters import isFiltered
 try: 
     from BeautifulSoup import BeautifulSoup
 except ImportError:
@@ -2720,6 +2721,12 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         if announcedJson['type']!='Note':
             rejectAnnounce(announceFilename)
             #pprint(announcedJson)
+            return None
+        if not announcedJson.get('content'):
+            rejectAnnounce(announceFilename)
+            return None        
+        if isFiltered(baseDir,nickname,domain,announcedJson['content']):
+            rejectAnnounce(announceFilename)
             return None
 
         # wrap in create to be consistent with other posts

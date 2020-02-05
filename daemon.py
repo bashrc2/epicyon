@@ -4252,6 +4252,19 @@ class PubServer(BaseHTTPRequestHandler):
                         if not followDMsActive:
                             if os.path.isfile(followDMsFilename):
                                 os.remove(followDMsFilename)
+                        # remove Twitter retweets
+                        removeTwitterFilename= \
+                            self.server.baseDir+'/accounts/'+ \
+                            nickname+'@'+self.server.domain+'/.removeTwitter'
+                        removeTwitterActive=False
+                        if fields.get('removeTwitter'):
+                            if fields['removeTwitter']=='on':
+                                removeTwitterActive=True
+                                with open(removeTwitterFilename, "w") as removeTwitterFile:
+                                    removeTwitterFile.write('\n')
+                        if not removeTwitterActive:
+                            if os.path.isfile(removeTwitterFilename):
+                                os.remove(removeTwitterFilename)                                
                         # this account is a bot
                         if fields.get('isBot'):
                             if fields['isBot']=='on':

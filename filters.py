@@ -37,13 +37,28 @@ def removeFilter(baseDir: str,nickname: str,domain: str, \
                 os.rename(filtersFilename+'.new',filtersFilename)
                 return True
     return False
-                    
+
+def isTwitterPost(content: str) -> bool:
+    """Returns true if the given post content is a retweet or twitter crosspost
+    """
+    if content.contains('/twitter.com') or content.contains('@twitter.com'):
+        return True
+    elif content.contains('RT:'):
+        return True
+    return False
+
 def isFiltered(baseDir: str,nickname: str,domain: str,content: str) -> bool:
     """Should the given content be filtered out?
     This is a simple type of filter which just matches words, not a regex
     You can add individual words or use word1+word2 to indicate that two
     words must be present although not necessarily adjacent
     """
+    # optionally remove retweets
+    removeTwitter=baseDir+'/accounts/'+nickname+'@'+domain+'/.removeTwitter'
+    if os.path.isfile(removeTwitter):
+        if isTwitterPost(content):
+            return True
+
     filtersFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/filters.txt'
     if os.path.isfile(filtersFilename):
         with open(filtersFilename, 'r') as fp:
