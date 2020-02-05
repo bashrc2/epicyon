@@ -1429,7 +1429,8 @@ def estimateNumberOfEmoji(content: str) -> int:
     """
     return int(content.count(':')/2)
 
-def validPostContent(messageJson: {},maxMentions: int,maxEmoji: int) -> bool:
+def validPostContent(baseDir: str,nickname: str,domain: str, \
+                     messageJson: {},maxMentions: int,maxEmoji: int) -> bool:
     """Is the content of a received post valid?
     Check for bad html
     Check for hellthreads
@@ -1477,6 +1478,10 @@ def validPostContent(messageJson: {},maxMentions: int,maxEmoji: int) -> bool:
                     print('REJECT: '+messageJson['object']['id'])
                 print('REJECT: Too many tags in post - '+messageJson['object']['tag'])
                 return False
+    # check for filtered content
+    if not isFiltered(baseDir,nickname,domain,messageJson['object']['content']):
+        print('REJECT: content filtered')
+        return False
     print('ACCEPT: post content is valid')
     return True
 
@@ -1854,15 +1859,14 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
     else:
         postJsonObject=messageJson
 
-    if validPostContent(postJsonObject,maxMentions,maxEmoji):
+    nickname=handle.split('@')[0]
+    if validPostContent(baseDir,nickname,domain,postJsonObject,maxMentions,maxEmoji):
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject)
 
         # list of indexes to be updated
         updateIndexList=['inbox']
         populateReplies(baseDir,httpPrefix,domain,postJsonObject,maxReplies,debug)
-
-        nickname=handle.split('@')[0]
 
         # if this is a reply to a question then update the votes
         questionJson=questionUpdateVotes(baseDir,nickname,domain,postJsonObject)
