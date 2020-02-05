@@ -1479,7 +1479,7 @@ def validPostContent(baseDir: str,nickname: str,domain: str, \
                 print('REJECT: Too many tags in post - '+messageJson['object']['tag'])
                 return False
     # check for filtered content
-    if not isFiltered(baseDir,nickname,domain,messageJson['object']['content']):
+    if isFiltered(baseDir,nickname,domain,messageJson['object']['content']):
         print('REJECT: content filtered')
         return False
     print('ACCEPT: post content is valid')
