@@ -134,9 +134,10 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
     if os.path.isfile(globalBlockingFilename):
         if '*@'+blockDomain in open(globalBlockingFilename).read():
             return True
-        blockHandle=blockNickname+'@'+blockDomain
-        if blockHandle in open(globalBlockingFilename).read():
-            return True
+        if blockNickname and blockDomain:
+            blockHandle=blockNickname+'@'+blockDomain
+            if blockHandle in open(globalBlockingFilename).read():
+                return True
     allowFilename= \
         baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
     if os.path.isfile(allowFilename):
@@ -147,9 +148,10 @@ def isBlocked(baseDir: str,nickname: str,domain: str, \
     if os.path.isfile(blockingFilename):
         if '*@'+blockDomain in open(blockingFilename).read():
             return True
-        blockHandle=blockNickname+'@'+blockDomain
-        if blockHandle in open(blockingFilename).read():
-            return True
+        if blockNickname and blockDomain:
+            blockHandle=blockNickname+'@'+blockDomain
+            if blockHandle in open(blockingFilename).read():
+                return True
     return False
 
 def sendBlockViaServer(baseDir: str,session, \
