@@ -58,7 +58,7 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
     par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
     hdr = {'Accept': 'application/jrd+json'}    
     try:
-        result = getJson(session, url, hdr, par,projectVersion,httpPrefix,fromDomain)
+        result = getJson(session,url,hdr,par,projectVersion,httpPrefix,fromDomain)
     except Exception as e:
         print("Unable to webfinger " + url)
         print('nickname: '+str(nickname))

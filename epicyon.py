@@ -976,7 +976,12 @@ if args.actor:
     if personJson:
         pprint(personJson)
     else:
-        print('Failed to get '+personUrl)
+        asHeader = {'Accept': 'application/jrd+json; profile="https://www.w3.org/ns/activitystreams"'}
+        personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
+        if personJson:
+            pprint(personJson)
+        else:
+            print('Failed to get '+personUrl)
     sys.exit()
 
 if args.addaccount:
