@@ -2327,7 +2327,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                         
         replyStr=''
         if not isModerationPost and showRepeatIcon:
-            if not manuallyApprovesFollowers:
+            if isPublicPostFromUrl(baseDir,nickname,domain,replyToLink):
                 replyStr+= \
                     '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
                     '?actor='+postJsonObject['actor']+ \
