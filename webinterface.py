@@ -2249,9 +2249,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     showRepeatIcon=showRepeats
     showDMicon=False
     if showRepeats:
-        if not isPublicPost(postJsonObject):
-            showRepeatIcon=False
+        if isDM(postJsonObject):
             showDMicon=True
+        else:
+            if not isPublicPost(postJsonObject):
+                showRepeatIcon=False
     
     titleStr=''
     galleryStr=''
