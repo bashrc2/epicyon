@@ -2150,6 +2150,7 @@ def postIsMuted(baseDir: str,nickname: str,domain: str, postJsonObject: {},messa
         return True
     return False
 
+
 def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                          iconsDir: str,translate: {}, \
                          pageNumber: int,baseDir: str, \
@@ -2248,7 +2249,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     showRepeatIcon=showRepeats
     showDMicon=False
     if showRepeats:
-        if isDM(postJsonObject):
+        if not isPublicPost(postJsonObject):
             showRepeatIcon=False
             showDMicon=True
     
