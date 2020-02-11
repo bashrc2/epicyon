@@ -2326,10 +2326,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         replyToLink+=pageNumberParam
                         
         replyStr=''
-        if not isModerationPost and showRepeatIcon:
-            if isPublicPostFromUrl(baseDir,nickname,domain,replyToLink):
+        if showRepeatIcon:
+            replyStr+= \
+                '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
+                '?actor='+postJsonObject['actor']+ \
+                '" title="'+translate['Reply to this post']+'">'
+        else:
+            if isDM(postJsonObject):
                 replyStr+= \
-                    '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
+                    '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
                     '?actor='+postJsonObject['actor']+ \
                     '" title="'+translate['Reply to this post']+'">'
             else:
@@ -2337,11 +2342,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                     '<a href="/users/'+nickname+'?replyfollowers='+replyToLink+ \
                     '?actor='+postJsonObject['actor']+ \
                     '" title="'+translate['Reply to this post']+'">'
-        else:
-            replyStr+= \
-                '<a href="/users/'+nickname+'?replydm='+replyToLink+ \
-                '?actor='+postJsonObject['actor']+ \
-                '" title="'+translate['Reply to this post']+'">'
+                
         replyStr+='<img loading="lazy" title="'+translate['Reply to this post']+' |" alt="'+translate['Reply to this post']+' |" src="/'+iconsDir+'/reply.png"/></a>'
 
     announceStr=''
