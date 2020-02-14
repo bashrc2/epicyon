@@ -1525,6 +1525,7 @@ class PubServer(BaseHTTPRequestHandler):
         repeatPrivate=False
         if htmlGET and '?repeatprivate=' in self.path:
             repeatPrivate=True
+            self.path=self.path.replace('?repeatprivate=','?repeat=')
         # announce/repeat from the web interface
         if htmlGET and '?repeat=' in self.path:
             pageNumber=1
@@ -1599,6 +1600,7 @@ class PubServer(BaseHTTPRequestHandler):
         unrepeatPrivate=False
         if htmlGET and '?unrepeatprivate=' in self.path:
             unrepeatPrivate=True
+            self.path=self.path.replace('?unrepeatprivate=','?unrepeat=')
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
             pageNumber=1
