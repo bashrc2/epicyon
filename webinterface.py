@@ -2247,13 +2247,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
+    isPublicRepeat=False
     showDMicon=False
     if showRepeats:
         if isDM(postJsonObject):
             showDMicon=True
         else:
+            showRepeatIcon=False
             if not isPublicPost(postJsonObject):
-                showRepeatIcon=False
+                isPublicRepeat=True
     
     titleStr=''
     galleryStr=''
@@ -2326,7 +2328,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         replyToLink+=pageNumberParam
                         
         replyStr=''
-        if showRepeatIcon:
+        if isPublicRepeat:
             replyStr+= \
                 '<a href="/users/'+nickname+'?replyto='+replyToLink+ \
                 '?actor='+postJsonObject['actor']+ \
@@ -2350,10 +2352,13 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         # don't allow announce/repeat of your own posts
         announceIcon='repeat_inactive.png'
         announceLink='repeat'
+        if not isPublicRepeat:
+            announceLink='repeatprivate'
         announceTitle=translate['Repeat this post']
         if announcedByPerson(postJsonObject,nickname,fullDomain):
             announceIcon='repeat.png'
-            announceLink='unrepeat'
+            if not isPublicRepeat:
+                announceLink='unrepeatprivate'
             announceTitle=translate['Undo the repeat']
         announceStr= \
             '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \

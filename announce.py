@@ -270,8 +270,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     if announceNickname and announceDomain:
         sendSignedJson(newAnnounce,session,baseDir, \
                        nickname,domain,port, \
-                       announceNickname,announceDomain,announcePort, \
-                       'https://www.w3.org/ns/activitystreams#Public', \
+                       announceNickname,announceDomain,announcePort,None, \
                        httpPrefix,True,clientToServer,federationList, \
                        sendThreads,postLog,cachedWebfingers,personCache, \
                        debug,projectVersion)

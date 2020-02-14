@@ -1522,10 +1522,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,31)
 
+        repeatPrivate=False
+        if htmlGET and '?repeatprivate=' in self.path:
+            repeatPrivate=True
         # announce/repeat from the web interface
         if htmlGET and '?repeat=' in self.path:
             pageNumber=1
-            repeatUrl=self.path.split('?repeat=')[1]
+            if not repeatPrivate:
+                repeatUrl=self.path.split('?repeat=')[1]
+            else:
+                repeatUrl=self.path.split('?repeatprivate=')[1]
             if '?' in repeatUrl:
                 repeatUrl=repeatUrl.split('?')[0]
             timelineBookmark=''
@@ -1545,7 +1551,10 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr=self.path.split('?tl=')[1]
                 if '?' in timelineStr:
                     timelineStr=timelineStr.split('?')[0]
-            actor=self.path.split('?repeat=')[0]
+            if not repeatPrivate:
+                actor=self.path.split('?repeat=')[0]
+            else:
+                actor=self.path.split('?repeatprivate=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
@@ -1558,13 +1567,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.session= \
                     createSession(self.server.useTor)                
             self.server.actorRepeat=self.path.split('?actor=')[1]
+            announceToStr=self.server.httpPrefix+'://'+self.server.domain+'/users/'+self.postToNickname+'/followers'
+            if not repeatPrivate:
+                announceToStr='https://www.w3.org/ns/activitystreams#Public'
             announceJson= \
                 createAnnounce(self.server.session, \
                                self.server.baseDir, \
                                self.server.federationList, \
                                self.postToNickname, \
                                self.server.domain,self.server.port, \
-                               'https://www.w3.org/ns/activitystreams#Public', \
+                               announceToStr, \
                                None,self.server.httpPrefix, \
                                repeatUrl,False,False, \
                                self.server.sendThreads, \
@@ -1584,10 +1596,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,32)
 
+        unrepeatPrivate=False
+        if htmlGET and '?unrepeatprivate=' in self.path:
+            unrepeatPrivate=True
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
             pageNumber=1
-            repeatUrl=self.path.split('?unrepeat=')[1]
+            if not unrepeatPrivate:
+                repeatUrl=self.path.split('?unrepeat=')[1]
+            else:
+                repeatUrl=self.path.split('?unrepeatprivate=')[1]
             if '?' in repeatUrl:
                 repeatUrl=repeatUrl.split('?')[0]
             timelineBookmark=''
@@ -1607,7 +1625,10 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr=self.path.split('?tl=')[1]
                 if '?' in timelineStr:
                     timelineStr=timelineStr.split('?')[0]
-            actor=self.path.split('?unrepeat=')[0]
+            if not unrepeatPrivate:
+                actor=self.path.split('?unrepeat=')[0]
+            else:
+                actor=self.path.split('?unrepeatprivate=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
@@ -1622,17 +1643,18 @@ class PubServer(BaseHTTPRequestHandler):
             undoAnnounceActor= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 '/users/'+self.postToNickname
+            unRepeatToStr='https://www.w3.org/ns/activitystreams#Public'
             newUndoAnnounce = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'actor': undoAnnounceActor,
                 'type': 'Undo',
                 'cc': [undoAnnounceActor+'/followers'],
-                'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                'to': [unRepeatToStr],
                 'object': {
                     'actor': undoAnnounceActor,
                     'cc': [undoAnnounceActor+'/followers'],
                     'object': repeatUrl,
-                    'to': ['https://www.w3.org/ns/activitystreams#Public'],
+                    'to': [unRepeatToStr],
                     'type': 'Announce'
                 }
             }                
