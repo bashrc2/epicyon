@@ -1529,10 +1529,7 @@ class PubServer(BaseHTTPRequestHandler):
         # announce/repeat from the web interface
         if htmlGET and '?repeat=' in self.path:
             pageNumber=1
-            if not repeatPrivate:
-                repeatUrl=self.path.split('?repeat=')[1]
-            else:
-                repeatUrl=self.path.split('?repeatprivate=')[1]
+            repeatUrl=self.path.split('?repeat=')[1]
             if '?' in repeatUrl:
                 repeatUrl=repeatUrl.split('?')[0]
             timelineBookmark=''
@@ -1552,10 +1549,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr=self.path.split('?tl=')[1]
                 if '?' in timelineStr:
                     timelineStr=timelineStr.split('?')[0]
-            if not repeatPrivate:
-                actor=self.path.split('?repeat=')[0]
-            else:
-                actor=self.path.split('?repeatprivate=')[0]
+            actor=self.path.split('?repeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
@@ -1604,10 +1598,7 @@ class PubServer(BaseHTTPRequestHandler):
         # undo an announce/repeat from the web interface
         if htmlGET and '?unrepeat=' in self.path:
             pageNumber=1
-            if not unrepeatPrivate:
-                repeatUrl=self.path.split('?unrepeat=')[1]
-            else:
-                repeatUrl=self.path.split('?unrepeatprivate=')[1]
+            repeatUrl=self.path.split('?unrepeat=')[1]
             if '?' in repeatUrl:
                 repeatUrl=repeatUrl.split('?')[0]
             timelineBookmark=''
@@ -1627,10 +1618,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr=self.path.split('?tl=')[1]
                 if '?' in timelineStr:
                     timelineStr=timelineStr.split('?')[0]
-            if not unrepeatPrivate:
-                actor=self.path.split('?unrepeat=')[0]
-            else:
-                actor=self.path.split('?unrepeatprivate=')[0]
+            actor=self.path.split('?unrepeat=')[0]
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
