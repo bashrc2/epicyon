@@ -66,6 +66,7 @@ def addWebLinks(content: str) -> str:
     for w in words:
         if w.startswith('https://') or \
            w.startswith('http://') or \
+           w.startswith('i2p://') or \
            w.startswith('dat://'):
             if w.endswith('.') or w.endswith(';'):
                 w=w[:-1]
@@ -74,9 +75,11 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">https://</span>'
             elif w.startswith('http://'):
                 markup+='<span class="invisible">http://</span>'
+            elif w.startswith('i2p://'):
+                markup+='<span class="invisible">i2p://</span>'
             elif w.startswith('dat://'):
                 markup+='<span class="invisible">dat://</span>'
-            linkText=w.replace('https://','').replace('http://','').replace('dat://','')
+            linkText=w.replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','')
             # prevent links from becoming too long
             if len(linkText)>maxLinkLength:
                 markup+='<span class="ellipsis">'+linkText[:maxLinkLength]+'</span>'
@@ -276,6 +279,8 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
             continue
         elif 'http:' in wordStr:
             continue
+        elif 'i2p:' in wordStr:
+            continue
         elif 'dat:' in wordStr:
             continue
         if '<' in wordStr:
@@ -396,6 +401,7 @@ def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\
             continue
         actorStr=mentionStr.split('"')[0]
         if actorStr.startswith('http') or \
+           actorStr.startswith('i2p') or \
            actorStr.startswith('dat:'):
             if actorStr not in mentions:
                 mentions.append(actorStr)

@@ -24,11 +24,11 @@ def parseHandle(handle: str) -> (str,str):
         return None, None
     if '/@' in handle:
         domain, nickname = \
-            handle.replace('https://','').replace('http://','').replace('dat://','').split('/@')
+            handle.replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','').split('/@')
     else:
         if '/users/' in handle:
             domain, nickname = \
-                handle.replace('https://','').replace('http://','').replace('dat://','').split('/users/')
+                handle.replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','').split('/users/')
         else:
             if '@' in handle:
                 nickname, domain = handle.split('@')

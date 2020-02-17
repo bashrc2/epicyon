@@ -175,17 +175,17 @@ def getDomainFromActor(actor: str) -> (str,int):
     """
     port=None
     if '/profile/' in actor:
-        domain = actor.split('/profile/')[0].replace('https://','').replace('http://','').replace('dat://','')
+        domain = actor.split('/profile/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
     else:
         if '/channel/' in actor:
-            domain = actor.split('/channel/')[0].replace('https://','').replace('http://','').replace('dat://','')
+            domain = actor.split('/channel/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
         else:
             if '/users/' not in actor:
-                domain = actor.replace('https://','').replace('http://','').replace('dat://','')
+                domain = actor.replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
                 if '/' in actor:
                     domain=domain.split('/')[0]
             else:
-                domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('dat://','')
+                domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
     if ':' in domain:
         port=int(domain.split(':')[1])
         domain=domain.split(':')[0]

@@ -166,6 +166,9 @@ parser.add_argument("--http", type=str2bool, nargs='?', \
 parser.add_argument("--dat", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Use dat protocol only")
+parser.add_argument("--i2p", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Use i2p protocol only")
 parser.add_argument("--tor", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Route via Tor")
@@ -900,12 +903,14 @@ if args.ocap:
     ocapAlways=args.ocap
 if args.dat:
     httpPrefix='dat'
+if args.i2p:
+    httpPrefix='i2p'
 
 if args.actor:
     originalActor=args.actor
     if '/@' in args.actor or '/users/' in args.actor or args.actor.startswith('http') or args.actor.startswith('dat'):
         # format: https://domain/@nick
-        args.actor=args.actor.replace('https://','').replace('http://','').replace('dat://','').replace('/@','/users/')
+        args.actor=args.actor.replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','').replace('/@','/users/')
         if '/users/' not in args.actor and \
            '/channel/' not in args.actor and \
            '/profile/' not in args.actor:

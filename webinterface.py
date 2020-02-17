@@ -1819,7 +1819,7 @@ def addEmbeddedAudio(translate: {},content: str) -> str:
         if not w.endswith(extension):
             continue
             
-        if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
+        if not (w.startswith('http') or w.startswith('dat:') or w.startswith('i2p:') or '/' in w):
             continue
         url=w
         content+='<center><audio controls>'
@@ -1858,7 +1858,7 @@ def addEmbeddedVideo(translate: {},content: str,width=400,height=300) -> str:
             w=w[:-1]
         if not w.endswith(extension):
             continue
-        if not (w.startswith('http') or w.startswith('dat:') or '/' in w):
+        if not (w.startswith('http') or w.startswith('dat:') or w.startswith('i2p:') or '/' in w):
             continue
         url=w
         content+='<center><video width="'+str(width)+'" height="'+str(height)+'" controls>'
@@ -2492,7 +2492,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                         else:
                             titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
                     else:
-                        postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','')
+                        postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','')
                         if '/' in postDomain:
                             postDomain=postDomain.split('/',1)[0]
                         if postDomain:

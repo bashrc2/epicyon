@@ -1248,7 +1248,7 @@ def receiveAnnounce(recentPostsCache: {}, \
         if debug:
             print('DEBUG: "users", "channel" or "profile" missing in '+messageJson['type'])
         return False
-    objectDomain=messageJson['object'].replace('https://','').replace('http://','').replace('dat://','')
+    objectDomain=messageJson['object'].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
     if '/' in objectDomain:
         objectDomain=objectDomain.split('/')[0]
     if isBlockedDomain(baseDir,objectDomain):
