@@ -2654,7 +2654,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         # sensitive posts should have a summary
         if postJsonObject['object'].get('summary'):
             postIsSensitive=postJsonObject['object']['sensitive']
-        
+        else:
+            # add a generic summary if none is provided
+            postJsonObject['object']['summary']=translate['Sensitive']
+
     # add an extra line if there is a content warning, for better vertical spacing on mobile
     if postIsSensitive:
         footerStr='<br>'+footerStr
