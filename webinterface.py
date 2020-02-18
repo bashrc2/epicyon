@@ -2649,11 +2649,14 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         footerStr+='<a href="'+messageId+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
         footerStr+='</div>'
 
-    if not postJsonObject['object'].get('sensitive'):
-        postJsonObject['object']['sensitive']=False
-
+    postIsSensitive=False
+    if postJsonObject['object'].get('sensitive'):
+        # sensitive posts should have a summary
+        if postJsonObject['object'].get('summary'):
+            postIsSensitive=postJsonObject['object']['sensitive']
+        
     # add an extra line if there is a content warning, for better vertical spacing on mobile
-    if postJsonObject['object']['sensitive']:
+    if postIsSensitive:
         footerStr='<br>'+footerStr
 
     if not postJsonObject['object'].get('summary'):
@@ -2662,7 +2665,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if not postJsonObject['object'].get('content'):
         return ''
     objectContent=removeLongWords(postJsonObject['object']['content'],40,[])
-    if not postJsonObject['object']['sensitive']:
+    if not postIsSensitive:
         contentStr=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
         contentStr=insertQuestion(baseDir,translate,nickname,domain,port, \
