@@ -21,7 +21,7 @@ def switchWords(baseDir: str,nickname: str,domain: str,content: str) -> str:
         return content
     with open(switchWordsFilename, 'r') as fp:
         for line in fp:
-            replaceStr=line.replace('\n','').replace('"','')
+            replaceStr=line.replace('\n','')
             wordTransform=None
             if '->' in replaceStr:
                 wordTransform=replaceStr.split('->')
@@ -37,8 +37,8 @@ def switchWords(baseDir: str,nickname: str,domain: str,content: str) -> str:
                 continue
             if len(wordTransform)==2:
                 content= \
-                    content.replace(wordTransform[0].strip(), \
-                                    wordTransform[1].strip())
+                    content.replace(wordTransform[0].strip().replace('"',''), \
+                                    wordTransform[1].strip().replace('"',''))
     return content
 
 def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
