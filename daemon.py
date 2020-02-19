@@ -5481,7 +5481,11 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
         pubHandler = partial(PubServerUnitTest)
     else:
         pubHandler = partial(PubServer)
-    httpd = ThreadingHTTPServer(serverAddress, pubHandler)
+    try:
+        httpd = ThreadingHTTPServer(serverAddress, pubHandler)
+    except Exception as e:
+        print('ERROR: HTTP Server failed to start. '+str(e))
+        return False
 
     httpd.useBlurHash=useBlurHash
     httpd.mediaInstance=mediaInstance
