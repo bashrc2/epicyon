@@ -3790,9 +3790,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         # make a copy of self.headers
         headers={}
+        headersWithoutCookie={}
         for dictEntryName,headerLine in self.headers.items():
             headers[dictEntryName]=headerLine
-        print('New post headers: '+str(headers))
+            if dictEntryName.lower()!='cookie':
+                headersWithoutCookie[dictEntryName]=headerLine
+        print('New post headers: '+str(headersWithoutCookie))
 
         length = int(headers['Content-Length'])
         if length>self.server.maxPostLength:
