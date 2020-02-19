@@ -927,6 +927,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self._requestHTTP():
                 htmlGET=True
         else:
+            print('WARN: No Accept header '+str(self.headers))
             self._400()
             return
 
