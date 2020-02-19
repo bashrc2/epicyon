@@ -2191,7 +2191,9 @@ def addPostStringToTimeline(postStr: str,boxname: str, \
     """ is this a valid timeline post?
     """
     # must be a "Note" or "Announce" type
-    if '"Note"' in postStr '"Article"' in postStr or '"Announce"' in postStr or \
+    if '"Note"' in postStr or \
+       '"Article"' in postStr or \
+       '"Announce"' in postStr or \
        ('"Question"' in postStr and ('"Create"' in postStr or '"Update"' in postStr)):
 
         if boxname=='dm':
