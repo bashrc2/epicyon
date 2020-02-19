@@ -2694,7 +2694,10 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         objectNickname=getNicknameFromActor(postJsonObject['object'])
         objectDomain,objectPort=getDomainFromActor(postJsonObject['object'])
         if isBlocked(baseDir,nickname,domain,objectNickname,objectDomain):
-            print('Announce download blocked object: '+objectNickname+'@'+objectDomain)
+            if objectNickname and objectDomain:
+                print('Announce download blocked object: '+objectNickname+'@'+objectDomain)
+            else:
+                print('Announce download blocked object: '+str(postJsonObject['object']))
             return None
         print('Downloading Announce content for '+postJsonObject['object'])
         announcedJson= \
