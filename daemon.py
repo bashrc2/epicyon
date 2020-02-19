@@ -5476,20 +5476,21 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
             print('Invalid domain: ' + domain)
             return
 
-    serverAddress = ('', proxyPort)
     if unitTest: 
+        serverAddress = (domain, proxyPort)
         pubHandler = partial(PubServerUnitTest)
     else:
+        serverAddress = ('', proxyPort)
         pubHandler = partial(PubServer)
 
     try:
         httpd = ThreadingHTTPServer(serverAddress, pubHandler)
     except Exception as e:
         if e.errno==98:
-            print('ERROR: HTTP Server address is already in use. '+str(serverAddress))
+            print('ERROR: HTTP server address is already in use. '+str(serverAddress))
             return False
             
-        print('ERROR: HTTP Server failed to start. '+str(e))
+        print('ERROR: HTTP server failed to start. '+str(e))
         return False
 
     httpd.useBlurHash=useBlurHash
