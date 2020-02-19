@@ -53,6 +53,7 @@ from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from blocking import isBlockedHashtag
+from content import switchWords
 from content import getMentionsFromHtml
 from content import addHtmlTags
 from content import replaceEmojiFromTags
@@ -2668,6 +2669,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if not postJsonObject['object'].get('content'):
         return ''
     objectContent=removeLongWords(postJsonObject['object']['content'],40,[])
+    objectContent=switchWords(baseDir,nickname,domain,objectContent)
     if not postIsSensitive:
         contentStr=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)

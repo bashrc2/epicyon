@@ -12,6 +12,35 @@ import email.parser
 from shutil import copyfile
 from utils import loadJson
 
+def switchWords(baseDir: str,nickname: str,domain: str,content: str) -> str:
+    """Performs word replacements. eg. Trump -> The Orange Menace
+    """
+    switchWordsFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/replacewords.txt'
+    if not os.path.isfile(switchWordsFilename):
+        return content
+    with open(switchWordsFilename, 'r') as fp:
+        for line in fp:
+            replaceStr=line.replace('\n','')
+            wordTransform=None
+            if '->' in replaceStr:
+                wordTransform=replaceStr.split('->')
+            elif ':' in replaceStr:
+                wordTransform=replaceStr.split(':')
+            elif ',' in replaceStr:
+                wordTransform=replaceStr.split(',')
+            elif ';' in replaceStr:
+                wordTransform=replaceStr.split(';')
+            elif '-' in replaceStr:
+                wordTransform=replaceStr.split('-')
+            if not wordTransform:
+                continue
+            if len(wordTransform)==2:
+                content= \
+                    content.replace(wordTransform[0].strip(), \
+                                    wordTransform[1].strip())
+    return content
+
 def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
     """Uses the tags to replace :emoji: with html image markup
     """
