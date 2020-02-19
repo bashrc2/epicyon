@@ -77,6 +77,9 @@ from theme import setCSSparam
 testServerAliceRunning = False
 testServerBobRunning = False
 testServerEveRunning = False
+thrAlice=None
+thrBob=None
+thrEve=None
 
 def testHttpsigBase(withDigest):
     print('testHttpsig(' + str(withDigest) + ')')
@@ -361,11 +364,26 @@ def testPostMessageBetweenServers():
     aliceSendThreads=[]
     bobSendThreads=[]
 
+    global thrAlice
+    if thrAlice:
+        while thrAlice.isAlive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
                               federationList,False,False, \
                               ocapAlways,aliceSendThreads),daemon=True)
+
+    global thrBob
+    if thrBob:
+        while thrBob.isAlive():
+            thrBob.stop()
+            time.sleep(1)
+        thrBob.kill()
+
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
@@ -556,6 +574,14 @@ def testFollowBetweenServersWithCapabilities():
     aliceDomain='127.0.0.42'
     alicePort=61935
     aliceSendThreads=[]
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.isAlive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
@@ -566,6 +592,14 @@ def testFollowBetweenServersWithCapabilities():
     bobDomain='127.0.0.64'
     bobPort=61936
     bobSendThreads=[]
+
+    global thrBob
+    if thrBob:
+        while thrBob.isAlive():
+            thrBob.stop()
+            time.sleep(1)
+        thrBob.kill()
+
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
@@ -576,6 +610,13 @@ def testFollowBetweenServersWithCapabilities():
     eveDomain='127.0.0.55'
     evePort=61937
     eveSendThreads=[]
+    global thrEve
+    if thrEve:
+        while thrEve.isAlive():
+            thrEve.stop()
+            time.sleep(1)
+        thrEve.kill()
+
     thrEve = \
         threadWithTrace(target=createServerEve, \
                         args=(eveDir,eveDomain,evePort, \
@@ -838,6 +879,14 @@ def testFollowBetweenServers():
     aliceDomain='127.0.0.42'
     alicePort=61935
     aliceSendThreads=[]
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.isAlive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
@@ -848,6 +897,14 @@ def testFollowBetweenServers():
     bobDomain='127.0.0.64'
     bobPort=61936
     bobSendThreads=[]
+
+    global thrBob
+    if thrBob:
+        while thrBob.isAlive():
+            thrBob.stop()
+            time.sleep(1)
+        thrBob.kill()
+
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \
@@ -1286,6 +1343,14 @@ def testClientToServer():
     aliceDomain='127.0.0.42'
     alicePort=61935
     aliceSendThreads=[]
+
+    global thrAlice
+    if thrAlice:
+        while thrAlice.isAlive():
+            thrAlice.stop()
+            time.sleep(1)
+        thrAlice.kill()
+
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort, \
@@ -1296,6 +1361,14 @@ def testClientToServer():
     bobDomain='127.0.0.64'
     bobPort=61936
     bobSendThreads=[]
+
+    global thrBob
+    if thrBob:
+        while thrBob.isAlive():
+            thrBob.stop()
+            time.sleep(1)
+        thrBob.kill()
+
     thrBob = \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort, \

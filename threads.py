@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import threading
+import os
 import sys
 import trace
 import time
@@ -134,5 +135,8 @@ def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
 
     if debug:
         sendLogFilename=baseDir+'/send.csv'
-        with open(sendLogFilename, "a+") as logFile:
-            logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ")+','+str(noOfActiveThreads)+','+str(len(threadsList))+'\n')
+        try:
+            with open(sendLogFilename, "a+") as logFile:
+                logFile.write(currTime.strftime("%Y-%m-%dT%H:%M:%SZ")+','+str(noOfActiveThreads)+','+str(len(threadsList))+'\n')
+        except:
+            pass
