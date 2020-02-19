@@ -21,7 +21,7 @@ def switchWords(baseDir: str,nickname: str,domain: str,content: str) -> str:
         return content
     with open(switchWordsFilename, 'r') as fp:
         for line in fp:
-            replaceStr=line.replace('\n','')
+            replaceStr=line.replace('\n','').replace('"','')
             wordTransform=None
             if '->' in replaceStr:
                 wordTransform=replaceStr.split('->')
