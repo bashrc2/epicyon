@@ -4320,6 +4320,16 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if os.path.isfile(filterFilename):
                                 os.remove(filterFilename)
+                        # word replacements
+                        switchFilename= \
+                            self.server.baseDir+'/accounts/'+ \
+                            nickname+'@'+self.server.domain+'/replacewords.txt'
+                        if fields.get('switchWords'):
+                            with open(switchFilename, "w") as switchfile:
+                                switchfile.write(fields['switchWords'])
+                        else:
+                            if os.path.isfile(switchFilename):
+                                os.remove(switchFilename)
                         # save blocked accounts list
                         blockedFilename= \
                             self.server.baseDir+'/accounts/'+ \

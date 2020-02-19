@@ -647,6 +647,12 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
         with open(filterFilename, 'r') as filterfile:
             filterStr=filterfile.read()
 
+    switchStr=''
+    switchFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/replacewords.txt'
+    if os.path.isfile(switchFilename):
+        with open(switchFilename, 'r') as switchfile:
+            switchStr=switchfile.read()
+
     blockedStr=''
     blockedFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
     if os.path.isfile(blockedFilename):
@@ -779,9 +785,15 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="removeTwitter" '+removeTwitter+'>'+translate['Remove Twitter posts']+'<br>'
     if path.startswith('/users/'+adminNickname+'/'):
         editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="mediaInstance" '+mediaInstanceStr+'>'+translate['This is a media instance']+'<br>'
+
     editProfileForm+='      <br><b><label class="labels">'+translate['Filtered words']+'</label></b>'
     editProfileForm+='      <br><label class="labels">'+translate['One per line']+'</label>'
     editProfileForm+='      <textarea id="message" name="filteredWords" style="height:200px">'+filterStr+'</textarea>'
+
+    editProfileForm+='      <br><b><label class="labels">'+translate['Word Replacements']+'</label></b>'
+    editProfileForm+='      <br><label class="labels">A -> B</label>'
+    editProfileForm+='      <textarea id="message" name="switchWords" style="height:200px">'+switchStr+'</textarea>'
+
     editProfileForm+='      <br><b><label class="labels">'+translate['Blocked accounts']+'</label></b>'
     editProfileForm+='      <br><label class="labels">'+translate['Blocked accounts, one per line, in the form nickname@domain or *@blockeddomain']+'</label>'
     editProfileForm+='      <textarea id="message" name="blocked" style="height:200px">'+blockedStr+'</textarea>'
