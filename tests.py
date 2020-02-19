@@ -610,6 +610,7 @@ def testFollowBetweenServersWithCapabilities():
     eveDomain='127.0.0.55'
     evePort=61937
     eveSendThreads=[]
+
     global thrEve
     if thrEve:
         while thrEve.isAlive():

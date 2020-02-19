@@ -52,7 +52,7 @@ def removeFromFollowBase(baseDir: str, \
     approveFollowsFilename=accountsDir+'/'+followFile+'.txt'
     if not os.path.isfile(approveFollowsFilename):
         if debug:
-            print('WARN: Follow requests file '+approveFollowsFilename+' not found')
+            print('WARN: Approve follow requests file '+approveFollowsFilename+' not found')
         return
     if acceptOrDenyHandle not in open(approveFollowsFilename).read():
         return
@@ -380,7 +380,7 @@ def followApprovalRequired(baseDir: str,nicknameToFollow: str, \
                 manuallyApproveFollows=actor['manuallyApprovesFollowers']
             else:
                 if debug:
-                    print('manuallyApprovesFollowers is missing from '+actorFilename)
+                    print(nicknameToFollow+'@'+domainToFollow+' automatically approves followers')
     else:
         if debug:
             print('DEBUG: Actor file not found: '+actorFilename)
@@ -545,6 +545,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     approveHandle=nickname+'@'+domainFull
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug,approveHandle):
+        print('Follow approval is required')
         if not domain.endswith('.onion'):            
             if noOfFollowRequests(baseDir, \
                                   nicknameToFollow,domainToFollow, \
@@ -751,13 +752,14 @@ def sendFollowRequest(session,baseDir: str, \
         'object': followedId
     }
 
-    # Remove any follow requests rejected for the account being followed.
-    # It's assumed that if you are following someone then you are
-    # ok with them following back. If this isn't the case then a rejected
-    # follow request will block them again.
-    removeFromFollowRejects(baseDir, \
-                            nickname,domain, \
-                            followHandle,debug)
+    if followApprovalRequired(baseDir,nickname,domain,debug,followHandle):
+        # Remove any follow requests rejected for the account being followed.
+        # It's assumed that if you are following someone then you are
+        # ok with them following back. If this isn't the case then a rejected
+        # follow request will block them again.
+        removeFromFollowRejects(baseDir, \
+                                nickname,domain, \
+                                followHandle,debug)
 
     sendSignedJson(newFollowJson,session,baseDir,nickname,domain,port, \
                    followNickname,followDomain,followPort, \
