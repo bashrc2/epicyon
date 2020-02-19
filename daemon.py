@@ -470,6 +470,9 @@ class PubServer(BaseHTTPRequestHandler):
             print('Error when showing '+str(httpCode))
             print(e)
 
+    def _200(self) -> None:
+        self._httpReturnCode(200,'Ok')
+
     def _404(self) -> None:
         self._httpReturnCode(404,'Not Found')
 
@@ -927,8 +930,13 @@ class PubServer(BaseHTTPRequestHandler):
             if self._requestHTTP():
                 htmlGET=True
         else:
-            print('WARN: No Accept header '+str(self.headers))
-            self._400()
+            if self.headers.get('Connection'):
+                # https://developer.mozilla.org/en-US/docs/Web/HTTP/Protocol_upgrade_mechanism
+                print('HTTP Connection request: '+self.headers['Connection'])
+                self._200()
+            else:
+                print('WARN: No Accept header '+str(self.headers))
+                self._400()
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,7)
