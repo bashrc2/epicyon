@@ -932,7 +932,10 @@ class PubServer(BaseHTTPRequestHandler):
         else:
             if self.headers.get('Connection'):
                 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Protocol_upgrade_mechanism
-                print('HTTP Connection request: '+self.headers['Connection'])
+                if self.headers.get('Upgrade'):
+                    print('HTTP Connection request: '+self.headers['Upgrade'])
+                else:
+                    print('HTTP Connection request: '+self.headers['Connection'])
                 self._200()
             else:
                 print('WARN: No Accept header '+str(self.headers))
