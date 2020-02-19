@@ -147,7 +147,6 @@ from shares import outboxUndoShareUpload
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
-from utils import isPortInUse
 from utils import removeAvatarFromCache
 from utils import locatePost
 from utils import getCachedPostFilename
@@ -5483,13 +5482,13 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
     else:
         pubHandler = partial(PubServer)
 
-    if isPortInUse(proxyPort):
-        print('Process is already running on port '+str(proxyPort))
-        return False
-
     try:
         httpd = ThreadingHTTPServer(serverAddress, pubHandler)
     except Exception as e:
+        if e.errno==98:
+            print('ERROR: HTTP Server address is already in use. '+str(serverAddress))
+            return False
+            
         print('ERROR: HTTP Server failed to start. '+str(e))
         return False
 

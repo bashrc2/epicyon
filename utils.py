@@ -11,13 +11,6 @@ import time
 import shutil
 import datetime
 import json
-import socket
-
-def isPortInUse(portNumber: int) -> bool:
-    """Returns true if the port is in use
-    """
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(('localhost', portNumber)) == 0
 
 def removeAvatarFromCache(baseDir: str,actorStr: str) -> None:
     """Removes any existing avatar entries from the cache

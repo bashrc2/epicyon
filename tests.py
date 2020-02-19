@@ -189,7 +189,7 @@ def testThreads():
     thr.join()
     assert thr.isAlive()==False
 
-def createServerAlice(path: str,domain: str,port: int,federationList: [], \
+def createServerAlice(path: str,domain: str,port: int,bobAddress: str,federationList: [], \
                       hasFollows: bool,hasPosts :bool,ocapAlways: bool,sendThreads: []):
     print('Creating test server: Alice on port '+str(port))
     if os.path.isdir(path):
@@ -217,9 +217,9 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
     assert setSkillLevel(path,nickname,domain,'hacking',90)
     assert setRole(path,nickname,domain,'someproject','guru')
     if hasFollows:
-        followPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
+        followPerson(path,nickname,domain,'bob',bobAddress, \
                      federationList,False)
-        followerOfPerson(path,nickname,domain,'bob','127.0.0.100:61936', \
+        followerOfPerson(path,nickname,domain,'bob',bobAddress, \
                          federationList,False)
     if hasPosts:
         createPublicPost(path,nickname, domain, port,httpPrefix, \
@@ -244,7 +244,7 @@ def createServerAlice(path: str,domain: str,port: int,federationList: [], \
               domainMaxPostsPerDay,accountMaxPostsPerDay, \
               allowDeletion,True,True,False,sendThreads,False)
 
-def createServerBob(path: str,domain: str,port: int,federationList: [], \
+def createServerBob(path: str,domain: str,port: int,aliceAddress: str,federationList: [], \
                     hasFollows: bool,hasPosts :bool,ocapAlways :bool,sendThreads: []):
     print('Creating test server: Bob on port '+str(port))
     if os.path.isdir(path):
@@ -274,9 +274,9 @@ def createServerBob(path: str,domain: str,port: int,federationList: [], \
     assert setRole(path,nickname,domain,'bandname','publicist')
     if hasFollows:
         followPerson(path,nickname,domain, \
-                     'alice','127.0.0.50:61935',federationList,False)
+                     'alice',aliceAddress,federationList,False)
         followerOfPerson(path,nickname,domain, \
-                         'alice','127.0.0.50:61935',federationList,False)
+                         'alice',aliceAddress,federationList,False)
     if hasPosts:
         createPublicPost(path,nickname, domain, port,httpPrefix, \
                          "It's your life, live it your way.", \
@@ -357,12 +357,15 @@ def testPostMessageBetweenServers():
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
     alicePort=61935
+    aliceAddress=aliceDomain+':'+str(alicePort)
+
     bobDir=baseDir+'/.tests/bob'
     bobDomain='127.0.0.100'
     bobPort=61936
     federationList=[bobDomain,aliceDomain]
     aliceSendThreads=[]
     bobSendThreads=[]
+    bobAddress=bobDomain+':'+str(bobPort)
 
     global thrAlice
     if thrAlice:
@@ -373,7 +376,7 @@ def testPostMessageBetweenServers():
 
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
-                        args=(aliceDir,aliceDomain,alicePort, \
+                        args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
                               ocapAlways,aliceSendThreads),daemon=True)
 
@@ -386,7 +389,7 @@ def testPostMessageBetweenServers():
 
     thrBob = \
         threadWithTrace(target=createServerBob, \
-                        args=(bobDir,bobDomain,bobPort, \
+                        args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
                               ocapAlways,bobSendThreads),daemon=True)
 
@@ -571,9 +574,16 @@ def testFollowBetweenServersWithCapabilities():
 
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
-    aliceDomain='127.0.0.42'
+    aliceDomain='127.0.0.52'
     alicePort=61935
     aliceSendThreads=[]
+    aliceAddress=aliceDomain+':'+str(alicePort)
+
+    bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.0.78'
+    bobPort=61936
+    bobSendThreads=[]
+    bobAddress=bobDomain+':'+str(bobPort)
 
     global thrAlice
     if thrAlice:
@@ -584,14 +594,9 @@ def testFollowBetweenServersWithCapabilities():
 
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
-                        args=(aliceDir,aliceDomain,alicePort, \
+                        args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
                               ocapAlways,aliceSendThreads),daemon=True)
-
-    bobDir=baseDir+'/.tests/bob'
-    bobDomain='127.0.0.64'
-    bobPort=61936
-    bobSendThreads=[]
 
     global thrBob
     if thrBob:
@@ -602,7 +607,7 @@ def testFollowBetweenServersWithCapabilities():
 
     thrBob = \
         threadWithTrace(target=createServerBob, \
-                        args=(bobDir,bobDomain,bobPort, \
+                        args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
                               ocapAlways,bobSendThreads),daemon=True)
 
@@ -877,9 +882,16 @@ def testFollowBetweenServers():
 
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
-    aliceDomain='127.0.0.42'
+    aliceDomain='127.0.0.47'
     alicePort=61935
     aliceSendThreads=[]
+    aliceAddress=aliceDomain+':'+str(alicePort)
+
+    bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.0.79'
+    bobPort=61936
+    bobSendThreads=[]
+    bobAddress=bobDomain+':'+str(bobPort)
 
     global thrAlice
     if thrAlice:
@@ -890,14 +902,9 @@ def testFollowBetweenServers():
 
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
-                        args=(aliceDir,aliceDomain,alicePort, \
+                        args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
                               ocapAlways,aliceSendThreads),daemon=True)
-
-    bobDir=baseDir+'/.tests/bob'
-    bobDomain='127.0.0.64'
-    bobPort=61936
-    bobSendThreads=[]
 
     global thrBob
     if thrBob:
@@ -908,7 +915,7 @@ def testFollowBetweenServers():
 
     thrBob = \
         threadWithTrace(target=createServerBob, \
-                        args=(bobDir,bobDomain,bobPort, \
+                        args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
                               ocapAlways,bobSendThreads),daemon=True)
 
@@ -1344,6 +1351,13 @@ def testClientToServer():
     aliceDomain='127.0.0.42'
     alicePort=61935
     aliceSendThreads=[]
+    aliceAddress=aliceDomain+':'+str(alicePort)
+
+    bobDir=baseDir+'/.tests/bob'
+    bobDomain='127.0.0.64'
+    bobPort=61936
+    bobSendThreads=[]
+    bobAddress=bobDomain+':'+str(bobPort)
 
     global thrAlice
     if thrAlice:
@@ -1354,15 +1368,10 @@ def testClientToServer():
 
     thrAlice = \
         threadWithTrace(target=createServerAlice, \
-                        args=(aliceDir,aliceDomain,alicePort, \
+                        args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
                               ocapAlways,aliceSendThreads),daemon=True)
     
-    bobDir=baseDir+'/.tests/bob'
-    bobDomain='127.0.0.64'
-    bobPort=61936
-    bobSendThreads=[]
-
     global thrBob
     if thrBob:
         while thrBob.isAlive():
@@ -1372,7 +1381,7 @@ def testClientToServer():
 
     thrBob = \
         threadWithTrace(target=createServerBob, \
-                        args=(bobDir,bobDomain,bobPort, \
+                        args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
                               ocapAlways,bobSendThreads),daemon=True)
 
