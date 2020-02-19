@@ -2023,7 +2023,8 @@ def isDM(postJsonObject: {}) -> bool:
         return False
     if not isinstance(postJsonObject['object'], dict):
         return False
-    if postJsonObject['object']['type']!='Note':
+    if postJsonObject['object']['type']!='Note' and \
+       postJsonObject['object']['type']!='Article':
         return False
     if postJsonObject['object'].get('moderationStatus'):
         return False
@@ -2056,7 +2057,8 @@ def isImageMedia(session,baseDir: str,httpPrefix: str, \
         return False
     if postJsonObject['object'].get('moderationStatus'):
         return False
-    if postJsonObject['object']['type']!='Note':
+    if postJsonObject['object']['type']!='Note' and \
+       postJsonObject['object']['type']!='Article':
         return False
     if not postJsonObject['object'].get('attachment'):
         return False
@@ -2081,7 +2083,8 @@ def isReply(postJsonObject: {},actor: str) -> bool:
         return False
     if postJsonObject['object'].get('moderationStatus'):
         return False
-    if postJsonObject['object']['type']!='Note':
+    if postJsonObject['object']['type']!='Note' and \
+       postJsonObject['object']['type']!='Article':
         return False
     if postJsonObject['object'].get('inReplyTo'):
         if postJsonObject['object']['inReplyTo'].startswith(actor):
@@ -2188,7 +2191,7 @@ def addPostStringToTimeline(postStr: str,boxname: str, \
     """ is this a valid timeline post?
     """
     # must be a "Note" or "Announce" type
-    if '"Note"' in postStr or '"Announce"' in postStr or \
+    if '"Note"' in postStr '"Article"' in postStr or '"Announce"' in postStr or \
        ('"Question"' in postStr and ('"Create"' in postStr or '"Update"' in postStr)):
 
         if boxname=='dm':
@@ -2718,7 +2721,8 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
             rejectAnnounce(announceFilename)
             #pprint(announcedJson)
             return None
-        if announcedJson['type']!='Note':
+        if announcedJson['type']!='Note' and \
+           announcedJson['type']!='Article':
             rejectAnnounce(announceFilename)
             #pprint(announcedJson)
             return None
