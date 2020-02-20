@@ -1756,7 +1756,7 @@ def individualFollowAsHtml(translate: {}, \
                 #buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
 
     resultStr='<div class="container">\n'
-    resultStr+='<a href="'+followUrl+'">'
+    resultStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'">'
     resultStr+='<p><img loading="lazy" src="'+avatarUrl+'" alt=" ">\n'
     resultStr+=titleStr+'</a>'+buttonsStr+'</p>'
     resultStr+='</div>\n'
