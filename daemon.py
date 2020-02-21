@@ -3775,10 +3775,15 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumber=int(pageNumberStr)
                 path=path.split('?page=')[0]
 
-        newPostThreadName=self.postToNickname
+        # get the username who posted
+        newPostThreadName=None
+        if '/users/' in path:
+            newPostThreadName=path.split('/users/')[1]
+            if '/' in nickname:
+                newPostThreadName=newPostThreadName.split('/')[0]
         if not newPostThreadName:
             newPostThreadName='*'
-        
+
         if self.server.newPostThread.get(newPostThreadName):
             print('Waiting for previous new post thread to end')
             waitCtr=0
@@ -3786,6 +3791,7 @@ class PubServer(BaseHTTPRequestHandler):
                 time.sleep(1)
                 waitCtr+=1
             if waitCtr>=8:
+                print('Killing previous new post thread for '+newPostThreadName)
                 self.server.newPostThread[newPostThreadName].kill()
 
         # make a copy of self.headers
@@ -5147,9 +5153,6 @@ class PubServer(BaseHTTPRequestHandler):
 
             pageNumber=self._receiveNewPost(authorized,currPostType,self.path)
             if pageNumber:
-                nickname=self.path.split('/users/')[1]
-                if '/' in nickname:
-                    nickname=nickname.split('/')[0]
                 self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                        '/users/'+nickname+ \
                                        '/'+postRedirect+ \
