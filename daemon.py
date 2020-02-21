@@ -908,11 +908,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if authorized:
-            if self.server.debug:
+        if self.server.debug:
+            if authorized:
                 print('GET Authorization granted')
-        else:
-            if self.server.debug:
+            else:
                 print('GET Not authorized')
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,5)
@@ -3874,11 +3873,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if authorized:
-            if self.server.debug:
+        if self.server.debug:
+            if authorized:
                 print('POST Authorization granted')
-        else:
-            if self.server.debug:
+            else:
                 print('POST Not authorized')
                 print(str(self.headers))
 
