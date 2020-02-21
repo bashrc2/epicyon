@@ -66,9 +66,12 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
                 if iconName[0].isdigit():
                     if '.' in iconName and '-' not in iconName:
                         iconName=iconName.split('.')[0]
-                        content= \
-                            content.replace(tagItem['name'], \
-                                            chr(int("0x"+iconName,16)))
+                        try:
+                            content= \
+                                content.replace(tagItem['name'], \
+                                                chr(int("0x"+iconName,16)))
+                        except:
+                            pass
         htmlClass='emoji'
         if messageType=='post header':
             htmlClass='emojiheader'            
