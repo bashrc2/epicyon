@@ -657,6 +657,7 @@ class PubServer(BaseHTTPRequestHandler):
         https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
         """
         if postToNickname:
+            print('Posting to nickname '+postToNickname)
             self.postToNickname=postToNickname
         return postMessageToOutbox(messageJson,self.postToNickname, \
                                    self.server,self.server.baseDir,self.server.httpPrefix, \
@@ -3630,6 +3631,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return -1
             elif postType=='newdm':
                 messageJson=None
+                print('A DM was posted')
                 if '@' in fields['message']:
                     messageJson= \
                         createDirectMessagePost(self.server.baseDir, \
@@ -3649,8 +3651,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
-                    if self.server.debug:
-                        print('DEBUG: new DM to '+str(messageJson['object']['to']))
+                    #if self.server.debug:
+                    print('DEBUG: new DM to '+str(messageJson['object']['to']))
                     if self._postToOutbox(messageJson,__version__,nickname):
                         populateReplies(self.server.baseDir, \
                                         self.server.httpPrefix, \
