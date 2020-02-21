@@ -401,11 +401,11 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
         if debug:
             print('DEBUG: capabilities for '+ \
                   actor+' do not exist')
-            if os.path.isfile(queueFilename):
-                os.remove(queueFilename)
-            if len(queue)>0:
-                queue.pop(0)
-            return False
+        if os.path.isfile(queueFilename):
+            os.remove(queueFilename)
+        if len(queue)>0:
+            queue.pop(0)
+        return False
 
     oc=loadJson(ocapFilename)
     if not oc: 
@@ -2158,10 +2158,10 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
             if not pubKey:
                 if debug:
                     print('DEBUG: public key could not be obtained from '+keyId)
-                    if os.path.isfile(queueFilename):
-                        os.remove(queueFilename)
-                    if len(queue)>0:
-                        queue.pop(0)
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             # check the signature
