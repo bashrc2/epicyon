@@ -666,7 +666,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.federationList,self.server.sendThreads, \
                                    self.server.postLog,self.server.cachedWebfingers, \
                                    self.server.personCache,self.server.allowDeletion, \
-                                   self.server.useTor,version,self.server.debug)
+                                   self.server.useTor,version,True)
 
     def _postToOutboxThread(self,messageJson: {}) -> bool:
         """Creates a thread to send a post
