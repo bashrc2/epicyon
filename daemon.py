@@ -3642,7 +3642,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.useBlurHash, \
                                                 fields['replyTo'],fields['replyTo'], \
                                                 fields['subject'], \
-                                                self.server.debug,fields['schedulePost'], \
+                                                True,fields['schedulePost'], \
                                                 fields['eventDate'], \
                                                 fields['eventTime'], \
                                                 fields['location'])                    
@@ -3830,7 +3830,7 @@ class PubServer(BaseHTTPRequestHandler):
             
                 # Note sending new posts needs to be synchronous, otherwise any attachments
                 # can get mangled if other events happen during their decoding
-                print('Creating new post: '+newPostThreadName)
+                print('Creating new post from: '+newPostThreadName)
                 self._receiveNewPostProcess(authorized,postType,path,headers,length,postBytes,boundary)
         return pageNumber
         
