@@ -297,14 +297,14 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                   ' recipient: '+str(messageJson['to']))
         else:
             print('c2s sender: '+postToNickname+'@'+domain+':'+str(port))
-        sendToNamedAddresses(server.session,baseDir, \
-                             postToNickname,domain,port, \
-                             httpPrefix, \
-                             federationList, \
-                             sendThreads, \
-                             postLog, \
-                             cachedWebfingers, \
-                             personCache, \
-                             messageJson,debug, \
-                             version)
+    sendToNamedAddresses(server.session,baseDir, \
+                         postToNickname,domain,port, \
+                         httpPrefix, \
+                         federationList, \
+                         sendThreads, \
+                         postLog, \
+                         cachedWebfingers, \
+                         personCache, \
+                         messageJson,debug, \
+                         version)
     return True
