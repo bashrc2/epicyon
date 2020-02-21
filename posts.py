@@ -533,8 +533,20 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                     nickname,domain,content, \
                     mentionedRecipients, \
                     hashtagsDict,True)
-    content=replaceEmojiFromTags(content,mentionedRecipients,'content')
-    
+
+    # replace emoji with unicode
+    tags=[]
+    for tagName,tag in hashtagsDict.items():
+        tags.append(tag)
+    # get list of tags
+    content=replaceEmojiFromTags(content,tags,'content')
+    # remove replaced emoji
+    for tagName,tag in hashtagsDict.items():
+        if tag.get('name'):
+            if tag['name'].startswith(':'):
+                if tag['name'] not in content:
+                    del hashtagsDict[tagName]
+
     statusNumber,published = getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'
     postCC=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
