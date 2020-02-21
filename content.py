@@ -81,7 +81,7 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
                             iconCodeSequence=''
                             for icode in iconCodes:
                                 try:
-                                    iconCodeSequence+=chr(int("0x"+iconName,16))
+                                    iconCodeSequence+=chr(int("0x"+icode,16))
                                 except:
                                     iconCodeSequence=''
                                     break
