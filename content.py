@@ -65,7 +65,7 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
             if iconName.startswith('1'):
                 if '.' in iconName:
                     iconName=iconName.split('.')[0]
-                    content=content.replace(tagItem['name'],'\\u'+iconName)
+                    content=content.replace(tagItem['name'],chr(int("0x"+iconName,16)))
         htmlClass='emoji'
         if messageType=='post header':
             htmlClass='emojiheader'            

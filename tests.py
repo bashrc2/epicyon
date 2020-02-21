@@ -1391,7 +1391,8 @@ def testAddEmoji():
         tags.append(tag)
     content=contentModified
     contentModified=replaceEmojiFromTags(content,tags,'content')
-    assert contentModified=='<p>Emoji \\u1F34B \\u1F353 \\u1F34C</p>'
+    #print('contentModified: '+contentModified)
+    assert contentModified=='<p>Emoji 🍋 🍓 🍌</p>'
 
     os.chdir(baseDirOriginal)
     shutil.rmtree(baseDirOriginal+'/.tests')
