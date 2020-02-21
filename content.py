@@ -56,8 +56,16 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
             continue
         if not tagItem['icon'].get('url'):
             continue
+        if '/' not in tagItem['icon']['url']:
+            continue
         if tagItem['name'] not in content:
             continue
+        iconName=tagItem['icon']['url'].split('/')[-1]
+        if iconName:
+            if iconName.startswith('1'):
+                if '.' in iconName:
+                    iconName=iconName.split('.')[0]
+                    content=content.replace(tagItem['name'],'\\u'+iconName)
         htmlClass='emoji'
         if messageType=='post header':
             htmlClass='emojiheader'            
@@ -66,6 +74,7 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
         emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
         content=content.replace(tagItem['name'],emojiHtml)
     return content
+
 
 def addMusicTag(content: str,tag: str) -> str:
     """If a music link is found then ensure that the post is tagged appropriately
