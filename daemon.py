@@ -5153,7 +5153,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             pageNumber=self._receiveNewPost(authorized,currPostType,self.path)
             if pageNumber:
-                nickname=path.split('/users/')[1]
+                nickname=self.path.split('/users/')[1]
                 if '/' in nickname:
                     nickname=nickname.split('/')[0]
 
