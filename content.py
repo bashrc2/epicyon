@@ -11,6 +11,7 @@ import time
 import email.parser
 from shutil import copyfile
 from utils import loadJson
+from utils import fileLastModified
 
 def switchWords(baseDir: str,nickname: str,domain: str,content: str) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
@@ -174,7 +175,10 @@ def loadEmojiDict(emojiDataFilename: str,emojiDict: {}) -> None:
                 emojiName=emojiName.split('..')[0]
             emojiDict[emojiName.lower()]=emojiUnicode
 
-def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji: {},postTags: {},emojiDict: {}) -> bool:
+def addEmoji(baseDir: str,wordStr: str, \
+             httpPrefix: str,domain: str, \
+             replaceEmoji: {},postTags: {}, \
+             emojiDict: {}) -> bool:
     """Detects Emoji and adds them to the replacements dict
     Also updates the tags list to be added to the post
     """
@@ -205,6 +209,8 @@ def addEmoji(baseDir: str,wordStr: str,httpPrefix: str,domain: str,replaceEmoji:
             'url': emojiUrl
         },
         'name': ':'+emoji+':',
+        "updated": fileLastModified(emojiFilename),
+        "id": emojiUrl.replace('.png',''),
         'type': 'Emoji'
     }
     return True
@@ -395,7 +401,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                 wordStr2=wordStr.split(':')[1]
                 if not emojiDict:
                     # emoji.json is generated so that it can be customized and the changes
-                    # will be retained even if default_emoji.json is subsequently updated                    
+                    # will be retained even if default_emoji.json is subsequently updated
                     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
                         copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
                 emojiDict=loadJson(baseDir+'/emoji/emoji.json')

@@ -562,3 +562,10 @@ def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
         recentPostsCache['html']={}
         recentPostsCache['json'][postId]=json.dumps(postJsonObject)
         recentPostsCache['html'][postId]=htmlStr
+
+def fileLastModified(filename: str) -> str:
+    """Returns the date when a file was last modified
+    """
+    t = os.path.getmtime(filename)
+    modifiedTime=datetime.datetime.fromtimestamp(t)
+    return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")

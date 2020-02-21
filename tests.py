@@ -1388,6 +1388,7 @@ def testAddEmoji(content: str,emojiStr:str):
     tags=[]
     for tagName,tag in hashtags.items():
         tags.append(tag)
+    print(str(tags))
     content=contentModified
     contentModified=replaceEmojiFromTags(content,tags,'content')
     assert 'img src' in contentModified
