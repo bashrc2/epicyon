@@ -1352,9 +1352,8 @@ def testWebLinks():
     assert resultText=='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
 
 
-def testAddEmoji():
-    print('testAddEmoji')
-    content='Emoji :lemon: :strawberry: :banana:'
+def testAddEmoji(content: str,emojiStr:str):
+    print('testAddEmoji: '+emojiStr)
     httpPrefix='http'
     nickname='testuser'
     domain='testdomain.net'
@@ -1383,14 +1382,16 @@ def testAddEmoji():
         addHtmlTags(baseDir,httpPrefix, \
                     nickname,domain,content, \
                     recipients,hashtags,True)
-    assert ':lemon:' in contentModified
+    assert ':'+emojiStr+':' in contentModified
+    assert contentModified.startswith('<p>')
+    assert contentModified.endswith('</p>')
     tags=[]
     for tagName,tag in hashtags.items():
         tags.append(tag)
     content=contentModified
     contentModified=replaceEmojiFromTags(content,tags,'content')
     assert 'img src' in contentModified
-    assert ':lemon:' not in contentModified
+    assert ':'+emojiStr+':' not in contentModified
 
     os.chdir(baseDirOriginal)
     shutil.rmtree(baseDirOriginal+'/.tests')
@@ -1472,7 +1473,9 @@ def runAllTests():
     testSaveLoadJson()
     testCommentJson()
     testGetStatusNumber()
-    testAddEmoji()
+    testAddEmoji("Emoji :lemon: :strawberry: :banana:","lemon")
+    testAddEmoji("Emoji :lemon: :strawberry: :banana:","banana")
+    testAddEmoji("G'day world :worldmap:","worldmap")
     testActorParsing()
     testHttpsig()
     testCache()
