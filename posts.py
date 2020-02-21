@@ -541,7 +541,8 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
     # get list of tags
     content=replaceEmojiFromTags(content,tags,'content')
     # remove replaced emoji
-    for tagName,tag in hashtagsDict.items():
+    hashtagsDictCopy=hashtagsDict.copy()
+    for tagName,tag in hashtagsDictCopy.items():
         if tag.get('name'):
             if tag['name'].startswith(':'):
                 if tag['name'] not in content:
