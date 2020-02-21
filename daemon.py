@@ -3779,7 +3779,7 @@ class PubServer(BaseHTTPRequestHandler):
         newPostThreadName=None
         if '/users/' in path:
             newPostThreadName=path.split('/users/')[1]
-            if '/' in nickname:
+            if '/' in newPostThreadName:
                 newPostThreadName=newPostThreadName.split('/')[0]
         if not newPostThreadName:
             newPostThreadName='*'
