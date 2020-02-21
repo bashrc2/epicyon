@@ -114,7 +114,7 @@ def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
     for th in dormantThreads:
         if debug:
             print('DEBUG: Removing dormant thread '+str(dormantCtr))
-            dormantCtr+=1        
+        dormantCtr+=1        
         threadsList.remove(th)
         th.kill()
         changed=True
