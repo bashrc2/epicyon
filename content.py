@@ -64,14 +64,32 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
         if iconName:
             if len(iconName)>1:
                 if iconName[0].isdigit():
-                    if '.' in iconName and '-' not in iconName:
+                    if '.' in iconName:
                         iconName=iconName.split('.')[0]
-                        try:
-                            content= \
-                                content.replace(tagItem['name'], \
-                                                chr(int("0x"+iconName,16)))
-                        except:
-                            pass
+                        # see https://unicode.org/emoji/charts/full-emoji-list.html
+                        if '-' not in iconName:
+                            # a single code
+                            try:
+                                content= \
+                                    content.replace(tagItem['name'], \
+                                                    chr(int("0x"+iconName,16)))
+                            except:
+                                pass
+                        else:
+                            # sequence of codes
+                            iconCodes=iconName.split('-')
+                            iconCodeSequence=''
+                            for icode in iconCodes:
+                                try:
+                                    iconCodeSequence+=chr(int("0x"+iconName,16))
+                                except:
+                                    iconCodeSequence=''
+                                    break
+                            if iconCodeSequence:
+                                content= \
+                                    content.replace(tagItem['name'], \
+                                                    iconCodeSequence)
+
         htmlClass='emoji'
         if messageType=='post header':
             htmlClass='emojiheader'            
