@@ -2960,8 +2960,8 @@ def htmlTimeline(defaultTimeline: str, \
     # add the javascript for content warnings
     tlStr+='<script>'+contentWarningScript()+'</script>'
 
-    # show todays events button
-    if boxName=='inbox':
+    # show todays events buttons on the first inbox page
+    if boxName=='inbox' and pageNumber==1:
         if todaysEventsCheck(baseDir,nickname,domain):
             now=datetime.now()
             tlStr+= \
