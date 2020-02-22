@@ -182,7 +182,7 @@ def thisWeeksEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
                                               "%Y-%m-%dT%H:%M:%S%z")
                         if int(eventTime.strftime("%Y"))==year and \
                            int(eventTime.strftime("%m"))==monthNumber and \
-                           (int(eventTime.strftime("%d"))>=dayNumber and \
+                           (int(eventTime.strftime("%d"))>dayNumber and \
                             int(eventTime.strftime("%d"))<=dayNumber+6):
                             eventsExist=True                            
                             break
