@@ -211,9 +211,9 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         handle=nickname+'@'+domain.lower()
         
     if ':' in followDomain:
-        handleToFollow=followNickname+'@'+followDomain.split(':')[0].lower()
+        handleToFollow=followNickname+'@'+followDomain.split(':')[0]
     else:
-        handleToFollow=followNickname+'@'+followDomain.lower()
+        handleToFollow=followNickname+'@'+followDomain
 
     # was this person previously unfollowed?
     unfollowedFilename=baseDir+'/accounts/'+handle+'/unfollowed.txt'
@@ -244,7 +244,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
             with open(filename, 'r+') as followFile:
                 content = followFile.read()
                 followFile.seek(0, 0)
-                followFile.write(followNickname+'@'+followDomain+'\n'+content)
+                followFile.write(handleToFollow+'\n'+content)
                 if debug:
                     print('DEBUG: follow added')
                 return True
@@ -253,7 +253,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
     if debug:
         print('DEBUG: creating new following file')
     with open(filename, "w") as followfile:
-        followfile.write(followNickname+'@'+followDomain+'\n')
+        followfile.write(handleToFollow+'\n')
     return True
 
 def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False) -> str:
