@@ -2968,12 +2968,17 @@ def htmlTimeline(defaultTimeline: str, \
                 '<center><a href="'+actor+'/calendar?year='+ \
                 str(now.year)+'?month='+str(now.month)+ \
                 '?day='+str(now.day)+'"><button class="buttonevent">'+ \
-                translate['Happening Today']+'</button></a></center>'
-        if thisWeeksEventsCheck(baseDir,nickname,domain):
-            now=datetime.now()
-            tlStr+= \
-                '<center><a href="'+actor+'/calendar"><button class="buttonevent">'+ \
-                translate['Happening This Week']+'</button></a></center>'
+                translate['Happening Today']+'</button></a>'
+            if thisWeeksEventsCheck(baseDir,nickname,domain):
+                tlStr+= \
+                    '<a href="'+actor+'/calendar"><button class="buttonevent">'+ \
+                    translate['Happening This Week']+'</button></a>'
+            tlStr+='</center>'
+        else:
+            if thisWeeksEventsCheck(baseDir,nickname,domain):
+                tlStr+= \
+                    '<center><a href="'+actor+'/calendar"><button class="buttonevent">'+ \
+                    translate['Happening This Week']+'</button></a></center>'
 
     # page up arrow
     if pageNumber>1:
