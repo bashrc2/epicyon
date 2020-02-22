@@ -3628,7 +3628,9 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
-            if postFilename:
+            if not postFilename:
+                recreateEventsFile=True
+            else:
                 postJsonObject=loadJson(postFilename)
                 if postJsonObject:
                     if postJsonObject.get('object'):
@@ -3660,8 +3662,6 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
                                     if not events.get(dayOfMonth):
                                         events[dayOfMonth]=[]
                                     events[dayOfMonth].append(postEvent)
-            else:
-                recreateEventsFile=True
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
@@ -3670,6 +3670,74 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
             calendarFile.write(postId+'\n')
         calendarFile.close()
     
+    return events
+
+def getTodaysEvents(baseDir: str,nickname: str,domain: str) -> {}:
+    """Retrieves calendar events for today
+    Returns a dictionary of lists containing Event and Place activities
+    """
+    now=datetime.now()
+    year=now.year
+    monthNumber=now.month
+    dayNumber=now.day
+    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    events={}
+    if not os.path.isfile(calendarFilename):
+        return events
+    calendarPostIds=[]
+    recreateEventsFile=False
+    with open(calendarFilename,'r') as eventsFile: 
+        for postId in eventsFile:
+            postId=postId.replace('\n','')
+            postFilename=locatePost(baseDir,nickname,domain,postId)
+            if not postFilename:
+                recreateEventsFile=True
+            else:
+                postJsonObject=loadJson(postFilename)
+                if not postJsonObject:
+                    continue
+                if not postJsonObject.get('object'):
+                    continue
+                if not isinstance(postJsonObject['object'], dict):
+                    continue
+                if not postJsonObject['object'].get('tag'):
+                    continue
+
+                postEvent=[]
+                dayOfMonth=None
+                for tag in postJsonObject['object']['tag']:
+                    if not tag.get('type'):
+                        continue
+                    if tag['type']!='Event' and tag['type']!='Place':
+                        continue
+                    if tag['type']=='Event':
+                        # tag is an event
+                        if not tag.get('startTime'):
+                            continue
+                        eventTime= \
+                            datetime.strptime(tag['startTime'], \
+                                              "%Y-%m-%dT%H:%M:%S%z")
+                        if int(eventTime.strftime("%Y"))==year and \
+                           int(eventTime.strftime("%m"))==monthNumber and \
+                           int(eventTime.strftime("%d"))==dayNumber:
+                            dayOfMonth=str(int(eventTime.strftime("%d")))
+                            postEvent.append(tag)
+                    else:
+                        # tag is a place
+                        postEvent.append(tag)
+                if postEvent and dayOfMonth:
+                    calendarPostIds.append(postId)
+                    if not events.get(dayOfMonth):
+                        events[dayOfMonth]=[]
+                    events[dayOfMonth].append(postEvent)
+
+    # if some posts have been deleted then regenerate the calendar file
+    if recreateEventsFile:
+        calendarFile=open(calendarFilename, "w")
+        for postId in calendarPostIds:
+            calendarFile.write(postId+'\n')
+        calendarFile.close()
+
     return events
 
 def htmlCalendarDay(translate: {}, \
