@@ -11,6 +11,7 @@ import time
 import shutil
 import datetime
 import json
+from calendar import monthrange
 
 def removeAvatarFromCache(baseDir: str,actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
@@ -584,3 +585,17 @@ def fileLastModified(filename: str) -> str:
     t = os.path.getmtime(filename)
     modifiedTime=datetime.datetime.fromtimestamp(t)
     return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+def daysInMonth(year: int,monthNumber: int) -> int:
+    """Returns the number of days in the month
+    """
+    if monthNumber<1 or monthNumber>12:
+        return None
+    daysRange=monthrange(year, monthNumber)
+    return daysRange[1]
+
+def mergeDicts(dict1: {}, dict2: {}) -> {}:
+    """Merges two dictionaries
+    """
+    res = {**dict1, **dict2}
+    return res
