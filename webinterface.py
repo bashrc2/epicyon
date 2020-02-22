@@ -2963,7 +2963,12 @@ def htmlTimeline(defaultTimeline: str, \
     # show todays events button
     if boxName=='inbox':
         if todaysEventsCheck(baseDir,nickname,domain):
-            tlStr+='<center><a href="'+actor+'/todaysevents"><button class="button">'+translate['Happening Today']+'</button></a></center>'
+            now=datetime.now()
+            tlStr+= \
+                '<center><a href="'+actor+'/calendar?year='+ \
+                str(now.year)+'?month='+str(now.month)+ \
+                '?day='+str(now.day)+'"><button class="button">'+ \
+                translate['Happening Today']+'</button></a></center>'
 
     # page up arrow
     if pageNumber>1:
