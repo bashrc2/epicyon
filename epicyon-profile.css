@@ -694,6 +694,18 @@ div.gallery img {
         cursor: pointer;
         margin: 5px;
     }
+    .buttonevent {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        padding: var(--button-height-padding);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+    }
     .button {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-background);
@@ -1010,6 +1022,18 @@ div.gallery img {
         padding: 2px;
         cursor: pointer;
         margin: 5px;
+    }
+    .buttonevent {
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        padding: var(--button-height-padding-mobile);
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
     }
     .button {
         border-radius: var(--button-corner-radius);

@@ -2967,7 +2967,7 @@ def htmlTimeline(defaultTimeline: str, \
             tlStr+= \
                 '<center><a href="'+actor+'/calendar?year='+ \
                 str(now.year)+'?month='+str(now.month)+ \
-                '?day='+str(now.day)+'"><button class="button">'+ \
+                '?day='+str(now.day)+'"><button class="buttonevent">'+ \
                 translate['Happening Today']+'</button></a></center>'
 
     # page up arrow
