@@ -696,7 +696,7 @@ div.gallery img {
     }
     .buttonevent {
         border-radius: var(--button-corner-radius);
-        background-color: var(--button-background);
+        background-color: var(--button-highlighted);
         border: none;
         color: var(--button-text);
         text-align: center;
@@ -1025,7 +1025,7 @@ div.gallery img {
     }
     .buttonevent {
         border-radius: var(--button-corner-radius);
-        background-color: var(--button-background);
+        background-color: var(--button-highlighted);
         border: none;
         color: var(--button-text);
         text-align: center;
