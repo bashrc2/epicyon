@@ -3766,18 +3766,10 @@ def todaysEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
     """Are there calendar events today?
     """
     now=datetime.now()
-    if not currYear:
-        year=now.year
-    else:
-        year=currYear
-    if not currMonthNumber:
-        monthNumber=now.month
-    else:
-        monthNumber=currMonthNumber
-    if not currDayOfMonth:
-        dayNumber=now.day
-    else:
-        dayNumber=currDayOfMonth
+    year=now.year
+    monthNumber=now.month
+    dayNumber=now.day
+
     calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
     if not os.path.isfile(calendarFilename):
         return False
