@@ -2960,6 +2960,11 @@ def htmlTimeline(defaultTimeline: str, \
     # add the javascript for content warnings
     tlStr+='<script>'+contentWarningScript()+'</script>'
 
+    # show todays events button
+    if boxName=='inbox':
+        if todaysEventsCheck(baseDir,nickname,domain):
+            tlStr+='<center><a href="'+actor+'/todaysevents"><button class="button">'+translate['Happening Today']+'</button></a></center>'
+
     # page up arrow
     if pageNumber>1:
         tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
@@ -3751,6 +3756,61 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
         calendarFile.close()
 
     return events
+
+def todaysEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
+    """Are there calendar events today?
+    """
+    now=datetime.now()
+    if not currYear:
+        year=now.year
+    else:
+        year=currYear
+    if not currMonthNumber:
+        monthNumber=now.month
+    else:
+        monthNumber=currMonthNumber
+    if not currDayOfMonth:
+        dayNumber=now.day
+    else:
+        dayNumber=currDayOfMonth
+    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    if not os.path.isfile(calendarFilename):
+        return False
+    eventsExist=False
+    with open(calendarFilename,'r') as eventsFile: 
+        for postId in eventsFile:
+            postId=postId.replace('\n','')
+            postFilename=locatePost(baseDir,nickname,domain,postId)
+            if postFilename:
+                postJsonObject=loadJson(postFilename)
+                if not postJsonObject:
+                    continue
+                if not postJsonObject.get('object'):
+                    continue
+                if not isinstance(postJsonObject['object'], dict):
+                    continue
+                if not postJsonObject['object'].get('tag'):
+                    continue
+
+                for tag in postJsonObject['object']['tag']:
+                    if not tag.get('type'):
+                        continue
+                    if tag['type']!='Event' and tag['type']!='Place':
+                        continue
+                    if tag['type']=='Event':
+                        # tag is an event
+                        if not tag.get('startTime'):
+                            continue
+                        eventTime= \
+                            datetime.strptime(tag['startTime'], \
+                                              "%Y-%m-%dT%H:%M:%S%z")
+                        if int(eventTime.strftime("%Y"))==year and \
+                           int(eventTime.strftime("%m"))==monthNumber and \
+                           int(eventTime.strftime("%d"))==dayNumber:
+                            eventsExist=True
+                            break
+
+    return eventsExist
 
 def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
     """Retrieves calendar events for this week
