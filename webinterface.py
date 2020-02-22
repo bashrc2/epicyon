@@ -3672,14 +3672,17 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str,year: int,monthNumb
     
     return events
 
-def getTodaysEvents(baseDir: str,nickname: str,domain: str) -> {}:
+def getTodaysEvents(baseDir: str,nickname: str,domain: str,dayOfMonth=None) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
     now=datetime.now()
     year=now.year
     monthNumber=now.month
-    dayNumber=now.day
+    if not dayOfMonth:
+        dayNumber=now.day
+    else:
+        dayNumber=dayOfMonth
     calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
     events={}
     if not os.path.isfile(calendarFilename):
