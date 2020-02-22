@@ -184,6 +184,7 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
+
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
         if debug:
@@ -199,6 +200,18 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
         for line in lines:
             if line.strip("\n") != handleToUnfollow:
                 f.write(line)
+
+    # write to an unfollowed file so that if a follow accept
+    # later arrives then it can be ignored
+    unfollowedFilename=baseDir+'/accounts/'+handle+'/unfollowed.txt'
+    if os.path.isfile(unfollowedFilename):
+        if handleToUnfollow not in open(unfollowedFilename).read():
+            with open(filename, "a+") as f:
+                f.write(handleToUnfollow+'\n')
+    else:
+        with open(filename, "w+") as f:
+            f.write(handleToUnfollow+'\n')
+
     return True
 
 def unfollowerOfPerson(baseDir: str,nickname: str,domain: str, \

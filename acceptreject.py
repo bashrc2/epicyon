@@ -156,6 +156,17 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                                     nickname,acceptedDomainFull, \
                                     messageJson['capabilities'])
 
+    # has this person already been unfollowed?
+    unfollowedFilename=baseDir+'/accounts/'+nickname+'@'+acceptedDomainFull+'/unfollowed.txt'
+    if os.path.isfile(unfollowedFilename):
+        if followedNickname+'@'+followedDomainFull in open(unfollowedFilename).read():
+            if debug:
+                print('DEBUG: follow accept arrived for '+ \
+                      nickname+'@'+acceptedDomainFull+ \
+                      ' from '+followedNickname+'@'+followedDomainFull+ \
+                      ' but they have been unfollowed')
+            return            
+
     if followPerson(baseDir, \
                     nickname,acceptedDomainFull, \
                     followedNickname,followedDomainFull, \

@@ -214,6 +214,21 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         handleToFollow=followNickname+'@'+followDomain.split(':')[0].lower()
     else:
         handleToFollow=followNickname+'@'+followDomain.lower()
+
+    # was this person previously unfollowed?
+    unfollowedFilename=baseDir+'/accounts/'+handle+'/unfollowed.txt'
+    if os.path.isfile(unfollowedFilename):
+        if handleToFollow in open(unfollowedFilename).read():
+            # remove them from the unfollowed file
+            newLines=''
+            with open(unfollowedFilename, "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if handleToFollow not in line:
+                        newLines+=line
+            with open(unfollowedFilename, "w") as f:
+                f.write(newLines)
+
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
