@@ -209,7 +209,7 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
             with open(filename, "a+") as f:
                 f.write(handleToUnfollow+'\n')
     else:
-        with open(filename, "w+") as f:
+        with open(unfollowedFilename, "w+") as f:
             f.write(handleToUnfollow+'\n')
 
     return True
