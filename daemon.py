@@ -175,6 +175,7 @@ from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
 from outbox import postMessageToOutbox
+from happening import removeCalendarEvent
 import os
 import sys
 
@@ -4792,6 +4793,16 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumberStr=pageNumberStr.split('&')[0]
                     if pageNumberStr.isdigit():
                         pageNumber=int(pageNumberStr)
+                yearStr=None
+                if 'year=' in removePostConfirmParams:
+                    yearStr=removePostConfirmParams.split('year=')[1]
+                    if '&' in yearStr:
+                        yearStr=yearStr.split('&')[0]
+                monthStr=None
+                if 'month=' in removePostConfirmParams:
+                    monthStr=removePostConfirmParams.split('month=')[1]
+                    if '&' in monthStr:
+                        monthStr=monthStr.split('&')[0]
                 if '/statuses/' in removeMessageId:
                     removePostActor=removeMessageId.split('/statuses/')[0]
                 if originPathStr in removePostActor:
@@ -4805,6 +4816,13 @@ class PubServer(BaseHTTPRequestHandler):
                     }
                     self.postToNickname=getNicknameFromActor(removePostActor)
                     if self.postToNickname:
+                        if monthStr and yearStr:
+                            if monthStr.isdigit() and yearStr.isdigit():
+                                removeCalendarEvent(self.server.baseDir, \
+                                                    self.postToNickname, \
+                                                    self.server.domain, \
+                                                    int(yearStr),int(monthStr), \
+                                                    removeMessageId)
                         self._postToOutboxThread(deleteJson)
             if pageNumber==1:
                 self._redirect_headers(originPathStr+'/outbox',cookie)

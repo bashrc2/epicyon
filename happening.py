@@ -369,3 +369,26 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str, \
         calendarFile.close()
     
     return events
+
+def removeCalendarEvent(baseDir: str,nickname: str,domain: str, \
+                        year: int,monthNumber: int,messageId: str) -> None:
+    """Removes a calendar event
+    """
+    calendarFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+ \
+        '/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    if not os.path.isfile(calendarFilename):
+        return
+    if '/' in messageId:
+        messageId=messageId.replace('/','#')
+    if messageId not in open(calendarFilename).read():
+        return
+    lines=None
+    with open(calendarFilename, "r") as f:
+        lines = f.readlines()
+    if not lines:
+        return
+    with open(calendarFilename, "w+") as f:
+        for line in lines:
+            if messageId not in line:
+                f.write(line)
