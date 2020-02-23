@@ -34,10 +34,14 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
         dayNumber=now.day
     else:
         dayNumber=currDayOfMonth
-    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+
+    calendarFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+ \
+        '/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
     events={}
     if not os.path.isfile(calendarFilename):
         return events
+
     calendarPostIds=[]
     recreateEventsFile=False
     with open(calendarFilename,'r') as eventsFile: 
@@ -102,9 +106,12 @@ def todaysEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
     monthNumber=now.month
     dayNumber=now.day
 
-    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    calendarFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+ \
+        '/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
     if not os.path.isfile(calendarFilename):
         return False
+
     eventsExist=False
     with open(calendarFilename,'r') as eventsFile: 
         for postId in eventsFile:
@@ -149,9 +156,12 @@ def thisWeeksEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
     monthNumber=now.month
     dayNumber=now.day
 
-    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    calendarFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+ \
+        '/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
     if not os.path.isfile(calendarFilename):
         return False
+
     eventsExist=False
     with open(calendarFilename,'r') as eventsFile: 
         for postId in eventsFile:
@@ -198,10 +208,15 @@ def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
     year=now.year
     monthNumber=now.month
     dayNumber=now.day
-    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+
+    calendarFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+ \
+        '/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+
     events={}
     if not os.path.isfile(calendarFilename):
         return events
+
     calendarPostIds=[]
     recreateEventsFile=False
     with open(calendarFilename,'r') as eventsFile: 
@@ -281,10 +296,14 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str, \
     """Retrieves calendar events
     Returns a dictionary indexed by day number of lists containing Event and Place activities
     """
-    calendarFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+    calendarFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+ \
+        '/calendar/'+str(year)+'/'+str(monthNumber)+'.txt'
+
     events={}
     if not os.path.isfile(calendarFilename):
         return events
+
     calendarPostIds=[]
     recreateEventsFile=False
     with open(calendarFilename,'r') as eventsFile: 
