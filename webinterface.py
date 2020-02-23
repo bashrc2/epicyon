@@ -3739,7 +3739,7 @@ def htmlCalendarDay(translate: {}, \
                         
             deleteButtonStr=''            
             if postId:
-                deleteButtonStr='<td class="calendar__day__icons"><a href="'+actor+'/eventdelete?id='+postId+'?yead='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayNumber)+'?time='+eventTime+'"><img class="calendardayicon" loading="lazy" alt="'+translate['Delete this event']+' |" title="'+translate['Delete this event']+' |" src="/'+iconsDir+'/delete.png" /></a></td>'
+                deleteButtonStr='<td class="calendar__day__icons"><a href="'+actor+'/eventdelete?id='+postId+'?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayNumber)+'?time='+eventTime+'"><img class="calendardayicon" loading="lazy" alt="'+translate['Delete this event']+' |" title="'+translate['Delete this event']+' |" src="/'+iconsDir+'/delete.png" /></a></td>'
 
             if eventTime and eventDescription and eventPlace:
                 calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
