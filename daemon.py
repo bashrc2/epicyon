@@ -1536,7 +1536,14 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.baseDir,self.path, \
                                              self.server.httpPrefix, \
                                              self.server.domainFull,
-                                             postId,postTime).encode()
+                                             postId,postTime)
+               if not msg:
+                   actor= \
+                       self.server.httpPrefix+'://'+self.server.domainFull+ \
+                       self.path.split('/eventdelete')[0]
+                   self._redirect_headers(actor+'/calendar',cookie)
+                   return
+               msg=msg.encode()
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False

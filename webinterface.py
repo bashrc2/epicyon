@@ -3402,7 +3402,7 @@ def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
         deletePostStr+='    <input type="hidden" name="pageNumber" value="1">'
         deletePostStr+='    <input type="hidden" name="messageId" value="'+messageId+'">'
         deletePostStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-        deletePostStr+='    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>'
+        deletePostStr+='    <a href="'+actor+'/calendar'+'"><button class="button">'+translate['No']+'</button></a>'
         deletePostStr+='  </form>'
         deletePostStr+='</center>'
         deletePostStr+=htmlFooter()
