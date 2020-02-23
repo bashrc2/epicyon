@@ -133,7 +133,7 @@ a:link {
 }
 
 .calendar__day__icons {
-    width: 15%;
+    width: 10%;
     position: relative;
     padding: 20px;
 }
@@ -172,7 +172,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 .calendardayicon {
-    width: 10%
+    width: 100%
 }
 
 .buttonprev {
