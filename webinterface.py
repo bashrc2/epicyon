@@ -66,6 +66,7 @@ from shares import getValidSharedItemID
 from happening import todaysEventsCheck
 from happening import thisWeeksEventsCheck
 from happening import getCalendarEvents
+from happening import getTodaysEvents
 
 def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avatarUrl: str,personCache: {},force=False) -> str:
     """Updates the cached avatar for the given actor
@@ -3735,17 +3736,17 @@ def htmlCalendar(translate: {}, \
         monthNumber=currDate.month
 
     nickname=getNicknameFromActor(actor)
-    events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
-
-    months=('January','February','March','April','May','June','July','August','September','October','November','December')
-    monthName=translate[months[monthNumber-1]]
 
     if os.path.isfile(baseDir+'/img/calendar-background.png'):
         if not os.path.isfile(baseDir+'/accounts/calendar-background.png'):
             copyfile(baseDir+'/img/calendar-background.png',baseDir+'/accounts/calendar-background.png')
 
+    months=('January','February','March','April','May','June','July','August','September','October','November','December')
+    monthName=translate[months[monthNumber-1]]
+
     if dayNumber:
         dayEvents=None
+        events=getTodaysEvents(baseDir,nickname,domain,year,monthNumber,dayNumber)
         if events.get(str(dayNumber)):
             dayEvents=events[str(dayNumber)]
         return htmlCalendarDay(translate,baseDir,path, \
@@ -3753,6 +3754,8 @@ def htmlCalendar(translate: {}, \
                                nickname,domain,dayEvents, \
                                monthName,actor)
     
+    events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
+
     prevYear=year
     prevMonthNumber=monthNumber-1
     if prevMonthNumber<1:
