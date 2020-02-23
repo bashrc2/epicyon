@@ -3362,6 +3362,52 @@ def htmlDeletePost(recentPostsCache: {},maxRecentPosts: int, \
         deletePostStr+=htmlFooter()
     return deletePostStr
 
+def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
+                              path: str,httpPrefix: str, \
+                              domainFull: str,postId: str,postTime: str) -> str:
+    """Shows a screen asking to confirm the deletion of a calendar event
+    """
+    iconsDir=getIconsDir(baseDir)
+    nickname=getNicknameFromActor(path)
+    actor=httpPrefix+'://'+domainFull+'/users/'+nickname
+    domain,port=getDomainFromActor(actor)
+    messageId=actor+'/'+postId
+
+    postFilename=locatePost(baseDir,nickname,domain,messageId)
+    if not postFilename:
+        return None
+
+    postJsonObject=loadJson(postFilename)
+    if not postJsonObject:
+        return None
+
+    if os.path.isfile(baseDir+'/img/delete-background.png'):
+        if not os.path.isfile(baseDir+'/accounts/delete-background.png'):
+            copyfile(baseDir+'/img/delete-background.png', \
+                     baseDir+'/accounts/delete-background.png')
+
+    deletePostStr=None
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
+        profileStyle = cssFile.read()
+        if httpPrefix!='https':
+            profileStyle=profileStyle.replace('https://',httpPrefix+'://')
+        deletePostStr=htmlHeader(cssFilename,profileStyle)
+        deletePostStr+='<center><h1>'+postTime+'</h1></center>'
+        deletePostStr+='<center>'
+        deletePostStr+='  <p class="followText">'+translate['Delete this event']+'</p>'
+        deletePostStr+='  <form method="POST" action="'+actor+'/rmpost">'
+        deletePostStr+='    <input type="hidden" name="pageNumber" value="1">'
+        deletePostStr+='    <input type="hidden" name="messageId" value="'+messageId+'">'
+        deletePostStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
+        deletePostStr+='    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>'
+        deletePostStr+='  </form>'
+        deletePostStr+='</center>'
+        deletePostStr+=htmlFooter()
+    return deletePostStr
+
 def htmlFollowConfirm(translate: {},baseDir: str, \
                       originPathStr: str, \
                       followActor: str, \
@@ -3689,7 +3735,7 @@ def htmlCalendarDay(translate: {}, \
                         
             deleteButtonStr=''            
             if postId:
-                deleteButtonStr='<td class="calendar__day__icons"><a href="'+actor+'/calendardelete?id='+postId+'?yead='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayNumber)+'?time='+eventTime+'"><img class="calendardayicon" loading="lazy" alt="'+translate['Delete this event']+' |" title="'+translate['Delete this event']+' |" src="/'+iconsDir+'/delete.png" /></a></td>'
+                deleteButtonStr='<td class="calendar__day__icons"><a href="'+actor+'/eventdelete?id='+postId+'?yead='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayNumber)+'?time='+eventTime+'"><img class="calendardayicon" loading="lazy" alt="'+translate['Delete this event']+' |" title="'+translate['Delete this event']+' |" src="/'+iconsDir+'/delete.png" /></a></td>'
 
             if eventTime and eventDescription and eventPlace:
                 calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'

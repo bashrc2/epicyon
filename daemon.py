@@ -107,6 +107,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlCalendarDeleteConfirm
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
 from webinterface import htmlRemoveSharedItem
@@ -1514,6 +1515,28 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.baseDir,self.path, \
                                 self.server.httpPrefix, \
                                 self.server.domainFull).encode()
+               self._set_headers('text/html',len(msg),cookie)
+               self._write(msg)
+               self.server.GETbusy=False
+               return
+
+        # Show confirmation for deleting a calendar event
+        if htmlGET and '/users/' in self.path:
+           if '/eventdelete' in self.path and \
+              '?time=' in self.path and \
+              '?id=' in self.path:
+               postId=self.path.split('?id=')[1]
+               if '?' in postId:
+                   postId=postId.split('?')[0]
+               postTime=self.path.split('?time=')[1]
+               if '?' in postTime:
+                   postTime=postTime.split('?')[0]
+               # show the confirmation screen screen
+               msg=htmlCalendarDeleteConfirm(self.server.translate, \
+                                             self.server.baseDir,self.path, \
+                                             self.server.httpPrefix, \
+                                             self.server.domainFull,
+                                             postId,postTime).encode()
                self._set_headers('text/html',len(msg),cookie)
                self._write(msg)
                self.server.GETbusy=False
