@@ -3371,7 +3371,7 @@ def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
     nickname=getNicknameFromActor(path)
     actor=httpPrefix+'://'+domainFull+'/users/'+nickname
     domain,port=getDomainFromActor(actor)
-    messageId=actor+'/'+postId
+    messageId=actor+'/statuses/'+postId
 
     postFilename=locatePost(baseDir,nickname,domain,messageId)
     if not postFilename:
