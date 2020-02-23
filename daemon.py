@@ -1531,12 +1531,22 @@ class PubServer(BaseHTTPRequestHandler):
                postTime=self.path.split('?time=')[1]
                if '?' in postTime:
                    postTime=postTime.split('?')[0]
+               postYear=self.path.split('?year=')[1]
+               if '?' in postYear:
+                   postYear=postYear.split('?')[0]
+               postMonth=self.path.split('?month=')[1]
+               if '?' in postMonth:
+                   postMonth=postMonth.split('?')[0]
+               postDay=self.path.split('?day=')[1]
+               if '?' in postDay:
+                   postDay=postDay.split('?')[0]
                # show the confirmation screen screen
                msg=htmlCalendarDeleteConfirm(self.server.translate, \
                                              self.server.baseDir,self.path, \
                                              self.server.httpPrefix, \
                                              self.server.domainFull,
-                                             postId,postTime)
+                                             postId,postTime, \
+                                             postYear,postMonth,postDay)
                if not msg:
                    actor= \
                        self.server.httpPrefix+'://'+self.server.domainFull+ \

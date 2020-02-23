@@ -3364,7 +3364,8 @@ def htmlDeletePost(recentPostsCache: {},maxRecentPosts: int, \
 
 def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
                               path: str,httpPrefix: str, \
-                              domainFull: str,postId: str,postTime: str) -> str:
+                              domainFull: str,postId: str,postTime: str, \
+                              year: int, monthNumber: int, dayNumber: int) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     iconsDir=getIconsDir(baseDir)
@@ -3395,14 +3396,14 @@ def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
         if httpPrefix!='https':
             profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         deletePostStr=htmlHeader(cssFilename,profileStyle)
-        deletePostStr+='<center><h1>'+postTime+'</h1></center>'
+        deletePostStr+='<center><h1>'+postTime+' '+str(year)+'/'+str(monthNumber)+'/'+str(dayNumber)+'</h1></center>'
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">'+translate['Delete this event']+'</p>'
         deletePostStr+='  <form method="POST" action="'+actor+'/rmpost">'
         deletePostStr+='    <input type="hidden" name="pageNumber" value="1">'
         deletePostStr+='    <input type="hidden" name="messageId" value="'+messageId+'">'
         deletePostStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-        deletePostStr+='    <a href="'+actor+'/calendar'+'"><button class="button">'+translate['No']+'</button></a>'
+        deletePostStr+='    <a href="'+actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'"><button class="button">'+translate['No']+'</button></a>'
         deletePostStr+='  </form>'
         deletePostStr+='</center>'
         deletePostStr+=htmlFooter()
