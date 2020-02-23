@@ -3650,13 +3650,13 @@ def htmlCalendarDay(translate: {}, \
     calendarFile=accountDir+'/.newCalendar'
     if os.path.isfile(calendarFile):
         os.remove(calendarFile)
-    
+
     cssFilename=baseDir+'/epicyon-calendar.css'
     if os.path.isfile(baseDir+'/calendar.css'):
         cssFilename=baseDir+'/calendar.css'        
     with open(cssFilename, 'r') as cssFile:
         calendarStyle = cssFile.read()
-    
+
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
@@ -3665,31 +3665,32 @@ def htmlCalendarDay(translate: {}, \
     calendarStr+='</caption>\n'
     calendarStr+='<tbody>\n'
 
-    for eventPost in dayEvents:
-        eventTime=None
-        eventDescription=None
-        eventPlace=None
-        for ev in eventPost:
-            if ev['type']=='Event':
-                if ev.get('startTime'):
-                    eventDate=datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
-                    eventTime=eventDate.strftime("%H:%M").strip()
-                if ev.get('name'):
-                    eventDescription=ev['name'].strip()
-            elif ev['type']=='Place':
-                if ev.get('name'):
-                    eventPlace=ev['name']
-        if eventTime and eventDescription and eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
-        elif eventTime and eventDescription and not eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
-        elif not eventTime and eventDescription and not eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
-        elif not eventTime and eventDescription and eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
-        elif eventTime and not eventDescription and eventPlace:
-            calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span></td></tr>\n'
-    
+    if dayEvents:
+        for eventPost in dayEvents:
+            eventTime=None
+            eventDescription=None
+            eventPlace=None
+            for ev in eventPost:
+                if ev['type']=='Event':
+                    if ev.get('startTime'):
+                        eventDate=datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
+                        eventTime=eventDate.strftime("%H:%M").strip()
+                    if ev.get('name'):
+                        eventDescription=ev['name'].strip()
+                elif ev['type']=='Place':
+                    if ev.get('name'):
+                        eventPlace=ev['name']
+            if eventTime and eventDescription and eventPlace:
+                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
+            elif eventTime and eventDescription and not eventPlace:
+                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
+            elif not eventTime and eventDescription and not eventPlace:
+                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
+            elif not eventTime and eventDescription and eventPlace:
+                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
+            elif eventTime and not eventDescription and eventPlace:
+                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span></td></tr>\n'
+
     calendarStr+='</tbody>\n'
     calendarStr+='</table></main>\n'
     calendarStr+=htmlFooter()
@@ -3747,8 +3748,9 @@ def htmlCalendar(translate: {}, \
     if dayNumber:
         dayEvents=None
         events=getTodaysEvents(baseDir,nickname,domain,year,monthNumber,dayNumber)
-        if events.get(str(dayNumber)):
-            dayEvents=events[str(dayNumber)]
+        if events:
+            if events.get(str(dayNumber)):
+                dayEvents=events[str(dayNumber)]
         return htmlCalendarDay(translate,baseDir,path, \
                                year,monthNumber,dayNumber, \
                                nickname,domain,dayEvents, \
