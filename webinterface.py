@@ -3665,13 +3665,19 @@ def htmlCalendarDay(translate: {}, \
     calendarStr+='</caption>\n'
     calendarStr+='<tbody>\n'
 
+    iconsDir=getIconsDir(baseDir)
+
     if dayEvents:
         for eventPost in dayEvents:
             eventTime=None
             eventDescription=None
             eventPlace=None
+            postId=None
+            # get the time place and description
             for ev in eventPost:
                 if ev['type']=='Event':
+                    if ev.get('postId'):
+                        postId=ev['postId']
                     if ev.get('startTime'):
                         eventDate=datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
                         eventTime=eventDate.strftime("%H:%M").strip()
@@ -3680,16 +3686,21 @@ def htmlCalendarDay(translate: {}, \
                 elif ev['type']=='Place':
                     if ev.get('name'):
                         eventPlace=ev['name']
+                        
+            deleteButtonStr=''            
+            if postId:
+                deleteButtonStr='<td><a href="'+actor+'/calendardelete?id='+postId+'"><img loading="lazy" alt="'+translate['Delete this event']+' |" title="'+translate['Delete this event']+' |" src="/'+iconsDir+'/delete.png" /></a></td>'
+
             if eventTime and eventDescription and eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
+                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
             elif eventTime and eventDescription and not eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
+                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
             elif not eventTime and eventDescription and not eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventDescription+'</td></tr>\n'
+                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
             elif not eventTime and eventDescription and eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td></tr>\n'
+                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
             elif eventTime and not eventDescription and eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span></td></tr>\n'
+                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span></td>'+deleteButtonStr+'</tr>\n'
 
     calendarStr+='</tbody>\n'
     calendarStr+='</table></main>\n'

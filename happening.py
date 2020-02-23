@@ -88,6 +88,8 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
                 calendarPostIds.append(postId)
                 if not events.get(dayOfMonth):
                     events[dayOfMonth]=[]
+                # link to the id so that the event can be easily deleted
+                postEvent['postId']=postId
                 events[dayOfMonth].append(postEvent)
 
     # if some posts have been deleted then regenerate the calendar file
