@@ -123,10 +123,17 @@ a:link {
     font-size: 38px;
     position: relative;
 }
+
 .calendar__day__time {
     color: var(--time-color);
     float: left;
     font-size: 38px;
+    position: relative;
+    padding: 20px;
+}
+
+.calendar__day__icons {
+    width: 15%;
     position: relative;
     padding: 20px;
 }
