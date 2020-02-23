@@ -50,44 +50,45 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
             postFilename=locatePost(baseDir,nickname,domain,postId)
             if not postFilename:
                 recreateEventsFile=True
-            else:
-                postJsonObject=loadJson(postFilename)
-                if not postJsonObject:
-                    continue
-                if not postJsonObject.get('object'):
-                    continue
-                if not isinstance(postJsonObject['object'], dict):
-                    continue
-                if not postJsonObject['object'].get('tag'):
-                    continue
+                continue
 
-                postEvent=[]
-                dayOfMonth=None
-                for tag in postJsonObject['object']['tag']:
-                    if not tag.get('type'):
+            postJsonObject=loadJson(postFilename)
+            if not postJsonObject:
+                continue
+            if not postJsonObject.get('object'):
+                continue
+            if not isinstance(postJsonObject['object'], dict):
+                continue
+            if not postJsonObject['object'].get('tag'):
+                continue
+
+            postEvent=[]
+            dayOfMonth=None
+            for tag in postJsonObject['object']['tag']:
+                if not tag.get('type'):
+                    continue
+                if tag['type']!='Event' and tag['type']!='Place':
+                    continue
+                if tag['type']=='Event':
+                    # tag is an event
+                    if not tag.get('startTime'):
                         continue
-                    if tag['type']!='Event' and tag['type']!='Place':
-                        continue
-                    if tag['type']=='Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        eventTime= \
-                            datetime.strptime(tag['startTime'], \
-                                              "%Y-%m-%dT%H:%M:%S%z")
-                        if int(eventTime.strftime("%Y"))==year and \
-                           int(eventTime.strftime("%m"))==monthNumber and \
-                           int(eventTime.strftime("%d"))==dayNumber:
-                            dayOfMonth=str(int(eventTime.strftime("%d")))
-                            postEvent.append(tag)
-                    else:
-                        # tag is a place
+                    eventTime= \
+                        datetime.strptime(tag['startTime'], \
+                                          "%Y-%m-%dT%H:%M:%S%z")
+                    if int(eventTime.strftime("%Y"))==year and \
+                       int(eventTime.strftime("%m"))==monthNumber and \
+                       int(eventTime.strftime("%d"))==dayNumber:
+                        dayOfMonth=str(int(eventTime.strftime("%d")))
                         postEvent.append(tag)
-                if postEvent and dayOfMonth:
-                    calendarPostIds.append(postId)
-                    if not events.get(dayOfMonth):
-                        events[dayOfMonth]=[]
-                    events[dayOfMonth].append(postEvent)
+                else:
+                    # tag is a place
+                    postEvent.append(tag)
+            if postEvent and dayOfMonth:
+                calendarPostIds.append(postId)
+                if not events.get(dayOfMonth):
+                    events[dayOfMonth]=[]
+                events[dayOfMonth].append(postEvent)
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
@@ -117,34 +118,36 @@ def todaysEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
-            if postFilename:
-                postJsonObject=loadJson(postFilename)
-                if not postJsonObject:
-                    continue
-                if not postJsonObject.get('object'):
-                    continue
-                if not isinstance(postJsonObject['object'], dict):
-                    continue
-                if not postJsonObject['object'].get('tag'):
-                    continue
+            if not postFilename:
+                continue
 
-                for tag in postJsonObject['object']['tag']:
-                    if not tag.get('type'):
+            postJsonObject=loadJson(postFilename)
+            if not postJsonObject:
+                continue
+            if not postJsonObject.get('object'):
+                continue
+            if not isinstance(postJsonObject['object'], dict):
+                continue
+            if not postJsonObject['object'].get('tag'):
+                continue
+
+            for tag in postJsonObject['object']['tag']:
+                if not tag.get('type'):
+                    continue
+                if tag['type']!='Event' and tag['type']!='Place':
+                    continue
+                if tag['type']=='Event':
+                    # tag is an event
+                    if not tag.get('startTime'):
                         continue
-                    if tag['type']!='Event' and tag['type']!='Place':
-                        continue
-                    if tag['type']=='Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        eventTime= \
-                            datetime.strptime(tag['startTime'], \
-                                              "%Y-%m-%dT%H:%M:%S%z")
-                        if int(eventTime.strftime("%Y"))==year and \
-                           int(eventTime.strftime("%m"))==monthNumber and \
-                           int(eventTime.strftime("%d"))==dayNumber:
-                            eventsExist=True
-                            break
+                    eventTime= \
+                        datetime.strptime(tag['startTime'], \
+                                          "%Y-%m-%dT%H:%M:%S%z")
+                    if int(eventTime.strftime("%Y"))==year and \
+                       int(eventTime.strftime("%m"))==monthNumber and \
+                       int(eventTime.strftime("%d"))==dayNumber:
+                        eventsExist=True
+                        break
 
     return eventsExist
 
@@ -167,35 +170,37 @@ def thisWeeksEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
-            if postFilename:
-                postJsonObject=loadJson(postFilename)
-                if not postJsonObject:
-                    continue
-                if not postJsonObject.get('object'):
-                    continue
-                if not isinstance(postJsonObject['object'], dict):
-                    continue
-                if not postJsonObject['object'].get('tag'):
-                    continue
+            if not postFilename:
+                continue
 
-                for tag in postJsonObject['object']['tag']:
-                    if not tag.get('type'):
+            postJsonObject=loadJson(postFilename)
+            if not postJsonObject:
+                continue
+            if not postJsonObject.get('object'):
+                continue
+            if not isinstance(postJsonObject['object'], dict):
+                continue
+            if not postJsonObject['object'].get('tag'):
+                continue
+
+            for tag in postJsonObject['object']['tag']:
+                if not tag.get('type'):
+                    continue
+                if tag['type']!='Event' and tag['type']!='Place':
+                    continue
+                if tag['type']=='Event':
+                    # tag is an event
+                    if not tag.get('startTime'):
                         continue
-                    if tag['type']!='Event' and tag['type']!='Place':
-                        continue
-                    if tag['type']=='Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        eventTime= \
-                            datetime.strptime(tag['startTime'], \
-                                              "%Y-%m-%dT%H:%M:%S%z")
-                        if int(eventTime.strftime("%Y"))==year and \
-                           int(eventTime.strftime("%m"))==monthNumber and \
-                           (int(eventTime.strftime("%d"))>dayNumber and \
-                            int(eventTime.strftime("%d"))<=dayNumber+6):
-                            eventsExist=True                            
-                            break
+                    eventTime= \
+                        datetime.strptime(tag['startTime'], \
+                                          "%Y-%m-%dT%H:%M:%S%z")
+                    if int(eventTime.strftime("%Y"))==year and \
+                       int(eventTime.strftime("%m"))==monthNumber and \
+                       (int(eventTime.strftime("%d"))>dayNumber and \
+                        int(eventTime.strftime("%d"))<=dayNumber+6):
+                        eventsExist=True                            
+                        break
 
     return eventsExist
 
@@ -225,47 +230,48 @@ def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
             postFilename=locatePost(baseDir,nickname,domain,postId)
             if not postFilename:
                 recreateEventsFile=True
-            else:
-                postJsonObject=loadJson(postFilename)
-                if not postJsonObject:
-                    continue
-                if not postJsonObject.get('object'):
-                    continue
-                if not isinstance(postJsonObject['object'], dict):
-                    continue
-                if not postJsonObject['object'].get('tag'):
-                    continue
+                continue
 
-                postEvent=[]
-                dayOfMonth=None
-                weekDayIndex=None
-                for tag in postJsonObject['object']['tag']:
-                    if not tag.get('type'):
+            postJsonObject=loadJson(postFilename)
+            if not postJsonObject:
+                continue
+            if not postJsonObject.get('object'):
+                continue
+            if not isinstance(postJsonObject['object'], dict):
+                continue
+            if not postJsonObject['object'].get('tag'):
+                continue
+
+            postEvent=[]
+            dayOfMonth=None
+            weekDayIndex=None
+            for tag in postJsonObject['object']['tag']:
+                if not tag.get('type'):
+                    continue
+                if tag['type']!='Event' and tag['type']!='Place':
+                    continue
+                if tag['type']=='Event':
+                    # tag is an event
+                    if not tag.get('startTime'):
                         continue
-                    if tag['type']!='Event' and tag['type']!='Place':
-                        continue
-                    if tag['type']=='Event':
-                        # tag is an event
-                        if not tag.get('startTime'):
-                            continue
-                        eventTime= \
-                            datetime.strptime(tag['startTime'], \
-                                              "%Y-%m-%dT%H:%M:%S%z")
-                        if int(eventTime.strftime("%Y"))==year and \
-                           int(eventTime.strftime("%m"))==monthNumber and \
-                           (int(eventTime.strftime("%d"))>=dayNumber and \
-                            int(eventTime.strftime("%d"))<=dayNumber+6):
-                            dayOfMonth=str(int(eventTime.strftime("%d")))
-                            weekDayIndex=dayOfMonth-dayNumber
-                            postEvent.append(tag)
-                    else:
-                        # tag is a place
+                    eventTime= \
+                        datetime.strptime(tag['startTime'], \
+                                          "%Y-%m-%dT%H:%M:%S%z")
+                    if int(eventTime.strftime("%Y"))==year and \
+                       int(eventTime.strftime("%m"))==monthNumber and \
+                       (int(eventTime.strftime("%d"))>=dayNumber and \
+                        int(eventTime.strftime("%d"))<=dayNumber+6):
+                        dayOfMonth=str(int(eventTime.strftime("%d")))
+                        weekDayIndex=dayOfMonth-dayNumber
                         postEvent.append(tag)
-                if postEvent and weekDayIndex:
-                    calendarPostIds.append(postId)
-                    if not events.get(dayOfMonth):
-                        events[weekDayIndex]=[]
-                    events[dayOfMonth].append(postEvent)
+                else:
+                    # tag is a place
+                    postEvent.append(tag)
+            if postEvent and weekDayIndex:
+                calendarPostIds.append(postId)
+                if not events.get(dayOfMonth):
+                    events[weekDayIndex]=[]
+                events[dayOfMonth].append(postEvent)
 
     # if some posts have been deleted then regenerate the calendar file
     if recreateEventsFile:
