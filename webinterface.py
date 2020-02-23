@@ -2539,18 +2539,25 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='<div class="gallery">\n'
                                 if not isMuted:
                                     galleryStr+='  <a href="'+attach['url']+'">\n'
-                                    galleryStr+='    <img loading="lazy" src="'+attach['url']+'" alt="" title="">\n'
+                                    galleryStr+= \
+                                        '    <img loading="lazy" src="'+ \
+                                        attach['url']+'" alt="" title="">\n'
                                     galleryStr+='  </a>\n'
                                 if postJsonObject['object'].get('url'):
                                     imagePostUrl=postJsonObject['object']['url']
                                 else:
                                     imagePostUrl=postJsonObject['object']['id']
                                 if imageDescription and not isMuted:
-                                    galleryStr+='  <a href="'+imagePostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
+                                    galleryStr+= \
+                                        '  <a href="'+imagePostUrl+ \
+                                        '" class="gallerytext"><div class="gallerytext">'+ \
+                                        imageDescription+'</div></a>\n'
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+'\n'
+                                galleryStr+= \
+                                    '    '+replyStr+announceStr+likeStr+ \
+                                    bookmarkStr+deleteStr+muteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='  <div class="mediaavatar">\n'
                                 galleryStr+='    '+avatarLink+'\n'
@@ -2558,7 +2565,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='</div>\n'
 
                             attachmentStr+='<a href="'+attach['url']+'">'
-                            attachmentStr+='<img loading="lazy" src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment"></a>\n'
+                            attachmentStr+= \
+                                '<img loading="lazy" src="'+attach['url']+ \
+                                '" alt="'+imageDescription+'" title="'+ \
+                                imageDescription+'" class="attachment"></a>\n'
                             attachmentCtr+=1                            
                     elif mediaType=='video/mp4' or \
                          mediaType=='video/webm' or \
@@ -2576,8 +2586,14 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 if not isMuted:
                                     galleryStr+='  <a href="'+attach['url']+'">\n'
                                     galleryStr+='    <video width="600" height="400" controls>\n'
-                                    galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
-                                    galleryStr+=translate['Your browser does not support the video tag.']
+                                    galleryStr+= \
+                                        '      <source src="'+attach['url']+ \
+                                        '" alt="'+imageDescription+ \
+                                        '" title="'+imageDescription+ \
+                                        '" class="attachment" type="video/'+ \
+                                        extension.replace('.','')+'">'
+                                    galleryStr+= \
+                                        translate['Your browser does not support the video tag.']
                                     galleryStr+='    </video>\n'
                                     galleryStr+='  </a>\n'
                                 if postJsonObject['object'].get('url'):
@@ -2585,11 +2601,16 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     videoPostUrl=postJsonObject['object']['id']
                                 if imageDescription and not isMuted:
-                                    galleryStr+='  <a href="'+videoPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
+                                    galleryStr+= \
+                                        '  <a href="'+videoPostUrl+ \
+                                        '" class="gallerytext"><div class="gallerytext">'+ \
+                                        imageDescription+'</div></a>\n'
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+'\n'
+                                galleryStr+= \
+                                    '    '+replyStr+announceStr+likeStr+ \
+                                    bookmarkStr+deleteStr+muteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='  <div class="mediaavatar">\n'
                                 galleryStr+='    '+avatarLink+'\n'
@@ -2597,7 +2618,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='</div>\n'
 
                             attachmentStr+='<center><video width="400" height="300" controls>'
-                            attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="video/'+extension.replace('.','')+'">'
+                            attachmentStr+= \
+                                '<source src="'+attach['url']+'" alt="'+ \
+                                imageDescription+'" title="'+imageDescription+ \
+                                '" class="attachment" type="video/'+ \
+                                extension.replace('.','')+'">'
                             attachmentStr+=translate['Your browser does not support the video tag.']
                             attachmentStr+='</video></center>'
                             attachmentCtr+=1
@@ -2614,8 +2639,14 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 if not isMuted:
                                     galleryStr+='  <a href="'+attach['url']+'">\n'
                                     galleryStr+='    <audio controls>\n'
-                                    galleryStr+='      <source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
-                                    galleryStr+=translate['Your browser does not support the audio tag.']
+                                    galleryStr+= \
+                                        '      <source src="'+attach['url']+ \
+                                        '" alt="'+imageDescription+ \
+                                        '" title="'+imageDescription+ \
+                                        '" class="attachment" type="audio/'+ \
+                                        extension.replace('.','')+'">'
+                                    galleryStr+= \
+                                        translate['Your browser does not support the audio tag.']
                                     galleryStr+='    </audio>\n'
                                     galleryStr+='  </a>\n'
                                 if postJsonObject['object'].get('url'):
@@ -2623,7 +2654,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     audioPostUrl=postJsonObject['object']['id']
                                 if imageDescription and not isMuted:
-                                    galleryStr+='  <a href="'+audioPostUrl+'" class="gallerytext"><div class="gallerytext">'+imageDescription+'</div></a>\n'
+                                    galleryStr+= \
+                                        '  <a href="'+audioPostUrl+ \
+                                        '" class="gallerytext"><div class="gallerytext">'+ \
+                                        imageDescription+'</div></a>\n'
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
@@ -2635,7 +2669,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 galleryStr+='</div>\n'
 
                             attachmentStr+='<center><audio controls>'
-                            attachmentStr+='<source src="'+attach['url']+'" alt="'+imageDescription+'" title="'+imageDescription+'" class="attachment" type="audio/'+extension.replace('.','')+'">'
+                            attachmentStr+= \
+                                '<source src="'+attach['url']+'" alt="'+ \
+                                imageDescription+'" title="'+imageDescription+ \
+                                '" class="attachment" type="audio/'+ \
+                                extension.replace('.','')+'">'
                             attachmentStr+=translate['Your browser does not support the audio tag.']
                             attachmentStr+='</audio></center>'
                             attachmentCtr+=1
@@ -2698,7 +2736,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             contentStr+='<b>'+postJsonObject['object']['summary']+'</b> '
             if isModerationPost:
                 containerClass='container report'
-        contentStr+='<button class="cwButton" onclick="showContentWarning('+"'"+postID+"'"+')">'+translate['SHOW MORE']+'</button>'
+        contentStr+= \
+            '<button class="cwButton" onclick="showContentWarning('+ \
+            "'"+postID+"'"+')">'+translate['SHOW MORE']+'</button>'
         contentStr+='<div class="cwText" id="'+postID+'">'
         contentStr+=objectContent+attachmentStr
         contentStr=addEmbeddedElements(translate,contentStr)
@@ -2707,7 +2747,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         contentStr+='</div>'
 
     if postJsonObject['object'].get('tag'):
-        contentStr=replaceEmojiFromTags(contentStr,postJsonObject['object']['tag'],'content')
+        contentStr= \
+            replaceEmojiFromTags(contentStr, \
+                                 postJsonObject['object']['tag'],'content')
 
     if isMuted:
         contentStr=''
@@ -2984,7 +3026,13 @@ def htmlTimeline(defaultTimeline: str, \
 
     # page up arrow
     if pageNumber>1:
-        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+        tlStr+= \
+            '<center><a href="'+actor+'/'+boxName+ \
+            '?page='+str(pageNumber-1)+ \
+            '"><img loading="lazy" class="pageicon" src="/'+ \
+            iconsDir+'/pageup.png" title="'+ \
+            translate['Page up']+'" alt="'+ \
+            translate['Page up']+'"></a></center>'
 
     # show the posts
     itemCtr=0
@@ -3030,7 +3078,12 @@ def htmlTimeline(defaultTimeline: str, \
 
     # page down arrow
     if itemCtr>2:
-        tlStr+='<center><a href="'+actor+'/'+boxName+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+        tlStr+= \
+            '<center><a href="'+actor+'/'+boxName+'?page='+ \
+            str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+ \
+            iconsDir+'/pagedown.png" title="'+ \
+            translate['Page down']+'" alt="'+ \
+            translate['Page down']+'"></a></center>'
     tlStr+=htmlFooter()
     return tlStr
 
@@ -3186,7 +3239,9 @@ def htmlIndividualPost(recentPostsCache: {},maxRecentPosts: int, \
     # show the previous posts
     if isinstance(postJsonObject['object'], dict):
         while postJsonObject['object'].get('inReplyTo'):
-            postFilename=locatePost(baseDir,nickname,domain,postJsonObject['object']['inReplyTo'])
+            postFilename= \
+                locatePost(baseDir,nickname,domain, \
+                           postJsonObject['object']['inReplyTo'])
             if not postFilename:
                 break
             postJsonObject=loadJson(postFilename)
@@ -3208,7 +3263,8 @@ def htmlIndividualPost(recentPostsCache: {},maxRecentPosts: int, \
         if os.path.isfile(repliesFilename):
             # get items from the replies file
             repliesJson={'orderedItems': []}
-            populateRepliesJson(baseDir,nickname,domain,repliesFilename,authorized,repliesJson)
+            populateRepliesJson(baseDir,nickname,domain, \
+                                repliesFilename,authorized,repliesJson)
             # add items to the html output
             for item in repliesJson['orderedItems']:
                 postStr+= \
@@ -3279,7 +3335,8 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
 
     if os.path.isfile(baseDir+'/img/shares-background.png'):
         if not os.path.isfile(baseDir+'/accounts/shares-background.png'):
-            copyfile(baseDir+'/img/shares-background.png',baseDir+'/accounts/shares-background.png')
+            copyfile(baseDir+'/img/shares-background.png', \
+                     baseDir+'/accounts/shares-background.png')
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
@@ -3292,12 +3349,18 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     sharesStr+='  <center>'
     if sharedItemImageUrl:
         sharesStr+='  <img loading="lazy" src="'+sharedItemImageUrl+'"/>'
-    sharesStr+='  <p class="followText">'+translate['Remove']+' '+sharedItemDisplayName+' ?</p>'
+    sharesStr+= \
+        '  <p class="followText">'+translate['Remove']+ \
+        ' '+sharedItemDisplayName+' ?</p>'
     sharesStr+='  <form method="POST" action="'+actor+'/rmshare">'
     sharesStr+='    <input type="hidden" name="actor" value="'+actor+'">'
     sharesStr+='    <input type="hidden" name="shareName" value="'+shareName+'">'
-    sharesStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-    sharesStr+='    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>'
+    sharesStr+= \
+        '    <button type="submit" class="button" name="submitYes">'+ \
+        translate['Yes']+'</button>'
+    sharesStr+= \
+        '    <a href="'+actor+'/inbox'+'"><button class="button">'+ \
+        translate['No']+'</button></a>'
     sharesStr+='  </form>'
     sharesStr+='  </center>'
     sharesStr+='  </div>'
@@ -3351,12 +3414,21 @@ def htmlDeletePost(recentPostsCache: {},maxRecentPosts: int, \
                                  httpPrefix,projectVersion,'outbox', \
                                  False,False,False,False,False)
         deletePostStr+='<center>'
-        deletePostStr+='  <p class="followText">'+translate['Delete this post?']+'</p>'
+        deletePostStr+= \
+            '  <p class="followText">'+ \
+            translate['Delete this post?']+'</p>'
         deletePostStr+='  <form method="POST" action="'+actor+'/rmpost">'
-        deletePostStr+='    <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
-        deletePostStr+='    <input type="hidden" name="messageId" value="'+messageId+'">'
-        deletePostStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-        deletePostStr+='    <a href="'+actor+'/inbox'+'"><button class="button">'+translate['No']+'</button></a>'
+        deletePostStr+= \
+            '    <input type="hidden" name="pageNumber" value="'+ \
+            str(pageNumber)+'">'
+        deletePostStr+= \
+            '    <input type="hidden" name="messageId" value="'+messageId+'">'
+        deletePostStr+= \
+            '    <button type="submit" class="button" name="submitYes">'+ \
+            translate['Yes']+'</button>'
+        deletePostStr+= \
+            '    <a href="'+actor+'/inbox'+'"><button class="button">'+ \
+            translate['No']+'</button></a>'
         deletePostStr+='  </form>'
         deletePostStr+='</center>'
         deletePostStr+=htmlFooter()
@@ -3396,7 +3468,9 @@ def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
         if httpPrefix!='https':
             profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         deletePostStr=htmlHeader(cssFilename,profileStyle)
-        deletePostStr+='<center><h1>'+postTime+' '+str(year)+'/'+str(monthNumber)+'/'+str(dayNumber)+'</h1></center>'
+        deletePostStr+= \
+            '<center><h1>'+postTime+' '+str(year)+'/'+str(monthNumber)+ \
+            '/'+str(dayNumber)+'</h1></center>'
         deletePostStr+='<center>'
         deletePostStr+='  <p class="followText">'+translate['Delete this event']+'</p>'
         deletePostStr+='  <form method="POST" action="'+actor+'/rmpost">'
@@ -3405,8 +3479,13 @@ def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
         deletePostStr+='    <input type="hidden" name="day" value="'+str(dayNumber)+'">'
         deletePostStr+='    <input type="hidden" name="pageNumber" value="1">'
         deletePostStr+='    <input type="hidden" name="messageId" value="'+messageId+'">'
-        deletePostStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-        deletePostStr+='    <a href="'+actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'"><button class="button">'+translate['No']+'</button></a>'
+        deletePostStr+= \
+            '    <button type="submit" class="button" name="submitYes">'+ \
+            translate['Yes']+'</button>'
+        deletePostStr+= \
+            '    <a href="'+actor+'/calendar?year='+str(year)+'?month='+ \
+            str(monthNumber)+'"><button class="button">'+translate['No']+ \
+            '</button></a>'
         deletePostStr+='  </form>'
         deletePostStr+='</center>'
         deletePostStr+=htmlFooter()
@@ -3422,7 +3501,8 @@ def htmlFollowConfirm(translate: {},baseDir: str, \
     
     if os.path.isfile(baseDir+'/img/follow-background.png'):
         if not os.path.isfile(baseDir+'/accounts/follow-background.png'):
-            copyfile(baseDir+'/img/follow-background.png',baseDir+'/accounts/follow-background.png')
+            copyfile(baseDir+'/img/follow-background.png', \
+                     baseDir+'/accounts/follow-background.png')
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
@@ -3435,11 +3515,17 @@ def htmlFollowConfirm(translate: {},baseDir: str, \
     followStr+='  <center>'
     followStr+='  <a href="'+followActor+'">'
     followStr+='  <img loading="lazy" src="'+followProfileUrl+'"/></a>'
-    followStr+='  <p class="followText">'+translate['Follow']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
+    followStr+= \
+        '  <p class="followText">'+translate['Follow']+' '+ \
+        getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+='  <form method="POST" action="'+originPathStr+'/followconfirm">'
     followStr+='    <input type="hidden" name="actor" value="'+followActor+'">'
-    followStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-    followStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+    followStr+= \
+        '    <button type="submit" class="button" name="submitYes">'+ \
+        translate['Yes']+'</button>'
+    followStr+= \
+        '    <a href="'+originPathStr+'"><button class="button">'+ \
+        translate['No']+'</button></a>'
     followStr+='  </form>'
     followStr+='</center>'
     followStr+='</div>'
@@ -3457,7 +3543,8 @@ def htmlUnfollowConfirm(translate: {},baseDir: str, \
     
     if os.path.isfile(baseDir+'/img/follow-background.png'):
         if not os.path.isfile(baseDir+'/accounts/follow-background.png'):
-            copyfile(baseDir+'/img/follow-background.png',baseDir+'/accounts/follow-background.png')
+            copyfile(baseDir+'/img/follow-background.png', \
+                     baseDir+'/accounts/follow-background.png')
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
@@ -3470,11 +3557,17 @@ def htmlUnfollowConfirm(translate: {},baseDir: str, \
     followStr+='  <center>'
     followStr+='  <a href="'+followActor+'">'
     followStr+='  <img loading="lazy" src="'+followProfileUrl+'"/></a>'
-    followStr+='  <p class="followText">'+translate['Stop following']+' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
+    followStr+= \
+        '  <p class="followText">'+translate['Stop following']+ \
+        ' '+getNicknameFromActor(followActor)+'@'+followDomain+' ?</p>'
     followStr+='  <form method="POST" action="'+originPathStr+'/unfollowconfirm">'
     followStr+='    <input type="hidden" name="actor" value="'+followActor+'">'
-    followStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-    followStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+    followStr+= \
+        '    <button type="submit" class="button" name="submitYes">'+ \
+        translate['Yes']+'</button>'
+    followStr+= \
+        '    <a href="'+originPathStr+'"><button class="button">'+ \
+        translate['No']+'</button></a>'
     followStr+='  </form>'
     followStr+='</center>'
     followStr+='</div>'
@@ -3499,7 +3592,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     
     if os.path.isfile(baseDir+'/img/options-background.png'):
         if not os.path.isfile(baseDir+'/accounts/options-background.png'):
-            copyfile(baseDir+'/img/options-background.png',baseDir+'/accounts/options-background.png')
+            copyfile(baseDir+'/img/options-background.png', \
+                     baseDir+'/accounts/options-background.png')
 
     followStr='Follow'
     blockStr='Block'
@@ -3540,7 +3634,8 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     donateStr=''
     if donateUrl:
         donateStr= \
-            '    <a href="'+donateUrl+'"><button class="button" name="submitDonate">'+translate['Donate']+'</button></a>'
+            '    <a href="'+donateUrl+'"><button class="button" name="submitDonate">'+ \
+            translate['Donate']+'</button></a>'
 
     optionsStr=htmlHeader(cssFilename,profileStyle)
     optionsStr+='<div class="options">'
@@ -3548,13 +3643,20 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='  <center>'
     optionsStr+='  <a href="'+optionsActor+'">'
     optionsStr+='  <img loading="lazy" src="'+optionsProfileUrl+'"/></a>'
-    optionsStr+='  <p class="optionsText">'+translate['Options for']+' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
+    optionsStr+= \
+        '  <p class="optionsText">'+translate['Options for']+ \
+        ' @'+getNicknameFromActor(optionsActor)+'@'+optionsDomain+'</p>'
     if emailAddress:
-        optionsStr+='<p class="imText">'+translate['Email']+': <a href="mailto:'+emailAddress+'">'+emailAddress+'</a></p>'
+        optionsStr+= \
+            '<p class="imText">'+translate['Email']+': <a href="mailto:'+ \
+            emailAddress+'">'+emailAddress+'</a></p>'
     if xmppAddress:
-        optionsStr+='<p class="imText">'+translate['XMPP']+': <a href="xmpp:'+xmppAddress+'">'+xmppAddress+'</a></p>'
+        optionsStr+= \
+            '<p class="imText">'+translate['XMPP']+ \
+            ': <a href="xmpp:'+xmppAddress+'">'+xmppAddress+'</a></p>'
     if matrixAddress:
-        optionsStr+='<p class="imText">'+translate['Matrix']+': '+matrixAddress+'</p>'
+        optionsStr+= \
+            '<p class="imText">'+translate['Matrix']+': '+matrixAddress+'</p>'
     if PGPpubKey:
         optionsStr+='<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'
@@ -3562,13 +3664,25 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     optionsStr+='    <input type="hidden" name="actor" value="'+optionsActor+'">'
     optionsStr+='    <input type="hidden" name="avatarUrl" value="'+optionsProfileUrl+'">'
     optionsStr+=optionsLinkStr
-    optionsStr+='    <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'
+    optionsStr+= \
+        '    <button type="submit" class="button" name="submitView">'+ \
+        translate['View']+'</button>'
     optionsStr+=donateStr
-    optionsStr+='    <button type="submit" class="button" name="submit'+followStr+'">'+translate[followStr]+'</button>'
-    optionsStr+='    <button type="submit" class="button" name="submit'+blockStr+'">'+translate[blockStr]+'</button>'
-    optionsStr+='    <button type="submit" class="button" name="submitDM">'+translate['DM']+'</button>'
-    optionsStr+='    <button type="submit" class="button" name="submit'+snoozeButtonStr+'">'+translate[snoozeButtonStr]+'</button>'
-    optionsStr+='    <button type="submit" class="button" name="submitReport">'+translate['Report']+'</button>'
+    optionsStr+= \
+        '    <button type="submit" class="button" name="submit'+ \
+        followStr+'">'+translate[followStr]+'</button>'
+    optionsStr+= \
+        '    <button type="submit" class="button" name="submit'+ \
+        blockStr+'">'+translate[blockStr]+'</button>'
+    optionsStr+= \
+        '    <button type="submit" class="button" name="submitDM">'+ \
+        translate['DM']+'</button>'
+    optionsStr+= \
+        '    <button type="submit" class="button" name="submit'+ \
+        snoozeButtonStr+'">'+translate[snoozeButtonStr]+'</button>'
+    optionsStr+= \
+        '    <button type="submit" class="button" name="submitReport">'+ \
+        translate['Report']+'</button>'
     optionsStr+='  </form>'
     optionsStr+='</center>'
     optionsStr+='</div>'
@@ -3618,7 +3732,8 @@ def htmlUnblockConfirm(translate: {},baseDir: str, \
     
     if os.path.isfile(baseDir+'/img/block-background.png'):
         if not os.path.isfile(baseDir+'/accounts/block-background.png'):
-            copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
+            copyfile(baseDir+'/img/block-background.png', \
+                     baseDir+'/accounts/block-background.png')
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
@@ -3631,11 +3746,17 @@ def htmlUnblockConfirm(translate: {},baseDir: str, \
     blockStr+='  <center>'
     blockStr+='  <a href="'+blockActor+'">'
     blockStr+='  <img loading="lazy" src="'+blockProfileUrl+'"/></a>'
-    blockStr+='  <p class="blockText">'+translate['Stop blocking']+' '+getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
+    blockStr+= \
+        '  <p class="blockText">'+translate['Stop blocking']+' '+ \
+        getNicknameFromActor(blockActor)+'@'+blockDomain+' ?</p>'
     blockStr+='  <form method="POST" action="'+originPathStr+'/unblockconfirm">'
     blockStr+='    <input type="hidden" name="actor" value="'+blockActor+'">'
-    blockStr+='    <button type="submit" class="button" name="submitYes">'+translate['Yes']+'</button>'
-    blockStr+='    <a href="'+originPathStr+'"><button class="button">'+translate['No']+'</button></a>'
+    blockStr+= \
+        '    <button type="submit" class="button" name="submitYes">'+ \
+        translate['Yes']+'</button>'
+    blockStr+= \
+        '    <a href="'+originPathStr+'"><button class="button">'+ \
+        translate['No']+'</button></a>'
     blockStr+='  </form>'
     blockStr+='</center>'
     blockStr+='</div>'
@@ -3650,7 +3771,8 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     # emoji.json is generated so that it can be customized and the changes
     # will be retained even if default_emoji.json is subsequently updated                    
     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
-        copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+        copyfile(baseDir+'/emoji/default_emoji.json', \
+                 baseDir+'/emoji/emoji.json')
 
     actor=path.replace('/search','')
     nickname=getNicknameFromActor(actor)
@@ -3658,7 +3780,8 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     
     if os.path.isfile(baseDir+'/img/search-background.png'):
         if not os.path.isfile(baseDir+'/accounts/search-background.png'):
-            copyfile(baseDir+'/img/search-background.png',baseDir+'/accounts/search-background.png')
+            copyfile(baseDir+'/img/search-background.png', \
+                     baseDir+'/accounts/search-background.png')
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
@@ -3669,11 +3792,15 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     emojiStr+='<div class="follow">'
     emojiStr+='  <div class="followAvatar">'
     emojiStr+='  <center>'    
-    emojiStr+='  <p class="followText">'+translate['Enter an emoji name to search for']+'</p>'
+    emojiStr+= \
+        '  <p class="followText">'+ \
+        translate['Enter an emoji name to search for']+'</p>'
     emojiStr+='  <form method="POST" action="'+actor+'/searchhandleemoji">'
     emojiStr+='    <input type="hidden" name="actor" value="'+actor+'">'
     emojiStr+='    <input type="text" name="searchtext" autofocus><br>'
-    emojiStr+='    <button type="submit" class="button" name="submitSearch">'+translate['Submit']+'</button>'
+    emojiStr+= \
+        '    <button type="submit" class="button" name="submitSearch">'+ \
+        translate['Submit']+'</button>'
     emojiStr+='  </form>'
     emojiStr+='  </center>'
     emojiStr+='  </div>'
@@ -3710,8 +3837,12 @@ def htmlCalendarDay(translate: {}, \
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
-    calendarStr+='  <a href="'+actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'">'
-    calendarStr+='  <h1>'+str(dayNumber)+' '+monthName+'</h1></a><br><span class="year">'+str(year)+'</span>\n'
+    calendarStr+= \
+        '  <a href="'+actor+'/calendar?year='+str(year)+ \
+        '?month='+str(monthNumber)+'">'
+    calendarStr+= \
+        '  <h1>'+str(dayNumber)+' '+monthName+ \
+        '</h1></a><br><span class="year">'+str(year)+'</span>\n'
     calendarStr+='</caption>\n'
     calendarStr+='<tbody>\n'
 
@@ -3729,7 +3860,9 @@ def htmlCalendarDay(translate: {}, \
                     if ev.get('postId'):
                         postId=ev['postId']
                     if ev.get('startTime'):
-                        eventDate=datetime.strptime(ev['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
+                        eventDate= \
+                            datetime.strptime(ev['startTime'], \
+                                              "%Y-%m-%dT%H:%M:%S%z")            
                         eventTime=eventDate.strftime("%H:%M").strip()
                     if ev.get('name'):
                         eventDescription=ev['name'].strip()
@@ -3739,18 +3872,41 @@ def htmlCalendarDay(translate: {}, \
                         
             deleteButtonStr=''            
             if postId:
-                deleteButtonStr='<td class="calendar__day__icons"><a href="'+actor+'/eventdelete?id='+postId+'?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayNumber)+'?time='+eventTime+'"><img class="calendardayicon" loading="lazy" alt="'+translate['Delete this event']+' |" title="'+translate['Delete this event']+' |" src="/'+iconsDir+'/delete.png" /></a></td>'
+                deleteButtonStr= \
+                    '<td class="calendar__day__icons"><a href="'+actor+ \
+                    '/eventdelete?id='+postId+'?year='+str(year)+ \
+                    '?month='+str(monthNumber)+'?day='+str(dayNumber)+ \
+                    '?time='+eventTime+ \
+                    '"><img class="calendardayicon" loading="lazy" alt="'+ \
+                    translate['Delete this event']+' |" title="'+ \
+                    translate['Delete this event']+' |" src="/'+ \
+                    iconsDir+'/delete.png" /></a></td>'
 
             if eventTime and eventDescription and eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
+                calendarStr+= \
+                    '<tr><td class="calendar__day__time"><b>'+eventTime+ \
+                    '</b></td><td class="calendar__day__event"><span class="place">'+ \
+                    eventPlace+'</span><br>'+eventDescription+ \
+                    '</td>'+deleteButtonStr+'</tr>\n'
             elif eventTime and eventDescription and not eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event">'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
+                calendarStr+= \
+                    '<tr><td class="calendar__day__time"><b>'+eventTime+ \
+                    '</b></td><td class="calendar__day__event">'+ \
+                    eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
             elif not eventTime and eventDescription and not eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
+                calendarStr+= \
+                    '<tr><td class="calendar__day__time"></td><td class="calendar__day__event">'+ \
+                    eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
             elif not eventTime and eventDescription and eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span><br>'+eventDescription+'</td>'+deleteButtonStr+'</tr>\n'
+                calendarStr+= \
+                    '<tr><td class="calendar__day__time"></td><td class="calendar__day__event"><span class="place">'+ \
+                    eventPlace+'</span><br>'+eventDescription+ \
+                    '</td>'+deleteButtonStr+'</tr>\n'
             elif eventTime and not eventDescription and eventPlace:
-                calendarStr+='<tr><td class="calendar__day__time"><b>'+eventTime+'</b></td><td class="calendar__day__event"><span class="place">'+eventPlace+'</span></td>'+deleteButtonStr+'</tr>\n'
+                calendarStr+= \
+                    '<tr><td class="calendar__day__time"><b>'+eventTime+ \
+                    '</b></td><td class="calendar__day__event"><span class="place">'+ \
+                    eventPlace+'</span></td>'+deleteButtonStr+'</tr>\n'
 
     calendarStr+='</tbody>\n'
     calendarStr+='</table></main>\n'
@@ -3801,14 +3957,19 @@ def htmlCalendar(translate: {}, \
 
     if os.path.isfile(baseDir+'/img/calendar-background.png'):
         if not os.path.isfile(baseDir+'/accounts/calendar-background.png'):
-            copyfile(baseDir+'/img/calendar-background.png',baseDir+'/accounts/calendar-background.png')
+            copyfile(baseDir+'/img/calendar-background.png', \
+                     baseDir+'/accounts/calendar-background.png')
 
-    months=('January','February','March','April','May','June','July','August','September','October','November','December')
+    months=('January','February','March','April', \
+            'May','June','July','August','September', \
+            'October','November','December')
     monthName=translate[months[monthNumber-1]]
 
     if dayNumber:
         dayEvents=None
-        events=getTodaysEvents(baseDir,nickname,domain,year,monthNumber,dayNumber)
+        events= \
+            getTodaysEvents(baseDir,nickname,domain, \
+                            year,monthNumber,dayNumber)
         if events:
             if events.get(str(dayNumber)):
                 dayEvents=events[str(dayNumber)]
@@ -3817,7 +3978,8 @@ def htmlCalendar(translate: {}, \
                                nickname,domain,dayEvents, \
                                monthName,actor)
     
-    events=getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
+    events= \
+        getCalendarEvents(baseDir,nickname,domain,year,monthNumber)
 
     prevYear=year
     prevMonthNumber=monthNumber-1
@@ -3831,7 +3993,8 @@ def htmlCalendar(translate: {}, \
         nextMonthNumber=1
         nextYear=year+1
 
-    print('Calendar year='+str(year)+' month='+str(monthNumber)+ ' '+str(weekDayOfMonthStart(monthNumber,year)))
+    print('Calendar year='+str(year)+' month='+str(monthNumber)+ \
+          ' '+str(weekDayOfMonthStart(monthNumber,year)))
 
     if monthNumber<12:
         daysInMonth=(date(year, monthNumber+1, 1) - date(year, monthNumber, 1)).days
@@ -3847,12 +4010,22 @@ def htmlCalendar(translate: {}, \
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
     calendarStr+='<caption class="calendar__banner--month">\n'
-    calendarStr+='  <a href="'+actor+'/calendar?year='+str(prevYear)+'?month='+str(prevMonthNumber)+'">'
-    calendarStr+='  <img loading="lazy" alt="'+translate['Previous month']+'" title="'+translate['Previous month']+'" src="/'+iconsDir+'/prev.png" class="buttonprev"/></a>\n'
+    calendarStr+= \
+        '  <a href="'+actor+'/calendar?year='+str(prevYear)+ \
+        '?month='+str(prevMonthNumber)+'">'
+    calendarStr+= \
+        '  <img loading="lazy" alt="'+translate['Previous month']+ \
+        '" title="'+translate['Previous month']+'" src="/'+iconsDir+ \
+        '/prev.png" class="buttonprev"/></a>\n'
     calendarStr+='  <a href="'+actor+'/inbox">'
     calendarStr+='  <h1>'+monthName+'</h1></a>\n'
-    calendarStr+='  <a href="'+actor+'/calendar?year='+str(nextYear)+'?month='+str(nextMonthNumber)+'">'
-    calendarStr+='  <img loading="lazy" alt="'+translate['Next month']+'" title="'+translate['Next month']+'" src="/'+iconsDir+'/prev.png" class="buttonnext"/></a>\n'
+    calendarStr+= \
+        '  <a href="'+actor+'/calendar?year='+str(nextYear)+ \
+        '?month='+str(nextMonthNumber)+'">'
+    calendarStr+= \
+        '  <img loading="lazy" alt="'+translate['Next month']+ \
+        '" title="'+translate['Next month']+'" src="/'+iconsDir+ \
+        '/prev.png" class="buttonnext"/></a>\n'
     calendarStr+='</caption>\n'
     calendarStr+='<thead>\n'
     calendarStr+='<tr>\n'
@@ -3882,7 +4055,8 @@ def htmlCalendar(translate: {}, \
                         if dayOfMonth==currDate.day:
                             isToday=True
                 if events.get(str(dayOfMonth)):
-                    url=actor+'/calendar?year='+str(year)+'?month='+str(monthNumber)+'?day='+str(dayOfMonth)
+                    url=actor+'/calendar?year='+str(year)+'?month='+ \
+                        str(monthNumber)+'?day='+str(dayOfMonth)
                     dayLink='<a href="'+url+'">'+str(dayOfMonth)+'</a>'
                     # there are events for this day
                     if not isToday:
