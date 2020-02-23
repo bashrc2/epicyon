@@ -68,7 +68,9 @@ from happening import thisWeeksEventsCheck
 from happening import getCalendarEvents
 from happening import getTodaysEvents
 
-def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avatarUrl: str,personCache: {},force=False) -> str:
+def updateAvatarImageCache(session,baseDir: str,httpPrefix: str, \
+                           actor: str,avatarUrl: str, \
+                           personCache: {},force=False) -> str:
     """Updates the cached avatar for the given actor
     """
     if not avatarUrl:
@@ -95,7 +97,8 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
             print('avatar image url: '+avatarUrl)
             result=session.get(avatarUrl, headers=sessionHeaders, params=None)
             if result.status_code<200 or result.status_code>202:
-                print('Avatar image download failed with status '+str(result.status_code))
+                print('Avatar image download failed with status '+ \
+                      str(result.status_code))
                 # remove partial download
                 if os.path.isfile(avatarImageFilename):
                     os.remove(avatarImageFilename)
@@ -108,10 +111,16 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
             print('Failed to download avatar image: '+str(avatarUrl))
             print(e)
         if '/channel/' not in actor:
-            sessionHeaders = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+            sessionHeaders = {
+                'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
         else:
-            sessionHeaders = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-        personJson = getJson(session,actor,sessionHeaders,None,__version__,httpPrefix,None)
+            sessionHeaders = {
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
+        personJson = \
+            getJson(session,actor,sessionHeaders,None,__version__, \
+                    httpPrefix,None)
         if personJson:
             if not personJson.get('id'):
                 return None
@@ -123,7 +132,8 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str,actor: str,avata
                 return None
             if not personCache.get(actor):
                 return None
-            if personCache[actor]['actor']['publicKey']['publicKeyPem']!=personJson['publicKey']['publicKeyPem']:
+            if personCache[actor]['actor']['publicKey']['publicKeyPem']!= \
+               personJson['publicKey']['publicKeyPem']:
                 print("ERROR: public keys don't match when downloading actor for "+actor)
                 return None
             storePersonInCache(baseDir,actor,personJson,personCache)
@@ -156,7 +166,8 @@ def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
             return personJson['icon']['url']
     return None
 
-def htmlSearchEmoji(translate: {},baseDir: str,httpPrefix: str,searchStr: str) -> str:
+def htmlSearchEmoji(translate: {},baseDir: str,httpPrefix: str, \
+                    searchStr: str) -> str:
     """Search results for emoji
     """
 
@@ -199,9 +210,15 @@ def htmlSearchEmoji(translate: {},baseDir: str,httpPrefix: str,searchStr: str) -
             for emojiName,filename in results.items():
                 if os.path.isfile(baseDir+'/emoji/'+filename):
                     if not headingShown:
-                        emojiForm+='<center><h5>'+translate['Copy the text then paste it into your post']+'</h5></center>'
+                        emojiForm+= \
+                            '<center><h5>'+ \
+                            translate['Copy the text then paste it into your post']+ \
+                            '</h5></center>'
                         headingShown=True
-                    emojiForm+='<h3>:'+emojiName+':<img loading="lazy" class="searchEmoji" src="/emoji/'+filename+'"/></h3>'
+                    emojiForm+= \
+                        '<h3>:'+emojiName+ \
+                        ':<img loading="lazy" class="searchEmoji" src="/emoji/'+ \
+                        filename+'"/></h3>'
             emojiForm+='</center>'
 
         emojiForm+=htmlFooter()
@@ -229,7 +246,8 @@ def htmlSearchSharedItems(translate: {}, \
     currPage=1
     ctr=0
     sharedItemsForm=''
-    searchStrLower=searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
+    searchStrLower= \
+        searchStr.replace('%2B','+').replace('%40','@').replace('%3A',':').replace('%23','#').lower().strip('\n')
     searchStrLowerList=searchStrLower.split('+')
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -238,9 +256,11 @@ def htmlSearchSharedItems(translate: {}, \
     with open(cssFilename, 'r') as cssFile:
         sharedItemsCSS=cssFile.read()
         if httpPrefix!='https':
-            sharedItemsCSS=sharedItemsCSS.replace('https://',httpPrefix+'://')
+            sharedItemsCSS= \
+                sharedItemsCSS.replace('https://',httpPrefix+'://')
         sharedItemsForm=htmlHeader(cssFilename,sharedItemsCSS)
-        sharedItemsForm+='<center><h1>'+translate['Shared Items Search']+'</h1></center>'
+        sharedItemsForm+= \
+            '<center><h1>'+translate['Shared Items Search']+'</h1></center>'
         resultsExist=False
         for subdir, dirs, files in os.walk(baseDir+'/accounts'):
             for handle in dirs:
@@ -274,26 +294,42 @@ def htmlSearchSharedItems(translate: {}, \
                     if matched:
                         if currPage==pageNumber:
                             sharedItemsForm+='<div class="container">'
-                            sharedItemsForm+='<p class="share-title">'+sharedItem['displayName']+'</p>'
+                            sharedItemsForm+= \
+                                '<p class="share-title">'+sharedItem['displayName']+'</p>'
                             if sharedItem.get('imageUrl'):
                                 sharedItemsForm+='<a href="'+sharedItem['imageUrl']+'">'
-                                sharedItemsForm+='<img loading="lazy" src="'+sharedItem['imageUrl']+'" alt="Item image"></a>'
+                                sharedItemsForm+= \
+                                    '<img loading="lazy" src="'+sharedItem['imageUrl']+ \
+                                    '" alt="Item image"></a>'
                             sharedItemsForm+='<p>'+sharedItem['summary']+'</p>'
                             sharedItemsForm+='<p><b>'+translate['Type']+':</b> '+sharedItem['itemType']+' '
                             sharedItemsForm+='<b>'+translate['Category']+':</b> '+sharedItem['category']+' '
                             sharedItemsForm+='<b>'+translate['Location']+':</b> '+sharedItem['location']+'</p>'
                             contactActor=httpPrefix+'://'+domainFull+'/users/'+contactNickname
-                            sharedItemsForm+='<p><a href="'+actor+'?replydm=sharedesc:'+sharedItem['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
+                            sharedItemsForm+= \
+                                '<p><a href="'+actor+'?replydm=sharedesc:'+ \
+                                sharedItem['displayName']+'?mention='+contactActor+ \
+                                '"><button class="button">'+translate['Contact']+'</button></a>'
                             if actor.endswith('/users/'+contactNickname):
-                                sharedItemsForm+=' <a href="'+actor+'?rmshare='+name+'"><button class="button">'+translate['Remove']+'</button></a>'
+                                sharedItemsForm+= \
+                                    ' <a href="'+actor+'?rmshare='+name+'"><button class="button">'+ \
+                                    translate['Remove']+'</button></a>'
                             sharedItemsForm+='</p></div>'
                             if not resultsExist and currPage>1:
                                 # previous page link, needs to be a POST
-                                sharedItemsForm+='<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber-1)+'">'
-                                sharedItemsForm+='  <input type="hidden" name="actor" value="'+actor+'">'
-                                sharedItemsForm+='  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>'
-                                sharedItemsForm+='  <center><a href="'+actor+'" type="submit" name="submitSearch">'
-                                sharedItemsForm+='    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"/></a>'
+                                sharedItemsForm+= \
+                                    '<form method="POST" action="'+actor+ \
+                                    '/searchhandle?page='+str(pageNumber-1)+'">'
+                                sharedItemsForm+= \
+                                    '  <input type="hidden" name="actor" value="'+actor+'">'
+                                sharedItemsForm+= \
+                                    '  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>'
+                                sharedItemsForm+= \
+                                    '  <center><a href="'+actor+'" type="submit" name="submitSearch">'
+                                sharedItemsForm+= \
+                                    '    <img loading="lazy" class="pageicon" src="/'+iconsDir+ \
+                                    '/pageup.png" title="'+translate['Page up']+ \
+                                    '" alt="'+translate['Page up']+'"/></a>'
                                 sharedItemsForm+='  </center>'
                                 sharedItemsForm+='</form>'
                                 resultsExist=True
@@ -302,11 +338,20 @@ def htmlSearchSharedItems(translate: {}, \
                             currPage+=1
                             if currPage>pageNumber:
                                 # next page link, needs to be a POST
-                                sharedItemsForm+='<form method="POST" action="'+actor+'/searchhandle?page='+str(pageNumber+1)+'">'
-                                sharedItemsForm+='  <input type="hidden" name="actor" value="'+actor+'">'
-                                sharedItemsForm+='  <input type="hidden" name="searchtext" value="'+searchStrLower+'"><br>'
-                                sharedItemsForm+='  <center><a href="'+actor+'" type="submit" name="submitSearch">'
-                                sharedItemsForm+='    <img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"/></a>'
+                                sharedItemsForm+= \
+                                    '<form method="POST" action="'+actor+ \
+                                    '/searchhandle?page='+str(pageNumber+1)+'">'
+                                sharedItemsForm+= \
+                                    '  <input type="hidden" name="actor" value="'+actor+'">'
+                                sharedItemsForm+= \
+                                    '  <input type="hidden" name="searchtext" value="'+ \
+                                    searchStrLower+'"><br>'
+                                sharedItemsForm+= \
+                                    '  <center><a href="'+actor+'" type="submit" name="submitSearch">'
+                                sharedItemsForm+= \
+                                    '    <img loading="lazy" class="pageicon" src="/'+iconsDir+ \
+                                    '/pagedown.png" title="'+translate['Page down']+ \
+                                    '" alt="'+translate['Page down']+'"/></a>'
                                 sharedItemsForm+='  </center>'
                                 sharedItemsForm+='</form>'
                                 break
@@ -327,7 +372,8 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
             infoCSS=infoCSS.replace('https://',httpPrefix+'://')
         infoForm=htmlHeader(cssFilename,infoCSS)
 
-        infoForm+='<center><h1>'+translate['Moderation Information']+'</h1></center>'
+        infoForm+= \
+            '<center><h1>'+translate['Moderation Information']+'</h1></center>'
 
         infoShown=False        
         suspendedFilename=baseDir+'/accounts/suspended.txt'
@@ -337,7 +383,9 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
                 infoForm+='<div class="container">'
                 infoForm+='  <br><b>'+translate['Suspended accounts']+'</b>'
                 infoForm+='  <br>'+translate['These are currently suspended']
-                infoForm+='  <textarea id="message" name="suspended" style="height:200px">'+suspendedStr+'</textarea>'
+                infoForm+= \
+                    '  <textarea id="message" name="suspended" style="height:200px">'+ \
+                    suspendedStr+'</textarea>'
                 infoForm+='</div>'
                 infoShown=True
 
@@ -346,13 +394,20 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
             with open(blockingFilename, "r") as f:
                 blockedStr = f.read()
                 infoForm+='<div class="container">'
-                infoForm+='  <br><b>'+translate['Blocked accounts and hashtags']+'</b>'
-                infoForm+='  <br>'+translate['These are globally blocked for all accounts on this instance']
-                infoForm+='  <textarea id="message" name="blocked" style="height:400px">'+blockedStr+'</textarea>'
+                infoForm+= \
+                    '  <br><b>'+translate['Blocked accounts and hashtags']+'</b>'
+                infoForm+= \
+                    '  <br>'+translate['These are globally blocked for all accounts on this instance']
+                infoForm+= \
+                    '  <textarea id="message" name="blocked" style="height:400px">'+ \
+                    blockedStr+'</textarea>'
                 infoForm+='</div>'        
                 infoShown=True
         if not infoShown:
-            infoForm+='<center><p>'+translate['Any blocks or suspensions made by moderators will be shown here.']+'</p></center>'
+            infoForm+= \
+                '<center><p>'+ \
+                translate['Any blocks or suspensions made by moderators will be shown here.']+ \
+                '</p></center>'
         infoForm+=htmlFooter()
     return infoForm    
 
@@ -388,7 +443,8 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
     with open(cssFilename, 'r') as cssFile:
         hashtagSearchCSS = cssFile.read()
         if httpPrefix!='https':
-            hashtagSearchCSS=hashtagSearchCSS.replace('https://',httpPrefix+'://')
+            hashtagSearchCSS= \
+                hashtagSearchCSS.replace('https://',httpPrefix+'://')
 
     # ensure that the page number is in bounds
     if not pageNumber:
@@ -503,7 +559,9 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                                 skillLevelStr='0'+skillLevelStr
                             if skillLevel<10:
                                 skillLevelStr='0'+skillLevelStr
-                            indexStr=skillLevelStr+';'+actor+';'+actorJson['name']+';'+actorJson['icon']['url']
+                            indexStr= \
+                                skillLevelStr+';'+actor+';'+actorJson['name']+ \
+                                ';'+actorJson['icon']['url']
                             if indexStr not in results:
                                 results.append(indexStr)
     if not instanceOnly:
@@ -534,7 +592,9 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                                         skillLevelStr='0'+skillLevelStr
                                     if skillLevel<10:
                                         skillLevelStr='0'+skillLevelStr                                
-                                    indexStr=skillLevelStr+';'+actor+';'+actorJson['name']+';'+actorJson['icon']['url']
+                                    indexStr= \
+                                        skillLevelStr+';'+actor+';'+actorJson['name']+ \
+                                        ';'+actorJson['icon']['url']
                                     if indexStr not in results:
                                         results.append(indexStr)
 
@@ -548,7 +608,9 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
         if httpPrefix!='https':
             skillSearchCSS=skillSearchCSS.replace('https://',httpPrefix+'://')
     skillSearchForm=htmlHeader(cssFilename,skillSearchCSS)
-    skillSearchForm+='<center><h1>'+translate['Skills search']+': '+skillsearch+'</h1></center>'
+    skillSearchForm+= \
+        '<center><h1>'+translate['Skills search']+': '+ \
+        skillsearch+'</h1></center>'
 
     if len(results)==0:
         skillSearchForm+='<center><h5>'+translate['No results']+'</h5></center>'
@@ -562,7 +624,9 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                 actorName=skillMatchFields[2]
                 avatarUrl=skillMatchFields[3]
                 skillSearchForm+='<div class="search-result""><a href="'+actor+'/skills">'
-                skillSearchForm+='<img loading="lazy" src="'+avatarUrl+'"/><span class="search-result-text">'+actorName+'</span></a></div>'
+                skillSearchForm+= \
+                    '<img loading="lazy" src="'+avatarUrl+ \
+                    '"/><span class="search-result-text">'+actorName+'</span></a></div>'
                 ctr+=1
                 if ctr>=postsPerPage:
                     break
@@ -580,7 +644,8 @@ def scheduledPostsExist(baseDir: str,nickname: str,domain: str) -> bool:
         return True
     return False
 
-def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,httpPrefix: str) -> str:
+def htmlEditProfile(translate: {},baseDir: str,path: str, \
+                    domain: str,port: int,httpPrefix: str) -> str:
     """Shows the edit profile screen
     """
     imageFormats='.png, .jpg, .jpeg, .gif, .webp'
@@ -674,12 +739,21 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
     skillCtr=1
     if skills:
         for skillDesc,skillValue in skills.items():
-            skillsStr+='<p><input type="text" placeholder="'+translate['Skill']+' '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="'+skillDesc+'" style="width:40%">'
-            skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="'+str(skillValue)+'"></p>'
+            skillsStr+= \
+                '<p><input type="text" placeholder="'+translate['Skill']+ \
+                ' '+str(skillCtr)+'" name="skillName'+str(skillCtr)+ \
+                '" value="'+skillDesc+'" style="width:40%">'
+            skillsStr+= \
+                '<input type="range" min="1" max="100" class="slider" name="skillValue'+ \
+                str(skillCtr)+'" value="'+str(skillValue)+'"></p>'
             skillCtr+=1
 
-    skillsStr+='<p><input type="text" placeholder="Skill '+str(skillCtr)+'" name="skillName'+str(skillCtr)+'" value="" style="width:40%">'
-    skillsStr+='<input type="range" min="1" max="100" class="slider" name="skillValue'+str(skillCtr)+'" value="50"></p>' \
+    skillsStr+= \
+        '<p><input type="text" placeholder="Skill '+str(skillCtr)+ \
+        '" name="skillName'+str(skillCtr)+'" value="" style="width:40%">'
+    skillsStr+= \
+        '<input type="range" min="1" max="100" class="slider" name="skillValue'+ \
+        str(skillCtr)+'" value="50"></p>' \
 
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -698,14 +772,24 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
         instanceDescriptionShort=getConfigParam(baseDir,'instanceDescriptionShort')
         instanceTitle=getConfigParam(baseDir,'instanceTitle')
         instanceStr='<div class="container">'
-        instanceStr+='  <label class="labels">'+translate['Instance Title']+'</label>'
-        instanceStr+='  <input type="text" name="instanceTitle" value="'+instanceTitle+'"><br>'
-        instanceStr+='  <label class="labels">'+translate['Instance Short Description']+'</label>'
-        instanceStr+='  <input type="text" name="instanceDescriptionShort" value="'+instanceDescriptionShort+'"><br>'
-        instanceStr+='  <label class="labels">'+translate['Instance Description']+'</label>'
-        instanceStr+='  <textarea id="message" name="instanceDescription" style="height:200px">'+instanceDescription+'</textarea>'
-        instanceStr+='  <label class="labels">'+translate['Instance Logo']+'</label>'
-        instanceStr+='  <input type="file" id="instanceLogo" name="instanceLogo"'
+        instanceStr+= \
+            '  <label class="labels">'+translate['Instance Title']+'</label>'
+        instanceStr+= \
+            '  <input type="text" name="instanceTitle" value="'+instanceTitle+'"><br>'
+        instanceStr+= \
+            '  <label class="labels">'+translate['Instance Short Description']+'</label>'
+        instanceStr+= \
+            '  <input type="text" name="instanceDescriptionShort" value="'+ \
+            instanceDescriptionShort+'"><br>'
+        instanceStr+= \
+            '  <label class="labels">'+translate['Instance Description']+'</label>'
+        instanceStr+= \
+            '  <textarea id="message" name="instanceDescription" style="height:200px">'+ \
+            instanceDescription+'</textarea>'
+        instanceStr+= \
+            '  <label class="labels">'+translate['Instance Logo']+'</label>'
+        instanceStr+= \
+            '  <input type="file" id="instanceLogo" name="instanceLogo"'
         instanceStr+='      accept="'+imageFormats+'">'
         instanceStr+='</div>'
         
@@ -717,7 +801,10 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
         moderatorsStr='<div class="container">'
         moderatorsStr+='  <b>'+translate['Moderators']+'</b><br>'
         moderatorsStr+='  '+translate['A list of moderator nicknames. One per line.']
-        moderatorsStr+='  <textarea id="message" name="moderators" placeholder="'+translate['List of moderator nicknames']+'..." style="height:200px">'+moderators+'</textarea>'
+        moderatorsStr+= \
+            '  <textarea id="message" name="moderators" placeholder="'+ \
+            translate['List of moderator nicknames']+ \
+            '..." style="height:200px">'+moderators+'</textarea>'
         moderatorsStr+='</div>'
 
         themesDropdown= '<div class="container">'
@@ -731,20 +818,31 @@ def htmlEditProfile(translate: {},baseDir: str,path: str,domain: str,port: int,h
         themesDropdown+='  </select><br>'
         themesDropdown+='</div>'
         themeName=getConfigParam(baseDir,'theme')
-        themesDropdown=themesDropdown.replace('<option value="'+themeName+'">','<option value="'+themeName+'" selected>')
+        themesDropdown= \
+            themesDropdown.replace('<option value="'+themeName+'">', \
+                                   '<option value="'+themeName+'" selected>')
 
     editProfileForm=htmlHeader(cssFilename,editProfileCSS)
-    editProfileForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">'
+    editProfileForm+= \
+        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'/profiledata">'
     editProfileForm+='  <div class="vertical-center">'
-    editProfileForm+='    <p class="new-post-text">'+translate['Profile for']+' '+nickname+'@'+domainFull+'</p>'
+    editProfileForm+= \
+        '    <p class="new-post-text">'+translate['Profile for']+ \
+        ' '+nickname+'@'+domainFull+'</p>'
     editProfileForm+='    <div class="container">'
-    editProfileForm+='      <input type="submit" name="submitProfile" value="'+translate['Submit']+'">'
-    editProfileForm+='      <a href="'+pathOriginal+'"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
+    editProfileForm+= \
+        '      <input type="submit" name="submitProfile" value="'+ \
+        translate['Submit']+'">'
+    editProfileForm+= \
+        '      <a href="'+pathOriginal+'"><button class="cancelbtn">'+ \
+        translate['Cancel']+'</button></a>'
     editProfileForm+='    </div>'
 
     if scheduledPostsExist(baseDir,nickname,domain):
         editProfileForm+='    <div class="container">'
-        editProfileForm+='      <input type="checkbox" class="profilecheckbox" name="removeScheduledPosts">'+translate['Remove scheduled posts']+'<br>'
+        editProfileForm+= \
+            '      <input type="checkbox" class="profilecheckbox" name="removeScheduledPosts">'+ \
+            translate['Remove scheduled posts']+'<br>'
         editProfileForm+='    </div>'
 
     editProfileForm+='    <div class="container">'
@@ -871,13 +969,20 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
         copyfile(baseDir+'/img/login.png',loginImageFilename)
     if os.path.isfile(baseDir+'/img/login-background.png'):
         if not os.path.isfile(baseDir+'/accounts/login-background.png'):
-            copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
+            copyfile(baseDir+'/img/login-background.png', \
+                     baseDir+'/accounts/login-background.png')
 
     if accounts>0:
-        loginText='<p class="login-text">'+translate['Welcome. Please enter your login details below.']+'</p>'
+        loginText= \
+            '<p class="login-text">'+ \
+            translate['Welcome. Please enter your login details below.']+'</p>'
     else:
-        loginText='<p class="login-text">'+translate['Please enter some credentials']+'</p>'
-        loginText+='<p class="login-text">'+translate['You will become the admin of this site.']+'</p>'
+        loginText= \
+            '<p class="login-text">'+ \
+            translate['Please enter some credentials']+'</p>'
+        loginText+= \
+            '<p class="login-text">'+ \
+            translate['You will become the admin of this site.']+'</p>'
     if os.path.isfile(baseDir+'/accounts/login.txt'):
         # custom login message
         with open(baseDir+'/accounts/login.txt', 'r') as file:
@@ -894,38 +999,55 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
     if getConfigParam(baseDir,'registration')=='open':
         if int(getConfigParam(baseDir,'registrationsRemaining'))>0:
             if accounts>0:
-                loginText='<p class="login-text">'+translate['Welcome. Please login or register a new account.']+'</p>'
-            registerButtonStr='<button type="submit" name="register">Register</button>'
+                loginText= \
+                    '<p class="login-text">'+ \
+                    translate['Welcome. Please login or register a new account.']+'</p>'
+            registerButtonStr= \
+                '<button type="submit" name="register">Register</button>'
 
-    TOSstr='<p class="login-text"><a href="/terms">'+translate['Terms of Service']+'</a></p>'
-    TOSstr+='<p class="login-text"><a href="/about">'+translate['About this Instance']+'</a></p>'
+    TOSstr= \
+        '<p class="login-text"><a href="/terms">'+ \
+        translate['Terms of Service']+'</a></p>'
+    TOSstr+= \
+        '<p class="login-text"><a href="/about">'+ \
+        translate['About this Instance']+'</a></p>'
 
     loginButtonStr=''
     if accounts>0:
-        loginButtonStr='<button type="submit" name="submit">'+translate['Login']+'</button>'
+        loginButtonStr= \
+            '<button type="submit" name="submit">'+ \
+            translate['Login']+'</button>'
 
     autocompleteStr=''
     if not autocomplete:
         autocompleteStr='autocomplete="off" value=""'
 
-        
     loginForm=htmlHeader(cssFilename,loginCSS)
     loginForm+='<form method="POST" action="/login">'
     loginForm+='  <div class="imgcontainer">'
-    loginForm+='    <img loading="lazy" src="'+loginImage+'" alt="login image" class="loginimage">'
+    loginForm+= \
+        '    <img loading="lazy" src="'+loginImage+ \
+        '" alt="login image" class="loginimage">'
     loginForm+=loginText+TOSstr
     loginForm+='  </div>'
     loginForm+=''
     loginForm+='  <div class="container">'
     loginForm+='    <label for="nickname"><b>'+translate['Nickname']+'</b></label>'
-    loginForm+='    <input type="text" '+autocompleteStr+' placeholder="'+translate['Enter Nickname']+'" name="username" required autofocus>'
+    loginForm+= \
+        '    <input type="text" '+autocompleteStr+' placeholder="'+ \
+        translate['Enter Nickname']+'" name="username" required autofocus>'
     loginForm+=''
     loginForm+='    <label for="password"><b>'+translate['Password']+'</b></label>'
-    loginForm+='    <input type="password" '+autocompleteStr+' placeholder="'+translate['Enter Password']+'" name="password" required>'
+    loginForm+= \
+        '    <input type="password" '+autocompleteStr+ \
+        ' placeholder="'+translate['Enter Password']+'" name="password" required>'
     loginForm+=registerButtonStr+loginButtonStr
     loginForm+='  </div>'
     loginForm+='</form>'
-    loginForm+='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" title="'+translate['Get the source code']+'" alt="'+translate['Get the source code']+'" src="/icons/agpl.png" /></a>'
+    loginForm+= \
+        '<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" title="'+ \
+        translate['Get the source code']+'" alt="'+ \
+        translate['Get the source code']+'" src="/icons/agpl.png" /></a>'
     loginForm+=htmlFooter()
     return loginForm
 
@@ -937,7 +1059,8 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         copyfile(baseDir+'/default_tos.txt',baseDir+'/accounts/tos.txt')
     if os.path.isfile(baseDir+'/img/login-background.png'):
         if not os.path.isfile(baseDir+'/accounts/login-background.png'):
-            copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
+            copyfile(baseDir+'/img/login-background.png', \
+                     baseDir+'/accounts/login-background.png')
 
     TOSText='Terms of Service go here.'
     if os.path.isfile(baseDir+'/accounts/tos.txt'):
@@ -957,7 +1080,9 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         TOSForm+='<div class="container">'+TOSText+'</div>'
         if adminNickname:
             adminActor=httpPrefix+'://'+domainFull+'/users/'+adminNickname
-            TOSForm+='<div class="container"><center><p class="administeredby">Administered by <a href="'+adminActor+'">'+adminNickname+'</a></p></center></div>'
+            TOSForm+= \
+                '<div class="container"><center><p class="administeredby">Administered by <a href="'+ \
+                adminActor+'">'+adminNickname+'</a></p></center></div>'
         TOSForm+=htmlFooter()
     return TOSForm
 
@@ -969,7 +1094,8 @@ def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         copyfile(baseDir+'/default_about.txt',baseDir+'/accounts/about.txt')
     if os.path.isfile(baseDir+'/img/login-background.png'):
         if not os.path.isfile(baseDir+'/accounts/login-background.png'):
-            copyfile(baseDir+'/img/login-background.png',baseDir+'/accounts/login-background.png')
+            copyfile(baseDir+'/img/login-background.png', \
+                     baseDir+'/accounts/login-background.png')
 
     aboutText='Information about this instance goes here.'
     if os.path.isfile(baseDir+'/accounts/about.txt'):
@@ -989,7 +1115,9 @@ def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
         aboutForm+='<div class="container">'+aboutText+'</div>'
         if adminNickname:
             adminActor=httpPrefix+'://'+domainFull+'/users/'+adminNickname
-            aboutForm+='<div class="container"><center><p class="administeredby">Administered by <a href="'+adminActor+'">'+adminNickname+'</a></p></center></div>'
+            aboutForm+= \
+                '<div class="container"><center><p class="administeredby">Administered by <a href="'+ \
+                adminActor+'">'+adminNickname+'</a></p></center></div>'
         aboutForm+=htmlFooter()
     return aboutForm
 
@@ -1045,7 +1173,9 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
             if not inReplyTo:
                 newPostText='<p class="new-post-text">'+translate['Write your post text below.']+'</p>'
             else:
-                newPostText='<p class="new-post-text">'+translate['Write your reply to']+' <a href="'+inReplyTo+'">'+translate['this post']+'</a></p>'
+                newPostText= \
+                    '<p class="new-post-text">'+translate['Write your reply to']+ \
+                    ' <a href="'+inReplyTo+'">'+translate['this post']+'</a></p>'
                 replyStr='<input type="hidden" name="replyTo" value="'+inReplyTo+'">'
 
                 # if replying to a non-public post then also make this post non-public
@@ -1067,16 +1197,26 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
                 with open(baseDir+'/accounts/report.txt', 'r') as file:
                     customReportText=file.read()
                     if '</p>' not in customReportText:
-                        customReportText='<p class="login-subtext">'+customReportText+'</p>'
-                        customReportText=customReportText.replace('<p>','<p class="login-subtext">')
+                        customReportText= \
+                            '<p class="login-subtext">'+customReportText+'</p>'
+                        customReportText= \
+                            customReportText.replace('<p>','<p class="login-subtext">')
                         newPostText+=customReportText
 
-            newPostText+='<p class="new-post-subtext">'+translate['This message only goes to moderators, even if it mentions other fediverse addresses.']+'</p><p class="new-post-subtext">'+translate['Also see']+' <a href="/terms">'+translate['Terms of Service']+'</a></p>'
+            newPostText+= \
+                '<p class="new-post-subtext">'+ \
+                translate['This message only goes to moderators, even if it mentions other fediverse addresses.']+ \
+                '</p><p class="new-post-subtext">'+translate['Also see']+ \
+                ' <a href="/terms">'+translate['Terms of Service']+'</a></p>'
     else:
-        newPostText='<p class="new-post-text">'+translate['Enter the details for your shared item below.']+'</p>'
+        newPostText= \
+            '<p class="new-post-text">'+ \
+            translate['Enter the details for your shared item below.']+'</p>'
 
     if path.endswith('/newquestion'):
-        newPostText='<p class="new-post-text">'+translate['Enter the choices for your question below.']+'</p>'
+        newPostText= \
+            '<p class="new-post-text">'+ \
+            translate['Enter the choices for your question below.']+'</p>'
 
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
@@ -1092,7 +1232,8 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
 
     if '?' in path:
         path=path.split('?')[0]
-    pathBase=path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
+    pathBase= \
+        path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
 
     newPostImageSection ='    <div class="container">'
     newPostImageSection+='      <label class="labels">'+translate['Image description']+'</label>'
@@ -1131,8 +1272,12 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
         extraFields='<div class="container">'
         extraFields+='  <label class="labels">'+translate['Possible answers']+':</label><br>'
         for questionCtr in range(8):
-            extraFields+='  <input type="text" class="questionOption" placeholder="'+str(questionCtr+1)+'" name="questionOption'+str(questionCtr)+'"><br>'
-        extraFields+='  <label class="labels">'+translate['Duration of listing in days']+':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14"><br>'
+            extraFields+= \
+                '  <input type="text" class="questionOption" placeholder="'+ \
+                str(questionCtr+1)+'" name="questionOption'+str(questionCtr)+'"><br>'
+        extraFields+= \
+            '  <label class="labels">'+translate['Duration of listing in days']+ \
+            ':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14"><br>'
         extraFields+='</div>'
     if path.endswith('/newshare'):
         scopeIcon='scope_share.png'
@@ -1141,15 +1286,23 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
         placeholderMessage=translate['Description of the item being shared']+'...'
         endpoint='newshare'        
         extraFields='<div class="container">'
-        extraFields+='  <label class="labels">'+translate['Type of shared item. eg. hat']+':</label>'
+        extraFields+= \
+            '  <label class="labels">'+ \
+            translate['Type of shared item. eg. hat']+':</label>'
         extraFields+='  <input type="text" class="itemType" name="itemType">'
-        extraFields+='  <br><label class="labels">'+translate['Category of shared item. eg. clothing']+':</label>'
+        extraFields+= \
+            '  <br><label class="labels">'+ \
+            translate['Category of shared item. eg. clothing']+':</label>'
         extraFields+='  <input type="text" class="category" name="category">'
-        extraFields+='  <br><label class="labels">'+translate['Duration of listing in days']+':</label>'
+        extraFields+= \
+            '  <br><label class="labels">'+ \
+            translate['Duration of listing in days']+':</label>'
         extraFields+='  <input type="number" name="duration" min="1" max="365" step="1" value="14">'
         extraFields+='</div>'
         extraFields+='<div class="container">'
-        extraFields+='<label class="labels">'+translate['City or location of the shared item']+':</label>'
+        extraFields+= \
+            '<label class="labels">'+ \
+            translate['City or location of the shared item']+':</label>'
         extraFields+='<input type="text" name="location">'
         extraFields+='</div>'
 
@@ -1158,9 +1311,13 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
         dateAndLocation='<div class="container">'
 
         if not inReplyTo:
-            dateAndLocation+='<p><input type="checkbox" class="profilecheckbox" name="schedulePost"><label class="labels">'+translate['This is a scheduled post.']+'</label></p>'
+            dateAndLocation+= \
+                '<p><input type="checkbox" class="profilecheckbox" name="schedulePost"><label class="labels">'+ \
+                translate['This is a scheduled post.']+'</label></p>'
 
-        dateAndLocation+='<p><img loading="lazy" alt="" title="" class="emojicalendar" src="/'+iconsDir+'/calendar.png"/>'
+        dateAndLocation+= \
+            '<p><img loading="lazy" alt="" title="" class="emojicalendar" src="/'+ \
+            iconsDir+'/calendar.png"/>'
         dateAndLocation+='<label class="labels">'+translate['Date']+': </label>'
         dateAndLocation+='<input type="date" name="eventDate">'
         dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
@@ -1177,8 +1334,16 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     shareOptionOnDropdown=''
     questionOptionOnDropdown=''
     if not replyStr:
-        shareOptionOnDropdown='<a href="'+pathBase+'/newshare"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_share.png"/><b>'+translate['Shares']+'</b><br>'+translate['Describe a shared item']+'</a>'
-        questionOptionOnDropdown='<a href="'+pathBase+'/newquestion"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_question.png"/><b>'+translate['Question']+'</b><br>'+translate['Ask a question']+'</a>'
+        shareOptionOnDropdown= \
+            '<a href="'+pathBase+ \
+            '/newshare"><img loading="lazy" alt="" title="" src="/'+ \
+            iconsDir+'/scope_share.png"/><b>'+translate['Shares']+ \
+            '</b><br>'+translate['Describe a shared item']+'</a>'
+        questionOptionOnDropdown= \
+            '<a href="'+pathBase+ \
+            '/newquestion"><img loading="lazy" alt="" title="" src="/'+ \
+            iconsDir+'/scope_question.png"/><b>'+translate['Question']+ \
+            '</b><br>'+translate['Ask a question']+'</a>'
 
     mentionsStr=''
     for m in mentions:
@@ -1189,13 +1354,15 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
         if not mentionDomain:
             continue
         if mentionPort:
-            mentionsHandle='@'+mentionNickname+'@'+mentionDomain+':'+str(mentionPort)
+            mentionsHandle= \
+                '@'+mentionNickname+'@'+mentionDomain+':'+str(mentionPort)
         else:
             mentionsHandle='@'+mentionNickname+'@'+mentionDomain
         if mentionsHandle not in mentionsStr:
             mentionsStr+=mentionsHandle+' '
 
-    # build suffixes so that any replies or mentions are preserved when switching between scopes
+    # build suffixes so that any replies or mentions are
+    # preserved when switching between scopes
     dropdownNewPostSuffix='/newpost'
     dropdownUnlistedSuffix='/newunlisted'
     dropdownFollowersSuffix='/newfollowers'
@@ -1223,34 +1390,71 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     if not reportUrl:
         dropDownContent+='        <div id="myDropdown" class="dropdown-content">'
         if showPublicOnDropdown:
-            dropDownContent+='          <a href="'+pathBase+dropdownNewPostSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_public.png"/><b>'+translate['Public']+'</b><br>'+translate['Visible to anyone']+'</a>'
-            dropDownContent+='          <a href="'+pathBase+dropdownUnlistedSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_unlisted.png"/><b>'+translate['Unlisted']+'</b><br>'+translate['Not on public timeline']+'</a>'
-        dropDownContent+='          <a href="'+pathBase+dropdownFollowersSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_followers.png"/><b>'+translate['Followers']+'</b><br>'+translate['Only to followers']+'</a>'
-        dropDownContent+='          <a href="'+pathBase+dropdownDMSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_dm.png"/><b>'+translate['DM']+'</b><br>'+translate['Only to mentioned people']+'</a>'
-        dropDownContent+='          <a href="'+pathBase+dropdownReportSuffix+'"><img loading="lazy" alt="" title="" src="/'+iconsDir+'/scope_report.png"/><b>'+translate['Report']+'</b><br>'+translate['Send to moderators']+'</a>'
+            dropDownContent+= \
+                '          <a href="'+pathBase+dropdownNewPostSuffix+ \
+                '"><img loading="lazy" alt="" title="" src="/'+ \
+                iconsDir+'/scope_public.png"/><b>'+ \
+                translate['Public']+'</b><br>'+ \
+                translate['Visible to anyone']+'</a>'
+            dropDownContent+= \
+                '          <a href="'+pathBase+dropdownUnlistedSuffix+ \
+                '"><img loading="lazy" alt="" title="" src="/'+ \
+                iconsDir+'/scope_unlisted.png"/><b>'+ \
+                translate['Unlisted']+'</b><br>'+ \
+                translate['Not on public timeline']+'</a>'
+        dropDownContent+= \
+            '          <a href="'+pathBase+dropdownFollowersSuffix+ \
+            '"><img loading="lazy" alt="" title="" src="/'+ \
+            iconsDir+'/scope_followers.png"/><b>'+ \
+            translate['Followers']+'</b><br>'+ \
+            translate['Only to followers']+'</a>'
+        dropDownContent+= \
+            '          <a href="'+ \
+            pathBase+dropdownDMSuffix+'"><img loading="lazy" alt="" title="" src="/'+ \
+            iconsDir+'/scope_dm.png"/><b>'+translate['DM']+ \
+            '</b><br>'+translate['Only to mentioned people']+'</a>'
+        dropDownContent+= \
+            '          <a href="'+pathBase+dropdownReportSuffix+ \
+            '"><img loading="lazy" alt="" title="" src="/'+iconsDir+ \
+            '/scope_report.png"/><b>'+translate['Report']+ \
+            '</b><br>'+translate['Send to moderators']+'</a>'
         dropDownContent+=questionOptionOnDropdown+shareOptionOnDropdown
         dropDownContent+='        </div>'
     else:
         mentionsStr='Re: '+reportUrl+'\n\n'+mentionsStr
     
-    newPostForm+='<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+path+'?'+endpoint+'?page='+str(pageNumber)+'">'
+    newPostForm+= \
+        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+ \
+        path+'?'+endpoint+'?page='+str(pageNumber)+'">'
     newPostForm+='  <div class="vertical-center">'
     newPostForm+='    <label for="nickname"><b>'+newPostText+'</b></label>'
     newPostForm+='    <div class="container">'
     newPostForm+='      <div class="dropbtn" onclick="dropdown()">'
-    newPostForm+='        <img loading="lazy" alt="" title="" src="/'+iconsDir+'/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
+    newPostForm+= \
+        '        <img loading="lazy" alt="" title="" src="/'+iconsDir+ \
+        '/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
     newPostForm+=dropDownContent
     newPostForm+='      </div>'
-    newPostForm+='      <a href="'+pathBase+'/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+translate['Search for emoji']+'" alt="'+translate['Search for emoji']+'"/></a>'
+    newPostForm+= \
+        '      <a href="'+pathBase+ \
+        '/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+ \
+        translate['Search for emoji']+'" alt="'+ \
+        translate['Search for emoji']+'"/></a>'
     newPostForm+='    </div>'
     newPostForm+='    <div class="container"><center>'
-    newPostForm+='      <a href="'+pathBase+'/inbox"><button class="cancelbtn">'+translate['Cancel']+'</button></a>'
-    newPostForm+='      <input type="submit" name="submitPost" value="'+translate['Submit']+'">'
+    newPostForm+= \
+        '      <a href="'+pathBase+ \
+        '/inbox"><button class="cancelbtn">'+ \
+        translate['Cancel']+'</button></a>'
+    newPostForm+= \
+        '      <input type="submit" name="submitPost" value="'+ \
+        translate['Submit']+'">'
     newPostForm+='    </center></div>'
     newPostForm+=replyStr
     if mediaInstance and not replyStr:
         newPostForm+=newPostImageSection
-    newPostForm+='    <label class="labels">'+placeholderSubject+'</label><br>'
+    newPostForm+= \
+        '    <label class="labels">'+placeholderSubject+'</label><br>'
     newPostForm+='    <input type="text" name="subject">'
     newPostForm+=''
     newPostForm+='    <br><label class="labels">'+placeholderMessage+'</label>'
@@ -1259,7 +1463,9 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
         messageBoxHeight=200
     if endpoint=='newquestion':
         messageBoxHeight=100
-    newPostForm+='    <textarea id="message" name="message" style="height:'+str(messageBoxHeight)+'px">'+mentionsStr+'</textarea>'
+    newPostForm+= \
+        '    <textarea id="message" name="message" style="height:'+ \
+        str(messageBoxHeight)+'px">'+mentionsStr+'</textarea>'
     newPostForm+=extraFields+dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm+=newPostImageSection
@@ -1267,8 +1473,11 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     newPostForm+='</form>'
 
     if not reportUrl:
-        newPostForm+='<script>'+clickToDropDownScript()+cursorToEndOfMessageScript()+'</script>'
-        newPostForm=newPostForm.replace('<body>','<body onload="focusOnMessage()">')
+        newPostForm+= \
+            '<script>'+clickToDropDownScript()+ \
+            cursorToEndOfMessageScript()+'</script>'
+        newPostForm= \
+            newPostForm.replace('<body>','<body onload="focusOnMessage()">')
 
     newPostForm+=htmlFooter()
     return newPostForm
@@ -1277,7 +1486,9 @@ def htmlHeader(cssFilename: str,css=None,refreshSec=0,lang='en') -> str:
     if refreshSec==0:
         meta='  <meta charset="utf-8">\n'
     else:
-        meta='  <meta http-equiv="Refresh" content="'+str(refreshSec)+'" charset="utf-8">\n'
+        meta= \
+            '  <meta http-equiv="Refresh" content="'+ \
+            str(refreshSec)+'" charset="utf-8">\n'
 
     if not css:
         if '/' in cssFilename:
@@ -1366,8 +1577,13 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         if authorized and pageNumber>1:
             # page up arrow
             profileStr+= \
-                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
-        
+                '<center><a href="'+actor+'/'+feedName+ \
+                '?page='+str(pageNumber-1)+ \
+                '"><img loading="lazy" class="pageicon" src="/'+ \
+                iconsDir+'/pageup.png" title="'+ \
+                translate['Page up']+'" alt="'+ \
+                translate['Page up']+'"></a></center>'
+
     for item in followingJson['orderedItems']:
         profileStr+= \
             individualFollowAsHtml(translate,baseDir,session, \
@@ -1379,7 +1595,12 @@ def htmlProfileFollowing(translate: {},baseDir: str,httpPrefix: str, \
         if len(followingJson['orderedItems'])>=maxItemsPerPage:
             # page down arrow
             profileStr+= \
-                '<center><a href="'+actor+'/'+feedName+'?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+                '<center><a href="'+actor+'/'+feedName+ \
+                '?page='+str(pageNumber+1)+ \
+                '"><img loading="lazy" class="pageicon" src="/'+ \
+                iconsDir+'/pagedown.png" title="'+ \
+                translate['Page down']+'" alt="'+ \
+                translate['Page down']+'"></a></center>'
     return profileStr
 
 def htmlProfileRoles(translate: {},nickname: str,domain: str,rolesJson: {}) -> str:
@@ -1387,7 +1608,8 @@ def htmlProfileRoles(translate: {},nickname: str,domain: str,rolesJson: {}) -> s
     """
     profileStr=''
     for project,rolesList in rolesJson.items():
-        profileStr+='<div class="roles"><h2>'+project+'</h2><div class="roles-inner">'
+        profileStr+= \
+            '<div class="roles"><h2>'+project+'</h2><div class="roles-inner">'
         for role in rolesList:
             profileStr+='<h3>'+role+'</h3>'
         profileStr+='</div></div>'
@@ -1397,37 +1619,49 @@ def htmlProfileRoles(translate: {},nickname: str,domain: str,rolesJson: {}) -> s
         profileStr='<div>'+profileStr+'</div>'
     return profileStr
 
-def htmlProfileSkills(translate: {},nickname: str,domain: str,skillsJson: {}) -> str:
+def htmlProfileSkills(translate: {},nickname: str,domain: str, \
+                      skillsJson: {}) -> str:
     """Shows skills on the profile screen
     """
     profileStr=''
     for skill,level in skillsJson.items():
-        profileStr+='<div>'+skill+'<br><div id="myProgress"><div id="myBar" style="width:'+str(level)+'%"></div></div></div><br>'
+        profileStr+= \
+            '<div>'+skill+'<br><div id="myProgress"><div id="myBar" style="width:'+ \
+            str(level)+'%"></div></div></div><br>'
     if len(profileStr)>0:
         profileStr='<center><div class="skill-title">'+profileStr+'</div></center>'
     return profileStr
 
-def htmlIndividualShare(actor: str,item: {},translate: {},showContact: bool,removeButton: bool) -> str:
+def htmlIndividualShare(actor: str,item: {},translate: {}, \
+                        showContact: bool,removeButton: bool) -> str:
     """Returns an individual shared item as html
     """
     profileStr='<div class="container">'
     profileStr+='<p class="share-title">'+item['displayName']+'</p>'
     if item.get('imageUrl'):
         profileStr+='<a href="'+item['imageUrl']+'">'
-        profileStr+='<img loading="lazy" src="'+item['imageUrl']+'" alt="'+translate['Item image']+'"></a>'
+        profileStr+= \
+            '<img loading="lazy" src="'+item['imageUrl']+ \
+            '" alt="'+translate['Item image']+'"></a>'
     profileStr+='<p>'+item['summary']+'</p>'
     profileStr+='<p><b>'+translate['Type']+':</b> '+item['itemType']+' '
     profileStr+='<b>'+translate['Category']+':</b> '+item['category']+' '
     profileStr+='<b>'+translate['Location']+':</b> '+item['location']+'</p>'
     if showContact:
         contactActor=item['actor']
-        profileStr+='<p><a href="'+actor+'?replydm=sharedesc:'+item['displayName']+'?mention='+contactActor+'"><button class="button">'+translate['Contact']+'</button></a>'
+        profileStr+= \
+            '<p><a href="'+actor+'?replydm=sharedesc:'+item['displayName']+ \
+            '?mention='+contactActor+'"><button class="button">'+ \
+            translate['Contact']+'</button></a>'
     if removeButton:
-        profileStr+=' <a href="'+actor+'?rmshare='+item['displayName']+'"><button class="button">'+translate['Remove']+'</button></a>'
+        profileStr+= \
+            ' <a href="'+actor+'?rmshare='+item['displayName']+ \
+            '"><button class="button">'+translate['Remove']+'</button></a>'
     profileStr+='</div>'
     return profileStr
 
-def htmlProfileShares(actor: str,translate: {},nickname: str,domain: str,sharesJson: {}) -> str:
+def htmlProfileShares(actor: str,translate: {}, \
+                      nickname: str,domain: str,sharesJson: {}) -> str:
     """Shows shares on the profile screen
     """
     profileStr=''
@@ -1505,7 +1739,12 @@ def htmlSharesTimeline(translate: {},pageNumber: int,itemsPerPage: int, \
     timelineStr=''
 
     if pageNumber>1:
-        timelineStr+='<center><a href="'+actor+'/tlshares?page='+str(pageNumber-1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pageup.png" title="'+translate['Page up']+'" alt="'+translate['Page up']+'"></a></center>'
+        timelineStr+= \
+            '<center><a href="'+actor+'/tlshares?page='+ \
+            str(pageNumber-1)+ \
+            '"><img loading="lazy" class="pageicon" src="/'+ \
+            iconsDir+'/pageup.png" title="'+translate['Page up']+ \
+            '" alt="'+translate['Page up']+'"></a></center>'
 
     for published,item in sharesJson.items():
         showContactButton=False
@@ -1514,10 +1753,16 @@ def htmlSharesTimeline(translate: {},pageNumber: int,itemsPerPage: int, \
         showRemoveButton=False
         if item['actor']==actor:
             showRemoveButton=True
-        timelineStr+=htmlIndividualShare(actor,item,translate,showContactButton,showRemoveButton)
+        timelineStr+= \
+            htmlIndividualShare(actor,item,translate, \
+                                showContactButton,showRemoveButton)
 
     if not lastPage:
-        timelineStr+='<center><a href="'+actor+'/tlshares?page='+str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+iconsDir+'/pagedown.png" title="'+translate['Page down']+'" alt="'+translate['Page down']+'"></a></center>'
+        timelineStr+= \
+            '<center><a href="'+actor+'/tlshares?page='+ \
+            str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+ \
+            iconsDir+'/pagedown.png" title="'+translate['Page down']+ \
+            '" alt="'+translate['Page down']+'"></a></center>'
         
     return timelineStr
 
@@ -1582,32 +1827,56 @@ def htmlProfile(defaultTimeline: str, \
     emailAddress=getEmailAddress(profileJson)
     xmppAddress=getXmppAddress(profileJson)
     matrixAddress=getMatrixAddress(profileJson)
-    if donateUrl or xmppAddress or matrixAddress or PGPpubKey or emailAddress:
+    if donateUrl or xmppAddress or matrixAddress or \
+       PGPpubKey or emailAddress:
         donateSection='<div class="container">\n'
         donateSection+='  <center>\n'
         if donateUrl:
-            donateSection+='    <p><a href="'+donateUrl+'"><button class="donateButton">'+translate['Donate']+'</button></a></p>\n'
+            donateSection+= \
+                '    <p><a href="'+donateUrl+ \
+                '"><button class="donateButton">'+translate['Donate']+ \
+                '</button></a></p>\n'
         if emailAddress:
-            donateSection+='<p>'+translate['Email']+': <a href="mailto:'+emailAddress+'">'+emailAddress+'</a></p>\n'
+            donateSection+= \
+                '<p>'+translate['Email']+': <a href="mailto:'+ \
+                emailAddress+'">'+emailAddress+'</a></p>\n'
         if xmppAddress:
-            donateSection+='<p>'+translate['XMPP']+': <a href="xmpp:'+xmppAddress+'">'+xmppAddress+'</a></p>\n'
+            donateSection+= \
+                '<p>'+translate['XMPP']+': <a href="xmpp:'+ \
+                xmppAddress+'">'+xmppAddress+'</a></p>\n'
         if matrixAddress:
-            donateSection+='<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
+            donateSection+= \
+                '<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
         if PGPpubKey:
-            donateSection+='<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>\n'
+            donateSection+= \
+                '<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>\n'
         donateSection+='  </center>\n'
         donateSection+='</div>\n'
 
     if not authorized:
-        loginButton='<br><a href="/login"><button class="loginButton">'+translate['Login']+'</button></a>'
+        loginButton= \
+            '<br><a href="/login"><button class="loginButton">'+ \
+            translate['Login']+'</button></a>'
     else:
-        editProfileStr='<a href="'+actor+'/editprofile"><button class="button"><span>'+translate['Edit']+' </span></button></a>'
-        logoutStr='<a href="/logout"><button class="button"><span>'+translate['Logout']+' </span></button></a>'
-        linkToTimelineStart='<a href="/users/'+nickname+'/'+defaultTimeline+'"><label class="transparent">'+translate['Switch to timeline view']+'</label></a>'
-        linkToTimelineStart+='<a href="/users/'+nickname+'/'+defaultTimeline+'" title="'+translate['Switch to timeline view']+'" alt="'+translate['Switch to timeline view']+'">'
+        editProfileStr= \
+            '<a href="'+actor+ \
+            '/editprofile"><button class="button"><span>'+ \
+            translate['Edit']+' </span></button></a>'
+        logoutStr= \
+            '<a href="/logout"><button class="button"><span>'+ \
+            translate['Logout']+' </span></button></a>'
+        linkToTimelineStart= \
+            '<a href="/users/'+nickname+'/'+defaultTimeline+ \
+            '"><label class="transparent">'+ \
+            translate['Switch to timeline view']+'</label></a>'
+        linkToTimelineStart+= \
+            '<a href="/users/'+nickname+'/'+defaultTimeline+ \
+            '" title="'+translate['Switch to timeline view']+ \
+            '" alt="'+translate['Switch to timeline view']+'">'
         linkToTimelineEnd='</a>'
         # are there any follow requests?
-        followRequestsFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
+        followRequestsFilename= \
+            baseDir+'/accounts/'+nickname+'@'+domain+'/followrequests.txt'
         if os.path.isfile(followRequestsFilename):
             with open(followRequestsFilename,'r') as f:
                 for line in f:
@@ -1625,15 +1894,22 @@ def htmlProfile(defaultTimeline: str, \
                             if '://' in followerHandle:
                                 followerActor=followerHandle
                             else:
-                                followerActor=httpPrefix+'://'+followerHandle.split('@')[1]+'/users/'+followerHandle.split('@')[0]
+                                followerActor= \
+                                    httpPrefix+'://'+followerHandle.split('@')[1]+ \
+                                    '/users/'+followerHandle.split('@')[0]
                             basePath=httpPrefix+'://'+domainFull+'/users/'+nickname
                             followApprovalsSection+='<div class="container">'
                             followApprovalsSection+='<a href="'+followerActor+'">'
-                            followApprovalsSection+='<span class="followRequestHandle">'+followerHandle+'</span></a>'
-                            followApprovalsSection+='<a href="'+basePath+'/followapprove='+followerHandle+'">'
-                            followApprovalsSection+='<button class="followApprove">'+translate['Approve']+'</button></a>'
-                            followApprovalsSection+='<a href="'+basePath+'/followdeny='+followerHandle+'">'
-                            followApprovalsSection+='<button class="followDeny">'+translate['Deny']+'</button></a>'
+                            followApprovalsSection+= \
+                                '<span class="followRequestHandle">'+followerHandle+'</span></a>'
+                            followApprovalsSection+= \
+                                '<a href="'+basePath+'/followapprove='+followerHandle+'">'
+                            followApprovalsSection+= \
+                                '<button class="followApprove">'+translate['Approve']+'</button></a>'
+                            followApprovalsSection+= \
+                                '<a href="'+basePath+'/followdeny='+followerHandle+'">'
+                            followApprovalsSection+= \
+                                '<button class="followDeny">'+translate['Deny']+'</button></a>'
                             followApprovalsSection+='</div>'
 
     profileDescriptionShort=profileDescription
@@ -1651,10 +1927,14 @@ def htmlProfile(defaultTimeline: str, \
     # remove formatting from profile description used on title
     avatarDescription=''
     if profileJson.get('summary'):
-        avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
+        avatarDescription= \
+            profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
     profileHeaderStr='<div class="hero-image">'
     profileHeaderStr+='  <div class="hero-text">'
-    profileHeaderStr+='    <img loading="lazy" src="'+profileJson['icon']['url']+'" title="'+avatarDescription+'" alt="'+avatarDescription+'" class="title">'
+    profileHeaderStr+= \
+        '    <img loading="lazy" src="'+profileJson['icon']['url']+ \
+        '" title="'+avatarDescription+'" alt="'+ \
+        avatarDescription+'" class="title">'
     profileHeaderStr+='    <h1>'+displayName+'</h1>'
     profileHeaderStr+='    <p><b>@'+nickname+'@'+domainFull+'</b></p>'
     profileHeaderStr+='    <p>'+profileDescriptionShort+'</p>'
@@ -1662,15 +1942,33 @@ def htmlProfile(defaultTimeline: str, \
     profileHeaderStr+='  </div>'
     profileHeaderStr+='</div>'
 
-    profileStr=linkToTimelineStart + profileHeaderStr + linkToTimelineEnd + donateSection
+    profileStr= \
+        linkToTimelineStart + profileHeaderStr + \
+        linkToTimelineEnd + donateSection
     profileStr+='<div class="container">\n'
     profileStr+='  <center>'
-    profileStr+='    <a href="'+actor+'"><button class="'+postsButton+'"><span>'+translate['Posts']+' </span></button></a>'
-    profileStr+='    <a href="'+actor+'/following"><button class="'+followingButton+'"><span>'+translate['Following']+' </span></button></a>'
-    profileStr+='    <a href="'+actor+'/followers"><button class="'+followersButton+'"><span>'+translate['Followers']+' </span></button></a>'
-    profileStr+='    <a href="'+actor+'/roles"><button class="'+rolesButton+'"><span>'+translate['Roles']+' </span></button></a>'
-    profileStr+='    <a href="'+actor+'/skills"><button class="'+skillsButton+'"><span>'+translate['Skills']+' </span></button></a>'
-    profileStr+='    <a href="'+actor+'/shares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'
+    profileStr+= \
+        '    <a href="'+actor+'"><button class="'+postsButton+ \
+        '"><span>'+translate['Posts']+' </span></button></a>'
+    profileStr+= \
+        '    <a href="'+actor+'/following"><button class="'+ \
+        followingButton+'"><span>'+translate['Following']+ \
+        ' </span></button></a>'
+    profileStr+= \
+        '    <a href="'+actor+'/followers"><button class="'+ \
+        followersButton+'"><span>'+translate['Followers']+ \
+        ' </span></button></a>'
+    profileStr+= \
+        '    <a href="'+actor+'/roles"><button class="'+ \
+        rolesButton+'"><span>'+translate['Roles']+' </span></button></a>'
+    profileStr+= \
+        '    <a href="'+actor+'/skills"><button class="'+ \
+        skillsButton+'"><span>'+translate['Skills']+ \
+        ' </span></button></a>'
+    profileStr+= \
+        '    <a href="'+actor+'/shares"><button class="'+ \
+        sharesButton+'"><span>'+translate['Shares']+ \
+        ' </span></button></a>'
     profileStr+=editProfileStr+logoutStr
     profileStr+='  </center>'
     profileStr+='</div>'
@@ -1681,9 +1979,14 @@ def htmlProfile(defaultTimeline: str, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read().replace('image.png',profileJson['image']['url'])
+        profileStyle = \
+            cssFile.read().replace('image.png', \
+                                   profileJson['image']['url'])
 
-        licenseStr='<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" alt="'+translate['Get the source code']+'" title="'+translate['Get the source code']+'" src="/icons/agpl.png" /></a>'
+        licenseStr= \
+            '<a href="https://gitlab.com/bashrc2/epicyon"><img loading="lazy" class="license" alt="'+ \
+            translate['Get the source code']+'" title="'+ \
+            translate['Get the source code']+'" src="/icons/agpl.png" /></a>'
 
         if selected=='posts':
             profileStr+= \
@@ -1721,8 +2024,11 @@ def htmlProfile(defaultTimeline: str, \
                 htmlProfileSkills(translate,nickname,domainFull,extraJson)
         if selected=='shares':
             profileStr+= \
-                htmlProfileShares(actor,translate,nickname,domainFull,extraJson)+licenseStr
-        profileStr=htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
+                htmlProfileShares(actor,translate, \
+                                  nickname,domainFull, \
+                                  extraJson)+licenseStr
+        profileStr= \
+            htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
     return profileStr
 
 def individualFollowAsHtml(translate: {}, \
@@ -1753,14 +2059,22 @@ def individualFollowAsHtml(translate: {}, \
     if authorized:
         for b in buttons:
             if b=='block':
-                buttonsStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'"><button class="buttonunfollow">'+translate['Block']+'</button></a>'
+                buttonsStr+= \
+                    '<a href="/users/'+actorNickname+'?options='+followUrl+ \
+                    ';1;'+avatarUrl+'"><button class="buttonunfollow">'+ \
+                    translate['Block']+'</button></a>'
                 #buttonsStr+='<a href="/users/'+actorNickname+'?block='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Block']+'</button></a>'
             if b=='unfollow':
-                buttonsStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
+                buttonsStr+= \
+                    '<a href="/users/'+actorNickname+'?options='+followUrl+ \
+                    ';1;'+avatarUrl+'"><button class="buttonunfollow">'+ \
+                    translate['Unfollow']+'</button></a>'
                 #buttonsStr+='<a href="/users/'+actorNickname+'?unfollow='+followUrl+';'+avatarUrl+'"><button class="buttonunfollow">'+translate['Unfollow']+'</button></a>'
 
     resultStr='<div class="container">\n'
-    resultStr+='<a href="/users/'+actorNickname+'?options='+followUrl+';1;'+avatarUrl+'">'
+    resultStr+= \
+        '<a href="/users/'+actorNickname+'?options='+ \
+        followUrl+';1;'+avatarUrl+'">'
     resultStr+='<p><img loading="lazy" src="'+avatarUrl+'" alt=" ">\n'
     resultStr+=titleStr+'</a>'+buttonsStr+'</p>'
     resultStr+='</div>\n'
@@ -1836,7 +2150,8 @@ def addEmbeddedAudio(translate: {},content: str) -> str:
         if not w.endswith(extension):
             continue
             
-        if not (w.startswith('http') or w.startswith('dat:') or w.startswith('i2p:') or '/' in w):
+        if not (w.startswith('http') or w.startswith('dat:') or \
+                w.startswith('i2p:') or '/' in w):
             continue
         url=w
         content+='<center><audio controls>'
@@ -1875,11 +2190,15 @@ def addEmbeddedVideo(translate: {},content: str,width=400,height=300) -> str:
             w=w[:-1]
         if not w.endswith(extension):
             continue
-        if not (w.startswith('http') or w.startswith('dat:') or w.startswith('i2p:') or '/' in w):
+        if not (w.startswith('http') or w.startswith('dat:') or \
+                w.startswith('i2p:') or '/' in w):
             continue
         url=w
-        content+='<center><video width="'+str(width)+'" height="'+str(height)+'" controls>'
-        content+='<source src="'+url+'" type="video/'+extension.replace('.','')+'">'
+        content+= \
+            '<center><video width="'+str(width)+'" height="'+ \
+            str(height)+'" controls>'
+        content+= \
+            '<source src="'+url+'" type="video/'+extension.replace('.','')+'">'
         content+=translate['Your browser does not support the video element.']
         content+='</video></center>'
     return content
@@ -1891,7 +2210,10 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
         url=content.split('>vimeo.com/')[1]
         if '<' in url:
             url=url.split('<')[0]
-            content=content+"<center><iframe loading=\"lazy\" src=\"https://player.vimeo.com/video/"+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content= \
+                content+"<center><iframe loading=\"lazy\" src=\"https://player.vimeo.com/video/"+ \
+                url+"\" width=\""+str(width)+"\" height=\""+str(height)+ \
+                "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     videoSite='https://www.youtube.com'
@@ -1901,10 +2223,15 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             url=url.split('"')[0].replace('/watch?v=','/embed/')
             if '&' in url:
                 url=url.split('&')[0]
-            content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+            content= \
+                content+"<center><iframe loading=\"lazy\" src=\""+ \
+                videoSite+url+"\" width=\""+str(width)+ \
+                "\" height=\""+str(height)+ \
+                "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
             return content
 
-    invidiousSites=('https://invidio.us','axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4bzzsg2ii4fv2iid.onion')
+    invidiousSites=('https://invidio.us', \
+                    'axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4bzzsg2ii4fv2iid.onion')
     for videoSite in invidiousSites:
         if '"'+videoSite in content:
             url=content.split('"'+videoSite)[1]
@@ -1912,7 +2239,11 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
                 url=url.split('"')[0].replace('/watch?v=','/embed/')
                 if '&' in url:
                     url=url.split('&')[0]
-                content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+                content= \
+                    content+"<center><iframe loading=\"lazy\" src=\""+ \
+                    videoSite+url+"\" width=\""+str(width)+"\" height=\""+ \
+                    str(height)+ \
+                    "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
                 return content
 
     videoSite='https://media.ccc.de'
@@ -1922,19 +2253,44 @@ def addEmbeddedVideoFromSites(translate: {},content: str,width=400,height=300) -
             url=url.split('"')[0]
             if not url.endswith('/oembed'):
                 url=url+'/oembed'
-            content=content+"<center><iframe loading=\"lazy\" src=\""+videoSite+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"fullscreen\" allowfullscreen></iframe></center>"
+            content= \
+                content+"<center><iframe loading=\"lazy\" src=\""+ \
+                videoSite+url+"\" width=\""+str(width)+"\" height=\""+ \
+                str(height)+ \
+                "\" frameborder=\"0\" allow=\"fullscreen\" allowfullscreen></iframe></center>"
             return content
 
     if '"https://' in content:
         # A selection of the current larger peertube sites, mostly French and German language
         # These have been chosen based on reported numbers of users and the content of each has not been reviewed, so mileage could vary
-        peerTubeSites=('peertube.mastodon.host','open.tube','share.tube','tube.tr4sk.me','videos.elbinario.net','hkvideo.live','peertube.snargol.com','tube.22decembre.eu','tube.fabrigli.fr','libretube.net','libre.video','peertube.linuxrocks.online','spacepub.space','video.ploud.jp','video.omniatv.com','peertube.servebeer.com','tube.tchncs.de','tubee.fr','video.alternanet.fr','devtube.dev-wiki.de','video.samedi.pm','video.irem.univ-paris-diderot.fr','peertube.openstreetmap.fr','video.antopie.org','scitech.video','tube.4aem.com','video.ploud.fr','peervideo.net','video.valme.io','videos.pair2jeux.tube','vault.mle.party','hostyour.tv','diode.zone','visionon.tv','artitube.artifaille.fr','peertube.fr','peertube.live','tube.ac-lyon.fr','www.yiny.org','betamax.video','tube.piweb.be','pe.ertu.be','peertube.social','videos.lescommuns.org','peertube.nogafa.org','skeptikon.fr','video.tedomum.net','tube.p2p.legal','sikke.fi','exode.me','peertube.video')
+        peerTubeSites=('peertube.mastodon.host','open.tube','share.tube', \
+                       'tube.tr4sk.me','videos.elbinario.net','hkvideo.live', \
+                       'peertube.snargol.com','tube.22decembre.eu', \
+                       'tube.fabrigli.fr','libretube.net','libre.video', \
+                       'peertube.linuxrocks.online','spacepub.space', \
+                       'video.ploud.jp','video.omniatv.com','peertube.servebeer.com', \
+                       'tube.tchncs.de','tubee.fr','video.alternanet.fr', \
+                       'devtube.dev-wiki.de','video.samedi.pm', \
+                       'video.irem.univ-paris-diderot.fr', \
+                       'peertube.openstreetmap.fr','video.antopie.org', \
+                       'scitech.video','tube.4aem.com','video.ploud.fr', \
+                       'peervideo.net','video.valme.io','videos.pair2jeux.tube', \
+                       'vault.mle.party','hostyour.tv','diode.zone','visionon.tv', \
+                       'artitube.artifaille.fr','peertube.fr','peertube.live', \
+                       'tube.ac-lyon.fr','www.yiny.org','betamax.video', \
+                       'tube.piweb.be','pe.ertu.be','peertube.social', \
+                       'videos.lescommuns.org','peertube.nogafa.org', \
+                       'skeptikon.fr','video.tedomum.net','tube.p2p.legal', \
+                       'sikke.fi','exode.me','peertube.video')
         for site in peerTubeSites:
             if '"https://'+site in content:
                 url=content.split('"https://'+site)[1]
                 if '"' in url:
                     url=url.split('"')[0].replace('/watch/','/embed/')            
-                    content=content+"<center><iframe loading=\"lazy\" sandbox=\"allow-same-origin allow-scripts\" src=\"https://"+site+url+"\" width=\""+str(width)+"\" height=\""+str(height)+"\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
+                    content= \
+                        content+"<center><iframe loading=\"lazy\" sandbox=\"allow-same-origin allow-scripts\" src=\"https://"+ \
+                        site+url+"\" width=\""+str(width)+"\" height=\""+str(height)+ \
+                        "\" frameborder=\"0\" allow=\"autoplay; fullscreen\" allowfullscreen></iframe></center>"
                     return content
     return content
 
@@ -1985,15 +2341,22 @@ def insertQuestion(baseDir: str,translate: {}, \
     if not showQuestionResults:
         # show the question options
         content+='<div class="question">'
-        content+='<form method="POST" action="/users/'+nickname+'/question'+pageNumberStr+'">'
-        content+='<input type="hidden" name="messageId" value="'+messageId+'"><br>'
+        content+= \
+            '<form method="POST" action="/users/'+ \
+            nickname+'/question'+pageNumberStr+'">'
+        content+= \
+            '<input type="hidden" name="messageId" value="'+messageId+'"><br>'
         for choice in postJsonObject['object']['oneOf']:
             if not choice.get('type'):
                 continue
             if not choice.get('name'):
                 continue
-            content+='<input type="radio" name="answer" value="'+choice['name']+'"> '+choice['name']+'<br><br>'
-        content+='<input type="submit" value="'+translate['Vote']+'" class="vote"><br><br>'
+            content+= \
+                '<input type="radio" name="answer" value="'+ \
+                choice['name']+'"> '+choice['name']+'<br><br>'
+        content+= \
+            '<input type="submit" value="'+ \
+            translate['Vote']+'" class="vote"><br><br>'
         content+='</form></div>'
     else:
         # show the responses to a question
@@ -2027,8 +2390,15 @@ def insertQuestion(baseDir: str,translate: {}, \
             except:
                 pass
             votesPercent=str(int(votes*100/maxVotes))
-            content+='<p><input type="text" title="'+str(votes)+'" name="skillName'+str(questionCtr)+'" value="'+questionOption['name']+' ('+str(votes)+')" style="width:40%">'
-            content+='<input type="range" min="1" max="100" class="slider" title="'+str(votes)+'" name="skillValue'+str(questionCtr)+'" value="'+votesPercent+'"></p>'
+            content+= \
+                '<p><input type="text" title="'+str(votes)+ \
+                '" name="skillName'+str(questionCtr)+ \
+                '" value="'+questionOption['name']+ \
+                ' ('+str(votes)+')" style="width:40%">'
+            content+= \
+                '<input type="range" min="1" max="100" class="slider" title="'+ \
+                str(votes)+'" name="skillValue'+str(questionCtr)+ \
+                '" value="'+votesPercent+'"></p>'
             questionCtr+=1
         content+='</div>'
     return content
@@ -2099,7 +2469,8 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
     return the html text
     This is much quicker than generating the html from the json object
     """
-    cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+    cachedPostFilename= \
+        getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
 
     postHtml=''
     if not cachedPostFilename:
@@ -2126,8 +2497,10 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,nickname: str,domain: str, \
     """Saves the given html for a post to a cache file
     This is so that it can be quickly reloaded on subsequent refresh of the timeline
     """
-    htmlPostCacheDir=getCachedPostDirectory(baseDir,nickname,domain)
-    cachedPostFilename=getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
+    htmlPostCacheDir= \
+        getCachedPostDirectory(baseDir,nickname,domain)
+    cachedPostFilename= \
+        getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
 
     # create the cache directory if needed
     if not os.path.isdir(htmlPostCacheDir):
@@ -2149,20 +2522,25 @@ def preparePostFromHtmlCache(postHtml: str,boxName: str,pageNumber: int) -> str:
         postHtml=postHtml.replace('?tl=inbox','?tl=tlbookmarks')
     return postHtml.replace(';-999;',';'+str(pageNumber)+';').replace('?page=-999','?page='+str(pageNumber))
 
-def postIsMuted(baseDir: str,nickname: str,domain: str, postJsonObject: {},messageId: str) -> bool:
+def postIsMuted(baseDir: str,nickname: str,domain: str, \
+                postJsonObject: {},messageId: str) -> bool:
     """ Returns true if the given post is muted
     """
     isMuted=postJsonObject.get('muted')
     if isMuted==True or isMuted==False:
         return isMuted
     postDir=baseDir+'/accounts/'+nickname+'@'+domain
-    muteFilename=postDir+'/inbox/'+messageId.replace('/','#')+'.json.muted'
+    muteFilename= \
+        postDir+'/inbox/'+messageId.replace('/','#')+'.json.muted'
     if os.path.isfile(muteFilename):
         return True
-    muteFilename=postDir+'/outbox/'+messageId.replace('/','#')+'.json.muted'
+    muteFilename= \
+        postDir+'/outbox/'+messageId.replace('/','#')+'.json.muted'
     if os.path.isfile(muteFilename):
         return True
-    muteFilename=baseDir+'/accounts/cache/announce/'+nickname+'/'+messageId.replace('/','#')+'.json.muted'
+    muteFilename= \
+        baseDir+'/accounts/cache/announce/'+nickname+ \
+        '/'+messageId.replace('/','#')+'.json.muted'
     if os.path.isfile(muteFilename):
         return True
     return False
@@ -2212,8 +2590,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if not showPublicOnly and storeToCache and boxName!='tlmedia':
         # update avatar if needed
         if not avatarUrl:
-            avatarUrl=getPersonAvatarUrl(baseDir,postActor,personCache)
-        updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
+            avatarUrl= \
+                getPersonAvatarUrl(baseDir,postActor,personCache)
+        updateAvatarImageCache(session,baseDir,httpPrefix, \
+                               postActor,avatarUrl,personCache)
 
         postHtml= \
             loadIndividualPostAsHtmlFromCache(baseDir,nickname,domain, \
@@ -2225,10 +2605,14 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             return postHtml
 
     if not avatarUrl:
-        avatarUrl=getPersonAvatarUrl(baseDir,postActor,personCache)
-        avatarUrl=updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
+        avatarUrl= \
+            getPersonAvatarUrl(baseDir,postActor,personCache)
+        avatarUrl= \
+            updateAvatarImageCache(session,baseDir,httpPrefix, \
+                                   postActor,avatarUrl,personCache)
     else:
-        updateAvatarImageCache(session,baseDir,httpPrefix,postActor,avatarUrl,personCache)
+        updateAvatarImageCache(session,baseDir,httpPrefix, \
+                               postActor,avatarUrl,personCache)
 
     if not avatarUrl:
         avatarUrl=postActor+'/avatar.png'
@@ -2248,11 +2632,18 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             titleStr=displayName+' '+titleStr
 
     avatarLink='    <a href="'+postActor+'">'
-    avatarLink+='    <img loading="lazy" src="'+avatarUrl+'" title="'+translate['Show profile']+'" alt=" "'+avatarPosition+'/></a>'
+    avatarLink+= \
+        '    <img loading="lazy" src="'+avatarUrl+'" title="'+ \
+        translate['Show profile']+'" alt=" "'+avatarPosition+'/></a>'
     
     if showAvatarOptions and fullDomain+'/users/'+nickname not in postActor:
-        avatarLink='    <a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'
-        avatarLink+='    <img loading="lazy" title="'+translate['Show options for this person']+'" src="'+avatarUrl+'" '+avatarPosition+'/></a>'
+        avatarLink= \
+            '    <a href="/users/'+nickname+'?options='+postActor+ \
+            ';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'
+        avatarLink+= \
+            '    <img loading="lazy" title="'+ \
+            translate['Show options for this person']+ \
+            '" src="'+avatarUrl+'" '+avatarPosition+'/></a>'
     avatarImageInPost='  <div class="timeline-avatar">'+avatarLink+'</div>'
 
     # don't create new html within the bookmarks timeline
@@ -2260,7 +2651,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if boxName=='tlbookmarks':
         return ''
 
-    timelinePostBookmark=postJsonObject['id'].replace('/activity','').replace('://','-').replace('/','-')
+    timelinePostBookmark= \
+        postJsonObject['id'].replace('/activity','').replace('://','-').replace('/','-')
 
     # If this is the inbox timeline then don't show the repeat icon on any DMs
     showRepeatIcon=showRepeats
@@ -2312,7 +2704,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 addEmojiToDisplayName(baseDir,httpPrefix, \
                                       nickname,domain, \
                                       displayName,False)
-        titleStr+='<a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">'+displayName+'</a>'
+        titleStr+= \
+            '<a href="/users/'+nickname+'?options='+postActor+ \
+            ';'+str(pageNumber)+';'+avatarUrl+messageIdStr+ \
+            '">'+displayName+'</a>'
     else:
         if not messageId:
             #pprint(postJsonObject)
@@ -2323,11 +2718,16 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if not actorDomain:
             #pprint(postJsonObject)
             print('ERROR: no actorDomain')
-        titleStr+='<a href="/users/'+nickname+'?options='+postActor+';'+str(pageNumber)+';'+avatarUrl+messageIdStr+'">@'+actorNickname+'@'+actorDomain+'</a>'
+        titleStr+= \
+            '<a href="/users/'+nickname+'?options='+postActor+ \
+            ';'+str(pageNumber)+';'+avatarUrl+messageIdStr+ \
+            '">@'+actorNickname+'@'+actorDomain+'</a>'
 
     # Show a DM icon for DMs in the inbox timeline
     if showDMicon:
-        titleStr=titleStr+' <img loading="lazy" src="/'+iconsDir+'/dm.png" class="DMicon"/>'
+        titleStr= \
+            titleStr+' <img loading="lazy" src="/'+ \
+            iconsDir+'/dm.png" class="DMicon"/>'
 
     replyStr=''
     if showIcons:
@@ -2335,7 +2735,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if postJsonObject['object'].get('attributedTo'):
             replyToLink+='?mention='+postJsonObject['object']['attributedTo']
         if postJsonObject['object'].get('content'):
-            mentionedActors=getMentionsFromHtml(postJsonObject['object']['content'])
+            mentionedActors= \
+                getMentionsFromHtml(postJsonObject['object']['content'])
             if mentionedActors:
                 for actorUrl in mentionedActors:
                     if '?mention='+actorUrl not in replyToLink:
@@ -2362,7 +2763,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                     '?actor='+postJsonObject['actor']+ \
                     '" title="'+translate['Reply to this post']+'">'
                 
-        replyStr+='<img loading="lazy" title="'+translate['Reply to this post']+' |" alt="'+translate['Reply to this post']+' |" src="/'+iconsDir+'/reply.png"/></a>'
+        replyStr+= \
+            '<img loading="lazy" title="'+ \
+            translate['Reply to this post']+' |" alt="'+ \
+            translate['Reply to this post']+ \
+            ' |" src="/'+iconsDir+'/reply.png"/></a>'
 
     announceStr=''
     if not isModerationPost and showRepeatIcon:
@@ -2378,11 +2783,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 announceLink='unrepeatprivate'
             announceTitle=translate['Undo the repeat']
         announceStr= \
-            '<a href="/users/'+nickname+'?'+announceLink+'='+postJsonObject['object']['id']+pageNumberParam+ \
+            '<a href="/users/'+nickname+'?'+announceLink+ \
+            '='+postJsonObject['object']['id']+pageNumberParam+ \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+announceTitle+'">'
-        announceStr+='<img loading="lazy" title="'+translate['Repeat this post']+' |" alt="'+translate['Repeat this post']+' |" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
+        announceStr+= \
+            '<img loading="lazy" title="'+translate['Repeat this post']+ \
+            ' |" alt="'+translate['Repeat this post']+ \
+            ' |" src="/'+iconsDir+'/'+announceIcon+'"/></a>'
 
     likeStr=''
     if not isModerationPost:
@@ -2400,7 +2809,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+likeTitle+'">'
-        likeStr+='<img loading="lazy" title="'+likeTitle+' |" alt="'+likeTitle+' |" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
+        likeStr+= \
+            '<img loading="lazy" title="'+likeTitle+' |" alt="'+likeTitle+ \
+            ' |" src="/'+iconsDir+'/'+likeIcon+'"/></a>'
 
     bookmarkStr=''
     if not isModerationPost:
@@ -2417,7 +2828,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             '?actor='+postJsonObject['actor']+ \
             '?bm='+timelinePostBookmark+ \
             '?tl='+boxName+'" title="'+bookmarkTitle+'">'
-        bookmarkStr+='<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
+        bookmarkStr+= \
+            '<img loading="lazy" title="'+bookmarkTitle+' |" alt="'+ \
+            bookmarkTitle+' |" src="/'+iconsDir+'/'+bookmarkIcon+'"/></a>'
 
     isMuted=postIsMuted(baseDir,nickname,domain,postJsonObject,messageId)
 
@@ -2427,61 +2840,118 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
        ('/'+fullDomain+'/' in postActor and \
         messageId.startswith(postActor)):
         if '/users/'+nickname+'/' in messageId:
-            deleteStr='<a href="/users/'+nickname+'?delete='+messageId+pageNumberParam+'" title="'+translate['Delete this post']+'">'
-            deleteStr+='<img loading="lazy" alt="'+translate['Delete this post']+' |" title="'+translate['Delete this post']+' |" src="/'+iconsDir+'/delete.png"/></a>'
+            deleteStr= \
+                '<a href="/users/'+nickname+'?delete='+messageId+pageNumberParam+ \
+                '" title="'+translate['Delete this post']+'">'
+            deleteStr+= \
+                '<img loading="lazy" alt="'+translate['Delete this post']+ \
+                ' |" title="'+translate['Delete this post']+ \
+                ' |" src="/'+iconsDir+'/delete.png"/></a>'
     else:
         if not isMuted:
-            muteStr='<a href="/users/'+nickname+'?mute='+messageId+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Mute this post']+'">'
-            muteStr+='<img loading="lazy" alt="'+translate['Mute this post']+' |" title="'+translate['Mute this post']+' |" src="/'+iconsDir+'/mute.png"/></a>'
+            muteStr= \
+                '<a href="/users/'+nickname+ \
+                '?mute='+messageId+pageNumberParam+'?tl='+boxName+ \
+                '?bm='+timelinePostBookmark+ \
+                '" title="'+translate['Mute this post']+'">'
+            muteStr+= \
+                '<img loading="lazy" alt="'+ \
+                translate['Mute this post']+ \
+                ' |" title="'+translate['Mute this post']+ \
+                ' |" src="/'+iconsDir+'/mute.png"/></a>'
         else:
-            muteStr='<a href="/users/'+nickname+'?unmute='+messageId+pageNumberParam+'?tl='+boxName+'?bm='+timelinePostBookmark+'" title="'+translate['Undo mute']+'">'
-            muteStr+='<img loading="lazy" alt="'+translate['Undo mute']+' |" title="'+translate['Undo mute']+' |" src="/'+iconsDir+'/unmute.png"/></a>'
+            muteStr= \
+                '<a href="/users/'+nickname+'?unmute='+messageId+ \
+                pageNumberParam+'?tl='+boxName+'?bm='+ \
+                timelinePostBookmark+'" title="'+translate['Undo mute']+'">'
+            muteStr+= \
+                '<img loading="lazy" alt="'+translate['Undo mute']+ \
+                ' |" title="'+translate['Undo mute']+ \
+                ' |" src="/'+iconsDir+'/unmute.png"/></a>'
             
     replyAvatarImageInPost=''
     if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
                 if postJsonObject['object']['attributedTo'].startswith(postActor):
-                    titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/>'
+                    titleStr+= \
+                        ' <img loading="lazy" title="'+translate['announces']+ \
+                        '" alt="'+translate['announces']+ \
+                        '" src="/'+iconsDir+ \
+                        '/repeat_inactive.png" class="announceOrReply"/>'
                 else:
-                    announceNickname=getNicknameFromActor(postJsonObject['object']['attributedTo'])
+                    announceNickname= \
+                        getNicknameFromActor(postJsonObject['object']['attributedTo'])
                     if announceNickname:
-                        announceDomain,announcePort=getDomainFromActor(postJsonObject['object']['attributedTo'])
-                        getPersonFromCache(baseDir,postJsonObject['object']['attributedTo'],personCache)
-                        announceDisplayName=getDisplayName(baseDir,postJsonObject['object']['attributedTo'],personCache)
+                        announceDomain,announcePort= \
+                            getDomainFromActor(postJsonObject['object']['attributedTo'])
+                        getPersonFromCache(baseDir, \
+                                           postJsonObject['object']['attributedTo'], \
+                                           personCache)
+                        announceDisplayName= \
+                            getDisplayName(baseDir, \
+                                           postJsonObject['object']['attributedTo'], \
+                                           personCache)
                         if announceDisplayName:
                             if ':' in announceDisplayName:
                                 announceDisplayName= \
                                     addEmojiToDisplayName(baseDir,httpPrefix, \
                                                           nickname,domain, \
                                                           announceDisplayName,False)
-                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
+                            titleStr+= \
+                                ' <img loading="lazy" title="'+ \
+                                translate['announces']+'" alt="'+ \
+                                translate['announces']+'" src="/'+ \
+                                iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+ \
+                                postJsonObject['object']['id']+'">'+announceDisplayName+'</a>'
                             # show avatar of person replied to
                             announceActor=postJsonObject['object']['attributedTo']
-                            announceAvatarUrl=getPersonAvatarUrl(baseDir,announceActor,personCache)
+                            announceAvatarUrl= \
+                                getPersonAvatarUrl(baseDir,announceActor,personCache)
                             if announceAvatarUrl:
                                 replyAvatarImageInPost= \
                                     '<div class="timeline-avatar-reply">' \
-                                    '<a href="/users/'+nickname+'?options='+announceActor+';'+str(pageNumber)+';'+announceAvatarUrl+messageIdStr+'">' \
+                                    '<a href="/users/'+nickname+'?options='+ \
+                                    announceActor+';'+str(pageNumber)+ \
+                                    ';'+announceAvatarUrl+messageIdStr+'">' \
                                     '<img loading="lazy" src="'+announceAvatarUrl+'" ' \
                                     'title="'+translate['Show options for this person']+ \
                                     '" alt=" "'+avatarPosition+'/></a></div>'
                         else:
-                            titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@'+announceNickname+'@'+announceDomain+'</a>'
+                            titleStr+= \
+                                ' <img loading="lazy" title="'+translate['announces']+ \
+                                '" alt="'+translate['announces']+'" src="/'+iconsDir+ \
+                                '/repeat_inactive.png" class="announceOrReply"/> <a href="'+ \
+                                postJsonObject['object']['id']+'">@'+ \
+                                announceNickname+'@'+announceDomain+'</a>'
                     else:
-                        titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                        titleStr+= \
+                            ' <img loading="lazy" title="'+ \
+                            translate['announces']+'" alt="'+ \
+                            translate['announces']+'" src="/'+iconsDir+ \
+                            '/repeat_inactive.png" class="announceOrReply"/> <a href="'+ \
+                            postJsonObject['object']['id']+'">@unattributed</a>'
             else:
-                titleStr+=' <img loading="lazy" title="'+translate['announces']+'" alt="'+translate['announces']+'" src="/'+iconsDir+'/repeat_inactive.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['id']+'">@unattributed</a>'
+                titleStr+= \
+                    ' <img loading="lazy" title="'+translate['announces']+ \
+                    '" alt="'+translate['announces']+'" src="/'+iconsDir+ \
+                    '/repeat_inactive.png" class="announceOrReply"/> <a href="'+ \
+                    postJsonObject['object']['id']+'">@unattributed</a>'
         else:
             if postJsonObject['object'].get('inReplyTo'):
                 containerClassIcons='containericons darker'
                 containerClass='container darker'
                 #avatarPosition=' class="right"'
                 if postJsonObject['object']['inReplyTo'].startswith(postActor):
-                    titleStr+=' <img loading="lazy" title="'+translate['replying to themselves']+'" alt="'+translate['replying to themselves']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
+                    titleStr+= \
+                        ' <img loading="lazy" title="'+ \
+                        translate['replying to themselves']+ \
+                        '" alt="'+translate['replying to themselves']+ \
+                        '" src="/'+iconsDir+'/reply.png" class="announceOrReply"/>'
                 else:
                     if '/statuses/' in postJsonObject['object']['inReplyTo']:
-                        replyActor=postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
+                        replyActor= \
+                            postJsonObject['object']['inReplyTo'].split('/statuses/')[0]
                         replyNickname=getNicknameFromActor(replyActor)
                         if replyNickname:
                             replyDomain,replyPort=getDomainFromActor(replyActor)
@@ -2494,26 +2964,54 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                             addEmojiToDisplayName(baseDir,httpPrefix, \
                                                                   nickname,domain, \
                                                                   replyDisplayName,False)
-                                    titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+replyDisplayName+'</a>'
+                                    titleStr+= \
+                                        ' <img loading="lazy" title="'+ \
+                                        translate['replying to']+'" alt="'+ \
+                                        translate['replying to']+'" src="/'+ \
+                                        iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+ \
+                                        postJsonObject['object']['inReplyTo']+ \
+                                        '">'+replyDisplayName+'</a>'
 
                                     # show avatar of person replied to
-                                    replyAvatarUrl=getPersonAvatarUrl(baseDir,replyActor,personCache)
+                                    replyAvatarUrl= \
+                                        getPersonAvatarUrl(baseDir,replyActor,personCache)
                                     if replyAvatarUrl:
                                         replyAvatarImageInPost='<div class="timeline-avatar-reply">'
-                                        replyAvatarImageInPost+='<a href="/users/'+nickname+'?options='+replyActor+';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">'
-                                        replyAvatarImageInPost+='<img loading="lazy" src="'+replyAvatarUrl+'" '
-                                        replyAvatarImageInPost+='title="'+translate['Show profile']
-                                        replyAvatarImageInPost+='" alt=" "'+avatarPosition+'/></a></div>'
+                                        replyAvatarImageInPost+= \
+                                            '<a href="/users/'+nickname+'?options='+replyActor+ \
+                                            ';'+str(pageNumber)+';'+replyAvatarUrl+messageIdStr+'">'
+                                        replyAvatarImageInPost+= \
+                                            '<img loading="lazy" src="'+replyAvatarUrl+'" '
+                                        replyAvatarImageInPost+= \
+                                            'title="'+translate['Show profile']
+                                        replyAvatarImageInPost+= \
+                                            '" alt=" "'+avatarPosition+'/></a></div>'
                                 else:
-                                    titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@'+replyNickname+'@'+replyDomain+'</a>'
+                                    titleStr+= \
+                                        ' <img loading="lazy" title="'+ \
+                                        translate['replying to']+'" alt="'+ \
+                                        translate['replying to']+'" src="/'+ \
+                                        iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+ \
+                                        postJsonObject['object']['inReplyTo']+'">@'+ \
+                                        replyNickname+'@'+replyDomain+'</a>'
                         else:
-                            titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">@unknown</a>'
+                            titleStr+= \
+                                ' <img loading="lazy" title="'+ \
+                                translate['replying to']+'" alt="'+ \
+                                translate['replying to']+'" src="/'+ \
+                                iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+ \
+                                postJsonObject['object']['inReplyTo']+'">@unknown</a>'
                     else:
-                        postDomain=postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','')
+                        postDomain= \
+                            postJsonObject['object']['inReplyTo'].replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','')
                         if '/' in postDomain:
                             postDomain=postDomain.split('/',1)[0]
                         if postDomain:
-                            titleStr+=' <img loading="lazy" title="'+translate['replying to']+'" alt="'+translate['replying to']+'" src="/'+iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
+                            titleStr+= \
+                                ' <img loading="lazy" title="'+translate['replying to']+ \
+                                '" alt="'+translate['replying to']+'" src="/'+ \
+                                iconsDir+'/reply.png" class="announceOrReply"/> <a href="'+ \
+                                postJsonObject['object']['inReplyTo']+'">'+postDomain+'</a>'
     attachmentStr=''
     if postJsonObject['object'].get('attachment'):
         if isinstance(postJsonObject['object']['attachment'], list):
@@ -2661,7 +3159,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                                 else:
                                     galleryStr+='<label class="transparent">---</label><br>'
                                 galleryStr+='  <div class="mediaicons">\n'
-                                galleryStr+='    '+replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+'\n'
+                                galleryStr+= \
+                                    '    '+replyStr+announceStr+likeStr+bookmarkStr+ \
+                                    deleteStr+muteStr+'\n'
                                 galleryStr+='  </div>\n'
                                 galleryStr+='  <div class="mediaavatar">\n'
                                 galleryStr+='    '+avatarLink+'\n'
@@ -2684,9 +3184,12 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         publishedStr=postJsonObject['object']['published']
         if '.' not in publishedStr:
             if '+' not in publishedStr:
-                datetimeObject = datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
+                datetimeObject = \
+                    datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
             else:
-                datetimeObject = datetime.strptime(publishedStr.split('+')[0]+'Z',"%Y-%m-%dT%H:%M:%SZ")
+                datetimeObject = \
+                    datetime.strptime(publishedStr.split('+')[0]+'Z', \
+                                      "%Y-%m-%dT%H:%M:%SZ")
         else:
             publishedStr=publishedStr.replace('T',' ').split('.')[0]
             datetimeObject = parse(publishedStr)
@@ -2713,7 +3216,8 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             # add a generic summary if none is provided
             postJsonObject['object']['summary']=translate['Sensitive']
 
-    # add an extra line if there is a content warning, for better vertical spacing on mobile
+    # add an extra line if there is a content warning,
+    # for better vertical spacing on mobile
     if postIsSensitive:
         footerStr='<br>'+footerStr
 
@@ -2929,16 +3433,29 @@ def htmlTimeline(defaultTimeline: str, \
             for line in f:
                 if len(line)>0:
                     # show follow approvals icon
-                    followApprovals='<a href="'+actor+'/followers"><img loading="lazy" class="timelineicon" alt="'+translate['Approve follow requests']+'" title="'+translate['Approve follow requests']+'" src="/'+iconsDir+'/person.png"/></a>'
+                    followApprovals= \
+                        '<a href="'+actor+'/followers"><img loading="lazy" class="timelineicon" alt="'+ \
+                        translate['Approve follow requests']+ \
+                        '" title="'+translate['Approve follow requests']+ \
+                        '" src="/'+iconsDir+'/person.png"/></a>'
                     break
 
     moderationButtonStr=''
     if moderator:
-        moderationButtonStr='<a href="'+actor+'/moderation"><button class="'+moderationButton+'"><span>'+translate['Mod']+' </span></button></a>'
+        moderationButtonStr= \
+            '<a href="'+actor+'/moderation"><button class="'+ \
+            moderationButton+'"><span>'+ \
+            translate['Mod']+' </span></button></a>'
 
-    sharesButtonStr='<a href="'+actor+'/tlshares"><button class="'+sharesButton+'"><span>'+translate['Shares']+' </span></button></a>'
+    sharesButtonStr= \
+        '<a href="'+actor+'/tlshares"><button class="'+ \
+        sharesButton+'"><span>'+translate['Shares']+ \
+        ' </span></button></a>'
 
-    bookmarksButtonStr='<a href="'+actor+'/tlbookmarks"><button class="'+bookmarksButton+'"><span>'+translate['Bookmarks']+' </span></button></a>'
+    bookmarksButtonStr= \
+        '<a href="'+actor+'/tlbookmarks"><button class="'+ \
+        bookmarksButton+'"><span>'+translate['Bookmarks']+ \
+        ' </span></button></a>'
 
     tlStr=htmlHeader(cssFilename,profileStyle)
     #if (boxName=='inbox' or boxName=='dm') and pageNumber==1:
@@ -2947,50 +3464,121 @@ def htmlTimeline(defaultTimeline: str, \
 
     if boxName!='dm':
         if not manuallyApproveFollowers:
-            newPostButtonStr='<a href="'+actor+'/newpost"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
+            newPostButtonStr= \
+                '<a href="'+actor+'/newpost"><img loading="lazy" src="/'+ \
+                iconsDir+'/newpost.png" title="'+ \
+                translate['Create a new post']+'" alt="'+ \
+                translate['Create a new post']+'" class="timelineicon"/></a>'
         else:
-            newPostButtonStr='<a href="'+actor+'/newfollowers"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new post']+'" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
+            newPostButtonStr= \
+                '<a href="'+actor+'/newfollowers"><img loading="lazy" src="/'+ \
+                iconsDir+'/newpost.png" title="'+translate['Create a new post']+ \
+                '" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
     else:
-        newPostButtonStr='<a href="'+actor+'/newdm"><img loading="lazy" src="/'+iconsDir+'/newpost.png" title="'+translate['Create a new DM']+'" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
+        newPostButtonStr= \
+            '<a href="'+actor+'/newdm"><img loading="lazy" src="/'+ \
+            iconsDir+'/newpost.png" title="'+translate['Create a new DM']+ \
+            '" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
 
     # This creates a link to the profile page when viewed in lynx, but should be invisible in a graphical web browser
-    tlStr+='<a href="/users/'+nickname+'"><label class="transparent">'+translate['Switch to profile view']+'</label></a>'
+    tlStr+= \
+        '<a href="/users/'+nickname+'"><label class="transparent">'+ \
+        translate['Switch to profile view']+'</label></a>'
     
     # banner and row of buttons
-    tlStr+='<a href="/users/'+nickname+'" title="'+translate['Switch to profile view']+'" alt="'+translate['Switch to profile view']+'">'
+    tlStr+= \
+        '<a href="/users/'+nickname+'" title="'+ \
+        translate['Switch to profile view']+'" alt="'+ \
+        translate['Switch to profile view']+'">'
     tlStr+='<div class="timeline-banner">'
     tlStr+='</div></a>'
     tlStr+='<div class="container">\n'
     if defaultTimeline!='tlmedia':
-        tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
+        tlStr+= \
+            '    <a href="'+actor+'/inbox"><button class="'+ \
+            inboxButton+'"><span>'+ \
+            translate['Inbox']+'</span></button></a>'
     else:
-        tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
-    tlStr+='    <a href="'+actor+'/dm"><button class="'+dmButton+'"><span>'+translate['DM']+'</span></button></a>'
-    tlStr+='    <a href="'+actor+'/tlreplies"><button class="'+repliesButton+'"><span>'+translate['Replies']+'</span></button></a>'
+        tlStr+= \
+            '    <a href="'+actor+'/tlmedia"><button class="'+ \
+            mediaButton+'"><span>'+translate['Media']+ \
+            '</span></button></a>'
+    tlStr+= \
+        '    <a href="'+actor+'/dm"><button class="'+dmButton+ \
+        '"><span>'+translate['DM']+'</span></button></a>'
+    tlStr+= \
+        '    <a href="'+actor+'/tlreplies"><button class="'+ \
+        repliesButton+'"><span>'+translate['Replies']+ \
+        '</span></button></a>'
     if defaultTimeline!='tlmedia':
-        tlStr+='    <a href="'+actor+'/tlmedia"><button class="'+mediaButton+'"><span>'+translate['Media']+'</span></button></a>'
+        tlStr+= \
+            '    <a href="'+actor+'/tlmedia"><button class="'+ \
+            mediaButton+'"><span>'+translate['Media']+ \
+            '</span></button></a>'
     else:
-        tlStr+='    <a href="'+actor+'/inbox"><button class="'+inboxButton+'"><span>'+translate['Inbox']+'</span></button></a>'
-    tlStr+='    <a href="'+actor+'/outbox"><button class="'+sentButton+'"><span>'+translate['Outbox']+'</span></button></a>'
-    tlStr+=sharesButtonStr+bookmarksButtonStr+moderationButtonStr+newPostButtonStr
-    tlStr+='    <a href="'+actor+'/search"><img loading="lazy" src="/'+iconsDir+'/search.png" title="'+translate['Search and follow']+'" alt="'+translate['Search and follow']+'" class="timelineicon"/></a>'
-    tlStr+='    <a href="'+actor+calendarPath+'"><img loading="lazy" src="/'+iconsDir+'/'+calendarImage+'" title="'+translate['Calendar']+'" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'
-    tlStr+='    <a href="'+actor+'/'+boxName+'"><img loading="lazy" src="/'+iconsDir+'/refresh.png" title="'+translate['Refresh']+'" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'
+        tlStr+= \
+            '    <a href="'+actor+'/inbox"><button class="'+ \
+            inboxButton+'"><span>'+translate['Inbox']+ \
+            '</span></button></a>'
+    tlStr+= \
+        '    <a href="'+actor+'/outbox"><button class="'+ \
+        sentButton+'"><span>'+translate['Outbox']+ \
+        '</span></button></a>'
+    tlStr+= \
+        sharesButtonStr+bookmarksButtonStr+moderationButtonStr+newPostButtonStr
+    tlStr+= \
+        '    <a href="'+actor+'/search"><img loading="lazy" src="/'+ \
+        iconsDir+'/search.png" title="'+ \
+        translate['Search and follow']+'" alt="'+ \
+        translate['Search and follow']+'" class="timelineicon"/></a>'
+    tlStr+= \
+        '    <a href="'+actor+calendarPath+ \
+        '"><img loading="lazy" src="/'+iconsDir+'/'+ \
+        calendarImage+'" title="'+translate['Calendar']+ \
+        '" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'
+    tlStr+= \
+        '    <a href="'+actor+'/'+boxName+ \
+        '"><img loading="lazy" src="/'+iconsDir+ \
+        '/refresh.png" title="'+translate['Refresh']+ \
+        '" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'
     tlStr+=followApprovals
     tlStr+='</div>'
 
     # second row of buttons for moderator actions
     if moderator and boxName=='moderation':
-        tlStr+='<form method="POST" action="/users/'+nickname+'/moderationaction">'
+        tlStr+= \
+            '<form method="POST" action="/users/'+ \
+            nickname+'/moderationaction">'
         tlStr+='<div class="container">\n'
-        tlStr+='    <b>'+translate['Nickname or URL. Block using *@domain or nickname@domain']+'</b><br>\n'
+        tlStr+= \
+            '    <b>'+ \
+            translate['Nickname or URL. Block using *@domain or nickname@domain']+'</b><br>\n'
         tlStr+='    <input type="text" name="moderationAction" value="" autofocus><br>\n'
-        tlStr+='    <input type="submit" title="'+translate['Remove the above item']+'" name="submitRemove" value="'+translate['Remove']+'">'
-        tlStr+='    <input type="submit" title="'+translate['Suspend the above account nickname']+'" name="submitSuspend" value="'+translate['Suspend']+'">'
-        tlStr+='    <input type="submit" title="'+translate['Remove a suspension for an account nickname']+'" name="submitUnsuspend" value="'+translate['Unsuspend']+'">'
-        tlStr+='    <input type="submit" title="'+translate['Block an account on another instance']+'" name="submitBlock" value="'+translate['Block']+'">'
-        tlStr+='    <input type="submit" title="'+translate['Unblock an account on another instance']+'" name="submitUnblock" value="'+translate['Unblock']+'">'
-        tlStr+='    <input type="submit" title="'+translate['Information about current blocks/suspensions']+'" name="submitInfo" value="'+translate['Info']+'">'
+        tlStr+= \
+            '    <input type="submit" title="'+ \
+            translate['Remove the above item']+ \
+            '" name="submitRemove" value="'+ \
+            translate['Remove']+'">'
+        tlStr+= \
+            '    <input type="submit" title="'+ \
+            translate['Suspend the above account nickname']+ \
+            '" name="submitSuspend" value="'+translate['Suspend']+'">'
+        tlStr+= \
+            '    <input type="submit" title="'+ \
+            translate['Remove a suspension for an account nickname']+ \
+            '" name="submitUnsuspend" value="'+translate['Unsuspend']+'">'
+        tlStr+= \
+            '    <input type="submit" title="'+ \
+            translate['Block an account on another instance']+ \
+            '" name="submitBlock" value="'+translate['Block']+'">'
+        tlStr+= \
+            '    <input type="submit" title="'+ \
+            translate['Unblock an account on another instance']+ \
+            '" name="submitUnblock" value="'+translate['Unblock']+'">'
+        tlStr+= \
+            '    <input type="submit" title="'+ \
+            translate['Information about current blocks/suspensions']+ \
+            '" name="submitInfo" value="'+translate['Info']+'">'
         tlStr+='</div></form>'
 
     if boxName=='tlshares':
@@ -4060,15 +4648,19 @@ def htmlCalendar(translate: {}, \
                     dayLink='<a href="'+url+'">'+str(dayOfMonth)+'</a>'
                     # there are events for this day
                     if not isToday:
-                        calendarStr+='    <td class="calendar__day__cell" data-event="">'+dayLink+'</td>\n'
+                        calendarStr+= \
+                            '    <td class="calendar__day__cell" data-event="">'+dayLink+'</td>\n'
                     else:
-                        calendarStr+='    <td class="calendar__day__cell" data-today-event="">'+dayLink+'</td>\n'
+                        calendarStr+= \
+                            '    <td class="calendar__day__cell" data-today-event="">'+dayLink+'</td>\n'
                 else:
                     # No events today
                     if not isToday:
-                        calendarStr+='    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
+                        calendarStr+= \
+                            '    <td class="calendar__day__cell">'+str(dayOfMonth)+'</td>\n'
                     else:
-                        calendarStr+='    <td class="calendar__day__cell" data-today="">'+str(dayOfMonth)+'</td>\n'
+                        calendarStr+= \
+                            '    <td class="calendar__day__cell" data-today="">'+str(dayOfMonth)+'</td>\n'
             else:
                 calendarStr+='    <td class="calendar__day__cell"></td>\n'
         calendarStr+='  </tr>\n'
@@ -4114,7 +4706,9 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
     tagSwarm.sort()
     tagSwarmStr=''
     for tagName in tagSwarm:
-        tagSwarmStr+='<a href="'+actor+'/tags/'+tagName+'" class="hashtagswarm">'+tagName+'</a> '
+        tagSwarmStr+= \
+            '<a href="'+actor+'/tags/'+tagName+ \
+            '" class="hashtagswarm">'+tagName+'</a> '
     tagSwarmHtml=tagSwarmStr.strip()+'\n'
     return tagSwarmHtml
 
@@ -4128,7 +4722,8 @@ def htmlSearch(translate: {}, \
 
     if os.path.isfile(baseDir+'/img/search-background.png'):
         if not os.path.isfile(baseDir+'/accounts/search-background.png'):
-            copyfile(baseDir+'/img/search-background.png',baseDir+'/accounts/search-background.png')
+            copyfile(baseDir+'/img/search-background.png', \
+                     baseDir+'/accounts/search-background.png')
 
     cssFilename=baseDir+'/epicyon-follow.css'
     if os.path.isfile(baseDir+'/follow.css'):
@@ -4139,7 +4734,9 @@ def htmlSearch(translate: {}, \
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
     followStr+='  <center>'    
-    followStr+='  <p class="followText">'+translate['Enter an address, shared item, #hashtag, *skill or :emoji: to search for']+'</p>'
+    followStr+= \
+        '  <p class="followText">'+ \
+        translate['Enter an address, shared item, #hashtag, *skill or :emoji: to search for']+'</p>'
     followStr+='  <form method="POST" accept-charset="UTF-8" action="'+actor+'/searchhandle">'
     followStr+='    <input type="hidden" name="actor" value="'+actor+'">'
     followStr+='    <input type="text" name="searchtext" autofocus><br>'
@@ -4204,8 +4801,11 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        wf = webfingerHandle(session,searchNickname+'@'+searchDomainFull,httpPrefix,wfRequest, \
-                             domain,projectVersion)
+        wf = \
+            webfingerHandle(session, \
+                            searchNickname+'@'+searchDomainFull, \
+                            httpPrefix,wfRequest, \
+                            domain,projectVersion)
         if not wf:
             if debug:
                 print('DEBUG: Unable to webfinger '+searchNickname+'@'+searchDomainFull)
@@ -4214,7 +4814,9 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
         if wf.get('errors'):
             personUrl=httpPrefix+'://'+searchDomainFull+'/users/'+searchNickname
             
-        asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader = {
+            'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
         if not personUrl:
             personUrl = getUserUrl(wf)
         if not personUrl:
@@ -4223,8 +4825,11 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
             personUrl=httpPrefix+'://'+searchDomainFull
         profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
-            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-            profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
+            asHeader = {
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
+            profileJson = \
+                getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
             if debug:
                 print('DEBUG: No actor returned from '+personUrl)
@@ -4275,10 +4880,14 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
         # remove formatting from profile description used on title
         avatarDescription=''
         if profileJson.get('summary'):
-            avatarDescription=profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
+            avatarDescription= \
+                profileJson['summary'].replace('<br>','\n').replace('<p>','').replace('</p>','')
         profileStr=' <div class="hero-image">'
         profileStr+='  <div class="hero-text">'
-        profileStr+='    <img loading="lazy" src="'+avatarUrl+'" alt="'+avatarDescription+'" title="'+avatarDescription+'">'
+        profileStr+= \
+            '    <img loading="lazy" src="'+avatarUrl+ \
+            '" alt="'+avatarDescription+'" title="'+ \
+            avatarDescription+'">'
         profileStr+='    <h1>'+displayName+'</h1>'
         profileStr+='    <p><b>@'+searchNickname+'@'+searchDomainFull+'</b></p>'
         profileStr+='    <p>'+profileDescriptionShort+'</p>'
@@ -4287,10 +4896,14 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
         profileStr+='<div class="container">\n'
         profileStr+='  <form method="POST" action="'+backUrl+'/followconfirm">'
         profileStr+='    <center>'
-        profileStr+='      <input type="hidden" name="actor" value="'+personUrl+'">'
-        profileStr+='      <button type="submit" class="button" name="submitYes">'+translate['Follow']+'</button>'
-        profileStr+='      <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'
-        profileStr+='      <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>'
+        profileStr+= \
+            '      <input type="hidden" name="actor" value="'+personUrl+'">'
+        profileStr+= \
+            '      <button type="submit" class="button" name="submitYes">'+translate['Follow']+'</button>'
+        profileStr+= \
+            '      <button type="submit" class="button" name="submitView">'+translate['View']+'</button>'
+        profileStr+= \
+            '      <a href="'+backUrl+'"><button class="button">'+translate['Go Back']+'</button></a>'
         profileStr+='    </center>'
         profileStr+='  </form>'
         profileStr+='</div>'
