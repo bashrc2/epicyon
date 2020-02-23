@@ -80,8 +80,9 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
                        int(eventTime.strftime("%m"))==monthNumber and \
                        int(eventTime.strftime("%d"))==dayNumber:
                         dayOfMonth=str(int(eventTime.strftime("%d")))
-                        # link to the id so that the event can be easily deleted
-                        tag['postId']=postId
+                        if '#statuses#' in postId:
+                            # link to the id so that the event can be easily deleted
+                            tag['postId']=postId.split('#statuses#')[1]
                         postEvent.append(tag)
                 else:
                     # tag is a place
