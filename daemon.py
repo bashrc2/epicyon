@@ -68,6 +68,7 @@ from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
+from inbox import isBlogPost
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -890,8 +891,8 @@ class PubServer(BaseHTTPRequestHandler):
         print('Test5')
         nickname=userEnding[0]
         # check for blog posts
-        print('Test6')
-        blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs.index'
+        blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/outbox.index'
+        print('Test6 '+blogIndexFilename)
         if not os.path.isfile(blogIndexFilename):
             return None,None
         print('Test7')
@@ -938,15 +939,16 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.path)
                 if blogFilename and nickname:
                     postJsonObject=loadJson(blogFilename)
-                    msg=htmlBlogPost(self.server.baseDir, \
-                                     self.server.httpPrefix, \
-                                     self.server.translate, \
-                                     nickname,self.server.domain, \
-                                     postJsonObject)
-                    if msg:
-                        self._set_headers('text/html',len(msg),cookie)
-                        self._write(msg)
-                        return
+                    if isBlogPost(postJsonObject):
+                        msg=htmlBlogPost(self.server.baseDir, \
+                                         self.server.httpPrefix, \
+                                         self.server.translate, \
+                                         nickname,self.server.domain, \
+                                         postJsonObject)
+                        if msg:
+                            self._set_headers('text/html',len(msg),cookie)
+                            self._write(msg)
+                            return
             self._404()
             return
 
