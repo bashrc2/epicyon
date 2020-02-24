@@ -876,32 +876,24 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' not in path:
             return None,None
         userEnding=path.split('/users/',1)[1]
-        print('Test1 '+path+' '+str(userEnding))
         if '/' not in userEnding:
             return None,None
         userEnding2=userEnding.split('/')
         nickname=userEnding2[0]
-        print('Test2 '+str(userEnding2) + ' nickname='+nickname)
         if len(userEnding2)!=2:
             return None,None
-        print('Test3')
         if len(userEnding2[1])<14:
             return None,None
         userEnding2[1]=userEnding2[1].strip()
-        print('Test4 '+str(userEnding2[1]))
         if not userEnding2[1].isdigit():
             return None,None
-        print('Test5')
         # check for blog posts
         blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/outbox.index'
-        print('Test6 '+blogIndexFilename)
         if not os.path.isfile(blogIndexFilename):
             return None,None
-        print('Test7')
         if '#'+userEnding2[1]+'.' not in open(blogIndexFilename).read():
             return None,None
         messageId=httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+userEnding2[1]
-        print('Test8 '+messageId+' '+str(locatePost(baseDir,nickname,domain,messageId)))
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
     def do_GET(self):
@@ -1064,7 +1056,6 @@ class PubServer(BaseHTTPRequestHandler):
                                     nickname,self.server.domain, \
                                     postJsonObject)
                    if msg!=None:
-                       print("Test sending blog post")
                        msg=msg.encode()
                        self._set_headers('text/html',len(msg),cookie)
                        self._write(msg)
