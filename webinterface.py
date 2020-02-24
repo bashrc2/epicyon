@@ -5030,7 +5030,7 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
                                          postJsonObject['object']['tag'],'content')
             blogStr+='<br>'+contentStr+'\n'
 
-        blogStr+='<hr>\n'
+        blogStr+='<br><hr>\n'
         blogStr+= \
             '<p class="about"><a href="'+httpPrefix+'://'+domain+ \
             '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
