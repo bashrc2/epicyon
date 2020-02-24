@@ -868,7 +868,9 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST TIMING|'+str(ctr)+'|'+timeDiff)
                     ctr+=1
 
-    def _pathContainsBlogLink(self,baseDir: str,httpPrefix: str,domain: str,path: str) -> (str,str):
+    def _pathContainsBlogLink(self,baseDir: str, \
+                              httpPrefix: str,domain: str, \
+                              domainFull: str,path: str) -> (str,str):
         """If the path contains a blog entry then return its filename
         """
         if '/users/' not in path:
@@ -899,7 +901,7 @@ class PubServer(BaseHTTPRequestHandler):
         if '#'+userEnding[1]+'.' not in open(blogIndexFilename).read():
             return None,None
         print('Test8')
-        messageId=httpPrefix+'://'+domain+'/'+nickname+'/statuses/'+nickname[1]
+        messageId=httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+userEnding[1]
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
     def do_GET(self):
@@ -936,6 +938,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._pathContainsBlogLink(self.server.baseDir, \
                                                self.server.httpPrefix, \
                                                self.server.domain, \
+                                               self.server.domainFull, \
                                                self.path)
                 if blogFilename and nickname:
                     postJsonObject=loadJson(blogFilename)
