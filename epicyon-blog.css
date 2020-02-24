@@ -69,10 +69,13 @@ a:link {
 }
 
 H1 {
+    font-size: var(--font-size3);
+    font-weight: bold;
     text-align: center
 }
 
 H3 {
+    font-size: var(--font-size3);
     text-align: center
 }
 
