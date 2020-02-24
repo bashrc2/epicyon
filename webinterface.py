@@ -5013,17 +5013,21 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
         cssFilename=baseDir+'/blog.css'
     print("Test cssFilename="+cssFilename)
     with open(cssFilename, 'r') as cssFile:
-        print("Test cssFilename loaded")
+        print("Test cssFilename loaded 1")
         blogCSS=cssFile.read()
+        print("Test cssFilename loaded 2")
         blogStr=htmlHeader(cssFilename,blogCSS)
 
+        print("Test cssFilename loaded 3")
         if postJsonObject['object'].get('summary'):
             blogStr+='<h1>'+postJsonObject['object']['summary']+'</h1>'
 
+        print("Test cssFilename loaded 4")
         if postJsonObject['object'].get('published'):
             if 'T' in postJsonObject['object']['published']:
                 blogStr+='<h3>'+postJsonObject['object']['published'].split('T')[0]+'</h3>'
 
+        print("Test cssFilename loaded 5")
         if postJsonObject['object'].get('content'):
             contentStr=addEmbeddedElements(translate,postJsonObject['object']['content'])
             if postJsonObject['object'].get('tag'):
@@ -5032,6 +5036,7 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
                                          postJsonObject['object']['tag'],'content')
             blogStr+=contentStr
 
+        print("Test cssFilename loaded 6")
         blogStr+='<hr>'
         blogStr+= \
             '<p class="about"><a href="'+httpPrefix+'://'+domain+ \
