@@ -1475,8 +1475,12 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     messageBoxHeight=400
     if mediaInstance:
         messageBoxHeight=200
+
     if endpoint=='newquestion':
         messageBoxHeight=100
+    elif endpoint=='newblog':
+        messageBoxHeight=800
+
     newPostForm+= \
         '    <textarea id="message" name="message" style="height:'+ \
         str(messageBoxHeight)+'px">'+mentionsStr+'</textarea>'
