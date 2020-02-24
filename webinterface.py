@@ -1249,6 +1249,7 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     extraFields=''
     endpoint='newpost'
     if path.endswith('/newblog'):
+        placeholderSubject=translate['Title']
         scopeIcon='scope_blog.png'
         scopeDescription=translate['Blog']
         endpoint='newblog'
