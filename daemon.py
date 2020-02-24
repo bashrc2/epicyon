@@ -900,8 +900,8 @@ class PubServer(BaseHTTPRequestHandler):
         print('Test7')
         if '#'+userEnding[1]+'.' not in open(blogIndexFilename).read():
             return None,None
-        messageId=httpPrefix+':##'+domainFull+'#users#'+nickname+'#statuses#'+userEnding[1]+'.json'
-        print('Test8 '+messageId)
+        messageId=httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+userEnding[1]
+        print('Test8 '+messageId+' '+str(locatePost(baseDir,nickname,domain,messageId)))
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
     def do_GET(self):
