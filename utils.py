@@ -279,8 +279,7 @@ def locatePost(baseDir: str,nickname: str,domain: str,postUrl: str,replies=False
     if os.path.isfile(postFilename):
         return postFilename
 
-    # if this post in the inbox of the person?
-    boxName='inbox'
+    boxName='tlblogs'
     postFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/'+boxName+'/'+postUrl+'.'+extension
     if os.path.isfile(postFilename):
         return postFilename

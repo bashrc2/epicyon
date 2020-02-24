@@ -22,6 +22,7 @@ from media import replaceYouTube
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
+from inbox import isBlogPost
 from announce import outboxAnnounce
 from follow import outboxUndoFollow
 from roles import outboxDelegate
@@ -156,20 +157,24 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
     if debug:
         print('DEBUG: savePostToBox')
     if messageJson['type']!='Upgrade':
+        outboxName='outbox'
+        if messageJson['type']=='Article':
+            outboxName='tlblogs'
+        
         savedFilename= \
             savePostToBox(baseDir, \
                           httpPrefix, \
                           postId, \
                           postToNickname, \
-                          domainFull,messageJson,'outbox')
+                          domainFull,messageJson,outboxName)
         if messageJson['type']=='Create' or \
            messageJson['type']=='Question' or \
            messageJson['type']=='Note' or \
            messageJson['type']=='Article' or \
            messageJson['type']=='Announce':
-            inboxUpdateIndex('outbox',baseDir, \
+            inboxUpdateIndex(outboxName,baseDir, \
                              postToNickname+'@'+domain, \
-                             savedFilename,debug)            
+                             savedFilename,debug)
     if outboxAnnounce(recentPostsCache, \
                       baseDir,messageJson,debug):
         if debug:

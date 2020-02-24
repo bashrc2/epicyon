@@ -888,7 +888,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not userEnding2[1].isdigit():
             return None,None
         # check for blog posts
-        blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/outbox.index'
+        blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs.index'
         if not os.path.isfile(blogIndexFilename):
             return None,None
         if '#'+userEnding2[1]+'.' not in open(blogIndexFilename).read():
