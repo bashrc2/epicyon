@@ -60,6 +60,7 @@ from posts import sendToFollowersThread
 from posts import postIsAddressedToPublic
 from posts import sendToNamedAddresses
 from posts import createPublicPost
+from posts import createBlogPost
 from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
@@ -2221,6 +2222,7 @@ class PubServer(BaseHTTPRequestHandler):
             # Various types of new post in the web interface
             if '/users/' in self.path and \
                (self.path.endswith('/newpost') or \
+                self.path.endswith('/newblog') or \
                 self.path.endswith('/newunlisted') or \
                 self.path.endswith('/newfollowers') or \
                 self.path.endswith('/newdm') or \
@@ -3603,6 +3605,33 @@ class PubServer(BaseHTTPRequestHandler):
                                      fields['subject'],fields['schedulePost'], \
                                      fields['eventDate'],fields['eventTime'], \
                                      fields['location'])
+                if messageJson:
+                    if fields['schedulePost']:
+                        return 1
+                    if self._postToOutbox(messageJson,__version__,nickname):
+                        populateReplies(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.domainFull, \
+                                        messageJson, \
+                                        self.server.maxReplies, \
+                                        self.server.debug)
+                        return 1
+                    else:
+                        return -1            
+            elif postType=='newblog':
+                messageJson= \
+                    createBlogPost(self.server.baseDir, \
+                                   nickname, \
+                                   self.server.domain,self.server.port, \
+                                   self.server.httpPrefix, \
+                                   fields['message'],False,False,False, \
+                                   filename,attachmentMediaType, \
+                                   fields['imageDescription'], \
+                                   self.server.useBlurHash, \
+                                   fields['replyTo'],fields['replyTo'], \
+                                   fields['subject'],fields['schedulePost'], \
+                                   fields['eventDate'],fields['eventTime'], \
+                                   fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
                         return 1

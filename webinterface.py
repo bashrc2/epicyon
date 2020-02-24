@@ -1233,7 +1233,7 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     if '?' in path:
         path=path.split('?')[0]
     pathBase= \
-        path.replace('/newreport','').replace('/newpost','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
+        path.replace('/newreport','').replace('/newpost','').replace('/newblog','').replace('/newshare','').replace('/newunlisted','').replace('/newfollowers','').replace('/newdm','')
 
     newPostImageSection ='    <div class="container">'
     newPostImageSection+='      <label class="labels">'+translate['Image description']+'</label>'
@@ -1248,23 +1248,27 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     placeholderMessage=translate['Write something']+'...'
     extraFields=''
     endpoint='newpost'
-    if path.endswith('/newunlisted'):
+    if path.endswith('/newblog'):
+        scopeIcon='scope_blog.png'
+        scopeDescription=translate['Blog']
+        endpoint='newblog'
+    elif path.endswith('/newunlisted'):
         scopeIcon='scope_unlisted.png'
         scopeDescription=translate['Unlisted']
         endpoint='newunlisted'
-    if path.endswith('/newfollowers'):
+    elif path.endswith('/newfollowers'):
         scopeIcon='scope_followers.png'
         scopeDescription=translate['Followers']
         endpoint='newfollowers'
-    if path.endswith('/newdm'):
+    elif path.endswith('/newdm'):
         scopeIcon='scope_dm.png'
         scopeDescription=translate['DM']
         endpoint='newdm'
-    if path.endswith('/newreport'):
+    elif path.endswith('/newreport'):
         scopeIcon='scope_report.png'
         scopeDescription=translate['Report']
         endpoint='newreport'
-    if path.endswith('/newquestion'):
+    elif path.endswith('/newquestion'):
         scopeIcon='scope_question.png'
         scopeDescription=translate['Question']
         placeholderMessage=translate['Enter your question']+'...'
@@ -1279,7 +1283,7 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
             '  <label class="labels">'+translate['Duration of listing in days']+ \
             ':</label> <input type="number" name="duration" min="1" max="365" step="1" value="14"><br>'
         extraFields+='</div>'
-    if path.endswith('/newshare'):
+    elif path.endswith('/newshare'):
         scopeIcon='scope_share.png'
         scopeDescription=translate['Shared Item']
         placeholderSubject=translate['Name of the shared item']+'...'
@@ -1364,23 +1368,27 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
     # build suffixes so that any replies or mentions are
     # preserved when switching between scopes
     dropdownNewPostSuffix='/newpost'
+    dropdownNewBlogSuffix='/newblog'
     dropdownUnlistedSuffix='/newunlisted'
     dropdownFollowersSuffix='/newfollowers'
     dropdownDMSuffix='/newdm'    
     dropdownReportSuffix='/newreport'    
     if inReplyTo or mentions:
         dropdownNewPostSuffix=''
+        dropdownNewBlogSuffix=''
         dropdownUnlistedSuffix=''
         dropdownFollowersSuffix=''
         dropdownDMSuffix=''        
         dropdownReportSuffix=''
     if inReplyTo:
         dropdownNewPostSuffix+='?replyto='+inReplyTo
+        dropdownNewBlogSuffix+='?replyto='+inReplyTo
         dropdownUnlistedSuffix+='?replyto='+inReplyTo
         dropdownFollowersSuffix+='?replyfollowers='+inReplyTo
         dropdownDMSuffix+='?replydm='+inReplyTo
     for mentionedActor in mentions:
         dropdownNewPostSuffix+='?mention='+mentionedActor
+        dropdownNewBlogSuffix+='?mention='+mentionedActor
         dropdownUnlistedSuffix+='?mention='+mentionedActor
         dropdownFollowersSuffix+='?mention='+mentionedActor
         dropdownDMSuffix+='?mention='+mentionedActor
@@ -1395,6 +1403,12 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
                 '"><img loading="lazy" alt="" title="" src="/'+ \
                 iconsDir+'/scope_public.png"/><b>'+ \
                 translate['Public']+'</b><br>'+ \
+                translate['Visible to anyone']+'</a>'
+            dropDownContent+= \
+                '          <a href="'+pathBase+dropdownNewBlogSuffix+ \
+                '"><img loading="lazy" alt="" title="" src="/'+ \
+                iconsDir+'/scope_blog.png"/><b>'+ \
+                translate['Blog']+'</b><br>'+ \
                 translate['Visible to anyone']+'</a>'
             dropDownContent+= \
                 '          <a href="'+pathBase+dropdownUnlistedSuffix+ \
