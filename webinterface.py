@@ -3484,17 +3484,24 @@ def htmlTimeline(defaultTimeline: str, \
         #tlStr=htmlHeader(cssFilename,profileStyle,240)
 
     if boxName!='dm':
-        if not manuallyApproveFollowers:
+        if boxName!='tlblogs':        
+            if not manuallyApproveFollowers:
+                newPostButtonStr= \
+                    '<a href="'+actor+'/newpost"><img loading="lazy" src="/'+ \
+                    iconsDir+'/newpost.png" title="'+ \
+                    translate['Create a new post']+'" alt="'+ \
+                    translate['Create a new post']+'" class="timelineicon"/></a>'
+            else:
+                newPostButtonStr= \
+                    '<a href="'+actor+'/newfollowers"><img loading="lazy" src="/'+ \
+                    iconsDir+'/newpost.png" title="'+translate['Create a new post']+ \
+                    '" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
+        else:
             newPostButtonStr= \
-                '<a href="'+actor+'/newpost"><img loading="lazy" src="/'+ \
+                '<a href="'+actor+'/newblog"><img loading="lazy" src="/'+ \
                 iconsDir+'/newpost.png" title="'+ \
                 translate['Create a new post']+'" alt="'+ \
                 translate['Create a new post']+'" class="timelineicon"/></a>'
-        else:
-            newPostButtonStr= \
-                '<a href="'+actor+'/newfollowers"><img loading="lazy" src="/'+ \
-                iconsDir+'/newpost.png" title="'+translate['Create a new post']+ \
-                '" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
     else:
         newPostButtonStr= \
             '<a href="'+actor+'/newdm"><img loading="lazy" src="/'+ \
