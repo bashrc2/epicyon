@@ -1040,7 +1040,7 @@ class PubServer(BaseHTTPRequestHandler):
                self._redirect_headers(originPathStrAbsolute,cookie)
                return
 
-           # show a blog post
+           # show blog post
            blogFilename,nickname= \
                self._pathContainsBlogLink(self.server.baseDir, \
                                           self.server.httpPrefix, \
