@@ -1956,6 +1956,13 @@ def createInbox(recentPostsCache: {}, \
                             session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
+def createBlogsTimeline(recentPostsCache: {}, \
+                        session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                        itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxIndexed(recentPostsCache, \
+                            session,baseDir,'tlblogs',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
 def createBookmarksTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                             itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxIndexed({},session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
@@ -2240,6 +2247,11 @@ def addPostStringToTimeline(postStr: str,boxname: str, \
         elif boxname=='tlreplies':
             if boxActor not in postStr:
                 return False
+        elif boxname=='tlblogs':
+            if '"Create"' not in postStr:
+                return False
+            if '"Article"' not in postStr:
+                return False
         elif boxname=='tlmedia':
             if '"Create"' in postStr:
                 if 'mediaType' not in postStr or 'image/' not in postStr:
@@ -2270,11 +2282,13 @@ def createBoxIndexed(recentPostsCache: {}, \
 
     if boxname!='inbox' and boxname!='dm' and \
        boxname!='tlreplies' and boxname!='tlmedia' and \
+       boxname!='tlblogs' and \
        boxname!='outbox' and boxname!='tlbookmarks':
         return None
 
     if boxname!='dm' and boxname!='tlreplies' and \
-       boxname!='tlmedia' and boxname!='tlbookmarks':
+       boxname!='tlmedia' and boxname!='tlblogs' and \
+       boxname!='tlbookmarks':
         boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     else:
         # extract DMs or replies or media from the inbox
@@ -2284,7 +2298,7 @@ def createBoxIndexed(recentPostsCache: {}, \
 
     sharedBoxDir=None
     if boxname=='inbox' or boxname=='tlreplies' or \
-       boxname=='tlmedia':
+       boxname=='tlmedia' or boxname=='tlblogs':
         sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
 
     # bookmarks timeline is like the inbox but has its own separate index
@@ -2297,6 +2311,8 @@ def createBoxIndexed(recentPostsCache: {}, \
         indexBoxName='tlreplies'
     elif boxname=='tlmedia':
         indexBoxName='tlmedia'
+    elif boxname=='tlblogs':
+        indexBoxName='tlblogs'
 
     if port:
         if port!=80 and port!=443:

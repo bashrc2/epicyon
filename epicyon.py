@@ -151,6 +151,9 @@ parser.add_argument('-f','--federate', nargs='+',dest='federationList', \
 parser.add_argument("--mediainstance", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Media Instance - favor media over text")
+parser.add_argument("--blogsinstance", type=str2bool, nargs='?', \
+                    const=True, default=False, \
+                    help="Blogs Instance - favor blogs over microblogging")
 parser.add_argument("--debug", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Show debug messages")
@@ -386,6 +389,11 @@ if not args.mediainstance:
     mediaInstance=getConfigParam(baseDir,'mediaInstance')
     if mediaInstance!=None:
         args.mediainstance=mediaInstance
+
+if not args.blogsinstance:
+    blogsInstance=getConfigParam(baseDir,'blogsInstance')
+    if blogsInstance!=None:
+        args.blogsinstance=blogsInstance
     
 # set the instance title in config.json
 title=getConfigParam(baseDir,'instanceTitle')
@@ -1504,7 +1512,8 @@ if not registration:
 if setTheme(baseDir,themeName):
     print('Theme set to '+themeName)
 
-runDaemon(args.mediainstance,args.maxRecentPosts, \
+runDaemon(args.blogsinstance,args.mediainstance, \
+          args.maxRecentPosts, \
           not args.nosharedinbox, \
           registration,args.language,__version__, \
           instanceId,args.client,baseDir, \

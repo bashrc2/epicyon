@@ -236,7 +236,7 @@ def createServerAlice(path: str,domain: str,port: int,bobAddress: str,federation
     maxMentions=10
     maxEmoji=10
     print('Server running: Alice')
-    runDaemon(False,5,True,True,'en',__version__, \
+    runDaemon(False,False,5,True,True,'en',__version__, \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
@@ -292,7 +292,7 @@ def createServerBob(path: str,domain: str,port: int,aliceAddress: str,federation
     maxMentions=10
     maxEmoji=10
     print('Server running: Bob')
-    runDaemon(False,5,True,True,'en',__version__, \
+    runDaemon(False,False,5,True,True,'en',__version__, \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \
@@ -328,7 +328,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     maxMentions=10
     maxEmoji=10
     print('Server running: Eve')
-    runDaemon(False,5,True,True,'en',__version__, \
+    runDaemon(False,False,5,True,True,'en',__version__, \
               "instanceId",False,path,domain,port,port, \
               httpPrefix,federationList,maxMentions,maxEmoji,False, \
               noreply,nolike,nopics,noannounce,cw,ocapAlways, \

@@ -3395,6 +3395,7 @@ def htmlTimeline(defaultTimeline: str, \
     moderator=isModerator(baseDir,nickname)
 
     inboxButton='button'
+    blogsButton='button'
     dmButton='button'
     if newDM:
         dmButton='buttonhighlighted'
@@ -3412,6 +3413,8 @@ def htmlTimeline(defaultTimeline: str, \
         moderationButton='buttonhighlighted'
     if boxName=='inbox':
         inboxButton='buttonselected'
+    elif boxName=='tlblogs':
+        blogsButton='buttonselected'
     elif boxName=='dm':
         dmButton='buttonselected'
         if newDM:
@@ -3511,16 +3514,24 @@ def htmlTimeline(defaultTimeline: str, \
     tlStr+='<div class="timeline-banner">'
     tlStr+='</div></a>'
     tlStr+='<div class="container">\n'
-    if defaultTimeline!='tlmedia':
-        tlStr+= \
-            '    <a href="'+actor+'/inbox"><button class="'+ \
-            inboxButton+'"><span>'+ \
-            translate['Inbox']+'</span></button></a>'
-    else:
+
+    # first button
+    if defaultTimeline=='tlmedia':
         tlStr+= \
             '    <a href="'+actor+'/tlmedia"><button class="'+ \
             mediaButton+'"><span>'+translate['Media']+ \
             '</span></button></a>'
+    elif defaultTimeline=='tlblogs':
+        tlStr+= \
+            '    <a href="'+actor+'/tlblogs"><button class="'+ \
+            blogsButton+'"><span>'+translate['Blogs']+ \
+            '</span></button></a>'
+    else:
+        tlStr+= \
+            '    <a href="'+actor+'/inbox"><button class="'+ \
+            inboxButton+'"><span>'+ \
+            translate['Inbox']+'</span></button></a>'
+
     tlStr+= \
         '    <a href="'+actor+'/dm"><button class="'+dmButton+ \
         '"><span>'+translate['DM']+'</span></button></a>'
@@ -3528,6 +3539,8 @@ def htmlTimeline(defaultTimeline: str, \
         '    <a href="'+actor+'/tlreplies"><button class="'+ \
         repliesButton+'"><span>'+translate['Replies']+ \
         '</span></button></a>'
+
+    # typically the media button
     if defaultTimeline!='tlmedia':
         tlStr+= \
             '    <a href="'+actor+'/tlmedia"><button class="'+ \
@@ -3538,6 +3551,19 @@ def htmlTimeline(defaultTimeline: str, \
             '    <a href="'+actor+'/inbox"><button class="'+ \
             inboxButton+'"><span>'+translate['Inbox']+ \
             '</span></button></a>'
+
+    # typically the blogs button
+    if defaultTimeline!='tlblogs':
+        tlStr+= \
+            '    <a href="'+actor+'/tlblogs"><button class="'+ \
+            blogsButton+'"><span>'+translate['Blogs']+ \
+            '</span></button></a>'
+    else:
+        tlStr+= \
+            '    <a href="'+actor+'/inbox"><button class="'+ \
+            inboxButton+'"><span>'+translate['Inbox']+ \
+            '</span></button></a>'
+
     tlStr+= \
         '    <a href="'+actor+'/outbox"><button class="'+ \
         sentButton+'"><span>'+translate['Outbox']+ \
@@ -3790,6 +3816,21 @@ def htmlInboxMedia(defaultTimeline: str, \
                         translate,pageNumber, \
                         itemsPerPage,session,baseDir,wfRequest,personCache, \
                         nickname,domain,port,inboxJson,'tlmedia',allowDeletion, \
+                        httpPrefix,projectVersion,False)
+
+def htmlInboxBlogs(defaultTimeline: str, \
+                   recentPostsCache: {},maxRecentPosts: int, \
+                   translate: {},pageNumber: int,itemsPerPage: int, \
+                   session,baseDir: str,wfRequest: {},personCache: {}, \
+                   nickname: str,domain: str,port: int,inboxJson: {}, \
+                   allowDeletion: bool, \
+                   httpPrefix: str,projectVersion: str) -> str:
+    """Show the blogs timeline as html
+    """
+    return htmlTimeline(defaultTimeline,recentPostsCache,maxRecentPosts, \
+                        translate,pageNumber, \
+                        itemsPerPage,session,baseDir,wfRequest,personCache, \
+                        nickname,domain,port,inboxJson,'tlblogs',allowDeletion, \
                         httpPrefix,projectVersion,False)
 
 def htmlModeration(defaultTimeline: str, \

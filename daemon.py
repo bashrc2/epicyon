@@ -115,6 +115,7 @@ from webinterface import htmlRemoveSharedItem
 from webinterface import htmlInboxDMs
 from webinterface import htmlInboxReplies
 from webinterface import htmlInboxMedia
+from webinterface import htmlInboxBlogs
 from webinterface import htmlUnblockConfirm
 from webinterface import htmlPersonOptions
 from webinterface import htmlIndividualPost
@@ -185,6 +186,9 @@ maxPostsInFeed=12
 
 # reduced posts for media feed because it can take a while
 maxPostsInMediaFeed=6
+
+# Blogs can be longer, so don't show many per page
+maxPostsInBlogsFeed=4
 
 # number of follows/followers per page
 followsPerPage=12
@@ -2894,6 +2898,84 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.GETbusy=False
                 return
 
+        # get the blogs for a given person
+        if self.path.endswith('/tlblogs') or '/tlblogs?page=' in self.path:
+            if '/users/' in self.path:
+                if authorized:
+                    inboxBlogsFeed= \
+                        personBoxJson(self.server.recentPostsCache, \
+                                      self.server.session, \
+                                      self.server.baseDir, \
+                                      self.server.domain, \
+                                      self.server.port, \
+                                      self.path, \
+                                      self.server.httpPrefix, \
+                                      maxPostsInBlogsFeed, 'tlblogs', \
+                                      True,self.server.ocapAlways)
+                    if not inboxBlogsFeed:
+                        inboxBlogsFeed=[]
+                    if self._requestHTTP():
+                        nickname=self.path.replace('/users/','').replace('/tlblogs','')
+                        pageNumber=1
+                        if '?page=' in nickname:
+                            pageNumber=nickname.split('?page=')[1]
+                            nickname=nickname.split('?page=')[0]
+                            if pageNumber.isdigit():
+                                pageNumber=int(pageNumber)
+                            else:
+                                pageNumber=1
+                        if 'page=' not in self.path:
+                            # if no page was specified then show the first
+                            inboxBlogsFeed= \
+                                personBoxJson(self.server.recentPostsCache, \
+                                              self.server.session, \
+                                              self.server.baseDir, \
+                                              self.server.domain, \
+                                              self.server.port, \
+                                              self.path+'?page=1', \
+                                              self.server.httpPrefix, \
+                                              maxPostsInBlogsFeed, 'tlblogs', \
+                                              True,self.server.ocapAlways)
+                        msg=htmlInboxBlogs(self.server.defaultTimeline, \
+                                           self.server.recentPostsCache, \
+                                           self.server.maxRecentPosts, \
+                                           self.server.translate, \
+                                           pageNumber,maxPostsInBlogsFeed, \
+                                           self.server.session, \
+                                           self.server.baseDir, \
+                                           self.server.cachedWebfingers, \
+                                           self.server.personCache, \
+                                           nickname, \
+                                           self.server.domain, \
+                                           self.server.port, \
+                                           inboxBlogsFeed, \
+                                           self.server.allowDeletion, \
+                                           self.server.httpPrefix, \
+                                           self.server.projectVersion).encode('utf-8')
+                        self._set_headers('text/html',len(msg),cookie)
+                        self._write(msg)
+                    else:
+                        # don't need authenticated fetch here because there is
+                        # already the authorization check
+                        msg=json.dumps(inboxBlogsFeed,ensure_ascii=False).encode('utf-8')
+                        self._set_headers('application/json',len(msg),None)
+                        self._write(msg)
+                    self.server.GETbusy=False
+                    return
+                else:
+                    if self.server.debug:
+                        nickname=self.path.replace('/users/','').replace('/tlblogs','')
+                        print('DEBUG: '+nickname+ \
+                              ' was not authorized to access '+self.path)
+            if self.path!='/tlblogs':
+                # not the blogs inbox
+                if self.server.debug:
+                    print('DEBUG: GET access to blogs is unauthorized')
+                self.send_response(405)
+                self.end_headers()
+                self.server.GETbusy=False
+                return
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,46)
 
         # get the shared items timeline for a given person
@@ -4343,6 +4425,20 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.defaultTimeline='inbox'
                                 setConfigParam(self.server.baseDir,"mediaInstance", \
                                                self.server.mediaInstance)
+                        if fields.get('blogsInstance'):
+                            self.server.blogsInstance=False
+                            self.server.defaultTimeline='inbox'
+                            if fields['blogsInstance']=='on':
+                                self.server.blogsInstance=True
+                                self.server.defaultTimeline='tlblogs'
+                            setConfigParam(self.server.baseDir,"blogsInstance", \
+                                           self.server.blogsInstance)
+                        else:
+                            if self.server.blogsInstance:
+                                self.server.blogsInstance=False
+                                self.server.defaultTimeline='inbox'
+                                setConfigParam(self.server.baseDir,"blogsInstance", \
+                                               self.server.blogsInstance)
                         # only receive DMs from accounts you follow
                         followDMsFilename= \
                             self.server.baseDir+'/accounts/'+ \
@@ -5574,7 +5670,8 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 tokensDict[nickname]=token
                 tokensLookup[token]=nickname
 
-def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
+def runDaemon(blogsInstance: bool,mediaInstance: bool, \
+              maxRecentPosts: int, \
               enableSharedInbox: bool,registration: bool, \
               language: str,projectVersion: str, \
               instanceId: str,clientToServer: bool, \
@@ -5615,9 +5712,12 @@ def runDaemon(mediaInstance: bool,maxRecentPosts: int, \
 
     httpd.useBlurHash=useBlurHash
     httpd.mediaInstance=mediaInstance
+    httpd.blogsInstance=blogsInstance
     httpd.defaultTimeline='inbox'
     if mediaInstance:
         httpd.defaultTimeline='tlmedia'
+    if blogsInstance:
+        httpd.defaultTimeline='tlblogs'
 
     # load translations dictionary
     httpd.translate={}
