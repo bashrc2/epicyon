@@ -627,6 +627,7 @@ if args.message:
         mediaType=getAttachmentMediaType(attach)
     replyTo=args.replyto
     followersOnly=False
+    isArticle=False
     print('Sending post to '+args.sendto)
 
     sendPostViaServer(__version__, \
@@ -636,7 +637,7 @@ if args.message:
                       httpPrefix,sendMessage,followersOnly, \
                       attach,mediaType, \
                       attachedImageDescription,useBlurhash, \
-                      cachedWebfingers,personCache, \
+                      cachedWebfingers,personCache,isArticle, \
                       args.debug,replyTo,replyTo,subject)
     for i in range(10):
         # TODO detect send success/fail

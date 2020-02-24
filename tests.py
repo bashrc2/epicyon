@@ -422,19 +422,20 @@ def testPostMessageBetweenServers():
     mediaType=getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription='Logo'
     useBlurhash=True
+    isArticle=False
     # nothing in Alice's outbox
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
 
     sendResult = \
         sendPost(__version__, \
-                 sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
-                 'bob', bobDomain, bobPort, ccUrl, httpPrefix, \
-                 'Why is a mouse when it spins? यह एक परीक्षण है #sillyquestion', followersOnly, \
-                 saveToFile, clientToServer,attachedImageFilename,mediaType, \
-                 attachedImageDescription,useBlurhash, federationList, \
-                 aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
-                 alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+                 sessionAlice,aliceDir,'alice',aliceDomain,alicePort, \
+                 'bob',bobDomain,bobPort,ccUrl,httpPrefix, \
+                 'Why is a mouse when it spins? यह एक परीक्षण है #sillyquestion',followersOnly, \
+                 saveToFile,clientToServer,attachedImageFilename,mediaType, \
+                 attachedImageDescription,useBlurhash,federationList, \
+                 aliceSendThreads,alicePostLog,aliceCachedWebfingers, \
+                 alicePersonCache,isArticle,inReplyTo,inReplyToAtomUri,subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -669,14 +670,15 @@ def testFollowBetweenServers():
     aliceCachedWebfingers={}
     alicePostLog=[]
     useBlurhash=False
+    isArticle=False
     sendResult = \
         sendPost(__version__, \
-                 sessionAlice,aliceDir,'alice', aliceDomain, alicePort, \
-                 'bob', bobDomain, bobPort, ccUrl, \
-                 httpPrefix, 'Alice message', followersOnly, saveToFile, \
+                 sessionAlice,aliceDir,'alice',aliceDomain,alicePort, \
+                 'bob',bobDomain,bobPort,ccUrl, \
+                 httpPrefix,'Alice message',followersOnly,saveToFile, \
                  clientToServer,None,None,None,useBlurhash, federationList, \
-                 aliceSendThreads, alicePostLog, aliceCachedWebfingers, \
-                 alicePersonCache,inReplyTo, inReplyToAtomUri, subject)
+                 aliceSendThreads,alicePostLog,aliceCachedWebfingers, \
+                 alicePersonCache,isArticle,inReplyTo,inReplyToAtomUri,subject)
     print('sendResult: '+str(sendResult))
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
@@ -1101,6 +1103,7 @@ def testClientToServer():
     mediaType=getAttachmentMediaType(attachedImageFilename)
     attachedImageDescription='Logo'
     useBlurhash=False
+    isArticle=False
     cachedWebfingers={}
     personCache={}
     password='alicepass'
@@ -1116,7 +1119,7 @@ def testClientToServer():
                           httpPrefix,'Sent from my ActivityPub client',followersOnly, \
                           attachedImageFilename,mediaType, \
                           attachedImageDescription,useBlurhash, \
-                          cachedWebfingers,personCache, \
+                          cachedWebfingers,personCache,isArticle, \
                           True,None,None,None)
     print('sendResult: '+str(sendResult))
 

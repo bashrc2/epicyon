@@ -403,7 +403,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
 def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
-    if boxname!='inbox' and boxname!='outbox':
+    if boxname!='inbox' and boxname!='outbox' and boxname!='tlblogs':
         return
     boxDir = createPersonDir(nickname,domain,baseDir,boxname)
     for deleteFilename in os.scandir(boxDir):
@@ -422,7 +422,8 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
     """Saves the give json to the give box
     Returns the filename
     """
-    if boxname!='inbox' and boxname!='outbox' and boxname!='scheduled':
+    if boxname!='inbox' and boxname!='outbox' and \
+       boxname!='tlblogs' and boxname!='scheduled':
         return None
     originalDomain=domain    
     if ':' in domain:
@@ -507,7 +508,8 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                    followersOnly: bool,saveToFile: bool,clientToServer: bool, \
                    attachImageFilename: str, \
                    mediaType: str,imageDescription: str, \
-                   useBlurhash: bool,isModerationReport: bool,inReplyTo=None, \
+                   useBlurhash: bool,isModerationReport: bool,isArticle: bool, \
+                   inReplyTo=None, \
                    inReplyToAtomUri=None,subject=None, \
                    schedulePost=False, \
                    eventDate=None,eventTime=None,location=None) -> {}:
@@ -766,8 +768,12 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
             print('Unable to create scheduled post without date and time values')
             return newPost
     elif saveToFile:
-        savePostToBox(baseDir,httpPrefix,newPostId, \
-                      nickname,domain,newPost,'outbox')
+        if not isArticle:
+            savePostToBox(baseDir,httpPrefix,newPostId, \
+                          nickname,domain,newPost,'outbox')
+        else:
+            savePostToBox(baseDir,httpPrefix,newPostId, \
+                          nickname,domain,newPost,'tlblogs')
     return newPost
 
 def outboxMessageCreateWrap(httpPrefix: str, \
@@ -889,7 +895,7 @@ def createPublicPost(baseDir: str, \
                           clientToServer, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
-                          False,inReplyTo,inReplyToAtomUri,subject, \
+                          False,False,inReplyTo,inReplyToAtomUri,subject, \
                           schedulePost,eventDate,eventTime,location)
 
 def createBlogPost(baseDir: str, \
@@ -938,7 +944,7 @@ def createQuestionPost(baseDir: str,
                        clientToServer, \
                        attachImageFilename,mediaType, \
                        imageDescription,useBlurhash, \
-                       False,None,None,subject, \
+                       False,False,None,None,subject, \
                        False,None,None,None)
     messageJson['object']['type']='Question'
     messageJson['object']['oneOf']=[]
@@ -982,7 +988,7 @@ def createUnlistedPost(baseDir: str,
                           clientToServer, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
-                          False,inReplyTo, inReplyToAtomUri, subject, \
+                          False,False,inReplyTo,inReplyToAtomUri,subject, \
                           schedulePost,eventDate,eventTime,location)
 
 def createFollowersOnlyPost(baseDir: str,
@@ -1008,7 +1014,7 @@ def createFollowersOnlyPost(baseDir: str,
                           clientToServer, \
                           attachImageFilename,mediaType, \
                           imageDescription,useBlurhash, \
-                          False,inReplyTo, inReplyToAtomUri, subject, \
+                          False,False,inReplyTo,inReplyToAtomUri,subject, \
                           schedulePost,eventDate,eventTime,location)
 
 def getMentionedPeople(baseDir: str,httpPrefix: str, \
@@ -1071,7 +1077,7 @@ def createDirectMessagePost(baseDir: str,
                        clientToServer, \
                        attachImageFilename,mediaType, \
                        imageDescription,useBlurhash, \
-                       False,inReplyTo,inReplyToAtomUri,subject, \
+                       False,False,inReplyTo,inReplyToAtomUri,subject, \
                        schedulePost,eventDate,eventTime,location)
     # mentioned recipients go into To rather than Cc
     messageJson['to']=messageJson['object']['cc']
@@ -1160,7 +1166,7 @@ def createReportPost(baseDir: str,
                            clientToServer, \
                            attachImageFilename,mediaType, \
                            imageDescription,useBlurhash, \
-                           True,None,None,subject, \
+                           True,False,None,None,subject, \
                            False,None,None,None)
         if not postJsonObject:
             continue
@@ -1246,6 +1252,7 @@ def sendPost(projectVersion: str, \
              imageDescription: str,useBlurhash: bool, \
              federationList: [],\
              sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
+             isArticle: bool, \
              debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Post to another inbox
     """
@@ -1273,6 +1280,8 @@ def sendPost(projectVersion: str, \
         postToBox='inbox'
     else:
         postToBox='outbox'
+        if isArticle:
+            postToBox='tlblogs'
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
@@ -1294,14 +1303,14 @@ def sendPost(projectVersion: str, \
     if not toPersonId:
         return 5
     # sharedInbox and capabilities are optional
-
+    
     postJsonObject = \
             createPostBase(baseDir,nickname,domain,port, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
                            attachImageFilename,mediaType, \
                            imageDescription,useBlurhash, \
-                           False,inReplyTo,inReplyToAtomUri,subject, \
+                           False,isArticle,inReplyTo,inReplyToAtomUri,subject, \
                            False,None,None,None)
 
     # get the senders private key
@@ -1350,6 +1359,7 @@ def sendPostViaServer(projectVersion: str, \
                       attachImageFilename: str,mediaType: str, \
                       imageDescription: str,useBlurhash: bool, \
                       cachedWebfingers: {},personCache: {}, \
+                      isArticle: bool, \
                       debug=False,inReplyTo=None, \
                       inReplyToAtomUri=None,subject=None) -> int:
     """Send a post via a proxy (c2s)
@@ -1376,6 +1386,8 @@ def sendPostViaServer(projectVersion: str, \
         return 1
 
     postToBox='outbox'
+    if isArticle:
+        postToBox='tlblogs'
 
     # get the actor inbox for the To handle
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
@@ -1417,6 +1429,7 @@ def sendPostViaServer(projectVersion: str, \
                     if ':' not in toDomain:
                         toDomainFull=toDomain+':'+str(toPort)        
             toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
+
     postJsonObject = \
             createPostBase(baseDir, \
                            fromNickname,fromDomain,fromPort, \
@@ -1424,7 +1437,7 @@ def sendPostViaServer(projectVersion: str, \
                            followersOnly,saveToFile,clientToServer, \
                            attachImageFilename,mediaType, \
                            imageDescription,useBlurhash, \
-                           False,inReplyTo,inReplyToAtomUri,subject, \
+                           False,isArticle,inReplyTo,inReplyToAtomUri,subject, \
                            False,None,None,None)
     
     authHeader=createBasicAuthHeader(fromNickname,password)
