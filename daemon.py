@@ -942,6 +942,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.path)
                 if blogFilename and nickname:
                     postJsonObject=loadJson(blogFilename)
+                    print('Blog post loaded')
                     if isBlogPost(postJsonObject):
                         msg=htmlBlogPost(self.server.baseDir, \
                                          self.server.httpPrefix, \
@@ -952,6 +953,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
                             return
+                    else:
+                        print("This isn't a blog post "+str(postJsonObject))
             self._404()
             return
 
