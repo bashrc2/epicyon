@@ -62,23 +62,6 @@ from webinterface import getIconsDir
 from question import questionUpdateVotes
 from media import replaceYouTube
 
-def isBlogPost(postJsonObject: {}) -> bool:
-    """Is the given post a blog post?
-    """
-    if postJsonObject['type']!='Create':
-        return False
-    if not postJsonObject.get('object'):
-        return False
-    if not isinstance(postJsonObject['object'], dict):
-        return False
-    if not postJsonObject['object'].get('type'):
-        return False
-    if not postJsonObject['object'].get('content'):
-        return False
-    if postJsonObject['object']['type']!='Article':
-        return False
-    return True    
-
 def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.

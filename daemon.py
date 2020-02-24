@@ -68,7 +68,6 @@ from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
-from inbox import isBlogPost
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -152,6 +151,7 @@ from shares import outboxUndoShareUpload
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import locatePost
 from utils import getCachedPostFilename

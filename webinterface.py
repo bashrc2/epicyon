@@ -23,6 +23,7 @@ from pgp import getPGPpubKey
 from xmpp import getXmppAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import isBlogPost
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
@@ -3213,7 +3214,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
             publishedStr=publishedStr.replace('T',' ').split('.')[0]
             datetimeObject = parse(publishedStr)
         publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
-    footerStr='<a href="'+messageId+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
+
+    publishedLink=messageId
+    # blog posts should have no /statuses/ in their link
+    if isBlogPost(postJsonObject):
+        # is this a post to the local domain?
+        if '/'+domain in messageId:
+            publishedLink=messageId.replace('/statuses/','/')
+
+    footerStr='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
 
     # change the background color for DMs in inbox timeline
     if showDMicon:

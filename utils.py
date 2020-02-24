@@ -598,3 +598,20 @@ def mergeDicts(dict1: {}, dict2: {}) -> {}:
     """
     res = {**dict1, **dict2}
     return res
+
+def isBlogPost(postJsonObject: {}) -> bool:
+    """Is the given post a blog post?
+    """
+    if postJsonObject['type']!='Create':
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('type'):
+        return False
+    if not postJsonObject['object'].get('content'):
+        return False
+    if postJsonObject['object']['type']!='Article':
+        return False
+    return True    

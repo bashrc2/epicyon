@@ -14,6 +14,7 @@ from posts import outboxMessageCreateWrap
 from posts import savePostToBox
 from posts import sendToFollowersThread
 from posts import sendToNamedAddresses
+from utils import isBlogPost
 from utils import getDomainFromActor
 from blocking import isBlockedDomain
 from blocking import outboxBlock
@@ -22,7 +23,6 @@ from media import replaceYouTube
 from media import getMediaPath
 from media import createMediaDirs
 from inbox import inboxUpdateIndex
-from inbox import isBlogPost
 from announce import outboxAnnounce
 from follow import outboxUndoFollow
 from roles import outboxDelegate
