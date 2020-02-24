@@ -940,6 +940,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.domain, \
                                                self.server.domainFull, \
                                                self.path)
+                print('blogFilename='+str(blogFilename))
+                print('nickname='+str(blogFilename))
                 if blogFilename and nickname:
                     postJsonObject=loadJson(blogFilename)
                     print('Blog post loaded')
