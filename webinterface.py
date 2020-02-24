@@ -5028,7 +5028,7 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
                 contentStr= \
                     replaceEmojiFromTags(contentStr, \
                                          postJsonObject['object']['tag'],'content')
-            blogStr+=contentStr+'\n'
+            blogStr+='<br>'+contentStr+'\n'
 
         blogStr+='<hr>\n'
         blogStr+= \
