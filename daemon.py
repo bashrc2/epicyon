@@ -953,13 +953,9 @@ class PubServer(BaseHTTPRequestHandler):
                             msg=msg.encode()
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
-                            self.server.GETbusy=False
                             return
-                    else:
-                        print("Test This isn't a blog post "+str(postJsonObject))
-            self.server.GETbusy=False
-            self._404()
-            return
+                    self._404()
+                    return
 
         # redirect music to #nowplaying list
         if self.path=='/music' or self.path=='/nowplaying':
