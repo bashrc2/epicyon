@@ -17,7 +17,8 @@ from utils import daysInMonth
 from utils import mergeDicts
 
 def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
-                    currYear=None,currMonthNumber=None,currDayOfMonth=None) -> {}:
+                    currYear=None,currMonthNumber=None, \
+                    currDayOfMonth=None) -> {}:
     """Retrieves calendar events for today
     Returns a dictionary of lists containing Event and Place activities
     """
@@ -81,7 +82,8 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
                        int(eventTime.strftime("%d"))==dayNumber:
                         dayOfMonth=str(int(eventTime.strftime("%d")))
                         if '#statuses#' in postId:
-                            # link to the id so that the event can be easily deleted
+                            # link to the id so that the event can be
+                            # easily deleted
                             tag['postId']=postId.split('#statuses#')[1]
                         postEvent.append(tag)
                 else:
@@ -209,7 +211,8 @@ def thisWeeksEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
 
 def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
     """Retrieves calendar events for this week
-    Returns a dictionary indexed by day number of lists containing Event and Place activities
+    Returns a dictionary indexed by day number of lists containing
+    Event and Place activities
     Note: currently not used but could be with a weekly calendar screen
     """
     now=datetime.now()
@@ -291,11 +294,13 @@ def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
             year+=1
         for d in range(1,dayNumber+6-lastDayOfMonth):
             dailyEvents= \
-                getTodaysEvents(baseDir,nickname,domain,year,monthNumber,d)
+                getTodaysEvents(baseDir,nickname,domain, \
+                                year,monthNumber,d)
             if dailyEvents:
                 if dailyEvents.get(d):
                     newEvents={}
-                    newEvents[d+(7-(dayNumber+6-lastDayOfMonth))]=dailyEvents[d]
+                    newEvents[d+(7-(dayNumber+6-lastDayOfMonth))]= \
+                        dailyEvents[d]
                     events=mergeDicts(events,newEvents)
 
     return events
@@ -303,7 +308,8 @@ def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
 def getCalendarEvents(baseDir: str,nickname: str,domain: str, \
                       year: int,monthNumber: int) -> {}:
     """Retrieves calendar events
-    Returns a dictionary indexed by day number of lists containing Event and Place activities
+    Returns a dictionary indexed by day number of lists containing
+    Event and Place activities
     """
     calendarFilename= \
         baseDir+'/accounts/'+nickname+'@'+domain+ \
