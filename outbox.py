@@ -158,8 +158,14 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
         print('DEBUG: savePostToBox')
     if messageJson['type']!='Upgrade':
         outboxName='outbox'
-        if messageJson['type']=='Article':
-            outboxName='tlblogs'
+
+        # if this is a blog post then save to its own box
+        if messageJson['type']=='Create':
+            if messageJson.get('object'):
+                if isinstance(messageJson['object'], dict):
+                    if messageJson['object'].get('type'):
+                        if messageJson['object']['type']=='Article':
+                            outboxName='tlblogs'
         
         savedFilename= \
             savePostToBox(baseDir, \

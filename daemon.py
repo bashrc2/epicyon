@@ -4073,7 +4073,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove any trailing slashes from the path
         if not self.path.endswith('confirm'):
             self.path= \
-                self.path.replace('/outbox/','/outbox').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
+                self.path.replace('/outbox/','/outbox').replace('/tlblogs/','/tlblogs').replace('/inbox/','/inbox').replace('/shares/','/shares').replace('/sharedInbox/','/sharedInbox')
 
         if self.path=='/inbox':
             if not self.server.enableSharedInbox:
@@ -4093,7 +4093,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('POST Not authorized')
                 print(str(self.headers))
 
-        # if this is a POST to teh outbox then check authentication
+        # if this is a POST to the outbox then check authentication
         self.outboxAuthenticated=False
         self.postToNickname=None
 
