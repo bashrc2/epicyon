@@ -5013,6 +5013,7 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
         cssFilename=baseDir+'/blog.css'
     print("Test cssFilename="+cssFilename)
     with open(cssFilename, 'r') as cssFile:
+        print("Test cssFilename loaded")
         blogCSS=cssFile.read()
         blogStr=htmlHeader(cssFilename,blogCSS)
 
@@ -5036,5 +5037,6 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
             '<p class="about"><a href="'+httpPrefix+'://'+domain+ \
             '/users/'+nickname+'">'+translate['About the author']+'</a></p>'
 
+        print("Test blogStr="+blogStr)
         return blogStr+htmlFooter()
     return None
