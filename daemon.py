@@ -932,30 +932,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
-            self.path=self.path.replace('/@','/users/')
-            if self._requestHTTP():
-                blogFilename,nickname= \
-                    self._pathContainsBlogLink(self.server.baseDir, \
-                                               self.server.httpPrefix, \
-                                               self.server.domain, \
-                                               self.server.domainFull, \
-                                               self.path)
-                if blogFilename and nickname:
-                    postJsonObject=loadJson(blogFilename)
-                    if isBlogPost(postJsonObject):
-                        msg=htmlBlogPost(self.server.baseDir, \
-                                         self.server.httpPrefix, \
-                                         self.server.translate, \
-                                         nickname,self.server.domain, \
-                                         postJsonObject)
-                        if msg!=None:
-                            print("Test sending blog post")
-                            msg=msg.encode()
-                            self._set_headers('text/html',len(msg),cookie)
-                            self._write(msg)
-                            return
-                    self._404()
-                    return
+            self.path=self.path.replace('/@','/users/')            
 
         # redirect music to #nowplaying list
         if self.path=='/music' or self.path=='/nowplaying':
@@ -1071,6 +1048,30 @@ class PubServer(BaseHTTPRequestHandler):
                self._redirect_headers(originPathStrAbsolute,cookie)
                return
 
+           # show a blog post
+           blogFilename,nickname= \
+               self._pathContainsBlogLink(self.server.baseDir, \
+                                          self.server.httpPrefix, \
+                                          self.server.domain, \
+                                          self.server.domainFull, \
+                                          self.path)
+           if blogFilename and nickname:
+               postJsonObject=loadJson(blogFilename)
+               if isBlogPost(postJsonObject):
+                   msg=htmlBlogPost(self.server.baseDir, \
+                                    self.server.httpPrefix, \
+                                    self.server.translate, \
+                                    nickname,self.server.domain, \
+                                    postJsonObject)
+                   if msg!=None:
+                       print("Test sending blog post")
+                       msg=msg.encode()
+                       self._set_headers('text/html',len(msg),cookie)
+                       self._write(msg)
+                       return
+                   self._404()
+                   return
+           
         self._benchmarkGETtimings(GETstartTime,GETtimings,9)
 
         # remove a shared item
