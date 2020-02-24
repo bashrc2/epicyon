@@ -896,7 +896,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not os.path.isfile(blogIndexFilename):
             return None,None
         print('Test7')
-        if '#'+userEnding[1]+'\n' not in open(blogIndexFilename).read():
+        if '#'+userEnding[1]+'.' not in open(blogIndexFilename).read():
             return None,None
         print('Test8')
         messageId=httpPrefix+'://'+domain+'/'+nickname+'/statuses/'+nickname[1]
