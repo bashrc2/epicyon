@@ -940,11 +940,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.domain, \
                                                self.server.domainFull, \
                                                self.path)
-                print('blogFilename='+str(blogFilename))
-                print('nickname='+str(blogFilename))
+                print('Test blogFilename='+str(blogFilename))
+                print('Test nickname='+str(blogFilename))
                 if blogFilename and nickname:
                     postJsonObject=loadJson(blogFilename)
-                    print('Blog post loaded')
+                    print('Test Blog post loaded')
                     if isBlogPost(postJsonObject):
                         msg=htmlBlogPost(self.server.baseDir, \
                                          self.server.httpPrefix, \
@@ -956,7 +956,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self._write(msg)
                             return
                     else:
-                        print("This isn't a blog post "+str(postJsonObject))
+                        print("Test This isn't a blog post "+str(postJsonObject))
             self._404()
             return
 
