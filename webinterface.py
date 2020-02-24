@@ -5011,23 +5011,17 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
     cssFilename=baseDir+'/epicyon-blog.css'
     if os.path.isfile(baseDir+'/blog.css'):
         cssFilename=baseDir+'/blog.css'
-    print("Test cssFilename="+cssFilename)
     with open(cssFilename, 'r') as cssFile:
-        print("Test cssFilename loaded 1")
         blogCSS=cssFile.read()
-        print("Test cssFilename loaded 2")
         blogStr=htmlHeader(cssFilename,blogCSS)
 
-        print("Test cssFilename loaded 3 "+blogStr)
         if postJsonObject['object'].get('summary'):
             blogStr+='<h1>'+postJsonObject['object']['summary']+'</h1>\n'
 
-        print("Test cssFilename loaded 4 "+blogStr)
         if postJsonObject['object'].get('published'):
             if 'T' in postJsonObject['object']['published']:
                 blogStr+='<h3>'+postJsonObject['object']['published'].split('T')[0]+'</h3>\n'
 
-        print("Test cssFilename loaded 5 "+blogStr)
         if postJsonObject['object'].get('content'):
             contentStr=addEmbeddedElements(translate,postJsonObject['object']['content'])
             if postJsonObject['object'].get('tag'):
@@ -5036,12 +5030,10 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
                                          postJsonObject['object']['tag'],'content')
             blogStr+=contentStr+'\n'
 
-        print("Test cssFilename loaded 6 "+blogStr)
         blogStr+='<hr>\n'
         blogStr+= \
             '<p class="about"><a href="'+httpPrefix+'://'+domain+ \
             '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
 
-        print("Test blogStr="+blogStr)
         return blogStr+htmlFooter()
     return None

@@ -951,7 +951,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.translate, \
                                          nickname,self.server.domain, \
                                          postJsonObject)
-                        if msg:
+                        if msg!=None:
+                            print("Test sending blog post")
                             msg=msg.encode()
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
