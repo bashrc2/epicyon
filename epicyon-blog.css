@@ -47,7 +47,7 @@ body, html {
     color: var(--main-fg-color);
 
     height: 100%;
-    font-family: serif;
+    font-family: "Times New Roman", Times, serif;
     max-width: 80%;
     min-width: 950px;
     margin: 0 auto;
