@@ -2910,7 +2910,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.port, \
                                       self.path, \
                                       self.server.httpPrefix, \
-                                      maxPostsInBlogsFeed, 'tlblogs', \
+                                      maxPostsInBlogsFeed,'tlblogs', \
                                       True,self.server.ocapAlways)
                     if not inboxBlogsFeed:
                         inboxBlogsFeed=[]

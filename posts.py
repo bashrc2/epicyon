@@ -1956,13 +1956,6 @@ def createInbox(recentPostsCache: {}, \
                             session,baseDir,'inbox',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
-def createBlogsTimeline(recentPostsCache: {}, \
-                        session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
-                        itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
-    return createBoxIndexed(recentPostsCache, \
-                            session,baseDir,'tlblogs',nickname,domain,port,httpPrefix, \
-                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
-
 def createBookmarksTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                             itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxIndexed({},session,baseDir,'tlbookmarks',nickname,domain,port,httpPrefix, \
@@ -1976,6 +1969,11 @@ def createDMTimeline(session,baseDir: str,nickname: str,domain: str,port: int,ht
 def createRepliesTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
                           itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
     return createBoxIndexed({},session,baseDir,'tlreplies',nickname,domain,port,httpPrefix, \
+                            itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
+
+def createBlogsTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
+                        itemsPerPage: int,headerOnly: bool,ocapAlways: bool,pageNumber=None) -> {}:
+    return createBoxIndexed({},session,baseDir,'tlblogs',nickname,domain,port,httpPrefix, \
                             itemsPerPage,headerOnly,True,ocapAlways,pageNumber)
 
 def createMediaTimeline(session,baseDir: str,nickname: str,domain: str,port: int,httpPrefix: str, \
