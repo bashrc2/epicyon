@@ -870,24 +870,32 @@ class PubServer(BaseHTTPRequestHandler):
     def _pathContainsBlogLink(self,baseDir: str,httpPrefix: str,domain: str,path: str) -> (str,str):
         """If the path contains a blog entry then return its filename
         """
+        print('Test1')
         userEnding=path.split('/users/')
         if '/' not in userEnding:
             return None,None
+        print('Test2')
         userEnding=userEnging.split('/')
         if len(userEnding)!=2:
             return None,None
+        print('Test3')
         if len(userEnding[1])<14:
             return None,None
+        print('Test4')
         userEnding[1]=userEnding[1].strip()
         if not userEnding[1].isdigit():
             return None,None
+        print('Test5')
         nickname=userEnding[0]
         # check for blog posts
+        print('Test6')
         blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs.index'
         if not os.path.isfile(blogIndexFilename):
             return None,None
+        print('Test7')
         if '/'+userEnding[1]+'\n' not in open(blogIndexFilename).read():
             return None,None
+        print('Test8')
         messageId=httpPrefix+'://'+domain+'/'+nickname+'/statuses/'+nickname[1]
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
