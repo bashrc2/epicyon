@@ -955,6 +955,8 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
                             return
+                        else:
+                            print("Test No html returned")
                     else:
                         print("Test This isn't a blog post "+str(postJsonObject))
             self._404()
