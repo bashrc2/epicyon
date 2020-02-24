@@ -5001,3 +5001,39 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
                 break
 
     return htmlHeader(cssFilename,profileStyle)+profileStr+htmlFooter()
+
+def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
+                 nickname: str,domain: str,postJsonObject: {}) -> str:
+    """Returns a html blog post
+    """
+    blogStr=''
+
+    cssFilename=baseDir+'/epicyon-blog.css'
+    if os.path.isfile(baseDir+'/blog.css'):
+        cssFilename=baseDir+'/blog.css'        
+    with open(cssFilename, 'r') as cssFile:
+        blogCSS=cssFile.read()
+        blogStr=htmlHeader(cssFilename,blogCSS)
+
+        if postJsonObject['object'].get('summary'):
+            blogStr+='<h1>'+postJsonObject['object']['summary']+'</h1>'
+
+        if postJsonObject['object'].get('published'):
+            if 'T' in postJsonObject['object']['published']:
+                blogStr+='<h3>'+postJsonObject['object']['published'].split('T')[0]+'</h3>'
+
+        if postJsonObject['object'].get('content'):
+            contentStr=addEmbeddedElements(translate,postJsonObject['object']['content'])
+            if postJsonObject['object'].get('tag'):
+                contentStr= \
+                    replaceEmojiFromTags(contentStr, \
+                                         postJsonObject['object']['tag'],'content')
+            blogStr+=contentStr
+
+        blogStr+='<hr>'
+        blogStr+= \
+            '<p class="about"><a href="'+httpPrefix+'://'+domain+ \
+            '/users/'+nickname+'">'+translate['About the author']+'</a></p>'
+
+        return blogStr+htmlFooter()
+    return None

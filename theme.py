@@ -21,7 +21,7 @@ def setThemeInConfig(baseDir: str,name: str) -> bool:
     return saveJson(configJson,configFilename)    
 
 def removeTheme(baseDir: str):
-    themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css')
+    themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css','blog.css')
     for filename in themeFiles:
         if os.path.isfile(baseDir+'/'+filename):
             os.remove(baseDir+'/'+filename)
@@ -65,7 +65,7 @@ def setThemeFromDict(baseDir: str,name: str,themeParams: {}):
     """Uses a dictionary to set a theme
     """
     setThemeInConfig(baseDir,name)
-    themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css')
+    themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css','blog.css')
     for filename in themeFiles:
         templateFilename=baseDir+'/epicyon-'+filename
         if filename=='epicyon.css':

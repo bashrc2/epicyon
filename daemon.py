@@ -108,6 +108,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from webinterface import htmlBlogPost
 from webinterface import htmlCalendarDeleteConfirm
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
@@ -866,6 +867,30 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST TIMING|'+str(ctr)+'|'+timeDiff)
                     ctr+=1
 
+    def _pathContainsBlogLink(baseDir: str,httpPrefix: str,domain: str,path: str) -> (str,str):
+        """If the path contains a blog entry then return its filename
+        """
+        userEnding=path.split('/users/')
+        if '/' not in userEnding:
+            return None,None
+        userEnding=userEnging.split('/')
+        if len(userEnding)!=2:
+            return None,None
+        if len(userEnding[1])<14:
+            return None,None
+        userEnding[1]=userEnding[1].strip()
+        if not userEnding[1].isdigit():
+            return None,None
+        nickname=userEnding[0]
+        # check for blog posts
+        blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs.index'
+        if not os.path.isfile(blogIndexFilename):
+            return None,None
+        if '/'+userEnding[1]+'\n' not in open(blogIndexFilename).read():
+            return None,None
+        messageId=httpPrefix+'://'+domain+'/'+nickname+'/statuses/'+nickname[1]
+        return locatePost(baseDir,nickname,domain,messageId),nickname
+
     def do_GET(self):
         GETstartTime=time.time()
         GETtimings=[]
@@ -895,6 +920,25 @@ class PubServer(BaseHTTPRequestHandler):
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
             self.path=self.path.replace('/@','/users/')
+            if self._requestHTTP():
+                blogFilename,nickname= \
+                    self._pathContainsBlogLink(self.server.baseDir, \
+                                               self.server.httpPrefix, \
+                                               self.server.domain, \
+                                               self.path)
+                if blogFilename and nickname:
+                    postJsonObject=loadJson(blogFilename)
+                    msg=htmlBlogPost(self.server.baseDir, \
+                                     self.server.httpPrefix, \
+                                     self.server.translate, \
+                                     nickname,self.server.domain, \
+                                     postJsonObject)
+                    if msg:
+                        self._set_headers('text/html',len(msg),cookie)
+                        self._write(msg)
+                        return
+            self._404()
+            return
 
         # redirect music to #nowplaying list
         if self.path=='/music' or self.path=='/nowplaying':
