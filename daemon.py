@@ -870,11 +870,11 @@ class PubServer(BaseHTTPRequestHandler):
     def _pathContainsBlogLink(self,baseDir: str,httpPrefix: str,domain: str,path: str) -> (str,str):
         """If the path contains a blog entry then return its filename
         """
-        userEnding=path.split('/users/')
+        userEnding=path.split('/users/',1)
         print('Test1 '+path+' '+str(userEnding))
         if '/' not in userEnding:
             return None,None
-        userEnding=userEnging.split('/')
+        userEnding=userEnding.split('/')
         print('Test2 '+str(userEnding))
         if len(userEnding)!=2:
             return None,None
