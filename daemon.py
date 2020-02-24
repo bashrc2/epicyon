@@ -952,6 +952,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          nickname,self.server.domain, \
                                          postJsonObject)
                         if msg:
+                            msg=msg.encode()
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
                             return
