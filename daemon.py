@@ -879,28 +879,28 @@ class PubServer(BaseHTTPRequestHandler):
         print('Test1 '+path+' '+str(userEnding))
         if '/' not in userEnding:
             return None,None
-        userEnding=userEnding.split('/')
-        print('Test2 '+str(userEnding))
-        if len(userEnding)!=2:
+        userEnding2=userEnding.split('/')
+        nickname=userEnding2[0]
+        print('Test2 '+str(userEnding2) + ' nickname='+nickname)
+        if len(userEnding2)!=2:
             return None,None
         print('Test3')
-        if len(userEnding[1])<14:
+        if len(userEnding2[1])<14:
             return None,None
-        userEnding[1]=userEnding[1].strip()
-        print('Test4 '+str(userEnding[1]))
-        if not userEnding[1].isdigit():
+        userEnding2[1]=userEnding2[1].strip()
+        print('Test4 '+str(userEnding2[1]))
+        if not userEnding2[1].isdigit():
             return None,None
         print('Test5')
-        nickname=userEnding[0]
         # check for blog posts
         blogIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/outbox.index'
         print('Test6 '+blogIndexFilename)
         if not os.path.isfile(blogIndexFilename):
             return None,None
         print('Test7')
-        if '#'+userEnding[1]+'.' not in open(blogIndexFilename).read():
+        if '#'+userEnding2[1]+'.' not in open(blogIndexFilename).read():
             return None,None
-        messageId=httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+userEnding[1]
+        messageId=httpPrefix+'://'+domainFull+'/users/'+nickname+'/statuses/'+userEnding2[1]
         print('Test8 '+messageId+' '+str(locatePost(baseDir,nickname,domain,messageId)))
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
@@ -944,7 +944,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Test nickname='+str(blogFilename))
                 if blogFilename and nickname:
                     postJsonObject=loadJson(blogFilename)
-                    print('Test Blog post loaded')
                     if isBlogPost(postJsonObject):
                         msg=htmlBlogPost(self.server.baseDir, \
                                          self.server.httpPrefix, \
@@ -957,8 +956,6 @@ class PubServer(BaseHTTPRequestHandler):
                             self._set_headers('text/html',len(msg),cookie)
                             self._write(msg)
                             return
-                        else:
-                            print("Test No html returned")
                     else:
                         print("Test This isn't a blog post "+str(postJsonObject))
             self._404()
