@@ -67,3 +67,16 @@ a:link {
     color: var(--main-link-color);
     font-weight: bold;
 }
+
+H1 {
+    text-align: center
+}
+
+H3 {
+    text-align: center
+}
+
+.about {
+    font-size: var(--font-size5);
+    float: right;
+}
