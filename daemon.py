@@ -867,7 +867,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST TIMING|'+str(ctr)+'|'+timeDiff)
                     ctr+=1
 
-    def _pathContainsBlogLink(baseDir: str,httpPrefix: str,domain: str,path: str) -> (str,str):
+    def _pathContainsBlogLink(self,baseDir: str,httpPrefix: str,domain: str,path: str) -> (str,str):
         """If the path contains a blog entry then return its filename
         """
         userEnding=path.split('/users/')
