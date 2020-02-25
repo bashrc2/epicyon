@@ -169,7 +169,7 @@ def htmlBlogPage(session, \
             if port!=80 and port!=443:
                 domainFull=domain+':'+str(port)
 
-        if pageNumber:
+        if pageNumber!=None:
             iconsDir=getIconsDir(baseDir)
             navigateStr='<p>'
             #if pageNumber>1:
@@ -186,7 +186,7 @@ def htmlBlogPage(session, \
                 '<img loading="lazy" alt=">" title=">" '+ \
                 'src="/'+iconsDir+ \
                 '/prev.png" class="buttonnext"/></a>\n'
-            navigateStr='</p>'
+            navigateStr+='</p>'
             blogStr+=navigateStr
         
         for item in timelineJson['orderedItems']:
