@@ -90,7 +90,7 @@ def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
                                  replyStr,announceStr,likeStr, \
                                  bookmarkStr,deleteStr,muteStr)
     if attachmentStr:
-        blogStr+='<br>'+attachmentStr
+        blogStr+='<br><center>'+attachmentStr+'</center>'
 
     if postJsonObject['object'].get('content'):
         contentStr=addEmbeddedElements(translate,postJsonObject['object']['content'])

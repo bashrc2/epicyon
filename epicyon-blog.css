@@ -83,3 +83,11 @@ H3 {
     font-size: var(--font-size5);
     float: right;
 }
+
+img {
+    border-radius: 5%;
+}
+
+img:hover {
+    box-shadow: 0 0 2px 1px var(--gallery-hover);
+}
