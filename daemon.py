@@ -998,7 +998,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,8)
 
         # show the main blog page
-        if htmlGET and (self.path=='/blog' or self.path=='/blogs'):
+        if htmlGET and (self.path=='/blog' or \
+                        self.path=='/blog/' or \
+                        self.path=='/blogs' or \
+                        self.path=='/blogs/'):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)                
@@ -1016,6 +1019,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
+        # show a particular page of blog entries
+        # for a particular account
         if htmlGET and self.path.startswith('/blog/'):
             pageNumber=1
             nickname=self.path.split('/blog/')[1]
