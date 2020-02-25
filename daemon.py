@@ -1110,6 +1110,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.httpPrefix, \
                                      self.server.translate, \
                                      nickname,self.server.domain, \
+                                     self.server.domainFull, \
                                      postJsonObject)
                     if msg!=None:
                         msg=msg.encode()

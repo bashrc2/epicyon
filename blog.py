@@ -89,7 +89,8 @@ def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
 
 
 def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
-                 nickname: str,domainFull: str,postJsonObject: {}) -> str:
+                 nickname: str,domain: str,domainFull: str, \
+                 postJsonObject: {}) -> str:
     """Returns a html blog post
     """
     blogStr=''
@@ -103,7 +104,7 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
 
         blogStr+= \
             htmlBlogPostContent(baseDir,httpPrefix,translate, \
-                                nickname,domainFull,postJsonObject, \
+                                nickname,domain,domainFull,postJsonObject, \
                                 None,False)
 
         return blogStr+htmlFooter()
@@ -158,7 +159,7 @@ def htmlBlogPage(session, \
 
             blogStr+= \
                 htmlBlogPostContent(baseDir,httpPrefix,translate, \
-                                    nickname,domainFull,item, \
+                                    nickname,domain,domainFull,item, \
                                     None,True)
 
         return blogStr+htmlFooter()
