@@ -995,50 +995,50 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,8)
 
-        # show the person options screen with view/follow/block/report
         if htmlGET and '/users/' in self.path:
-           if '?options=' in self.path:
-               optionsStr=self.path.split('?options=')[1]
-               originPathStr=self.path.split('?options=')[0]
-               if ';' in optionsStr:
-                   pageNumber=1
-                   optionsList=optionsStr.split(';')
-                   optionsActor=optionsList[0]
-                   optionsPageNumber=optionsList[1]
-                   optionsProfileUrl=optionsList[2]
-                   if optionsPageNumber.isdigit():
-                       pageNumber=int(optionsPageNumber)
-                   optionsLink=None
-                   if len(optionsList)>3:
-                       optionsLink=optionsList[3]
-                   donateUrl=None
-                   PGPpubKey=None
-                   xmppAddress=None
-                   matrixAddress=None
-                   emailAddress=None
-                   actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
-                   if actorJson:
-                       donateUrl=getDonationUrl(actorJson)
-                       xmppAddress=getXmppAddress(actorJson)
-                       matrixAddress=getMatrixAddress(actorJson)
-                       emailAddress=getEmailAddress(actorJson)
-                       PGPpubKey=getPGPpubKey(actorJson)
-                   msg=htmlPersonOptions(self.server.translate, \
-                                         self.server.baseDir, \
-                                         self.server.domain, \
-                                         originPathStr, \
-                                         optionsActor, \
-                                         optionsProfileUrl, \
-                                         optionsLink, \
-                                         pageNumber,donateUrl, \
-                                         xmppAddress,matrixAddress, \
-                                         PGPpubKey,emailAddress).encode()
-                   self._set_headers('text/html',len(msg),cookie)
-                   self._write(msg)
-                   return
-               originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
-               self._redirect_headers(originPathStrAbsolute,cookie)
-               return
+            # show the person options screen with view/follow/block/report
+            if '?options=' in self.path:
+                optionsStr=self.path.split('?options=')[1]
+                originPathStr=self.path.split('?options=')[0]
+                if ';' in optionsStr:
+                    pageNumber=1
+                    optionsList=optionsStr.split(';')
+                    optionsActor=optionsList[0]
+                    optionsPageNumber=optionsList[1]
+                    optionsProfileUrl=optionsList[2]
+                    if optionsPageNumber.isdigit():
+                        pageNumber=int(optionsPageNumber)
+                    optionsLink=None
+                    if len(optionsList)>3:
+                        optionsLink=optionsList[3]
+                    donateUrl=None
+                    PGPpubKey=None
+                    xmppAddress=None
+                    matrixAddress=None
+                    emailAddress=None
+                    actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
+                    if actorJson:
+                        donateUrl=getDonationUrl(actorJson)
+                        xmppAddress=getXmppAddress(actorJson)
+                        matrixAddress=getMatrixAddress(actorJson)
+                        emailAddress=getEmailAddress(actorJson)
+                        PGPpubKey=getPGPpubKey(actorJson)
+                    msg=htmlPersonOptions(self.server.translate, \
+                                          self.server.baseDir, \
+                                          self.server.domain, \
+                                          originPathStr, \
+                                          optionsActor, \
+                                          optionsProfileUrl, \
+                                          optionsLink, \
+                                          pageNumber,donateUrl, \
+                                          xmppAddress,matrixAddress, \
+                                          PGPpubKey,emailAddress).encode()
+                    self._set_headers('text/html',len(msg),cookie)
+                    self._write(msg)
+                    return
+                originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+                self._redirect_headers(originPathStrAbsolute,cookie)
+                return
 
            # show blog post
            blogFilename,nickname= \
