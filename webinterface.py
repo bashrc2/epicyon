@@ -3217,9 +3217,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     publishedLink=messageId
     # blog posts should have no /statuses/ in their link
+    print('Test isBlog '+str(postJsonObject))
     if isBlogPost(postJsonObject):
+        print('Test messageId '+messageId)
         # is this a post to the local domain?
-        if '/'+domain in messageId:
+        if '://'+domain in messageId:
             publishedLink=messageId.replace('/statuses/','/')
 
     footerStr='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
