@@ -3216,9 +3216,9 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     attachmentStr,galleryStr= \
         getPostAttachmentsAsHtml(postJsonObject,boxName,translate, \
-                             isMuted, \
-                             replyStr,announceStr,likeStr, \
-                             bookmarkStr,deleteStr,muteStr)
+                                 isMuted, \
+                                 replyStr,announceStr,likeStr, \
+                                 bookmarkStr,deleteStr,muteStr)
 
     publishedStr=''
     if postJsonObject['object'].get('published'):
