@@ -90,6 +90,31 @@ a:link {
     position: relative;
 }
 
+.about {
+    font-size: var(--font-size5);
+    float: right;
+}
+
+.blogreplies {
+    color: var(--button-highlighted);
+    font-size: var(--font-size2);
+    float: right;
+}
+
+.buttonprev {
+    float: left;
+    width: 10%;
+    -ms-transform: translateY(30%);
+    transform: translateY(30%);
+}
+
+.buttonnext {
+    float: right;
+    width: 10%;
+    -ms-transform: translateY(30%) scaleX(-1);
+    transform: translateY(30%) scaleX(-1);
+}
+
 .hero-image img {
     width: 50%;
 }

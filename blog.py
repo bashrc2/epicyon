@@ -185,9 +185,12 @@ def htmlBlogPost(authorized: bool, \
     """
     blogStr=''
 
-    cssFilename=baseDir+'/epicyon-blog.css'
-    if os.path.isfile(baseDir+'/blog.css'):
-        cssFilename=baseDir+'/blog.css'
+    #cssFilename=baseDir+'/epicyon-blog.css'
+    #if os.path.isfile(baseDir+'/blog.css'):
+    #    cssFilename=baseDir+'/blog.css'
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'
     with open(cssFilename, 'r') as cssFile:
         blogCSS=cssFile.read()
         blogStr=htmlHeader(cssFilename,blogCSS)
