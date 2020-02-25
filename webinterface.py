@@ -2147,11 +2147,7 @@ def contentWarningScriptOpen() -> str:
     """
     script='function showContentWarning(postID) {\n'
     script+='  var x = document.getElementById(postID);\n'
-    script+='  if (x.style.display !== "none") {\n'
-    script+='    x.style.display = "none";\n'
-    script+='  } else {\n'
-    script+='    x.style.display = "block";\n'
-    script+='  }\n'
+    script+='  x.style.display = "none";\n'
     script+='}\n'
     return script
 
