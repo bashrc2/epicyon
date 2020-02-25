@@ -3218,13 +3218,10 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     publishedLink=messageId
     # blog posts should have no /statuses/ in their link
     if isBlogPost(postJsonObject):
-        print('Test messageId '+messageId)
-        print('Test domain '+domain)
         # is this a post to the local domain?
         if '://'+domain in messageId:
             publishedLink=messageId.replace('/statuses/','/')
 
-    print('Test publishedLink '+publishedLink)
     footerStr='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
 
     # change the background color for DMs in inbox timeline
@@ -3235,7 +3232,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
         footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr
-        footerStr+='<a href="'+messageId+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
+        footerStr+='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
         footerStr+='</div>'
 
     postIsSensitive=False
