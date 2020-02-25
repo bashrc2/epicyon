@@ -2566,7 +2566,7 @@ def postIsMuted(baseDir: str,nickname: str,domain: str, \
     return False
 
 def getPostAttachmentsAsHtml(postJsonObject: {},boxName: str,translate: {}, \
-                             isMuted: bool, \
+                             isMuted: bool,avatarLink: str, \
                              replyStr: str,announceStr: str,likeStr: str, \
                              bookmarkStr: str,deleteStr: str,muteStr: str) -> (str,str):
     """Returns a string representing any attachments
@@ -3216,7 +3216,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     attachmentStr,galleryStr= \
         getPostAttachmentsAsHtml(postJsonObject,boxName,translate, \
-                                 isMuted, \
+                                 isMuted,avatarLink, \
                                  replyStr,announceStr,likeStr, \
                                  bookmarkStr,deleteStr,muteStr)
 
