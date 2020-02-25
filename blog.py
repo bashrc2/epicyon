@@ -191,7 +191,7 @@ def noOfBlogAccounts(baseDir: str) -> int:
         for acct in dirs:
             if '@' not in acct:
                 continue
-            if 'inbox@' not in acct:
+            if 'inbox@' in acct:
                 continue
             accountDir=os.path.join(baseDir+'/accounts', acct)
             blogsIndex=accountDir+'/tlblogs.index'
