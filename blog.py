@@ -18,6 +18,7 @@ from shutil import copyfileobj
 from pprint import pprint
 
 from content import replaceEmojiFromTags
+from webinterface import contentWarningScriptOpen
 from webinterface import getIconsDir
 from webinterface import getPostAttachmentsAsHtml
 from webinterface import htmlHeader
@@ -69,7 +70,7 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
             if not os.path.isfile(postFilename):
                 continue
             with open(postFilename, "r") as postFile:
-                repliesStr+=postFile.read()
+                repliesStr+=postFile.read()+'\n'
         return repliesStr
     return ''
 
@@ -165,9 +166,10 @@ def htmlBlogPostContent(authorized: bool, \
         if replies>0:
             blogStr+= \
                 '<p class="blogreplies">'+ \
-                translate['Replies'].lower()+': '+str(replies)+'</p>'
+                translate['Replies'].lower()+': '+str(replies)+'</p>\n'
     else:
-        blogStr+='<h1>'+translate['Replies']+'</h1>'
+        blogStr+='<h1>'+translate['Replies']+'</h1>\n'
+        blogStr+='<script>'+contentWarningScriptOpen()+'</script>\n'
         blogStr+= \
             getBlogReplies(baseDir,httpPrefix,translate, \
                            nickname,domain,domainFull, \

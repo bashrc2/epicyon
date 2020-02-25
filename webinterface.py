@@ -2141,6 +2141,20 @@ def contentWarningScript() -> str:
     script+='}\n'
     return script
 
+def contentWarningScriptOpen() -> str:
+    """Returns a script used for content warnings
+    The warning is open by default. This is used on blog replies.
+    """
+    script='function showContentWarning(postID) {\n'
+    script+='  var x = document.getElementById(postID);\n'
+    script+='  if (x.style.display !== "none") {\n'
+    script+='    x.style.display = "none";\n'
+    script+='  } else {\n'
+    script+='    x.style.display = "block";\n'
+    script+='  }\n'
+    script+='}\n'
+    return script
+
 def addEmbeddedAudio(translate: {},content: str) -> str:
     """Adds embedded audio for mp3/ogg
     """
