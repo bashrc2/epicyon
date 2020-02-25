@@ -71,7 +71,7 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
                 continue
             with open(postFilename, "r") as postFile:
                 repliesStr+=postFile.read()+'\n'
-        return repliesStr
+        return repliesStr.replace(translate['SHOW MORE'],'')
     return ''
 
 
@@ -88,8 +88,10 @@ def htmlBlogPostContent(authorized: bool, \
     messageLink=''
     if postJsonObject['object'].get('id'):
         messageLink=postJsonObject['object']['id'].replace('/statuses/','/')
+    titleStr=''
     if postJsonObject['object'].get('summary'):
-        blogStr+='<h1><a href="'+messageLink+'">'+postJsonObject['object']['summary']+'</a></h1>\n'
+        titleStr=postJsonObject['object']['summary']
+        blogStr+='<h1><a href="'+messageLink+'">'+titleStr+'</a></h1>\n'
 
     # get the handle of the author
     if postJsonObject['object'].get('attributedTo'):
@@ -170,10 +172,16 @@ def htmlBlogPostContent(authorized: bool, \
     else:
         blogStr+='<h1>'+translate['Replies']+'</h1>\n'
         blogStr+='<script>'+contentWarningScriptOpen()+'</script>\n'
-        blogStr+= \
-            getBlogReplies(baseDir,httpPrefix,translate, \
-                           nickname,domain,domainFull, \
-                           postJsonObject)
+        if not titleStr:
+            blogStr+= \
+                getBlogReplies(baseDir,httpPrefix,translate, \
+                               nickname,domain,domainFull, \
+                               postJsonObject)
+        else:
+            blogStr+= \
+                getBlogReplies(baseDir,httpPrefix,translate, \
+                               nickname,domain,domainFull, \
+                               postJsonObject).replace('>'+titleStr+'<','')
         blogStr+='<br><hr>\n'
 
     return blogStr
