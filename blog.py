@@ -152,6 +152,11 @@ def htmlBlogPostContent(authorized: bool, \
 
     blogStr+='<br><hr>\n'
 
+    if not linkedAuthor:
+        blogStr+= \
+            '<p class="about"><a class="about" href="'+httpPrefix+'://'+domainFull+ \
+            '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
+
     if not authorized:
         replies= \
             noOfBlogReplies(baseDir,httpPrefix,translate, \
@@ -162,16 +167,13 @@ def htmlBlogPostContent(authorized: bool, \
                 '<p class="blogreplies">'+ \
                 translate['Replies'].lower()+': '+str(replies)+'</p>'
     else:
+        blogStr+='<h1>'+translate['Replies']+'</h1>'
         blogStr+= \
             getBlogReplies(baseDir,httpPrefix,translate, \
                            nickname,domain,domainFull, \
                            postJsonObject)
         blogStr+='<br><hr>\n'
 
-    if not linkedAuthor:
-        blogStr+= \
-            '<p class="about"><a class="about" href="'+httpPrefix+'://'+domainFull+ \
-            '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
     return blogStr
 
 
