@@ -160,30 +160,29 @@ def htmlBlogPostContent(authorized: bool, \
             '<p class="about"><a class="about" href="'+httpPrefix+'://'+domainFull+ \
             '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
 
-    if not authorized:
-        replies= \
-            noOfBlogReplies(baseDir,httpPrefix,translate, \
-                            nickname,domain,domainFull, \
-                            postJsonObject)
-        if replies>0:
+    replies= \
+        noOfBlogReplies(baseDir,httpPrefix,translate, \
+                        nickname,domain,domainFull, \
+                        postJsonObject)
+    if replies>0:
+        if not authorized:
             blogStr+= \
                 '<p class="blogreplies">'+ \
                 translate['Replies'].lower()+': '+str(replies)+'</p>\n'
-    else:
-        blogStr+='<h1>'+translate['Replies']+'</h1>\n'
-        blogStr+='<script>'+contentWarningScriptOpen()+'</script>\n'
-        if not titleStr:
-            blogStr+= \
-                getBlogReplies(baseDir,httpPrefix,translate, \
-                               nickname,domain,domainFull, \
-                               postJsonObject)
         else:
-            blogStr+= \
-                getBlogReplies(baseDir,httpPrefix,translate, \
-                               nickname,domain,domainFull, \
-                               postJsonObject).replace('>'+titleStr+'<','')
-        blogStr+='<br><hr>\n'
-
+            blogStr+='<h1>'+translate['Replies']+'</h1>\n'
+            blogStr+='<script>'+contentWarningScriptOpen()+'</script>\n'
+            if not titleStr:
+                blogStr+= \
+                    getBlogReplies(baseDir,httpPrefix,translate, \
+                                   nickname,domain,domainFull, \
+                                   postJsonObject)
+            else:
+                blogStr+= \
+                    getBlogReplies(baseDir,httpPrefix,translate, \
+                                   nickname,domain,domainFull, \
+                                   postJsonObject).replace('>'+titleStr+'<','')
+            blogStr+='<br><hr>\n'
     return blogStr
 
 
