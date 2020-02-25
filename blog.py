@@ -93,7 +93,9 @@ def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
         blogStr+='<br><center>'+attachmentStr+'</center>'
 
     if postJsonObject['object'].get('content'):
-        contentStr=addEmbeddedElements(translate,postJsonObject['object']['content'])
+        contentStr= \
+            addEmbeddedElements(translate, \
+                                postJsonObject['object']['content'])
         if postJsonObject['object'].get('tag'):
             contentStr= \
                 replaceEmojiFromTags(contentStr, \
@@ -153,13 +155,6 @@ def htmlBlogPage(session, \
         if not os.path.isfile(blogsIndex):
             return blogStr+htmlFooter()
 
-        if pageNumber:
-            if pageNumber>1:
-                # show previous button
-                print('TODO previous')
-            # show next button
-            print('TODO next')
-
         timelineJson= \
             createBlogsTimeline(session,baseDir, \
                                 nickname,domain,port,httpPrefix, \
@@ -173,6 +168,26 @@ def htmlBlogPage(session, \
             if port!=80 and port!=443:
                 domainFull=domain+':'+str(port)
 
+        if pageNumber:
+            iconsDir=getIconsDir(baseDir)
+            navigateStr='<p>'
+            if pageNumber>1:
+                # show previous button
+                navigateStr+= \
+                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber-1)+'">'+ \
+                    '<img loading="lazy" alt="<" title="<" '+ \
+                    'src="/'+iconsDir+ \
+                    '/prev.png" class="buttonprev"/></a>\n'
+            if len(timelineJson['orderedItems'])>=noOfItems:
+                # show next button
+                navigateStr+= \
+                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber+1)+'">'+ \
+                    '<img loading="lazy" alt=">" title=">" '+ \
+                    'src="/'+iconsDir+ \
+                    '/prev.png" class="buttonnext"/></a>\n'
+            navigateStr='</p>'
+            blogStr+=navigateStr
+        
         for item in timelineJson['orderedItems']:
             if item['type']!='Create':
                 continue
@@ -181,6 +196,9 @@ def htmlBlogPage(session, \
                 htmlBlogPostContent(baseDir,httpPrefix,translate, \
                                     nickname,domain,domainFull,item, \
                                     None,True)
+
+        if len(timelineJson['orderedItems'])>=noOfItems:
+            blogStr+=navigateStr
 
         return blogStr+htmlFooter()
     return None

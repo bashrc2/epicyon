@@ -91,3 +91,17 @@ img {
 img:hover {
     box-shadow: 0 0 2px 1px var(--gallery-hover);
 }
+
+.buttonprev {
+    float: left;
+    width: 10%;
+    -ms-transform: translateY(30%);
+    transform: translateY(30%);
+}
+
+.buttonnext {
+    float: right;
+    width: 10%;
+    -ms-transform: translateY(30%) scaleX(-1);
+    transform: translateY(30%) scaleX(-1);
+}
