@@ -1005,7 +1005,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)                
-            msg=htmlBlogView(self.server.session, \
+            msg=htmlBlogView(authorized, \
+                             self.server.session, \
                              self.server.baseDir, \
                              self.server.httpPrefix, \
                              self.server.translate, \
@@ -1041,7 +1042,8 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)                
-            msg=htmlBlogPage(self.server.session, \
+            msg=htmlBlogPage(authorized, \
+                             self.server.session, \
                              self.server.baseDir, \
                              self.server.httpPrefix, \
                              self.server.translate, \
@@ -1111,7 +1113,8 @@ class PubServer(BaseHTTPRequestHandler):
             if blogFilename and nickname:
                 postJsonObject=loadJson(blogFilename)
                 if isBlogPost(postJsonObject):
-                    msg=htmlBlogPost(self.server.baseDir, \
+                    msg=htmlBlogPost(authorized, \
+                                     self.server.baseDir, \
                                      self.server.httpPrefix, \
                                      self.server.translate, \
                                      nickname,self.server.domain, \

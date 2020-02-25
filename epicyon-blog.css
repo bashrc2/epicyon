@@ -84,6 +84,12 @@ H3 {
     float: right;
 }
 
+.blogreplies {
+    color: var(--button-highlighted);
+    font-size: var(--font-size5);
+    float: right;
+}
+
 img {
     border-radius: 5%;
 }

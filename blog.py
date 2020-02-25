@@ -28,7 +28,26 @@ from utils import getDomainFromActor
 from posts import createBlogsTimeline
 
 
-def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
+def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
+                    nickname: str,domain: str,domainFull: str, \
+                    postJsonObject: {}) -> int:
+    """Returns the number of replies on the post
+    """
+    if not postJsonObject['object'].get('id'):
+        return 0
+    postFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs/'+ \
+        postJsonObject['object']['id'].replace('/','#')+'.replies'
+    if not os.path.isfile(postFilename):
+        return 0
+    with open(postFilename, "r") as f:
+        lines = f.readlines()
+        return len(lines)
+    return 0
+
+
+def htmlBlogPostContent(authorized: bool, \
+                        baseDir: str,httpPrefix: str,translate: {}, \
                         nickname: str,domain: str,domainFull: str, \
                         postJsonObject: {}, \
                         handle: str,restrictToDomain: bool) -> str:
@@ -104,14 +123,26 @@ def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
         blogStr+='<br>'+contentStr+'\n'
 
     blogStr+='<br><hr>\n'
+
+    #if not authorized:
+    replies= \
+        noOfBlogReplies(baseDir,httpPrefix,translate, \
+                        nickname,domain,domainFull, \
+                        postJsonObject)
+    if replies>0:
+        blogStr+= \
+            '<p class="blogreplies">'+str(replies)+' '+ \
+            translate['Replies'].lower()+'</p>'
+
     if not linkedAuthor:
         blogStr+= \
-            '<p class="about"><a href="'+httpPrefix+'://'+domainFull+ \
+            '<p class="about"><a class="about" href="'+httpPrefix+'://'+domainFull+ \
             '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
     return blogStr
 
 
-def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
+def htmlBlogPost(authorized: bool, \
+                 baseDir: str,httpPrefix: str,translate: {}, \
                  nickname: str,domain: str,domainFull: str, \
                  postJsonObject: {}) -> str:
     """Returns a html blog post
@@ -126,15 +157,14 @@ def htmlBlogPost(baseDir: str,httpPrefix: str,translate: {}, \
         blogStr=htmlHeader(cssFilename,blogCSS)
 
         blogStr+= \
-            htmlBlogPostContent(baseDir,httpPrefix,translate, \
+            htmlBlogPostContent(authorized,baseDir,httpPrefix,translate, \
                                 nickname,domain,domainFull,postJsonObject, \
                                 None,False)
-
+        
         return blogStr+htmlFooter()
     return None
 
-
-def htmlBlogPage(session, \
+def htmlBlogPage(authorized: bool, session, \
                  baseDir: str,httpPrefix: str,translate: {}, \
                  nickname: str,domain: str,port: int, \
                  noOfItems: int,pageNumber: int) -> str:
@@ -194,7 +224,7 @@ def htmlBlogPage(session, \
                 continue
 
             blogStr+= \
-                htmlBlogPostContent(baseDir,httpPrefix,translate, \
+                htmlBlogPostContent(authorized,baseDir,httpPrefix,translate, \
                                     nickname,domain,domainFull,item, \
                                     None,True)
 
@@ -253,7 +283,8 @@ def singleBlogAccountNickname(baseDir: str) -> str:
                 return acct.split('@')[0]
     return None
 
-def htmlBlogView(session,baseDir: str,httpPrefix: str, \
+def htmlBlogView(authorized: bool, \
+                 session,baseDir: str,httpPrefix: str, \
                  translate: {},domain: str,port: int, \
                  noOfItems: int) -> str:
     """Show the blog main page
@@ -270,7 +301,7 @@ def htmlBlogView(session,baseDir: str,httpPrefix: str, \
         if noOfBlogAccounts(baseDir) <= 1:
             nickname=singleBlogAccountNickname(baseDir)
             if nickname:
-                return htmlBlogPage(session, \
+                return htmlBlogPage(authorized,session, \
                                     baseDir,httpPrefix,translate, \
                                     nickname,domain,port, \
                                     noOfItems,1)
