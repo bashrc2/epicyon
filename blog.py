@@ -172,20 +172,20 @@ def htmlBlogPage(session, \
         if pageNumber:
             iconsDir=getIconsDir(baseDir)
             navigateStr='<p>'
-            if pageNumber>1:
-                # show previous button
-                navigateStr+= \
-                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber-1)+'">'+ \
-                    '<img loading="lazy" alt="<" title="<" '+ \
-                    'src="/'+iconsDir+ \
-                    '/prev.png" class="buttonprev"/></a>\n'
-            if len(timelineJson['orderedItems'])>=noOfItems:
-                # show next button
-                navigateStr+= \
-                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber+1)+'">'+ \
-                    '<img loading="lazy" alt=">" title=">" '+ \
-                    'src="/'+iconsDir+ \
-                    '/prev.png" class="buttonnext"/></a>\n'
+            #if pageNumber>1:
+            # show previous button
+            navigateStr+= \
+                '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber-1)+'">'+ \
+                '<img loading="lazy" alt="<" title="<" '+ \
+                'src="/'+iconsDir+ \
+                '/prev.png" class="buttonprev"/></a>\n'
+            #if len(timelineJson['orderedItems'])>=noOfItems:
+            # show next button
+            navigateStr+= \
+                '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber+1)+'">'+ \
+                '<img loading="lazy" alt=">" title=">" '+ \
+                'src="/'+iconsDir+ \
+                '/prev.png" class="buttonnext"/></a>\n'
             navigateStr='</p>'
             blogStr+=navigateStr
         
