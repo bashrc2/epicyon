@@ -12,6 +12,7 @@ import datetime
 import time
 import json
 from shutil import copyfile
+from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import isPublicPost
 from utils import getCachedPostFilename
