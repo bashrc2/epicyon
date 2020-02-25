@@ -18,6 +18,7 @@ from shutil import copyfileobj
 from pprint import pprint
 
 from content import replaceEmojiFromTags
+from webinterface import getPostAttachmentsAsHtml
 from webinterface import htmlHeader
 from webinterface import htmlFooter
 from webinterface import addEmbeddedElements
@@ -74,6 +75,22 @@ def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
                     else:
                         blogStr+=' '+handle
             blogStr+='</h3>\n'
+
+    avatarLink=''
+    replyStr=''
+    announceStr=''
+    likeStr=''
+    bookmarkStr=''
+    deleteStr=''
+    muteStr=''
+    isMuted=False
+    attachmentStr,galleryStr= \
+        getPostAttachmentsAsHtml(postJsonObject,'tlblogs',translate, \
+                                 isMuted,avatarLink, \
+                                 replyStr,announceStr,likeStr, \
+                                 bookmarkStr,deleteStr,muteStr)
+    if attachmentStr:
+        blogStr+='<br>'+attachmentStr
 
     if postJsonObject['object'].get('content'):
         contentStr=addEmbeddedElements(translate,postJsonObject['object']['content'])
