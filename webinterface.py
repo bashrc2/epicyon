@@ -3224,6 +3224,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if '://'+domain in messageId:
             publishedLink=messageId.replace('/statuses/','/')
 
+    print('Test publishedLink '+publishedLink)
     footerStr='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
 
     # change the background color for DMs in inbox timeline
