@@ -46,6 +46,34 @@ def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
     return 0
 
 
+def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
+                   nickname: str,domain: str,domainFull: str, \
+                   postJsonObject: {}) -> str:
+    """Returns the number of replies on the post
+    """
+    if not postJsonObject['object'].get('id'):
+        return ''
+    postFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs/'+ \
+        postJsonObject['object']['id'].replace('/','#')+'.replies'
+    if not os.path.isfile(postFilename):
+        return ''
+    with open(postFilename, "r") as f:
+        lines = f.readlines()
+        repliesStr=''
+        for messageId in lines:
+            postFilename= \
+                baseDir+'/accounts/'+nickname+'@'+domain+ \
+                '/postcache/'+ \
+                messageId.replace('\n','').replace('/','#')+'.html'
+            if not os.path.isfile(postFilename):
+                continue
+            with open(postFilename, "r") as postFile:
+                repliesStr+=postFile.read()
+        return repliesStr
+    return ''
+
+
 def htmlBlogPostContent(authorized: bool, \
                         baseDir: str,httpPrefix: str,translate: {}, \
                         nickname: str,domain: str,domainFull: str, \
@@ -133,6 +161,12 @@ def htmlBlogPostContent(authorized: bool, \
             blogStr+= \
                 '<p class="blogreplies">'+ \
                 translate['Replies'].lower()+': '+str(replies)+'</p>'
+    else:
+        blogStr+= \
+            getBlogReplies(baseDir,httpPrefix,translate, \
+                           nickname,domain,domainFull, \
+                           postJsonObject)
+        blogStr+='<br><hr>\n'
 
     if not linkedAuthor:
         blogStr+= \
