@@ -108,7 +108,9 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
-from webinterface import htmlBlogPost
+from blog import htmlBlogView
+from blog import htmlBlogPage
+from blog import htmlBlogPost
 from webinterface import htmlCalendarDeleteConfirm
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
@@ -995,7 +997,61 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,8)
 
-        if htmlGET and '/users/' in self.path:
+        # show the main blog page
+        if htmlGET and (self.path=='/blog' or self.path=='/blogs'):
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.useTor)                
+            msg=htmlBlogView(self.server.session, \
+                             self.server.baseDir, \
+                             self.server.httpPrefix, \
+                             self.server.translate, \
+                             self.server.domain,self.server.port, \
+                             maxPostsInBlogsFeed)
+            if msg!=None:
+                msg=msg.encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self._write(msg)
+                return
+            self._404()
+            return
+
+        if htmlGET and self.path.startswith('/blog/'):
+            pageNumber=1
+            nickname=self.path.split('/blog/')[1]
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
+            if '?' in nickname:
+                nickname=nickname.split('?')[0]
+            if '?page=' in self.path:
+                pageNumberStr=self.path.split('?page=')[1]
+                if '?' in pageNumberStr:
+                    pageNumberStr=pageNumberStr.split('?')[0]
+                if pageNumberStr.isdigit():
+                    pageNumber=int(pageNumberStr)
+                    if pageNumber<1:
+                        pageNumber=1
+                    elif pageNumber>10:
+                        pageNumber=10
+            if not self.server.session:
+                self.server.session= \
+                    createSession(self.server.useTor)                
+            msg=htmlBlogPage(self.server.session, \
+                             self.server.baseDir, \
+                             self.server.httpPrefix, \
+                             self.server.translate, \
+                             nickname, \
+                             self.server.domain,self.server.port, \
+                             maxPostsInBlogsFeed,pageNumber)
+            if msg!=None:
+                msg=msg.encode()
+                self._set_headers('text/html',len(msg),cookie)
+                self._write(msg)
+                return
+            self._404()
+            return
+
+        if htmlGET and '/users/' in self.path:            
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
                 optionsStr=self.path.split('?options=')[1]
@@ -1040,28 +1096,28 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStrAbsolute,cookie)
                 return
 
-           # show blog post
-           blogFilename,nickname= \
-               self._pathContainsBlogLink(self.server.baseDir, \
-                                          self.server.httpPrefix, \
-                                          self.server.domain, \
-                                          self.server.domainFull, \
-                                          self.path)
-           if blogFilename and nickname:
-               postJsonObject=loadJson(blogFilename)
-               if isBlogPost(postJsonObject):
-                   msg=htmlBlogPost(self.server.baseDir, \
-                                    self.server.httpPrefix, \
-                                    self.server.translate, \
-                                    nickname,self.server.domain, \
-                                    postJsonObject)
-                   if msg!=None:
-                       msg=msg.encode()
-                       self._set_headers('text/html',len(msg),cookie)
-                       self._write(msg)
-                       return
-                   self._404()
-                   return
+            # show blog post
+            blogFilename,nickname= \
+                self._pathContainsBlogLink(self.server.baseDir, \
+                                           self.server.httpPrefix, \
+                                           self.server.domain, \
+                                           self.server.domainFull, \
+                                           self.path)
+            if blogFilename and nickname:
+                postJsonObject=loadJson(blogFilename)
+                if isBlogPost(postJsonObject):
+                    msg=htmlBlogPost(self.server.baseDir, \
+                                     self.server.httpPrefix, \
+                                     self.server.translate, \
+                                     nickname,self.server.domain, \
+                                     postJsonObject)
+                    if msg!=None:
+                        msg=msg.encode()
+                        self._set_headers('text/html',len(msg),cookie)
+                        self._write(msg)
+                        return
+                    self._404()
+                    return
            
         self._benchmarkGETtimings(GETstartTime,GETtimings,9)
 

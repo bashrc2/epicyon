@@ -466,7 +466,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
 def personBoxJson(recentPostsCache: {}, \
                   session,baseDir: str,domain: str,port: int,path: str, \
                   httpPrefix: str,noOfItems: int,boxname: str, \
-                  authorized: bool,ocapAlways: bool) -> []:
+                  authorized: bool,ocapAlways: bool) -> {}:
     """Obtain the inbox/outbox/moderation feed for the given person
     """
     if boxname!='inbox' and boxname!='dm' and \
