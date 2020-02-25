@@ -124,15 +124,15 @@ def htmlBlogPostContent(authorized: bool, \
 
     blogStr+='<br><hr>\n'
 
-    #if not authorized:
-    replies= \
-        noOfBlogReplies(baseDir,httpPrefix,translate, \
-                        nickname,domain,domainFull, \
-                        postJsonObject)
-    if replies>0:
-        blogStr+= \
-            '<p class="blogreplies">'+str(replies)+' '+ \
-            translate['Replies'].lower()+'</p>'
+    if not authorized:
+        replies= \
+            noOfBlogReplies(baseDir,httpPrefix,translate, \
+                            nickname,domain,domainFull, \
+                            postJsonObject)
+        if replies>0:
+            blogStr+= \
+                '<p class="blogreplies">'+ \
+                translate['Replies'].lower()+': '+str(replies)+'</p>'
 
     if not linkedAuthor:
         blogStr+= \
