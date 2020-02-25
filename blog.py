@@ -71,7 +71,7 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
                 continue
             with open(postFilename, "r") as postFile:
                 repliesStr+=postFile.read()+'\n'
-        return repliesStr.replace(translate['SHOW MORE'],'')
+        return repliesStr.replace(translate['SHOW MORE'],' ')
     return ''
 
 
