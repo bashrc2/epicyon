@@ -193,6 +193,7 @@ def htmlBlogPost(authorized: bool, \
     with open(cssFilename, 'r') as cssFile:
         blogCSS=cssFile.read()
         blogStr=htmlHeader(cssFilename,blogCSS)
+        blogStr=blogStr.replace('.cwText','.cwTextInactive')
 
         blogStr+= \
             htmlBlogPostContent(authorized,baseDir,httpPrefix,translate, \
@@ -218,6 +219,7 @@ def htmlBlogPage(authorized: bool, session, \
     with open(cssFilename, 'r') as cssFile:
         blogCSS=cssFile.read()
         blogStr=htmlHeader(cssFilename,blogCSS)
+        blogStr=blogStr.replace('.cwText','.cwTextInactive')
 
         blogsIndex= \
             baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs.index'
