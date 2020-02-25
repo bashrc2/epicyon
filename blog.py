@@ -18,6 +18,7 @@ from shutil import copyfileobj
 from pprint import pprint
 
 from content import replaceEmojiFromTags
+from webinterface import getIconsDir
 from webinterface import getPostAttachmentsAsHtml
 from webinterface import htmlHeader
 from webinterface import htmlFooter
