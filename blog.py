@@ -35,8 +35,11 @@ def htmlBlogPostContent(baseDir: str,httpPrefix: str,translate: {}, \
     linkedAuthor=False
     actor=''
     blogStr=''
+    messageLink=''
+    if postJsonObject['object'].get('id'):
+        messageLink=postJsonObject['object']['id'].replace('/statuses/','/')
     if postJsonObject['object'].get('summary'):
-        blogStr+='<h1>'+postJsonObject['object']['summary']+'</h1>\n'
+        blogStr+='<h1><a href="'+messageLink+'">'+postJsonObject['object']['summary']+'</a></h1>\n'
 
     # get the handle of the author
     if postJsonObject['object'].get('attributedTo'):
