@@ -1875,7 +1875,7 @@ def htmlProfile(defaultTimeline: str, \
                 '<p>'+translate['Matrix']+': '+matrixAddress+'</p>\n'
         if ssbAddress:
             donateSection+= \
-                '<p>'+translate['SSB']+': '+ssbAddress+'</p>\n'
+                '<p>SSB: '+ssbAddress+'</p>\n'
         if PGPpubKey:
             donateSection+= \
                 '<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>\n'
