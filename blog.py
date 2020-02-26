@@ -39,11 +39,19 @@ def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
         return 0
     if not postId:
         return 0
-    postFilename= \
-        baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs/'+ \
-        postId.replace('/','#')+'.replies'
-    if not os.path.isfile(postFilename):
+
+    tryPostBox=('tlblogs','inbox','outbox')
+    boxFound=False
+    for postBox in tryPostBox:
+        postFilename= \
+            baseDir+'/accounts/'+nickname+'@'+domain+'/'+postBox+'/'+ \
+            postId.replace('/','#')+'.replies'
+        if os.path.isfile(postFilename):
+            boxFound=True
+            break
+    if not boxFound:
         return 0
+
     replies=0
     with open(postFilename, "r") as f:
         lines = f.readlines()
@@ -67,11 +75,19 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
         return ''
     if not postId:
         return ''
-    postFilename= \
-        baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs/'+ \
-        postId.replace('/','#')+'.replies'
-    if not os.path.isfile(postFilename):
+
+    tryPostBox=('tlblogs','inbox','outbox')
+    boxFound=False
+    for postBox in tryPostBox:
+        postFilename= \
+            baseDir+'/accounts/'+nickname+'@'+domain+'/'+postBox+'/'+ \
+            postId.replace('/','#')+'.replies'
+        if os.path.isfile(postFilename):
+            boxFound=True
+            break
+    if not boxFound:
         return ''
+
     with open(postFilename, "r") as f:
         lines = f.readlines()
         repliesStr=''
