@@ -75,7 +75,7 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
     with open(postFilename, "r") as f:
         lines = f.readlines()
         repliesStr=''
-        for messageId in lines:
+        for replyPostId in lines:
             replyPostId= \
                 replyPostId.replace('\n','').replace('.json','')
             postFilename= \
