@@ -50,6 +50,13 @@ def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
             boxFound=True
             break
     if not boxFound:
+        # post may exist but has no replies
+        for postBox in tryPostBox:
+            postFilename= \
+                baseDir+'/accounts/'+nickname+'@'+domain+'/'+postBox+'/'+ \
+                postId.replace('/','#')
+            if os.path.isfile(postFilename):
+                return 1
         return 0
 
     replies=0
@@ -57,7 +64,7 @@ def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
         lines = f.readlines()
         for replyPostId in lines:
             replyPostId= \
-                replyPostId.replace('\n','').replace('.json','')
+                replyPostId.replace('\n','').replace('.json','').replace('.replies','')
             replies+= \
                 1 + \
                 noOfBlogReplies(baseDir,httpPrefix,translate, \
@@ -86,6 +93,19 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
             boxFound=True
             break
     if not boxFound:
+        # post may exist but has no replies
+        for postBox in tryPostBox:
+            postFilename= \
+                baseDir+'/accounts/'+nickname+'@'+domain+'/'+postBox+'/'+ \
+                postId.replace('/','#')
+            if os.path.isfile(postFilename):
+                postFilename= \
+                    baseDir+'/accounts/'+nickname+'@'+domain+ \
+                    '/postcache/'+ \
+                    postId.replace('/','#')+'.html'
+                if os.path.isfile(postFilename):
+                    with open(postFilename, "r") as postFile:
+                        return postFile.read()+'\n'
         return ''
 
     with open(postFilename, "r") as f:
@@ -93,7 +113,7 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
         repliesStr=''
         for replyPostId in lines:
             replyPostId= \
-                replyPostId.replace('\n','').replace('.json','')
+                replyPostId.replace('\n','').replace('.json','').replace('.replies','')
             postFilename= \
                 baseDir+'/accounts/'+nickname+'@'+domain+ \
                 '/postcache/'+ \
