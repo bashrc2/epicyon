@@ -31,47 +31,72 @@ from posts import createBlogsTimeline
 
 def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
                     nickname: str,domain: str,domainFull: str, \
-                    postJsonObject: {}) -> int:
+                    postId: str,depth=0) -> int:
     """Returns the number of replies on the post
+    This is recursive, so can handle replies to replies
     """
-    if not postJsonObject['object'].get('id'):
+    if depth>4:
+        return 0
+    if not postId:
         return 0
     postFilename= \
         baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs/'+ \
-        postJsonObject['object']['id'].replace('/','#')+'.replies'
+        postId.replace('/','#')+'.replies'
     if not os.path.isfile(postFilename):
         return 0
+    replies=0
     with open(postFilename, "r") as f:
         lines = f.readlines()
-        return len(lines)
-    return 0
+        for replyPostId in lines:
+            replyPostId= \
+                replyPostId.replace('\n','').replace('.json','')
+            replies+= \
+                1 + \
+                noOfBlogReplies(baseDir,httpPrefix,translate, \
+                                nickname,domain,domainFull, \
+                                replyPostId,depth+1)
+    return replies
 
 
 def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
                    nickname: str,domain: str,domainFull: str, \
-                   postJsonObject: {}) -> str:
+                   postId: str,depth=0) -> str:
     """Returns the number of replies on the post
     """
-    if not postJsonObject['object'].get('id'):
+    if depth>4:
+        return ''
+    if not postId:
         return ''
     postFilename= \
         baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs/'+ \
-        postJsonObject['object']['id'].replace('/','#')+'.replies'
+        postId.replace('/','#')+'.replies'
     if not os.path.isfile(postFilename):
         return ''
     with open(postFilename, "r") as f:
         lines = f.readlines()
         repliesStr=''
         for messageId in lines:
+            replyPostId= \
+                replyPostId.replace('\n','').replace('.json','')
             postFilename= \
                 baseDir+'/accounts/'+nickname+'@'+domain+ \
                 '/postcache/'+ \
-                messageId.replace('\n','').replace('/','#')+'.html'
+                replyPostId.replace('\n','').replace('/','#')+'.html'
             if not os.path.isfile(postFilename):
                 continue
             with open(postFilename, "r") as postFile:
                 repliesStr+=postFile.read()+'\n'
-        return repliesStr.replace(translate['SHOW MORE'],'-').replace('?tl=outbox','?tl=tlblogs')
+            repliesStr+= \
+                getBlogReplies(baseDir,httpPrefix,translate, \
+                               nickname,domain,domainFull, \
+                               replyPostId,depth+1)
+
+        # indicate the reply indentation level
+        indentStr='>'
+        for indentLevel in range(depth):
+            indentStr+=' >'
+
+        return repliesStr.replace(translate['SHOW MORE'],indentStr).replace('?tl=outbox','?tl=tlblogs')
     return ''
 
 
@@ -163,7 +188,7 @@ def htmlBlogPostContent(authorized: bool, \
     replies= \
         noOfBlogReplies(baseDir,httpPrefix,translate, \
                         nickname,domain,domainFull, \
-                        postJsonObject)
+                        postJsonObject['object']['id'])
     if replies>0:
         if not authorized:
             blogStr+= \
@@ -176,12 +201,12 @@ def htmlBlogPostContent(authorized: bool, \
                 blogStr+= \
                     getBlogReplies(baseDir,httpPrefix,translate, \
                                    nickname,domain,domainFull, \
-                                   postJsonObject)
+                                   postJsonObject['object']['id'])
             else:
                 blogStr+= \
                     getBlogReplies(baseDir,httpPrefix,translate, \
                                    nickname,domain,domainFull, \
-                                   postJsonObject).replace('>'+titleStr+'<','')
+                                   postJsonObject['object']['id']).replace('>'+titleStr+'<','')
             blogStr+='<br><hr>\n'
     return blogStr
 
