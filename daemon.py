@@ -32,6 +32,8 @@ from pgp import getPGPpubKey
 from pgp import setPGPpubKey
 from xmpp import getXmppAddress
 from xmpp import setXmppAddress
+from ssb import getSSBAddress
+from ssb import setSSBAddress
 from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
@@ -1078,12 +1080,14 @@ class PubServer(BaseHTTPRequestHandler):
                     PGPpubKey=None
                     xmppAddress=None
                     matrixAddress=None
+                    ssbAddress=None
                     emailAddress=None
                     actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
                     if actorJson:
                         donateUrl=getDonationUrl(actorJson)
                         xmppAddress=getXmppAddress(actorJson)
                         matrixAddress=getMatrixAddress(actorJson)
+                        ssbAddress=getSSBAddress(actorJson)
                         emailAddress=getEmailAddress(actorJson)
                         PGPpubKey=getPGPpubKey(actorJson)
                     msg=htmlPersonOptions(self.server.translate, \
@@ -1095,6 +1099,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           optionsLink, \
                                           pageNumber,donateUrl, \
                                           xmppAddress,matrixAddress, \
+                                          ssbAddress, \
                                           PGPpubKey,emailAddress).encode()
                     self._set_headers('text/html',len(msg),cookie)
                     self._write(msg)
@@ -4422,6 +4427,15 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if currentMatrixAddress:
                                 setMatrixAddress(actorJson,'')
+                                actorChanged=True                                
+                        currentSSBAddress=getSSBAddress(actorJson)
+                        if fields.get('ssbAddress'):
+                            if fields['ssbAddress']!=currentSSBAddress:
+                                setSSBAddress(actorJson,fields['ssbAddress'])
+                                actorChanged=True
+                        else:
+                            if currentSSBAddress:
+                                setSSBAddress(actorJson,'')
                                 actorChanged=True                                
                         currentPGPpubKey=getPGPpubKey(actorJson)
                         if fields.get('pgp'):
