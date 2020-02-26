@@ -31,6 +31,10 @@ def getSSBAddress(actorJson: {}) -> str:
             continue
         if '"' in propertyValue['value']:
             continue
+        if ' ' in propertyValue['value']:
+            continue
+        if ',' in propertyValue['value']:
+            continue
         return propertyValue['value']
     return ''
 
@@ -54,15 +58,15 @@ def setSSBAddress(actorJson: {},ssbAddress: str) -> None:
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
 
-    if '@' not in ssbAddress:
-        return
     if not ssbAddress.startswith('@'):
         return
-    if '.' not in ssbAddress:
+    if '=.' not in ssbAddress:
         return
     if '"' in ssbAddress:
         return
-    if ':' not in ssbAddress:
+    if ' ' in ssbAddress:
+        return
+    if ',' in ssbAddress:
         return
 
     for propertyValue in actorJson['attachment']:
