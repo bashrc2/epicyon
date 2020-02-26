@@ -2507,6 +2507,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     for f in postsInBox:
         noOfPosts+=1
     if noOfPosts<=maxPostsInBox:
+        print('Checked '+str(noOfPosts)+' '+boxname+' posts for '+nickname+'@'+domain)
         return
 
     # remove entries from the index
@@ -2550,6 +2551,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
 
     noOfPosts=postsCtr
     if noOfPosts<=maxPostsInBox:
+        print('Checked '+str(noOfPosts)+' '+boxname+' posts for '+nickname+'@'+domain)
         return
 
     # sort the list in ascending order of date
@@ -2559,6 +2561,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     # directory containing cached html posts
     postCacheDir=boxDir.replace('/'+boxname,'/postcache')
 
+    removeCtr=0
     for publishedStr,postFilename in postsInBoxSorted.items():
         filePath=os.path.join(boxDir,postFilename)        
         if not os.path.isfile(filePath):
@@ -2579,8 +2582,14 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
             os.remove(postCacheFilename)
 
         noOfPosts-=1
+        removeCtr+=1
         if noOfPosts<=maxPostsInBox:
             break
+    if archiveDir:
+        print('Archived '+str(removeCtr)+' '+boxname+' posts for '+nickname+'@'+domain)
+    else:
+        print('Removed '+str(removeCtr)+' '+boxname+' posts for '+nickname+'@'+domain)
+    print(nickname+'@'+domain+' has '+str(noOfPosts)+' in '+boxname)
 
 def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
                            raw: bool,simple: bool,useTor: bool, \
