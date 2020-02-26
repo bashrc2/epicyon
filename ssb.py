@@ -24,11 +24,10 @@ def getSSBAddress(actorJson: {}) -> str:
             continue
         if propertyValue['type']!='PropertyValue':
             continue
-        if '@' not in propertyValue['value']:
-            continue
+        propertyValue['value']=propertyValue['value'].strip()
         if not propertyValue['value'].startswith('@'):
             continue
-        if ':' not in propertyValue['value']:
+        if '=.' not in propertyValue['value']:
             continue
         if '"' in propertyValue['value']:
             continue
