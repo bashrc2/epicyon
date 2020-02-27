@@ -247,6 +247,27 @@ def htmlBlogPostContent(authorized: bool, \
     return blogStr
 
 
+def htmlBlogPostRSS(authorized: bool, \
+                    baseDir: str,httpPrefix: str,translate: {}, \
+                    nickname: str,domain: str,domainFull: str, \
+                    postJsonObject: {}, \
+                    handle: str,restrictToDomain: bool) -> str:
+    """Returns the RSS feed for a single blog post
+    """
+    messageLink=''
+    if postJsonObject['object'].get('id'):
+        messageLink=postJsonObject['object']['id'].replace('/statuses/','/')
+        if not restrictToDomain or \
+           (restrictToDomain and '/'+domain in messageLink):
+            if postJsonObject['object'].get('summary'):
+                titleStr=postJsonObject['object']['summary']
+                rssStr= '     <item>'
+                rssStr+='         <title>'+titleStr+'</title>'
+                rssStr+='         <link>'+messageLink+'</link>'
+                rssStr+='     </item>'
+    return rssStr
+
+
 def htmlBlogPost(authorized: bool, \
                  baseDir: str,httpPrefix: str,translate: {}, \
                  nickname: str,domain: str,domainFull: str, \
@@ -307,6 +328,7 @@ def htmlBlogPage(authorized: bool, session, \
             if port!=80 and port!=443:
                 domainFull=domain+':'+str(port)
 
+        # show previous and next buttons
         if pageNumber!=None:
             iconsDir=getIconsDir(baseDir)
             navigateStr='<p>'
@@ -326,7 +348,13 @@ def htmlBlogPage(authorized: bool, session, \
                     '/prev.png" class="buttonnext"/></a>\n'
             navigateStr+='</p>'
             blogStr+=navigateStr
-        
+
+        # show rss link
+        blogStr+='<center><p class="rssfeed">'
+        blogStr+='<a href="'+httpPrefix+'://'+domainFull+'/blog/rss.xml">'
+        blogStr+='<img loading="lazy" alt="RSS" title="RSS" src="/'+iconsDir+'/rss.png" />'
+        blogStr+='</a></p></center>'
+
         for item in timelineJson['orderedItems']:
             if item['type']!='Create':
                 continue
@@ -341,6 +369,60 @@ def htmlBlogPage(authorized: bool, session, \
 
         return blogStr+htmlFooter()
     return None
+
+def rssHeader(httpPrefix: str,nickname: str,domainFull: str,translate: {}) -> str:
+    rssStr="<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
+    rssStr+="<rss version=\"2.0\">"
+    rssStr+='<channel>'
+    rssStr+='    <title>'+translate['Blog']+'</title>'
+    rssStr+='    <link>'+httpPrefix+'://'+domainFull+'/users/'+nickname+'/rss.xml'+'</link>'
+    return rssStr
+
+def rssFooter() -> str:
+    rssStr='</channel>'
+    rssStr+='</rss>'
+    return rssStr
+
+def htmlBlogPageRSS(authorized: bool, session, \
+                    baseDir: str,httpPrefix: str,translate: {}, \
+                    nickname: str,domain: str,port: int, \
+                    noOfItems: int,pageNumber: int) -> str:
+    """Returns an rss feed containing posts
+    """
+    if ' ' in nickname or '@' in nickname or '\n' in nickname:
+        return None
+
+    domainFull=domain
+    if port:
+        if port!=80 and port!=443:
+            domainFull=domain+':'+str(port)
+
+    blogRSS=rssHeader(httpPrefix,nickname,domainFull,translate)
+
+    blogsIndex= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/tlblogs.index'
+    if not os.path.isfile(blogsIndex):
+        return blogRSS+rssFooter()
+
+    timelineJson= \
+        createBlogsTimeline(session,baseDir, \
+                            nickname,domain,port,httpPrefix, \
+                            noOfItems,False,False,pageNumber)
+
+    if not timelineJson:
+        return blogRSS+rssFooter()
+
+    if pageNumber!=None:        
+        for item in timelineJson['orderedItems']:
+            if item['type']!='Create':
+                continue
+
+            blogRSS+= \
+                htmlBlogPostRSS(authorized,baseDir,httpPrefix,translate, \
+                                nickname,domain,domainFull,item, \
+                                None,True)
+
+    return blogRSS+rssFooter()
 
 
 def getBlogIndexesForAccounts(baseDir: str) -> {}:

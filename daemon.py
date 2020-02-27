@@ -110,6 +110,7 @@ from roles import setRole
 from roles import clearModeratorStatus
 from skills import outboxSkills
 from availability import outboxAvailability
+from blog import htmlBlogPageRSS
 from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
@@ -195,6 +196,9 @@ maxPostsInMediaFeed=6
 
 # Blogs can be longer, so don't show many per page
 maxPostsInBlogsFeed=4
+
+# Maximum number of entries in returned rss.xml
+maxPostsInRSSFeed=10
 
 # number of follows/followers per page
 followsPerPage=12
@@ -998,6 +1002,34 @@ class PubServer(BaseHTTPRequestHandler):
             self.path='/inbox'
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,8)
+
+        if self.path.startswith('/blog/') and self.path.endswith('/rss.xml'):
+            nickname=self.path.split('/blog/')[1]
+            if '/' not in nickname:
+                if not nickname.startswith('rss.'):
+                    if os.path.isdir(self.server.baseDir+ \
+                                     '/accounts/'+nickname+ \
+                                     '@'+self.server.domain):
+                        if not self.server.session:
+                            self.server.session= \
+                                createSession(self.server.useTor)                
+                        msg= \
+                            htmlBlogPageRSS(authorized, \
+                                            self.server.session, \
+                                            self.server.baseDir, \
+                                            self.server.httpPrefix, \
+                                            self.server.translate, \
+                                            nickname, \
+                                            self.server.domain, \
+                                            self.server.port, \
+                                            maxPostsInRSSFeed,1)
+                        if msg!=None:
+                            msg=msg.encode()
+                            self._set_headers('application/rss+xml',len(msg),cookie)
+                            self._write(msg)
+                            return
+                    self._404()
+                    return                
 
         # show the main blog page
         if htmlGET and (self.path=='/blog' or \

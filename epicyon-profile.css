@@ -90,6 +90,10 @@ a:link {
     position: relative;
 }
 
+.rssfeed img {
+    width: 5%;
+}
+
 .ssbaddr {
     font-size: var(--font-size5);
 }
