@@ -1025,7 +1025,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             maxPostsInRSSFeed,1)
                         if msg!=None:
                             msg=msg.encode()
-                            self._set_headers('application/rss+xml',len(msg),cookie)
+                            self._set_headers('text/xml',len(msg),cookie)
                             self._write(msg)
                             return
                     self._404()
@@ -1036,61 +1036,63 @@ class PubServer(BaseHTTPRequestHandler):
                         self.path=='/blog/' or \
                         self.path=='/blogs' or \
                         self.path=='/blogs/'):
-            if not self.server.session:
-                self.server.session= \
-                    createSession(self.server.useTor)                
-            msg=htmlBlogView(authorized, \
-                             self.server.session, \
-                             self.server.baseDir, \
-                             self.server.httpPrefix, \
-                             self.server.translate, \
-                             self.server.domain,self.server.port, \
-                             maxPostsInBlogsFeed)
-            if msg!=None:
-                msg=msg.encode()
-                self._set_headers('text/html',len(msg),cookie)
-                self._write(msg)
+            if '/rss.xml' not in self.path:
+                if not self.server.session:
+                    self.server.session= \
+                        createSession(self.server.useTor)                
+                msg=htmlBlogView(authorized, \
+                                 self.server.session, \
+                                 self.server.baseDir, \
+                                 self.server.httpPrefix, \
+                                 self.server.translate, \
+                                 self.server.domain,self.server.port, \
+                                 maxPostsInBlogsFeed)
+                if msg!=None:
+                    msg=msg.encode()
+                    self._set_headers('text/html',len(msg),cookie)
+                    self._write(msg)
+                    return
+                self._404()
                 return
-            self._404()
-            return
 
         # show a particular page of blog entries
         # for a particular account
         if htmlGET and self.path.startswith('/blog/'):
-            pageNumber=1
-            nickname=self.path.split('/blog/')[1]
-            if '/' in nickname:
-                nickname=nickname.split('/')[0]
-            if '?' in nickname:
-                nickname=nickname.split('?')[0]
-            if '?page=' in self.path:
-                pageNumberStr=self.path.split('?page=')[1]
-                if '?' in pageNumberStr:
-                    pageNumberStr=pageNumberStr.split('?')[0]
-                if pageNumberStr.isdigit():
-                    pageNumber=int(pageNumberStr)
-                    if pageNumber<1:
-                        pageNumber=1
-                    elif pageNumber>10:
-                        pageNumber=10
-            if not self.server.session:
-                self.server.session= \
-                    createSession(self.server.useTor)                
-            msg=htmlBlogPage(authorized, \
-                             self.server.session, \
-                             self.server.baseDir, \
-                             self.server.httpPrefix, \
-                             self.server.translate, \
-                             nickname, \
-                             self.server.domain,self.server.port, \
-                             maxPostsInBlogsFeed,pageNumber)
-            if msg!=None:
-                msg=msg.encode()
-                self._set_headers('text/html',len(msg),cookie)
-                self._write(msg)
+            if '/rss.xml' not in self.path:
+                pageNumber=1
+                nickname=self.path.split('/blog/')[1]
+                if '/' in nickname:
+                    nickname=nickname.split('/')[0]
+                if '?' in nickname:
+                    nickname=nickname.split('?')[0]
+                if '?page=' in self.path:
+                    pageNumberStr=self.path.split('?page=')[1]
+                    if '?' in pageNumberStr:
+                        pageNumberStr=pageNumberStr.split('?')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber=int(pageNumberStr)
+                        if pageNumber<1:
+                            pageNumber=1
+                        elif pageNumber>10:
+                            pageNumber=10
+                if not self.server.session:
+                    self.server.session= \
+                        createSession(self.server.useTor)                
+                msg=htmlBlogPage(authorized, \
+                                 self.server.session, \
+                                 self.server.baseDir, \
+                                 self.server.httpPrefix, \
+                                 self.server.translate, \
+                                 nickname, \
+                                 self.server.domain,self.server.port, \
+                                 maxPostsInBlogsFeed,pageNumber)
+                if msg!=None:
+                    msg=msg.encode()
+                    self._set_headers('text/html',len(msg),cookie)
+                    self._write(msg)
+                    return
+                self._404()
                 return
-            self._404()
-            return
 
         if htmlGET and '/users/' in self.path:            
             # show the person options screen with view/follow/block/report
