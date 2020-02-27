@@ -90,6 +90,10 @@ a:link {
     position: relative;
 }
 
+.ssbaddr {
+    font-size: var(--font-size5);
+}
+
 .about {
     font-size: var(--font-size5);
     float: right;
