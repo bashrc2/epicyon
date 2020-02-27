@@ -1005,31 +1005,32 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.path.startswith('/blog/') and self.path.endswith('/rss.xml'):
             nickname=self.path.split('/blog/')[1]
-            if '/' not in nickname:
-                if not nickname.startswith('rss.'):
-                    if os.path.isdir(self.server.baseDir+ \
-                                     '/accounts/'+nickname+ \
-                                     '@'+self.server.domain):
-                        if not self.server.session:
-                            self.server.session= \
-                                createSession(self.server.useTor)                
-                        msg= \
-                            htmlBlogPageRSS(authorized, \
-                                            self.server.session, \
-                                            self.server.baseDir, \
-                                            self.server.httpPrefix, \
-                                            self.server.translate, \
-                                            nickname, \
-                                            self.server.domain, \
-                                            self.server.port, \
-                                            maxPostsInRSSFeed,1)
-                        if msg!=None:
-                            msg=msg.encode()
-                            self._set_headers('text/xml',len(msg),cookie)
-                            self._write(msg)
-                            return
-                    self._404()
-                    return                
+            if '/' in nickname:
+                nickname=nickname.split('/')[0]
+            if not nickname.startswith('rss.'):
+                if os.path.isdir(self.server.baseDir+ \
+                                 '/accounts/'+nickname+ \
+                                 '@'+self.server.domain):
+                    if not self.server.session:
+                        self.server.session= \
+                            createSession(self.server.useTor)                
+                    msg= \
+                        htmlBlogPageRSS(authorized, \
+                                        self.server.session, \
+                                        self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        self.server.translate, \
+                                        nickname, \
+                                        self.server.domain, \
+                                        self.server.port, \
+                                        maxPostsInRSSFeed,1)
+                    if msg!=None:
+                        msg=msg.encode()
+                        self._set_headers('text/xml',len(msg),cookie)
+                        self._write(msg)
+                        return
+                self._404()
+                return                
 
         # show the main blog page
         if htmlGET and (self.path=='/blog' or \
