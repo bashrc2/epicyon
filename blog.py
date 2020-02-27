@@ -363,7 +363,7 @@ def htmlBlogPage(authorized: bool, session, \
 
         # show rss link
         blogStr+='<p class="rssfeed">'
-        blogStr+='<a href="'+httpPrefix+'://'+domainFull+'/blog/rss.xml">'
+        blogStr+='<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'/rss.xml">'
         blogStr+='<img loading="lazy" alt="RSS" title="RSS" src="/'+iconsDir+'/rss.png" />'
         blogStr+='</a></p>'
 
