@@ -349,12 +349,6 @@ def htmlBlogPage(authorized: bool, session, \
             navigateStr+='</p>'
             blogStr+=navigateStr
 
-        # show rss link
-        blogStr+='<center><p class="rssfeed">'
-        blogStr+='<a href="'+httpPrefix+'://'+domainFull+'/blog/rss.xml">'
-        blogStr+='<img loading="lazy" alt="RSS" title="RSS" src="/'+iconsDir+'/rss.png" />'
-        blogStr+='</a></p></center>'
-
         for item in timelineJson['orderedItems']:
             if item['type']!='Create':
                 continue
@@ -366,6 +360,12 @@ def htmlBlogPage(authorized: bool, session, \
 
         if len(timelineJson['orderedItems'])>=noOfItems:
             blogStr+=navigateStr
+
+        # show rss link
+        blogStr+='<p class="rssfeed">'
+        blogStr+='<a href="'+httpPrefix+'://'+domainFull+'/blog/rss.xml">'
+        blogStr+='<img loading="lazy" alt="RSS" title="RSS" src="/'+iconsDir+'/rss.png" />'
+        blogStr+='</a></p>'
 
         return blogStr+htmlFooter()
     return None
