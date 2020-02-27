@@ -289,6 +289,13 @@ def htmlBlogPost(authorized: bool, \
                                 nickname,domain,domainFull,postJsonObject, \
                                 None,False)
         
+        # show rss link
+        iconsDir=getIconsDir(baseDir)
+        blogStr+='<p class="rssfeed">'
+        blogStr+='<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'/rss.xml">'
+        blogStr+='<img loading="lazy" alt="RSS" title="RSS" src="/'+iconsDir+'/rss.png" />'
+        blogStr+='</a></p>'
+
         return blogStr+htmlFooter()
     return None
 
