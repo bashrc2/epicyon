@@ -4808,8 +4808,8 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
                 continue
             if daysSinceEpochStr not in open(tagsFilename).read():
                 continue
-            tagCtr=0
             with open(tagsFilename, 'r') as tagsFile:
+                tagCtr=0
                 lines=tagsFile.readlines()
                 for l in lines:
                     if '  ' not in l:
@@ -4824,10 +4824,10 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
                         if tagCtr==0:
                             tagSwarm.append(hashTagName)
                         tagCtr+=1
-                        if tagCtr>3:
+                        if tagCtr>1:
                             break
-            if tagCtr>0:
-                tagSwarmCtr.append(tagCtr)
+                if tagCtr>0:
+                    tagSwarmCtr.append(tagCtr)
     if not tagSwarm:
         return ''
     tagSwarm.sort()
