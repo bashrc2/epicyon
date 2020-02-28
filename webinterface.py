@@ -4824,7 +4824,7 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
                         if tagCtr==0:
                             tagSwarm.append(hashTagName)
                         tagCtr+=1
-                        if tagCtr>1:
+                        if tagCtr>2:
                             break
                 if tagCtr>0:
                     tagSwarmCtr.append(tagCtr)
@@ -4834,7 +4834,7 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
     tagSwarmStr=''
     ctr=0
     for tagName in tagSwarm:
-        if tagSwarmCtr[ctr]<2:
+        if tagSwarmCtr[ctr]<3:
             tagSwarmStr+= \
                 '<a href="'+actor+'/tags/'+tagName+ \
                 '" class="hashtagswarm">'+tagName+'</a> '
