@@ -140,6 +140,11 @@ input[type=text] {
 	padding: 30px;
 	line-height: 60px;
     }
+    .hashtagswarm2 {
+	font-size: 40px;
+	padding: 30px;
+	line-height: 60px;
+    }
     .followText {
         font-size: 24px;
     }
@@ -170,6 +175,11 @@ input[type=text] {
 @media screen and (max-width: 1000px) {
     .hashtagswarm {
 	font-size: 40px;
+	padding: 40px;
+	line-height: 70px;
+    }
+    .hashtagswarm2 {
+	font-size: 50px;
 	padding: 40px;
 	line-height: 70px;
     }

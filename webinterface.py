@@ -4841,7 +4841,7 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
         else:
             tagSwarmStr+= \
                 '<a href="'+actor+'/tags/'+tagName+ \
-                '" class="hashtagswarm"><b>'+tagName+'</b></a> '
+                '" class="hashtagswarm2">'+tagName+'</a> '
         ctr+=1
     tagSwarmHtml=tagSwarmStr.strip()+'\n'
     return tagSwarmHtml
