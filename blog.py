@@ -288,7 +288,7 @@ def htmlBlogPost(authorized: bool, \
             htmlBlogPostContent(authorized,baseDir,httpPrefix,translate, \
                                 nickname,domain,domainFull,postJsonObject, \
                                 None,False)
-        
+
         # show rss link
         iconsDir=getIconsDir(baseDir)
         blogStr+='<p class="rssfeed">'

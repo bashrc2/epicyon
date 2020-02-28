@@ -166,7 +166,7 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                     if messageJson['object'].get('type'):
                         if messageJson['object']['type']=='Article':
                             outboxName='tlblogs'
-        
+
         savedFilename= \
             savePostToBox(baseDir, \
                           httpPrefix, \
@@ -178,9 +178,13 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
            messageJson['type']=='Note' or \
            messageJson['type']=='Article' or \
            messageJson['type']=='Announce':
-            inboxUpdateIndex(outboxName,baseDir, \
-                             postToNickname+'@'+domain, \
-                             savedFilename,debug)
+            indexes=[outboxName,"inbox"]
+            for boxNameIndex in indexes:
+                if boxNameIndex=='inbox' and outboxName=='tlblogs':
+                    continue
+                inboxUpdateIndex(boxNameIndex,baseDir, \
+                                 postToNickname+'@'+domain, \
+                                 savedFilename,debug)
     if outboxAnnounce(recentPostsCache, \
                       baseDir,messageJson,debug):
         if debug:
