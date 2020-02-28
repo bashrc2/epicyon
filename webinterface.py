@@ -4797,6 +4797,7 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
     daysSinceEpochStr=str(daysSinceEpoch)+' '
     nickname=getNicknameFromActor(actor)
     tagSwarm=[]
+    tagSwarmCtr=[]
     for subdir, dirs, files in os.walk(baseDir+'/tags'):
         for f in files:
             tagsFilename=os.path.join(baseDir+'/tags',f)
@@ -4807,6 +4808,7 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
                 continue
             if daysSinceEpochStr not in open(tagsFilename).read():
                 continue
+            tagCtr=0
             with open(tagsFilename, 'r') as tagsFile:
                 lines=tagsFile.readlines()
                 for l in lines:
@@ -4819,16 +4821,28 @@ def htmlHashTagSwarm(baseDir: str,actor: str) -> str:
                     if postDaysSinceEpoch<daysSinceEpoch:
                         break
                     if postDaysSinceEpoch==daysSinceEpoch:
-                        tagSwarm.append(hashTagName)
-                        break
+                        if tagCtr==0:
+                            tagSwarm.append(hashTagName)
+                        tagCtr+=1
+                        if tagCtr>3:
+                            break
+            if tagCtr>0:
+                tagSwarmCtr.append(tagCtr)
     if not tagSwarm:
         return ''
     tagSwarm.sort()
     tagSwarmStr=''
+    ctr=0
     for tagName in tagSwarm:
-        tagSwarmStr+= \
-            '<a href="'+actor+'/tags/'+tagName+ \
-            '" class="hashtagswarm">'+tagName+'</a> '
+        if tagSwarmCtr[ctr]<2:
+            tagSwarmStr+= \
+                '<a href="'+actor+'/tags/'+tagName+ \
+                '" class="hashtagswarm">'+tagName+'</a> '
+        else:
+            tagSwarmStr+= \
+                '<a href="'+actor+'/tags/'+tagName+ \
+                '" class="hashtagswarm"><b>'+tagName+'</b></a> '
+        ctr+=1
     tagSwarmHtml=tagSwarmStr.strip()+'\n'
     return tagSwarmHtml
 

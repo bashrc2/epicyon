@@ -197,7 +197,8 @@ def deletePostPub(session,baseDir: str,federationList: [], \
             if ':' not in deletedDomain:
                 deletedDomain=deletedDomain+':'+str(deletePort)
 
-    objectUrl = deleteHttpsPrefix + '://'+deletedDomain+'/users/'+ \
+    objectUrl = \
+        deleteHttpsPrefix + '://'+deletedDomain+'/users/'+ \
         deleteNickname+'/statuses/'+str(deleteStatusNumber)
 
     return deletePublic(session,baseDir,federationList, \
