@@ -529,3 +529,120 @@ def htmlBlogView(authorized: bool, \
 
         return blogStr+htmlFooter()
     return None
+
+def htmlEditBlog(mediaInstance: bool,translate: {}, \
+                 baseDir: str,httpPrefix: str, \
+                 path: str, \
+                 pageNumber: int, \
+                 nickname: str,domain: str) -> str:
+    """Edit a blog post after it was created
+    """
+    iconsDir=getIconsDir(baseDir)
+
+    editBlogText='<p class="new-post-text">'+translate['Write your post text below.']+'</p>'
+
+    if os.path.isfile(baseDir+'/accounts/newpost.txt'):
+        with open(baseDir+'/accounts/newpost.txt', 'r') as file:
+            editBlogText = '<p class="new-post-text">'+file.read()+'</p>'    
+
+    cssFilename=baseDir+'/epicyon-profile.css'
+    if os.path.isfile(baseDir+'/epicyon.css'):
+        cssFilename=baseDir+'/epicyon.css'        
+    with open(cssFilename, 'r') as cssFile:
+        editBlogCSS = cssFile.read()
+        if httpPrefix!='https':
+            editBlogCSS=editBlogCSS.replace('https://',httpPrefix+'://')
+
+    if '?' in path:
+        path=path.split('?')[0]
+    pathBase= \
+        path.replace('/editblogpost','')
+
+    editBlogImageSection ='    <div class="container">'
+    editBlogImageSection+='      <label class="labels">'+translate['Image description']+'</label>'
+    editBlogImageSection+='      <input type="text" name="imageDescription">'
+    editBlogImageSection+='      <input type="file" id="attachpic" name="attachpic"'
+    editBlogImageSection+='            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
+    editBlogImageSection+='    </div>'
+
+    placeholderMessage=translate['Write something']+'...'
+    endpoint='editblogpost'
+    placeholderSubject=translate['Title']
+    scopeIcon='scope_blog.png'
+    scopeDescription=translate['Blog']
+
+    dateAndLocation=''
+    dateAndLocation='<div class="container">'
+
+    dateAndLocation+= \
+        '<p><input type="checkbox" class="profilecheckbox" name="schedulePost"><label class="labels">'+ \
+        translate['This is a scheduled post.']+'</label></p>'
+
+    dateAndLocation+= \
+        '<p><img loading="lazy" alt="" title="" class="emojicalendar" src="/'+ \
+        iconsDir+'/calendar.png"/>'
+    dateAndLocation+='<label class="labels">'+translate['Date']+': </label>'
+    dateAndLocation+='<input type="date" name="eventDate">'
+    dateAndLocation+='<label class="labelsright">'+translate['Time']+':'
+    dateAndLocation+='<input type="time" name="eventTime"></label></p>'
+    dateAndLocation+='</div>'
+    dateAndLocation+='<div class="container">'
+    dateAndLocation+='<br><label class="labels">'+translate['Location']+': </label>'
+    dateAndLocation+='<input type="text" name="location">'
+    dateAndLocation+='</div>'
+
+    editBlogForm=htmlHeader(cssFilename,editBlogCSS)
+
+    mentionsStr=''
+        
+    editBlogForm+= \
+        '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+ \
+        path+'?'+endpoint+'?page='+str(pageNumber)+'">'
+    editBlogForm+='  <div class="vertical-center">'
+    editBlogForm+='    <label for="nickname"><b>'+editBlogText+'</b></label>'
+    editBlogForm+='    <div class="container">'
+
+    editBlogForm+='      <div class="dropbtn">'
+    editBlogForm+= \
+        '        <img loading="lazy" alt="" title="" src="/'+iconsDir+ \
+        '/'+scopeIcon+'"/><b class="scope-desc">'+scopeDescription+'</b>'
+    editBlogForm+='      </div>'
+
+    editBlogForm+= \
+        '      <a href="'+pathBase+ \
+        '/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+ \
+        translate['Search for emoji']+'" alt="'+ \
+        translate['Search for emoji']+'"/></a>'
+    editBlogForm+='    </div>'
+    editBlogForm+='    <div class="container"><center>'
+    editBlogForm+= \
+        '      <a href="'+pathBase+ \
+        '/inbox"><button class="cancelbtn">'+ \
+        translate['Cancel']+'</button></a>'
+    editBlogForm+= \
+        '      <input type="submit" name="submitPost" value="'+ \
+        translate['Submit']+'">'
+    editBlogForm+='    </center></div>'
+    if mediaInstance:
+        editBlogForm+=editBlogImageSection
+    editBlogForm+= \
+        '    <label class="labels">'+placeholderSubject+'</label><br>'
+    editBlogForm+='    <input type="text" name="subject">'
+    editBlogForm+=''
+    editBlogForm+='    <br><label class="labels">'+placeholderMessage+'</label>'
+    messageBoxHeight=800
+
+    editBlogForm+= \
+        '    <textarea id="message" name="message" style="height:'+ \
+        str(messageBoxHeight)+'px"></textarea>'
+    editBlogForm+=dateAndLocation
+    if not mediaInstance:
+        editBlogForm+=editBlogImageSection
+    editBlogForm+='  </div>'
+    editBlogForm+='</form>'
+
+    editBlogForm= \
+        editBlogForm.replace('<body>','<body onload="focusOnMessage()">')
+
+    editBlogForm+=htmlFooter()
+    return editBlogForm
