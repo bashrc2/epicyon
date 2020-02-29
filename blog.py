@@ -266,7 +266,7 @@ def htmlBlogPostRSS(authorized: bool, \
                 rssStr= '     <item>'
                 rssStr+='         <title>'+titleStr+'</title>'
                 rssStr+='         <link>'+messageLink+'</link>'
-                rssStr+='         <pubDate>'+pubDate.strftime("%D, %d %M %Y %H:%M:%S Z")+'</pubDate>'
+                rssStr+='         <pubDate>'+pubDate.strftime("%a, %d %M %Y %H:%M:%S UT")+'</pubDate>'
                 rssStr+='     </item>'
     return rssStr
 
