@@ -260,10 +260,13 @@ def htmlBlogPostRSS(authorized: bool, \
         if not restrictToDomain or \
            (restrictToDomain and '/'+domain in messageLink):
             if postJsonObject['object'].get('summary'):
+                published=postJsonObject['object']['published']
+                pubDate=datetime.strptime(published,"%Y-%m-%dT%H:%M:%SZ")
                 titleStr=postJsonObject['object']['summary']
                 rssStr= '     <item>'
                 rssStr+='         <title>'+titleStr+'</title>'
                 rssStr+='         <link>'+messageLink+'</link>'
+                rssStr+='         <pubDate>'+pubDate.strftime("%D, %d %M %Y %H:%M:%S Z")+'</pubDate>'
                 rssStr+='     </item>'
     return rssStr
 
