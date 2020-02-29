@@ -2982,13 +2982,22 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                     '<a href="/users/'+nickname+'?replyfollowers='+replyToLink+ \
                     '?actor='+postJsonObject['actor']+ \
                     '" title="'+translate['Reply to this post']+'">'
-                
+
         replyStr+= \
             '<img loading="lazy" title="'+ \
             translate['Reply to this post']+' |" alt="'+ \
             translate['Reply to this post']+ \
             ' |" src="/'+iconsDir+'/reply.png"/></a>'
 
+    editStr=''
+    if fullDomain+'/users/'+nickname in postJsonObject['actor']:
+        if isBlogPost(postJsonObject):
+            editStr+= \
+                '<a href="/users/'+nickname+'?editblogpost='+ \
+                postJsonObject['object']['id']+ \
+                '?actor='+postJsonObject['actor']+ \
+                '" title="'+translate['Edit blog post']+'">'
+        
     announceStr=''
     if not isModerationPost and showRepeatIcon:
         # don't allow announce/repeat of your own posts
@@ -3271,7 +3280,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
 
     if showIcons:
         footerStr='<div class="'+containerClassIcons+'">'
-        footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr
+        footerStr+=replyStr+announceStr+likeStr+bookmarkStr+deleteStr+muteStr+editStr
         footerStr+='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
         footerStr+='</div>'
 
