@@ -114,6 +114,7 @@ from blog import htmlBlogPageRSS
 from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
+from blog import htmlEditBlog
 from webinterface import htmlCalendarDeleteConfirm
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
@@ -2368,6 +2369,30 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path=self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path '+self.path)
+
+            # Edit a blog post
+            if authorized and '?editblogpost=' in self.path and \
+               '?actor=' in self.path:
+                messageId=self.path.split('?editblogpost=')[1]
+                if '?' in messageId:
+                    messageId=messageId.split('?')[0]
+                actor=self.path.split('?actor=')[1]
+                if '?' in actor:
+                    actor=actor.split('?')[0]
+                pathWithoutOptions=self.path.split('?')[0]
+                if actor in pathWithoutOptions:
+                    nickname=getNicknameFromActor(self.path)
+                    msg=htmlEditBlog(self.server.mediaInstance, \
+                                     self.server.translate, \
+                                     self.server.baseDir, \
+                                     self.server.httpPrefix, \
+                                     self.path, \
+                                     replyPageNumber, \
+                                     nickname,self.server.domain).encode()
+                    self._set_headers('text/html',len(msg),cookie)
+                    self._write(msg)
+                    self.server.GETbusy=False
+                    return                    
 
             # edit profile in web interface
             if '/users/' in self.path and self.path.endswith('/editprofile'):
