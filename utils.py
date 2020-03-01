@@ -188,7 +188,10 @@ def getDomainFromActor(actor: str) -> (str,int):
             else:
                 domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
     if ':' in domain:
-        port=int(domain.split(':')[1])
+        portStr=domain.split(':')[1]
+        if not portStr.isdigit():
+            return None,None
+        port=int(portStr)
         domain=domain.split(':')[0]
     return domain,port
     
