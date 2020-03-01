@@ -3962,6 +3962,23 @@ class PubServer(BaseHTTPRequestHandler):
                             replaceEmojiFromTags(fields['message'],tags,'content')
                         
                         postJsonObject['object']['content']=fields['message']
+
+                        imgDescription=''
+                        if fields.get('imageDescription'):
+                            imgDescription=fields['imageDescription']
+
+                        if filename:
+                            postJsonObject['object']= \
+                                attachMedia(self.server.baseDir, \
+                                            self.server.httpPrefix, \
+                                            self.server.domain, \
+                                            self.server.port, \
+                                            postJsonObject['object'], \
+                                            filename, \
+                                            attachmentMediaType, \
+                                            imgDescription, \
+                                            self.server.useBlurhash)
+
                         saveJson(postJsonObject,postFilename)
                         print('Edited blog post, resaved '+postFilename)
                         return 1
