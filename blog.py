@@ -609,7 +609,9 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
         
     editBlogForm+= \
         '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+ \
-        pathBase+'?'+endpoint+'?page='+str(pageNumber)+'">'
+        pathBase+'?'+endpoint+'">'
+    editBlogForm+='  <input type="hidden" name="postUrl" value="'+postUrl+'">'
+    editBlogForm+='  <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     editBlogForm+='  <div class="vertical-center">'
     editBlogForm+='    <label for="nickname"><b>'+editBlogText+'</b></label>'
     editBlogForm+='    <div class="container">'
@@ -622,7 +624,8 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
 
     editBlogForm+= \
         '      <a href="'+pathBase+ \
-        '/searchemoji"><img loading="lazy" class="emojisearch" src="/emoji/1F601.png" title="'+ \
+        '/searchemoji"><img loading="lazy" '+ \
+        'class="emojisearch" src="/emoji/1F601.png" title="'+ \
         translate['Search for emoji']+'" alt="'+ \
         translate['Search for emoji']+'"/></a>'
     editBlogForm+='    </div>'
@@ -645,10 +648,13 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
     editBlogForm+= \
         '    <input type="text" name="subject" value="'+titleStr+'">'
     editBlogForm+=''
-    editBlogForm+='    <br><label class="labels">'+placeholderMessage+'</label>'
+    editBlogForm+= \
+        '    <br><label class="labels">'+ \
+        placeholderMessage+'</label>'
     messageBoxHeight=800
 
-    contentStr=postJsonObject['object']['content'].replace('<p>','').replace('</p>','')
+    contentStr= \
+        postJsonObject['object']['content'].replace('<p>','').replace('</p>','')
 
     editBlogForm+= \
         '    <textarea id="message" name="message" style="height:'+ \

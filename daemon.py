@@ -3896,8 +3896,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return -1            
             elif postType=='newblog':
                 messageJson= \
-                    createBlogPost(self.server.baseDir, \
-                                   nickname, \
+                    createBlogPost(self.server.baseDir,nickname, \
                                    self.server.domain,self.server.port, \
                                    self.server.httpPrefix, \
                                    fields['message'],False,False,False, \
@@ -5361,6 +5360,75 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,13)
+
+        # edit blog post
+        if authorized and self.path.endswith('/tlblogs?editblogpost'):
+            pageNumber=1
+
+            length = int(self.headers['Content-length'])
+            if length>self.server.maxPostLength:
+                print('POST size too large')
+                self.send_response(429)
+                self.end_headers()
+                return
+
+            optionsConfirmParams= \
+                self.rfile.read(length).decode('utf-8').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').replace('%3F','')
+            postUrl=None
+            if 'postUrl=' in optionsConfirmParams:
+                postUrl=optionsConfirmParams.split('postUrl=')[1]
+                if '&' in postUrl:
+                    postUrl=postUrl.split('&')[0]
+            originPathStr= \
+                self.server.httpPrefix+'://'+self.server.domainFull+ \
+                self.path.split('?')[0]
+            if postUrl:
+                titleStr=''
+                if 'subject=' in optionsConfirmParams:
+                    titleStr=optionsConfirmParams.split('subject=')[1]
+                    if '&' in titleStr:
+                        titleStr=titleStr.split('&')[0]
+                    titleStr=titleStr.replace('%26','&')
+                contentStr=''
+                if 'message=' in optionsConfirmParams:
+                    contentStr=optionsConfirmParams.split('message=')[1]
+                    if '&' in contentStr:
+                        contentStr=contentStr.split('&')[0]
+                    contentStr=contentStr.replace('%26','&')
+                #editNickname=getNicknameFromActor(originPathStr)
+                # page number to return to
+                if 'pageNumber=' in optionsConfirmParams:
+                    pageNumberStr=optionsConfirmParams.split('pageNumber=')[1]
+                    if '&' in pageNumberStr:
+                        pageNumberStr=pageNumberStr.split('&')[0]
+                    if pageNumberStr.isdigit():
+                        pageNumber=int(pageNumberStr)
+                nickname= \
+                    getNicknameFromActor(originPathStr)
+                postFilename= \
+                    locatePost(self.server.baseDir, \
+                               nickname,self.server.domain, \
+                               postUrl)
+                if postFilename and titleStr and contentStr:
+                    postJsonObject=loadJson(postFilename)
+                    if postJsonObject:
+                        # remove any previous cached html
+                        cacheFilename= \
+                            self.server.baseDir+'/postcache/' + \
+                            postUrl.replace('/','#')+'.html'
+                        if os.path.isfile(cacheFilename):
+                            try:
+                                os.remove(cacheFilename)
+                            except:
+                                pass
+                        # save the new blog post
+                        postJsonObject['object']['summary']=titleStr
+                        postJsonObject['object']['content']=contentStr
+                        saveJson(postJsonObject,postFilename)
+            self.server.POSTbusy=False
+            self._redirect_headers(originPathStr+ \
+                                   '?page='+str(pageNumber),cookie)
+            return
 
         # an option was chosen from person options screen
         # view/follow/block/report
