@@ -542,10 +542,12 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
     """
     postFilename=locatePost(baseDir,nickname,domain,postUrl)
     if not postFilename:
+        print('Edit blog: Filename not found for '+postUrl)
         return None
 
     postJsonObject=loadJson(postFilename)
     if not postJsonObject:
+        print('Edit blog: json not loaded for '+postFilename)
         return None
 
     iconsDir=getIconsDir(baseDir)
