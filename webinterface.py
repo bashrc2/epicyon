@@ -2996,7 +2996,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                 '<a href="/users/'+nickname+'?editblogpost='+ \
                 postJsonObject['object']['id']+ \
                 '?actor='+postJsonObject['actor']+ \
-                '" title="'+translate['Edit blog post']+'">'
+                '" title="'+translate['Edit blog post']+'">'+ \
+                '<img loading="lazy" title="'+ \
+                translate['Edit blog post']+' |" alt="'+ \
+                translate['Edit blog post']+ \
+                ' |" src="/'+iconsDir+'/edit.png"/></a>'
         
     announceStr=''
     if not isModerationPost and showRepeatIcon:
