@@ -2380,20 +2380,25 @@ class PubServer(BaseHTTPRequestHandler):
                 actor=self.path.split('?actor=')[1]
                 if '?' in actor:
                     actor=actor.split('?')[0]
+                actor=self.server.domainFull+'/users/'+actor
                 pathWithoutOptions=self.path.split('?')[0]
                 if actor in pathWithoutOptions:
                     nickname=getNicknameFromActor(self.path)
+                    postUrl=pathWithoutOptions+'/statuses/'+messageId
                     msg=htmlEditBlog(self.server.mediaInstance, \
                                      self.server.translate, \
                                      self.server.baseDir, \
                                      self.server.httpPrefix, \
                                      self.path, \
                                      replyPageNumber, \
-                                     nickname,self.server.domain).encode()
-                    self._set_headers('text/html',len(msg),cookie)
-                    self._write(msg)
-                    self.server.GETbusy=False
-                    return                    
+                                     nickname,self.server.domain, \
+                                     postUrl)
+                    if msg:
+                        msg-msg.encode()
+                        self._set_headers('text/html',len(msg),cookie)
+                        self._write(msg)
+                        self.server.GETbusy=False
+                        return
 
             # edit profile in web interface
             if '/users/' in self.path and self.path.endswith('/editprofile'):

@@ -26,6 +26,8 @@ from webinterface import htmlFooter
 from webinterface import addEmbeddedElements
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
+from utils import locatePost
+from utils import loadJson
 from posts import createBlogsTimeline
 
 
@@ -534,9 +536,18 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
                  baseDir: str,httpPrefix: str, \
                  path: str, \
                  pageNumber: int, \
-                 nickname: str,domain: str) -> str:
+                 nickname: str,domain: str, \
+                 postUrl: str) -> str:
     """Edit a blog post after it was created
     """
+    postFilename=locatePost(baseDir,nickname,domain,postUrl)
+    if not postFilename:
+        return None
+
+    postJsonObject=loadJson(postFilename)
+    if not postJsonObject:
+        return None
+
     iconsDir=getIconsDir(baseDir)
 
     editBlogText='<p class="new-post-text">'+translate['Write your post text below.']+'</p>'
@@ -597,7 +608,7 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
         
     editBlogForm+= \
         '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+ \
-        path+'?'+endpoint+'?page='+str(pageNumber)+'">'
+        pathBase+'?'+endpoint+'?page='+str(pageNumber)+'">'
     editBlogForm+='  <div class="vertical-center">'
     editBlogForm+='    <label for="nickname"><b>'+editBlogText+'</b></label>'
     editBlogForm+='    <div class="container">'
@@ -627,14 +638,20 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
         editBlogForm+=editBlogImageSection
     editBlogForm+= \
         '    <label class="labels">'+placeholderSubject+'</label><br>'
-    editBlogForm+='    <input type="text" name="subject">'
+    titleStr=''
+    if postJsonObject['object'].get('summary'):
+        titleStr=postJsonObject['object']['summary']
+    editBlogForm+= \
+        '    <input type="text" name="subject" value="'+titleStr+'">'
     editBlogForm+=''
     editBlogForm+='    <br><label class="labels">'+placeholderMessage+'</label>'
     messageBoxHeight=800
 
+    contentStr=postJsonObject['object']['content']
+
     editBlogForm+= \
         '    <textarea id="message" name="message" style="height:'+ \
-        str(messageBoxHeight)+'px"></textarea>'
+        str(messageBoxHeight)+'px">'+contentStr+'</textarea>'
     editBlogForm+=dateAndLocation
     if not mediaInstance:
         editBlogForm+=editBlogImageSection

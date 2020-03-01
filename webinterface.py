@@ -2992,15 +2992,16 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
     editStr=''
     if fullDomain+'/users/'+nickname in postJsonObject['actor']:
         if isBlogPost(postJsonObject):
-            editStr+= \
-                '<a href="/users/'+nickname+'?editblogpost='+ \
-                postJsonObject['object']['id']+ \
-                '?actor='+postJsonObject['actor']+ \
-                '" title="'+translate['Edit blog post']+'">'+ \
-                '<img loading="lazy" title="'+ \
-                translate['Edit blog post']+' |" alt="'+ \
-                translate['Edit blog post']+ \
-                ' |" src="/'+iconsDir+'/edit.png"/></a>'
+            if '/statuses/' in postJsonObject['object']['id']:
+                editStr+= \
+                    '<a href="/users/'+nickname+'?editblogpost='+ \
+                    postJsonObject['object']['id'].split('/statuses/')[1]+ \
+                    '?actor='+actorNickname+ \
+                    '" title="'+translate['Edit blog post']+'">'+ \
+                    '<img loading="lazy" title="'+ \
+                    translate['Edit blog post']+' |" alt="'+ \
+                    translate['Edit blog post']+ \
+                    ' |" src="/'+iconsDir+'/edit.png"/></a>'
         
     announceStr=''
     if not isModerationPost and showRepeatIcon:
