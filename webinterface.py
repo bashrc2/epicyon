@@ -2994,7 +2994,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         if isBlogPost(postJsonObject):
             if '/statuses/' in postJsonObject['object']['id']:
                 editStr+= \
-                    '<a href="/users/'+nickname+'?editblogpost='+ \
+                    '<a href="/users/'+nickname+'/tlblogs?editblogpost='+ \
                     postJsonObject['object']['id'].split('/statuses/')[1]+ \
                     '?actor='+actorNickname+ \
                     '" title="'+translate['Edit blog post']+'">'+ \

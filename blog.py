@@ -566,8 +566,7 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
 
     if '?' in path:
         path=path.split('?')[0]
-    pathBase= \
-        path.replace('/editblogpost','')
+    pathBase=path
 
     editBlogImageSection ='    <div class="container">'
     editBlogImageSection+='      <label class="labels">'+translate['Image description']+'</label>'

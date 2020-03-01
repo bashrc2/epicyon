@@ -2372,6 +2372,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             # Edit a blog post
             if authorized and \
+               '/tlblogs' in self.path and \
                '?editblogpost=' in self.path and \
                '?actor=' in self.path:
                 messageId=self.path.split('?editblogpost=')[1]
