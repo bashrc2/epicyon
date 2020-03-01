@@ -2384,6 +2384,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=getNicknameFromActor(self.path)
                 if nickname==actor:
                     postUrl= \
+                        self.server.httpPrefix+'://'+ \
                         self.server.domainFull+'/users/'+nickname+ \
                         '/statuses/'+messageId
                     print('Edit blog nickname: '+nickname)
