@@ -1414,7 +1414,7 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
             dropDownContent+= \
                 '          <a href="'+pathBase+dropdownNewBlogSuffix+ \
                 '"><img loading="lazy" alt="" title="" src="/'+ \
-                iconsDir+'/scope_blog.png"/><b>'+ \
+                iconsDir+'/edit.png"/><b>'+ \
                 translate['Blog']+'</b><br>'+ \
                 translate['Visible to anyone']+'</a>'
             dropDownContent+= \
