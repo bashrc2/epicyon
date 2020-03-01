@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import os
 import json
 from capabilities import capabilitiesAccept
 from capabilities import capabilitiesGrantedSave
