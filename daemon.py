@@ -3979,7 +3979,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             filename, \
                                             attachmentMediaType, \
                                             imgDescription, \
-                                            self.server.useBlurhash)
+                                            self.server.useBlurHash)
 
                         replaceYouTube(postJsonObject)
                         saveJson(postJsonObject,postFilename)
