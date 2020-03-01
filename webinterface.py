@@ -4923,7 +4923,9 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
         searchDomain=profileHandle.split('@')[1]
         searchPort=None
         if ':' in searchDomain:
-            searchPort=int(searchDomain.split(':')[1])
+            searchPortStr=searchDomain.split(':')[1]
+            if searchPortStr.isdigit():
+                searchPort=int(searchPortStr)
             searchDomain=searchDomain.split(':')[0]
     if not searchNickname:
         if debug:

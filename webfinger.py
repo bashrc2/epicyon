@@ -48,7 +48,9 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
         return None
     wfDomain=domain
     if ':' in wfDomain:
-        #wfPort=int(wfDomain.split(':')[1])
+        #wfPortStr=wfDomain.split(':')[1]
+        #if wfPortStr.isdigit():
+        #    wfPort=int(wfPortStr)
         #if wfPort==80 or wfPort==443:
         wfDomain=wfDomain.split(':')[0]
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)

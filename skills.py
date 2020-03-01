@@ -83,7 +83,10 @@ def outboxSkills(baseDir: str,nickname: str,messageJson: {},debug: bool) -> bool
         return False
     domain,port=getDomainFromActor(messageJson['actor'])
     skill=messageJson['object'].replace('"','').split(';')[0].strip()
-    skillLevelPercent=int(messageJson['object'].replace('"','').split(';')[1].strip())
+    skillLevelPercentStr=messageJson['object'].replace('"','').split(';')[1].strip()
+    skillLevelPercent=50
+    if skillLevelPercentStr.isdigit():
+        skillLevelPercent=int(skillLevelPercentStr)
 
     return setSkillLevel(baseDir,nickname,domain, \
                          skill,skillLevelPercent)

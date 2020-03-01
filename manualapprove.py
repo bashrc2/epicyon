@@ -109,7 +109,9 @@ def manualApproveFollowRequest(session,baseDir: str, \
                 handleOfFollowRequester=handleOfFollowRequester.replace('\n','')
                 port2=port
                 if ':' in handleOfFollowRequester:
-                    port2=int(handleOfFollowRequester.split(':')[1])
+                    port2Str=handleOfFollowRequester.split(':')[1]
+                    if port2Str.isdigit():
+                        port2=int(port2Str)
                 requestsDir=accountDir+'/requests'
                 followActivityfilename=requestsDir+'/'+handleOfFollowRequester+'.follow'
                 if os.path.isfile(followActivityfilename):
