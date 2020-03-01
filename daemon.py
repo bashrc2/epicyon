@@ -3927,7 +3927,8 @@ class PubServer(BaseHTTPRequestHandler):
                     postJsonObject=loadJson(postFilename)
                     if postJsonObject:
                         cachedFilename= \
-                            self.server.baseDir+'/postcache/'+ \
+                            self.server.baseDir+'/accounts/'+ \
+                            nickname+'@'+self.server.domain+'/postcache/'+ \
                             fields['postUrl'].replace('/','#')+'.html'
                         if os.path.isfile(cachedFilename):
                             print('Edited blog post, removing cached html')
@@ -3936,6 +3937,7 @@ class PubServer(BaseHTTPRequestHandler):
                             except:
                                 pass
                         postJsonObject['object']['summary']=fields['subject']
+                        # TODO format message
                         postJsonObject['object']['content']=fields['message']
                         saveJson(postJsonObject,postFilename)
                         print('Edited blog post, resaved '+postFilename)
