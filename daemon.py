@@ -3917,6 +3917,34 @@ class PubServer(BaseHTTPRequestHandler):
                         return 1
                     else:
                         return -1            
+            elif postType=='editblogpost':
+                print('Edited blog post received')
+                postFilename= \
+                    locatePost(self.server.baseDir, \
+                               nickname,self.server.domain, \
+                               fields['postUrl'])
+                if os.path.isfile(postFilename):
+                    postJsonObject=loadJson(postFilename)
+                    if postJsonObject:
+                        cachedFilename= \
+                            self.server.baseDir+'/postcache/'+ \
+                            fields['postUrl'].replace('/','#')+'.html'
+                        if os.path.isfile(cachedFilename):
+                            print('Edited blog post, removing cached html')
+                            try:
+                                os.remove(cachedFilename)
+                            except:
+                                pass
+                        postJsonObject['object']['summary']=fields['subject']
+                        postJsonObject['object']['content']=fields['message']
+                        saveJson(postJsonObject,postFilename)
+                        print('Edited blog post, resaved '+postFilename)
+                        return 1
+                    else:
+                        print('Edited blog post, unable to load json for '+postFilename)
+                else:
+                    print('Edited blog post not found '+str(fields['postUrl']))
+                return -1            
             elif postType=='newunlisted':
                 messageJson= \
                     createUnlistedPost(self.server.baseDir, \
@@ -5358,86 +5386,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,13)
 
-        # edit blog post
-        if authorized and '/tlblogs?editblogpost' in self.path:
-            pageNumber=1
-
-            print('Edit blog 1')
-            length = int(self.headers['Content-length'])
-            if length>self.server.maxPostLength:
-                print('POST size too large')
-                self.send_response(429)
-                self.end_headers()
-                return
-
-            optionsConfirmParams= \
-                self.rfile.read(length).decode('utf-8').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').replace('%3F','')
-            print('Edit blog 2: '+optionsConfirmParams)
-            postUrl=None
-            if 'postUrl=' in optionsConfirmParams:
-                postUrl=optionsConfirmParams.split('postUrl=')[1]
-                if '&' in postUrl:
-                    postUrl=postUrl.split('&')[0]
-            originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('?')[0]
-            print('Edit blog 3: '+str(postUrl))
-            print('Edit blog 4: '+originPathStr)
-            if postUrl:
-                titleStr=''
-                if 'subject=' in optionsConfirmParams:
-                    titleStr=optionsConfirmParams.split('subject=')[1]
-                    if '&' in titleStr:
-                        titleStr=titleStr.split('&')[0]
-                    titleStr=titleStr.replace('%26','&')
-                contentStr=''
-                if 'message=' in optionsConfirmParams:
-                    contentStr=optionsConfirmParams.split('message=')[1]
-                    if '&' in contentStr:
-                        contentStr=contentStr.split('&')[0]
-                    contentStr=contentStr.replace('%26','&')
-                print('Edit blog 5: '+titleStr)
-                print('Edit blog 6: '+contentStr)
-                #editNickname=getNicknameFromActor(originPathStr)
-                # page number to return to
-                if 'pageNumber=' in optionsConfirmParams:
-                    pageNumberStr=optionsConfirmParams.split('pageNumber=')[1]
-                    if '&' in pageNumberStr:
-                        pageNumberStr=pageNumberStr.split('&')[0]
-                    if pageNumberStr.isdigit():
-                        pageNumber=int(pageNumberStr)
-                print('Edit blog 7: '+str(pageNumber))
-                nickname= \
-                    getNicknameFromActor(originPathStr)
-                postFilename= \
-                    locatePost(self.server.baseDir, \
-                               nickname,self.server.domain, \
-                               postUrl)
-                print('Edit blog 8: '+str(postFilename))
-                if postFilename and titleStr and contentStr:
-                    postJsonObject=loadJson(postFilename)
-                    print('Edit blog 9: '+str(postJsonObject))
-                    if postJsonObject:
-                        # remove any previous cached html
-                        cacheFilename= \
-                            self.server.baseDir+'/postcache/' + \
-                            postUrl.replace('/','#')+'.html'
-                        if os.path.isfile(cacheFilename):
-                            try:
-                                os.remove(cacheFilename)
-                            except:
-                                pass
-                        print('Edit blog 10')
-                        # save the new blog post
-                        postJsonObject['object']['summary']=titleStr
-                        postJsonObject['object']['content']=contentStr
-                        saveJson(postJsonObject,postFilename)
-            print('Edit blog 11')
-            self.server.POSTbusy=False
-            self._redirect_headers(originPathStr+ \
-                                   '?page='+str(pageNumber),cookie)
-            return
-
         # an option was chosen from person options screen
         # view/follow/block/report
         if authorized and self.path.endswith('/personoptions'):
@@ -5608,7 +5556,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,14)
 
         # receive different types of post created by htmlNewPost
-        postTypes=["newpost","newblog","newunlisted","newfollowers","newdm","newreport","newshare","newquestion"]
+        postTypes=["newpost","newblog","newunlisted","newfollowers","newdm","newreport","newshare","newquestion","editblogpost"]
         for currPostType in postTypes:
             if currPostType!='newshare':
                 postRedirect=self.server.defaultTimeline

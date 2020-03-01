@@ -609,7 +609,7 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
         
     editBlogForm+= \
         '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+ \
-        pathBase+'?'+endpoint+'">'
+        pathBase+'?'+endpoint+'?page='+str(pageNumber)+'">'
     editBlogForm+='  <input type="hidden" name="postUrl" value="'+postUrl+'">'
     editBlogForm+='  <input type="hidden" name="pageNumber" value="'+str(pageNumber)+'">'
     editBlogForm+='  <div class="vertical-center">'
