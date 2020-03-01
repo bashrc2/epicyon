@@ -5359,9 +5359,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,13)
 
         # edit blog post
-        if authorized and self.path.endswith('/tlblogs?editblogpost'):
+        if authorized and '/tlblogs?editblogpost' in self.path:
             pageNumber=1
 
+            print('Edit blog 1')
             length = int(self.headers['Content-length'])
             if length>self.server.maxPostLength:
                 print('POST size too large')
@@ -5371,6 +5372,7 @@ class PubServer(BaseHTTPRequestHandler):
 
             optionsConfirmParams= \
                 self.rfile.read(length).decode('utf-8').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').replace('%3F','')
+            print('Edit blog 2: '+optionsConfirmParams)
             postUrl=None
             if 'postUrl=' in optionsConfirmParams:
                 postUrl=optionsConfirmParams.split('postUrl=')[1]
@@ -5379,6 +5381,8 @@ class PubServer(BaseHTTPRequestHandler):
             originPathStr= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 self.path.split('?')[0]
+            print('Edit blog 3: '+str(postUrl))
+            print('Edit blog 4: '+originPathStr)
             if postUrl:
                 titleStr=''
                 if 'subject=' in optionsConfirmParams:
@@ -5392,6 +5396,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if '&' in contentStr:
                         contentStr=contentStr.split('&')[0]
                     contentStr=contentStr.replace('%26','&')
+                print('Edit blog 5: '+titleStr)
+                print('Edit blog 6: '+contentStr)
                 #editNickname=getNicknameFromActor(originPathStr)
                 # page number to return to
                 if 'pageNumber=' in optionsConfirmParams:
@@ -5400,14 +5406,17 @@ class PubServer(BaseHTTPRequestHandler):
                         pageNumberStr=pageNumberStr.split('&')[0]
                     if pageNumberStr.isdigit():
                         pageNumber=int(pageNumberStr)
+                print('Edit blog 7: '+str(pageNumber))
                 nickname= \
                     getNicknameFromActor(originPathStr)
                 postFilename= \
                     locatePost(self.server.baseDir, \
                                nickname,self.server.domain, \
                                postUrl)
+                print('Edit blog 8: '+str(postFilename))
                 if postFilename and titleStr and contentStr:
                     postJsonObject=loadJson(postFilename)
+                    print('Edit blog 9: '+str(postJsonObject))
                     if postJsonObject:
                         # remove any previous cached html
                         cacheFilename= \
@@ -5418,10 +5427,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(cacheFilename)
                             except:
                                 pass
+                        print('Edit blog 10')
                         # save the new blog post
                         postJsonObject['object']['summary']=titleStr
                         postJsonObject['object']['content']=contentStr
                         saveJson(postJsonObject,postFilename)
+            print('Edit blog 11')
             self.server.POSTbusy=False
             self._redirect_headers(originPathStr+ \
                                    '?page='+str(pageNumber),cookie)
