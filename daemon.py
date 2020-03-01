@@ -2387,8 +2387,6 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.httpPrefix+'://'+ \
                         self.server.domainFull+'/users/'+nickname+ \
                         '/statuses/'+messageId
-                    print('Edit blog nickname: '+nickname)
-                    print('Edit blog post: '+postUrl)
                     msg=htmlEditBlog(self.server.mediaInstance, \
                                      self.server.translate, \
                                      self.server.baseDir, \
@@ -2398,7 +2396,6 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,self.server.domain, \
                                      postUrl)
                     if msg:
-                        print('Edit blog write: '+postUrl)
                         msg=msg.encode()
                         self._set_headers('text/html',len(msg),cookie)
                         self._write(msg)
