@@ -2762,11 +2762,19 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
             asHeader={'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
+        if not actorDomain:
+            print('Announce actor does not contain a valid domain or port number: '+ \
+                  str(postJsonObject['actor']))
+            return None
         if isBlocked(baseDir,nickname,domain,actorNickname,actorDomain):
             print('Announce download blocked actor: '+actorNickname+'@'+actorDomain)
             return None
         objectNickname=getNicknameFromActor(postJsonObject['object'])
         objectDomain,objectPort=getDomainFromActor(postJsonObject['object'])
+        if not objectDomain:
+            print('Announce object does not contain a valid domain or port number: '+ \
+                  str(postJsonObject['object']))
+            return None
         if isBlocked(baseDir,nickname,domain,objectNickname,objectDomain):
             if objectNickname and objectDomain:
                 print('Announce download blocked object: '+objectNickname+'@'+objectDomain)
