@@ -2383,20 +2383,19 @@ class PubServer(BaseHTTPRequestHandler):
                     actor=actor.split('?')[0]
                 nickname=getNicknameFromActor(self.path)
                 if nickname==actor:
-                    msg=None
-                    nickname=getNicknameFromActor(self.path)
-                    if nickname:
-                        postUrl=pathWithoutOptions+'/statuses/'+messageId
-                        print('Edit blog nickname: '+nickname)
-                        print('Edit blog post: '+postUrl)
-                        msg=htmlEditBlog(self.server.mediaInstance, \
-                                         self.server.translate, \
-                                         self.server.baseDir, \
-                                         self.server.httpPrefix, \
-                                         self.path, \
-                                         replyPageNumber, \
-                                         nickname,self.server.domain, \
-                                         postUrl)
+                    postUrl= \
+                        self.server.domainFull+'/users/'+nickname+ \
+                        '/statuses/'+messageId
+                    print('Edit blog nickname: '+nickname)
+                    print('Edit blog post: '+postUrl)
+                    msg=htmlEditBlog(self.server.mediaInstance, \
+                                     self.server.translate, \
+                                     self.server.baseDir, \
+                                     self.server.httpPrefix, \
+                                     self.path, \
+                                     replyPageNumber, \
+                                     nickname,self.server.domain, \
+                                     postUrl)
                     if msg:
                         print('Edit blog write: '+postUrl)
                         msg=msg.encode()
