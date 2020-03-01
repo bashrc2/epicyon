@@ -2381,11 +2381,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actor=self.path.split('?actor=')[1]
                 if '?' in actor:
                     actor=actor.split('?')[0]
-                actor=self.server.domainFull+'/users/'+actor
-                print('Edit blog actor: '+actor)
-                pathWithoutOptions=self.path.split('?')[0]
-                print('Edit blog path: '+pathWithoutOptions)
-                if actor+'/' in pathWithoutOptions:
+                nickname=getNicknameFromActor(self.path)
+                if nickname==actor:
                     msg=None
                     nickname=getNicknameFromActor(self.path)
                     if nickname:
