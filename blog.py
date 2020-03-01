@@ -654,7 +654,7 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
     messageBoxHeight=800
 
     contentStr= \
-        postJsonObject['object']['content'].replace('<p>','').replace('</p>','')
+        postJsonObject['object']['content'].replace('<p>','').replace('</p>','\n')
 
     editBlogForm+= \
         '    <textarea id="message" name="message" style="height:'+ \
