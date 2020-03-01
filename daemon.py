@@ -2382,20 +2382,27 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?' in actor:
                     actor=actor.split('?')[0]
                 actor=self.server.domainFull+'/users/'+actor
+                print('Edit blog actor: '+actor)
                 pathWithoutOptions=self.path.split('?')[0]
-                if actor in pathWithoutOptions:
+                print('Edit blog path: '+pathWithoutOptions)
+                if actor+'/' in pathWithoutOptions:
+                    msg=None
                     nickname=getNicknameFromActor(self.path)
-                    postUrl=pathWithoutOptions+'/statuses/'+messageId
-                    msg=htmlEditBlog(self.server.mediaInstance, \
-                                     self.server.translate, \
-                                     self.server.baseDir, \
-                                     self.server.httpPrefix, \
-                                     self.path, \
-                                     replyPageNumber, \
-                                     nickname,self.server.domain, \
-                                     postUrl)
+                    if nickname:
+                        postUrl=pathWithoutOptions+'/statuses/'+messageId
+                        print('Edit blog nickname: '+nickname)
+                        print('Edit blog post: '+postUrl)
+                        msg=htmlEditBlog(self.server.mediaInstance, \
+                                         self.server.translate, \
+                                         self.server.baseDir, \
+                                         self.server.httpPrefix, \
+                                         self.path, \
+                                         replyPageNumber, \
+                                         nickname,self.server.domain, \
+                                         postUrl)
                     if msg:
-                        msg-msg.encode()
+                        print('Edit blog write: '+postUrl)
+                        msg=msg.encode()
                         self._set_headers('text/html',len(msg),cookie)
                         self._write(msg)
                         self.server.GETbusy=False
