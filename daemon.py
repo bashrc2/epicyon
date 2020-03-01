@@ -88,6 +88,8 @@ from auth import authorizeBasic
 from auth import storeBasicCredentials
 from threads import threadWithTrace
 from threads import removeDormantThreads
+from media import replaceYouTube
+from media import attachMedia
 from media import getMediaPath
 from media import createMediaDirs
 from delete import outboxDelete
@@ -3979,6 +3981,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             imgDescription, \
                                             self.server.useBlurhash)
 
+                        replaceYouTube(postJsonObject)
                         saveJson(postJsonObject,postFilename)
                         print('Edited blog post, resaved '+postFilename)
                         return 1
