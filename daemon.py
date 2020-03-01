@@ -3945,6 +3945,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # format message
                         tags=[]
                         hashtagsDict={}
+                        mentionedRecipients=[]
                         fields['message']= \
                             addHtmlTags(self.server.baseDir, \
                                         self.server.httpPrefix, \
