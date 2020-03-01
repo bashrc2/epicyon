@@ -172,6 +172,7 @@ from manualapprove import manualDenyFollowRequest
 from manualapprove import manualApproveFollowRequest
 from announce import createAnnounce
 from announce import outboxAnnounce
+from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
@@ -3936,8 +3937,29 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(cachedFilename)
                             except:
                                 pass
+                        # remove from memory cache
+                        removePostFromCache(postJsonObject, \
+                                            self.server.recentPostsCache)
+                        # change the blog post title
                         postJsonObject['object']['summary']=fields['subject']
-                        # TODO format message
+                        # format message
+                        tags=[]
+                        hashtagsDict={}
+                        fields['message']= \
+                            addHtmlTags(self.server.baseDir, \
+                                        self.server.httpPrefix, \
+                                        nickname,self.server.domain, \
+                                        fields['message'], \
+                                        mentionedRecipients, \
+                                        hashtagsDict,True)
+                        # replace emoji with unicode
+                        tags=[]
+                        for tagName,tag in hashtagsDict.items():
+                            tags.append(tag)
+                        # get list of tags
+                        fields['message']= \
+                            replaceEmojiFromTags(fields['message'],tags,'content')
+                        
                         postJsonObject['object']['content']=fields['message']
                         saveJson(postJsonObject,postFilename)
                         print('Edited blog post, resaved '+postFilename)
