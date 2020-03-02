@@ -1898,7 +1898,7 @@ def sendToFollowers(session,baseDir: str, \
         fromDomain=domain
         fromHttpPrefix=httpPrefix
         if onionDomain:
-            if toDomain.endswidth('.onion'):
+            if toDomain.endswith('.onion'):
                 fromDomain=onionDomain
                 fromHttpPrefix='http'
 
