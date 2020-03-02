@@ -6149,7 +6149,8 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
                               baseDir,httpPrefix,httpd.sendThreads, \
                               httpd.postLog,httpd.cachedWebfingers, \
                               httpd.personCache,httpd.inboxQueue, \
-                              domain,port,useTor,httpd.federationList, \
+                              domain,onionDomain,port,useTor, \
+                              httpd.federationList, \
                               httpd.ocapAlways,maxReplies, \
                               domainMaxPostsPerDay,accountMaxPostsPerDay, \
                               allowDeletion,debug,maxMentions,maxEmoji, \

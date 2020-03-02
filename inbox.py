@@ -2001,7 +2001,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                   projectVersion: str, \
                   baseDir: str,httpPrefix: str,sendThreads: [],postLog: [], \
                   cachedWebfingers: {},personCache: {},queue: [], \
-                  domain: str,port: int,useTor: bool,federationList: [], \
+                  domain: str,onionDomain: str,port: int,useTor: bool, \
+                  federationList: [], \
                   ocapAlways: bool,maxReplies: int, \
                   domainMaxPostsPerDay: int,accountMaxPostsPerDay: int, \
                   allowDeletion: bool,debug: bool,maxMentions: int, \
