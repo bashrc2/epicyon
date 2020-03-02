@@ -190,8 +190,9 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
         personDomain=domain
-        if '.onion/' in personUrl:
-            personDomain=onionDomain
+        if onionDomain:
+            if '.onion/' in personUrl:
+                personDomain=onionDomain
         asHeader = {
             'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
         }
