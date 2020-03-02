@@ -102,6 +102,8 @@ parser.add_argument('--unfol','--unfollow', dest='unfollow', type=str,default=No
                     help='Handle of account stop following. eg. nickname@domain')
 parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
+parser.add_argument('-o','--onion', dest='domain', type=str,default=None, \
+                    help='Onion domain name of the server if primarily on clearnet')
 parser.add_argument('-p','--port', dest='port', type=int,default=None, \
                     help='Port number to run on')
 parser.add_argument('--postcache', dest='maxRecentPosts', type=int,default=100, \
@@ -414,6 +416,15 @@ if args.domain:
     domain=args.domain
     setConfigParam(baseDir,'domain',domain)
 
+if args.onion:
+    if not args.onion.endswith('.onion'):
+        print(args.onion+' does not look like an onion domain')
+        sys.exit()
+    if '://' in args.onion:
+        args.onion=args.onion.split('://')[1]
+    onionDomain=args.onion
+    setConfigParam(baseDir,'onion',onionDomain)
+
 if not args.language:
     languageCode=getConfigParam(baseDir,'language')
     if languageCode:
@@ -469,6 +480,13 @@ if configDomain:
     domain=configDomain
 else:
     domain='localhost'
+
+# get onion domain name from configuration
+configOnionDomain=getConfigParam(baseDir,'onion')
+if configOnionDomain:
+    onionDomain=configOnionDomain
+else:
+    onionDomain=None
 
 # get port number from configuration
 configPort=getConfigParam(baseDir,'port')
