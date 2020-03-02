@@ -968,6 +968,7 @@ if args.actor:
     if args.http or domain.endswith('.onion'):
         httpPrefix='http'
         port=80
+        useTor=True
     else:
         httpPrefix='https'
         port=443
