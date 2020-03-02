@@ -56,6 +56,27 @@ def loadJson(filename: str,delaySec=2) -> {}:
             tries+=1
     return jsonObject
 
+def loadJsonOnionify(filename: str,domain: str,onionDomain: str,delaySec=2) -> {}:
+    """Makes a few attempts to load a json formatted file
+    This also converts the domain name to the onion domain
+    """
+    jsonObject=None
+    tries=0
+    while tries<5:
+        try:
+            with open(filename, 'r') as fp:
+                data=fp.read()
+                if data:
+                    data=data.replace(domain,onionDomain)
+                jsonObject=json.loads(data)
+                break
+        except:
+            print('WARN: loadJson exception')
+            if delaySec>0:
+                time.sleep(delaySec)
+            tries+=1
+    return jsonObject
+
 def getStatusNumber() -> (str,str):
     """Returns the status number and published date
     """

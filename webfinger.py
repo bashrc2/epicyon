@@ -17,6 +17,7 @@ from session import getJson
 from cache import storeWebfingerInCache
 from cache import getWebfingerFromCache
 from utils import loadJson
+from utils import loadJsonOnionify
 from utils import saveJson
 
 def parseHandle(handle: str) -> (str,str):
@@ -181,7 +182,9 @@ def webfingerMeta(httpPrefix: str,domainFull: str) -> str:
     metaStr+="</XRD>"
     return metaStr
 
-def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
+def webfingerLookup(path: str,baseDir: str, \
+                    domain: str,onionDomain: str, \
+                    port: int,debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
     if not path.startswith('/.well-known/webfinger?'):        
@@ -217,6 +220,13 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
         handleDomain=handle.split('@')[1]
         if handle.startswith(handleDomain+'@'):
             handle='inbox@'+handleDomain
+    # if this is a lookup for a handle using its onion domain
+    # then swap the onion domain for the clearnet version
+    onionify=False
+    if onionDomain:
+        if onionDomain in handle:
+            handle=handle.replace(onionDomain,domain)
+            onionify=True
     filename=baseDir+'/wfendpoints/'+handle.lower()+'.json'
     if debug:
         print('DEBUG: WEBFINGER filename '+filename)
@@ -224,7 +234,11 @@ def webfingerLookup(path: str,baseDir: str,port: int,debug: bool) -> {}:
         if debug:
             print('DEBUG: WEBFINGER filename not found '+filename)
         return None
-    wfJson=loadJson(filename)
+    if not onionify:
+        wfJson=loadJson(filename)
+    else:
+        print('Webfinger request for onionified '+handle)
+        wfJson=loadJsonOnionify(filename,domain,onionDomain)
     if not wfJson:
         wfJson={"nickname": "unknown"}
     return wfJson
