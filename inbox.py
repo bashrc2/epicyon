@@ -1889,7 +1889,7 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
                 # if the votes on a question have changed then send out an update
                 questionJson['type']='Update'
                 sendToFollowersThread(session,baseDir, \
-                                      nickname,domain,port, \
+                                      nickname,domain,onionDomain,port, \
                                       httpPrefix,federationList, \
                                       sendThreads,postLog, \
                                       cachedWebfingers,personCache, \

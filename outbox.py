@@ -218,7 +218,7 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
         sendToFollowersThread(server.session, \
                               baseDir, \
                               postToNickname, \
-                              domain, \
+                              domain,onionDomain, \
                               port, \
                               httpPrefix, \
                               federationList, \

@@ -1841,7 +1841,8 @@ def hasSharedInbox(session,httpPrefix: str,domain: str) -> bool:
     return False
 
 def sendToFollowers(session,baseDir: str, \
-                    nickname: str, domain: str, port: int, \
+                    nickname: str, \
+                    domain: str,onionDomain: str,port: int, \
                     httpPrefix: str,federationList: [], \
                     sendThreads: [],postLog: [], \
                     cachedWebfingers: {},personCache: {}, \
@@ -1892,6 +1893,15 @@ def sendToFollowers(session,baseDir: str, \
 
         cc=''
 
+        # if we are sending to an onion domain and we
+        # have an alt onion domain then use the alt
+        fromDomain=domain
+        fromHttpPrefix=httpPrefix
+        if onionDomain:
+            if toDomain.endswidth('.onion'):
+                fromDomain=onionDomain
+                fromHttpPrefix='http'
+
         if withSharedInbox:
             toNickname=followerHandles[index].split('@')[0]
 
@@ -1915,10 +1925,11 @@ def sendToFollowers(session,baseDir: str, \
             if debug:
                 print('DEBUG: Sending from '+nickname+'@'+domain+ \
                       ' to '+toNickname+'@'+toDomain)
+
             sendSignedJson(postJsonObject,session,baseDir, \
-                           nickname,domain,port, \
+                           nickname,fromDomain,port, \
                            toNickname,toDomain,toPort, \
-                           cc,httpPrefix,True,clientToServer, \
+                           cc,fromHttpPrefix,True,clientToServer, \
                            federationList, \
                            sendThreads,postLog,cachedWebfingers, \
                            personCache,debug,projectVersion)
@@ -1940,9 +1951,9 @@ def sendToFollowers(session,baseDir: str, \
                               toNickname+'@'+toDomain)
 
                 sendSignedJson(postJsonObject,session,baseDir, \
-                               nickname,domain,port, \
+                               nickname,fromDomain,port, \
                                toNickname,toDomain,toPort, \
-                               cc,httpPrefix,True,clientToServer, \
+                               cc,fromHttpPrefix,True,clientToServer, \
                                federationList, \
                                sendThreads,postLog,cachedWebfingers, \
                                personCache,debug,projectVersion)
@@ -1953,7 +1964,8 @@ def sendToFollowers(session,baseDir: str, \
         print('DEBUG: End of sendToFollowers')
 
 def sendToFollowersThread(session,baseDir: str, \
-                          nickname: str,domain: str,port: int, \
+                          nickname: str, \
+                          domain: str,onionDomain: str,port: int, \
                           httpPrefix: str,federationList: [], \
                           sendThreads: [],postLog: [], \
                           cachedWebfingers: {},personCache: {}, \
@@ -1964,7 +1976,7 @@ def sendToFollowersThread(session,baseDir: str, \
     sendThread= \
         threadWithTrace(target=sendToFollowers, \
                         args=(session,baseDir, \
-                              nickname,domain,port, \
+                              nickname,domain,onionDomain,port, \
                               httpPrefix,federationList, \
                               sendThreads,postLog, \
                               cachedWebfingers,personCache, \
