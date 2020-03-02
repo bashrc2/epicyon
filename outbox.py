@@ -38,7 +38,8 @@ from shares import outboxUndoShareUpload
 
 def postMessageToOutbox(messageJson: {},postToNickname: str, \
                         server,baseDir: str,httpPrefix: str, \
-                        domain: str,domainFull: str,port: int, \
+                        domain: str,domainFull: str,onionDomain: str, \
+                        port: int, \
                         recentPostsCache: {},followersThreads: [], \
                         federationList: [],sendThreads: [], \
                         postLog: [],cachedWebfingers: {}, \
@@ -313,7 +314,8 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
         else:
             print('c2s sender: '+postToNickname+'@'+domain+':'+str(port))
     sendToNamedAddresses(server.session,baseDir, \
-                         postToNickname,domain,port, \
+                         postToNickname, \
+                         domain,onionDomain,port, \
                          httpPrefix, \
                          federationList, \
                          sendThreads, \

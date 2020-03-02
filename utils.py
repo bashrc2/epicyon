@@ -68,6 +68,7 @@ def loadJsonOnionify(filename: str,domain: str,onionDomain: str,delaySec=2) -> {
                 data=fp.read()
                 if data:
                     data=data.replace(domain,onionDomain).replace('https:','http:')
+                    print('*****data: '+data)
                 jsonObject=json.loads(data)
                 break
         except:

@@ -87,6 +87,7 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
                                        httpd.httpPrefix, \
                                        httpd.domain, \
                                        httpd.domainFull, \
+                                       httpd.onionDomain, \
                                        httpd.port, \
                                        httpd.recentPostsCache, \
                                        httpd.followersThreads, \

@@ -1704,7 +1704,8 @@ def addToField(activityType: str,postJsonObject: {},debug: bool) -> ({},bool):
     return postJsonObject,False
 
 def sendToNamedAddresses(session,baseDir: str, \
-                         nickname: str, domain: str, port: int, \
+                         nickname: str, \
+                         domain: str,onionDomain: str,port: int, \
                          httpPrefix: str,federationList: [], \
                          sendThreads: [],postLog: [], \
                          cachedWebfingers: {},personCache: {}, \
@@ -1810,11 +1811,21 @@ def sendToNamedAddresses(session,baseDir: str, \
                         toDomainFull=toDomain+':'+str(toPort)
             print('DEBUG: Post sending s2s: '+nickname+'@'+domainFull+ \
                   ' to '+toNickname+'@'+toDomainFull)
+
+        # if we have an alt onion domain and we are sending to
+        # another onion domain then switch the clearnet
+        # domain for the onion one
+        fromDomain=domain
+        fromHttpPrefix=httpPrefix
+        if onionDomain:
+            if toDomain.endswith('.onion'):
+                fromDomain=onionDomain
+                fromHttpPrefix='http'
         cc=[]
         sendSignedJson(postJsonObject,session,baseDir, \
-                       nickname,domain,port, \
+                       nickname,fromDomain,port, \
                        toNickname,toDomain,toPort, \
-                       cc,httpPrefix,True,clientToServer, \
+                       cc,fromHttpPrefix,True,clientToServer, \
                        federationList, \
                        sendThreads,postLog,cachedWebfingers, \
                        personCache,debug,projectVersion)

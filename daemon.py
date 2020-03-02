@@ -684,7 +684,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.postToNickname=postToNickname
         return postMessageToOutbox(messageJson,self.postToNickname, \
                                    self.server,self.server.baseDir,self.server.httpPrefix, \
-                                   self.server.domain,self.server.domainFull,self.server.port, \
+                                   self.server.domain,self.server.domainFull, \
+                                   self.server.onionDomain,self.server.port, \
                                    self.server.recentPostsCache,self.server.followersThreads, \
                                    self.server.federationList,self.server.sendThreads, \
                                    self.server.postLog,self.server.cachedWebfingers, \
@@ -3521,8 +3522,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if pageNumberStr.isdigit():
                         pageNumber=int(pageNumberStr)
                     searchPath=self.path.split('?page=')[0]
-                getPerson = personLookup(self.server.domain,searchPath.replace('/following',''), \
-                                         self.server.baseDir)
+                getPerson = \
+                    personLookup(self.server.domain, \
+                                 searchPath.replace('/following',''), \
+                                 self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
                         if self.server.debug:
@@ -3623,8 +3626,9 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,52)
 
         # look up a person
-        getPerson = personLookup(self.server.domain,self.path, \
-                                 self.server.baseDir)
+        getPerson = \
+            personLookup(self.server.domain,self.path, \
+                         self.server.baseDir)
         if getPerson:
             if self._requestHTTP():
                 if not self.server.session:
