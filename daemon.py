@@ -378,7 +378,7 @@ class PubServer(BaseHTTPRequestHandler):
             getPersonPubKey(self.server.baseDir,self.server.session,keyId, \
                             self.server.personCache,self.server.debug, \
                             __version__,self.server.httpPrefix, \
-                            self.server.domain)
+                            self.server.domain,self.server.onionDomain)
         if not pubKey:
             if self.server.debug:
                 print('DEBUG: Authenticated fetch failed to obtain public key for '+ \

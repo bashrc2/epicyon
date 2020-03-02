@@ -176,7 +176,8 @@ def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
 
 def getPersonPubKey(baseDir: str,session,personUrl: str, \
                     personCache: {},debug: bool, \
-                    projectVersion: str,httpPrefix: str,domain: str) -> str:
+                    projectVersion: str,httpPrefix: str, \
+                    domain: str,onionDomain: str) -> str:
     if not personUrl:
         return None
     personUrl=personUrl.replace('#main-key','')
@@ -188,8 +189,15 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
-        asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
-        personJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
+        personDomain=domain
+        if '.onion/' in personUrl:
+            personDomain=onionDomain
+        asHeader = {
+            'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
+        personJson = \
+            getJson(session,personUrl,asHeader,None,projectVersion, \
+                    httpPrefix,personDomain)
         if not personJson:
             return None
     pubKey=None
@@ -1207,7 +1215,7 @@ def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
 
 def receiveAnnounce(recentPostsCache: {}, \
                     session,handle: str,isGroup: bool,baseDir: str, \
-                    httpPrefix: str,domain :str,port: int, \
+                    httpPrefix: str,domain :str,onionDomain: str,port: int, \
                     sendThreads: [],postLog: [],cachedWebfingers: {}, \
                     personCache: {},messageJson: {},federationList: [], \
                     debug : bool) -> bool:
@@ -1298,7 +1306,8 @@ def receiveAnnounce(recentPostsCache: {}, \
                     pubKey= \
                         getPersonPubKey(baseDir,session,lookupActor, \
                                         personCache,debug, \
-                                        __version__,httpPrefix,domain)                
+                                        __version__,httpPrefix, \
+                                        domain,onionDomain)                
                     if pubKey:
                         print('DEBUG: public key obtained for announce: '+lookupActor)
                         break
@@ -1487,7 +1496,7 @@ def validPostContent(baseDir: str,nickname: str,domain: str, \
     return True
 
 def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
-                             domain: str,personCache: {}, \
+                             domain: str,onionDomain: str,personCache: {}, \
                              postJsonObject: {},debug: bool) -> None:
     """Tries to obtain the actor for the person being replied to
     so that their avatar can later be shown
@@ -1520,7 +1529,8 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
         pubKey= \
             getPersonPubKey(baseDir,session,lookupActor, \
                             personCache,debug, \
-                            __version__,httpPrefix,domain)                
+                            __version__,httpPrefix, \
+                            domain,onionDomain)                
         if pubKey:
             print('DEBUG: public key obtained for reply: '+lookupActor)
             break
@@ -1737,7 +1747,8 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
                            session,keyId: str,handle: str,messageJson: {}, \
                            baseDir: str,httpPrefix: str,sendThreads: [], \
                            postLog: [],cachedWebfingers: {},personCache: {}, \
-                           queue: [],domain: str,port: int,useTor: bool, \
+                           queue: [],domain: str,onionDomain: str, \
+                           port: int,useTor: bool, \
                            federationList: [],ocapAlways: bool,debug: bool, \
                            acceptedCaps: [], \
                            queueFilename :str,destinationFilename :str, \
@@ -1811,7 +1822,7 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
     if receiveAnnounce(recentPostsCache, \
                        session,handle,isGroup, \
                        baseDir,httpPrefix, \
-                       domain,port, \
+                       domain,onionDomain,port, \
                        sendThreads,postLog, \
                        cachedWebfingers, \
                        personCache, \
@@ -1930,7 +1941,9 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
                 updateIndexList.append('tlblogs')
 
         # get the avatar for a reply/announce
-        obtainAvatarForReplyPost(session,baseDir,httpPrefix,domain,personCache,postJsonObject,debug)
+        obtainAvatarForReplyPost(session,baseDir, \
+                                 httpPrefix,domain,onionDomain, \
+                                 personCache,postJsonObject,debug)
 
         # save the post to file
         if saveJson(postJsonObject,destinationFilename):
@@ -2149,7 +2162,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 pubKey= \
                     getPersonPubKey(baseDir,session,keyId, \
                                     personCache,debug, \
-                                    projectVersion,httpPrefix,domain)
+                                    projectVersion,httpPrefix, \
+                                    domain,onionDomain)
                 if pubKey:
                     if debug:
                         print('DEBUG: public key: '+str(pubKey))
@@ -2345,7 +2359,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                                baseDir,httpPrefix, \
                                                sendThreads,postLog, \
                                                cachedWebfingers, \
-                                               personCache,queue,domain, \
+                                               personCache,queue, \
+                                               domain,onionDomain, \
                                                port,useTor, \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \
@@ -2365,7 +2380,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                                baseDir,httpPrefix, \
                                                sendThreads,postLog, \
                                                cachedWebfingers, \
-                                               personCache,queue,domain, \
+                                               personCache,queue, \
+                                               domain,onionDomain, \
                                                port,useTor, \
                                                federationList,ocapAlways, \
                                                debug,acceptedCaps, \

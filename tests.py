@@ -1169,7 +1169,7 @@ def testClientToServer():
                                httpPrefix, \
                                cachedWebfingers,personCache, \
                                True,__version__)
-    for t in range(10):
+    for t in range(25):
         if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
             if 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
                 if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
