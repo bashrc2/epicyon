@@ -1168,19 +1168,23 @@ def testClientToServer():
                                'bob',bobDomain,bobPort, \
                                httpPrefix, \
                                cachedWebfingers,personCache, \
-                               True,__version__)
-    for t in range(25):
-        if os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'):
-            if 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
-                if os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'):
-                    if 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read():
+                               True,__version__)    
+    aliceFollowingFilename=aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'
+    bobFollowersFilename=bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'
+    for t in range(10):
+        if os.path.isfile(bobFollowersFilename):
+            if 'alice@'+aliceDomain+':'+str(alicePort) in open(bobFollowersFilename).read():
+                if os.path.isfile(aliceFollowingFilename):
+                    if 'bob@'+bobDomain+':'+str(bobPort) in open(aliceFollowingFilename).read():
                         break
         time.sleep(1)
 
-    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt')
-    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
-    assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
-    assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+    assert os.path.isfile(bobFollowersFilename)
+    assert os.path.isfile(aliceFollowingFilename)
+    print('alice@'+aliceDomain+':'+str(alicePort)+' in '+bobFollowersFilename)
+    assert 'alice@'+aliceDomain+':'+str(alicePort) in open(bobFollowersFilename).read()
+    print('bob@'+bobDomain+':'+str(bobPort)+' in '+aliceFollowingFilename)
+    assert 'bob@'+bobDomain+':'+str(bobPort) in open(aliceFollowingFilename).read()
     assert validInbox(bobDir,'bob',bobDomain)
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
@@ -1285,15 +1289,15 @@ def testClientToServer():
                                  cachedWebfingers,personCache, \
                                  True,__version__)
     for t in range(10):
-        if 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read():
-            if 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read():
+        if 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobFollowersFilename).read():
+            if 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceFollowingFilename).read():
                 break
         time.sleep(1)
 
-    assert os.path.isfile(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt')
-    assert os.path.isfile(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt')
-    assert 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
-    assert 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
+    assert os.path.isfile(bobFollowersFilename)
+    assert os.path.isfile(aliceFollowingFilename)
+    assert 'alice@'+aliceDomain+':'+str(alicePort) not in open(bobFollowersFilename).read()
+    assert 'bob@'+bobDomain+':'+str(bobPort) not in open(aliceFollowingFilename).read()
     assert validInbox(bobDir,'bob',bobDomain)
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
     assert validInbox(aliceDir,'alice',aliceDomain)

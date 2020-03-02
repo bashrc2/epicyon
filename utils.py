@@ -259,6 +259,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         os.mkdir(baseDir+'/accounts/'+handle)
+    handleToFollow=followNickname+'@'+followDomain
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if os.path.isfile(filename):
         if handleToFollow in open(filename).read():
@@ -277,7 +278,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         except Exception as e:
             print('WARN: Failed to write entry to follow file '+filename+' '+str(e))        
     if debug:
-        print('DEBUG: creating new following file')
+        print('DEBUG: creating new following file to follow '+handleToFollow)
     with open(filename, "w") as followfile:
         followfile.write(handleToFollow+'\n')
     return True

@@ -512,7 +512,8 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         # single user instance
         nickname='dev'
         if debug:
-            print('DEBUG: follow request does not contain a nickname. Assuming single user instance.')
+            print('DEBUG: follow request does not contain a '+ \
+                  'nickname. Assuming single user instance.')
     if not messageJson.get('to'):
         messageJson['to']=messageJson['object']
     handle=nickname.lower()+'@'+domain.lower()
@@ -555,7 +556,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
         return True
     
     # what is the followers policy?
-    approveHandle=nickname+'@'+domainFull
+    approveHandle=nickname+'@'+domainFull    
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug,approveHandle):
         print('Follow approval is required')
