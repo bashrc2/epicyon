@@ -102,7 +102,7 @@ parser.add_argument('--unfol','--unfollow', dest='unfollow', type=str,default=No
                     help='Handle of account stop following. eg. nickname@domain')
 parser.add_argument('-d','--domain', dest='domain', type=str,default=None, \
                     help='Domain name of the server')
-parser.add_argument('-o','--onion', dest='domain', type=str,default=None, \
+parser.add_argument('-o','--onion', dest='onion', type=str,default=None, \
                     help='Onion domain name of the server if primarily on clearnet')
 parser.add_argument('-p','--port', dest='port', type=int,default=None, \
                     help='Port number to run on')
