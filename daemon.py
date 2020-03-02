@@ -5947,7 +5947,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
               enableSharedInbox: bool,registration: bool, \
               language: str,projectVersion: str, \
               instanceId: str,clientToServer: bool, \
-              baseDir: str,domain: str, \
+              baseDir: str,domain: str,onionDomain: str, \
               port=80,proxyPort=80,httpPrefix='https', \
               fedList=[],maxMentions=10,maxEmoji=10, \
               authenticatedFetch=False, \
@@ -5982,6 +5982,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
         print('ERROR: HTTP server failed to start. '+str(e))
         return False
 
+    httpd.onionDomain=onionDomain
     httpd.useBlurHash=useBlurHash
     httpd.mediaInstance=mediaInstance
     httpd.blogsInstance=blogsInstance

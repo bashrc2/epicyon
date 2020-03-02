@@ -1536,7 +1536,7 @@ runDaemon(args.blogsinstance,args.mediainstance, \
           not args.nosharedinbox, \
           registration,args.language,__version__, \
           instanceId,args.client,baseDir, \
-          domain,port,proxyPort,httpPrefix, \
+          domain,onionDomain,port,proxyPort,httpPrefix, \
           federationList,args.maxMentions, \
           args.maxEmoji,args.authenticatedFetch, \
           args.noreply,args.nolike,args.nopics, \
