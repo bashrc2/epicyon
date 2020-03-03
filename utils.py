@@ -236,6 +236,10 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
     else:
         handle=nickname+'@'+domain.lower()
         
+    if not os.path.isdir(baseDir+'/accounts/'+handle):
+        print('WARN: account for '+handle+' does not exist')
+        return False
+
     if ':' in followDomain:
         handleToFollow=followNickname+'@'+followDomain.split(':')[0]
     else:
@@ -257,8 +261,6 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
 
     if not os.path.isdir(baseDir+'/accounts'):
         os.mkdir(baseDir+'/accounts')
-    if not os.path.isdir(baseDir+'/accounts/'+handle):
-        os.mkdir(baseDir+'/accounts/'+handle)
     handleToFollow=followNickname+'@'+followDomain
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if os.path.isfile(filename):
