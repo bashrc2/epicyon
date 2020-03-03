@@ -20,7 +20,7 @@ On Arch/Parabola:
 
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
-               python-beautifulsoup4 imagemagick python-pillow \
+               imagemagick python-pillow \
 			   python-requests perl-image-exiftool python-numpy \
 			   python-dateutil certbot
 ```
