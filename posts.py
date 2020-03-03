@@ -1535,6 +1535,9 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         return 8
     withDigest=True
 
+    if toDomain.endswith('.onion'):
+        httpPrefix='http'
+    
     sharedInbox=False
     if toNickname=='inbox':
         # shared inbox actor on @domain@domain
