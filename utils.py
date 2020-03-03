@@ -235,7 +235,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         handle=nickname+'@'+domain.split(':')[0].lower()
     else:
         handle=nickname+'@'+domain.lower()
-        
+
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         print('WARN: account for '+handle+' does not exist')
         return False

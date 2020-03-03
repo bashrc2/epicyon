@@ -52,10 +52,10 @@ from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
-try: 
-    from BeautifulSoup import BeautifulSoup
-except ImportError:
-    from bs4 import BeautifulSoup
+#try: 
+#    from BeautifulSoup import BeautifulSoup
+#except ImportError:
+#    from bs4 import BeautifulSoup
 
 def isModerator(baseDir: str,nickname: str) -> bool:
     """Returns true if the given nickname is a moderator
@@ -116,7 +116,8 @@ def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public', \
     return keyPem
     
 def cleanHtml(rawHtml: str) -> str:
-    text = BeautifulSoup(rawHtml, 'html.parser').get_text()
+    #text = BeautifulSoup(rawHtml, 'html.parser').get_text()
+    text=rawHtml
     return html.unescape(text)
 
 def getUserUrl(wfRequest: {}) -> str:

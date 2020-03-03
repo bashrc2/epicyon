@@ -33,8 +33,10 @@ sudo apt install -y \
     python3-numpy python3-setuptools python3-crypto \
     python3-dateutil python3-pil.imagetk python3-idna \
 	python3-requests libimage-exiftool-perl certbot nginx
-sudo pip3 install beautifulsoup4 pycryptodome
+sudo pip3 install pycryptodome
 ```
+
+*Note*: A recent version of pycryptodome is needed because the packaged version does not include *pkcs1_15* within *Crypto.Signature*
 
 ## Installation
 
