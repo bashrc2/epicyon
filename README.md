@@ -29,14 +29,12 @@ Or on Debian:
 
 ``` bash
 sudo apt install -y \
-    tor python3-pip python3-socks imagemagick \
-    python3-numpy python3-setuptools python3-crypto \
+    tor python3-socks imagemagick \
+    python3-numpy python3-setuptools \
+	python3-crypto python3-cryptodome \
     python3-dateutil python3-pil.imagetk python3-idna \
 	python3-requests libimage-exiftool-perl certbot nginx
-sudo pip3 install pycryptodome
 ```
-
-*Note*: A recent version of pycryptodome is needed because the packaged version does not include *pkcs1_15* within *Crypto.Signature*
 
 ## Installation
 
