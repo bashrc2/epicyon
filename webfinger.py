@@ -7,10 +7,12 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import base64
-from Cryptodome.PublicKey import RSA
-from Cryptodome.Util import number
-#from Crypto.PublicKey import RSA
-#from Crypto.Util import number
+try:
+    from Cryptodome.PublicKey import RSA
+    from Cryptodome.Util import number
+except ImportError:
+    from Crypto.PublicKey import RSA
+    from Crypto.Util import number
 import requests
 import json
 import os

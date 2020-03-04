@@ -9,14 +9,16 @@ __status__ = "Production"
 
 # see https://tools.ietf.org/html/draft-cavage-http-signatures-06
 
-from Cryptodome.PublicKey import RSA
-from Cryptodome.Hash import SHA256
-from Cryptodome.Signature import pkcs1_15
+try: 
+    from Cryptodome.PublicKey import RSA
+    from Cryptodome.Hash import SHA256
+    from Cryptodome.Signature import pkcs1_15
+except ImportError:
+    from Crypto.PublicKey import RSA
+    from Crypto.Hash import SHA256
+    #from Crypto.Signature import PKCS1_v1_5
+    from Crypto.Signature import pkcs1_15
 
-#from Crypto.PublicKey import RSA
-#from Crypto.Hash import SHA256
-##from Crypto.Signature import PKCS1_v1_5
-#from Crypto.Signature import pkcs1_15
 from requests.auth import AuthBase
 import base64
 import json

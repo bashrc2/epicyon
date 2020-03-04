@@ -14,8 +14,10 @@ import json
 from time import gmtime, strftime
 from pprint import pprint
 from person import createPerson
-from Cryptodome.Hash import SHA256
-#from Crypto.Hash import SHA256
+try:
+    from Cryptodome.Hash import SHA256
+except ImportError:
+    from Crypto.Hash import SHA256
 from httpsig import signPostHeaders
 from httpsig import verifyPostHeaders
 from httpsig import messageContentDigest

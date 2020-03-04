@@ -14,8 +14,10 @@ import subprocess
 import shutil
 from random import randint
 from pathlib import Path
-from Cryptodome.PublicKey import RSA
-#from Crypto.PublicKey import RSA
+try:
+    from Cryptodome.PublicKey import RSA
+except ImportError:
+    from Crypto.PublicKey import RSA
 from shutil import copyfile
 from webfinger import createWebfingerEndpoint
 from webfinger import storeWebfingerEndpoint
