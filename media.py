@@ -169,7 +169,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
     postJson['attachment']=[attachmentJson]
 
     if baseDir:
-        if mediaType=='image':
+        if mediaType.startswith('image/'):
             removeMetaData(imageFilename,mediaFilename)
         else:
             copyfile(imageFilename,mediaFilename)
