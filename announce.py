@@ -195,7 +195,7 @@ def updateAnnounceCollection(recentPostsCache: {}, \
             pprint(postJsonObject)
         saveJson(postJsonObject,postFilename)
 
-def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
+def announcedByPerson(postJsonObject: {},nickname: str,domain: str) -> bool:
     """Returns True if the given post is announced by the given person
     """
     if not postJsonObject.get('object'):
@@ -212,9 +212,9 @@ def announcedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:
     return False
 
 def createAnnounce(session,baseDir: str,federationList: [], \
-                   nickname: str, domain: str, port: int, \
-                   toUrl: str, ccUrl: str, httpPrefix: str, \
-                   objectUrl: str, saveToFile: bool, \
+                   nickname: str,domain: str,port: int, \
+                   toUrl: str,ccUrl: str,httpPrefix: str, \
+                   objectUrl: str,saveToFile: bool, \
                    clientToServer: bool, \
                    sendThreads: [],postLog: [], \
                    personCache: {},cachedWebfingers: {}, \
@@ -278,7 +278,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
     return newAnnounce
 
 def announcePublic(session,baseDir: str,federationList: [], \
-                   nickname: str, domain: str, port: int, httpPrefix: str, \
+                   nickname: str,domain: str,port: int,httpPrefix: str, \
                    objectUrl: str,clientToServer: bool, \
                    sendThreads: [],postLog: [], \
                    personCache: {},cachedWebfingers: {}, \
@@ -328,9 +328,9 @@ def repeatPost(session,baseDir: str,federationList: [], \
                           debug,projectVersion)
 
 def undoAnnounce(session,baseDir: str,federationList: [], \
-                 nickname: str, domain: str, port: int, \
-                 toUrl: str, ccUrl: str, httpPrefix: str, \
-                 objectUrl: str, saveToFile: bool, \
+                 nickname: str,domain: str,port: int, \
+                 toUrl: str,ccUrl: str,httpPrefix: str, \
+                 objectUrl: str,saveToFile: bool, \
                  clientToServer: bool, \
                  sendThreads: [],postLog: [], \
                  personCache: {},cachedWebfingers: {}, \
@@ -390,7 +390,7 @@ def undoAnnounce(session,baseDir: str,federationList: [], \
     return newUndoAnnounce
 
 def undoAnnouncePublic(session,baseDir: str,federationList: [], \
-                       nickname: str, domain: str, port: int, httpPrefix: str, \
+                       nickname: str,domain: str,port: int,httpPrefix: str, \
                        objectUrl: str,clientToServer: bool, \
                        sendThreads: [],postLog: [], \
                        personCache: {},cachedWebfingers: {}, \
@@ -414,9 +414,9 @@ def undoAnnouncePublic(session,baseDir: str,federationList: [], \
                         debug)
 
 def undoRepeatPost(session,baseDir: str,federationList: [], \
-                   nickname: str, domain: str, port: int, httpPrefix: str, \
-                   announceNickname: str, announceDomain: str, \
-                   announcePort: int, announceHttpsPrefix: str, \
+                   nickname: str,domain: str,port: int,httpPrefix: str, \
+                   announceNickname: str,announceDomain: str, \
+                   announcePort: int,announceHttpsPrefix: str, \
                    announceStatusNumber: int,clientToServer: bool, \
                    sendThreads: [],postLog: [], \
                    personCache: {},cachedWebfingers: {}, \

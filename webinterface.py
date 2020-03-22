@@ -2217,7 +2217,7 @@ def addEmbeddedAudio(translate: {},content: str) -> str:
             w=w[:-1]
         if not w.endswith(extension):
             continue
-            
+
         if not (w.startswith('http') or w.startswith('dat:') or \
                 w.startswith('i2p:') or '/' in w):
             continue
