@@ -22,7 +22,7 @@ def hashPassword(password: str) -> str:
                                 salt, 100000)
     pwdhash=binascii.hexlify(pwdhash)
     return (salt+pwdhash).decode('ascii')
- 
+
 def verifyPassword(storedPassword: str,providedPassword: str) -> bool:
     """Verify a stored password against one provided by user
     """

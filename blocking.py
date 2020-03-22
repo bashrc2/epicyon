@@ -14,7 +14,7 @@ def addGlobalBlock(baseDir: str, \
     """Global block which applies to all accounts
     """
     blockingFilename=baseDir+'/accounts/blocking.txt'
-    if not blockNickname.startswith('#'):        
+    if not blockNickname.startswith('#'):
         blockHandle=blockNickname+'@'+blockDomain
         if os.path.isfile(blockingFilename):
             if blockHandle in open(blockingFilename).read():
@@ -54,7 +54,7 @@ def removeGlobalBlock(baseDir: str, \
     """Unblock the given global block
     """
     unblockingFilename=baseDir+'/accounts/blocking.txt'
-    if not unblockNickname.startswith('#'):        
+    if not unblockNickname.startswith('#'):
         unblockHandle=unblockNickname+'@'+unblockDomain
         if os.path.isfile(unblockingFilename):
             if unblockHandle in open(unblockingFilename).read():

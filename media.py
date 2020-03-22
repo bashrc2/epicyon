@@ -49,13 +49,13 @@ def getImageHash(imageFilename: str) -> str:
 
 def isMedia(imageFilename: str) -> bool:
     permittedMedia=['png','jpg','gif','webp','mp4','ogv','mp3','ogg']
-    for m in permittedMedia:        
+    for m in permittedMedia:
         if imageFilename.endswith('.'+m):
             return True
     print('WARN: '+imageFilename+' is not a permitted media type')
     return False
 
-def createMediaDirs(baseDir: str,mediaPath: str) -> None:    
+def createMediaDirs(baseDir: str,mediaPath: str) -> None:
     if not os.path.isdir(baseDir+'/media'):
         os.mkdir(baseDir+'/media')
     if not os.path.isdir(baseDir+'/'+mediaPath):
@@ -100,7 +100,7 @@ def updateEtag(mediaFilename: str) -> None:
     data=None
     try:
         with open(mediaFilename, 'rb') as mediaFile:
-            data=mediaFile.read()                
+            data=mediaFile.read()
     except:
         pass
 
@@ -125,7 +125,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
     """
     if not isMedia(imageFilename):
         return postJson
-    
+
     fileExtension=None
     acceptedTypes=['png','jpg','gif','webp','mp4','webm','ogv','mp3','ogg']
     for mType in acceptedTypes:
@@ -135,7 +135,7 @@ def attachMedia(baseDir: str,httpPrefix: str,domain: str,port: int, \
             if mType=='mp3':
                 mType='mpeg'
             fileExtension=mType
-    if not fileExtension:        
+    if not fileExtension:
         return postJson
     mediaType=mediaType+'/'+fileExtension
     print('Attached media type: '+mediaType)
@@ -189,7 +189,7 @@ def archiveMedia(baseDir: str,archiveDirectory: str,maxWeeks=4) -> None:
             os.mkdir(archiveDirectory)
         if not os.path.isdir(archiveDirectory+'/media'):
             os.mkdir(archiveDirectory+'/media')
-    
+
     for subdir, dirs, files in os.walk(baseDir+'/media'):
         for weekDir in dirs:
             if int(weekDir)<minWeek:

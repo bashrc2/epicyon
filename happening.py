@@ -67,7 +67,7 @@ def getTodaysEvents(baseDir: str,nickname: str,domain: str, \
 
     calendarPostIds=[]
     recreateEventsFile=False
-    with open(calendarFilename,'r') as eventsFile: 
+    with open(calendarFilename,'r') as eventsFile:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
@@ -134,7 +134,7 @@ def todaysEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
         return False
 
     eventsExist=False
-    with open(calendarFilename,'r') as eventsFile: 
+    with open(calendarFilename,'r') as eventsFile:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
@@ -180,7 +180,7 @@ def thisWeeksEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
         return False
 
     eventsExist=False
-    with open(calendarFilename,'r') as eventsFile: 
+    with open(calendarFilename,'r') as eventsFile:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
@@ -207,7 +207,7 @@ def thisWeeksEventsCheck(baseDir: str,nickname: str,domain: str) -> bool:
                    int(eventTime.strftime("%m"))==monthNumber and \
                    (int(eventTime.strftime("%d"))>dayNumber and \
                     int(eventTime.strftime("%d"))<=dayNumber+6):
-                    eventsExist=True                            
+                    eventsExist=True
                     break
 
     return eventsExist
@@ -233,7 +233,7 @@ def getThisWeeksEvents(baseDir: str,nickname: str,domain: str) -> {}:
 
     calendarPostIds=[]
     recreateEventsFile=False
-    with open(calendarFilename,'r') as eventsFile: 
+    with open(calendarFilename,'r') as eventsFile:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
@@ -317,7 +317,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str, \
 
     calendarPostIds=[]
     recreateEventsFile=False
-    with open(calendarFilename,'r') as eventsFile: 
+    with open(calendarFilename,'r') as eventsFile:
         for postId in eventsFile:
             postId=postId.replace('\n','')
             postFilename=locatePost(baseDir,nickname,domain,postId)
@@ -362,7 +362,7 @@ def getCalendarEvents(baseDir: str,nickname: str,domain: str, \
         for postId in calendarPostIds:
             calendarFile.write(postId+'\n')
         calendarFile.close()
-    
+
     return events
 
 def removeCalendarEvent(baseDir: str,nickname: str,domain: str, \

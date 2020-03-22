@@ -85,7 +85,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
     if not messageJson.get('object'):
         return
     if not messageJson['object'].get('type'):
-        return 
+        return
     if not messageJson['object']['type']=='Follow':
         return
     if debug:
@@ -96,7 +96,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
     # no, this isn't a mistake
     if not messageJson['object'].get('object'):
         print('DEBUG: no object within Follow activity')
-        return 
+        return
     if not messageJson.get('to'):
         if debug:
             print('DEBUG: No "to" parameter in follow Accept')
@@ -115,7 +115,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         return
     if not nickname:
         if debug:
-            print('DEBUG: nickname not found in '+thisActor)        
+            print('DEBUG: nickname not found in '+thisActor)
         return
     if acceptedPort:
         if '/'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname not in thisActor:
@@ -132,7 +132,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                 print('Expected: /'+acceptedDomain+'/users/'+nickname)
                 print('Actual:   '+thisActor)
                 print('DEBUG: unrecognized actor '+thisActor)
-            return    
+            return
     followedActor=messageJson['object']['object']
     followedDomain,port=getDomainFromActor(followedActor)
     if not followedDomain:
@@ -166,7 +166,7 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                       nickname+'@'+acceptedDomainFull+ \
                       ' from '+followedNickname+'@'+followedDomainFull+ \
                       ' but they have been unfollowed')
-            return            
+            return
 
     if followPerson(baseDir, \
                     nickname,acceptedDomainFull, \

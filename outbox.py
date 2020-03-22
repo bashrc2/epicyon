@@ -272,7 +272,7 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                        messageJson,debug)
 
     if debug:
-        print('DEBUG: handle delete requests')        
+        print('DEBUG: handle delete requests')
     outboxDelete(baseDir,httpPrefix, \
                  postToNickname,domain, \
                  messageJson,debug, \

@@ -143,7 +143,7 @@ def updateLikesCollection(recentPostsCache: {}, \
                 'items': [{
                     'type': 'Like',
                     'actor': actor
-                }]                
+                }]
             }
             postJsonObject['object']['likes']=likesJson
         else:
@@ -225,11 +225,11 @@ def like(recentPostsCache: {}, \
             print('DEBUG: like domain: '+domain)
             print('DEBUG: like objectUrl: '+objectUrl)
             return None
-        
+
         updateLikesCollection(recentPostsCache, \
                               baseDir,postFilename,objectUrl, \
                               newLikeJson['actor'],domain,debug)
-        
+
         sendSignedJson(newLikeJson,session,baseDir, \
                        nickname,domain,port, \
                        likedPostNickname,likedPostDomain,likedPostPort, \
@@ -338,7 +338,7 @@ def undolike(recentPostsCache: {}, \
 
         undoLikesCollectionEntry(baseDir,postFilename,objectUrl, \
                                  newLikeJson['actor'],domain,debug)
-        
+
         sendSignedJson(newUndoLikeJson,session,baseDir, \
                        nickname,domain,port, \
                        likedPostNickname,likedPostDomain,likedPostPort, \
@@ -379,7 +379,7 @@ def undoLikePost(recentPostsCache: {}, \
                 ccUrl= \
                     httpPrefix+'://'+likeDomain+':'+ \
                     str(likePort)+'/users/'+likeNickname
-        
+
     return undoLike(recentPostsCache, \
                     session,baseDir,federationList,nickname,domain,port, \
                     ccList,httpPrefix,objectUrl,clientToServer, \
@@ -408,7 +408,7 @@ def sendLikeViaServer(baseDir: str,session, \
 
     if '/statuses/' in likeUrl:
         toUrl=[likeUrl.split('/statuses/')[0]]
-    
+
     newLikeJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
@@ -433,7 +433,7 @@ def sendLikeViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -442,9 +442,9 @@ def sendLikeViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -515,7 +515,7 @@ def sendUndoLikeViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -524,9 +524,9 @@ def sendUndoLikeViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -598,7 +598,7 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
     if not isinstance(messageJson['object'], dict):
         if debug:
             print('DEBUG: undo like object is not dict')
-        return    
+        return
     if not messageJson['object'].get('type'):
         if debug:
             print('DEBUG: undo like - no type')

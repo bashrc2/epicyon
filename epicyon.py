@@ -354,7 +354,7 @@ if args.posts:
 if args.postsraw:
     if '@' not in args.postsraw:
         print('Syntax: --postsraw nickname@domain')
-        sys.exit()        
+        sys.exit()
     if not args.http:
         args.port=443
     nickname=args.postsraw.split('@')[0]
@@ -398,7 +398,7 @@ if not args.blogsinstance:
     blogsInstance=getConfigParam(baseDir,'blogsInstance')
     if blogsInstance!=None:
         args.blogsinstance=blogsInstance
-    
+
 # set the instance title in config.json
 title=getConfigParam(baseDir,'instanceTitle')
 if not title:
@@ -450,13 +450,13 @@ if not getConfigParam(baseDir,'registration'):
     setConfigParam(baseDir,'maxRegistrations',str(maxRegistrations))
     setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
 
-if args.resetregistrations:    
+if args.resetregistrations:
     setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
     print('Number of new registrations reset to '+str(maxRegistrations))
-    
+
 # whether new registrations are open or closed
 if args.registration:
-    if args.registration.lower()=='open':        
+    if args.registration.lower()=='open':
         registration=getConfigParam(baseDir,'registration')
         if not registration:
             setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
@@ -468,7 +468,7 @@ if args.registration:
     else:
         setConfigParam(baseDir,'registration','closed')
         print('New registrations closed')
-    
+
 # unique ID for the instance
 instanceId=getConfigParam(baseDir,'instanceId')
 if not instanceId:
@@ -535,7 +535,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session=createSession(useTor)        
+    session=createSession(useTor)
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -559,7 +559,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session=createSession(useTor)        
+    session=createSession(useTor)
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -590,21 +590,21 @@ if args.followerspending:
     if approveCtr==0:
         print('There are no follow requests pending approval.')
     sys.exit()
-        
-    
+
+
 if args.message:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
-        
-    session=createSession(useTor)        
+
+    session=createSession(useTor)
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
-        sys.exit()        
+        sys.exit()
     if '@' not in args.sendto and \
        not args.sendto.lower().endswith('public') and \
        not args.sendto.lower().endswith('followers'):
@@ -628,7 +628,7 @@ if args.message:
             toNickname=None
             toDomain='public'
             toPort=port
-        
+
     #ccUrl=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
     ccUrl=None
     sendMessage=args.message
@@ -668,12 +668,12 @@ if args.announce:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
-        
-    session=createSession(useTor)        
+
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending announce/repeat of '+args.announce)
@@ -717,7 +717,7 @@ if args.itemName:
         print('Specify a duration to share the object with the --duration option')
         sys.exit()
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending shared item: '+args.itemName)
@@ -749,7 +749,7 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending undo of shared item: '+args.undoItemName)
@@ -770,12 +770,12 @@ if args.like:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
-        
-    session=createSession(useTor)        
+
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending like of '+args.like)
@@ -795,12 +795,12 @@ if args.undolike:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
-        
-    session=createSession(useTor)        
+
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending undo like of '+args.undolike)
@@ -820,12 +820,12 @@ if args.delete:
     if not args.nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
-        
-    session=createSession(useTor)        
+
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending delete request of '+args.delete)
@@ -852,11 +852,11 @@ if args.follow:
     if not args.password:
         print('Please specify the password for '+args.nickname+' on '+domain)
         sys.exit()
-        
+
     followNickname=getNicknameFromActor(args.follow)
     if not followNickname:
         print('Unable to find nickname in '+args.follow)
-        sys.exit()        
+        sys.exit()
     followDomain,followPort=getDomainFromActor(args.follow)
 
     session=createSession(useTor)
@@ -890,11 +890,11 @@ if args.unfollow:
     if not args.password:
         print('Please specify the password for '+args.nickname+' on '+domain)
         sys.exit()
-        
+
     followNickname=getNicknameFromActor(args.unfollow)
     if not followNickname:
         print('WARN: unable to find nickname in '+args.unfollow)
-        sys.exit()        
+        sys.exit()
     followDomain,followPort=getDomainFromActor(args.unfollow)
 
     session=createSession(useTor)
@@ -927,7 +927,7 @@ if args.port:
 if args.proxyPort:
     proxyPort=args.proxyPort
     setConfigParam(baseDir,'proxyPort',proxyPort)
-ocapAlways=False    
+ocapAlways=False
 if args.ocap:
     ocapAlways=args.ocap
 if args.dat:
@@ -995,7 +995,7 @@ if args.actor:
             personUrl=originalActor
         else:
             sys.exit()
-        
+
     asHeader={
         'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
     }
@@ -1041,13 +1041,13 @@ if args.addaccount:
             sys.exit()
     if not validNickname(domain,nickname):
         print(nickname+' is a reserved name. Use something different.')
-        sys.exit()        
+        sys.exit()
     if not args.password:
         print('Use the --password option to set the password for '+nickname)
         sys.exit()
     if len(args.password.strip())<8:
         print('Password should be at least 8 characters')
-        sys.exit()            
+        sys.exit()
     if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         print('Account already exists')
         sys.exit()
@@ -1198,7 +1198,7 @@ if args.avatar:
         print('Avatar added for '+args.nickname)
     else:
         print('Avatar was not added for '+args.nickname)
-    sys.exit()    
+    sys.exit()
 
 if args.backgroundImage:
     if not os.path.isfile(args.backgroundImage):
@@ -1212,14 +1212,14 @@ if args.backgroundImage:
         print('Background image added for '+args.nickname)
     else:
         print('Background image was not added for '+args.nickname)
-    sys.exit()    
+    sys.exit()
 
 if args.project:
-    if not args.delegate and not args.undelegate:        
+    if not args.delegate and not args.undelegate:
         if not nickname:
             print('No nickname given')
             sys.exit()
-        
+
         if args.role.lower()=='none' or \
            args.role.lower()=='remove' or \
            args.role.lower()=='delete':
@@ -1236,7 +1236,7 @@ if args.skill:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
@@ -1249,7 +1249,7 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending '+args.skill+' skill level '+str(args.skillLevelPercent)+' for '+nickname)
@@ -1270,12 +1270,12 @@ if args.availability:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending availability status of '+nickname+' as '+args.availability)
@@ -1305,7 +1305,7 @@ if args.block:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
@@ -1320,7 +1320,7 @@ if args.block:
             print(args.block+' does not look like an actor url')
             sys.exit()
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending block of '+args.block)
@@ -1339,7 +1339,7 @@ if args.delegate:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
@@ -1356,7 +1356,7 @@ if args.delegate:
         delegatedNickname=args.delegate.split('@')[0]
         args.delegate=blockedActor
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending delegation for '+args.delegate+' with role '+args.role+' in project '+args.project)
@@ -1377,7 +1377,7 @@ if args.undelegate:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
@@ -1390,7 +1390,7 @@ if args.undelegate:
         delegatedNickname=args.undelegate.split('@')[0]
         args.undelegate=blockedActor
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending delegation removal for '+args.undelegate+' from role '+args.role+' in project '+args.project)
@@ -1411,7 +1411,7 @@ if args.unblock:
     if not nickname:
         print('Specify a nickname with the --nickname option')
         sys.exit()
-        
+
     if not args.password:
         print('Specify a password with the --password option')
         sys.exit()
@@ -1426,7 +1426,7 @@ if args.unblock:
             print(args.unblock+' does not look like an actor url')
             sys.exit()
 
-    session=createSession(useTor)        
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     print('Sending undo block of '+args.unblock)
@@ -1458,7 +1458,7 @@ if args.unfilterStr:
     sys.exit()
 
 if args.testdata:
-    useBlurhash=False    
+    useBlurhash=False
     nickname='testuser567'
     password='boringpassword'
     print('Generating some test data for user: '+nickname)
@@ -1475,7 +1475,7 @@ if args.testdata:
         shutil.rmtree(baseDir+'/sharefiles')
     if os.path.isdir(baseDir+'/wfendpoints'):
         shutil.rmtree(baseDir+'/wfendpoints')
-    
+
     setConfigParam(baseDir,'registrationsRemaining',str(maxRegistrations))
 
     createPerson(baseDir,'maxboardroom',domain,port,httpPrefix,True,password)
@@ -1511,7 +1511,7 @@ if args.testdata:
              "City", \
              "3 months",
              debug)
-    
+
     deleteAllPosts(baseDir,nickname,domain,'inbox')
     deleteAllPosts(baseDir,nickname,domain,'outbox')
     createPublicPost(baseDir,nickname,domain,port,httpPrefix,"like, this is totally just a #test, man",False,True,False,None,None,useBlurhash)

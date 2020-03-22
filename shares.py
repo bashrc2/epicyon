@@ -187,7 +187,7 @@ def expireSharesForAccount(baseDir: str,nickname: str,domain: str) -> None:
     if ':' in handleDomain:
         handleDomain=domain.split(':')[0]
     handle=nickname+'@'+handleDomain
-    sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'    
+    sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'
     if os.path.isfile(sharesFilename):
         sharesJson=loadJson(sharesFilename)
         if sharesJson:
@@ -219,7 +219,7 @@ def getSharesFeedForPerson(baseDir: str, \
         return None
     # handle page numbers
     headerOnly=True
-    pageNumber=None    
+    pageNumber=None
     if '?page=' in path:
         pageNumber=path.split('?page=')[1]
         if pageNumber=='true':
@@ -231,7 +231,7 @@ def getSharesFeedForPerson(baseDir: str, \
                 pass
         path=path.split('?page=')[0]
         headerOnly=False
-    
+
     if not path.endswith('/shares'):
         return None
     nickname=None
@@ -253,7 +253,7 @@ def getSharesFeedForPerson(baseDir: str, \
     if ':' in handleDomain:
         handleDomain=domain.split(':')[0]
     handle=nickname+'@'+handleDomain
-    sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'    
+    sharesFilename=baseDir+'/accounts/'+handle+'/shares.json'
 
     if headerOnly:
         noOfShares=0
@@ -374,7 +374,7 @@ def sendShareViaServer(baseDir,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      fromNickname,fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -383,7 +383,7 @@ def sendShareViaServer(baseDir,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
 
     if imageFilename:
@@ -393,7 +393,7 @@ def sendShareViaServer(baseDir,session, \
         }
         postResult= \
             postImage(session,imageFilename,[],inboxUrl.replace('/'+postToBox,'/shares'),headers,"inbox:write")
-    
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -465,7 +465,7 @@ def sendUndoShareViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      fromNickname,fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -474,9 +474,9 @@ def sendUndoShareViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-    
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \

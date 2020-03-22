@@ -171,7 +171,7 @@ def htmlBlogPostContent(authorized: bool, \
         # posts from the domain are expected to have an attributedTo field
         if restrictToDomain:
             return ''
-        
+
     if postJsonObject['object'].get('published'):
         if 'T' in postJsonObject['object']['published']:
             blogStr+='<h3>'+postJsonObject['object']['published'].split('T')[0]
@@ -312,7 +312,7 @@ def htmlBlogPage(authorized: bool, session, \
     """
     if ' ' in nickname or '@' in nickname or '\n' in nickname:
         return None
-    blogStr=''    
+    blogStr=''
 
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
@@ -424,7 +424,7 @@ def htmlBlogPageRSS(authorized: bool, session, \
     if not timelineJson:
         return blogRSS+rssFooter()
 
-    if pageNumber!=None:        
+    if pageNumber!=None:
         for item in timelineJson['orderedItems']:
             if item['type']!='Create':
                 continue
@@ -556,11 +556,11 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
 
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
-            editBlogText='<p class="new-post-text">'+file.read()+'</p>'    
+            editBlogText='<p class="new-post-text">'+file.read()+'</p>'
 
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
-        cssFilename=baseDir+'/epicyon.css'        
+        cssFilename=baseDir+'/epicyon.css'
     with open(cssFilename, 'r') as cssFile:
         editBlogCSS=cssFile.read()
         if httpPrefix!='https':
@@ -606,7 +606,7 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
     editBlogForm=htmlHeader(cssFilename,editBlogCSS)
 
     mentionsStr=''
-        
+
     editBlogForm+= \
         '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="'+ \
         pathBase+'?'+endpoint+'?page='+str(pageNumber)+'">'

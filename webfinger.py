@@ -60,7 +60,7 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
         wfDomain=wfDomain.split(':')[0]
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
-        return wf    
+        return wf
     url='{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
     par={
         'resource': 'acct:{}'.format(nickname+'@'+wfDomain)
@@ -85,7 +85,7 @@ def generateMagicKey(publicKeyPem) -> str:
     """See magic_key method in
        https://github.com/tootsuite/mastodon/blob/707ddf7808f90e3ab042d7642d368c2ce8e95e6f/app/models/account.rb
     """
-    privkey=RSA.importKey(publicKeyPem)    
+    privkey=RSA.importKey(publicKeyPem)
     mod=base64.urlsafe_b64encode(number.long_to_bytes(privkey.n)).decode("utf-8")
     pubexp=base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
@@ -130,7 +130,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
         personId=httpPrefix+"://"+domain+"/"+personName
         subjectStr="acct:"+originalDomain+"@"+originalDomain
         profilePageHref=httpPrefix+'://'+domain+'/about/more?instance_actor=true'
-    
+
     account={
         "aliases": [
             httpPrefix+"://"+domain+"/@"+personName,
@@ -195,7 +195,7 @@ def webfingerLookup(path: str,baseDir: str, \
                     port: int,debug: bool) -> {}:
     """Lookup the webfinger endpoint for an account
     """
-    if not path.startswith('/.well-known/webfinger?'):        
+    if not path.startswith('/.well-known/webfinger?'):
         return None
     handle=None
     if 'resource=acct:' in path:

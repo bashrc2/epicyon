@@ -167,7 +167,7 @@ def updateBookmarksCollection(recentPostsCache: {}, \
                 'items': [{
                     'type': 'Bookmark',
                     'actor': actor
-                }]                
+                }]
             }
             postJsonObject['object']['bookmarks']=bookmarksJson
         else:
@@ -271,11 +271,11 @@ def bookmark(recentPostsCache: {}, \
             print('DEBUG: bookmark domain: '+domain)
             print('DEBUG: bookmark objectUrl: '+objectUrl)
             return None
-        
+
         updateBookmarksCollection(recentPostsCache, \
                                   baseDir,postFilename,objectUrl, \
                                   newBookmarkJson['actor'],domain,debug)
-        
+
         sendSignedJson(newBookmarkJson,session,baseDir, \
                        nickname,domain,port, \
                        bookmarkedPostNickname,bookmarkedPostDomain,bookmarkedPostPort, \
@@ -385,7 +385,7 @@ def undoBookmark(recentPostsCache: {}, \
         undoBookmarksCollectionEntry(recentPostsCache, \
                                      baseDir,postFilename,objectUrl, \
                                      newBookmarkJson['actor'],domain,debug)
-        
+
         sendSignedJson(newUndoBookmarkJson,session,baseDir, \
                        nickname,domain,port, \
                        bookmarkedPostNickname,bookmarkedPostDomain,bookmarkedPostPort, \
@@ -425,7 +425,7 @@ def undoBookmarkPost(session,baseDir: str,federationList: [], \
                 ccUrl= \
                     httpPrefix+'://'+bookmarkedomain+':'+ \
                     str(bookmarkPort)+'/users/'+bookmarkNickname
-                
+
     return undoBookmark(session,baseDir,federationList,nickname,domain,port, \
                         ccList,httpPrefix,objectUrl,clientToServer, \
                         sendThreads,postLog,personCache,cachedWebfingers,debug)
@@ -453,7 +453,7 @@ def sendBookmarkViaServer(baseDir: str,session, \
 
     if '/statuses/' in bookmarkUrl:
         toUrl=[bookmarkUrl.split('/statuses/')[0]]
-        
+
     newBookmarkJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
@@ -478,7 +478,7 @@ def sendBookmarkViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-    
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -487,9 +487,9 @@ def sendBookmarkViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-    
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -559,7 +559,7 @@ def sendUndoBookmarkViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-    
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -568,9 +568,9 @@ def sendUndoBookmarkViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-    
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -618,7 +618,7 @@ def outboxBookmark(recentPostsCache: {}, \
             return
         if messageJson['to'][0]!=messageJson['actor']:
             print('WARN: Bookmark should be addressed to the same actor')
-            return            
+            return
     if debug:
         print('DEBUG: c2s bookmark request arrived in outbox')
 
@@ -652,7 +652,7 @@ def outboxUndoBookmark(recentPostsCache: {}, \
     if not isinstance(messageJson['object'], dict):
         if debug:
             print('DEBUG: undo bookmark object is not dict')
-        return    
+        return
     if not messageJson['object'].get('type'):
         if debug:
             print('DEBUG: undo bookmark - no type')
@@ -677,7 +677,7 @@ def outboxUndoBookmark(recentPostsCache: {}, \
             return
         if messageJson['to'][0]!=messageJson['actor']:
             print('WARN: Bookmark should be addressed to the same actor')
-            return            
+            return
     if debug:
         print('DEBUG: c2s undo bookmark request arrived in outbox')
 

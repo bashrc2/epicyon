@@ -18,7 +18,7 @@ def setThemeInConfig(baseDir: str,name: str) -> bool:
     if not configJson:
         return False
     configJson['theme']=name
-    return saveJson(configJson,configFilename)    
+    return saveJson(configJson,configFilename)
 
 def removeTheme(baseDir: str):
     themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css','blog.css')
@@ -60,7 +60,7 @@ def setCSSparam(css: str,param: str,value: str) -> str:
             else:
                 newcss+=searchStr+' '+sectionStr
     return newcss.strip()
-    
+
 def setThemeFromDict(baseDir: str,name: str,themeParams: {}):
     """Uses a dictionary to set a theme
     """
@@ -197,7 +197,7 @@ def setThemeLight(baseDir: str):
         "gallery-text-color": "black"
     }
     setThemeFromDict(baseDir,'light',themeParams)
-    
+
 def setTheme(baseDir: str,name: str) -> bool:
     if name=='default':
         setThemeDefault(baseDir)
@@ -215,4 +215,3 @@ def setTheme(baseDir: str,name: str) -> bool:
         setThemeHighVis(baseDir)
         return True
     return False
-        

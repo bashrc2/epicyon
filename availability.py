@@ -88,7 +88,7 @@ def sendAvailabilityViaServer(baseDir: str,session, \
         if port!=80 and port!=443:
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
-        
+
     toUrl=httpPrefix+'://'+domainFull+'/users/'+nickname
     ccUrl=httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
 
@@ -117,7 +117,7 @@ def sendAvailabilityViaServer(baseDir: str,session, \
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,nickname,domain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -126,9 +126,9 @@ def sendAvailabilityViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(Nickname,password)
-     
+
     headers={
         'host': domain, \
         'Content-type': 'application/json', \

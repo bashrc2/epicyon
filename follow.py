@@ -88,7 +88,7 @@ def isFollowingActor(baseDir: str,nickname: str,domain: str,actor: str) -> bool:
     handle=nickname+'@'+domain
     if not os.path.isdir(baseDir+'/accounts/'+handle):
         return False
-    followingFile=baseDir+'/accounts/'+handle+'/following.txt'    
+    followingFile=baseDir+'/accounts/'+handle+'/following.txt'
     if not os.path.isfile(followingFile):
         return False
     if actor in open(followingFile).read():
@@ -284,7 +284,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
         return None
     # handle page numbers
     headerOnly=True
-    pageNumber=None    
+    pageNumber=None
     if '?page=' in path:
         pageNumber=path.split('?page=')[1]
         if pageNumber=='true' or not authenticated:
@@ -296,7 +296,7 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
                 pass
         path=path.split('?page=')[0]
         headerOnly=False
-    
+
     if not path.endswith('/'+followFile):
         return None
     nickname=None
@@ -495,7 +495,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor')            
+            print('DEBUG: "users" or "profile" missing from actor')
         return False
     domain,tempPort=getDomainFromActor(messageJson['actor'])
     fromPort=port
@@ -534,7 +534,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
     if tempPort:
         if tempPort!=80 and tempPort!=443:
             if ':' not in domainToFollow:
-                domainToFollowFull=domainToFollow+':'+str(tempPort)            
+                domainToFollowFull=domainToFollow+':'+str(tempPort)
     nicknameToFollow=getNicknameFromActor(messageJson['object'])
     if not nicknameToFollow:
         if debug:
@@ -547,7 +547,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                 print('DEBUG: followed account not found - '+ \
                       baseDir+'/accounts/'+handleToFollow)
             return True
-        
+
     if isFollowerOfPerson(baseDir, \
                           nicknameToFollow,domainToFollowFull, \
                           nickname,domainFull):
@@ -556,13 +556,13 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                   ' is already a follower of '+ \
                   nicknameToFollow+'@'+domainToFollow)
         return True
-    
+
     # what is the followers policy?
-    approveHandle=nickname+'@'+domainFull    
+    approveHandle=nickname+'@'+domainFull
     if followApprovalRequired(baseDir,nicknameToFollow, \
                               domainToFollow,debug,approveHandle):
         print('Follow approval is required')
-        if not domain.endswith('.onion'):            
+        if not domain.endswith('.onion'):
             if noOfFollowRequests(baseDir, \
                                   nicknameToFollow,domainToFollow, \
                                   nickname,domain,fromPort, \
@@ -730,10 +730,10 @@ def sendFollowRequest(session,baseDir: str, \
                       personCache: {},debug : bool, \
                       projectVersion: str) -> {}:
     """Gets the json object for sending a follow request
-    """    
+    """
     if not domainPermitted(followDomain,federationList):
         return None
-    
+
     fullDomain=domain
     followActor=httpPrefix+'://'+domain+'/users/'+nickname
     if port:
@@ -749,7 +749,7 @@ def sendFollowRequest(session,baseDir: str, \
                 requestDomain=followDomain+':'+str(followPort)
 
     statusNumber,published=getStatusNumber()
-    
+
     if followNickname:
         followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
         followHandle=followNickname+'@'+requestDomain
@@ -812,7 +812,7 @@ def sendFollowRequestViaServer(baseDir: str,session, \
             if ':' not in followDomain:
                 followDomainFull=followDomain+':'+str(followPort)
 
-    followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
+    followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
     followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
 
     statusNumber,published=getStatusNumber()
@@ -842,7 +842,7 @@ def sendFollowRequestViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -851,9 +851,9 @@ def sendFollowRequestViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -895,7 +895,7 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
             if ':' not in followDomain:
                 followDomainFull=followDomain+':'+str(followPort)
 
-    followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
+    followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
     followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
     statusNumber,published=getStatusNumber()
 
@@ -930,7 +930,7 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -939,9 +939,9 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -1008,7 +1008,7 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
                                 if ocapJson.get('id'):
                                     if debug:
                                         print('DEBUG: capabilities id found for '+account)
-                
+
                                     recipientsDict[account]=ocapJson['id']
                                 else:
                                     if debug:
@@ -1058,7 +1058,7 @@ def outboxUndoFollow(baseDir: str,messageJson: {},debug: bool) -> None:
         if portFollower!=80 and portFollower!=443:
             if ':' not in domainFollower:
                 domainFollowerFull=domainFollower+':'+str(portFollower)
-    
+
     nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
     if not nicknameFollowing:
         print('WARN: unable to find nickname in '+messageJson['object']['object'])

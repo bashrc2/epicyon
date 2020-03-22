@@ -39,7 +39,7 @@ from utils import loadJson
 from utils import saveJson
 from auth import createPassword
 from config import setConfigParam
-from config import getConfigParam    
+from config import getConfigParam
 
 def generateRSAKey() -> (str,str):
     key=RSA.generate(2048)
@@ -85,7 +85,7 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         iconFilenameBase='icon'
     else:
         iconFilenameBase='image'
-        
+
     mediaType='image/png'
     iconFilename=iconFilenameBase+'.png'
     if imageFilename.endswith('.jpg') or \
@@ -103,7 +103,7 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
         personJson[iconFilenameBase]['url']= \
             httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
         saveJson(personJson,personFilename)
-            
+
         cmd= \
             '/usr/bin/convert '+imageFilename+' -size '+ \
             resolution+' -quality 50 '+profileFilename
@@ -365,20 +365,20 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         os.mkdir(baseDir+'/accounts')
     if not os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
         os.mkdir(baseDir+'/accounts/'+nickname+'@'+domain)
-    
+
     if os.path.isfile(baseDir+'/img/default-avatar.png'):
         copyfile(baseDir+'/img/default-avatar.png',baseDir+'/accounts/'+nickname+'@'+domain+'/avatar.png')
     theme=getConfigParam(baseDir,'theme')
     defaultProfileImageFilename=baseDir+'/img/image.png'
     if theme:
         if os.path.isfile(baseDir+'/img/image_'+theme+'.png'):
-            defaultBannerFilename=baseDir+'/img/image_'+theme+'.png'        
+            defaultBannerFilename=baseDir+'/img/image_'+theme+'.png'
     if os.path.isfile(defaultProfileImageFilename):
         copyfile(defaultProfileImageFilename,baseDir+'/accounts/'+nickname+'@'+domain+'/image.png')
     defaultBannerFilename=baseDir+'/img/banner.png'
     if theme:
         if os.path.isfile(baseDir+'/img/banner_'+theme+'.png'):
-            defaultBannerFilename=baseDir+'/img/banner_'+theme+'.png'        
+            defaultBannerFilename=baseDir+'/img/banner_'+theme+'.png'
     if os.path.isfile(defaultBannerFilename):
         copyfile(defaultBannerFilename,baseDir+'/accounts/'+nickname+'@'+domain+'/banner.png')
     if remainingConfigExists:
@@ -405,7 +405,7 @@ def personUpgradeActor(baseDir: str,personJson: {},handle: str,filename: str) ->
     if not os.path.isfile(filename):
         print('WARN: actor file not found '+filename)
         return
-    if not personJson:        
+    if not personJson:
         personJson=loadJson(filename)
     if not personJson.get('nomadicLocations'):
         personJson['nomadicLocations']=[{
@@ -415,7 +415,7 @@ def personUpgradeActor(baseDir: str,personJson: {},handle: str,filename: str) ->
             'locationPrimary':True,
             'locationDeleted':False
         }]
-        print('Nomadic locations added to to actor '+handle)        
+        print('Nomadic locations added to to actor '+handle)
         updateActor=True
 
     if updateActor:
@@ -450,7 +450,7 @@ def personLookup(domain: str,path: str,baseDir: str) -> {}:
         notPersonLookup=['/inbox','/outbox','/outboxarchive', \
                          '/followers','/following','/featured', \
                          '.png','.jpg','.gif','.mpv']
-        for ending in notPersonLookup:        
+        for ending in notPersonLookup:
             if path.endswith(ending):
                 return None
     nickname=None
@@ -494,7 +494,7 @@ def personBoxJson(recentPostsCache: {}, \
     headerOnly=True
 
     # handle page numbers
-    pageNumber=None    
+    pageNumber=None
     if '?page=' in path:
         pageNumber=path.split('?page=')[1]
         if pageNumber=='true':
@@ -558,7 +558,7 @@ def personInboxJson(recentPostsCache: {}, \
     headerOnly=True
 
     # handle page numbers
-    pageNumber=None    
+    pageNumber=None
     if '?page=' in path:
         pageNumber=path.split('?page=')[1]
         if pageNumber=='true':
@@ -594,7 +594,7 @@ def setDisplayNickname(baseDir: str,nickname: str, domain: str, \
     if not os.path.isfile(filename):
         return False
 
-    personJson=loadJson(filename)            
+    personJson=loadJson(filename)
     if not personJson:
         return False
     personJson['name']=displayName
@@ -616,7 +616,7 @@ def setBio(baseDir: str,nickname: str, domain: str, bio: str) -> bool:
         return False
     personJson['summary']=bio
 
-    saveJson(personJson,filename)        
+    saveJson(personJson,filename)
     return True
 
 def isSuspended(baseDir: str,nickname: str) -> bool:
@@ -672,7 +672,7 @@ def suspendAccount(baseDir: str,nickname: str,domain: str) -> None:
     tokenFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/.token'
     if os.path.isfile(tokenFilename):
         os.remove(tokenFilename)
-    
+
     suspendedFilename=baseDir+'/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, "r") as f:
@@ -746,11 +746,11 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
             for tagline in lines:
                 if matchStr not in tagline:
                     tagFile.write(tagline)
-            tagFile.close()                
+            tagFile.close()
 
 def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
     """Removes an account
-    """    
+    """
     # Don't remove the admin
     adminNickname=getConfigParam(baseDir,'admin')
     if nickname==adminNickname:

@@ -74,4 +74,3 @@ def isFiltered(baseDir: str,nickname: str,domain: str,content: str) -> bool:
                             return False
                     return True
     return False
-

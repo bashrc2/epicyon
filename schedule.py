@@ -147,7 +147,7 @@ def runPostScheduleWatchdog(projectVersion: str,httpd) -> None:
         httpd.thrPostSchedule.clone(runPostSchedule)
     httpd.thrPostSchedule.start()
     while True:
-        time.sleep(20) 
+        time.sleep(20)
         if not httpd.thrPostSchedule.isAlive():
             httpd.thrPostSchedule.kill()
             httpd.thrPostSchedule= \

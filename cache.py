@@ -11,7 +11,7 @@ import time
 import datetime
 from utils import loadJson
 from utils import saveJson
-        
+
 def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {}) -> None:
     """Store an actor in the cache
     """
@@ -41,7 +41,7 @@ def getPersonFromCache(baseDir: str,personUrl: str,personCache: {}) -> {}:
             if personJson:
                 storePersonInCache(baseDir,personUrl,personJson,personCache)
                 loadedFromFile=True
-        
+
     if personCache.get(personUrl):
         if not loadedFromFile:
             # update the timestamp for the last time the actor was retrieved

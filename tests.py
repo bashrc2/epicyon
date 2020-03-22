@@ -383,7 +383,7 @@ def testPostMessageBetweenServers():
     os.mkdir(baseDir+'/.tests')
 
     ocapAlways=False
-    
+
     # create the servers
     aliceDir=baseDir+'/.tests/alice'
     aliceDomain='127.0.0.50'
@@ -432,7 +432,7 @@ def testPostMessageBetweenServers():
     # wait for both servers to be running
     while not (testServerAliceRunning and testServerBobRunning):
         time.sleep(1)
-        
+
     time.sleep(1)
 
     print('\n\n*******************************************************')
@@ -483,7 +483,7 @@ def testPostMessageBetweenServers():
         time.sleep(1)
 
     # Image attachment created
-    assert len([name for name in os.listdir(mediaPath) if os.path.isfile(os.path.join(mediaPath, name))])>0        
+    assert len([name for name in os.listdir(mediaPath) if os.path.isfile(os.path.join(mediaPath, name))])>0
     # inbox item created
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     # queue item removed
@@ -539,7 +539,7 @@ def testPostMessageBetweenServers():
     alicePostJson=loadJson(outboxPostFilename,0)
     if alicePostJson:
         pprint(alicePostJson)
-            
+
     assert 'likes' in open(outboxPostFilename).read()
 
     print('\n\n*******************************************************')
@@ -714,7 +714,7 @@ def testFollowBetweenServers():
 
     queuePath=bobDir+'/accounts/bob@'+bobDomain+'/queue'
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
-    aliceMessageArrived=False    
+    aliceMessageArrived=False
     for i in range(20):
         time.sleep(1)
         if os.path.isdir(inboxPath):
@@ -734,14 +734,14 @@ def testFollowBetweenServers():
     thrBob.kill()
     thrBob.join()
     assert thrBob.isAlive()==False
-    
+
     assert 'alice@'+aliceDomain in open(bobDir+'/accounts/bob@'+bobDomain+'/followers.txt').read()
     assert 'bob@'+bobDomain in open(aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt').read()
 
     # queue item removed
     time.sleep(4)
     assert len([name for name in os.listdir(queuePath) if os.path.isfile(os.path.join(queuePath, name))])==0
-    
+
     os.chdir(baseDir)
     shutil.rmtree(baseDir+'/.tests')
 
@@ -758,7 +758,7 @@ def testFollowersOfPerson():
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
-    os.chdir(baseDir)    
+    os.chdir(baseDir)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
     createPerson(baseDir,'maxboardroom',domain,port,httpPrefix,True,password)
     createPerson(baseDir,'ultrapancake',domain,port,httpPrefix,True,password)
@@ -796,7 +796,7 @@ def testNoOfFollowersOnDomain():
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
-    os.chdir(baseDir)    
+    os.chdir(baseDir)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
     createPerson(baseDir,'maxboardroom',otherdomain,port,httpPrefix,True,password)
     createPerson(baseDir,'ultrapancake',otherdomain,port,httpPrefix,True,password)
@@ -806,7 +806,7 @@ def testNoOfFollowersOnDomain():
     followPerson(baseDir,'drokk',otherdomain,nickname,domain,federationList,False)
     followPerson(baseDir,'sausagedog',otherdomain,nickname,domain,federationList,False)
     followPerson(baseDir,'maxboardroom',otherdomain,nickname,domain,federationList,False)
-    
+
     followerOfPerson(baseDir,nickname,domain,'cucumber','sandwiches.party',federationList,False)
     followerOfPerson(baseDir,nickname,domain,'captainsensible','damned.zone',federationList,False)
     followerOfPerson(baseDir,nickname,domain,'pilchard','zombies.attack',federationList,False)
@@ -820,7 +820,7 @@ def testNoOfFollowersOnDomain():
     unfollowerOfPerson(baseDir,nickname,domain,'sausagedog',otherdomain)
     followersOnOtherDomain=noOfFollowersOnDomain(baseDir,nickname+'@'+domain, otherdomain)
     assert followersOnOtherDomain==2
-    
+
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
@@ -838,7 +838,7 @@ def testGroupFollowers():
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
-    os.chdir(baseDir)    
+    os.chdir(baseDir)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
 
     clearFollowers(baseDir,nickname,domain)
@@ -857,11 +857,11 @@ def testGroupFollowers():
     assert len(grouped['zzz.domain'])==2
     assert len(grouped['wild.domain'])==3
     assert len(grouped['clutterly.domain'])==1
-    
+
     os.chdir(currDir)
     shutil.rmtree(baseDir)
 
-    
+
 def testFollows():
     print('testFollows')
     currDir=os.getcwd()
@@ -875,7 +875,7 @@ def testFollows():
     if os.path.isdir(baseDir):
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
-    os.chdir(baseDir)    
+    os.chdir(baseDir)
     createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
 
     clearFollows(baseDir,nickname,domain)
@@ -937,7 +937,7 @@ def testCreatePerson():
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    
+
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
     assert os.path.isfile(baseDir+'/accounts/passwords')
     deleteAllPosts(baseDir,nickname,domain,'inbox')
@@ -967,7 +967,7 @@ def testDelegateRoles():
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    
+
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nickname,domain,port,httpPrefix,True,password)
     privateKeyPem,publicKeyPem,person,wfEndpoint=createPerson(baseDir,nicknameDelegated,domain,port,httpPrefix,True,'insecure')
 
@@ -982,7 +982,7 @@ def testDelegateRoles():
             'actor': httpPrefix+'://'+domain+'/users/'+nicknameDelegated,
             'object': project+';'+role,
             'to': [],
-            'cc': []            
+            'cc': []
         },
         'to': [],
         'cc': []
@@ -994,7 +994,7 @@ def testDelegateRoles():
 
     assert '"delegator"' in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
     assert '"delegator"' in open(baseDir+'/accounts/'+nicknameDelegated+'@'+domain+'.json').read()
-    
+
     newRoleJson={
         'type': 'Delegate',
         'actor': httpPrefix+'://'+domain+'/users/'+nicknameDelegated,
@@ -1003,7 +1003,7 @@ def testDelegateRoles():
             'actor': httpPrefix+'://'+domain+'/users/'+nickname,
             'object': 'otherproject;otherrole',
             'to': [],
-            'cc': []            
+            'cc': []
         },
         'to': [],
         'cc': []
@@ -1094,7 +1094,7 @@ def testClientToServer():
                         args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
                               ocapAlways,aliceSendThreads),daemon=True)
-    
+
     global thrBob
     if thrBob:
         while thrBob.isAlive():
@@ -1124,7 +1124,7 @@ def testClientToServer():
     print('Bob online: '+str(testServerBobRunning))
 
     time.sleep(1)
-        
+
     print('\n\n*******************************************************')
     print('Alice sends to Bob via c2s')
 
@@ -1162,7 +1162,7 @@ def testClientToServer():
 
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==1
     print(">>> c2s post arrived in Alice's outbox")
-    
+
     for i in range(30):
         if os.path.isdir(inboxPath):
             if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
@@ -1196,7 +1196,7 @@ def testClientToServer():
                                'bob',bobDomain,bobPort, \
                                httpPrefix, \
                                cachedWebfingers,personCache, \
-                               True,__version__)    
+                               True,__version__)
     aliceFollowingFilename=aliceDir+'/accounts/alice@'+aliceDomain+'/following.txt'
     bobFollowersFilename=bobDir+'/accounts/bob@'+bobDomain+'/followers.txt'
     for t in range(10):
@@ -1254,7 +1254,7 @@ def testClientToServer():
                       cachedWebfingers,personCache, \
                       True,__version__)
     for i in range(20):
-        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
+        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2:
                 if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1:
                     break
@@ -1262,7 +1262,7 @@ def testClientToServer():
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
     assert len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==1
     print('Post liked')
-    
+
     print('\n\nBob repeats the post')
     print(str(len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])))
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==2
@@ -1274,7 +1274,7 @@ def testClientToServer():
                           cachedWebfingers, \
                           personCache,True,__version__)
     for i in range(20):
-        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):             
+        if os.path.isdir(outboxPath) and os.path.isdir(inboxPath):
             if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==3:
                 if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])==2:
                     break
@@ -1306,7 +1306,7 @@ def testClientToServer():
     assert validInbox(bobDir,'bob',bobDomain)
     assert validInboxFilenames(bobDir,'bob',bobDomain,aliceDomain,alicePort)
 
-    
+
     print('\n\nAlice unfollows Bob')
     password='alicepass'
     sendUnfollowRequestViaServer(baseDir,sessionAlice, \
@@ -1411,12 +1411,12 @@ def testAddEmoji():
     path=baseDir+'/.tests/emoji'
     if os.path.isdir(path):
         shutil.rmtree(path)
-    os.mkdir(path)    
+    os.mkdir(path)
     baseDir=path
     path=baseDir+'/emoji'
     if os.path.isdir(path):
         shutil.rmtree(path)
-    os.mkdir(path)    
+    os.mkdir(path)
     copytree(baseDirOriginal+'/emoji',baseDir+'/emoji')
     os.chdir(baseDir)
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
@@ -1528,4 +1528,4 @@ def runAllTests():
     testFollows()
     testGroupFollowers()
     testDelegateRoles()
-    print('Tests succeeded\n')        
+    print('Tests succeeded\n')

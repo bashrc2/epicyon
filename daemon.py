@@ -218,7 +218,7 @@ def readFollowList(filename: str) -> None:
     followlist=[]
     if not os.path.isfile(filename):
         return followlist
-    followUsers=open(filename, "r")    
+    followUsers=open(filename, "r")
     for u in followUsers:
         if u not in followlist:
             nickname,domain=parseHandle(u)
@@ -228,7 +228,7 @@ def readFollowList(filename: str) -> None:
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version='HTTP/1.1'        
+    protocol_version='HTTP/1.1'
 
     def _sendReplyToQuestion(self,nickname: str,messageId: str,answer: str) -> None:
         """Sends a reply to a question
@@ -293,7 +293,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('ERROR: unable to post vote to outbox')
         else:
             print('ERROR: unable to create vote')
-    
+
     def _removePostInteractions(self,postJsonObject: {}) -> None:
         """Removes potentially sensitive interactions from a post
         This is the type of thing which would be of interest to marketers
@@ -419,7 +419,7 @@ class PubServer(BaseHTTPRequestHandler):
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
-    
+
     def _set_headers_base(self,fileFormat: str,length: int,cookie: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
@@ -507,7 +507,7 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _503(self) -> None:
         self._httpReturnCode(503,'Service Unavailable')
-            
+
     def _write(self,msg) -> None:
         tries=0
         while tries<5:
@@ -563,7 +563,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/ld+json',len(msg),None)
             self._write(msg)
             print('instance metadata sent')
-            return True            
+            return True
         if self.path.startswith('/api/v1/instance/peers'):
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
@@ -594,14 +594,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             print('instance activity metadata sent')
             return True
-        self._404()            
+        self._404()
         return True
-        
+
     def _nodeinfo(self) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
-            print('DEBUG: nodeinfo '+self.path)        
+            print('DEBUG: nodeinfo '+self.path)
         info=metaDataNodeInfo(self.server.baseDir,self.server.registration,self.server.projectVersion)
         if info:
             msg=json.dumps(info).encode('utf-8')
@@ -617,7 +617,7 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         self._404()
         return True
-    
+
     def _webfinger(self) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
@@ -633,7 +633,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('application/xrd+xml',len(msg),None)
                 self._write(msg)
                 return True
-            self._404()            
+            self._404()
             return True
         if self.path.startswith('/.well-known/nodeinfo'):
             wfResult=webfingerNodeInfo(self.server.httpPrefix,self.server.domainFull)
@@ -648,7 +648,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('application/ld+json',len(msg),None)
                 self._write(msg)
                 return True
-            self._404()            
+            self._404()
             return True
 
         if self.server.debug:
@@ -675,7 +675,7 @@ class PubServer(BaseHTTPRequestHandler):
            path.startswith('/accounts'):
             return False
         return True
-        
+
     def _postToOutbox(self,messageJson: {},version: str,postToNickname=None) -> bool:
         """post is received by the outbox
         Client to server message post
@@ -700,7 +700,7 @@ class PubServer(BaseHTTPRequestHandler):
         accountOutboxThreadName=self.postToNickname
         if not accountOutboxThreadName:
             accountOutboxThreadName='*'
-        
+
         if self.server.outboxThread.get(accountOutboxThreadName):
             print('Waiting for previous outbox thread to end')
             waitCtr=0
@@ -737,7 +737,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.inboxQueue.pop(0)
             timeDiff=str(int((time.time()-cleardownStartTime)*1000))
             print('Inbox cleardown took '+timeDiff+' mS. Removed '+str(removals)+' items.')
-    
+
     def _updateInboxQueue(self,nickname: str,messageJson: {}, \
                           messageBytes: str) -> int:
         """Update the inbox queue
@@ -755,7 +755,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Content-type'):
             headersDict['Content-type']=self.headers['Content-type']
         if self.headers.get('Content-Length'):
-            headersDict['Content-Length']=self.headers['Content-Length']            
+            headersDict['Content-Length']=self.headers['Content-Length']
         elif self.headers.get('content-length'):
             headersDict['content-length']=self.headers['content-length']
 
@@ -763,7 +763,7 @@ class PubServer(BaseHTTPRequestHandler):
         # of the object field
         messageJson,toFieldExists= \
             addToField('Follow',messageJson,self.server.debug)
-        
+
         # For like activities add a 'to' field, which is a copy of
         # the actor within the object field
         messageJson,toFieldExists= \
@@ -814,7 +814,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.path='/users/'+nickname+'/inbox'
                     # check that the path contains the same nickname as the cookie
                     # otherwise it would be possible to be authorized to use
-                    # an account you don't own                    
+                    # an account you don't own
                     if '/'+nickname+'/' in self.path:
                         return True
                     if self.path.endswith('/'+nickname):
@@ -834,7 +834,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return True
             print('AUTH: Basic auth did not authorize '+self.headers['Authorization'])
         return False
-    
+
     def _clearLoginDetails(self,nickname: str):
         """Clears login details for the given account
         """
@@ -934,14 +934,14 @@ class PubServer(BaseHTTPRequestHandler):
             msg=htmlLogin(self.server.translate, \
                           self.server.baseDir,False).encode('utf-8')
             self._logout_headers('text/html',len(msg))
-            self._write(msg)            
+            self._write(msg)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,3)
 
         # replace https://domain/@nick with https://domain/users/nick
         if self.path.startswith('/@'):
-            self.path=self.path.replace('/@','/users/')            
+            self.path=self.path.replace('/@','/users/')
 
         # redirect music to #nowplaying list
         if self.path=='/music' or self.path=='/nowplaying':
@@ -1007,7 +1007,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.server.enableSharedInbox:
                 self._503()
                 return
-                
+
             self.path='/inbox'
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,8)
@@ -1022,7 +1022,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  '@'+self.server.domain):
                     if not self.server.session:
                         self.server.session= \
-                            createSession(self.server.useTor)                
+                            createSession(self.server.useTor)
                     msg= \
                         htmlBlogPageRSS(authorized, \
                                         self.server.session, \
@@ -1039,7 +1039,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         return
                 self._404()
-                return                
+                return
 
         # show the main blog page
         if htmlGET and (self.path=='/blog' or \
@@ -1049,7 +1049,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/rss.xml' not in self.path:
                 if not self.server.session:
                     self.server.session= \
-                        createSession(self.server.useTor)                
+                        createSession(self.server.useTor)
                 msg=htmlBlogView(authorized, \
                                  self.server.session, \
                                  self.server.baseDir, \
@@ -1087,7 +1087,7 @@ class PubServer(BaseHTTPRequestHandler):
                             pageNumber=10
                 if not self.server.session:
                     self.server.session= \
-                        createSession(self.server.useTor)                
+                        createSession(self.server.useTor)
                 msg=htmlBlogPage(authorized, \
                                  self.server.session, \
                                  self.server.baseDir, \
@@ -1104,7 +1104,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 return
 
-        if htmlGET and '/users/' in self.path:            
+        if htmlGET and '/users/' in self.path:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
                 optionsStr=self.path.split('?options=')[1]
@@ -1177,7 +1177,7 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                     self._404()
                     return
-           
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,9)
 
         # remove a shared item
@@ -1192,7 +1192,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      actor,shareName).encode()
             if not msg:
                self._redirect_headers(actor+'/tlshares',cookie)
-               return                
+               return
             self._set_headers('text/html',len(msg),cookie)
             self._write(msg)
             return
@@ -1222,7 +1222,7 @@ class PubServer(BaseHTTPRequestHandler):
         # send robots.txt if asked
         if self._robotsTxt():
             return
-            
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,13)
 
         # if not authorized then show the login screen
@@ -1381,7 +1381,7 @@ class PubServer(BaseHTTPRequestHandler):
                     elif emojiFilename.endswith('.webp'):
                         mediaImageType='webp'
                     else:
-                        mediaImageType='gif'                        
+                        mediaImageType='gif'
                     with open(emojiFilename, 'rb') as avFile:
                         mediaBinary=avFile.read()
                         self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
@@ -1431,7 +1431,7 @@ class PubServer(BaseHTTPRequestHandler):
                         etagHeader='if-none-match'
                         if not self.headers.get(etagHeader):
                             etagHeader='If-none-match'
-                        
+
                     if self.headers.get(etagHeader):
                         oldEtag=self.headers['If-None-Match']
                         if os.path.isfile(mediaFilename+'.etag'):
@@ -1450,7 +1450,7 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaBinary=avFile.read()
                         self._set_headers_etag(mediaFilename,mediaFileType,mediaBinary,cookie)
                         self._write(mediaBinary)
-                    return        
+                    return
             self._404()
             return
 
@@ -1480,7 +1480,7 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaBinary=avFile.read()
                         self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie)
                         self._write(mediaBinary)
-                    return        
+                    return
             self._404()
             return
 
@@ -1497,7 +1497,7 @@ class PubServer(BaseHTTPRequestHandler):
                     mediaBinary=self.server.iconsCache[mediaStr]
                     self._set_headers('image/png',len(mediaBinary),cookie)
                     self._write(mediaBinary)
-                    return        
+                    return
                 else:
                     if os.path.isfile(mediaFilename):
                         with open(mediaFilename, 'rb') as avFile:
@@ -1531,7 +1531,7 @@ class PubServer(BaseHTTPRequestHandler):
                         #self._404()
                         return
                     self._write(mediaBinary)
-                    return        
+                    return
             self._404()
             return
 
@@ -1584,7 +1584,7 @@ class PubServer(BaseHTTPRequestHandler):
             if currTimeGET-self.server.lastGET==0:
                 if self.server.debug:
                     print('DEBUG: GET Busy')
-                self.send_response(429)                    
+                self.send_response(429)
                 self.end_headers()
                 return
             self.server.lastGET=currTimeGET
@@ -1658,7 +1658,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 originPathStr=self.path.split('/tags/')[0]
                 originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
-                self._redirect_headers(originPathStrAbsolute+'/search',cookie)                
+                self._redirect_headers(originPathStrAbsolute+'/search',cookie)
             self.server.GETbusy=False
             return
 
@@ -1770,7 +1770,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
-                    pageNumber=int(pageNumberStr)                
+                    pageNumber=int(pageNumberStr)
             timelineStr='inbox'
             if '?tl=' in self.path:
                 timelineStr=self.path.split('?tl=')[1]
@@ -1781,13 +1781,13 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
-                return                
+                return
             if not self.server.session:
                 self.server.session= \
-                    createSession(self.server.useTor)                
+                    createSession(self.server.useTor)
             self.server.actorRepeat=self.path.split('?actor=')[1]
             announceToStr=self.server.httpPrefix+'://'+self.server.domain+'/users/'+self.postToNickname+'/followers'
             if not repeatPrivate:
@@ -1810,7 +1810,7 @@ class PubServer(BaseHTTPRequestHandler):
             if announceJson:
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
-            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -1839,7 +1839,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
-                    pageNumber=int(pageNumberStr)                
+                    pageNumber=int(pageNumberStr)
             timelineStr='inbox'
             if '?tl=' in self.path:
                 timelineStr=self.path.split('?tl=')[1]
@@ -1850,10 +1850,10 @@ class PubServer(BaseHTTPRequestHandler):
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
-                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+                actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                        str(pageNumber),cookie)
-                return                
+                return
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
@@ -1874,10 +1874,10 @@ class PubServer(BaseHTTPRequestHandler):
                     'to': [unRepeatToStr],
                     'type': 'Announce'
                 }
-            }                
+            }
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
-            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor                
+            actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -1950,7 +1950,7 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber=1
             likeUrl=self.path.split('?like=')[1]
             if '?' in likeUrl:
-                likeUrl=likeUrl.split('?')[0]                
+                likeUrl=likeUrl.split('?')[0]
             timelineBookmark=''
             if '?bm=' in self.path:
                 timelineBookmark=self.path.split('?bm=')[1]
@@ -1969,7 +1969,7 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr=self.path.split('?tl=')[1]
                 if '?' in timelineStr:
                     timelineStr=timelineStr.split('?')[0]
-                
+
             self.postToNickname=getNicknameFromActor(actor)
             if not self.postToNickname:
                 print('WARN: unable to find nickname in '+actor)
@@ -1978,13 +1978,13 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber)+ \
                                        timelineBookmark,cookie)
-                return                
+                return
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
             likeActor= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+'/users/'+self.postToNickname                    
+                self.server.domainFull+'/users/'+self.postToNickname
             actorLiked=self.path.split('?actor=')[1]
             if '?' in actorLiked:
                 actorLiked=actorLiked.split('?')[0]
@@ -1994,7 +1994,7 @@ class PubServer(BaseHTTPRequestHandler):
                 'actor': likeActor,
                 'to': [actorLiked],
                 'object': likeUrl
-            }    
+            }
             self._postToOutbox(likeJson,self.server.projectVersion)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
@@ -2036,7 +2036,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
-                return                
+                return
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
@@ -2073,7 +2073,7 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber=1
             bookmarkUrl=self.path.split('?bookmark=')[1]
             if '?' in bookmarkUrl:
-                bookmarkUrl=bookmarkUrl.split('?')[0]                
+                bookmarkUrl=bookmarkUrl.split('?')[0]
             timelineBookmark=''
             if '?bm=' in self.path:
                 timelineBookmark=self.path.split('?bm=')[1]
@@ -2100,20 +2100,20 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
-                return                
+                return
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
             bookmarkActor= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+'/users/'+self.postToNickname                    
+                self.server.domainFull+'/users/'+self.postToNickname
             bookmarkJson= {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'type': 'Bookmark',
                 'actor': bookmarkActor,
                 'to': [bookmarkActor],
                 'object': bookmarkUrl
-            }    
+            }
             self._postToOutbox(bookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
@@ -2153,7 +2153,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
-                return                
+                return
             if not self.server.session:
                 self.server.session= \
                     createSession(self.server.useTor)
@@ -2187,12 +2187,12 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber=1
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
-                if '?' in pageNumberStr:                
+                if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
             deleteUrl=self.path.split('?delete=')[1]
-            if '?' in deleteUrl:                
+            if '?' in deleteUrl:
                 deleteUrl=deleteUrl.split('?')[0]
             timelineStr=self.server.defaultTimeline
             if '?tl=' in self.path:
@@ -2217,7 +2217,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+actor)
                     self.server.GETbusy=False
                     self._redirect_headers(actor+'/'+timelineStr,cookie)
-                    return                    
+                    return
                 if not self.server.session:
                     self.server.session= \
                         createSession(self.server.useTor)
@@ -2244,12 +2244,12 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber=1
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
-                if '?' in pageNumberStr:                
+                if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
             muteUrl=self.path.split('?mute=')[1]
-            if '?' in muteUrl:                
+            if '?' in muteUrl:
                 muteUrl=muteUrl.split('?')[0]
             timelineBookmark=''
             if '?bm=' in self.path:
@@ -2277,12 +2277,12 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber=1
             if '?page=' in self.path:
                 pageNumberStr=self.path.split('?page=')[1]
-                if '?' in pageNumberStr:                
+                if '?' in pageNumberStr:
                     pageNumberStr=pageNumberStr.split('?')[0]
                 if pageNumberStr.isdigit():
                     pageNumber=int(pageNumberStr)
             muteUrl=self.path.split('?unmute=')[1]
-            if '?' in muteUrl:                
+            if '?' in muteUrl:
                 muteUrl=muteUrl.split('?')[0]
             timelineBookmark=''
             if '?bm=' in self.path:
@@ -2461,7 +2461,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if len(postSections)==2:
                     nickname=postSections[0]
                     statusNumber=postSections[1]
-                    if len(statusNumber)>10 and statusNumber.isdigit():                        
+                    if len(statusNumber)>10 and statusNumber.isdigit():
                         postFilename= \
                             self.server.baseDir+'/accounts/'+nickname+'@'+ \
                             self.server.domain+'/outbox/'+ \
@@ -2475,7 +2475,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 loadedPost=True
                             else:
                                 postJsonObject={}
-                            if loadedPost:                            
+                            if loadedPost:
                                 # Only authorized viewers get to see likes on posts
                                 # Otherwize marketers could gain more social graph info
                                 if not authorized:
@@ -2493,7 +2493,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                            authorized,postJsonObject, \
                                                            self.server.httpPrefix, \
                                                            self.server.projectVersion).encode('utf-8')
-                                    self._set_headers('text/html',len(msg),cookie)                    
+                                    self._set_headers('text/html',len(msg),cookie)
                                     self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
@@ -2634,7 +2634,7 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
                     actorJson=loadJson(actorFilename)
-                    if actorJson:                    
+                    if actorJson:
                         if actorJson.get('roles'):
                             if self._requestHTTP():
                                 getPerson= \
@@ -2680,7 +2680,7 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname+'@'+self.server.domain+'.json'
                 if os.path.isfile(actorFilename):
                     actorJson=loadJson(actorFilename)
-                    if actorJson:                    
+                    if actorJson:
                         if actorJson.get('skills'):
                             if self._requestHTTP():
                                 getPerson= \
@@ -2806,7 +2806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if pageNumber.isdigit():
                                     pageNumber=int(pageNumber)
                                 else:
-                                    pageNumber=1                                
+                                    pageNumber=1
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 inboxFeed= \
@@ -2885,7 +2885,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if pageNumber.isdigit():
                                     pageNumber=int(pageNumber)
                                 else:
-                                    pageNumber=1                                
+                                    pageNumber=1
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 inboxDMFeed= \
@@ -3243,7 +3243,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if pageNumber.isdigit():
                                     pageNumber=int(pageNumber)
                                 else:
-                                    pageNumber=1                                
+                                    pageNumber=1
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 bookmarksFeed= \
@@ -3387,7 +3387,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 if pageNumber.isdigit():
                                     pageNumber=int(pageNumber)
                                 else:
-                                    pageNumber=1                                
+                                    pageNumber=1
                             if 'page=' not in self.path:
                                 # if no page was specified then show the first
                                 moderationFeed= \
@@ -3437,7 +3437,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.GETbusy=False
             return
-        
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,49)
 
         shares= \
@@ -3680,7 +3680,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: Unauthenticated GET')
             self._404()
             return
-        
+
         self._benchmarkGETtimings(GETstartTime,GETtimings,54)
 
         # check that the file exists
@@ -3802,7 +3802,7 @@ class PubServer(BaseHTTPRequestHandler):
             filenameBase= \
                 self.server.baseDir+'/accounts/'+ \
                 nickname+'@'+self.server.domain+'/upload.temp'
-                    
+
             filename,attachmentMediaType= \
                 saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
             if self.server.debug:
@@ -3902,7 +3902,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.debug)
                         return 1
                     else:
-                        return -1            
+                        return -1
             elif postType=='newblog':
                 messageJson= \
                     createBlogPost(self.server.baseDir,nickname, \
@@ -3928,7 +3928,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.debug)
                         return 1
                     else:
-                        return -1            
+                        return -1
             elif postType=='editblogpost':
                 print('Edited blog post received')
                 postFilename= \
@@ -3971,7 +3971,7 @@ class PubServer(BaseHTTPRequestHandler):
                         # get list of tags
                         fields['message']= \
                             replaceEmojiFromTags(fields['message'],tags,'content')
-                        
+
                         postJsonObject['object']['content']=fields['message']
 
                         imgDescription=''
@@ -3998,7 +3998,7 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Edited blog post, unable to load json for '+postFilename)
                 else:
                     print('Edited blog post not found '+str(fields['postUrl']))
-                return -1            
+                return -1
             elif postType=='newunlisted':
                 messageJson= \
                     createUnlistedPost(self.server.baseDir, \
@@ -4071,7 +4071,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 True,fields['schedulePost'], \
                                                 fields['eventDate'], \
                                                 fields['eventTime'], \
-                                                fields['location'])                    
+                                                fields['location'])
                 if messageJson:
                     if fields['schedulePost']:
                         return 1
@@ -4246,20 +4246,20 @@ class PubServer(BaseHTTPRequestHandler):
                     boundary=boundary.split(';')[0]
 
                 postBytes=self.rfile.read(length)
-            
+
                 # second length check from the bytes received
                 # since Content-Length could be untruthful
                 length=len(postBytes)
                 if length>self.server.maxPostLength:
                     print('POST size too large')
                     return None
-            
+
                 # Note sending new posts needs to be synchronous, otherwise any attachments
                 # can get mangled if other events happen during their decoding
                 print('Creating new post from: '+newPostThreadName)
                 self._receiveNewPostProcess(authorized,postType,path,headers,length,postBytes,boundary)
         return pageNumber
-        
+
     def do_POST(self):
         POSTstartTime=time.time()
         POSTtimings=[]
@@ -4278,9 +4278,9 @@ class PubServer(BaseHTTPRequestHandler):
             if currTimePOST-self.server.lastPOST==0:
                 self.send_response(429)
                 self.end_headers()
-                return              
+                return
             self.server.lastPOST=currTimePOST
-            
+
         self.server.POSTbusy=True
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
@@ -4317,7 +4317,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.postToNickname=None
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,1)
-        
+
         if self.path.startswith('/login'):
             # get the contents of POST containing login credentials
             length=int(self.headers['Content-length'])
@@ -4326,7 +4326,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(401)
                 self.end_headers()
                 self.server.POSTbusy=False
-                return                
+                return
             loginParams=self.rfile.read(length).decode('utf-8')
             loginNickname,loginPassword,register= \
                 htmlGetLoginCredentials(loginParams,self.server.lastLoginTime)
@@ -4354,7 +4354,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        return                 
+                        return
                     # login success - redirect with authorization
                     print('Login success: '+loginNickname)
                     self.send_response(303)
@@ -4576,7 +4576,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if currentMatrixAddress:
                                 setMatrixAddress(actorJson,'')
-                                actorChanged=True                                
+                                actorChanged=True
                         currentSSBAddress=getSSBAddress(actorJson)
                         if fields.get('ssbAddress'):
                             if fields['ssbAddress']!=currentSSBAddress:
@@ -4690,7 +4690,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             setRole(self.server.baseDir, \
                                                     modNick,self.server.domain, \
                                                     'instance','moderator')
-                                        
+
                         if fields.get('removeScheduledPosts'):
                             if fields['removeScheduledPosts']=='on':
                                 removeScheduledPosts(self.server.baseDir,nickname,self.server.domain)
@@ -4754,7 +4754,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     removeTwitterFile.write('\n')
                         if not removeTwitterActive:
                             if os.path.isfile(removeTwitterFilename):
-                                os.remove(removeTwitterFilename)                                
+                                os.remove(removeTwitterFilename)
                         # this account is a bot
                         if fields.get('isBot'):
                             if fields['isBot']=='on':
@@ -4876,7 +4876,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._login_headers('text/html',len(msg))
                         self._write(msg)
                         self.server.POSTbusy=False
-                        return                        
+                        return
                     elif moderationStr.startswith('submitBlock'):
                         moderationButton='block'
                     elif moderationStr.startswith('submitUnblock'):
@@ -4943,7 +4943,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.domain, \
                                           self.server.port)
                         else:
-                            # remove a post or thread                            
+                            # remove a post or thread
                             postFilename= \
                                 locatePost(self.server.baseDir, \
                                            nickname,self.server.domain, \
@@ -4953,7 +4953,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                  nickname, \
                                                  self.server.domain, \
                                                  self.server.port, \
-                                                 moderationText):                                
+                                                 moderationText):
                                     deletePost(self.server.baseDir, \
                                                self.server.httpPrefix, \
                                                nickname,self.server.domain, \
@@ -5014,7 +5014,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._redirect_headers(actor+'/'+self.server.defaultTimeline+ \
                                    '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
-            return                
+            return
 
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,6)
 
@@ -5040,7 +5040,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # go back on search screen
                 self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
                 self.server.POSTbusy=False
-                return                
+                return
             if 'searchtext=' in searchParams:
                 searchStr=searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
@@ -5052,7 +5052,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('searchStr: '+searchStr)
                 if searchForEmoji:
                     searchStr=':'+searchStr+':'
-                if searchStr.startswith('#'):      
+                if searchStr.startswith('#'):
                     nickname=getNicknameFromActor(actorStr)
                     # hashtag search
                     hashtagStr= \
@@ -5073,7 +5073,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
-                elif searchStr.startswith('*'):      
+                elif searchStr.startswith('*'):
                     # skill search
                     searchStr=searchStr.replace('*','').strip()
                     skillStr= \
@@ -5119,7 +5119,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         self._redirect_headers(actorStr+'/search',cookie)
                         self.server.POSTbusy=False
-                        return                        
+                        return
                 elif searchStr.startswith(':') or \
                      searchStr.lower().strip('\n').endswith(' emoji'):
                     # eg. "cat emoji"
@@ -5362,7 +5362,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                return                
+                return
             length=int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
@@ -5375,7 +5375,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
-                    return                    
+                    return
                 blockingDomain,blockingPort=getDomainFromActor(blockingActor)
                 blockingDomainFull=blockingDomain
                 if blockingPort:
@@ -5409,7 +5409,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                return                
+                return
             length=int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
@@ -5422,7 +5422,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
-                    return                    
+                    return
                 blockingDomain,blockingPort= \
                     getDomainFromActor(blockingActor)
                 blockingDomainFull=blockingDomain
@@ -5461,7 +5461,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                return                
+                return
             length=int(self.headers['Content-length'])
             optionsConfirmParams= \
                 self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
@@ -5486,13 +5486,13 @@ class PubServer(BaseHTTPRequestHandler):
                 postUrl=optionsConfirmParams.split('postUrl=')[1]
                 if '&' in postUrl:
                     postUrl=postUrl.split('&')[0]
-                
+
             optionsNickname=getNicknameFromActor(optionsActor)
             if not optionsNickname:
                 print('WARN: unable to find nickname in '+optionsActor)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
-                return                
+                return
             optionsDomain,optionsPort=getDomainFromActor(optionsActor)
             optionsDomainFull=optionsDomain
             if optionsPort:
@@ -5568,7 +5568,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                return            
+                return
             if '&submitSnooze=' in optionsConfirmParams:
                 thisActor= \
                     self.server.httpPrefix+'://'+self.server.domainFull+ \
@@ -5610,7 +5610,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._set_headers('text/html',len(msg),cookie)
                 self._write(msg)
                 self.server.POSTbusy=False
-                return            
+                return
 
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
@@ -5700,13 +5700,13 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
-                return            
+                return
             pathUsersSection=self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
                 self.send_response(404)
                 self.end_headers()
                 self.server.POSTbusy=False
-                return                
+                return
             self.postFromNickname=pathUsersSection.split('/')[0]
             accountsDir= \
                 self.server.baseDir+'/accounts/'+ \
@@ -5715,7 +5715,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.send_response(404)
                 self.end_headers()
                 self.server.POSTbusy=False
-                return                
+                return
             mediaBytes=self.rfile.read(length)
             mediaFilenameBase=accountsDir+'/upload'
             mediaFilename=mediaFilenameBase+'.png'
@@ -5732,7 +5732,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_response(201)
             self.end_headers()
             self.server.POSTbusy=False
-            return            
+            return
 
         # refuse to receive non-json content
         if self.headers['Content-type'] != 'application/json' and \
@@ -5782,12 +5782,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         # convert the raw bytes to json
         messageJson=json.loads(messageBytes)
-            
+
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,19)
 
         # https://www.w3.org/TR/activitypub/#object-without-create
         if self.outboxAuthenticated:
-            if self._postToOutbox(messageJson,__version__):                
+            if self._postToOutbox(messageJson,__version__):
                 if messageJson.get('id'):
                     self.headers['Location']= \
                         messageJson['id'].replace('/activity','').replace('/undo','')
@@ -5842,7 +5842,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy=False
             return
-        
+
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,23)
 
         if self.server.debug:
@@ -5891,7 +5891,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.send_response(503)
                     self.end_headers()
                     self.server.POSTbusy=False
-                    return                    
+                    return
         self.send_response(200)
         self.end_headers()
         self.server.POSTbusy=False
@@ -5920,7 +5920,7 @@ def runPostsWatchdog(projectVersion: str,httpd) -> None:
     postsQueueOriginal=httpd.thrPostsQueue.clone(runPostsQueue)
     httpd.thrPostsQueue.start()
     while True:
-        time.sleep(20) 
+        time.sleep(20)
         if not httpd.thrPostsQueue.isAlive():
             httpd.thrPostsQueue.kill()
             httpd.thrPostsQueue=postsQueueOriginal.clone(runPostsQueue)
@@ -5934,7 +5934,7 @@ def runSharesExpireWatchdog(projectVersion: str,httpd) -> None:
     sharesExpireOriginal=httpd.thrSharesExpire.clone(runSharesExpire)
     httpd.thrSharesExpire.start()
     while True:
-        time.sleep(20) 
+        time.sleep(20)
         if not httpd.thrSharesExpire.isAlive():
             httpd.thrSharesExpire.kill()
             httpd.thrSharesExpire=sharesExpireOriginal.clone(runSharesExpire)
@@ -5983,7 +5983,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
             print('Invalid domain: ' + domain)
             return
 
-    if unitTest: 
+    if unitTest:
         serverAddress=(domain, proxyPort)
         pubHandler=partial(PubServerUnitTest)
     else:
@@ -5996,7 +5996,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
         if e.errno==98:
             print('ERROR: HTTP server address is already in use. '+str(serverAddress))
             return False
-            
+
         print('ERROR: HTTP server failed to start. '+str(e))
         return False
 
@@ -6022,7 +6022,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
         else:
             systemLanguage=language
         if not systemLanguage:
-            systemLanguage='en'            
+            systemLanguage='en'
         if '_' in systemLanguage:
             systemLanguage=systemLanguage.split('_')[0]
         while '/' in systemLanguage:
@@ -6121,7 +6121,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
     if not os.path.isdir(archiveDir):
         print('Creating archive')
         os.mkdir(archiveDir)
-        
+
     print('Creating cache expiry thread')
     httpd.thrCache= \
         threadWithTrace(target=expireCache, \
@@ -6135,10 +6135,10 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
     httpd.thrPostsQueue= \
         threadWithTrace(target=runPostsQueue, \
                         args=(baseDir,httpd.sendThreads,debug),daemon=True)
-    if not unitTest: 
+    if not unitTest:
         httpd.thrPostsWatchdog= \
             threadWithTrace(target=runPostsWatchdog, \
-                            args=(projectVersion,httpd),daemon=True)        
+                            args=(projectVersion,httpd),daemon=True)
         httpd.thrPostsWatchdog.start()
     else:
         httpd.thrPostsQueue.start()
@@ -6147,10 +6147,10 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
     httpd.thrSharesExpire= \
         threadWithTrace(target=runSharesExpire, \
                         args=(__version__,baseDir),daemon=True)
-    if not unitTest: 
+    if not unitTest:
         httpd.thrSharesExpireWatchdog= \
             threadWithTrace(target=runSharesExpireWatchdog, \
-                            args=(projectVersion,httpd),daemon=True)        
+                            args=(projectVersion,httpd),daemon=True)
         httpd.thrSharesExpireWatchdog.start()
     else:
         httpd.thrSharesExpire.start()
@@ -6177,18 +6177,18 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
     print('Creating scheduled post thread')
     httpd.thrPostSchedule= \
         threadWithTrace(target=runPostSchedule, \
-                        args=(baseDir,httpd,20),daemon=True)    
-    if not unitTest: 
+                        args=(baseDir,httpd,20),daemon=True)
+    if not unitTest:
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog= \
             threadWithTrace(target=runInboxQueueWatchdog, \
-                            args=(projectVersion,httpd),daemon=True)        
+                            args=(projectVersion,httpd),daemon=True)
         httpd.thrWatchdog.start()
 
         print('Creating scheduled post watchdog')
         httpd.thrWatchdogSchedule= \
             threadWithTrace(target=runPostScheduleWatchdog, \
-                            args=(projectVersion,httpd),daemon=True)        
+                            args=(projectVersion,httpd),daemon=True)
         httpd.thrWatchdogSchedule.start()
     else:
         httpd.thrInboxQueue.start()

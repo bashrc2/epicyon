@@ -27,7 +27,7 @@ def clearModeratorStatus(baseDir: str) -> None:
     for f in os.scandir(directory):
         f=f.name
         filename=os.fsdecode(f)
-        if filename.endswith(".json") and '@' in filename: 
+        if filename.endswith(".json") and '@' in filename:
             filename=os.path.join(baseDir+'/accounts/', filename)
             if '"moderator"' in open(filename).read():
                 actorJson=loadJson(filename)
@@ -62,7 +62,7 @@ def addModerator(baseDir: str,nickname: str,domain: str) -> None:
         with open(moderatorsFile, "w+") as f:
             if os.path.isdir(baseDir+'/accounts/'+nickname+'@'+domain):
                 f.write(nickname+'\n')
-        
+
 def removeModerator(baseDir: str,nickname: str):
     """Removes a moderator nickname from the file
     """
@@ -90,7 +90,7 @@ def setRole(baseDir: str,nickname: str,domain: str, \
         return False
 
     actorJson=loadJson(actorFilename)
-    if actorJson:        
+    if actorJson:
         if role:
             # add the role
             if project=='instance' and 'role'=='moderator':
@@ -196,13 +196,13 @@ def outboxDelegate(baseDir: str,authenticatedNickname: str,messageJson: {},debug
     if not role:
         setRole(baseDir,nickname,domain,project,None)
         return True
-        
+
     # what roles is this person already assigned to?
     existingRoles=getRoles(baseDir,nickname,domain,project)
     if existingRoles:
         if role in existingRoles:
             if debug:
-                print(nickname+'@'+domain+' is already assigned to the role '+role+' within the project '+project)            
+                print(nickname+'@'+domain+' is already assigned to the role '+role+' within the project '+project)
             return False
     setRole(baseDir,nickname,domain,project,role)
     if debug:
@@ -228,7 +228,7 @@ def sendRoleViaServer(baseDir: str,session, \
         if fromPort!=80 and fromPort!=443:
             if ':' not in delegatorDomain:
                 delegatorDomainFull=delegatorDomain+':'+str(fromPort)
-        
+
     toUrl= \
         httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname
     ccUrl= \
@@ -247,7 +247,7 @@ def sendRoleViaServer(baseDir: str,session, \
             'actor': httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname,
             'object': roleStr,
             'to': [toUrl],
-            'cc': [ccUrl]            
+            'cc': [ccUrl]
         },
         'to': [toUrl],
         'cc': [ccUrl]
@@ -270,7 +270,7 @@ def sendRoleViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      delegatorNickname,delegatorDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -279,9 +279,9 @@ def sendRoleViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(delegatorNickname,password)
-     
+
     headers={
         'host': delegatorDomain, \
         'Content-type': 'application/json', \

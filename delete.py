@@ -80,7 +80,7 @@ def createDelete(session,baseDir: str,federationList: [], \
                        'https://www.w3.org/ns/activitystreams#Public', \
                        httpPrefix,True,clientToServer,federationList, \
                        sendThreads,postLog,cachedWebfingers,personCache,debug)
-        
+
     return newDelete
 
 def sendDeleteViaServer(baseDir: str,session, \
@@ -131,7 +131,7 @@ def sendDeleteViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -140,9 +140,9 @@ def sendDeleteViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -257,14 +257,14 @@ def outboxDelete(baseDir: str,httpPrefix: str, \
     if deleteNickname!=nickname:
         if debug:
             print("DEBUG: you can't delete a post which wasn't created by you (nickname does not match)")
-        return        
+        return
     deleteDomain,deletePort=getDomainFromActor(messageId)
     if ':' in domain:
         domain=domain.split(':')[0]
     if deleteDomain!=domain:
         if debug:
             print("DEBUG: you can't delete a post which wasn't created by you (domain does not match)")
-        return        
+        return
     removeModerationPostFromIndex(baseDir,messageId,debug)
     postFilename=locatePost(baseDir,deleteNickname,deleteDomain,messageId)
     if not postFilename:

@@ -59,7 +59,7 @@ def postJson(session,postJsonObject: {},federationList: [], \
     """
 
     # always allow capability requests
-    if not capability.startswith('cap'):    
+    if not capability.startswith('cap'):
         # check that we are posting to a permitted domain
         if not urlPermitted(inboxUrl,federationList,capability):
             print('postJson: '+inboxUrl+' not permitted')
@@ -88,7 +88,7 @@ def postJsonString(session,postJsonStr: str, \
     """
 
     # always allow capability requests
-    if not capability.startswith('cap'):    
+    if not capability.startswith('cap'):
         # check that we are posting to a permitted domain
         if not urlPermitted(inboxUrl,federationList,capability):
             print('postJson: '+inboxUrl+' not permitted by capabilities')
@@ -118,7 +118,7 @@ def postImage(session,attachImageFilename: str,federationList: [], \
     Supplying a capability, such as "inbox:write"
     """
     # always allow capability requests
-    if not capability.startswith('cap'):    
+    if not capability.startswith('cap'):
         # check that we are posting to a permitted domain
         if not urlPermitted(inboxUrl,federationList,capability):
             print('postJson: '+inboxUrl+' not permitted')

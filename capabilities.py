@@ -82,7 +82,7 @@ def CapablePost(postJson: {}, capabilityList: [], debug :bool) -> bool:
                         if 'inbox:cw' in capabilityList:
                             if debug:
                                 print('DEBUG: inbox post rejected because inbox:cw, summary missing')
-                            return False                        
+                            return False
     if 'inbox:write' in capabilityList:
         return True
     return True
@@ -102,7 +102,7 @@ def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
         "actor": requestedActor
     }
     return ocapRequest
- 
+
 def capabilitiesAccept(baseDir: str,httpPrefix: str, \
                        nickname: str,domain: str, port: int, \
                        acceptedActor: str, saveToFile: bool, \
@@ -119,7 +119,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
         if port!=80 and port !=443:
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
-    
+
     # make directories to store capabilities
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,acceptedActor,'accept')
     if not ocapFilename:
@@ -129,14 +129,14 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
     # if the capability already exists then load it from file
     if os.path.isfile(ocapFilename):
         ocapAccept=loadJson(ocapFilename)
-    # otherwise create a new capability    
+    # otherwise create a new capability
     if not ocapAccept:
         acceptedActorNickname=getNicknameFromActor(acceptedActor)
         if not acceptedActorNickname:
             print('WARN: unable to find nickname in '+acceptedActor)
             return None
         acceptedActorDomain,acceptedActorPort=getDomainFromActor(acceptedActor)
-        if acceptedActorPort:            
+        if acceptedActorPort:
             ocapId=acceptedActorNickname+'@'+acceptedActorDomain+':'+str(acceptedActorPort)+'#'+createPassword(32)
         else:
             ocapId=acceptedActorNickname+'@'+acceptedActorDomain+'#'+createPassword(32)
@@ -185,7 +185,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
         if port!=80 and port !=443:
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
-    
+
     # Get the filename of the capability
     ocapFilename=getOcapFilename(baseDir,nickname,fullDomain,updateActor,'accept')
     if not ocapFilename:

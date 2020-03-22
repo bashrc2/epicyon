@@ -92,7 +92,7 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
 
         htmlClass='emoji'
         if messageType=='post header':
-            htmlClass='emojiheader'            
+            htmlClass='emojiheader'
         if messageType=='profile':
             htmlClass='emojiprofile'
         emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
@@ -298,7 +298,7 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
             return True
     # @nick@domain
     if not (possibleDomain=='localhost' or '.' in possibleDomain):
-        return False        
+        return False
     recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
     if recipientActor not in recipients:
         recipients.append(recipientActor)
@@ -389,7 +389,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     content=content.replace('\n',' --linebreak-- ')
     content=addMusicTag(content,'nowplaying')
     words=content.replace(',',' ').replace(';',' ').split(' ')
-    
+
     # remove . for words which are not mentions
     wordCtr=0
     newWords=[]
@@ -461,7 +461,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
         content=removeLongWords(content,maxWordLength,longWordsList)
     content=content.replace(' --linebreak-- ','</p><p>')
     return '<p>'+content+'</p>'
-                
+
 def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
     """Extracts mentioned actors from the given html content string
     """
@@ -521,7 +521,7 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
     mediaLocation=-1
     searchStr=''
     filename=None
-    
+
     # directly search the binary array for the beginning
     # of an image
     extensionList= {
@@ -579,7 +579,7 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
 def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
-    """    
+    """
     msg=email.parser.BytesParser().parsebytes(postBytes)
     if debug:
         print('DEBUG: POST arriving '+msg.get_payload(decode=True).decode('utf-8'))
@@ -590,7 +590,7 @@ def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:
         if f=='--':
             continue
         if ' name="' not in f:
-            continue                    
+            continue
         postStr=f.split(' name="',1)[1]
         if '"' not in postStr:
             continue
@@ -600,7 +600,7 @@ def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:
             continue
         if '\r\n' not in postValueStr:
             continue
-        postLines=postValueStr.split('\r\n')                                    
+        postLines=postValueStr.split('\r\n')
         postValue=''
         if len(postLines)>2:
             for line in range(2,len(postLines)-1):

@@ -78,7 +78,7 @@ def undoAnnounceCollectionEntry(recentPostsCache: {}, \
                                 baseDir: str,postFilename: str, \
                                 actor: str,domain: str,debug: bool) -> None:
     """Undoes an announce for a particular actor by removing it from
-    the "shares" collection within a post. Note that the "shares" 
+    the "shares" collection within a post. Note that the "shares"
     collection has no relation to shared items in shares.py. It's
     shares of posts, not shares of physical objects.
     """
@@ -169,7 +169,7 @@ def updateAnnounceCollection(recentPostsCache: {}, \
                 "totalItems": 1,
                 'items': [{
                     'type': 'Announce',
-                    'actor': actor                    
+                    'actor': actor
                 }]
             }
             postJsonObject['object']['shares']=announcementsJson
@@ -274,7 +274,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
                        httpPrefix,True,clientToServer,federationList, \
                        sendThreads,postLog,cachedWebfingers,personCache, \
                        debug,projectVersion)
-            
+
     return newAnnounce
 
 def announcePublic(session,baseDir: str,federationList: [], \
@@ -386,7 +386,7 @@ def undoAnnounce(session,baseDir: str,federationList: [], \
                        'https://www.w3.org/ns/activitystreams#Public', \
                        httpPrefix,True,clientToServer,federationList, \
                        sendThreads,postLog,cachedWebfingers,personCache,debug)
-            
+
     return newUndoAnnounce
 
 def undoAnnouncePublic(session,baseDir: str,federationList: [], \
@@ -495,7 +495,7 @@ def sendAnnounceViaServer(baseDir: str,session, \
     inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname,fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -504,9 +504,9 @@ def sendAnnounceViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \

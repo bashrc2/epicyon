@@ -79,7 +79,7 @@ def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
         return
     if not isinstance(postJsonObject['object']['tag'], list):
         return
-    tagsDir=baseDir+'/tags'    
+    tagsDir=baseDir+'/tags'
     for tag in postJsonObject['object']['tag']:
         if not tag.get('type'):
             continue
@@ -149,7 +149,7 @@ def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
             if 'postNickname' in open(filename).read():
                 print('queue file incorrectly saved to '+filename)
                 return False
-    return True    
+    return True
 
 def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
                         expectedDomain: str,expectedPort: int) -> bool:
@@ -172,7 +172,7 @@ def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
                 print('Expected: '+expectedStr)
                 print('Invalid filename: '+filename)
                 return False
-    return True    
+    return True
 
 def getPersonPubKey(baseDir: str,session,personUrl: str, \
                     personCache: {},debug: bool, \
@@ -184,7 +184,7 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
     if personUrl.endswith('/users/inbox'):
         if debug:
             print('DEBUG: Obtaining public key for shared inbox')
-        personUrl=personUrl.replace('/users/inbox','/inbox')        
+        personUrl=personUrl.replace('/users/inbox','/inbox')
     personJson=getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         if debug:
@@ -345,9 +345,9 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
             postId=actor+'/statuses/'+statusNumber
         else:
             postId=httpPrefix+'://'+originalDomain+'/users/'+nickname+'/statuses/'+statusNumber
-    
+
     # NOTE: don't change postJsonObject['id'] before signature check
-    
+
     inboxQueueDir=createInboxQueueDir(nickname,domain,baseDir)
 
     handle=nickname+'@'+domain
@@ -418,7 +418,7 @@ def inboxCheckCapabilities(baseDir :str,nickname :str,domain :str, \
         return False
 
     oc=loadJson(ocapFilename)
-    if not oc: 
+    if not oc:
         return False
 
     if not oc.get('id'):
@@ -533,7 +533,7 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{}, \
 
     actor=postJsonObject['actor']
     # first get any specific people which the post is addressed to
-    
+
     followerRecipients=False
     if postJsonObject.get('object'):
         if isinstance(postJsonObject['object'], dict):
@@ -649,7 +649,7 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if portFollower!=80 and portFollower!=443:
             if ':' not in domainFollower:
                 domainFollowerFull=domainFollower+':'+str(portFollower)
-    
+
     nicknameFollowing=getNicknameFromActor(messageJson['object']['object'])
     if not nicknameFollowing:
         print('WARN: unable to find nickname in '+messageJson['object']['object'])
@@ -668,7 +668,7 @@ def receiveUndoFollow(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: Follower '+nicknameFollower+'@'+domainFollowerFull+' was removed')
         return True
-    
+
     if debug:
         print('DEBUG: Follower '+nicknameFollower+'@'+domainFollowerFull+' was not removed')
     return False
@@ -693,7 +693,7 @@ def receiveUndo(session,baseDir: str,httpPrefix: str, \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor')            
+            print('DEBUG: "users" or "profile" missing from actor')
         return False
     if not messageJson.get('object'):
         if debug:
@@ -755,11 +755,11 @@ def personReceiveUpdate(baseDir: str, \
         return False
     if not personJson.get('publicKey'):
         if debug:
-            print('DEBUG: actor update does not contain a public key')        
+            print('DEBUG: actor update does not contain a public key')
         return False
     if not personJson['publicKey'].get('publicKeyPem'):
         if debug:
-            print('DEBUG: actor update does not contain a public key Pem')        
+            print('DEBUG: actor update does not contain a public key Pem')
         return False
     actorFilename=baseDir+'/cache/actors/'+personJson['id'].replace('/','#')+'.json'
     # check that the public keys match.
@@ -824,7 +824,7 @@ def receiveUpdateToQuestion(recentPostsCache: {},messageJson: {}, \
             os.remove(cachedPostFilename)
     # remove from memory cache
     removePostFromCache(messageJson,recentPostsCache)
-                            
+
 def receiveUpdate(recentPostsCache: {},session,baseDir: str, \
                   httpPrefix: str,domain :str,port: int, \
                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
@@ -878,7 +878,7 @@ def receiveUpdate(recentPostsCache: {},session,baseDir: str, \
                     if debug:
                         print('DEBUG: Unwrapped profile update was received for '+messageJson['url'])
                         return True
-    
+
     if messageJson['object']['type']=='Person' or \
        messageJson['object']['type']=='Application' or \
        messageJson['object']['type']=='Group' or \
@@ -1056,11 +1056,11 @@ def receiveBookmark(recentPostsCache: {}, \
     if domain not in handle.split('@')[1]:
         if debug:
             print('DEBUG: unrecognized domain '+handle)
-        return False        
+        return False
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)            
+            domainFull=domain+':'+str(port)
     nickname=handle.split('@')[0]
     if not messageJson['actor'].endswith(domainFull+'/users/'+nickname):
         if debug:
@@ -1121,12 +1121,12 @@ def receiveUndoBookmark(recentPostsCache: {}, \
     domainFull=domain
     if port:
         if port!=80 and port!=443:
-            domainFull=domain+':'+str(port)            
+            domainFull=domain+':'+str(port)
     nickname=handle.split('@')[0]
     if domain not in handle.split('@')[1]:
         if debug:
             print('DEBUG: unrecognized bookmark domain '+handle)
-        return False        
+        return False
     if not messageJson['actor'].endswith(domainFull+'/users/'+nickname):
         if debug:
             print('DEBUG: bookmark actor should be the same as the handle sent to '+handle+' != '+messageJson['actor'])
@@ -1180,7 +1180,7 @@ def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
         not messageJson['actor'].startswith(deletePrefix)):
         if debug:
             print('DEBUG: delete not permitted from other instances')
-        return False        
+        return False
     if not messageJson.get('to'):
         if debug:
             print('DEBUG: '+messageJson['type']+' has no "to" list')
@@ -1197,9 +1197,9 @@ def receiveDelete(session,handle: str,isGroup: bool,baseDir: str, \
         return False
     if messageJson['actor'] not in messageJson['object']:
         if debug:
-            print('DEBUG: actor is not the owner of the post to be deleted')    
+            print('DEBUG: actor is not the owner of the post to be deleted')
     if not os.path.isdir(baseDir+'/accounts/'+handle):
-        print('DEBUG: unknown recipient of like - '+handle)    
+        print('DEBUG: unknown recipient of like - '+handle)
     # if this post in the outbox of the person?
     messageId=messageJson['object'].replace('/activity','').replace('/undo','')
     removeModerationPostFromIndex(baseDir,messageId,debug)
@@ -1227,7 +1227,7 @@ def receiveAnnounce(recentPostsCache: {}, \
     if '@' not in handle:
         if debug:
             print('DEBUG: bad handle '+handle)
-        return False        
+        return False
     if not messageJson.get('actor'):
         if debug:
             print('DEBUG: '+messageJson['type']+' has no actor')
@@ -1308,7 +1308,7 @@ def receiveAnnounce(recentPostsCache: {}, \
                         getPersonPubKey(baseDir,session,lookupActor, \
                                         personCache,debug, \
                                         __version__,httpPrefix, \
-                                        domain,onionDomain)                
+                                        domain,onionDomain)
                     if pubKey:
                         print('DEBUG: public key obtained for announce: '+lookupActor)
                         break
@@ -1316,7 +1316,7 @@ def receiveAnnounce(recentPostsCache: {}, \
                     if debug:
                         print('DEBUG: Retry '+str(tries+1)+ \
                               ' obtaining actor for '+lookupActor)
-                    time.sleep(5)                
+                    time.sleep(5)
     if debug:
         print('DEBUG: announced/repeated post arrived in inbox')
     return True
@@ -1342,7 +1342,7 @@ def receiveUndoAnnounce(recentPostsCache: {}, \
     if not isinstance(messageJson['object']['object'], str):
         return False
     if messageJson['object']['type']!='Announce':
-        return False    
+        return False
     if '/users/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
@@ -1367,7 +1367,7 @@ def receiveUndoAnnounce(recentPostsCache: {}, \
             if postJsonObject['type']!='Announce':
                 if debug:
                     print("DEBUG: Attempt to undo something which isn't an announcement")
-                return False        
+                return False
     undoAnnounceCollectionEntry(recentPostsCache,baseDir,postFilename, \
                                 messageJson['actor'],domain,debug)
     if os.path.isfile(postFilename):
@@ -1376,7 +1376,7 @@ def receiveUndoAnnounce(recentPostsCache: {}, \
 
 def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
                     messageJson :{},maxReplies: int,debug :bool) -> bool:
-    """Updates the list of replies for a post on this domain if 
+    """Updates the list of replies for a post on this domain if
     a reply to it arrives
     """
     if not messageJson.get('id'):
@@ -1412,7 +1412,7 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
     if not postFilename:
         if debug:
             print('DEBUG: post may have expired - '+replyTo)
-        return False    
+        return False
     # populate a text file containing the ids of replies
     postRepliesFilename=postFilename.replace('.json','.replies')
     messageId=messageJson['id'].replace('/activity','').replace('/undo','')
@@ -1461,7 +1461,7 @@ def validPostContent(baseDir: str,nickname: str,domain: str, \
     if 'Z' not in messageJson['object']['published']:
         return False
     # check for bad html
-    invalidStrings=['<script>','<canvas>','<style>','</html>','</body>','<br>','<hr>']    
+    invalidStrings=['<script>','<canvas>','<style>','</html>','</body>','<br>','<hr>']
     for badStr in invalidStrings:
         if badStr in messageJson['object']['content']:
             if messageJson['object'].get('id'):
@@ -1504,7 +1504,7 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
     """
     if not postJsonObject.get('object'):
         return
-    
+
     if not isinstance(postJsonObject['object'], dict):
         return
 
@@ -1522,7 +1522,7 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
 
     if '/statuses/' in lookupActor:
         lookupActor=lookupActor.split('/statuses/')[0]
-            
+
     if debug:
         print('DEBUG: Obtaining actor for reply post '+lookupActor)
 
@@ -1531,7 +1531,7 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
             getPersonPubKey(baseDir,session,lookupActor, \
                             personCache,debug, \
                             __version__,httpPrefix, \
-                            domain,onionDomain)                
+                            domain,onionDomain)
         if pubKey:
             print('DEBUG: public key obtained for reply: '+lookupActor)
             break
@@ -1539,7 +1539,7 @@ def obtainAvatarForReplyPost(session,baseDir: str,httpPrefix: str, \
         if debug:
             print('DEBUG: Retry '+str(tries+1)+ \
                   ' obtaining actor for '+lookupActor)
-        time.sleep(5)                
+        time.sleep(5)
 
 def dmNotify(baseDir: str,handle: str,url: str) -> None:
     """Creates a notification that a new DM has arrived
@@ -1687,7 +1687,7 @@ def inboxUpdateCalendar(baseDir: str,handle: str,postJsonObject: {}) -> None:
         if not tagDict.get('startTime'):
             continue
         # get the year and month from the event
-        eventTime=datetime.datetime.strptime(tagDict['startTime'],"%Y-%m-%dT%H:%M:%S%z")            
+        eventTime=datetime.datetime.strptime(tagDict['startTime'],"%Y-%m-%dT%H:%M:%S%z")
         eventYear=int(eventTime.strftime("%Y"))
         eventMonthNumber=int(eventTime.strftime("%m"))
         eventDayOfMonth=int(eventTime.strftime("%d"))
@@ -1819,7 +1819,7 @@ def inboxAfterCapabilities(recentPostsCache: {},maxRecentPosts: int, \
         if debug:
             print('DEBUG: Undo bookmark accepted from '+actor)
         return False
-    
+
     if receiveAnnounce(recentPostsCache, \
                        session,handle,isGroup, \
                        baseDir,httpPrefix, \
@@ -2004,7 +2004,7 @@ def runInboxQueueWatchdog(projectVersion: str,httpd) -> None:
     #httpd.thrInboxQueue=inboxQueueOriginal
     httpd.thrInboxQueue.start()
     while True:
-        time.sleep(20) 
+        time.sleep(20)
         if not httpd.thrInboxQueue.isAlive():
             httpd.thrInboxQueue.kill()
             httpd.thrInboxQueue=inboxQueueOriginal.clone(runInboxQueue)
@@ -2068,7 +2068,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
             if not session or currTime-sessionLastUpdate>1200:
                 print('Creating inbox session')
                 session=createSession(useTor)
-                sessionLastUpdate=currTime            
+                sessionLastUpdate=currTime
 
             # oldest item first
             queue.sort()
@@ -2081,7 +2081,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 continue
 
             print('Loading queue item '+queueFilename)
-            
+
             # Load the queue json
             queueJson=loadJson(queueFilename,1)
             if not queueJson:
@@ -2096,14 +2096,14 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     except:
                         pass
                 continue
-            
+
             # clear the daily quotas for maximum numbers of received posts
             if currTime-quotasLastUpdate>60*60*24:
                 quotas={
                     'domains': {},
                     'accounts': {}
                 }
-                quotasLastUpdate=currTime            
+                quotasLastUpdate=currTime
 
             # limit the number of posts which can arrive per domain per day
             postDomain=queueJson['postDomain']
@@ -2138,7 +2138,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         pprint(quotas)
 
             print('Obtaining public key for actor '+queueJson['actor'])
-                        
+
             # Try a few times to obtain the public key
             pubKey=None
             keyId=None
@@ -2169,7 +2169,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     if debug:
                         print('DEBUG: public key: '+str(pubKey))
                     break
-                    
+
                 if debug:
                     print('DEBUG: Retry '+str(tries+1)+ \
                           ' obtaining public key for '+keyId)
@@ -2210,7 +2210,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
             # This makes the filename and the id consistent
             #if queueJson['post'].get('id'):
             #    queueJson['post']['id']=queueJson['id']
-            
+
             if receiveUndo(session, \
                            baseDir,httpPrefix,port, \
                            sendThreads,postLog, \
@@ -2344,7 +2344,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     saveJson(queueJson['post'],sharedInboxPostFilename)
 
             # for posts addressed to specific accounts
-            for handle,capsId in recipientsDict.items():              
+            for handle,capsId in recipientsDict.items():
                 destination=queueJson['destination'].replace(inboxHandle,handle)
                 # check that capabilities are accepted
                 if queueJson['post'].get('capability'):
@@ -2395,7 +2395,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         print('No capability list within post')
                         print('ocapAlways: '+str(ocapAlways))
                         print('DEBUG: object capabilities check failed')
-            
+
                 if debug:
                     print('DEBUG: Queue post accepted')
             if os.path.isfile(queueFilename):

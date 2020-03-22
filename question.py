@@ -104,7 +104,7 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}) ->
             lines=votersFile.readlines()
             for voteLine in lines:
                 if voteLine.endswith(votersFileSeparator+possibleAnswer['name']+'\n'):
-                    totalItems+=1                    
+                    totalItems+=1
         if possibleAnswer['replies']['totalItems']!=totalItems:
             possibleAnswer['replies']['totalItems']=totalItems
             questionTotalsChanged=True

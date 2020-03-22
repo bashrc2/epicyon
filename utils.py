@@ -220,7 +220,7 @@ def getDomainFromActor(actor: str) -> (str,int):
         port=int(portStr)
         domain=domain.split(':')[0]
     return domain,port
-    
+
 def followPerson(baseDir: str,nickname: str, domain: str, \
                  followNickname: str, followDomain: str, \
                  federationList: [],debug: bool, \
@@ -282,7 +282,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
                     print('DEBUG: follow added')
                 return True
         except Exception as e:
-            print('WARN: Failed to write entry to follow file '+filename+' '+str(e))        
+            print('WARN: Failed to write entry to follow file '+filename+' '+str(e))
     if debug:
         print('DEBUG: creating new following file to follow '+handleToFollow)
     with open(filename, "w") as followfile:
@@ -385,9 +385,9 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)    
+                os.remove(cachedPostFilename)
         #removePostFromCache(postJsonObject,recentPostsCache)
-        
+
         hasObject=False
         if postJsonObject.get('object'):
             hasObject=True
@@ -451,7 +451,7 @@ def deletePost(baseDir: str,httpPrefix: str,nickname: str,domain: str,postFilena
         # remove the replies file
         os.remove(repliesFilename)
     # finally, remove the post itself
-    os.remove(postFilename)    
+    os.remove(postFilename)
 
 def validNickname(domain: str,nickname: str) -> bool:
     forbiddenChars=['.',' ','/','?',':',';','@']
@@ -646,4 +646,4 @@ def isBlogPost(postJsonObject: {}) -> bool:
         return False
     if postJsonObject['object']['type']!='Article':
         return False
-    return True    
+    return True

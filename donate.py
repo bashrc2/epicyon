@@ -12,7 +12,7 @@ def getDonationTypes() -> str:
     return ('patreon','paypal','gofundme','liberapay', \
             'kickstarter','indiegogo','crowdsupply', \
             'subscribestar')
-    
+
 def getDonationUrl(actorJson: {}) -> str:
     """Returns a link used for donations
     """

@@ -21,20 +21,20 @@ class threadWithTrace(threading.Thread):
         while tries<3:
             try:
                 self._args,self._keywords=args,keywords
-                threading.Thread.__init__(self,*self._args,**self._keywords) 
+                threading.Thread.__init__(self,*self._args,**self._keywords)
                 self.killed=False
                 break
             except Exception as e:
                 print('ERROR: threads.py/__init__ failed - '+str(e))
                 time.sleep(1)
                 tries+=1
-  
-    def start(self): 
+
+    def start(self):
         tries=0
         while tries<3:
             try:
-                self.__run_backup=self.run 
-                self.run=self.__run       
+                self.__run_backup=self.run
+                self.run=self.__run
                 threading.Thread.start(self)
                 break
             except Exception as e:
@@ -49,25 +49,25 @@ class threadWithTrace(threading.Thread):
         self.__run_backup()
         self.run=self.__run_backup
 
-    def globaltrace(self, frame, event, arg): 
-        if event == 'call': 
+    def globaltrace(self, frame, event, arg):
+        if event == 'call':
             return self.localtrace
         else:
             return None
 
-    def localtrace(self, frame, event, arg): 
-        if self.killed: 
-            if event == 'line': 
-                raise SystemExit() 
-        return self.localtrace 
-  
-    def kill(self): 
+    def localtrace(self, frame, event, arg):
+        if self.killed:
+            if event == 'line':
+                raise SystemExit()
+        return self.localtrace
+
+    def kill(self):
         self.killed=True
 
     def clone(self,fn):
         return threadWithTrace(target=fn, \
                                args=self._args, \
-                               daemon=True)        
+                               daemon=True)
 
 def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
     """Removes threads whose execution has completed
@@ -82,7 +82,7 @@ def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
     # which threads are dormant?
     noOfActiveThreads=0
     for th in threadsList:
-        removeThread=False        
+        removeThread=False
 
         if th.isStarted:
             if not th.is_alive():
@@ -114,7 +114,7 @@ def removeDormantThreads(baseDir: str,threadsList: [],debug: bool) -> None:
     for th in dormantThreads:
         if debug:
             print('DEBUG: Removing dormant thread '+str(dormantCtr))
-        dormantCtr+=1        
+        dormantCtr+=1
         threadsList.remove(th)
         th.kill()
         changed=True

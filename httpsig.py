@@ -9,7 +9,7 @@ __status__="Production"
 
 # see https://tools.ietf.org/html/draft-cavage-http-signatures-06
 
-try: 
+try:
     from Cryptodome.PublicKey import RSA
     from Cryptodome.Hash import SHA256
     from Cryptodome.Signature import pkcs1_15
@@ -175,7 +175,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
 
     if debug:
         print('DEBUG: verifyPostHeaders '+method)
-        
+
     publicKeyPem=RSA.import_key(publicKeyPem)
     # Build a dictionary of the signature values
     signatureHeader=headers['signature']

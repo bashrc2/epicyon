@@ -58,7 +58,7 @@ def metaDataInstance(instanceTitle: str, \
     isBot=False
     if adminActor['type']!='Person':
         isBot=True
-        
+
     instance={
         'approval_required': False,
         'contact_account': {
@@ -98,5 +98,5 @@ def metaDataInstance(instanceTitle: str, \
         'urls': {},
         'version': version
     }
-    
+
     return instance

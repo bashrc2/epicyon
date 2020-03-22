@@ -33,17 +33,17 @@ def manualDenyFollowRequest(session,baseDir: str, \
     rejectedFollowsFilename=accountsDir+'/followrejects.txt'
     if os.path.isfile(rejectedFollowsFilename):
         if denyHandle in open(rejectedFollowsFilename).read():
-            removeFromFollowRequests(baseDir,nickname,domain,denyHandle,debug)        
+            removeFromFollowRequests(baseDir,nickname,domain,denyHandle,debug)
             print(denyHandle+' has already been rejected as a follower of '+nickname)
             return
 
-    removeFromFollowRequests(baseDir,nickname,domain,denyHandle,debug)        
+    removeFromFollowRequests(baseDir,nickname,domain,denyHandle,debug)
 
     # Store rejected follows
     rejectsFile=open(rejectedFollowsFilename, "a+")
     rejectsFile.write(denyHandle+'\n')
     rejectsFile.close()
-    
+
     denyNickname=denyHandle.split('@')[0]
     denyDomain=denyHandle.split('@')[1].replace('\n','')
     denyPort=port
@@ -59,11 +59,11 @@ def manualDenyFollowRequest(session,baseDir: str, \
                            debug,projectVersion)
 
     print('Follow request from '+denyHandle+' was denied.')
-    
+
 def approveFollowerHandle(accountDir: str,approveHandle: str) -> None:
     """ Record manually approved handles so that if they unfollow and then
      re-follow later then they don't need to be manually approved again
-    """    
+    """
     approvedFilename=accountDir+'/approved.txt'
     if os.path.isfile(approvedFilename):
         if approveHandle not in open(approvedFilename).read():
@@ -73,8 +73,8 @@ def approveFollowerHandle(accountDir: str,approveHandle: str) -> None:
     else:
         approvedFile=open(approvedFilename, "w+")
         approvedFile.write(approveHandle+'\n')
-        approvedFile.close()    
-    
+        approvedFile.close()
+
 def manualApproveFollowRequest(session,baseDir: str, \
                                httpPrefix: str,
                                nickname: str,domain: str,port: int, \
@@ -98,7 +98,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
     if approveHandle not in open(approveFollowsFilename).read():
         print('Manual follow accept: '+approveHandle+' not in requests file '+approveFollowsFilename)
         return
-    
+
     approvefilenew=open(approveFollowsFilename+'.new', 'w+')
     updateApprovedFollowers=False
     followActivityfilename=None
