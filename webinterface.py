@@ -22,6 +22,7 @@ from pgp import getEmailAddress
 from pgp import getPGPpubKey
 from xmpp import getXmppAddress
 from ssb import getSSBAddress
+from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
 from utils import isBlogPost
@@ -679,6 +680,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
     xmppAddress=''
     matrixAddress=''
     ssbAddress=''
+    toxAddress=''
     manuallyApprovesFollowers=''
     actorJson=loadJson(actorFilename)
     if actorJson:
@@ -686,6 +688,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
         xmppAddress=getXmppAddress(actorJson)
         matrixAddress=getMatrixAddress(actorJson)
         ssbAddress=getSSBAddress(actorJson)
+        toxAddress=getToxAddress(actorJson)
         emailAddress=getEmailAddress(actorJson)
         PGPpubKey=getPGPpubKey(actorJson)
         if actorJson.get('name'):
@@ -862,6 +865,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
     editProfileForm+='      <input type="text" name="matrixAddress" value="'+matrixAddress+'">'
     editProfileForm+='<label class="labels">SSB</label><br>'
     editProfileForm+='      <input type="text" name="ssbAddress" value="'+ssbAddress+'">'
+    editProfileForm+='<label class="labels">Tox</label><br>'
+    editProfileForm+='      <input type="text" name="toxAddress" value="'+toxAddress+'">'
     editProfileForm+='<label class="labels">'+translate['Email']+'</label><br>'
     editProfileForm+='      <input type="text" name="email" value="'+emailAddress+'">'
     editProfileForm+='<label class="labels">'+translate['PGP']+'</label><br>'
@@ -1853,8 +1858,9 @@ def htmlProfile(defaultTimeline: str, \
     xmppAddress=getXmppAddress(profileJson)
     matrixAddress=getMatrixAddress(profileJson)
     ssbAddress=getSSBAddress(profileJson)
+    toxAddress=getToxAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or PGPpubKey or emailAddress:
+       ssbAddress or toxAddress or PGPpubKey or emailAddress:
         donateSection='<div class="container">\n'
         donateSection+='  <center>\n'
         if donateUrl:
@@ -1876,6 +1882,9 @@ def htmlProfile(defaultTimeline: str, \
         if ssbAddress:
             donateSection+= \
                 '<p>SSB: <label class="ssbaddr">'+ssbAddress+'</label></p>\n'
+        if toxAddress:
+            donateSection+= \
+                '<p>Tox: <label class="ssbaddr">'+toxAddress+'</label></p>\n'
         if PGPpubKey:
             donateSection+= \
                 '<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>\n'
@@ -4303,6 +4312,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
                       xmppAddress: str, \
                       matrixAddress: str, \
                       ssbAddress: str, \
+                      toxAddress: str, \
                       PGPpubKey: str, \
                       emailAddress) -> str:
     """Show options for a person: view/follow/block/report
@@ -4379,6 +4389,9 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     if ssbAddress:
         optionsStr+= \
             '<p class="imText">SSB: '+ssbAddress+'</p>'
+    if toxAddress:
+        optionsStr+= \
+            '<p class="imText">Tox: '+toxAddress+'</p>'
     if PGPpubKey:
         optionsStr+='<p class="pgp">'+PGPpubKey.replace('\n','<br>')+'</p>'
     optionsStr+='  <form method="POST" action="'+originPathStr+'/personoptions">'

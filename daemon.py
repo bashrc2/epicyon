@@ -34,6 +34,8 @@ from xmpp import getXmppAddress
 from xmpp import setXmppAddress
 from ssb import getSSBAddress
 from ssb import setSSBAddress
+from tox import getToxAddress
+from tox import setToxAddress
 from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
@@ -1130,6 +1132,7 @@ class PubServer(BaseHTTPRequestHandler):
                         xmppAddress=getXmppAddress(actorJson)
                         matrixAddress=getMatrixAddress(actorJson)
                         ssbAddress=getSSBAddress(actorJson)
+                        toxAddress=getToxAddress(actorJson)
                         emailAddress=getEmailAddress(actorJson)
                         PGPpubKey=getPGPpubKey(actorJson)
                     msg=htmlPersonOptions(self.server.translate, \
@@ -1141,7 +1144,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           optionsLink, \
                                           pageNumber,donateUrl, \
                                           xmppAddress,matrixAddress, \
-                                          ssbAddress, \
+                                          ssbAddress,toxAddress, \
                                           PGPpubKey,emailAddress).encode()
                     self._set_headers('text/html',len(msg),cookie)
                     self._write(msg)
@@ -4582,7 +4585,16 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if currentSSBAddress:
                                 setSSBAddress(actorJson,'')
-                                actorChanged=True                                
+                                actorChanged=True
+                        currentToxAddress=getToxAddress(actorJson)
+                        if fields.get('toxAddress'):
+                            if fields['toxAddress']!=currentToxAddress:
+                                setToxAddress(actorJson,fields['toxAddress'])
+                                actorChanged=True
+                        else:
+                            if currentToxAddress:
+                                setToxAddress(actorJson,'')
+                                actorChanged=True
                         currentPGPpubKey=getPGPpubKey(actorJson)
                         if fields.get('pgp'):
                             if fields['pgp']!=currentPGPpubKey:
