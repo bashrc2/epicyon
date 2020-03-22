@@ -1,10 +1,10 @@
-__filename__ = "epicyon.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="epicyon.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 from person import createPerson
 from person import createGroup
@@ -93,7 +93,7 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-parser = argparse.ArgumentParser(description='ActivityPub Server')
+parser=argparse.ArgumentParser(description='ActivityPub Server')
 parser.add_argument('-n','--nickname', dest='nickname', type=str,default=None, \
                     help='Nickname of the account to use')
 parser.add_argument('--fol','--follow', dest='follow', type=str,default=None, \
@@ -311,7 +311,7 @@ parser.add_argument('--maxregistrations', dest='maxRegistrations', type=int,defa
 parser.add_argument("--resetregistrations", type=str2bool, nargs='?', \
                     const=True, default=False, \
                     help="Reset the number of remaining registrations")
-args = parser.parse_args()
+args=parser.parse_args()
 
 debug=False
 if args.debug:
@@ -365,9 +365,11 @@ if args.postsraw:
     sys.exit()
 
 if args.json:
-    session = createSession(False)
-    asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-    testJson = getJson(session,args.json,asHeader,None,__version__,httpPrefix,None)
+    session=createSession(False)
+    asHeader={
+        'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+    }
+    testJson=getJson(session,args.json,asHeader,None,__version__,httpPrefix,None)
     pprint(testJson)
     sys.exit()
 
@@ -533,7 +535,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -557,7 +559,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     sendThreads=[]
     postLog=[]
     cachedWebfingers={}
@@ -599,7 +601,7 @@ if args.message:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()        
@@ -634,8 +636,8 @@ if args.message:
     clientToServer=args.client
     attachedImageDescription=args.imageDescription
     useBlurhash=args.blurhash
-    sendThreads = []
-    postLog = []
+    sendThreads=[]
+    postLog=[]
     personCache={}
     cachedWebfingers={}
     subject=args.subject
@@ -671,7 +673,7 @@ if args.announce:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending announce/repeat of '+args.announce)
@@ -715,7 +717,7 @@ if args.itemName:
         print('Specify a duration to share the object with the --duration option')
         sys.exit()
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending shared item: '+args.itemName)
@@ -747,7 +749,7 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending undo of shared item: '+args.undoItemName)
@@ -773,7 +775,7 @@ if args.like:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending like of '+args.like)
@@ -798,7 +800,7 @@ if args.undolike:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending undo like of '+args.undolike)
@@ -823,7 +825,7 @@ if args.delete:
         print('Specify a password with the --password option')
         sys.exit()
         
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending delete request of '+args.delete)
@@ -857,7 +859,7 @@ if args.follow:
         sys.exit()        
     followDomain,followPort=getDomainFromActor(args.follow)
 
-    session = createSession(useTor)
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     followHttpPrefix=httpPrefix
@@ -895,7 +897,7 @@ if args.unfollow:
         sys.exit()        
     followDomain,followPort=getDomainFromActor(args.unfollow)
 
-    session = createSession(useTor)
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     followHttpPrefix=httpPrefix
@@ -994,24 +996,34 @@ if args.actor:
         else:
             sys.exit()
         
-    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+    asHeader={
+        'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+    }
     if not personUrl:
-        personUrl = getUserUrl(wfRequest)
+        personUrl=getUserUrl(wfRequest)
     if nickname==domain:
         personUrl=personUrl.replace('/users/','/actor/').replace('/channel/','/actor/').replace('/profile/','/actor/')
     if not personUrl:
         # try single user instance
         personUrl=httpPrefix+'://'+domain
-        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader={
+            'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
     if '/channel/' in personUrl:
-        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader={
+            'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
 
-    personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
+    personJson= \
+        getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
     if personJson:
         pprint(personJson)
     else:
-        asHeader = {'Accept': 'application/jrd+json; profile="https://www.w3.org/ns/activitystreams"'}
-        personJson = getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
+        asHeader={
+            'Accept': 'application/jrd+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
+        personJson= \
+            getJson(session,personUrl,asHeader,None,__version__,httpPrefix,None)
         if personJson:
             pprint(personJson)
         else:
@@ -1237,7 +1249,7 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending '+args.skill+' skill level '+str(args.skillLevelPercent)+' for '+nickname)
@@ -1263,7 +1275,7 @@ if args.availability:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending availability status of '+nickname+' as '+args.availability)
@@ -1308,7 +1320,7 @@ if args.block:
             print(args.block+' does not look like an actor url')
             sys.exit()
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending block of '+args.block)
@@ -1344,7 +1356,7 @@ if args.delegate:
         delegatedNickname=args.delegate.split('@')[0]
         args.delegate=blockedActor
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending delegation for '+args.delegate+' with role '+args.role+' in project '+args.project)
@@ -1378,7 +1390,7 @@ if args.undelegate:
         delegatedNickname=args.undelegate.split('@')[0]
         args.undelegate=blockedActor
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending delegation removal for '+args.undelegate+' from role '+args.role+' in project '+args.project)
@@ -1414,7 +1426,7 @@ if args.unblock:
             print(args.unblock+' does not look like an actor url')
             sys.exit()
 
-    session = createSession(useTor)        
+    session=createSession(useTor)        
     personCache={}
     cachedWebfingers={}
     print('Sending undo block of '+args.unblock)

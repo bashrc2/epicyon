@@ -1,10 +1,10 @@
-__filename__ = "schedule.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="schedule.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import time
@@ -70,7 +70,7 @@ def updatePostSchedule(baseDir: str,handle: str,httpd,maxScheduledPosts: int) ->
             # set the published time
             # If this is not recent then http checks on the receiving side
             # will reject it
-            statusNumber,published = getStatusNumber()
+            statusNumber,published=getStatusNumber()
             if postJsonObject.get('published'):
                 postJsonObject['published']=published
             if postJsonObject.get('object'):

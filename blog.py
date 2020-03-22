@@ -1,10 +1,10 @@
-__filename__ = "blog.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="blog.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import time
@@ -63,12 +63,12 @@ def noOfBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
 
     replies=0
     with open(postFilename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
         for replyPostId in lines:
             replyPostId= \
                 replyPostId.replace('\n','').replace('.json','').replace('.replies','')
             replies+= \
-                1 + \
+                1+ \
                 noOfBlogReplies(baseDir,httpPrefix,translate, \
                                 nickname,domain,domainFull, \
                                 replyPostId,depth+1)
@@ -111,7 +111,7 @@ def getBlogReplies(baseDir: str,httpPrefix: str,translate: {}, \
         return ''
 
     with open(postFilename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
         repliesStr=''
         for replyPostId in lines:
             replyPostId= \
@@ -556,13 +556,13 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
 
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
-            editBlogText = '<p class="new-post-text">'+file.read()+'</p>'    
+            editBlogText='<p class="new-post-text">'+file.read()+'</p>'    
 
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        editBlogCSS = cssFile.read()
+        editBlogCSS=cssFile.read()
         if httpPrefix!='https':
             editBlogCSS=editBlogCSS.replace('https://',httpPrefix+'://')
 

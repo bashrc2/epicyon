@@ -1,10 +1,10 @@
-__filename__ = "happening.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="happening.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import time
@@ -380,7 +380,7 @@ def removeCalendarEvent(baseDir: str,nickname: str,domain: str, \
         return
     lines=None
     with open(calendarFilename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
     if not lines:
         return
     with open(calendarFilename, "w+") as f:

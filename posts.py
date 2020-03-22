@@ -1,10 +1,10 @@
-__filename__ = "posts.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="posts.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import requests
 import json
@@ -68,7 +68,7 @@ def isModerator(baseDir: str,nickname: str) -> bool:
         return False
 
     with open(moderatorsFile, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
         if len(lines)==0:
             if getConfigParam(baseDir,'admin')==nickname:
                 return True
@@ -116,7 +116,7 @@ def getPersonKey(nickname: str,domain: str,baseDir: str,keyType='public', \
     return keyPem
     
 def cleanHtml(rawHtml: str) -> str:
-    #text = BeautifulSoup(rawHtml, 'html.parser').get_text()
+    #text=BeautifulSoup(rawHtml, 'html.parser').get_text()
     text=rawHtml
     return html.unescape(text)
 
@@ -134,8 +134,8 @@ def getUserUrl(wfRequest: {}) -> str:
 
 def parseUserFeed(session,feedUrl: str,asHeader: {}, \
                   projectVersion: str,httpPrefix: str,domain: str) -> None:
-    feedJson = getJson(session,feedUrl,asHeader,None, \
-                       projectVersion,httpPrefix,domain)
+    feedJson=getJson(session,feedUrl,asHeader,None, \
+                     projectVersion,httpPrefix,domain)
     if not feedJson:
         return
 
@@ -143,11 +143,11 @@ def parseUserFeed(session,feedUrl: str,asHeader: {}, \
         for item in feedJson['orderedItems']:
             yield item
 
-    nextUrl = None
+    nextUrl=None
     if 'first' in feedJson:
-        nextUrl = feedJson['first']
+        nextUrl=feedJson['first']
     elif 'next' in feedJson:
-        nextUrl = feedJson['next']
+        nextUrl=feedJson['next']
 
     if nextUrl:
         if isinstance(nextUrl, str):
@@ -165,29 +165,37 @@ def getPersonBox(baseDir: str,session,wfRequest: {},personCache: {}, \
                  projectVersion: str,httpPrefix: str, \
                  nickname: str,domain: str, \
                  boxName='inbox') -> (str,str,str,str,str,str,str,str):
-    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+    asHeader={
+        'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+    }
     if not wfRequest.get('errors'):
-        personUrl = getUserUrl(wfRequest)
+        personUrl=getUserUrl(wfRequest)
     else:
         if nickname=='dev':
             # try single user instance
             print('getPersonBox: Trying single user instance with ld+json')
-            personUrl = httpPrefix+'://'+domain
-            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+            personUrl=httpPrefix+'://'+domain
+            asHeader={
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
         else:
-            personUrl = httpPrefix+'://'+domain+'/users/'+nickname
+            personUrl=httpPrefix+'://'+domain+'/users/'+nickname
     if not personUrl:
         return None,None,None,None,None,None,None,None
-    personJson = getPersonFromCache(baseDir,personUrl,personCache)
+    personJson=getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         if '/channel/' in personUrl:
-            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-        personJson = getJson(session,personUrl,asHeader,None, \
-                             projectVersion,httpPrefix,domain)
+            asHeader={
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
+        personJson=getJson(session,personUrl,asHeader,None, \
+                           projectVersion,httpPrefix,domain)
         if not personJson:
-            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-            personJson = getJson(session,personUrl,asHeader,None, \
-                                 projectVersion,httpPrefix,domain)
+            asHeader={
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
+            personJson=getJson(session,personUrl,asHeader,None, \
+                               projectVersion,httpPrefix,domain)
             if not personJson:
                 print('Unable to get actor')
                 return None,None,None,None,None,None,None,None
@@ -246,12 +254,16 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
     personPosts={}    
     if not outboxUrl:
         return personPosts
-    asHeader = {'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+    asHeader={
+        'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+    }
     if '/outbox/' in outboxUrl:
-        asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader={
+            'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
     if raw:
-        result = []
-        i = 0
+        result=[]
+        i=0
         userFeed=parseUserFeed(session,outboxUrl,asHeader, \
                                projectVersion,httpPrefix,domain)
         for item in userFeed:
@@ -262,7 +274,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
         pprint(result)
         return None
 
-    i = 0
+    i=0
     userFeed=parseUserFeed(session,outboxUrl,asHeader, \
                            projectVersion,httpPrefix,domain)
     for item in userFeed:
@@ -291,7 +303,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
                 print('No published attribute')
             continue
         #pprint(item)
-        published = item['object']['published']
+        published=item['object']['published']
         if not personPosts.get(item['id']):
             # check that this is a public post
             # #Public should appear in the "to" list
@@ -304,7 +316,7 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
                 if not isPublic:
                     continue
             
-            content = item['object']['content'].replace('&apos;',"'")
+            content=item['object']['content'].replace('&apos;',"'")
 
             mentions=[]
             emoji={}
@@ -337,12 +349,12 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
                     print('max emojis reached')
                 continue
 
-            summary = ''
+            summary=''
             if item['object'].get('summary'):
                 if item['object']['summary']:
-                    summary = item['object']['summary']
+                    summary=item['object']['summary']
 
-            inReplyTo = ''
+            inReplyTo=''
             if item['object'].get('inReplyTo'):
                 if item['object']['inReplyTo']:
                     # No replies to non-permitted domains
@@ -352,17 +364,17 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
                         if debug:
                             print('url not permitted '+item['object']['inReplyTo'])
                         continue
-                    inReplyTo = item['object']['inReplyTo']
+                    inReplyTo=item['object']['inReplyTo']
 
-            conversation = ''
+            conversation=''
             if item['object'].get('conversation'):
                 if item['object']['conversation']:
                     # no conversations originated in non-permitted domains
                     if urlPermitted(item['object']['conversation'], \
                                     federationList,"objects:read"):  
-                        conversation = item['object']['conversation']
+                        conversation=item['object']['conversation']
 
-            attachment = []
+            attachment=[]
             if item['object'].get('attachment'):
                 if item['object']['attachment']:
                     for attach in item['object']['attachment']:
@@ -376,15 +388,15 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
                                 if debug:
                                     print('url not permitted '+attach['url'])
 
-            sensitive = False
+            sensitive=False
             if item['object'].get('sensitive'):
-                sensitive = item['object']['sensitive']
+                sensitive=item['object']['sensitive']
 
             if simple:
                 print(cleanHtml(content)+'\n')
             else:
                 pprint(item)
-                personPosts[item['id']] = {
+                personPosts[item['id']]={
                     "sensitive": sensitive,
                     "inreplyto": inReplyTo,
                     "summary": summary,
@@ -406,10 +418,10 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None
     """
     if boxname!='inbox' and boxname!='outbox' and boxname!='tlblogs':
         return
-    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    boxDir=createPersonDir(nickname,domain,baseDir,boxname)
     for deleteFilename in os.scandir(boxDir):
         deleteFilename=deleteFilename.name
-        filePath = os.path.join(boxDir, deleteFilename)
+        filePath=os.path.join(boxDir,deleteFilename)
         try:
             if os.path.isfile(filePath):
                 os.unlink(filePath)
@@ -431,7 +443,7 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
         domain=domain.split(':')[0]
 
     if not postId:
-        statusNumber,published = getStatusNumber()
+        statusNumber,published=getStatusNumber()
         postId= \
             httpPrefix+'://'+originalDomain+'/users/'+nickname+ \
             '/statuses/'+statusNumber
@@ -441,7 +453,7 @@ def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
             postJsonObject['object']['id']=postId
             postJsonObject['object']['atomUri']=postId
          
-    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    boxDir=createPersonDir(nickname,domain,baseDir,boxname)
     filename=boxDir+'/'+postId.replace('/','#')+'.json'
     saveJson(postJsonObject,filename)
     return filename
@@ -472,7 +484,7 @@ def updateHashtagsIndex(baseDir: str,tag: {},newPostId: str) -> None:
         if tagline not in open(tagsFilename).read():
             try:
                 with open(tagsFilename, 'r+') as tagsFile:
-                    content = tagsFile.read()
+                    content=tagsFile.read()
                     tagsFile.seek(0, 0)
                     tagsFile.write(tagline+content)
             except Exception as e:
@@ -491,7 +503,7 @@ def addSchedulePost(baseDir: str,nickname: str,domain: str, \
         if indexStr not in open(scheduleIndexFilename).read():
             try:
                 with open(scheduleIndexFilename, 'r+') as scheduleFile:
-                    content = scheduleFile.read()
+                    content=scheduleFile.read()
                     scheduleFile.seek(0, 0)
                     scheduleFile.write(indexStr+'\n'+content)
                     print('DEBUG: scheduled post added to index')
@@ -551,7 +563,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                 if tag['name'] not in content:
                     del hashtagsDict[tagName]
 
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
     postTo='https://www.w3.org/ns/activitystreams#Public'
     postCC=httpPrefix+'://'+domain+'/users/'+nickname+'/followers'
     if followersOnly:
@@ -659,7 +671,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                 if oc:
                     if oc.get('id'):
                         capabilityIdList=[oc['id']]
-        newPost = {
+        newPost={
             "@context": postContext,
             'id': newPostId+'/activity',
             'capability': capabilityIdList,
@@ -704,7 +716,7 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
                             newPost['object'],attachImageFilename, \
                             mediaType,imageDescription,useBlurhash)            
     else:
-        newPost = {
+        newPost={
             "@context": postContext,
             'id': newPostId,
             'type': 'Note',
@@ -788,16 +800,16 @@ def outboxMessageCreateWrap(httpPrefix: str, \
         if port!=80 and port!=443:
             if ':' not in domain:
                 domain=domain+':'+str(port)
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
     if messageJson.get('published'):
-        published = messageJson['published']
+        published=messageJson['published']
     newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     cc=[]
     if messageJson.get('cc'):
         cc=messageJson['cc']
     # TODO
     capabilityUrl=[]
-    newPost = {
+    newPost={
         "@context": "https://www.w3.org/ns/activitystreams",
         'id': newPostId+'/activity',
         'capability': capabilityUrl,
@@ -1207,7 +1219,7 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         postResult=None
         unauthorized=False
         try:
-            postResult,unauthorized = \
+            postResult,unauthorized= \
                 postJsonString(session,postJsonStr,federationList, \
                                inboxUrl,signatureHeaderJson, \
                                "inbox:write",debug)
@@ -1272,8 +1284,8 @@ def sendPost(projectVersion: str, \
     handle=httpPrefix+'://'+toDomain+'/@'+toNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                domain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              domain,projectVersion)
     if not wfRequest:
         return 1
 
@@ -1285,7 +1297,7 @@ def sendPost(projectVersion: str, \
             postToBox='tlblogs'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      nickname,domain,postToBox)
@@ -1305,7 +1317,7 @@ def sendPost(projectVersion: str, \
         return 5
     # sharedInbox and capabilities are optional
     
-    postJsonObject = \
+    postJsonObject= \
             createPostBase(baseDir,nickname,domain,port, \
                            toPersonId,cc,httpPrefix,content, \
                            followersOnly,saveToFile,clientToServer, \
@@ -1328,7 +1340,7 @@ def sendPost(projectVersion: str, \
     postJsonStr=json.dumps(postJsonObject)
 
     # construct the http header, including the message body digest
-    signatureHeaderJson = \
+    signatureHeaderJson= \
         createSignedHeader(privateKeyPem,nickname,domain,port, \
                            toDomain,toPort, \
                            postPath,httpPrefix,withDigest,postJsonStr)
@@ -1339,7 +1351,7 @@ def sendPost(projectVersion: str, \
         sendThreads[0].kill()
         sendThreads.pop(0)
         print('WARN: thread killed')
-    thr = \
+    thr= \
         threadWithTrace(target=threadSendPost, \
                         args=(session, \
                               postJsonStr, \
@@ -1378,7 +1390,7 @@ def sendPostViaServer(projectVersion: str, \
     handle=httpPrefix+'://'+fromDomain+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wfRequest= \
         webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
                         fromDomain,projectVersion)
     if not wfRequest:
@@ -1391,7 +1403,7 @@ def sendPostViaServer(projectVersion: str, \
         postToBox='tlblogs'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -1431,7 +1443,7 @@ def sendPostViaServer(projectVersion: str, \
                         toDomainFull=toDomain+':'+str(toPort)        
             toPersonId=httpPrefix+'://'+toDomainFull+'/users/'+toNickname
 
-    postJsonObject = \
+    postJsonObject= \
             createPostBase(baseDir, \
                            fromNickname,fromDomain,fromPort, \
                            toPersonId,cc,httpPrefix,content, \
@@ -1444,9 +1456,11 @@ def sendPostViaServer(projectVersion: str, \
     authHeader=createBasicAuthHeader(fromNickname,password)
 
     if attachImageFilename:
-        headers = {'host': fromDomain, \
-                   'Authorization': authHeader}
-        postResult = \
+        headers={
+            'host': fromDomain, \
+            'Authorization': authHeader
+        }
+        postResult= \
             postImage(session,attachImageFilename,[], \
                       inboxUrl,headers,"inbox:write")
         #if not postResult:
@@ -1454,10 +1468,12 @@ def sendPostViaServer(projectVersion: str, \
         #        print('DEBUG: Failed to upload image')
         #    return 9
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJsonString(session,json.dumps(postJsonObject),[], \
                        inboxUrl,headers,"inbox:write",debug)
     #if not postResult:
@@ -1578,7 +1594,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
         postToBox='outbox'
 
     # get the actor inbox/outbox/capabilities for the To handle
-    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,toPersonId,sharedInboxUrl,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,nickname,domain,postToBox)
 
@@ -1633,7 +1649,7 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     postJsonStr=json.dumps(postJsonObject)
 
     # construct the http header, including the message body digest
-    signatureHeaderJson = \
+    signatureHeaderJson= \
         createSignedHeader(privateKeyPem,nickname,domain,port, \
                            toDomain,toPort, \
                            postPath,httpPrefix,withDigest,postJsonStr)
@@ -1648,14 +1664,15 @@ def sendSignedJson(postJsonObject: {},session,baseDir: str, \
     if debug:
         print('DEBUG: starting thread to send post')
         pprint(postJsonObject)
-    thr = threadWithTrace(target=threadSendPost, \
-                          args=(session, \
-                                postJsonStr, \
-                                federationList, \
-                                inboxUrl,baseDir, \
-                                signatureHeaderJson.copy(), \
-                                postLog,
-                                debug),daemon=True)
+    thr= \
+        threadWithTrace(target=threadSendPost, \
+                        args=(session, \
+                              postJsonStr, \
+                              federationList, \
+                              inboxUrl,baseDir, \
+                              signatureHeaderJson.copy(), \
+                              postLog,
+                              debug),daemon=True)
     sendThreads.append(thr)
     #thr.start()
     return 0
@@ -2030,7 +2047,7 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int, \
                      httpPrefix: str, \
                      itemsPerPage: int,headerOnly: bool, \
                      ocapAlways: bool,pageNumber=None) -> {}:
-    boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
+    boxDir=createPersonDir(nickname,domain,baseDir,'inbox')
     boxname='moderation'
 
     if port:
@@ -2042,24 +2059,28 @@ def createModeration(baseDir: str,nickname: str,domain: str,port: int, \
         pageNumber=1
 
     pageStr='?page='+str(pageNumber)
-    boxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
-                 'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
-                 'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
-                 'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
-                 'totalItems': 0,
-                 'type': 'OrderedCollection'}
-    boxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
-                'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
-                'orderedItems': [
-                ],
-                'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
-                'type': 'OrderedCollectionPage'}
+    boxHeader={
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+        'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+        'totalItems': 0,
+        'type': 'OrderedCollection'
+    }
+    boxItems={
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
+        'orderedItems': [
+        ],
+        'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+        'type': 'OrderedCollectionPage'
+    }
 
     if isModerator(baseDir,nickname):
         moderationIndexFile=baseDir+'/accounts/moderation.txt'
         if os.path.isfile(moderationIndexFile):
             with open(moderationIndexFile, "r") as f:
-                lines = f.readlines()
+                lines=f.readlines()
             boxHeader['totalItems']=len(lines)
             if headerOnly:
                 return boxHeader
@@ -2237,7 +2258,7 @@ def createSharedInboxIndex(baseDir: str,sharedBoxDir: str, \
         # is the actor followed by this account?
         if not followingHandles:
             with open(followingFilename, 'r') as followingFile:
-                followingHandles = followingFile.read()
+                followingHandles=followingFile.read()
         if actorNickname+'@'+actorDomain not in followingHandles:
             continue
 
@@ -2304,7 +2325,7 @@ def addPostToTimeline(filePath: str,boxname: str, \
     """ Reads a post from file and decides whether it is valid
     """
     with open(filePath, 'r') as postFile:
-        postStr = postFile.read()
+        postStr=postFile.read()
         return addPostStringToTimeline(postStr,boxname,postsInBox,boxActor)
     return False
 
@@ -2327,17 +2348,17 @@ def createBoxIndexed(recentPostsCache: {}, \
     if boxname!='dm' and boxname!='tlreplies' and \
        boxname!='tlmedia' and boxname!='tlblogs' and \
        boxname!='tlbookmarks':
-        boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+        boxDir=createPersonDir(nickname,domain,baseDir,boxname)
     else:
         # extract DMs or replies or media from the inbox
-        boxDir = createPersonDir(nickname,domain,baseDir,'inbox')
+        boxDir=createPersonDir(nickname,domain,baseDir,'inbox')
 
     announceCacheDir=baseDir+'/cache/announce/'+nickname
 
     sharedBoxDir=None
     if boxname=='inbox' or boxname=='tlreplies' or \
        boxname=='tlmedia' or boxname=='tlblogs':
-        sharedBoxDir = createPersonDir('inbox',domain,baseDir,boxname)
+        sharedBoxDir=createPersonDir('inbox',domain,baseDir,boxname)
 
     # bookmarks timeline is like the inbox but has its own separate index
     indexBoxName=boxname
@@ -2365,18 +2386,22 @@ def createBoxIndexed(recentPostsCache: {}, \
             pageStr='?page='+str(pageNumber)
         except:
             pass
-    boxHeader = {'@context': 'https://www.w3.org/ns/activitystreams',
-                 'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
-                 'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
-                 'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
-                 'totalItems': 0,
-                 'type': 'OrderedCollection'}
-    boxItems = {'@context': 'https://www.w3.org/ns/activitystreams',
-                'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
-                'orderedItems': [
-                ],
-                'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
-                'type': 'OrderedCollectionPage'}
+    boxHeader={
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+        'last': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+'?page=true',
+        'totalItems': 0,
+        'type': 'OrderedCollection'
+    }
+    boxItems={
+        '@context': 'https://www.w3.org/ns/activitystreams',
+        'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname+pageStr,
+        'orderedItems': [
+        ],
+        'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+boxname,
+        'type': 'OrderedCollectionPage'
+    }
 
     postsInBox=[]
 
@@ -2528,7 +2553,7 @@ def archivePostsForPerson(httpPrefix: str,nickname: str,domain: str,baseDir: str
     if archiveDir:
         if not os.path.isdir(archiveDir):
             os.mkdir(archiveDir)    
-    boxDir = createPersonDir(nickname,domain,baseDir,boxname)
+    boxDir=createPersonDir(nickname,domain,baseDir,boxname)
     postsInBox=os.scandir(boxDir)
     noOfPosts=0
     for f in postsInBox:
@@ -2624,7 +2649,7 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
                            debug: bool,projectVersion: str) -> None:
     """ This is really just for test purposes
     """
-    session = createSession(useTor)
+    session=createSession(useTor)
     personCache={}
     cachedWebfingers={}
     federationList=[]
@@ -2635,7 +2660,7 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
     handle=httpPrefix+"://"+domainFull+"/@"+nickname
-    wfRequest = \
+    wfRequest= \
         webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
                         domain,projectVersion)
     if not wfRequest:
@@ -2644,12 +2669,12 @@ def getPublicPostsOfPerson(baseDir: str,nickname: str,domain: str, \
     personUrl,pubKeyId,pubKey,personId,shaedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,nickname,domain,'outbox')
-    wfResult = json.dumps(wfRequest, indent=2, sort_keys=False)
+    wfResult=json.dumps(wfRequest,indent=2,sort_keys=False)
 
     maxMentions=10
     maxEmoji=10
     maxAttachments=5
-    userPosts = \
+    userPosts= \
         getPosts(session,personUrl,30,maxMentions,maxEmoji, \
                  maxAttachments,federationList, \
                  personCache,raw,simple,debug, \

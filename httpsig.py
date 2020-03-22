@@ -1,11 +1,11 @@
-__filename__ = "posts.py"
-__author__ = "Bob Mottram"
-__credits__ = ['lamia']
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="posts.py"
+__author__="Bob Mottram"
+__credits__=['lamia']
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 # see https://tools.ietf.org/html/draft-cavage-http-signatures-06
 
@@ -63,27 +63,27 @@ def signPostHeaders(dateStr: str,privateKeyPem: str, \
     #    '(request-target)': f'post {path}',
     #})
     # build a digest for signing
-    signedHeaderKeys = headers.keys()
-    signedHeaderText = ''
+    signedHeaderKeys=headers.keys()
+    signedHeaderText=''
     for headerKey in signedHeaderKeys:
         signedHeaderText += f'{headerKey}: {headers[headerKey]}\n'
         #print(f'*********************signing:  headerKey: {headerKey}: {headers[headerKey]}')
-    signedHeaderText = signedHeaderText.strip()
+    signedHeaderText=signedHeaderText.strip()
     #print('******************************Send: signedHeaderText: '+signedHeaderText)
-    headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
+    headerDigest=SHA256.new(signedHeaderText.encode('ascii'))
 
     # Sign the digest
-    rawSignature = pkcs1_15.new(privateKeyPem).sign(headerDigest)
-    signature = base64.b64encode(rawSignature).decode('ascii')
+    rawSignature=pkcs1_15.new(privateKeyPem).sign(headerDigest)
+    signature=base64.b64encode(rawSignature).decode('ascii')
 
     # Put it into a valid HTTP signature format
-    signatureDict = {
+    signatureDict={
         'keyId': keyID,
         'algorithm': 'rsa-sha256',
         'headers': ' '.join(signedHeaderKeys),
         'signature': signature
     }
-    signatureHeader = ','.join(
+    signatureHeader=','.join(
         [f'{k}="{v}"' for k, v in signatureDict.items()])
     return signatureHeader
 
@@ -104,8 +104,10 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
 
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     if not withDigest:
-        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr}
-        signatureHeader = \
+        headers={
+            '(request-target)': f'post {path}','host': headerDomain,'date': dateStr
+        }
+        signatureHeader= \
             signPostHeaders(dateStr,privateKeyPem,nickname, \
                             domain,port,toDomain,toPort, \
                             path,httpPrefix,None)
@@ -119,13 +121,20 @@ def createSignedHeader(privateKeyPem: str,nickname: str, \
         #print('***************************Send Content-type: '+contentType)
         #print('***************************Send Content-Length: '+str(len(messageBodyJsonStr)))
         #print('***************************Send messageBodyJsonStr: '+messageBodyJsonStr)
-        headers = {'(request-target)': f'post {path}','host': headerDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-length': str(contentLength),'content-type': contentType}
-        signatureHeader = \
+        headers={
+            '(request-target)': f'post {path}',
+            'host': headerDomain,
+            'date': dateStr,
+            'digest': f'SHA-256={bodyDigest}',
+            'content-length': str(contentLength),
+            'content-type': contentType
+        }
+        signatureHeader= \
             signPostHeaders(dateStr,privateKeyPem,nickname, \
                             domain,port, \
                             toDomain,toPort, \
                             path,httpPrefix,messageBodyJsonStr)
-    headers['signature'] = signatureHeader
+    headers['signature']=signatureHeader
     return headers
 
 def verifyRecentSignature(signedDateStr: str) -> bool:
@@ -167,10 +176,10 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
     if debug:
         print('DEBUG: verifyPostHeaders '+method)
         
-    publicKeyPem = RSA.import_key(publicKeyPem)
+    publicKeyPem=RSA.import_key(publicKeyPem)
     # Build a dictionary of the signature values
-    signatureHeader = headers['signature']
-    signatureDict = {
+    signatureHeader=headers['signature']
+    signatureDict={
         k: v[1:-1]
         for k, v in [i.split('=', 1) for i in signatureHeader.split(',')]
     }
@@ -179,7 +188,7 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
 
     # Unpack the signed headers and set values based on current headers and
     # body (if a digest was included)
-    signedHeaderList = []
+    signedHeaderList=[]
     for signedHeader in signatureDict['headers'].split(' '):
         if debug:
             print('DEBUG: verifyPostHeaders signedHeader='+signedHeader)
@@ -236,12 +245,12 @@ def verifyPostHeaders(httpPrefix: str,publicKeyPem: str,headers: dict, \
     if debug:
         print('DEBUG: signedHeaderList: '+str(signedHeaderList))
     # Now we have our header data digest
-    signedHeaderText = '\n'.join(signedHeaderList)
+    signedHeaderText='\n'.join(signedHeaderList)
     #print('***********************Verify: signedHeaderText: '+signedHeaderText)
-    headerDigest = SHA256.new(signedHeaderText.encode('ascii'))
+    headerDigest=SHA256.new(signedHeaderText.encode('ascii'))
 
     # Get the signature, verify with public key, return result
-    signature = base64.b64decode(signatureDict['signature'])
+    signature=base64.b64decode(signatureDict['signature'])
 
     try:
         pkcs1_15.new(publicKeyPem).verify(headerDigest, signature)

@@ -1,10 +1,10 @@
-__filename__ = "session.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="session.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import sys
@@ -15,11 +15,11 @@ import json
 baseDirectory=None
 
 def createSession(onionRoute: bool):
-    session = requests.session()
+    session=requests.session()
     if onionRoute:
-        session.proxies = {}
-        session.proxies['http'] = 'socks5h://localhost:9050'
-        session.proxies['https'] = 'socks5h://localhost:9050'
+        session.proxies={}
+        session.proxies['http']='socks5h://localhost:9050'
+        session.proxies['https']='socks5h://localhost:9050'
     return session
 
 def getJson(session,url: str,headers: {},params: {}, \
@@ -94,11 +94,12 @@ def postJsonString(session,postJsonStr: str, \
             print('postJson: '+inboxUrl+' not permitted by capabilities')
             return None,None
 
-    postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
+    postResult= \
+        session.post(url=inboxUrl,data=postJsonStr,headers=headers)
     if postResult.status_code<200 or postResult.status_code>202:
         #if postResult.status_code==400:
         #    headers['content-type']='application/ld+json'
-        #    postResult = session.post(url = inboxUrl, data = postJsonStr, headers=headers)
+        #    postResult=session.post(url=inboxUrl,data=postJsonStr,headers=headers)
         #    if not (postResult.status_code<200 or postResult.status_code>202):
         #        return True
         if postResult.status_code>=400 and postResult.status_code<=405 and \
@@ -140,8 +141,8 @@ def postImage(session,attachImageFilename: str,federationList: [], \
     headers['Content-type']=contentType
 
     with open(attachImageFilename, 'rb') as avFile:
-        mediaBinary = avFile.read()
-        postResult = session.post(url=inboxUrl, data=mediaBinary, headers=headers)
+        mediaBinary=avFile.read()
+        postResult=session.post(url=inboxUrl,data=mediaBinary,headers=headers)
         if postResult:
             return postResult.text
     return None

@@ -1,10 +1,10 @@
-__filename__ = "availability.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="availability.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import time
@@ -89,10 +89,10 @@ def sendAvailabilityViaServer(baseDir: str,session, \
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
         
-    toUrl = httpPrefix+'://'+domainFull+'/users/'+nickname
-    ccUrl = httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
+    toUrl=httpPrefix+'://'+domainFull+'/users/'+nickname
+    ccUrl=httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
 
-    newAvailabilityJson = {
+    newAvailabilityJson={
         'type': 'Availability',
         'actor': httpPrefix+'://'+domainFull+'/users/'+nickname,
         'object': '"'+status+'"',
@@ -103,8 +103,9 @@ def sendAvailabilityViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+domainFull+'/@'+nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                domain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        domain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -113,7 +114,7 @@ def sendAvailabilityViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,nickname,domain,postToBox)
                      
@@ -128,10 +129,12 @@ def sendAvailabilityViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(Nickname,password)
      
-    headers = {'host': domain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': domain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newAvailabilityJson,[],inboxUrl,headers,"inbox:write")
 
     if debug:

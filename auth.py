@@ -1,10 +1,10 @@
-__filename__ = "auth.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="auth.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import base64
 import hashlib
@@ -16,24 +16,24 @@ import random
 def hashPassword(password: str) -> str:
     """Hash a password for storing
     """
-    salt = hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-    pwdhash = hashlib.pbkdf2_hmac('sha512', \
+    salt=hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
+    pwdhash=hashlib.pbkdf2_hmac('sha512', \
                                   password.encode('utf-8'), \
                                   salt, 100000)
-    pwdhash = binascii.hexlify(pwdhash)
-    return (salt + pwdhash).decode('ascii')
+    pwdhash=binascii.hexlify(pwdhash)
+    return (salt+pwdhash).decode('ascii')
  
 def verifyPassword(storedPassword: str,providedPassword: str) -> bool:
     """Verify a stored password against one provided by user
     """
-    salt = storedPassword[:64]
-    storedPassword = storedPassword[64:]
-    pwdhash = hashlib.pbkdf2_hmac('sha512', \
+    salt=storedPassword[:64]
+    storedPassword=storedPassword[64:]
+    pwdhash=hashlib.pbkdf2_hmac('sha512', \
                                   providedPassword.encode('utf-8'), \
                                   salt.encode('ascii'), \
                                   100000)
-    pwdhash = binascii.hexlify(pwdhash).decode('ascii')
-    return pwdhash == storedPassword
+    pwdhash=binascii.hexlify(pwdhash).decode('ascii')
+    return pwdhash==storedPassword
 
 def createBasicAuthHeader(nickname: str,password: str) -> str:
     """This is only used by tests
@@ -60,13 +60,13 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
             print('DEBUG: This is not a users endpoint')
         return False
     nicknameFromPath=pathUsersSection.split('/')[0]
-    base64Str = authHeader.split(' ')[1].replace('\n','')
-    plain = base64.b64decode(base64Str).decode('utf-8')
+    base64Str=authHeader.split(' ')[1].replace('\n','')
+    plain=base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
         if debug:
             print('DEBUG: Basic Auth header does not contain a ":" separator for username:password')
         return False
-    nickname = plain.split(':')[0]
+    nickname=plain.split(':')[0]
     if nickname!=nicknameFromPath:
         if debug:
             print('DEBUG: Nickname given in the path ('+nicknameFromPath+ \
@@ -78,12 +78,12 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
         if debug:
             print('DEBUG: passwords file missing')
         return False
-    providedPassword = plain.split(':')[1]
-    passfile = open(passwordFile, "r")
+    providedPassword=plain.split(':')[1]
+    passfile=open(passwordFile, "r")
     for line in passfile:
         if line.startswith(nickname+':'):
             storedPassword=line.split(':')[1].replace('\n','')
-            success = verifyPassword(storedPassword,providedPassword)
+            success=verifyPassword(storedPassword,providedPassword)
             if not success:
                 if debug:
                     print('DEBUG: Password check failed for '+nickname)

@@ -1,10 +1,10 @@
-__filename__ = "person.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="person.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import time
@@ -42,9 +42,9 @@ from config import setConfigParam
 from config import getConfigParam    
 
 def generateRSAKey() -> (str,str):
-    key = RSA.generate(2048)
-    privateKeyPem = key.exportKey("PEM").decode("utf-8")
-    publicKeyPem = key.publickey().exportKey("PEM").decode("utf-8")
+    key=RSA.generate(2048)
+    privateKeyPem=key.exportKey("PEM").decode("utf-8")
+    publicKeyPem=key.publickey().exportKey("PEM").decode("utf-8")
     return privateKeyPem,publicKeyPem
 
 def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
@@ -100,10 +100,13 @@ def setProfileImage(baseDir: str,httpPrefix :str,nickname: str,domain: str, \
     personJson=loadJson(personFilename)
     if personJson:
         personJson[iconFilenameBase]['mediaType']=mediaType
-        personJson[iconFilenameBase]['url']=httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
+        personJson[iconFilenameBase]['url']= \
+            httpPrefix+'://'+fullDomain+'/users/'+nickname+'/'+iconFilename
         saveJson(personJson,personFilename)
             
-        cmd = '/usr/bin/convert '+imageFilename+' -size '+resolution+' -quality 50 '+profileFilename
+        cmd= \
+            '/usr/bin/convert '+imageFilename+' -size '+ \
+            resolution+' -quality 50 '+profileFilename
         subprocess.call(cmd, shell=True)
         removeMetaData(profileFilename,profileFilename)
         return True
@@ -180,61 +183,66 @@ def createPersonBase(baseDir: str,nickname: str,domain: str,port: int, \
         approveFollowers=True
         personType='Application'
 
-    newPerson = {'@context': ['https://www.w3.org/ns/activitystreams',
-                              'https://w3id.org/security/v1',
-                              {'Emoji': 'toot:Emoji',
-                               'Hashtag': 'as:Hashtag',
-                               'IdentityProof': 'toot:IdentityProof',
-                               'PropertyValue': 'schema:PropertyValue',
-                               'alsoKnownAs': {'@id': 'as:alsoKnownAs', '@type': '@id'},
-                               'focalPoint': {'@container': '@list', '@id': 'toot:focalPoint'},
-                               'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
-                               'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
-                               'schema': 'http://schema.org#',
-                               'value': 'schema:value'}],
-                 'attachment': [],
-                 'alsoKnownAs': [],
-                 'discoverable': False,
-                 'endpoints': {
-                     'id': personId+'/endpoints',
-                     'sharedInbox': httpPrefix+'://'+domain+'/inbox',
-                 },
-                 'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
-                 'followers': personId+'/followers',
-                 'following': personId+'/following',
-                 'shares': personId+'/shares',
-                 'orgSchema': None,
-                 'skills': {},
-                 'roles': {},
-                 'availability': None,
-                 'icon': {'mediaType': 'image/png',
-                          'type': 'Image',
-                          'url': personId+'/avatar'+str(randint(10000000000000,99999999999999))+'.png'},
-                 'id': personId,
-                 'image': {'mediaType': 'image/png',
-                           'type': 'Image',
-                           'url': personId+'/image'+str(randint(10000000000000,99999999999999))+'.png'},
-                 'inbox': inboxStr,
-                 'manuallyApprovesFollowers': approveFollowers,
-                 'name': personName,
-                 'outbox': personId+'/outbox',
-                 'preferredUsername': personName,
-                 'summary': '',
-                 'publicKey': {
-                     'id': personId+'#main-key',
-                     'owner': personId,
-                     'publicKeyPem': publicKeyPem
-                 },
-                 'tag': [],
-                 'type': personType,
-                 'url': personUrl,
-                 'nomadicLocations': [{
-                     'id': personId,
-                     'type': 'nomadicLocation',
-                     'locationAddress':'acct:'+nickname+'@'+domain,
-                     'locationPrimary':True,
-                     'locationDeleted':False
-                 }]
+    newPerson={
+        '@context': ['https://www.w3.org/ns/activitystreams',
+                     'https://w3id.org/security/v1',
+                     {'Emoji': 'toot:Emoji',
+                      'Hashtag': 'as:Hashtag',
+                      'IdentityProof': 'toot:IdentityProof',
+                      'PropertyValue': 'schema:PropertyValue',
+                      'alsoKnownAs': {'@id': 'as:alsoKnownAs', '@type': '@id'},
+                      'focalPoint': {'@container': '@list', '@id': 'toot:focalPoint'},
+                      'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+                      'movedTo': {'@id': 'as:movedTo', '@type': '@id'},
+                      'schema': 'http://schema.org#',
+                      'value': 'schema:value'}],
+        'attachment': [],
+        'alsoKnownAs': [],
+        'discoverable': False,
+        'endpoints': {
+            'id': personId+'/endpoints',
+            'sharedInbox': httpPrefix+'://'+domain+'/inbox',
+        },
+        'capabilityAcquisitionEndpoint': httpPrefix+'://'+domain+'/caps/new',
+        'followers': personId+'/followers',
+        'following': personId+'/following',
+        'shares': personId+'/shares',
+        'orgSchema': None,
+        'skills': {},
+        'roles': {},
+        'availability': None,
+        'icon': {
+            'mediaType': 'image/png',
+            'type': 'Image',
+            'url': personId+'/avatar'+str(randint(10000000000000,99999999999999))+'.png'
+        },
+        'id': personId,
+        'image': {
+            'mediaType': 'image/png',
+            'type': 'Image',
+            'url': personId+'/image'+str(randint(10000000000000,99999999999999))+'.png'
+        },
+        'inbox': inboxStr,
+        'manuallyApprovesFollowers': approveFollowers,
+        'name': personName,
+        'outbox': personId+'/outbox',
+        'preferredUsername': personName,
+        'summary': '',
+        'publicKey': {
+            'id': personId+'#main-key',
+            'owner': personId,
+            'publicKeyPem': publicKeyPem
+        },
+        'tag': [],
+        'type': personType,
+        'url': personUrl,
+        'nomadicLocations': [{
+            'id': personId,
+            'type': 'nomadicLocation',
+            'locationAddress':'acct:'+nickname+'@'+domain,
+            'locationPrimary':True,
+            'locationDeleted':False
+        }]
     }
 
     if nickname=='inbox':
@@ -344,7 +352,7 @@ def createPerson(baseDir: str,nickname: str,domain: str,port: int, \
         if registrationsRemaining<=0:
             return None,None,None,None
 
-    privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint = \
+    privateKeyPem,publicKeyPem,newPerson,webfingerEndpoint= \
         createPersonBase(baseDir,nickname,domain,port,httpPrefix,saveToFile,password)
     if noOfAccounts(baseDir)==1:
         #print(nickname+' becomes the instance admin and a moderator')
@@ -621,7 +629,7 @@ def isSuspended(baseDir: str,nickname: str) -> bool:
     suspendedFilename=baseDir+'/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         suspendedFile=open(suspendedFilename,"w+")
         for suspended in lines:
             if suspended.strip('\n')==nickname:
@@ -634,7 +642,7 @@ def unsuspendAccount(baseDir: str,nickname: str) -> None:
     suspendedFilename=baseDir+'/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         suspendedFile=open(suspendedFilename,"w+")
         for suspended in lines:
             if suspended.strip('\n')!=nickname:
@@ -653,7 +661,7 @@ def suspendAccount(baseDir: str,nickname: str,domain: str) -> None:
     moderatorsFile=baseDir+'/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         for moderator in lines:
             if moderator.strip('\n')==nickname:
                 return
@@ -668,7 +676,7 @@ def suspendAccount(baseDir: str,nickname: str,domain: str) -> None:
     suspendedFilename=baseDir+'/accounts/suspended.txt'
     if os.path.isfile(suspendedFilename):
         with open(suspendedFilename, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         for suspended in lines:
             if suspended.strip('\n')==nickname:
                 return
@@ -703,7 +711,7 @@ def canRemovePost(baseDir: str,nickname: str,domain: str,port: int,postId: str) 
     moderatorsFile=baseDir+'/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         for moderator in lines:
             if domainFull+'/users/'+moderator.strip('\n')+'/' in postId:
                 return False
@@ -720,10 +728,10 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
     matchStr=domainFull+'/users/'+nickname+'/'
-    directory = os.fsencode(baseDir+'/tags/')
+    directory=os.fsencode(baseDir+'/tags/')
     for f in os.scandir(directory):
         f=f.name
-        filename = os.fsdecode(f)
+        filename=os.fsdecode(f)
         if not filename.endswith(".txt"):
             continue
         tagFilename=os.path.join(directory,filename)
@@ -732,7 +740,7 @@ def removeTagsForNickname(baseDir: str,nickname: str,domain: str,port: int) -> N
         if matchStr not in open(tagFilename).read():
             continue
         with open(tagFilename, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         tagFile=open(tagFilename,"w+")
         if tagFile:
             for tagline in lines:
@@ -752,7 +760,7 @@ def removeAccount(baseDir: str,nickname: str,domain: str,port: int) -> bool:
     moderatorsFile=baseDir+'/accounts/moderators.txt'
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         for moderator in lines:
             if moderator.strip('\n')==nickname:
                 return False

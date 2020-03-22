@@ -1,10 +1,10 @@
-__filename__ = "acceptreject.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="acceptreject.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import json
@@ -39,7 +39,7 @@ def createAcceptReject(baseDir: str,federationList: [], \
             if ':' not in domain:
                 domain=domain+':'+str(port)
 
-    newAccept = {
+    newAccept={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,

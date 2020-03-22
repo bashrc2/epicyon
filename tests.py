@@ -1,10 +1,10 @@
-__filename__ = "tests.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="tests.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import base64
 import time
@@ -77,9 +77,9 @@ from content import addHtmlTags
 from content import removeLongWords
 from theme import setCSSparam
 
-testServerAliceRunning = False
-testServerBobRunning = False
-testServerEveRunning = False
+testServerAliceRunning=False
+testServerBobRunning=False
+testServerEveRunning=False
 thrAlice=None
 thrBob=None
 thrEve=None
@@ -103,7 +103,11 @@ def testHttpsigBase(withDigest):
     privateKeyPem,publicKeyPem,person,wfEndpoint= \
         createPerson(path,nickname,domain,port,httpPrefix,False,password)
     assert privateKeyPem
-    messageBodyJson = {"a key": "a value", "another key": "A string","yet another key": "Another string"}
+    messageBodyJson={
+        "a key": "a value",
+        "another key": "A string",
+        "yet another key": "Another string"
+    }
     messageBodyJsonStr=json.dumps(messageBodyJson)
 
     headersDomain=domain
@@ -115,23 +119,33 @@ def testHttpsigBase(withDigest):
     dateStr=strftime("%a, %d %b %Y %H:%M:%S %Z", gmtime())
     boxpath='/inbox'
     if not withDigest:
-        headers = {'host': headersDomain,'date': dateStr,'content-type': 'application/json'}
-        signatureHeader = \
+        headers={
+            'host': headersDomain,
+            'date': dateStr,
+            'content-type': 'application/json'
+        }
+        signatureHeader= \
             signPostHeaders(dateStr,privateKeyPem, nickname, \
                             domain, port, \
                             domain, port, \
                             boxpath, httpPrefix, None)
     else:
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
+        bodyDigest=messageContentDigest(messageBodyJsonStr)
         contentLength=len(messageBodyJsonStr)
-        headers = {'host': headersDomain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType,'content-length': str(contentLength)}
-        signatureHeader = \
+        headers={
+            'host': headersDomain,
+            'date': dateStr,
+            'digest': f'SHA-256={bodyDigest}',
+            'content-type': contentType,
+            'content-length': str(contentLength)
+        }
+        signatureHeader= \
             signPostHeaders(dateStr,privateKeyPem, nickname, \
                             domain, port, \
                             domain, port, \
                             boxpath, httpPrefix, messageBodyJsonStr)
 
-    headers['signature'] = signatureHeader
+    headers['signature']=signatureHeader
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              boxpath,False,None, \
                              messageBodyJsonStr,False)
@@ -149,14 +163,24 @@ def testHttpsigBase(withDigest):
                              messageBodyJsonStr,False) == False
     if not withDigest:
         # fake domain
-        headers = {'host': 'bogon.domain','date': dateStr,'content-type': 'application/json'}
+        headers={
+            'host': 'bogon.domain',
+            'date': dateStr,
+            'content-type': 'application/json'
+        }
     else:
         # correct domain but fake message
-        messageBodyJsonStr = '{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'
+        messageBodyJsonStr='{"a key": "a value", "another key": "Fake GNUs", "yet another key": "More Fake GNUs"}'
         contentLength=len(messageBodyJsonStr)
-        bodyDigest = messageContentDigest(messageBodyJsonStr)
-        headers = {'host': domain,'date': dateStr,'digest': f'SHA-256={bodyDigest}','content-type': contentType,'content-length': str(contentLength)}
-    headers['signature'] = signatureHeader
+        bodyDigest=messageContentDigest(messageBodyJsonStr)
+        headers={
+            'host': domain,
+            'date': dateStr,
+            'digest': f'SHA-256={bodyDigest}',
+            'content-type': contentType,
+            'content-length': str(contentLength)
+        }
+    headers['signature']=signatureHeader
     assert verifyPostHeaders(httpPrefix,publicKeyPem,headers, \
                              boxpath,True,None, \
                              messageBodyJsonStr,False) == False
@@ -184,7 +208,8 @@ def testThreadsFunction(param: str):
 
 def testThreads():
     print('testThreads')
-    thr = threadWithTrace(target=testThreadsFunction,args=('test',),daemon=True)
+    thr= \
+        threadWithTrace(target=testThreadsFunction,args=('test',),daemon=True)
     thr.start()
     assert thr.isAlive()==True
     time.sleep(1)
@@ -235,7 +260,7 @@ def createServerAlice(path: str,domain: str,port: int,bobAddress: str,federation
                          "In the gardens of memory, in the palace of dreams, that is where you and I shall meet", \
                          False, True, clientToServer,None,None,useBlurhash)
     global testServerAliceRunning
-    testServerAliceRunning = True
+    testServerAliceRunning=True
     maxMentions=10
     maxEmoji=10
     onionDomain=None
@@ -292,7 +317,7 @@ def createServerBob(path: str,domain: str,port: int,aliceAddress: str,federation
                          "Quantum physics is a bit of a passion of mine", \
                          False, True, clientToServer,None,None,useBlurhash)
     global testServerBobRunning
-    testServerBobRunning = True
+    testServerBobRunning=True
     maxMentions=10
     maxEmoji=10
     onionDomain=None
@@ -329,7 +354,7 @@ def createServerEve(path: str,domain: str,port: int,federationList: [], \
     deleteAllPosts(path,nickname,domain,'inbox')
     deleteAllPosts(path,nickname,domain,'outbox')
     global testServerEveRunning
-    testServerEveRunning = True
+    testServerEveRunning=True
     maxMentions=10
     maxEmoji=10
     onionDomain=None
@@ -346,8 +371,8 @@ def testPostMessageBetweenServers():
 
     global testServerAliceRunning
     global testServerBobRunning
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    testServerAliceRunning=False
+    testServerBobRunning=False
 
     httpPrefix='http'
     useTor=False
@@ -380,7 +405,7 @@ def testPostMessageBetweenServers():
             time.sleep(1)
         thrAlice.kill()
 
-    thrAlice = \
+    thrAlice= \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
@@ -393,7 +418,7 @@ def testPostMessageBetweenServers():
             time.sleep(1)
         thrBob.kill()
 
-    thrBob = \
+    thrBob= \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
@@ -413,11 +438,11 @@ def testPostMessageBetweenServers():
     print('\n\n*******************************************************')
     print('Alice sends to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(useTor)
+    sessionAlice=createSession(useTor)
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
-    alicePostLog = []
+    alicePostLog=[]
     followersOnly=False
     saveToFile=True
     clientToServer=False
@@ -433,7 +458,7 @@ def testPostMessageBetweenServers():
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
     assert len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])==0
 
-    sendResult = \
+    sendResult= \
         sendPost(__version__, \
                  sessionAlice,aliceDir,'alice',aliceDomain,alicePort, \
                  'bob',bobDomain,bobPort,ccUrl,httpPrefix, \
@@ -486,8 +511,8 @@ def testPostMessageBetweenServers():
     followPerson(aliceDir,'alice',aliceDomain,'bob', \
                  bobDomain+':'+str(bobPort),federationList,False)
 
-    sessionBob = createSession(useTor)
-    bobPostLog = []
+    sessionBob=createSession(useTor)
+    bobPostLog=[]
     bobPersonCache={}
     bobCachedWebfingers={}
     statusNumber=None
@@ -563,8 +588,8 @@ def testFollowBetweenServers():
 
     global testServerAliceRunning
     global testServerBobRunning
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    testServerAliceRunning=False
+    testServerBobRunning=False
 
     httpPrefix='http'
     useTor=False
@@ -597,7 +622,7 @@ def testFollowBetweenServers():
             time.sleep(1)
         thrAlice.kill()
 
-    thrAlice = \
+    thrAlice= \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
@@ -610,7 +635,7 @@ def testFollowBetweenServers():
             time.sleep(1)
         thrBob.kill()
 
-    thrBob = \
+    thrBob= \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
@@ -638,11 +663,11 @@ def testFollowBetweenServers():
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(useTor)
+    sessionAlice=createSession(useTor)
     inReplyTo=None
     inReplyToAtomUri=None
     subject=None
-    alicePostLog = []
+    alicePostLog=[]
     followersOnly=False
     saveToFile=True
     clientToServer=False
@@ -650,7 +675,7 @@ def testFollowBetweenServers():
     alicePersonCache={}
     aliceCachedWebfingers={}
     alicePostLog=[]
-    sendResult = \
+    sendResult= \
         sendFollowRequest(sessionAlice,aliceDir, \
                           'alice',aliceDomain,alicePort,httpPrefix, \
                           'bob',bobDomain,bobPort,httpPrefix, \
@@ -671,13 +696,13 @@ def testFollowBetweenServers():
 
     print('\n\n*********************************************************')
     print('Alice sends a message to Bob')
-    alicePostLog = []
+    alicePostLog=[]
     alicePersonCache={}
     aliceCachedWebfingers={}
     alicePostLog=[]
     useBlurhash=False
     isArticle=False
-    sendResult = \
+    sendResult= \
         sendPost(__version__, \
                  sessionAlice,aliceDir,'alice',aliceDomain,alicePort, \
                  'bob',bobDomain,bobPort,ccUrl, \
@@ -860,7 +885,7 @@ def testFollows():
     followPerson(baseDir,nickname,domain,'batman','mesh.com',federationList,False)
     followPerson(baseDir,nickname,domain,'giraffe','trees.com',federationList,False)
 
-    f = open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt', "r")
+    f=open(baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt', "r")
     domainFound=False
     for followingDomain in f:
         testDomain=followingDomain.split('@')[1].replace('\n','')
@@ -887,7 +912,7 @@ def testFollows():
     followerOfPerson(baseDir,nickname,domain,'batman','mesh.com',federationList,False)
     followerOfPerson(baseDir,nickname,domain,'giraffe','trees.com',federationList,False)
 
-    f = open(baseDir+'/accounts/'+nickname+'@'+domain+'/followers.txt', "r")
+    f=open(baseDir+'/accounts/'+nickname+'@'+domain+'/followers.txt', "r")
     for followerDomain in f:
         testDomain=followerDomain.split('@')[1].replace('\n','')
         if testDomain not in federationList:
@@ -949,7 +974,7 @@ def testDelegateRoles():
     httpPrefix='http'
     project='artechoke'
     role='delegator'
-    newRoleJson = {
+    newRoleJson={
         'type': 'Delegate',
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
         'object': {
@@ -970,7 +995,7 @@ def testDelegateRoles():
     assert '"delegator"' in open(baseDir+'/accounts/'+nickname+'@'+domain+'.json').read()
     assert '"delegator"' in open(baseDir+'/accounts/'+nicknameDelegated+'@'+domain+'.json').read()
     
-    newRoleJson = {
+    newRoleJson={
         'type': 'Delegate',
         'actor': httpPrefix+'://'+domain+'/users/'+nicknameDelegated,
         'object': {
@@ -1030,8 +1055,8 @@ def testClientToServer():
 
     global testServerAliceRunning
     global testServerBobRunning
-    testServerAliceRunning = False
-    testServerBobRunning = False
+    testServerAliceRunning=False
+    testServerBobRunning=False
 
     httpPrefix='http'
     useTor=False
@@ -1064,7 +1089,7 @@ def testClientToServer():
             time.sleep(1)
         thrAlice.kill()
 
-    thrAlice = \
+    thrAlice= \
         threadWithTrace(target=createServerAlice, \
                         args=(aliceDir,aliceDomain,alicePort,bobAddress, \
                               federationList,False,False, \
@@ -1077,7 +1102,7 @@ def testClientToServer():
             time.sleep(1)
         thrBob.kill()
 
-    thrBob = \
+    thrBob= \
         threadWithTrace(target=createServerBob, \
                         args=(bobDir,bobDomain,bobPort,aliceAddress, \
                               federationList,False,False, \
@@ -1103,7 +1128,7 @@ def testClientToServer():
     print('\n\n*******************************************************')
     print('Alice sends to Bob via c2s')
 
-    sessionAlice = createSession(useTor)
+    sessionAlice=createSession(useTor)
     followersOnly=False
     attachedImageFilename=baseDir+'/img/logo.png'
     mediaType=getAttachmentMediaType(attachedImageFilename)
@@ -1214,7 +1239,7 @@ def testClientToServer():
 
 
     print('\n\nBob likes the post')
-    sessionBob = createSession(useTor)
+    sessionBob=createSession(useTor)
     password='bobpass'
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
     inboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/inbox'
@@ -1262,7 +1287,7 @@ def testClientToServer():
 
     inboxPath=bobDir+'/accounts/bob@'+bobDomain+'/inbox'
     outboxPath=aliceDir+'/accounts/alice@'+aliceDomain+'/outbox'
-    postsBefore = len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
+    postsBefore=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
     print('\n\nAlice deletes her post: '+outboxPostId+' '+str(postsBefore))
     password='alicepass'
     sendDeleteViaServer(aliceDir,sessionAlice,'alice',password,
@@ -1418,7 +1443,7 @@ def testGetStatusNumber():
     print('testGetStatusNumber')
     prevStatusNumber=None
     for i in range(1,20):
-        statusNumber,published = getStatusNumber()
+        statusNumber,published=getStatusNumber()
         if prevStatusNumber:
             assert len(statusNumber) == 18
             assert int(statusNumber) > prevStatusNumber

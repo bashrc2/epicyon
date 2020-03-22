@@ -1,10 +1,10 @@
-__filename__ = "question.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="question.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 from utils import locatePost
@@ -76,7 +76,7 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}) ->
         else:
             # change an entry in the voters file
             with open(votersFilename, "r") as votersFile:
-                lines = votersFile.readlines()
+                lines=votersFile.readlines()
                 newlines=[]
                 saveVotersFile=False
                 for voteLine in lines:
@@ -101,7 +101,7 @@ def questionUpdateVotes(baseDir: str,nickname: str,domain: str,replyJson: {}) ->
             continue
         totalItems=0
         with open(votersFilename, "r") as votersFile:
-            lines = votersFile.readlines()
+            lines=votersFile.readlines()
             for voteLine in lines:
                 if voteLine.endswith(votersFileSeparator+possibleAnswer['name']+'\n'):
                     totalItems+=1                    

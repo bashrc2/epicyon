@@ -1,10 +1,10 @@
-__filename__ = "skills.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="skills.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import os
@@ -109,14 +109,14 @@ def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
             if ':' not in domain:
                 domainFull=domain+':'+str(port)
         
-    toUrl = httpPrefix+'://'+domainFull+'/users/'+nickname
-    ccUrl = httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
+    toUrl=httpPrefix+'://'+domainFull+'/users/'+nickname
+    ccUrl=httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
 
     if skillLevelPercent:
         skillStr=skill+';'+str(skillLevelPercent)
     else:
         skillStr=skill+';0'
-    newSkillJson = {
+    newSkillJson={
         'type': 'Skill',
         'actor': httpPrefix+'://'+domainFull+'/users/'+nickname,
         'object': '"'+skillStr+'"',
@@ -127,8 +127,8 @@ def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
     handle=httpPrefix+'://'+domainFull+'/@'+nickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                domain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              domain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -137,7 +137,7 @@ def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,nickname,domain,postToBox)
                      
@@ -152,10 +152,12 @@ def sendSkillViaServer(baseDir: str,session,nickname: str,password: str,
     
     authHeader=createBasicAuthHeader(Nickname,password)
      
-    headers = {'host': domain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': domain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newSkillJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:

@@ -1,10 +1,10 @@
-__filename__ = "threads.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="threads.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import threading
 import os
@@ -20,9 +20,9 @@ class threadWithTrace(threading.Thread):
         tries=0
         while tries<3:
             try:
-                self._args, self._keywords = args, keywords
-                threading.Thread.__init__(self, *self._args, **self._keywords) 
-                self.killed = False
+                self._args,self._keywords=args,keywords
+                threading.Thread.__init__(self,*self._args,**self._keywords) 
+                self.killed=False
                 break
             except Exception as e:
                 print('ERROR: threads.py/__init__ failed - '+str(e))
@@ -33,8 +33,8 @@ class threadWithTrace(threading.Thread):
         tries=0
         while tries<3:
             try:
-                self.__run_backup = self.run 
-                self.run = self.__run       
+                self.__run_backup=self.run 
+                self.run=self.__run       
                 threading.Thread.start(self)
                 break
             except Exception as e:
@@ -47,7 +47,7 @@ class threadWithTrace(threading.Thread):
     def __run(self):
         sys.settrace(self.globaltrace)
         self.__run_backup()
-        self.run = self.__run_backup
+        self.run=self.__run_backup
 
     def globaltrace(self, frame, event, arg): 
         if event == 'call': 
@@ -62,7 +62,7 @@ class threadWithTrace(threading.Thread):
         return self.localtrace 
   
     def kill(self): 
-        self.killed = True
+        self.killed=True
 
     def clone(self,fn):
         return threadWithTrace(target=fn, \

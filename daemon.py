@@ -1,10 +1,10 @@
-__filename__ = "daemon.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="daemon.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 #import socketserver
@@ -218,17 +218,17 @@ def readFollowList(filename: str) -> None:
     followlist=[]
     if not os.path.isfile(filename):
         return followlist
-    followUsers = open(filename, "r")    
+    followUsers=open(filename, "r")    
     for u in followUsers:
         if u not in followlist:
-            nickname,domain = parseHandle(u)
+            nickname,domain=parseHandle(u)
             if nickname:
                 followlist.append(nickname+'@'+domain)
     followUsers.close()
     return followlist
 
 class PubServer(BaseHTTPRequestHandler):
-    protocol_version = 'HTTP/1.1'        
+    protocol_version='HTTP/1.1'        
 
     def _sendReplyToQuestion(self,nickname: str,messageId: str,answer: str) -> None:
         """Sends a reply to a question
@@ -451,7 +451,7 @@ class PubServer(BaseHTTPRequestHandler):
         if os.path.isfile(mediaFilename+'.etag'):
             try:
                 with open(mediaFilename+'.etag', 'r') as etagFile:
-                    etag = etagFile.read()
+                    etag=etagFile.read()
             except:
                 pass
         if not etag:
@@ -771,7 +771,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         beginSaveTime=time.time()
         # save the json for later queue processing
-        queueFilename = \
+        queueFilename= \
             savePostToInboxQueue(self.server.baseDir,
                                  self.server.httpPrefix,
                                  nickname,
@@ -962,7 +962,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,4)
 
         # check authorization
-        authorized = self._isAuthorized()
+        authorized=self._isAuthorized()
         if self.server.debug:
             if authorized:
                 print('GET Authorization granted')
@@ -1270,7 +1270,7 @@ class PubServer(BaseHTTPRequestHandler):
                 while tries<5:
                     try:
                         with open('epicyon-profile.css', 'r') as cssfile:
-                            css = cssfile.read()
+                            css=cssfile.read()
                             break
                     except Exception as e:
                         print(e)
@@ -1299,7 +1299,7 @@ class PubServer(BaseHTTPRequestHandler):
                 while tries<5:
                     try:
                         with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
+                            mediaBinary=avFile.read()
                             break
                     except Exception as e:
                         print(e)
@@ -1324,7 +1324,7 @@ class PubServer(BaseHTTPRequestHandler):
                 while tries<5:
                     try:
                         with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
+                            mediaBinary=avFile.read()
                             break
                     except Exception as e:
                         print(e)
@@ -1349,7 +1349,7 @@ class PubServer(BaseHTTPRequestHandler):
                 while tries<5:
                     try:
                         with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
+                            mediaBinary=avFile.read()
                             break
                     except Exception as e:
                         print(e)
@@ -1383,7 +1383,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         mediaImageType='gif'                        
                     with open(emojiFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
+                        mediaBinary=avFile.read()
                         self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
                         self._write(mediaBinary)
                     return
@@ -1439,7 +1439,7 @@ class PubServer(BaseHTTPRequestHandler):
                             currEtag=''
                             try:
                                 with open(mediaFilename, 'r') as etagFile:
-                                    currEtag = etagFile.read()
+                                    currEtag=etagFile.read()
                             except:
                                 pass
                             if oldEtag==currEtag:
@@ -1447,7 +1447,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._304()
                                 return
                     with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
+                        mediaBinary=avFile.read()
                         self._set_headers_etag(mediaFilename,mediaFileType,mediaBinary,cookie)
                         self._write(mediaBinary)
                     return        
@@ -1477,7 +1477,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         mediaFileType='gif'
                     with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
+                        mediaBinary=avFile.read()
                         self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie)
                         self._write(mediaBinary)
                     return        
@@ -1501,7 +1501,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     if os.path.isfile(mediaFilename):
                         with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
+                            mediaBinary=avFile.read()
                             self._set_headers('image/png',len(mediaBinary),cookie)
                             self._write(mediaBinary)
                             self.server.iconsCache[mediaStr]=mediaBinary
@@ -1518,7 +1518,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.baseDir+'/cache/'+self.path
             if os.path.isfile(mediaFilename):
                 with open(mediaFilename, 'rb') as avFile:
-                    mediaBinary = avFile.read()
+                    mediaBinary=avFile.read()
                     if mediaFilename.endswith('.png'):
                         self._set_headers('image/png',len(mediaBinary),cookie)
                     elif mediaFilename.endswith('.jpg'):
@@ -1568,7 +1568,7 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             mediaImageType='webp'
                         with open(avatarFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
+                            mediaBinary=avFile.read()
                             self._set_headers('image/'+mediaImageType, \
                                               len(mediaBinary),cookie)
                             self._write(mediaBinary)
@@ -1861,7 +1861,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 '/users/'+self.postToNickname
             unRepeatToStr='https://www.w3.org/ns/activitystreams#Public'
-            newUndoAnnounce = {
+            newUndoAnnounce={
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'actor': undoAnnounceActor,
                 'type': 'Undo',
@@ -2534,7 +2534,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     nickname+'#statuses#'+statusNumber+'.replies'
                                 if not os.path.isfile(postRepliesFilename):
                                     # There are no replies, so show empty collection
-                                    repliesJson = {
+                                    repliesJson={
                                         '@context': 'https://www.w3.org/ns/activitystreams',
                                         'first': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies?page=true',
                                         'id': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'/replies',
@@ -2574,7 +2574,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     return
                                 else:
                                     # replies exist. Itterate through the text file containing message ids
-                                    repliesJson = {
+                                    repliesJson={
                                         '@context': 'https://www.w3.org/ns/activitystreams',
                                         'id': self.server.httpPrefix+'://'+self.server.domainFull+'/users/'+nickname+'/statuses/'+statusNumber+'?page=true',
                                         'orderedItems': [
@@ -2637,7 +2637,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if actorJson:                    
                         if actorJson.get('roles'):
                             if self._requestHTTP():
-                                getPerson = \
+                                getPerson= \
                                     personLookup(self.server.domain, \
                                                  self.path.replace('/roles',''), \
                                                  self.server.baseDir)
@@ -2683,7 +2683,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if actorJson:                    
                         if actorJson.get('skills'):
                             if self._requestHTTP():
-                                getPerson = \
+                                getPerson= \
                                     personLookup(self.server.domain, \
                                                  self.path.replace('/skills',''), \
                                                  self.server.baseDir)
@@ -3525,7 +3525,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if pageNumberStr.isdigit():
                         pageNumber=int(pageNumberStr)
                     searchPath=self.path.split('?page=')[0]
-                getPerson = \
+                getPerson= \
                     personLookup(self.server.domain, \
                                  searchPath.replace('/following',''), \
                                  self.server.baseDir)
@@ -3629,7 +3629,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,52)
 
         # look up a person
-        getPerson = \
+        getPerson= \
             personLookup(self.server.domain,self.path, \
                          self.server.baseDir)
         if getPerson:
@@ -3687,7 +3687,7 @@ class PubServer(BaseHTTPRequestHandler):
         filename=self.server.baseDir+self.path
         if os.path.isfile(filename):
             with open(filename, 'r', encoding='utf-8') as File:
-                content = File.read()
+                content=File.read()
                 contentJson=json.loads(content)
                 msg=json.dumps(contentJson,ensure_ascii=False).encode('utf-8')
                 self._set_headers('application/json',len(msg),None)
@@ -3723,12 +3723,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(mediaFilename+'.etag'):
                         try:
                             with open(mediaFilename+'.etag', 'r') as etagFile:
-                                etag = etagFile.read()
+                                etag=etagFile.read()
                         except:
                             pass
                     else:
                         with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
+                            mediaBinary=avFile.read()
                             etag=sha1(mediaBinary).hexdigest()
                             try:
                                 with open(mediaFilename+'.etag', 'w') as etagFile:
@@ -3760,10 +3760,10 @@ class PubServer(BaseHTTPRequestHandler):
                                postType: str,path: str,headers: {},
                                length: int,postBytes,boundary: str) -> int:
         # Note: this needs to happen synchronously
-        # 0 = this is not a new post
-        # 1 = new post success
-        # -1 = new post failed
-        # 2 = new post canceled
+        # 0=this is not a new post
+        # 1=new post success
+        # -1=new post failed
+        # 2=new post canceled
         if self.server.debug:
             print('DEBUG: receiving POST')
 
@@ -3776,7 +3776,7 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname=nicknameStr.split('/')[0]
             else:
                 return -1
-            length = int(headers['Content-Length'])
+            length=int(headers['Content-Length'])
             if length>self.server.maxPostLength:
                 print('POST size too large')
                 return -1
@@ -4229,7 +4229,7 @@ class PubServer(BaseHTTPRequestHandler):
                 headersWithoutCookie[dictEntryName]=headerLine
         print('New post headers: '+str(headersWithoutCookie))
 
-        length = int(headers['Content-Length'])
+        length=int(headers['Content-Length'])
         if length>self.server.maxPostLength:
             print('POST size too large')
             return None
@@ -4304,7 +4304,7 @@ class PubServer(BaseHTTPRequestHandler):
             cookie=self.headers['Cookie']
 
         # check authorization
-        authorized = self._isAuthorized()
+        authorized=self._isAuthorized()
         if self.server.debug:
             if authorized:
                 print('POST Authorization granted')
@@ -4320,7 +4320,7 @@ class PubServer(BaseHTTPRequestHandler):
         
         if self.path.startswith('/login'):
             # get the contents of POST containing login credentials
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             if length>512:
                 print('Login failed - credentials too long')
                 self.send_response(401)
@@ -4368,7 +4368,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(saltFilename):
                         try:
                             with open(saltFilename, 'r') as fp:
-                                salt = fp.read()
+                                salt=fp.read()
                         except Exception as e:
                             print('WARN: Unable to read salt for '+ \
                                   loginNickname+' '+str(e))
@@ -4430,7 +4430,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
                     return
-                length = int(self.headers['Content-length'])
+                length=int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
                     print('Maximum profile data length exceeded '+str(length))
                     self._redirect_headers(actorStr,cookie)
@@ -4855,7 +4855,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorStr= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 self.path.replace('/moderationaction','')
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             moderationParams=self.rfile.read(length).decode('utf-8')
             print('moderationParams: '+moderationParams)
             if '&' in moderationParams:
@@ -4995,7 +4995,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
             # get the parameters
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             questionParams=self.rfile.read(length).decode('utf-8')
             questionParams= \
                 questionParams.replace('+',' ').replace('%40','@').replace('%3A',':').replace('%23','#').replace('%2F','/').replace('%3F','').strip()
@@ -5034,7 +5034,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix+'://'+ \
                 self.server.domainFull+ \
                 self.path.replace('/searchhandle','')
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
             if 'submitBack=' in searchParams:
                 # go back on search screen
@@ -5165,7 +5165,7 @@ class PubServer(BaseHTTPRequestHandler):
             originPathStr= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 self.path.split('/rmshare')[0]
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             removeShareConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removeShareConfirmParams:
                 removeShareConfirmParams= \
@@ -5193,7 +5193,7 @@ class PubServer(BaseHTTPRequestHandler):
             originPathStr= \
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 self.path.split('/rmpost')[0]
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             removePostConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removePostConfirmParams:
                 removePostConfirmParams= \
@@ -5255,7 +5255,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 self.path.split('/followconfirm')[0]
             followerNickname=getNicknameFromActor(originPathStr)
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitView=' in followConfirmParams:
                 followingActor= \
@@ -5308,7 +5308,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix+'://'+self.server.domainFull+ \
                 self.path.split('/unfollowconfirm')[0]
             followerNickname=getNicknameFromActor(originPathStr)
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in followConfirmParams:
                 followingActor= \
@@ -5329,9 +5329,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.httpPrefix+'://'+ \
                         self.server.domainFull+ \
                         '/users/'+followerNickname
-                    statusNumber,published = getStatusNumber()
+                    statusNumber,published=getStatusNumber()
                     followId=followActor+'/statuses/'+str(statusNumber)
-                    unfollowJson = {
+                    unfollowJson={
                         '@context': 'https://www.w3.org/ns/activitystreams',
                         'id': followId+'/undo',
                         'type': 'Undo',
@@ -5363,7 +5363,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
                 return                
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
                 blockingActor= \
@@ -5410,7 +5410,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
                 return                
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             blockConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
                 blockingActor= \
@@ -5462,7 +5462,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
                 return                
-            length = int(self.headers['Content-length'])
+            length=int(self.headers['Content-length'])
             optionsConfirmParams= \
                 self.rfile.read(length).decode('utf-8').replace('%3A',':').replace('%2F','/')
             # page number to return to
@@ -5671,7 +5671,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,17)
 
         # read the message and convert it into a python dictionary
-        length = int(self.headers['Content-length'])
+        length=int(self.headers['Content-length'])
         if self.server.debug:
             print('DEBUG: content-length: '+str(length))
         if not self.headers['Content-type'].startswith('image/') and \
@@ -5740,7 +5740,7 @@ class PubServer(BaseHTTPRequestHandler):
             print("POST is not json: "+self.headers['Content-type'])
             if self.server.debug:
                 print(str(self.headers))
-                length = int(self.headers['Content-length'])
+                length=int(self.headers['Content-length'])
                 if length<self.server.maxPostLength:
                     unknownPost=self.rfile.read(length).decode('utf-8')
                     print(str(unknownPost))
@@ -5758,11 +5758,11 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/sharedInbox' or self.path == '/inbox':
             length=0
             if self.headers.get('Content-length'):
-                length = int(self.headers['Content-length'])
+                length=int(self.headers['Content-length'])
             elif self.headers.get('Content-Length'):
-                length = int(self.headers['Content-Length'])
+                length=int(self.headers['Content-Length'])
             elif self.headers.get('content-length'):
-                length = int(self.headers['content-length'])
+                length=int(self.headers['content-length'])
             if length>10240:
                 print('WARN: post to shared inbox is too long '+str(length)+' bytes')
                 self._400()
@@ -5897,7 +5897,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.POSTbusy=False
 
 class PubServerUnitTest(PubServer):
-    protocol_version = 'HTTP/1.0'
+    protocol_version='HTTP/1.0'
 
 def runPostsQueue(baseDir: str,sendThreads: [],debug: bool) -> None:
     """Manages the threads used to send posts
@@ -5952,7 +5952,7 @@ def loadTokens(baseDir: str,tokensDict: {},tokensLookup: {}) -> None:
                 token=None
                 try:
                     with open(tokenFilename, 'r') as fp:
-                        token = fp.read()
+                        token=fp.read()
                 except Exception as e:
                     print('WARN: Unable to read token for '+nickname+' '+str(e))
                 if not token:
@@ -5984,14 +5984,14 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
             return
 
     if unitTest: 
-        serverAddress = (domain, proxyPort)
-        pubHandler = partial(PubServerUnitTest)
+        serverAddress=(domain, proxyPort)
+        pubHandler=partial(PubServerUnitTest)
     else:
-        serverAddress = ('', proxyPort)
-        pubHandler = partial(PubServer)
+        serverAddress=('', proxyPort)
+        pubHandler=partial(PubServer)
 
     try:
-        httpd = ThreadingHTTPServer(serverAddress, pubHandler)
+        httpd=ThreadingHTTPServer(serverAddress, pubHandler)
     except Exception as e:
         if e.errno==98:
             print('ERROR: HTTP server address is already in use. '+str(serverAddress))
@@ -6068,7 +6068,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
     httpd.personCache={}
     httpd.cachedWebfingers={}
     httpd.useTor=useTor
-    httpd.session = None
+    httpd.session=None
     httpd.sessionLastUpdate=0
     httpd.lastGET=0
     httpd.lastPOST=0

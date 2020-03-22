@@ -1,10 +1,10 @@
-__filename__ = "roles.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="roles.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import os
@@ -23,10 +23,10 @@ def clearModeratorStatus(baseDir: str) -> None:
     This could be slow if there are many users, but only happens
     rarely when moderators are appointed or removed
     """
-    directory = os.fsencode(baseDir+'/accounts/')
+    directory=os.fsencode(baseDir+'/accounts/')
     for f in os.scandir(directory):
         f=f.name
-        filename = os.fsdecode(f)
+        filename=os.fsdecode(f)
         if filename.endswith(".json") and '@' in filename: 
             filename=os.path.join(baseDir+'/accounts/', filename)
             if '"moderator"' in open(filename).read():
@@ -46,7 +46,7 @@ def addModerator(baseDir: str,nickname: str,domain: str) -> None:
     if os.path.isfile(moderatorsFile):
         # is this nickname already in the file?
         with open(moderatorsFile, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
         for moderator in lines:
             moderator=moderator.strip('\n')
             if line==nickname:
@@ -70,7 +70,7 @@ def removeModerator(baseDir: str,nickname: str):
     if not os.path.isfile(moderatorsFile):
         return
     with open(moderatorsFile, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
     with open(moderatorsFile, "w") as f:
         for moderator in lines:
             moderator=moderator.strip('\n')
@@ -229,14 +229,17 @@ def sendRoleViaServer(baseDir: str,session, \
             if ':' not in delegatorDomain:
                 delegatorDomainFull=delegatorDomain+':'+str(fromPort)
         
-    toUrl = httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname
-    ccUrl = httpPrefix+'://'+delegatorDomainFull+'/users/'+delegatorNickname+'/followers'
+    toUrl= \
+        httpPrefix+'://'+delegatorDomainFull+'/users/'+nickname
+    ccUrl= \
+        httpPrefix+'://'+delegatorDomainFull+'/users/'+ \
+        delegatorNickname+'/followers'
 
     if role:
         roleStr=project.lower()+';'+role.lower()
     else:
         roleStr=project.lower()+';'
-    newRoleJson = {
+    newRoleJson={
         'type': 'Delegate',
         'actor': httpPrefix+'://'+delegatorDomainFull+'/users/'+delegatorNickname,
         'object': {
@@ -253,8 +256,8 @@ def sendRoleViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+delegatorDomainFull+'/@'+delegatorNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                delegatorDomain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              delegatorDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -263,7 +266,7 @@ def sendRoleViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      delegatorNickname,delegatorDomain,postToBox)
@@ -279,10 +282,12 @@ def sendRoleViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(delegatorNickname,password)
      
-    headers = {'host': delegatorDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': delegatorDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newRoleJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:

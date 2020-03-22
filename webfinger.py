@@ -1,10 +1,10 @@
-__filename__ = "webfinger.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="webfinger.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import base64
 try:
@@ -26,21 +26,21 @@ from utils import saveJson
 
 def parseHandle(handle: str) -> (str,str):
     if '.' not in handle:
-        return None, None
+        return None,None
     if '/@' in handle:
-        domain, nickname = \
+        domain,nickname= \
             handle.replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','').split('/@')
     else:
         if '/users/' in handle:
-            domain, nickname = \
+            domain,nickname= \
                 handle.replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','').split('/users/')
         else:
             if '@' in handle:
-                nickname, domain = handle.split('@')
+                nickname,domain=handle.split('@')
             else:
-                return None, None
+                return None,None
 
-    return nickname, domain
+    return nickname,domain
 
 def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
                     fromDomain: str,projectVersion: str) -> {}:
@@ -48,7 +48,7 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
         print('WARN: No session specified for webfingerHandle')
         return None
 
-    nickname, domain = parseHandle(handle)
+    nickname,domain=parseHandle(handle)
     if not nickname:
         return None
     wfDomain=domain
@@ -61,11 +61,15 @@ def webfingerHandle(session,handle: str,httpPrefix: str,cachedWebfingers: {}, \
     wf=getWebfingerFromCache(nickname+'@'+wfDomain,cachedWebfingers)
     if wf:
         return wf    
-    url = '{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
-    par = {'resource': 'acct:{}'.format(nickname+'@'+wfDomain)}
-    hdr = {'Accept': 'application/jrd+json'}    
+    url='{}://{}/.well-known/webfinger'.format(httpPrefix,domain)
+    par={
+        'resource': 'acct:{}'.format(nickname+'@'+wfDomain)
+    }
+    hdr={
+        'Accept': 'application/jrd+json'
+    }
     try:
-        result = getJson(session,url,hdr,par,projectVersion,httpPrefix,fromDomain)
+        result=getJson(session,url,hdr,par,projectVersion,httpPrefix,fromDomain)
     except Exception as e:
         print("Unable to webfinger " + url)
         print('nickname: '+str(nickname))
@@ -81,9 +85,9 @@ def generateMagicKey(publicKeyPem) -> str:
     """See magic_key method in
        https://github.com/tootsuite/mastodon/blob/707ddf7808f90e3ab042d7642d368c2ce8e95e6f/app/models/account.rb
     """
-    privkey = RSA.importKey(publicKeyPem)    
-    mod = base64.urlsafe_b64encode(number.long_to_bytes(privkey.n)).decode("utf-8")
-    pubexp = base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
+    privkey=RSA.importKey(publicKeyPem)    
+    mod=base64.urlsafe_b64encode(number.long_to_bytes(privkey.n)).decode("utf-8")
+    pubexp=base64.urlsafe_b64encode(number.long_to_bytes(privkey.e)).decode("utf-8")
     return f"data:application/magic-public-key,RSA.{mod}.{pubexp}"
 
 def storeWebfingerEndpoint(nickname: str,domain: str,port: int,baseDir: str, \
@@ -127,7 +131,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
         subjectStr="acct:"+originalDomain+"@"+originalDomain
         profilePageHref=httpPrefix+'://'+domain+'/about/more?instance_actor=true'
     
-    account = {
+    account={
         "aliases": [
             httpPrefix+"://"+domain+"/@"+personName,
             personId
@@ -160,7 +164,7 @@ def createWebfingerEndpoint(nickname: str,domain: str,port: int, \
 def webfingerNodeInfo(httpPrefix: str,domainFull: str) -> {}:
     """ /.well-known/nodeinfo endpoint
     """
-    nodeinfo = {
+    nodeinfo={
         'links': [
             {
                 'href': httpPrefix+'://'+domainFull+'/nodeinfo/2.0',

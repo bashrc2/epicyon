@@ -1,10 +1,10 @@
-__filename__ = "config.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="config.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import time
@@ -18,7 +18,7 @@ def createConfig(baseDir: str) -> None:
     configFilename=baseDir+'/config.json'
     if os.path.isfile(configFilename):
         return
-    configJson = {
+    configJson={
     }
     saveJson(configJson,configFilename)
 

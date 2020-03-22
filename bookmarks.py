@@ -1,10 +1,10 @@
-__filename__ = "bookmarks.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="bookmarks.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import json
@@ -159,7 +159,7 @@ def updateBookmarksCollection(recentPostsCache: {}, \
         if not postJsonObject['object'].get('bookmarks'):
             if debug:
                 print('DEBUG: Adding initial bookmarks to '+objectUrl)
-            bookmarksJson = {
+            bookmarksJson={
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': objectUrl,
                 'type': 'Collection',
@@ -198,7 +198,7 @@ def updateBookmarksCollection(recentPostsCache: {}, \
             if bookmarkIndex not in open(bookmarksIndexFilename).read():
                 try:
                     with open(bookmarksIndexFilename, 'r+') as bookmarksIndexFile:
-                        content = bookmarksIndexFile.read()
+                        content=bookmarksIndexFile.read()
                         bookmarksIndexFile.seek(0, 0)
                         bookmarksIndexFile.write(bookmarkIndex+'\n'+content)
                         if debug:
@@ -239,7 +239,7 @@ def bookmark(recentPostsCache: {}, \
     if '/statuses/' in objectUrl:
         bookmarkTo=[objectUrl.split('/statuses/')[0]]
 
-    newBookmarkJson = {
+    newBookmarkJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
@@ -348,7 +348,7 @@ def undoBookmark(recentPostsCache: {}, \
     if '/statuses/' in objectUrl:
         bookmarkTo=[objectUrl.split('/statuses/')[0]]
 
-    newUndoBookmarkJson = {
+    newUndoBookmarkJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
@@ -414,8 +414,8 @@ def undoBookmarkPost(session,baseDir: str,federationList: [], \
             if ':' not in bookmarkedomain:
                 bookmarkedomain=bookmarkedomain+':'+str(bookmarkPort)
 
-    objectUrl = \
-        httpPrefix + '://'+bookmarkedomain+'/users/'+bookmarkNickname+ \
+    objectUrl= \
+        httpPrefix+'://'+bookmarkedomain+'/users/'+bookmarkNickname+ \
         '/statuses/'+str(bookmarkStatusNumber)
 
     ccUrl=httpPrefix+'://'+bookmarkedomain+'/users/'+bookmarkNickname
@@ -454,7 +454,7 @@ def sendBookmarkViaServer(baseDir: str,session, \
     if '/statuses/' in bookmarkUrl:
         toUrl=[bookmarkUrl.split('/statuses/')[0]]
         
-    newBookmarkJson = {
+    newBookmarkJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Bookmark',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -474,7 +474,7 @@ def sendBookmarkViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -490,10 +490,12 @@ def sendBookmarkViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
     
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newBookmarkJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
@@ -529,7 +531,7 @@ def sendUndoBookmarkViaServer(baseDir: str,session, \
     if '/statuses/' in bookmarkUrl:
         toUrl=[bookmarkUrl.split('/statuses/')[0]]
 
-    newUndoBookmarkJson = {
+    newUndoBookmarkJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -543,8 +545,8 @@ def sendUndoBookmarkViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -553,7 +555,7 @@ def sendUndoBookmarkViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -569,10 +571,12 @@ def sendUndoBookmarkViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
     
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newUndoBookmarkJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:

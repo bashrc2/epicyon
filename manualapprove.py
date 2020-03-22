@@ -1,10 +1,10 @@
-__filename__ = "manualapprove.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="manualapprove.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import json
@@ -99,7 +99,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
         print('Manual follow accept: '+approveHandle+' not in requests file '+approveFollowsFilename)
         return
     
-    approvefilenew = open(approveFollowsFilename+'.new', 'w+')
+    approvefilenew=open(approveFollowsFilename+'.new', 'w+')
     updateApprovedFollowers=False
     followActivityfilename=None
     with open(approveFollowsFilename, 'r') as approvefile:
@@ -147,7 +147,7 @@ def manualApproveFollowRequest(session,baseDir: str, \
             if approveHandle not in open(followersFilename).read():
                 try:
                     with open(followersFilename, 'r+') as followersFile:
-                        content = followersFile.read()
+                        content=followersFile.read()
                         followersFile.seek(0, 0)
                         followersFile.write(approveHandle+'\n'+content)
                 except Exception as e:

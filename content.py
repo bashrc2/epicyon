@@ -1,10 +1,10 @@
-__filename__ = "content.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="content.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import time
@@ -158,7 +158,8 @@ def addWebLinks(content: str) -> str:
 def validHashTag(hashtag: str) -> bool:
     """Returns true if the give hashtag contains valid characters
     """
-    validChars = set('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    validChars= \
+        set('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
     if set(hashtag).issubset(validChars):
         return True
     return False
@@ -417,7 +418,7 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     if '@' in words:
         if os.path.isfile(followingFilename):
             with open(followingFilename, "r") as f:
-                following = f.readlines()
+                following=f.readlines()
 
     # extract mentions and tags from words
     longWordsList=[]
@@ -569,7 +570,7 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
         if os.path.isfile(possibleOtherFormat):
             os.remove(possibleOtherFormat)
 
-    fd = open(filename, 'wb')
+    fd=open(filename, 'wb')
     fd.write(mediaBytes[startPos:])
     fd.close()
 
@@ -579,7 +580,7 @@ def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:
     """Returns a dictionary containing the text fields of a http form POST
     The boundary argument comes from the http header
     """    
-    msg = email.parser.BytesParser().parsebytes(postBytes)
+    msg=email.parser.BytesParser().parsebytes(postBytes)
     if debug:
         print('DEBUG: POST arriving '+msg.get_payload(decode=True).decode('utf-8'))
     messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)

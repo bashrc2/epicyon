@@ -1,10 +1,10 @@
-__filename__ = "like.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="like.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import json
@@ -135,7 +135,7 @@ def updateLikesCollection(recentPostsCache: {}, \
         if not postJsonObject['object'].get('likes'):
             if debug:
                 print('DEBUG: Adding initial likes to '+objectUrl)
-            likesJson = {
+            likesJson={
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': objectUrl,
                 'type': 'Collection',
@@ -193,7 +193,7 @@ def like(recentPostsCache: {}, \
     if '/statuses/' in objectUrl:
         likeTo=[objectUrl.split('/statuses/')[0]]
 
-    newLikeJson = {
+    newLikeJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
@@ -302,7 +302,7 @@ def undolike(recentPostsCache: {}, \
     if '/statuses/' in objectUrl:
         likeTo=[objectUrl.split('/statuses/')[0]]
 
-    newUndoLikeJson = {
+    newUndoLikeJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
@@ -368,8 +368,8 @@ def undoLikePost(recentPostsCache: {}, \
             if ':' not in likeDomain:
                 likeDomain=likeDomain+':'+str(likePort)
 
-    objectUrl = \
-        httpPrefix + '://'+likeDomain+'/users/'+likeNickname+ \
+    objectUrl= \
+        httpPrefix+'://'+likeDomain+'/users/'+likeNickname+ \
         '/statuses/'+str(likeStatusNumber)
 
     ccUrl=httpPrefix+'://'+likeDomain+'/users/'+likeNickname
@@ -409,7 +409,7 @@ def sendLikeViaServer(baseDir: str,session, \
     if '/statuses/' in likeUrl:
         toUrl=[likeUrl.split('/statuses/')[0]]
     
-    newLikeJson = {
+    newLikeJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Like',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -429,7 +429,7 @@ def sendLikeViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -445,10 +445,12 @@ def sendLikeViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newLikeJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
@@ -484,7 +486,7 @@ def sendUndoLikeViaServer(baseDir: str,session, \
     if '/statuses/' in likeUrl:
         toUrl=[likeUrl.split('/statuses/')[0]]
 
-    newUndoLikeJson = {
+    newUndoLikeJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -498,8 +500,9 @@ def sendUndoLikeViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -508,7 +511,7 @@ def sendUndoLikeViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -524,10 +527,12 @@ def sendUndoLikeViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newUndoLikeJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:

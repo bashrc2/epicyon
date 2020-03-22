@@ -1,10 +1,10 @@
-__filename__ = "follow.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="follow.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import time
@@ -56,7 +56,7 @@ def removeFromFollowBase(baseDir: str, \
         return
     if acceptOrDenyHandle not in open(approveFollowsFilename).read():
         return
-    approvefilenew = open(approveFollowsFilename+'.new', 'w+')
+    approvefilenew=open(approveFollowsFilename+'.new', 'w+')
     with open(approveFollowsFilename, 'r') as approvefile:
         for approveHandle in approvefile:
             if not approveHandle.startswith(acceptOrDenyHandle):
@@ -137,8 +137,8 @@ def getFollowersOfPerson(baseDir: str, \
         return followers
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for account in dirs:
-            filename = os.path.join(subdir, account)+'/'+followFile
-            if account == handle or account.startswith('inbox@'):
+            filename=os.path.join(subdir, account)+'/'+followFile
+            if account==handle or account.startswith('inbox@'):
                 continue
             if not os.path.isfile(filename):
                 continue
@@ -195,7 +195,7 @@ def unfollowPerson(baseDir: str,nickname: str, domain: str, \
             print('DEBUG: handle to unfollow '+handleToUnfollow+' is not in '+filename)
         return
     with open(filename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
     with open(filename, "w") as f:
         for line in lines:
             if line.strip("\n") != handleToUnfollow:
@@ -254,9 +254,9 @@ def getNoOfFollows(baseDir: str,nickname: str,domain: str, \
     filename=baseDir+'/accounts/'+handle+'/'+followFile
     if not os.path.isfile(filename):
         return 0
-    ctr = 0
+    ctr=0
     with open(filename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
         for line in lines:
             if '#' not in line:
                 if '@' in line and '.' in line and not line.startswith('http'):
@@ -315,25 +315,27 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
                 domain=domain+':'+str(port)
 
     if headerOnly:
-        following = {
+        following={
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page=1',
             'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile,
             'totalItems': getNoOfFollows(baseDir,nickname,domain,authenticated),
-            'type': 'OrderedCollection'}
+            'type': 'OrderedCollection'
+        }
         return following
 
     if not pageNumber:
         pageNumber=1
 
     nextPageNumber=int(pageNumber+1)
-    following = {
+    following={
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile+'?page='+str(pageNumber),
         'orderedItems': [],
         'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/'+followFile,
         'totalItems': 0,
-        'type': 'OrderedCollectionPage'}        
+        'type': 'OrderedCollectionPage'
+    }
 
     handleDomain=domain
     if ':' in handleDomain:
@@ -346,15 +348,15 @@ def getFollowingFeed(baseDir: str,domain: str,port: int,path: str, \
     pageCtr=0
     totalCtr=0
     with open(filename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
         for line in lines:
             if '#' not in line:
                 if '@' in line and not line.startswith('http'):
                     pageCtr += 1
                     totalCtr += 1
                     if currPage==pageNumber:
-                        url = httpPrefix + '://' + line.lower().replace('\n','').split('@')[1] + \
-                            '/users/' + line.lower().replace('\n','').split('@')[0]
+                        url=httpPrefix+'://' + line.lower().replace('\n','').split('@')[1] + \
+                            '/users/'+line.lower().replace('\n','').split('@')[0]
                         following['orderedItems'].append(url)
                 elif (line.startswith('http') or line.startswith('dat')) and '/users/' in line:
                     pageCtr += 1
@@ -411,7 +413,7 @@ def noOfFollowRequests(baseDir: str, \
         return 0
     ctr=0
     with open(approveFollowsFilename, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
         if followType != "onion":
             return len(lines)
         for l in lines:
@@ -590,7 +592,7 @@ def receiveFollowRequest(session,baseDir: str,httpPrefix: str, \
                 if approveHandle not in open(followersFilename).read():
                     try:
                         with open(followersFilename, 'r+') as followersFile:
-                            content = followersFile.read()
+                            content=followersFile.read()
                             followersFile.seek(0, 0)
                             followersFile.write(approveHandle+'\n'+content)
                     except Exception as e:
@@ -746,7 +748,7 @@ def sendFollowRequest(session,baseDir: str, \
             if ':' not in followDomain:
                 requestDomain=followDomain+':'+str(followPort)
 
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
     
     if followNickname:
         followedId=followHttpPrefix+'://'+requestDomain+'/users/'+followNickname
@@ -758,7 +760,7 @@ def sendFollowRequest(session,baseDir: str, \
         singleUserNickname='dev'
         followHandle=singleUserNickname+'@'+requestDomain
 
-    newFollowJson = {
+    newFollowJson={
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': followActor+'/statuses/'+str(statusNumber),
         'type': 'Follow',
@@ -813,8 +815,8 @@ def sendFollowRequestViaServer(baseDir: str,session, \
     followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
     followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
 
-    statusNumber,published = getStatusNumber()
-    newFollowJson = {
+    statusNumber,published=getStatusNumber()
+    newFollowJson={
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': followActor+'/statuses/'+str(statusNumber),
         'type': 'Follow',
@@ -825,8 +827,9 @@ def sendFollowRequestViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -835,7 +838,7 @@ def sendFollowRequestViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -851,10 +854,12 @@ def sendFollowRequestViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newFollowJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
@@ -892,9 +897,9 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
 
     followActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname    
     followedId=httpPrefix+'://'+followDomainFull+'/users/'+followNickname
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
 
-    unfollowJson = {
+    unfollowJson={
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': followActor+'/statuses/'+str(statusNumber)+'/undo',
         'type': 'Undo',
@@ -910,8 +915,9 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -920,7 +926,7 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -936,10 +942,12 @@ def sendUnfollowRequestViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,unfollowJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
@@ -980,7 +988,7 @@ def getFollowersOfActor(baseDir :str,actor :str,debug: bool) -> {}:
     for subdir, dirs, files in os.walk(baseDir+'/accounts'):
         for account in dirs:
             if '@' in account and not account.startswith('inbox@'):
-                followingFilename = os.path.join(subdir, account)+'/following.txt'
+                followingFilename=os.path.join(subdir, account)+'/following.txt'
                 if debug:
                     print('DEBUG: examining follows of '+account)
                     print(followingFilename)

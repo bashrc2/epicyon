@@ -1,10 +1,10 @@
-__filename__ = "shares.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="shares.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import os
@@ -142,7 +142,7 @@ def addShare(baseDir: str, \
                     os.remove(imageFilename)
                 imageUrl=httpPrefix+'://'+domainFull+'/sharefiles/'+nickname+'/'+itemID+'.gif'
 
-    sharesJson[itemID] = {
+    sharesJson[itemID]={
         "displayName": displayName,
         "summary": summary,
         "imageUrl": imageUrl,
@@ -261,25 +261,27 @@ def getSharesFeedForPerson(baseDir: str, \
             sharesJson=loadJson(sharesFilename)
             if sharesJson:
                 noOfShares=len(sharesJson.items())
-        shares = {
+        shares={
             '@context': 'https://www.w3.org/ns/activitystreams',
             'first': httpPrefix+'://'+domain+'/users/'+nickname+'/shares?page=1',
             'id': httpPrefix+'://'+domain+'/users/'+nickname+'/shares',
             'totalItems': str(noOfShares),
-            'type': 'OrderedCollection'}
+            'type': 'OrderedCollection'
+        }
         return shares
 
     if not pageNumber:
         pageNumber=1
 
     nextPageNumber=int(pageNumber+1)
-    shares = {
+    shares={
         '@context': 'https://www.w3.org/ns/activitystreams',
         'id': httpPrefix+'://'+domain+'/users/'+nickname+'/shares?page='+str(pageNumber),
         'orderedItems': [],
         'partOf': httpPrefix+'://'+domain+'/users/'+nickname+'/shares',
         'totalItems': 0,
-        'type': 'OrderedCollectionPage'}        
+        'type': 'OrderedCollectionPage'
+    }
 
     if not os.path.isfile(sharesFilename):
         print("test5")
@@ -332,10 +334,10 @@ def sendShareViaServer(baseDir,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
-    newShareJson = {
+    newShareJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Add',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -358,8 +360,8 @@ def sendShareViaServer(baseDir,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -368,7 +370,7 @@ def sendShareViaServer(baseDir,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      fromNickname,fromDomain,postToBox)
@@ -385,15 +387,19 @@ def sendShareViaServer(baseDir,session, \
     authHeader=createBasicAuthHeader(fromNickname,password)
 
     if imageFilename:
-        headers = {'host': fromDomain, \
-                   'Authorization': authHeader}
-        postResult = \
+        headers={
+            'host': fromDomain, \
+            'Authorization': authHeader
+        }
+        postResult= \
             postImage(session,imageFilename,[],inboxUrl.replace('/'+postToBox,'/shares'),headers,"inbox:write")
     
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newShareJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
@@ -424,10 +430,10 @@ def sendUndoShareViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
-    undoShareJson = {
+    undoShareJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Remove',
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
@@ -445,8 +451,8 @@ def sendUndoShareViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest=webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                              fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -455,7 +461,7 @@ def sendUndoShareViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix, \
                      fromNickname,fromDomain,postToBox)
@@ -471,10 +477,12 @@ def sendUndoShareViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
     
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,undoShareJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:

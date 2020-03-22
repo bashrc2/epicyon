@@ -1,10 +1,10 @@
-__filename__ = "announce.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="announce.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import time
@@ -162,7 +162,7 @@ def updateAnnounceCollection(recentPostsCache: {}, \
             if debug:
                 print('DEBUG: Adding initial shares (announcements) to '+ \
                       postUrl)
-            announcementsJson = {
+            announcementsJson={
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': postUrl,
                 'type': 'Collection',
@@ -236,10 +236,10 @@ def createAnnounce(session,baseDir: str,federationList: [], \
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
 
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
     newAnnounceId= \
         httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber
-    newAnnounce = {
+    newAnnounce={
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'atomUri': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
@@ -254,7 +254,7 @@ def createAnnounce(session,baseDir: str,federationList: [], \
         if len(ccUrl)>0:
             newAnnounce['cc']=[ccUrl]
     if saveToFile:
-        outboxDir = createOutboxDir(nickname,domain,baseDir)
+        outboxDir=createOutboxDir(nickname,domain,baseDir)
         filename=outboxDir+'/'+newAnnounceId.replace('/','#')+'.json'
         saveJson(newAnnounce,filename)
 
@@ -291,8 +291,8 @@ def announcePublic(session,baseDir: str,federationList: [], \
             if ':' not in domain:
                 fromDomain=domain+':'+str(port)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomain+'/users/'+nickname+'/followers'
     return createAnnounce(session,baseDir,federationList, \
                           nickname,domain,port, \
                           toUrl,ccUrl,httpPrefix, \
@@ -317,7 +317,7 @@ def repeatPost(session,baseDir: str,federationList: [], \
             if ':' not in announcedDomain:
                 announcedDomain=announcedDomain+':'+str(announcePort)
 
-    objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
+    objectUrl=announceHttpsPrefix+'://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
 
     return announcePublic(session,baseDir,federationList, \
@@ -352,7 +352,7 @@ def undoAnnounce(session,baseDir: str,federationList: [], \
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
 
-    newUndoAnnounce = {
+    newUndoAnnounce={
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'type': 'Undo',
@@ -403,8 +403,8 @@ def undoAnnouncePublic(session,baseDir: str,federationList: [], \
             if ':' not in domain:
                 fromDomain=domain+':'+str(port)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomain+'/users/'+nickname+'/followers'
     return undoAnnounce(session,baseDir,federationList, \
                         nickname,domain,port, \
                         toUrl,ccUrl,httpPrefix, \
@@ -429,7 +429,7 @@ def undoRepeatPost(session,baseDir: str,federationList: [], \
             if ':' not in announcedDomain:
                 announcedDomain=announcedDomain+':'+str(announcePort)
 
-    objectUrl = announceHttpsPrefix + '://'+announcedDomain+'/users/'+ \
+    objectUrl=announceHttpsPrefix+'://'+announcedDomain+'/users/'+ \
         announceNickname+'/statuses/'+str(announceStatusNumber)
 
     return undoAnnouncePublic(session,baseDir,federationList, \
@@ -459,14 +459,14 @@ def sendAnnounceViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
     newAnnounceId= \
         httpPrefix+'://'+fromDomainFull+'/users/'+ \
         fromNickname+'/statuses/'+statusNumber
-    newAnnounceJson = {
+    newAnnounceJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'atomUri': newAnnounceId,
@@ -481,7 +481,7 @@ def sendAnnounceViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = \
+    wfRequest= \
         webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
                         fromDomain,projectVersion)
     if not wfRequest:
@@ -492,7 +492,7 @@ def sendAnnounceViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname,fromDomain,postToBox)
                      
@@ -507,10 +507,12 @@ def sendAnnounceViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newAnnounceJson,[],inboxUrl,headers,"inbox:write")
 
     if debug:

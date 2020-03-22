@@ -1,10 +1,10 @@
-__filename__ = "capabilities.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="capabilities.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import datetime
@@ -94,7 +94,7 @@ def capabilitiesRequest(baseDir: str,httpPrefix: str,domain: str, \
     # which could be instance wide or for a particular person
     # This could also be added to a follow activity
     ocapId=createPassword(32)
-    ocapRequest = {
+    ocapRequest={
         "@context": "https://www.w3.org/ns/activitystreams",
         "id": httpPrefix+"://"+requestedDomain+"/caps/request/"+ocapId,
         "type": "Request",
@@ -140,7 +140,7 @@ def capabilitiesAccept(baseDir: str,httpPrefix: str, \
             ocapId=acceptedActorNickname+'@'+acceptedActorDomain+':'+str(acceptedActorPort)+'#'+createPassword(32)
         else:
             ocapId=acceptedActorNickname+'@'+acceptedActorDomain+'#'+createPassword(32)
-        ocapAccept = {
+        ocapAccept={
             "@context": "https://www.w3.org/ns/activitystreams",
             "id": httpPrefix+"://"+fullDomain+"/caps/"+ocapId,
             "type": "Capability",
@@ -196,7 +196,7 @@ def capabilitiesUpdate(baseDir: str,httpPrefix: str, \
         return None
 
     # create an update activity
-    ocapUpdate = {
+    ocapUpdate={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Update',
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,

@@ -1,10 +1,10 @@
-__filename__ = "delete.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="delete.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import json
@@ -46,10 +46,10 @@ def createDelete(session,baseDir: str,federationList: [], \
             if ':' not in domain:
                 fullDomain=domain+':'+str(port)
 
-    statusNumber,published = getStatusNumber()
+    statusNumber,published=getStatusNumber()
     newDeleteId= \
         httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber
-    newDelete = {
+    newDelete={
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fullDomain+'/users/'+nickname,
         'atomUri': httpPrefix+'://'+fullDomain+'/users/'+nickname+'/statuses/'+statusNumber,
@@ -101,10 +101,10 @@ def sendDeleteViaServer(baseDir: str,session, \
             if ':' not in fromDomain:
                 fromDomainFull=fromDomain+':'+str(fromPort)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
-    newDeleteJson = {
+    newDeleteJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'actor': httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname,
         'cc': [ccUrl],
@@ -116,8 +116,9 @@ def sendDeleteViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -126,7 +127,7 @@ def sendDeleteViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -142,10 +143,12 @@ def sendDeleteViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newDeleteJson,[],inboxUrl,headers,"inbox:write")
     #if not postResult:
     #    if debug:
@@ -171,8 +174,8 @@ def deletePublic(session,baseDir: str,federationList: [], \
             if ':' not in domain:
                 fromDomain=domain+':'+str(port)
 
-    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
-    ccUrl = httpPrefix + '://'+fromDomain+'/users/'+nickname+'/followers'
+    toUrl='https://www.w3.org/ns/activitystreams#Public'
+    ccUrl=httpPrefix+'://'+fromDomain+'/users/'+nickname+'/followers'
     return createDelete(session,baseDir,federationList, \
                         nickname,domain,port, \
                         toUrl,ccUrl,httpPrefix, \
@@ -197,7 +200,7 @@ def deletePostPub(session,baseDir: str,federationList: [], \
             if ':' not in deletedDomain:
                 deletedDomain=deletedDomain+':'+str(deletePort)
 
-    objectUrl = \
+    objectUrl= \
         deleteHttpsPrefix + '://'+deletedDomain+'/users/'+ \
         deleteNickname+'/statuses/'+str(deleteStatusNumber)
 

@@ -1,10 +1,10 @@
-__filename__ = "inbox.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="inbox.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import os
@@ -101,7 +101,7 @@ def storeHashTags(baseDir: str,nickname: str,postJsonObject: {}) -> None:
             if postUrl not in open(tagsFilename).read():
                 try:
                     with open(tagsFilename, 'r+') as tagsFile:
-                        content = tagsFile.read()
+                        content=tagsFile.read()
                         tagsFile.seek(0, 0)
                         tagsFile.write(tagline+content)
                 except Exception as e:
@@ -142,7 +142,7 @@ def validInbox(baseDir: str,nickname: str,domain: str) -> bool:
         return True
     for subdir, dirs, files in os.walk(inboxDir):
         for f in files:
-            filename = os.path.join(subdir, f)
+            filename=os.path.join(subdir, f)
             if not os.path.isfile(filename):
                 print('filename: '+filename)
                 return False
@@ -164,7 +164,7 @@ def validInboxFilenames(baseDir: str,nickname: str,domain: str, \
     expectedStr=expectedDomain+':'+str(expectedPort)
     for subdir, dirs, files in os.walk(inboxDir):
         for f in files:
-            filename = os.path.join(subdir, f)
+            filename=os.path.join(subdir, f)
             if not os.path.isfile(filename):
                 print('filename: '+filename)
                 return False
@@ -185,7 +185,7 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
         if debug:
             print('DEBUG: Obtaining public key for shared inbox')
         personUrl=personUrl.replace('/users/inbox','/inbox')        
-    personJson = getPersonFromCache(baseDir,personUrl,personCache)
+    personJson=getPersonFromCache(baseDir,personUrl,personCache)
     if not personJson:
         if debug:
             print('DEBUG: Obtaining public key for '+personUrl)
@@ -193,10 +193,10 @@ def getPersonPubKey(baseDir: str,session,personUrl: str, \
         if onionDomain:
             if '.onion/' in personUrl:
                 personDomain=onionDomain
-        asHeader = {
+        asHeader={
             'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
         }
-        personJson = \
+        personJson= \
             getJson(session,personUrl,asHeader,None,projectVersion, \
                     httpPrefix,personDomain)
         if not personJson:
@@ -258,7 +258,7 @@ def inboxPermittedMessage(domain: str,messageJson: {},federationList: []) -> boo
 def validPublishedDate(published: str) -> bool:
     currTime=datetime.datetime.utcnow()
     pubDate=datetime.datetime.strptime(published,"%Y-%m-%dT%H:%M:%SZ")
-    daysSincePublished = (currTime - pubTime).days
+    daysSincePublished=(currTime - pubTime).days
     if daysSincePublished>30:
         return False
     return True
@@ -340,7 +340,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
         postId=postJsonObject['id'].replace('/activity','').replace('/undo','')
         published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     if not postId:
-        statusNumber,published = getStatusNumber()
+        statusNumber,published=getStatusNumber()
         if actor:
             postId=actor+'/statuses/'+statusNumber
         else:
@@ -372,7 +372,7 @@ def savePostToInboxQueue(baseDir: str,httpPrefix: str, \
             timeDiffStr='0'+timeDiffStr
         print('DIGEST|'+timeDiffStr+'|'+filename)
 
-    newQueueItem = {
+    newQueueItem={
         'originalId': originalPostId,
         'id': postId,
         'actor': actor,
@@ -531,7 +531,7 @@ def inboxPostRecipients(baseDir :str,postJsonObject :{}, \
                 domain=domain+':'+str(port)
     domainMatch='/'+domain+'/users/'
 
-    actor = postJsonObject['actor']
+    actor=postJsonObject['actor']
     # first get any specific people which the post is addressed to
     
     followerRecipients=False
@@ -1417,7 +1417,7 @@ def populateReplies(baseDir :str,httpPrefix :str,domain :str, \
     postRepliesFilename=postFilename.replace('.json','.replies')
     messageId=messageJson['id'].replace('/activity','').replace('/undo','')
     if os.path.isfile(postRepliesFilename):
-        numLines = sum(1 for line in open(postRepliesFilename))
+        numLines=sum(1 for line in open(postRepliesFilename))
         if numLines>maxReplies:
             return False
         if messageId not in open(postRepliesFilename).read():
@@ -1727,7 +1727,7 @@ def inboxUpdateIndex(boxname: str,baseDir: str,handle: str,destinationFilename: 
     if os.path.isfile(indexFilename):
         try:
             with open(indexFilename, 'r+') as indexFile:
-                content = indexFile.read()
+                content=indexFile.read()
                 indexFile.seek(0, 0)
                 indexFile.write(destinationFilename+'\n'+content)
                 return True

@@ -1,10 +1,10 @@
-__filename__ = "webinterface.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="webinterface.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import json
 import time
@@ -81,17 +81,25 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str, \
     actorStr=actor.replace('/','-')
     avatarImagePath=baseDir+'/cache/avatars/'+actorStr
     if avatarUrl.endswith('.png') or '.png?' in avatarUrl:
-        sessionHeaders = {'Accept': 'image/png'}
+        sessionHeaders={
+            'Accept': 'image/png'
+        }
         avatarImageFilename=avatarImagePath+'.png'
     elif avatarUrl.endswith('.jpg') or avatarUrl.endswith('.jpeg') or \
          '.jpg?' in avatarUrl or '.jpeg?' in avatarUrl:
-        sessionHeaders = {'Accept': 'image/jpeg'}
+        sessionHeaders={
+            'Accept': 'image/jpeg'
+        }
         avatarImageFilename=avatarImagePath+'.jpg'
     elif avatarUrl.endswith('.gif') or '.gif?' in avatarUrl:
-        sessionHeaders = {'Accept': 'image/gif'}
+        sessionHeaders={
+            'Accept': 'image/gif'
+        }
         avatarImageFilename=avatarImagePath+'.gif'
     elif avatarUrl.endswith('.webp') or '.webp?' in avatarUrl:
-        sessionHeaders = {'Accept': 'image/webp'}
+        sessionHeaders={
+            'Accept': 'image/webp'
+        }
         avatarImageFilename=avatarImagePath+'.webp'
     else:
         return None
@@ -114,14 +122,14 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str, \
             print('Failed to download avatar image: '+str(avatarUrl))
             print(e)
         if '/channel/' not in actor:
-            sessionHeaders = {
+            sessionHeaders={
                 'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
             }
         else:
-            sessionHeaders = {
+            sessionHeaders={
                 'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
             }
-        personJson = \
+        personJson= \
             getJson(session,actor,sessionHeaders,None,__version__, \
                     httpPrefix,None)
         if personJson:
@@ -147,7 +155,7 @@ def updateAvatarImageCache(session,baseDir: str,httpPrefix: str, \
 def getPersonAvatarUrl(baseDir: str,personUrl: str,personCache: {}) -> str:
     """Returns the avatar url for the person
     """
-    personJson = getPersonFromCache(baseDir,personUrl,personCache)    
+    personJson=getPersonFromCache(baseDir,personUrl,personCache)    
     if not personJson:
         return None
     # get from locally stored image
@@ -204,10 +212,10 @@ def htmlSearchEmoji(translate: {},baseDir: str,httpPrefix: str, \
             results={}
             for emojiName,filename in emojiJson.items():
                 if searchStr in emojiName:
-                    results[emojiName] = filename+'.png'
+                    results[emojiName]=filename+'.png'
             for emojiName,filename in emojiJson.items():
                 if emojiName in searchStr:
-                    results[emojiName] = filename+'.png'
+                    results[emojiName]=filename+'.png'
             headingShown=False
             emojiForm+='<center>'
             for emojiName,filename in results.items():
@@ -382,7 +390,7 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
         suspendedFilename=baseDir+'/accounts/suspended.txt'
         if os.path.isfile(suspendedFilename):
             with open(suspendedFilename, "r") as f:
-                suspendedStr = f.read()
+                suspendedStr=f.read()
                 infoForm+='<div class="container">'
                 infoForm+='  <br><b>'+translate['Suspended accounts']+'</b>'
                 infoForm+='  <br>'+translate['These are currently suspended']
@@ -395,7 +403,7 @@ def htmlModerationInfo(translate: {},baseDir: str,httpPrefix: str) -> str:
         blockingFilename=baseDir+'/accounts/blocking.txt'
         if os.path.isfile(blockingFilename):
             with open(blockingFilename, "r") as f:
-                blockedStr = f.read()
+                blockedStr=f.read()
                 infoForm+='<div class="container">'
                 infoForm+= \
                     '  <br><b>'+translate['Blocked accounts and hashtags']+'</b>'
@@ -437,14 +445,14 @@ def htmlHashtagSearch(nickname: str,domain: str,port: int, \
 
     # read the index
     with open(hashtagIndexFile, "r") as f:
-        lines = f.readlines()
+        lines=f.readlines()
 
     # read the css
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        hashtagSearchCSS = cssFile.read()
+        hashtagSearchCSS=cssFile.read()
         if httpPrefix!='https':
             hashtagSearchCSS= \
                 hashtagSearchCSS.replace('https://',httpPrefix+'://')
@@ -546,7 +554,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                 continue
             if f.startswith('inbox@'):
                 continue
-            actorFilename = os.path.join(subdir, f)
+            actorFilename=os.path.join(subdir, f)
             actorJson=loadJson(actorFilename)
             if actorJson:
                 if actorJson.get('id') and \
@@ -556,17 +564,19 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                     actor=actorJson['id']
                     for skillName,skillLevel in actorJson['skills'].items():
                         skillName=skillName.lower()
-                        if skillName in skillsearch or skillsearch in skillName:
-                            skillLevelStr=str(skillLevel)
-                            if skillLevel<100:
-                                skillLevelStr='0'+skillLevelStr
-                            if skillLevel<10:
-                                skillLevelStr='0'+skillLevelStr
-                            indexStr= \
-                                skillLevelStr+';'+actor+';'+actorJson['name']+ \
-                                ';'+actorJson['icon']['url']
-                            if indexStr not in results:
-                                results.append(indexStr)
+                        if not (skillName in skillsearch or \
+                                skillsearch in skillName):
+                            continue
+                        skillLevelStr=str(skillLevel)
+                        if skillLevel<100:
+                            skillLevelStr='0'+skillLevelStr
+                        if skillLevel<10:
+                            skillLevelStr='0'+skillLevelStr
+                        indexStr= \
+                            skillLevelStr+';'+actor+';'+actorJson['name']+ \
+                            ';'+actorJson['icon']['url']
+                        if indexStr not in results:
+                            results.append(indexStr)
     if not instanceOnly:
         # search actor cache
         for subdir, dirs, files in os.walk(baseDir+'/cache/actors/'):
@@ -577,7 +587,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                     continue
                 if f.startswith('inbox@'):
                     continue
-                actorFilename = os.path.join(subdir, f)
+                actorFilename=os.path.join(subdir, f)
                 cachedActorJson=loadJson(actorFilename)
                 if cachedActorJson:
                     if cachedActorJson.get('actor'):
@@ -589,17 +599,19 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
                             actor=actorJson['id']
                             for skillName,skillLevel in actorJson['skills'].items():
                                 skillName=skillName.lower()
-                                if skillName in skillsearch or skillsearch in skillName:
-                                    skillLevelStr=str(skillLevel)
-                                    if skillLevel<100:
-                                        skillLevelStr='0'+skillLevelStr
-                                    if skillLevel<10:
-                                        skillLevelStr='0'+skillLevelStr                                
-                                    indexStr= \
-                                        skillLevelStr+';'+actor+';'+actorJson['name']+ \
-                                        ';'+actorJson['icon']['url']
-                                    if indexStr not in results:
-                                        results.append(indexStr)
+                                if not (skillName in skillsearch or \
+                                        skillsearch in skillName):
+                                    continue
+                                skillLevelStr=str(skillLevel)
+                                if skillLevel<100:
+                                    skillLevelStr='0'+skillLevelStr
+                                if skillLevel<10:
+                                    skillLevelStr='0'+skillLevelStr                                
+                                indexStr= \
+                                    skillLevelStr+';'+actor+';'+actorJson['name']+ \
+                                    ';'+actorJson['icon']['url']
+                                if indexStr not in results:
+                                    results.append(indexStr)
 
     results.sort(reverse=True)
 
@@ -607,7 +619,7 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        skillSearchCSS = cssFile.read()
+        skillSearchCSS=cssFile.read()
         if httpPrefix!='https':
             skillSearchCSS=skillSearchCSS.replace('https://',httpPrefix+'://')
     skillSearchForm=htmlHeader(cssFilename,skillSearchCSS)
@@ -622,17 +634,20 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
         ctr=0
         for skillMatch in results:
             skillMatchFields=skillMatch.split(';')
-            if len(skillMatchFields)==4:
-                actor=skillMatchFields[1]
-                actorName=skillMatchFields[2]
-                avatarUrl=skillMatchFields[3]
-                skillSearchForm+='<div class="search-result""><a href="'+actor+'/skills">'
-                skillSearchForm+= \
-                    '<img loading="lazy" src="'+avatarUrl+ \
-                    '"/><span class="search-result-text">'+actorName+'</span></a></div>'
-                ctr+=1
-                if ctr>=postsPerPage:
-                    break
+            if len(skillMatchFields)!=4:
+                continue
+            actor=skillMatchFields[1]
+            actorName=skillMatchFields[2]
+            avatarUrl=skillMatchFields[3]
+            skillSearchForm+= \
+                '<div class="search-result""><a href="'+actor+'/skills">'
+            skillSearchForm+= \
+                '<img loading="lazy" src="'+avatarUrl+ \
+                '"/><span class="search-result-text">'+actorName+ \
+                '</span></a></div>'
+            ctr+=1
+            if ctr>=postsPerPage:
+                break
         skillSearchForm+='</center>'
     skillSearchForm+=htmlFooter()
     return skillSearchForm
@@ -640,7 +655,8 @@ def htmlSkillsSearch(translate: {},baseDir: str, \
 def scheduledPostsExist(baseDir: str,nickname: str,domain: str) -> bool:
     """Returns true if there are posts scheduled to be delivered
     """
-    scheduleIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/schedule.index'
+    scheduleIndexFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/schedule.index'
     if not os.path.isfile(scheduleIndexFilename):
         return False
     if '#users#' in open(scheduleIndexFilename).read():
@@ -653,7 +669,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
     """
     imageFormats='.png, .jpg, .jpeg, .gif, .webp'
     pathOriginal=path
-    path=path.replace('/inbox','').replace('/outbox','').replace('/shares','')
+    path= \
+        path.replace('/inbox','').replace('/outbox','').replace('/shares','')
     nickname=getNicknameFromActor(path)
     if not nickname:
         return ''
@@ -730,13 +747,15 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
             switchStr=switchfile.read()
 
     blockedStr=''
-    blockedFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
+    blockedFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/blocking.txt'
     if os.path.isfile(blockedFilename):
         with open(blockedFilename, 'r') as blockedfile:
             blockedStr=blockedfile.read()
 
     allowedInstancesStr=''
-    allowedInstancesFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
+    allowedInstancesFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/allowedinstances.txt'
     if os.path.isfile(allowedInstancesFilename):
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr=allowedInstancesFile.read()
@@ -766,7 +785,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        editProfileCSS = cssFile.read()
+        editProfileCSS=cssFile.read()
         if httpPrefix!='https':
             editProfileCSS=editProfileCSS.replace('https://',httpPrefix+'://')
 
@@ -804,7 +823,7 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
         moderatorsFile=baseDir+'/accounts/moderators.txt'
         if os.path.isfile(moderatorsFile):
             with open(moderatorsFile, "r") as f:
-                moderators = f.read()
+                moderators=f.read()
         moderatorsStr='<div class="container">'
         moderatorsStr+='  <b>'+translate['Moderators']+'</b><br>'
         moderatorsStr+='  '+translate['A list of moderator nicknames. One per line.']
@@ -928,7 +947,8 @@ def htmlEditProfile(translate: {},baseDir: str,path: str, \
     editProfileForm+=htmlFooter()
     return editProfileForm
 
-def htmlGetLoginCredentials(loginParams: str,lastLoginTime: int) -> (str,str,bool):
+def htmlGetLoginCredentials(loginParams: str, \
+                            lastLoginTime: int) -> (str,str,bool):
     """Receives login credentials via HTTPServer POST
     """
     if not loginParams.startswith('username='):
@@ -997,13 +1017,13 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
     if os.path.isfile(baseDir+'/accounts/login.txt'):
         # custom login message
         with open(baseDir+'/accounts/login.txt', 'r') as file:
-            loginText = '<p class="login-text">'+file.read()+'</p>'    
+            loginText='<p class="login-text">'+file.read()+'</p>'    
 
     cssFilename=baseDir+'/epicyon-login.css'
     if os.path.isfile(baseDir+'/login.css'):
         cssFilename=baseDir+'/login.css'
     with open(cssFilename, 'r') as cssFile:
-        loginCSS = cssFile.read()
+        loginCSS=cssFile.read()
 
     # show the register button
     registerButtonStr=''
@@ -1065,7 +1085,7 @@ def htmlLogin(translate: {},baseDir: str,autocomplete=True) -> str:
 def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
     """Show the terms of service screen
     """
-    adminNickname = getConfigParam(baseDir,'admin')
+    adminNickname=getConfigParam(baseDir,'admin')
     if not os.path.isfile(baseDir+'/accounts/tos.txt'):
         copyfile(baseDir+'/default_tos.txt',baseDir+'/accounts/tos.txt')
     if os.path.isfile(baseDir+'/img/login-background.png'):
@@ -1076,14 +1096,14 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
     TOSText='Terms of Service go here.'
     if os.path.isfile(baseDir+'/accounts/tos.txt'):
         with open(baseDir+'/accounts/tos.txt', 'r') as file:
-            TOSText = file.read()    
+            TOSText=file.read()    
 
     TOSForm=''
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        termsCSS = cssFile.read()
+        termsCSS=cssFile.read()
         if httpPrefix!='https':
             termsCSS=termsCSS.replace('https://',httpPrefix+'://')
             
@@ -1100,7 +1120,7 @@ def htmlTermsOfService(baseDir: str,httpPrefix: str,domainFull: str) -> str:
 def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
     """Show the about screen
     """
-    adminNickname = getConfigParam(baseDir,'admin')
+    adminNickname=getConfigParam(baseDir,'admin')
     if not os.path.isfile(baseDir+'/accounts/about.txt'):
         copyfile(baseDir+'/default_about.txt',baseDir+'/accounts/about.txt')
     if os.path.isfile(baseDir+'/img/login-background.png'):
@@ -1111,14 +1131,14 @@ def htmlAbout(baseDir: str,httpPrefix: str,domainFull: str) -> str:
     aboutText='Information about this instance goes here.'
     if os.path.isfile(baseDir+'/accounts/about.txt'):
         with open(baseDir+'/accounts/about.txt', 'r') as file:
-            aboutText = file.read()    
+            aboutText=file.read()    
 
     aboutForm=''
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        termsCSS = cssFile.read()
+        termsCSS=cssFile.read()
         if httpPrefix!='http':
             termsCSS=termsCSS.replace('https://',httpPrefix+'://')
 
@@ -1231,13 +1251,13 @@ def htmlNewPost(mediaInstance: bool,translate: {}, \
 
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:
-            newPostText = '<p class="new-post-text">'+file.read()+'</p>'    
+            newPostText='<p class="new-post-text">'+file.read()+'</p>'    
 
     cssFilename=baseDir+'/epicyon-profile.css'
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        newPostCSS = cssFile.read()
+        newPostCSS=cssFile.read()
         if httpPrefix!='https':
             newPostCSS=newPostCSS.replace('https://',httpPrefix+'://')
 
@@ -2017,7 +2037,7 @@ def htmlProfile(defaultTimeline: str, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = \
+        profileStyle= \
             cssFile.read().replace('image.png', \
                                    profileJson['image']['url'])
 
@@ -2085,7 +2105,7 @@ def individualFollowAsHtml(translate: {}, \
     if not avatarUrl:
         avatarUrl=followUrl+'/avatar.png'
     if domain not in followUrl:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName= \
             getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,nickname,domain,'outbox')
         if avatarUrl2:
@@ -2131,8 +2151,8 @@ def cursorToEndOfMessageScript() -> str:
     This avoids the cursor being in the wrong position when replying
     """
     script='function focusOnMessage() {\n'
-    script+="  var replyTextArea = document.getElementById('message');\n"
-    script+='  val = replyTextArea.value;\n'
+    script+="  var replyTextArea=document.getElementById('message');\n"
+    script+='  val=replyTextArea.value;\n'
     script+='  if ((val.length>0) && (val.charAt(val.length-1) != " ")) {\n'
     script+='    val += " ";\n'
     script+='  }\n'
@@ -2140,8 +2160,8 @@ def cursorToEndOfMessageScript() -> str:
     script+='  replyTextArea.value="";\n'
     script+='  replyTextArea.value=val;\n'
     script+='}\n'
-    script+="var replyTextArea = document.getElementById('message')\n"
-    script+='replyTextArea.onFocus = function() {\n'
+    script+="var replyTextArea=document.getElementById('message')\n"
+    script+='replyTextArea.onFocus=function() {\n'
     script+='  focusOnMessage();'
     script+='}\n'
     return script
@@ -2150,11 +2170,11 @@ def contentWarningScript() -> str:
     """Returns a script used for content warnings
     """
     script='function showContentWarning(postID) {\n'
-    script+='  var x = document.getElementById(postID);\n'
+    script+='  var x=document.getElementById(postID);\n'
     script+='  if (x.style.display !== "block") {\n'
-    script+='    x.style.display = "block";\n'
+    script+='    x.style.display="block";\n'
     script+='  } else {\n'
-    script+='    x.style.display = "none";\n'
+    script+='    x.style.display="none";\n'
     script+='  }\n'
     script+='}\n'
     return script
@@ -2164,8 +2184,8 @@ def contentWarningScriptOpen() -> str:
     The warning is open by default. This is used on blog replies.
     """
     script='function showContentWarning(postID) {\n'
-    script+='  var x = document.getElementById(postID);\n'
-    script+='  x.style.display = "block";\n'
+    script+='  var x=document.getElementById(postID);\n'
+    script+='  x.style.display="block";\n'
     script+='}\n'
     return script
 
@@ -2531,7 +2551,7 @@ def loadIndividualPostAsHtmlFromCache(baseDir: str,nickname: str,domain: str, \
     while tries<3:
         try:
             with open(cachedPostFilename, 'r') as file:
-                postHtml = file.read()
+                postHtml=file.read()
                 break
         except Exception as e:
             print(e)
@@ -2847,7 +2867,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         avatarUrl=postActor+'/avatar.png'
 
     if fullDomain not in postActor:
-        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName = \
+        inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl2,displayName= \
             getPersonBox(baseDir,session,wfRequest,personCache, \
                          projectVersion,httpPrefix,nickname,domain,'outbox')
         if avatarUrl2:
@@ -3267,15 +3287,15 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         publishedStr=postJsonObject['object']['published']
         if '.' not in publishedStr:
             if '+' not in publishedStr:
-                datetimeObject = \
+                datetimeObject= \
                     datetime.strptime(publishedStr,"%Y-%m-%dT%H:%M:%SZ")
             else:
-                datetimeObject = \
+                datetimeObject= \
                     datetime.strptime(publishedStr.split('+')[0]+'Z', \
                                       "%Y-%m-%dT%H:%M:%SZ")
         else:
             publishedStr=publishedStr.replace('T',' ').split('.')[0]
-            datetimeObject = parse(publishedStr)
+            datetimeObject=parse(publishedStr)
         publishedStr=datetimeObject.strftime("%a %b %d, %H:%M")
 
     publishedLink=messageId
@@ -3459,7 +3479,7 @@ def htmlTimeline(defaultTimeline: str, \
         bannerFile='banner.webp'
     
     with open(cssFilename, 'r') as cssFile:        
-        profileStyle = \
+        profileStyle= \
             cssFile.read().replace('banner.png', \
                                    '/users/'+nickname+'/'+bannerFile)
         if httpPrefix!='https':
@@ -4069,7 +4089,7 @@ def htmlRemoveSharedItem(translate: {},baseDir: str,actor: str,shareName: str) -
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
     sharesStr=htmlHeader(cssFilename,profileStyle)
     sharesStr+='<div class="follow">'
     sharesStr+='  <div class="followAvatar">'
@@ -4127,7 +4147,7 @@ def htmlDeletePost(recentPostsCache: {},maxRecentPosts: int, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
         if httpPrefix!='https':
             profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         deletePostStr=htmlHeader(cssFilename,profileStyle)
@@ -4191,7 +4211,7 @@ def htmlCalendarDeleteConfirm(translate: {},baseDir: str, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
         if httpPrefix!='https':
             profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         deletePostStr=htmlHeader(cssFilename,profileStyle)
@@ -4235,7 +4255,7 @@ def htmlFollowConfirm(translate: {},baseDir: str, \
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
     followStr=htmlHeader(cssFilename,profileStyle)
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
@@ -4277,7 +4297,7 @@ def htmlUnfollowConfirm(translate: {},baseDir: str, \
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
     followStr=htmlHeader(cssFilename,profileStyle)
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
@@ -4352,7 +4372,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
 
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr='Snooze'
@@ -4438,7 +4458,7 @@ def htmlPersonOptions(translate: {},baseDir: str, \
 #            copyfile(baseDir+'/img/block-background.png',baseDir+'/accounts/block-background.png')
 #
 #    with open(baseDir+'/epicyon-follow.css', 'r') as cssFile:
-#        profileStyle = cssFile.read()
+#        profileStyle=cssFile.read()
 #    blockStr=htmlHeader(cssFilename,profileStyle)
 #    blockStr+='<div class="block">'
 #    blockStr+='  <div class="blockAvatar">'
@@ -4474,7 +4494,7 @@ def htmlUnblockConfirm(translate: {},baseDir: str, \
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
     blockStr=htmlHeader(cssFilename,profileStyle)
     blockStr+='<div class="block">'
     blockStr+='  <div class="blockAvatar">'
@@ -4522,7 +4542,7 @@ def htmlSearchEmojiTextEntry(translate: {}, \
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'        
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
     emojiStr=htmlHeader(cssFilename,profileStyle)
     emojiStr+='<div class="follow">'
     emojiStr+='  <div class="followAvatar">'
@@ -4567,7 +4587,7 @@ def htmlCalendarDay(translate: {}, \
     if os.path.isfile(baseDir+'/calendar.css'):
         cssFilename=baseDir+'/calendar.css'        
     with open(cssFilename, 'r') as cssFile:
-        calendarStyle = cssFile.read()
+        calendarStyle=cssFile.read()
 
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
@@ -4740,7 +4760,7 @@ def htmlCalendar(translate: {}, \
     if os.path.isfile(baseDir+'/calendar.css'):
         cssFilename=baseDir+'/calendar.css'        
     with open(cssFilename, 'r') as cssFile:
-        calendarStyle = cssFile.read()
+        calendarStyle=cssFile.read()
     
     calendarStr=htmlHeader(cssFilename,calendarStyle)
     calendarStr+='<main><table class="calendar">\n'
@@ -4890,7 +4910,7 @@ def htmlSearch(translate: {}, \
     if os.path.isfile(baseDir+'/follow.css'):
         cssFilename=baseDir+'/follow.css'
     with open(cssFilename, 'r') as cssFile:
-        profileStyle = cssFile.read()
+        profileStyle=cssFile.read()
     followStr=htmlHeader(cssFilename,profileStyle)
     followStr+='<div class="follow">'
     followStr+='  <div class="followAvatar">'
@@ -4964,7 +4984,7 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
     if os.path.isfile(baseDir+'/epicyon.css'):
         cssFilename=baseDir+'/epicyon.css'        
     with open(cssFilename, 'r') as cssFile:
-        wf = \
+        wf= \
             webfingerHandle(session, \
                             searchNickname+'@'+searchDomainFull, \
                             httpPrefix,wfRequest, \
@@ -4977,21 +4997,23 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
         if wf.get('errors'):
             personUrl=httpPrefix+'://'+searchDomainFull+'/users/'+searchNickname
             
-        asHeader = {
+        asHeader={
             'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
         }
         if not personUrl:
-            personUrl = getUserUrl(wf)
+            personUrl=getUserUrl(wf)
         if not personUrl:
             # try single user instance
-            asHeader = {'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
-            personUrl=httpPrefix+'://'+searchDomainFull
-        profileJson = getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
-        if not profileJson:
-            asHeader = {
+            asHeader={
                 'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
             }
-            profileJson = \
+            personUrl=httpPrefix+'://'+searchDomainFull
+        profileJson=getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
+        if not profileJson:
+            asHeader={
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
+            profileJson= \
                 getJson(session,personUrl,asHeader,None,projectVersion,httpPrefix,domain)
         if not profileJson:
             if debug:
@@ -5021,7 +5043,7 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
             if profileJson['image'].get('url'):
                 profileBackgroundImage=profileJson['image']['url']
 
-        profileStyle = cssFile.read().replace('image.png',profileBackgroundImage)
+        profileStyle=cssFile.read().replace('image.png',profileBackgroundImage)
         if httpPrefix!='https':
             profileStyle=profileStyle.replace('https://',httpPrefix+'://')
         # url to return to
@@ -5074,8 +5096,8 @@ def htmlProfileAfterSearch(recentPostsCache: {},maxRecentPosts: int, \
         profileStr+='<script>'+contentWarningScript()+'</script>'
 
         iconsDir=getIconsDir(baseDir)
-        result = []
-        i = 0
+        result=[]
+        i=0
         for item in parseUserFeed(session,outboxUrl,asHeader, \
                                   projectVersion,httpPrefix,domain):
             if not item.get('type'):

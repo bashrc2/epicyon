@@ -1,10 +1,10 @@
-__filename__ = "utils.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="utils.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 import time
@@ -198,17 +198,21 @@ def getDomainFromActor(actor: str) -> (str,int):
     """
     port=None
     if '/profile/' in actor:
-        domain = actor.split('/profile/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
+        domain= \
+            actor.split('/profile/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
     else:
         if '/channel/' in actor:
-            domain = actor.split('/channel/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
+            domain= \
+                actor.split('/channel/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
         else:
             if '/users/' not in actor:
-                domain = actor.replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
+                domain= \
+                    actor.replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
                 if '/' in actor:
                     domain=domain.split('/')[0]
             else:
-                domain = actor.split('/users/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
+                domain= \
+                    actor.split('/users/')[0].replace('https://','').replace('http://','').replace('i2p://','').replace('dat://','')
     if ':' in domain:
         portStr=domain.split(':')[1]
         if not portStr.isdigit():
@@ -252,7 +256,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
             # remove them from the unfollowed file
             newLines=''
             with open(unfollowedFilename, "r") as f:
-                lines = f.readlines()
+                lines=f.readlines()
                 for line in lines:
                     if handleToFollow not in line:
                         newLines+=line
@@ -271,7 +275,7 @@ def followPerson(baseDir: str,nickname: str, domain: str, \
         # prepend to follow file
         try:
             with open(filename, 'r+') as followFile:
-                content = followFile.read()
+                content=followFile.read()
                 followFile.seek(0, 0)
                 followFile.write(handleToFollow+'\n'+content)
                 if debug:
@@ -347,7 +351,7 @@ def removeModerationPostFromIndex(baseDir: str,postUrl: str,debug: bool) -> None
     postId=postUrl.replace('/activity','')
     if postId in open(moderationIndexFile).read():
         with open(moderationIndexFile, "r") as f:
-            lines = f.readlines()
+            lines=f.readlines()
             with open(moderationIndexFile, "w+") as f:
                 for line in lines:
                     if line.strip("\n") != postId:
@@ -485,7 +489,7 @@ def noOfActiveAccountsMonthly(baseDir: str,months: int) -> bool:
                     lastUsedFilename=baseDir+'/accounts/'+account+'/.lastUsed'
                     if os.path.isfile(lastUsedFilename):
                         with open(lastUsedFilename, 'r') as lastUsedFile:
-                            lastUsed = lastUsedFile.read()
+                            lastUsed=lastUsedFile.read()
                             if lastUsed.isdigit():
                                 timeDiff=(currTime-int(lastUsed))
                                 if timeDiff<monthSeconds:
@@ -525,8 +529,8 @@ def copytree(src: str, dst: str, symlinks=False, ignore=None):
     """Copy a directory
     """
     for item in os.listdir(src):
-        s = os.path.join(src, item)
-        d = os.path.join(dst, item)
+        s=os.path.join(src, item)
+        d=os.path.join(dst, item)
         if os.path.isdir(s):
             shutil.copytree(s, d, symlinks, ignore)
         else:
@@ -609,7 +613,7 @@ def updateRecentPostsCache(recentPostsCache: {},maxRecentPosts: int, \
 def fileLastModified(filename: str) -> str:
     """Returns the date when a file was last modified
     """
-    t = os.path.getmtime(filename)
+    t=os.path.getmtime(filename)
     modifiedTime=datetime.datetime.fromtimestamp(t)
     return modifiedTime.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -624,7 +628,7 @@ def daysInMonth(year: int,monthNumber: int) -> int:
 def mergeDicts(dict1: {}, dict2: {}) -> {}:
     """Merges two dictionaries
     """
-    res = {**dict1, **dict2}
+    res={**dict1,**dict2}
     return res
 
 def isBlogPost(postJsonObject: {}) -> bool:

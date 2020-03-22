@@ -1,10 +1,10 @@
-__filename__ = "blocking.py"
-__author__ = "Bob Mottram"
-__license__ = "AGPL3+"
-__version__ = "1.1.0"
-__maintainer__ = "Bob Mottram"
-__email__ = "bob@freedombone.net"
-__status__ = "Production"
+__filename__="blocking.py"
+__author__="Bob Mottram"
+__license__="AGPL3+"
+__version__="1.1.0"
+__maintainer__="Bob Mottram"
+__email__="bob@freedombone.net"
+__status__="Production"
 
 import os
 from utils import isEvil
@@ -174,10 +174,10 @@ def sendBlockViaServer(baseDir: str,session, \
 
     toUrl= 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl= \
-        httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+        httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     blockActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
-    newBlockJson = {
+    newBlockJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Block',
         'actor': blockActor,
@@ -189,8 +189,9 @@ def sendBlockViaServer(baseDir: str,session, \
     handle=httpPrefix+'://'+fromDomainFull+'/@'+fromNickname
 
     # lookup the inbox for the To handle
-    wfRequest = webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                                fromDomain,projectVersion)
+    wfRequest= \
+        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
+                        fromDomain,projectVersion)
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for '+handle)
@@ -199,7 +200,7 @@ def sendBlockViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -215,10 +216,12 @@ def sendBlockViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newBlockJson,[],inboxUrl,headers,"inbox:write")
 
     if debug:
@@ -246,10 +249,10 @@ def sendUndoBlockViaServer(baseDir: str,session, \
 
     toUrl= 'https://www.w3.org/ns/activitystreams#Public'
     ccUrl= \
-        httpPrefix + '://'+fromDomainFull+'/users/'+fromNickname+'/followers'
+        httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname+'/followers'
 
     blockActor=httpPrefix+'://'+fromDomainFull+'/users/'+fromNickname
-    newBlockJson = {
+    newBlockJson={
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': 'Undo',
         'actor': blockActor,
@@ -276,7 +279,7 @@ def sendUndoBlockViaServer(baseDir: str,session, \
     postToBox='outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName = \
+    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
@@ -292,10 +295,12 @@ def sendUndoBlockViaServer(baseDir: str,session, \
     
     authHeader=createBasicAuthHeader(fromNickname,password)
      
-    headers = {'host': fromDomain, \
-               'Content-type': 'application/json', \
-               'Authorization': authHeader}
-    postResult = \
+    headers={
+        'host': fromDomain, \
+        'Content-type': 'application/json', \
+        'Authorization': authHeader
+    }
+    postResult= \
         postJson(session,newBlockJson,[],inboxUrl,headers,"inbox:write")
 
     if debug:
