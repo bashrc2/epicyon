@@ -204,7 +204,7 @@ def sendBlockViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -213,9 +213,9 @@ def sendBlockViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -283,7 +283,7 @@ def sendUndoBlockViaServer(baseDir: str,session, \
         getPersonBox(baseDir,session,wfRequest,personCache, \
                      projectVersion,httpPrefix,fromNickname, \
                      fromDomain,postToBox)
-                     
+
     if not inboxUrl:
         if debug:
             print('DEBUG: No '+postToBox+' was found for '+handle)
@@ -292,9 +292,9 @@ def sendUndoBlockViaServer(baseDir: str,session, \
         if debug:
             print('DEBUG: No actor was found for '+handle)
         return 4
-    
+
     authHeader=createBasicAuthHeader(fromNickname,password)
-     
+
     headers={
         'host': fromDomain, \
         'Content-type': 'application/json', \
@@ -364,7 +364,7 @@ def outboxBlock(baseDir: str,httpPrefix: str, \
 
     addBlock(baseDir,nickname,domain, \
              nicknameBlocked,domainBlockedFull)
-    
+
     if debug:
         print('DEBUG: post blocked via c2s - '+postFilename)
 
