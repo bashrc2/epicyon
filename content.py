@@ -332,6 +332,10 @@ def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
     for wordStr in longWordsList:
         if wordStr.startswith('<'):
             continue
+        if len(wordStr)==76:
+            if wordStr.upper()==wordStr:
+                # tox address
+                continue
         if '=\"' in wordStr:
             continue
         if '@' in wordStr:
