@@ -2042,6 +2042,11 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
         'domains': {},
         'accounts': {}
     }
+    quotasLastUpdatePerMin=int(time.time())
+    quotasPerMin={
+        'domains': {},
+        'accounts': {}
+    }
 
     heartBeatCtr=0
     queueRestoreCtr=0
@@ -2105,19 +2110,38 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 }
                 quotasLastUpdateDaily=currTime
 
+            # clear the per minute quotas for maximum numbers of received posts
+            if currTime-quotasLastUpdatePerMin>60:
+                quotasPerMin={
+                    'domains': {},
+                    'accounts': {}
+                }
+                quotasLastUpdatePerMin=currTime
+
             # limit the number of posts which can arrive per domain per day
             postDomain=queueJson['postDomain']
             if postDomain:
                 if domainMaxPostsPerDay>0:
                     if quotasDaily['domains'].get(postDomain):
                         if quotasDaily['domains'][postDomain]>domainMaxPostsPerDay:
-                            print('DEBUG: Quota - Maximum posts for '+postDomain+' reached')
+                            print('DEBUG: Quota per day - Maximum posts for '+postDomain+' reached')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
                         quotasDaily['domains'][postDomain]+=1
                     else:
                         quotasDaily['domains'][postDomain]=1
+
+                    if quotasPerMin['domains'].get(postDomain):
+                        domainMaxPostsPerMin=int(domainMaxPostsPerDay/(24*60))
+                        if quotasPerMin['domains'][postDomain]>domainMaxPostsPerMin:
+                            print('DEBUG: Quota per min - Maximum posts for '+postDomain+' reached')
+                            if len(queue)>0:
+                                queue.pop(0)
+                            continue
+                        quotasPerMin['domains'][postDomain]+=1
+                    else:
+                        quotasPerMin['domains'][postDomain]=1
 
                 if accountMaxPostsPerDay>0:
                     postHandle=queueJson['postNickname']+'@'+postDomain

@@ -5973,7 +5973,7 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
               noreply=False,nolike=False,nopics=False, \
               noannounce=False,cw=False,ocapAlways=False, \
               useTor=False,maxReplies=64, \
-              domainMaxPostsPerDay=8640,accountMaxPostsPerDay=8640, \
+              domainMaxPostsPerDay=8640,accountMaxPostsPerDay=864, \
               allowDeletion=False,debug=False,unitTest=False, \
               instanceOnlySkillsSearch=False,sendThreads=[], \
               useBlurHash=False) -> None:
