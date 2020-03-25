@@ -2126,11 +2126,10 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         if quotasDaily['domains'][postDomain]>domainMaxPostsPerDay:
                             print('DEBUG: Quota per day - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerDay)+')')
                             if len(queue)>0:
-                                if os.path.isfile(queueFilename):
-                                    try:
-                                        os.remove(queueFilename)
-                                    except:
-                                        pass                                
+                                try:
+                                    os.remove(queueFilename)
+                                except:
+                                    pass                                
                                 queue.pop(0)
                             continue
                         quotasDaily['domains'][postDomain]+=1
@@ -2142,11 +2141,10 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         if quotasPerMin['domains'][postDomain]>domainMaxPostsPerMin:
                             print('DEBUG: Quota per min - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerMin)+')')
                             if len(queue)>0:
-                                if os.path.isfile(queueFilename):
-                                    try:
-                                        os.remove(queueFilename)
-                                    except:
-                                        pass                                
+                                try:
+                                    os.remove(queueFilename)
+                                except:
+                                    pass                                
                                 queue.pop(0)
                             continue
                         quotasPerMin['domains'][postDomain]+=1
@@ -2159,11 +2157,10 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         if quotasDaily['accounts'][postHandle]>accountMaxPostsPerDay:
                             print('DEBUG: Quota account posts per day - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerDay)+')')
                             if len(queue)>0:
-                                if os.path.isfile(queueFilename):
-                                    try:
-                                        os.remove(queueFilename)
-                                    except:
-                                        pass                                
+                                try:
+                                    os.remove(queueFilename)
+                                except:
+                                    pass                                
                                 queue.pop(0)
                             continue
                         quotasDaily['accounts'][postHandle]+=1
@@ -2175,11 +2172,10 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         if quotasPerMin['accounts'][postHandle]>accountMaxPostsPerMin:
                             print('DEBUG: Quota account posts per min - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerMin)+')')
                             if len(queue)>0:
-                                if os.path.isfile(queueFilename):
-                                    try:
-                                        os.remove(queueFilename)
-                                    except:
-                                        pass                                
+                                try:
+                                    os.remove(queueFilename)
+                                except:
+                                    pass                                
                                 queue.pop(0)
                             continue
                         quotasPerMin['accounts'][postHandle]+=1
