@@ -721,22 +721,23 @@ class PubServer(BaseHTTPRequestHandler):
     def _inboxQueueCleardown(self) -> None:
         """ Check if the queue is full and remove oldest items if it is
         """
-        if len(self.server.inboxQueue)>=self.server.maxQueueLength:
-            print('Inbox queue is full ('+str(self.server.maxQueueLength)+' items). Removing oldest items.')
-            cleardownStartTime=time.time()
-            removals=0
-            while len(self.server.inboxQueue) >= self.server.maxQueueLength-4:
-                queueFilename=self.server.inboxQueue[0]
-                if os.path.isfile(queueFilename):
-                    try:
-                        os.remove(queueFilename)
-                        removals+=1
-                    except:
-                        print('WARN: unable to remove inbox queue file '+queueFilename)
-                        pass
-                self.server.inboxQueue.pop(0)
-            timeDiff=str(int((time.time()-cleardownStartTime)*1000))
-            print('Inbox cleardown took '+timeDiff+' mS. Removed '+str(removals)+' items.')
+        if len(self.server.inboxQueue)<self.server.maxQueueLength:
+            return
+        print('Inbox queue is full ('+str(self.server.maxQueueLength)+' items). Removing oldest items.')
+        cleardownStartTime=time.time()
+        removals=0
+        while len(self.server.inboxQueue) >= self.server.maxQueueLength/2:
+            queueFilename=self.server.inboxQueue[0]
+            if os.path.isfile(queueFilename):
+                try:
+                    os.remove(queueFilename)
+                    removals+=1
+                except:
+                    print('WARN: unable to remove inbox queue file '+queueFilename)
+                    pass
+            self.server.inboxQueue.pop(0)
+        timeDiff=str(int((time.time()-cleardownStartTime)*1000))
+        print('Inbox cleardown took '+timeDiff+' mS. Removed '+str(removals)+' items.')
 
     def _updateInboxQueue(self,nickname: str,messageJson: {}, \
                           messageBytes: str) -> int:
@@ -5887,7 +5888,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.server.POSTbusy=False
                     return
-                if queueStatus==1:
+                elif queueStatus==1:
                     self.send_response(503)
                     self.end_headers()
                     self.server.POSTbusy=False
