@@ -2036,9 +2036,9 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
     # then this loads any outstanding items back into the queue
     restoreQueueItems(baseDir,queue)
 
-    # keep track of numbers of incoming posts per unit of time
-    quotasLastUpdate=int(time.time())
-    quotas={
+    # keep track of numbers of incoming posts per day
+    quotasLastUpdateDaily=int(time.time())
+    quotasDaily={
         'domains': {},
         'accounts': {}
     }
@@ -2098,44 +2098,44 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 continue
 
             # clear the daily quotas for maximum numbers of received posts
-            if currTime-quotasLastUpdate>60*60*24:
-                quotas={
+            if currTime-quotasLastUpdateDaily>60*60*24:
+                quotasDaily={
                     'domains': {},
                     'accounts': {}
                 }
-                quotasLastUpdate=currTime
+                quotasLastUpdateDaily=currTime
 
             # limit the number of posts which can arrive per domain per day
             postDomain=queueJson['postDomain']
             if postDomain:
                 if domainMaxPostsPerDay>0:
-                    if quotas['domains'].get(postDomain):
-                        if quotas['domains'][postDomain]>domainMaxPostsPerDay:
+                    if quotasDaily['domains'].get(postDomain):
+                        if quotasDaily['domains'][postDomain]>domainMaxPostsPerDay:
                             if debug:
                                 print('DEBUG: Maximum posts for '+postDomain+' reached')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
-                        quotas['domains'][postDomain]+=1
+                        quotasDaily['domains'][postDomain]+=1
                     else:
-                        quotas['domains'][postDomain]=1
+                        quotasDaily['domains'][postDomain]=1
 
                 if accountMaxPostsPerDay>0:
                     postHandle=queueJson['postNickname']+'@'+postDomain
-                    if quotas['accounts'].get(postHandle):
-                        if quotas['accounts'][postHandle]>accountMaxPostsPerDay:
+                    if quotasDaily['accounts'].get(postHandle):
+                        if quotasDaily['accounts'][postHandle]>accountMaxPostsPerDay:
                             if debug:
                                 print('DEBUG: Maximum posts for '+postHandle+' reached')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
-                        quotas['accounts'][postHandle]+=1
+                        quotasDaily['accounts'][postHandle]+=1
                     else:
-                        quotas['accounts'][postHandle]=1
+                        quotasDaily['accounts'][postHandle]=1
 
                 if debug:
                     if accountMaxPostsPerDay>0 or domainMaxPostsPerDay>0:
-                        pprint(quotas)
+                        pprint(quotasDaily)
 
             print('Obtaining public key for actor '+queueJson['actor'])
 
