@@ -2124,7 +2124,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 if domainMaxPostsPerDay>0:
                     if quotasDaily['domains'].get(postDomain):
                         if quotasDaily['domains'][postDomain]>domainMaxPostsPerDay:
-                            print('DEBUG: Quota per day - Maximum posts for '+postDomain+' reached')
+                            print('DEBUG: Quota per day - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerDay)+')')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
@@ -2135,7 +2135,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     if quotasPerMin['domains'].get(postDomain):
                         domainMaxPostsPerMin=int(domainMaxPostsPerDay/(24*60))
                         if quotasPerMin['domains'][postDomain]>domainMaxPostsPerMin:
-                            print('DEBUG: Quota per min - Maximum posts for '+postDomain+' reached')
+                            print('DEBUG: Quota per min - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerMin)+')')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
@@ -2147,14 +2147,24 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     postHandle=queueJson['postNickname']+'@'+postDomain
                     if quotasDaily['accounts'].get(postHandle):
                         if quotasDaily['accounts'][postHandle]>accountMaxPostsPerDay:
-                            if debug:
-                                print('DEBUG: Maximum posts for '+postHandle+' reached')
+                            print('DEBUG: Quota account posts per day - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerDay)+')')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
                         quotasDaily['accounts'][postHandle]+=1
                     else:
                         quotasDaily['accounts'][postHandle]=1
+
+                    if quotasPerMin['accounts'].get(postHandle):
+                        accountMaxPostsPerMin=int(accountMaxPostsPerDay/(24*60))
+                        if quotasPerMin['accounts'][postHandle]>accountMaxPostsPerMin:
+                            print('DEBUG: Quota account posts per min - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerMin)+')')
+                            if len(queue)>0:
+                                queue.pop(0)
+                            continue
+                        quotasPerMin['accounts'][postHandle]+=1
+                    else:
+                        quotasPerMin['accounts'][postHandle]=1
 
                 if debug:
                     if accountMaxPostsPerDay>0 or domainMaxPostsPerDay>0:
