@@ -2111,8 +2111,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 if domainMaxPostsPerDay>0:
                     if quotasDaily['domains'].get(postDomain):
                         if quotasDaily['domains'][postDomain]>domainMaxPostsPerDay:
-                            if debug:
-                                print('DEBUG: Maximum posts for '+postDomain+' reached')
+                            print('DEBUG: Quota - Maximum posts for '+postDomain+' reached')
                             if len(queue)>0:
                                 queue.pop(0)
                             continue
