@@ -76,7 +76,7 @@ def undoLikesCollectionEntry(recentPostsCache: {}, \
                 del postJsonObject['object']['likes']
             else:
                 postJsonObject['object']['likes']['totalItems']= \
-                    len(postJsonObject['likes']['items'])
+                    len(postJsonObject['object']['likes']['items'])
             saveJson(postJsonObject,postFilename)
 
 def likedByPerson(postJsonObject: {}, nickname: str,domain: str) -> bool:

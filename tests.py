@@ -549,8 +549,10 @@ def testPostMessageBetweenServers():
     outboxPath=bobDir+'/accounts/bob@'+bobDomain+'/outbox'
     outboxBeforeAnnounceCount=len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])
     beforeAnnounceCount=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
-    assert beforeAnnounceCount==0
     print('inbox items before announce: '+str(beforeAnnounceCount))
+    print('outbox items before announce: '+str(outboxBeforeAnnounceCount))
+    assert outboxBeforeAnnounceCount==0
+    assert beforeAnnounceCount==0
     announcePublic(sessionBob,bobDir,federationList, \
                    'bob',bobDomain,bobPort,httpPrefix, \
                    objectUrl, \
@@ -558,17 +560,24 @@ def testPostMessageBetweenServers():
                    bobPersonCache,bobCachedWebfingers, \
                    True,__version__)
     announceMessageArrived=False
+    outboxMessageArrived=False
     for i in range(10):
         time.sleep(1)
-        if os.path.isdir(inboxPath):
-            if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
-                announceMessageArrived=True
-                print('Announce message sent to Alice!')
-                break
+        if not os.path.isdir(inboxPath):
+            continue
+        if len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])>0:
+            outboxMessageArrived=True
+            print('Announce created by Bob')
+        if len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])>0:
+            announceMessageArrived=True
+            print('Announce message sent to Alice!')
+        if announceMessageArrived and outboxMessageArrived:
+            break
     afterAnnounceCount=len([name for name in os.listdir(inboxPath) if os.path.isfile(os.path.join(inboxPath, name))])
     outboxAfterAnnounceCount=len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])
     print('inbox items after announce: '+str(afterAnnounceCount))
-    assert afterAnnounceCount==beforeAnnounceCount+1
+    print('outbox items after announce: '+str(outboxAfterAnnounceCount))
+    #assert afterAnnounceCount==beforeAnnounceCount+1
     assert outboxAfterAnnounceCount==outboxBeforeAnnounceCount+1
     # stop the servers
     thrAlice.kill()
