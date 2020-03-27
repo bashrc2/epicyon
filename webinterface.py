@@ -3535,8 +3535,8 @@ def htmlTimeline(defaultTimeline: str, \
     if port!=80 and port!=443:
         if ':' not in domain:
             fullDomain=domain+':'+str(port)
-    actor=httpPrefix+'://'+fullDomain+'/users/'+nickname
     usersPath='/users/'+nickname
+    actor=httpPrefix+'://'+fullDomain+usersPath
 
     showIndividualPostIcons=True
 
