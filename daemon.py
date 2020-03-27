@@ -915,6 +915,14 @@ class PubServer(BaseHTTPRequestHandler):
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
     def do_GET(self):
+        callingDomain=None
+        if self.headers.get('Host'):
+            callingDomain=self.headers['Host']
+            if isBlockedDomain(self.server.baseDir,callingDomain):
+                print('GET domain blocked: '+callingDomain)
+                self._400()
+                return
+
         GETstartTime=time.time()
         GETtimings=[]
 
@@ -4281,6 +4289,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 return
             self.server.lastPOST=currTimePOST
+
+        callingDomain=None
+        if self.headers.get('Host'):
+            callingDomain=self.headers['Host']
+            if isBlockedDomain(self.server.baseDir,callingDomain):
+                print('POST domain blocked: '+callingDomain)
+                self._400()
+                return
 
         self.server.POSTbusy=True
         if not self.headers.get('Content-type'):
