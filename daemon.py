@@ -618,7 +618,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._404()
         return True
 
-    def _webfinger(self) -> bool:
+    def _webfinger(self,callingDomain: str) -> bool:
         if not self.path.startswith('/.well-known'):
             return False
         if self.server.debug:
@@ -627,7 +627,13 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: WEBFINGER host-meta')
         if self.path.startswith('/.well-known/host-meta'):
-            wfResult=webfingerMeta(self.server.httpPrefix,self.server.domainFull)
+            if not callingDomain.endswith('.onion'):
+                wfResult= \
+                    webfingerMeta(self.server.httpPrefix, \
+                                  self.server.domainFull)
+            else:
+                wfResult= \
+                    webfingerMeta('http',self.server.onionDomain)
             if wfResult:
                 msg=wfResult.encode('utf-8')
                 self._set_headers('application/xrd+xml',len(msg),None)
@@ -636,7 +642,13 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return True
         if self.path.startswith('/.well-known/nodeinfo'):
-            wfResult=webfingerNodeInfo(self.server.httpPrefix,self.server.domainFull)
+            if not callingDomain.endswith('.onion'):
+                wfResult= \
+                    webfingerNodeInfo(self.server.httpPrefix, \
+                                      self.server.domainFull)
+            else:
+                wfResult= \
+                    webfingerNodeInfo('http',self.server.onionDomain)
             if wfResult:
                 msg=json.dumps(wfResult).encode('utf-8')
                 if self.headers.get('Accept'):
@@ -653,9 +665,10 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print('DEBUG: WEBFINGER lookup '+self.path+' '+str(self.server.baseDir))
-        wfResult=webfingerLookup(self.path,self.server.baseDir, \
-                                 self.server.domain,self.server.onionDomain, \
-                                 self.server.port,self.server.debug)
+        wfResult= \
+            webfingerLookup(self.path,self.server.baseDir, \
+                            self.server.domain,self.server.onionDomain, \
+                            self.server.port,self.server.debug)
         if wfResult:
             msg=json.dumps(wfResult).encode('utf-8')
             self._set_headers('application/jrd+json',len(msg),None)
@@ -1608,7 +1621,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.GETbusy=False
             return
         # get webfinger endpoint for a person
-        if self._webfinger():
+        if self._webfinger(callingDomain):
             self.server.GETbusy=False
             return
 
