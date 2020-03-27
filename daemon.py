@@ -627,7 +627,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: WEBFINGER host-meta')
         if self.path.startswith('/.well-known/host-meta'):
-            if not callingDomain.endswith('.onion'):
+            if not callingDomain.endswith('.onion') or \
+               not self.server.onionDomain:
                 wfResult= \
                     webfingerMeta(self.server.httpPrefix, \
                                   self.server.domainFull)
@@ -642,7 +643,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return True
         if self.path.startswith('/.well-known/nodeinfo'):
-            if not callingDomain.endswith('.onion'):
+            if not callingDomain.endswith('.onion') or \
+               not self.server.onionDomain:
                 wfResult= \
                     webfingerNodeInfo(self.server.httpPrefix, \
                                       self.server.domainFull)
@@ -1274,9 +1276,15 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: authorized='+str(authorized))
                         print('DEBUG: path='+self.path)
                     self.send_response(303)
-                    self.send_header('Location', \
-                                     self.server.httpPrefix+'://'+ \
-                                     self.server.domainFull+'/login')
+                    if not callingDomain.endswith('.onion') or \
+                       not self.server.onionDomain:
+                        self.send_header('Location', \
+                                         self.server.httpPrefix+'://'+ \
+                                         self.server.domainFull+'/login')
+                    else:
+                        self.send_header('Location', \
+                                         'http://'+ \
+                                         self.server.onionDomain+'/login')
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
