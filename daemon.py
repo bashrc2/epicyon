@@ -838,7 +838,10 @@ class PubServer(BaseHTTPRequestHandler):
                     print('AUTH: nickname '+nickname+' was not found in path '+self.path)
                     return False
                 if self.server.debug:
-                    print('AUTH: epicyon cookie authorization failed, header='+self.headers['Cookie'].replace('epicyon=','')+' tokenStr='+tokenStr+' tokens='+str(self.server.tokensLookup))
+                    print('AUTH: epicyon cookie authorization failed, header='+ \
+                          self.headers['Cookie'].replace('epicyon=','')+ \
+                          ' tokenStr='+tokenStr+' tokens='+ \
+                          str(self.server.tokensLookup))
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
@@ -4436,10 +4439,19 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
                     self.send_header('Set-Cookie', \
                                      'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
-                    self.send_header('Location', \
-                                     self.server.httpPrefix+'://'+ \
-                                     self.server.domainFull+ \
-                                     '/users/'+loginNickname+'/'+self.server.defaultTimeline)
+                    if not callingDomain.endswith('.onion') or \
+                       not self.server.onionDomain:
+                        self.send_header('Location', \
+                                         self.server.httpPrefix+'://'+ \
+                                         self.server.domainFull+ \
+                                         '/users/'+loginNickname+'/'+ \
+                                         self.server.defaultTimeline)
+                    else:
+                        self.send_header('Location', \
+                                         'http://'+ \
+                                         self.server.onionDomain+ \
+                                         '/users/'+loginNickname+'/'+ \
+                                         self.server.defaultTimeline)
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag','noindex')
                     self.end_headers()
