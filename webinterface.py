@@ -3549,7 +3549,7 @@ def htmlTimeline(defaultTimeline: str, \
                 if len(line)>0:
                     # show follow approvals icon
                     followApprovals= \
-                        '<a href="'+actor+'/followers"><img loading="lazy" class="timelineicon" alt="'+ \
+                        '<a href="'+usersPath+'/followers"><img loading="lazy" class="timelineicon" alt="'+ \
                         translate['Approve follow requests']+ \
                         '" title="'+translate['Approve follow requests']+ \
                         '" src="/'+iconsDir+'/person.png"/></a>'
@@ -3558,17 +3558,17 @@ def htmlTimeline(defaultTimeline: str, \
     moderationButtonStr=''
     if moderator:
         moderationButtonStr= \
-            '<a href="'+actor+'/moderation"><button class="'+ \
+            '<a href="'+usersPath+'/moderation"><button class="'+ \
             moderationButton+'"><span>'+ \
             translate['Mod']+' </span></button></a>'
 
     sharesButtonStr= \
-        '<a href="'+actor+'/tlshares"><button class="'+ \
+        '<a href="'+usersPath+'/tlshares"><button class="'+ \
         sharesButton+'"><span>'+translate['Shares']+ \
         ' </span></button></a>'
 
     bookmarksButtonStr= \
-        '<a href="'+actor+'/tlbookmarks"><button class="'+ \
+        '<a href="'+usersPath+'/tlbookmarks"><button class="'+ \
         bookmarksButton+'"><span>'+translate['Bookmarks']+ \
         ' </span></button></a>'
 
@@ -3581,24 +3581,24 @@ def htmlTimeline(defaultTimeline: str, \
         if boxName!='tlblogs':
             if not manuallyApproveFollowers:
                 newPostButtonStr= \
-                    '<a href="'+actor+'/newpost"><img loading="lazy" src="/'+ \
+                    '<a href="'+usersPath+'/newpost"><img loading="lazy" src="/'+ \
                     iconsDir+'/newpost.png" title="'+ \
                     translate['Create a new post']+'" alt="'+ \
                     translate['Create a new post']+'" class="timelineicon"/></a>'
             else:
                 newPostButtonStr= \
-                    '<a href="'+actor+'/newfollowers"><img loading="lazy" src="/'+ \
+                    '<a href="'+usersPath+'/newfollowers"><img loading="lazy" src="/'+ \
                     iconsDir+'/newpost.png" title="'+translate['Create a new post']+ \
                     '" alt="'+translate['Create a new post']+'" class="timelineicon"/></a>'
         else:
             newPostButtonStr= \
-                '<a href="'+actor+'/newblog"><img loading="lazy" src="/'+ \
+                '<a href="'+usersPath+'/newblog"><img loading="lazy" src="/'+ \
                 iconsDir+'/newpost.png" title="'+ \
                 translate['Create a new post']+'" alt="'+ \
                 translate['Create a new post']+'" class="timelineicon"/></a>'
     else:
         newPostButtonStr= \
-            '<a href="'+actor+'/newdm"><img loading="lazy" src="/'+ \
+            '<a href="'+usersPath+'/newdm"><img loading="lazy" src="/'+ \
             iconsDir+'/newpost.png" title="'+translate['Create a new DM']+ \
             '" alt="'+translate['Create a new DM']+'" class="timelineicon"/></a>'
 
