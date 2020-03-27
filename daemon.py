@@ -1176,7 +1176,11 @@ class PubServer(BaseHTTPRequestHandler):
                     self._set_headers('text/html',len(msg),cookie)
                     self._write(msg)
                     return
-                originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+                if not callingDomain.endswith('.onion') or \
+                   not self.server.onionDomain:
+                    originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+                else:
+                    originPathStrAbsolute='http://'+self.server.onionDomain+originPathStr
                 self._redirect_headers(originPathStrAbsolute,cookie)
                 return
 
@@ -1211,13 +1215,15 @@ class PubServer(BaseHTTPRequestHandler):
         if htmlGET and '?rmshare=' in self.path:
             shareName=self.path.split('?rmshare=')[1]
             shareName=shareName.replace('%20',' ').replace('%40','@').replace('%3A',':').replace('%2F','/').replace('%23','#').strip()
+            usersPath=self.path.split('?rmshare=')[0]
             actor= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('?rmshare=')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             msg=htmlRemoveSharedItem(self.server.translate, \
                                      self.server.baseDir, \
                                      actor,shareName).encode()
             if not msg:
+               if callingDomain.endswith('.onion') and self.server.onionDomain:
+                   actor='http://'+self.server.onionDomain+usersPath
                self._redirect_headers(actor+'/tlshares',cookie)
                return
             self._set_headers('text/html',len(msg),cookie)
@@ -1691,6 +1697,8 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 originPathStr=self.path.split('/tags/')[0]
                 originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    originPathStrAbsolute='http://'+self.server.onionDomain+originPathStr
                 self._redirect_headers(originPathStrAbsolute+'/search',cookie)
             self.server.GETbusy=False
             return
@@ -1758,6 +1766,10 @@ class PubServer(BaseHTTPRequestHandler):
                    actor= \
                        self.server.httpPrefix+'://'+self.server.domainFull+ \
                        self.path.split('/eventdelete')[0]
+                   if callingDomain.endswith('.onion') and self.server.onionDomain:
+                       actor= \
+                           'http://'+self.server.onionDomain+ \
+                           self.path.split('/eventdelete')[0]
                    self._redirect_headers(actor+'/calendar',cookie)
                    return
                msg=msg.encode()
@@ -1815,6 +1827,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return
@@ -1844,6 +1858,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -1884,6 +1900,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                        str(pageNumber),cookie)
                 return
@@ -1911,6 +1929,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -1943,7 +1963,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.acceptedCaps, \
                                            self.server.debug, \
                                            self.server.projectVersion)
-            originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+            originPathStrAbsolute= \
+                self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStrAbsolute= \
+                    'http://'+self.server.onionDomain+originPathStr
             self._redirect_headers(originPathStrAbsolute,cookie)
             self.server.GETbusy=False
             return
@@ -1971,7 +1995,10 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.personCache, \
                                         self.server.debug, \
                                         self.server.projectVersion)
-            originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+            originPathStrAbsolute= \
+                self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStrAbsolute='http://'+self.server.onionDomain+originPathStr
             self._redirect_headers(originPathStrAbsolute,cookie)
             self.server.GETbusy=False
             return
@@ -2008,6 +2035,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber)+ \
                                        timelineBookmark,cookie)
@@ -2031,6 +2060,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(likeJson,self.server.projectVersion)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -2067,6 +2098,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return
@@ -2094,6 +2127,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(undoLikeJson,self.server.projectVersion)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -2131,6 +2166,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return
@@ -2150,6 +2187,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(bookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -2184,6 +2223,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('WARN: unable to find nickname in '+actor)
                 self.server.GETbusy=False
                 actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber),cookie)
                 return
@@ -2208,6 +2249,8 @@ class PubServer(BaseHTTPRequestHandler):
             self._postToOutbox(undoBookmarkJson,self.server.projectVersion)
             self.server.GETbusy=False
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
                                    timelineBookmark,cookie)
@@ -2232,9 +2275,10 @@ class PubServer(BaseHTTPRequestHandler):
                 timelineStr=self.path.split('?tl=')[1]
                 if '?' in timelineStr:
                     timelineStr=timelineStr.split('?')[0]
+            usersPath=self.path.split('?delete=')[0]
             actor= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+self.path.split('?delete=')[0]
+                self.server.domainFull+usersPath
             if self.server.allowDeletion or \
                deleteUrl.startswith(actor):
                 if self.server.debug:
@@ -2243,12 +2287,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if actor not in deleteUrl:
                     # You can only delete your own posts
                     self.server.GETbusy=False
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        actor='http://'+self.server.onionDomain+usersPath
                     self._redirect_headers(actor+'/'+timelineStr,cookie)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.postToNickname:
                     print('WARN: unable to find nickname in '+actor)
                     self.server.GETbusy=False
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        actor='http://'+self.server.onionDomain+usersPath
                     self._redirect_headers(actor+'/'+timelineStr,cookie)
                     return
                 if not self.server.session:
@@ -2269,6 +2317,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     return
             self.server.GETbusy=False
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actor='http://'+self.server.onionDomain+usersPath
             self._redirect_headers(actor+'/'+timelineStr,cookie)
             return
 
@@ -2302,6 +2352,10 @@ class PubServer(BaseHTTPRequestHandler):
             mutePost(self.server.baseDir,nickname,self.server.domain, \
                      muteUrl,self.server.recentPostsCache)
             self.server.GETbusy=False
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actor= \
+                    'http://'+self.server.onionDomain+ \
+                    self.path.split('?mute=')[0]
             self._redirect_headers(actor+'/'+timelineStr+timelineBookmark,cookie)
             return
 
@@ -2335,6 +2389,10 @@ class PubServer(BaseHTTPRequestHandler):
             unmutePost(self.server.baseDir,nickname,self.server.domain, \
                        muteUrl,self.server.recentPostsCache)
             self.server.GETbusy=False
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actor= \
+                    'http://'+ \
+                    self.server.onionDomain+self.path.split('?unmute=')[0]
             self._redirect_headers(actor+'/'+timelineStr+timelineBookmark,cookie)
             return
 
@@ -2749,6 +2807,8 @@ class PubServer(BaseHTTPRequestHandler):
                             return
             actor=self.path.replace('/skills','')
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute,cookie)
             self.server.GETbusy=False
             return
@@ -4380,7 +4440,12 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.port, \
                                            loginNickname,loginPassword):
                         self.server.POSTbusy=False
-                        self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+'/login',cookie)
+                        if callingDomain.endswith('.onion') and \
+                           self.server.onionDomain:
+                            self._redirect_headers('http://'+self.server.onionDomain+'/login',cookie)
+                        else:
+                            self._redirect_headers(self.server.httpPrefix+'://'+ \
+                                                   self.server.domainFull+'/login',cookie)
                         return
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+ \
@@ -4466,9 +4531,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
+            usersPath=self.path.replace('/profiledata','').replace('/editprofile','')
             actorStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.replace('/profiledata','').replace('/editprofile','')
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             if ' boundary=' in self.headers['Content-type']:
                 boundary=self.headers['Content-type'].split('boundary=')[1]
                 if ';' in boundary:
@@ -4476,12 +4541,18 @@ class PubServer(BaseHTTPRequestHandler):
 
                 nickname=getNicknameFromActor(actorStr)
                 if not nickname:
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        actorStr= \
+                            'http://'+self.server.onionDomain+usersPath
                     print('WARN: nickname not found in '+actorStr)
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
                     return
                 length=int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        actorStr= \
+                            'http://'+self.server.onionDomain+usersPath
                     print('Maximum profile data length exceeded '+str(length))
                     self._redirect_headers(actorStr,cookie)
                     self.server.POSTbusy=False
@@ -4893,6 +4964,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 self._clearLoginDetails(nickname)
                                 self.server.POSTbusy=False
                                 return
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(actorStr,cookie)
             self.server.POSTbusy=False
             return
@@ -4902,9 +4976,9 @@ class PubServer(BaseHTTPRequestHandler):
         # moderator action buttons
         if authorized and '/users/' in self.path and \
            self.path.endswith('/moderationaction'):
+            usersPath=self.path.replace('/moderationaction','')
             actorStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.replace('/moderationaction','')
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             length=int(self.headers['Content-length'])
             moderationParams=self.rfile.read(length).decode('utf-8')
             print('moderationParams: '+moderationParams)
@@ -5009,6 +5083,9 @@ class PubServer(BaseHTTPRequestHandler):
                                                nickname,self.server.domain, \
                                                postFilename, \
                                                self.server.debug)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(actorStr+'/moderation',cookie)
             self.server.POSTbusy=False
             return
@@ -5035,11 +5112,14 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber=int(pageNumberStr)
                 self.path=self.path.split('?page=')[0]
             # the actor who votes
+            usersPath=self.path.replace('/question','')
             actor= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+self.path.replace('/question','')
+                self.server.domainFull+usersPath
             nickname=getNicknameFromActor(actor)
             if not nickname:
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actor='http://'+self.server.onionDomain+usersPath
                 self._redirect_headers(actor+'/'+self.server.defaultTimeline+'?page='+ \
                                        str(pageNumber),cookie)
                 self.server.POSTbusy=False
@@ -5061,6 +5141,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if '&' in answer:
                     answer=answer.split('&')[0]
             self._sendReplyToQuestion(nickname,messageId,answer)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actor='http://'+self.server.onionDomain+usersPath
             self._redirect_headers(actor+'/'+self.server.defaultTimeline+ \
                                    '?page='+str(pageNumber),cookie)
             self.server.POSTbusy=False
@@ -5080,14 +5162,16 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumber=int(pageNumberStr)
                 self.path=self.path.split('?page=')[0]
 
+            usersPath=self.path.replace('/searchhandle','')
             actorStr= \
                 self.server.httpPrefix+'://'+ \
-                self.server.domainFull+ \
-                self.path.replace('/searchhandle','')
+                self.server.domainFull+usersPath
             length=int(self.headers['Content-length'])
             searchParams=self.rfile.read(length).decode('utf-8')
             if 'submitBack=' in searchParams:
                 # go back on search screen
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    actorStr='http://'+self.server.onionDomain+usersPath
                 self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
                 self.server.POSTbusy=False
                 return
@@ -5167,6 +5251,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         return
                     else:
+                        if callingDomain.endswith('.onion') and self.server.onionDomain:
+                            actorStr='http://'+self.server.onionDomain+usersPath
                         self._redirect_headers(actorStr+'/search',cookie)
                         self.server.POSTbusy=False
                         return
@@ -5204,6 +5290,8 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                actorStr='http://'+self.server.onionDomain+usersPath
             self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
             self.server.POSTbusy=False
             return
@@ -5212,9 +5300,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # removes a shared item
         if authorized and self.path.endswith('/rmshare'):
+            usersPath=self.path.split('/rmshare')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/rmshare')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             length=int(self.headers['Content-length'])
             removeShareConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removeShareConfirmParams:
@@ -5231,6 +5319,9 @@ class PubServer(BaseHTTPRequestHandler):
                     shareDomain,sharePort=getDomainFromActor(shareActor)
                     removeShare(self.server.baseDir, \
                                 shareNickname,shareDomain,shareName)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(originPathStr+'/tlshares',cookie)
             self.server.POSTbusy=False
             return
@@ -5240,9 +5331,9 @@ class PubServer(BaseHTTPRequestHandler):
         # removes a post
         if authorized and self.path.endswith('/rmpost'):
             pageNumber=1
+            usersPath=self.path.split('/rmpost')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/rmpost')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             length=int(self.headers['Content-length'])
             removePostConfirmParams=self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removePostConfirmParams:
@@ -5289,6 +5380,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                     int(yearStr),int(monthStr), \
                                                     removeMessageId)
                         self._postToOutboxThread(deleteJson)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr='http://'+self.server.onionDomain+usersPath
             if pageNumber==1:
                 self._redirect_headers(originPathStr+'/outbox',cookie)
             else:
@@ -5301,9 +5394,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to follow in the web interface is confirmed
         if authorized and self.path.endswith('/followconfirm'):
+            usersPath=self.path.split('/followconfirm')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/followconfirm')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             followerNickname=getNicknameFromActor(originPathStr)
             length=int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -5346,6 +5439,9 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.personCache, \
                                       self.server.debug, \
                                       self.server.projectVersion)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -5354,9 +5450,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to unfollow in the web interface is confirmed
         if authorized and self.path.endswith('/unfollowconfirm'):
+            usersPath=self.path.split('/unfollowconfirm')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/unfollowconfirm')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             followerNickname=getNicknameFromActor(originPathStr)
             length=int(self.headers['Content-length'])
             followConfirmParams=self.rfile.read(length).decode('utf-8')
@@ -5396,6 +5492,9 @@ class PubServer(BaseHTTPRequestHandler):
                     pathUsersSection=self.path.split('/users/')[1]
                     self.postToNickname=pathUsersSection.split('/')[0]
                     self._postToOutboxThread(unfollowJson)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -5404,11 +5503,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to unblock in the web interface is confirmed
         if authorized and self.path.endswith('/unblockconfirm'):
+            usersPath=self.path.split('/unblockconfirm')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/unblockconfirm')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             blockerNickname=getNicknameFromActor(originPathStr)
             if not blockerNickname:
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    originPathStr= \
+                        'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
@@ -5422,6 +5524,9 @@ class PubServer(BaseHTTPRequestHandler):
                     blockingActor=blockingActor.split('&')[0]
                 blockingNickname=getNicknameFromActor(blockingActor)
                 if not blockingNickname:
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        originPathStr= \
+                            'http://'+self.server.onionDomain+usersPath
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
@@ -5443,6 +5548,9 @@ class PubServer(BaseHTTPRequestHandler):
                         print(blockerNickname+' stops blocking '+blockingActor)
                     removeBlock(self.server.baseDir,blockerNickname,self.server.domain, \
                                 blockingNickname,blockingDomainFull)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -5451,11 +5559,14 @@ class PubServer(BaseHTTPRequestHandler):
 
         # decision to block in the web interface is confirmed
         if authorized and self.path.endswith('/blockconfirm'):
+            usersPath=self.path.split('/blockconfirm')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/blockconfirm')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             blockerNickname=getNicknameFromActor(originPathStr)
             if not blockerNickname:
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    originPathStr= \
+                        'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
@@ -5469,6 +5580,9 @@ class PubServer(BaseHTTPRequestHandler):
                     blockingActor=blockingActor.split('&')[0]
                 blockingNickname=getNicknameFromActor(blockingActor)
                 if not blockingNickname:
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        originPathStr= \
+                            'http://'+self.server.onionDomain+usersPath
                     print('WARN: unable to find nickname in '+blockingActor)
                     self._redirect_headers(originPathStr,cookie)
                     self.server.POSTbusy=False
@@ -5493,6 +5607,9 @@ class PubServer(BaseHTTPRequestHandler):
                     addBlock(self.server.baseDir,blockerNickname, \
                              self.server.domain, \
                              blockingNickname,blockingDomainFull)
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -5503,11 +5620,15 @@ class PubServer(BaseHTTPRequestHandler):
         # view/follow/block/report
         if authorized and self.path.endswith('/personoptions'):
             pageNumber=1
+            usersPath=self.path.split('/personoptions')[0]
             originPathStr= \
-                self.server.httpPrefix+'://'+self.server.domainFull+ \
-                self.path.split('/personoptions')[0]
+                self.server.httpPrefix+'://'+self.server.domainFull+usersPath
+
             chooserNickname=getNicknameFromActor(originPathStr)
             if not chooserNickname:
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    originPathStr= \
+                        'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+originPathStr)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
@@ -5539,6 +5660,9 @@ class PubServer(BaseHTTPRequestHandler):
 
             optionsNickname=getNicknameFromActor(optionsActor)
             if not optionsNickname:
+                if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    originPathStr= \
+                        'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+optionsActor)
                 self._redirect_headers(originPathStr,cookie)
                 self.server.POSTbusy=False
@@ -5620,28 +5744,34 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
             if '&submitSnooze=' in optionsConfirmParams:
+                usersPath=self.path.split('/personoptions')[0]
                 thisActor= \
-                    self.server.httpPrefix+'://'+self.server.domainFull+ \
-                    self.path.split('/personoptions')[0]
+                    self.server.httpPrefix+'://'+self.server.domainFull+usersPath
                 if self.server.debug:
                     print('Snoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        thisActor= \
+                            'http://'+self.server.onionDomain+usersPath
                     self._redirect_headers(thisActor+ \
                                            '/'+self.server.defaultTimeline+ \
                                            '?page='+str(pageNumber),cookie)
                     self.server.POSTbusy=False
                     return
             if '&submitUnSnooze=' in optionsConfirmParams:
+                usersPath=self.path.split('/personoptions')[0]
                 thisActor= \
-                    self.server.httpPrefix+'://'+self.server.domainFull+ \
-                    self.path.split('/personoptions')[0]
+                    self.server.httpPrefix+'://'+self.server.domainFull+usersPath
                 if self.server.debug:
                     print('Unsnoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
                     personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                        thisActor= \
+                            'http://'+self.server.onionDomain+usersPath
                     self._redirect_headers(thisActor+ \
                                            '/'+self.server.defaultTimeline+ \
                                            '?page='+str(pageNumber),cookie)
@@ -5662,6 +5792,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy=False
                 return
 
+            if callingDomain.endswith('.onion') and self.server.onionDomain:
+                originPathStr= \
+                    'http://'+self.server.onionDomain+usersPath
             self._redirect_headers(originPathStr,cookie)
             self.server.POSTbusy=False
             return
@@ -5682,10 +5815,17 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nickname:
                     nickname=nickname.split('/')[0]
 
-                self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
-                                       '/users/'+nickname+ \
-                                       '/'+postRedirect+ \
-                                       '?page='+str(pageNumber),cookie)
+                if not callingDomain.endswith('.onion') or \
+                   not self.server.onionDomain:
+                    self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                                           '/users/'+nickname+ \
+                                           '/'+postRedirect+ \
+                                           '?page='+str(pageNumber),cookie)
+                else:
+                    self._redirect_headers('http://'+self.server.onionDomain+ \
+                                           '/users/'+nickname+ \
+                                           '/'+postRedirect+ \
+                                           '?page='+str(pageNumber),cookie)
                 self.server.POSTbusy=False
                 return
 
