@@ -3536,6 +3536,7 @@ def htmlTimeline(defaultTimeline: str, \
         if ':' not in domain:
             fullDomain=domain+':'+str(port)
     actor=httpPrefix+'://'+fullDomain+'/users/'+nickname
+    usersPath='/users/'+nickname
 
     showIndividualPostIcons=True
 
@@ -3618,70 +3619,70 @@ def htmlTimeline(defaultTimeline: str, \
     # first button
     if defaultTimeline=='tlmedia':
         tlStr+= \
-            '    <a href="'+actor+'/tlmedia"><button class="'+ \
+            '    <a href="'+usersPath+'/tlmedia"><button class="'+ \
             mediaButton+'"><span>'+translate['Media']+ \
             '</span></button></a>'
     elif defaultTimeline=='tlblogs':
         tlStr+= \
-            '    <a href="'+actor+'/tlblogs"><button class="'+ \
+            '    <a href="'+usersPath+'/tlblogs"><button class="'+ \
             blogsButton+'"><span>'+translate['Blogs']+ \
             '</span></button></a>'
     else:
         tlStr+= \
-            '    <a href="'+actor+'/inbox"><button class="'+ \
+            '    <a href="'+usersPath+'/inbox"><button class="'+ \
             inboxButton+'"><span>'+ \
             translate['Inbox']+'</span></button></a>'
 
     tlStr+= \
-        '    <a href="'+actor+'/dm"><button class="'+dmButton+ \
+        '    <a href="'+usersPath+'/dm"><button class="'+dmButton+ \
         '"><span>'+translate['DM']+'</span></button></a>'
     tlStr+= \
-        '    <a href="'+actor+'/tlreplies"><button class="'+ \
+        '    <a href="'+usersPath+'/tlreplies"><button class="'+ \
         repliesButton+'"><span>'+translate['Replies']+ \
         '</span></button></a>'
 
     # typically the media button
     if defaultTimeline!='tlmedia':
         tlStr+= \
-            '    <a href="'+actor+'/tlmedia"><button class="'+ \
+            '    <a href="'+usersPath+'/tlmedia"><button class="'+ \
             mediaButton+'"><span>'+translate['Media']+ \
             '</span></button></a>'
     else:
         tlStr+= \
-            '    <a href="'+actor+'/inbox"><button class="'+ \
+            '    <a href="'+usersPath+'/inbox"><button class="'+ \
             inboxButton+'"><span>'+translate['Inbox']+ \
             '</span></button></a>'
 
     # typically the blogs button
     if defaultTimeline!='tlblogs':
         tlStr+= \
-            '    <a href="'+actor+'/tlblogs"><button class="'+ \
+            '    <a href="'+usersPath+'/tlblogs"><button class="'+ \
             blogsButton+'"><span>'+translate['Blogs']+ \
             '</span></button></a>'
     else:
         tlStr+= \
-            '    <a href="'+actor+'/inbox"><button class="'+ \
+            '    <a href="'+usersPath+'/inbox"><button class="'+ \
             inboxButton+'"><span>'+translate['Inbox']+ \
             '</span></button></a>'
 
     tlStr+= \
-        '    <a href="'+actor+'/outbox"><button class="'+ \
+        '    <a href="'+usersPath+'/outbox"><button class="'+ \
         sentButton+'"><span>'+translate['Outbox']+ \
         '</span></button></a>'
     tlStr+= \
         sharesButtonStr+bookmarksButtonStr+moderationButtonStr+newPostButtonStr
     tlStr+= \
-        '    <a href="'+actor+'/search"><img loading="lazy" src="/'+ \
+        '    <a href="'+usersPath+'/search"><img loading="lazy" src="/'+ \
         iconsDir+'/search.png" title="'+ \
         translate['Search and follow']+'" alt="'+ \
         translate['Search and follow']+'" class="timelineicon"/></a>'
     tlStr+= \
-        '    <a href="'+actor+calendarPath+ \
+        '    <a href="'+usersPath+calendarPath+ \
         '"><img loading="lazy" src="/'+iconsDir+'/'+ \
         calendarImage+'" title="'+translate['Calendar']+ \
         '" alt="'+translate['Calendar']+'" class="timelineicon"/></a>'
     tlStr+= \
-        '    <a href="'+actor+'/'+boxName+ \
+        '    <a href="'+usersPath+'/'+boxName+ \
         '"><img loading="lazy" src="/'+iconsDir+ \
         '/refresh.png" title="'+translate['Refresh']+ \
         '" alt="'+translate['Refresh']+'" class="timelineicon"/></a>'
@@ -3741,25 +3742,25 @@ def htmlTimeline(defaultTimeline: str, \
         if todaysEventsCheck(baseDir,nickname,domain):
             now=datetime.now()
             tlStr+= \
-                '<center><a href="'+actor+'/calendar?year='+ \
+                '<center><a href="'+usersPath+'/calendar?year='+ \
                 str(now.year)+'?month='+str(now.month)+ \
                 '?day='+str(now.day)+'"><button class="buttonevent">'+ \
                 translate['Happening Today']+'</button></a>'
             if thisWeeksEventsCheck(baseDir,nickname,domain):
                 tlStr+= \
-                    '<a href="'+actor+'/calendar"><button class="buttonevent">'+ \
+                    '<a href="'+usersPath+'/calendar"><button class="buttonevent">'+ \
                     translate['Happening This Week']+'</button></a>'
             tlStr+='</center>'
         else:
             if thisWeeksEventsCheck(baseDir,nickname,domain):
                 tlStr+= \
-                    '<center><a href="'+actor+'/calendar"><button class="buttonevent">'+ \
+                    '<center><a href="'+usersPath+'/calendar"><button class="buttonevent">'+ \
                     translate['Happening This Week']+'</button></a></center>'
 
     # page up arrow
     if pageNumber>1:
         tlStr+= \
-            '<center><a href="'+actor+'/'+boxName+ \
+            '<center><a href="'+usersPath+'/'+boxName+ \
             '?page='+str(pageNumber-1)+ \
             '"><img loading="lazy" class="pageicon" src="/'+ \
             iconsDir+'/pageup.png" title="'+ \
@@ -3811,7 +3812,7 @@ def htmlTimeline(defaultTimeline: str, \
     # page down arrow
     if itemCtr>2:
         tlStr+= \
-            '<center><a href="'+actor+'/'+boxName+'?page='+ \
+            '<center><a href="'+usersPath+'/'+boxName+'?page='+ \
             str(pageNumber+1)+'"><img loading="lazy" class="pageicon" src="/'+ \
             iconsDir+'/pagedown.png" title="'+ \
             translate['Page down']+'" alt="'+ \
