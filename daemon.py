@@ -1260,9 +1260,15 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,10)
 
         if self.path.startswith('/terms'):
-            msg=htmlTermsOfService(self.server.baseDir, \
-                                   self.server.httpPrefix, \
-                                   self.server.domainFull).encode()
+            if not callingDomain.endswith('.onion') or \
+               not self.server.onionDomain:
+                msg=htmlTermsOfService(self.server.baseDir, \
+                                       self.server.httpPrefix, \
+                                       self.server.domainFull).encode()
+            else:
+                msg=htmlTermsOfService(self.server.baseDir, \
+                                       self.server.httpPrefix, \
+                                       self.server.onionDomain).encode()
             self._login_headers('text/html',len(msg),callingDomain)
             self._write(msg)
             return
