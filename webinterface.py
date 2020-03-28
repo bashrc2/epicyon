@@ -2808,7 +2808,7 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
                          boxName: str,showRepeats=True, \
                          showIcons=False, \
                          manuallyApprovesFollowers=False, \
-                         showPublicOnly=False,
+                         showPublicOnly=False, \
                          storeToCache=True) -> str:
     """ Shows a single post as html
     """
@@ -3305,6 +3305,11 @@ def individualPostAsHtml(recentPostsCache: {},maxRecentPosts: int, \
         # is this a post to the local domain?
         if '://'+domain in messageId:
             publishedLink=messageId.replace('/statuses/','/')
+    # if this is a local link then make it relative so that it works
+    # on clearnet or onion address
+    if domain+'/users/' in publishedLink or \
+       domain+':'+str(port)+'/users/' in publishedLink:
+        publishedLink='/users/'+publishedLink.split('/users/')[1]
 
     footerStr='<a href="'+publishedLink+'" class="'+timeClass+'">'+publishedStr+'</a>\n'
 
