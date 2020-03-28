@@ -1266,8 +1266,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.httpPrefix, \
                                        self.server.domainFull).encode()
             else:
-                msg=htmlTermsOfService(self.server.baseDir, \
-                                       self.server.httpPrefix, \
+                msg=htmlTermsOfService(self.server.baseDir,'http', \
                                        self.server.onionDomain).encode()
             self._login_headers('text/html',len(msg),callingDomain)
             self._write(msg)
