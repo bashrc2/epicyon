@@ -937,17 +937,30 @@ class PubServer(BaseHTTPRequestHandler):
         callingDomain=None
         if self.headers.get('Host'):
             callingDomain=self.headers['Host']
+            if self.server.onionDomain:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull and \
+                   callingDomain != self.server.onionDomain:
+                    print('GET domain blocked: '+callingDomain)
+                    self._400()
+                    return
+            else:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull:
+                    print('GET domain blocked: '+callingDomain)
+                    self._400()
+                    return
 
-            if self.server.blocklistUpdateCtr<=0:
-                self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
-                self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
+            #if self.server.blocklistUpdateCtr<=0:
+            #    self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
+            #    self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
 
-            self.server.blocklistUpdateCtr-=1
+            #self.server.blocklistUpdateCtr-=1
 
-            if callingDomain in self.server.domainBlocklist:
-                print('GET domain blocked: '+callingDomain)
-                self._400()
-                return
+            #if callingDomain in self.server.domainBlocklist:
+            #    print('GET domain blocked: '+callingDomain)
+            #    self._400()
+            #    return
 
         GETstartTime=time.time()
         GETtimings=[]
@@ -4389,17 +4402,30 @@ class PubServer(BaseHTTPRequestHandler):
         callingDomain=None
         if self.headers.get('Host'):
             callingDomain=self.headers['Host']
+            if self.server.onionDomain:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull and \
+                   callingDomain != self.server.onionDomain:
+                    print('POST domain blocked: '+callingDomain)
+                    self._400()
+                    return
+            else:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull:
+                    print('POST domain blocked: '+callingDomain)
+                    self._400()
+                    return
 
-            if self.server.blocklistUpdateCtr<=0:
-                self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
-                self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
+            #if self.server.blocklistUpdateCtr<=0:
+            #    self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
+            #    self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
 
-            self.server.blocklistUpdateCtr-=1
+            #self.server.blocklistUpdateCtr-=1
 
-            if callingDomain in self.server.domainBlocklist:
-                print('POST domain blocked: '+callingDomain)
-                self._400()
-                return
+            #if callingDomain in self.server.domainBlocklist:
+            #    print('POST domain blocked: '+callingDomain)
+            #    self._400()
+            #    return
 
         self.server.POSTbusy=True
         if not self.headers.get('Content-type'):
