@@ -107,6 +107,7 @@ from blocking import addGlobalBlock
 from blocking import removeGlobalBlock
 from blocking import isBlockedHashtag
 from blocking import isBlockedDomain
+from blocking import getDomainBlocklist
 from config import setConfigParam
 from config import getConfigParam
 from roles import outboxDelegate
@@ -936,7 +937,14 @@ class PubServer(BaseHTTPRequestHandler):
         callingDomain=None
         if self.headers.get('Host'):
             callingDomain=self.headers['Host']
-            if isBlockedDomain(self.server.baseDir,callingDomain):
+
+            if self.server.blocklistUpdateCtr<=0:
+                self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
+                self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
+
+            self.server.blocklistUpdateCtr-=1
+
+            if callingDomain in self.server.domainBlocklist:
                 print('GET domain blocked: '+callingDomain)
                 self._400()
                 return
@@ -4381,7 +4389,14 @@ class PubServer(BaseHTTPRequestHandler):
         callingDomain=None
         if self.headers.get('Host'):
             callingDomain=self.headers['Host']
-            if isBlockedDomain(self.server.baseDir,callingDomain):
+
+            if self.server.blocklistUpdateCtr<=0:
+                self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
+                self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
+
+            self.server.blocklistUpdateCtr-=1
+
+            if callingDomain in self.server.domainBlocklist:
                 print('POST domain blocked: '+callingDomain)
                 self._400()
                 return
@@ -6193,6 +6208,12 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
 
         print('ERROR: HTTP server failed to start. '+str(e))
         return False
+
+    # This counter is used to update the list of blocked domains in memory.
+    # It helps to avoid touching the disk and so improves flooding resistance
+    httpd.blocklistUpdateCtr=0
+    httpd.blocklistUpdateInterval=100
+    httpd.domainBlocklist=getDomainBlocklist(baseDir)
 
     httpd.onionDomain=onionDomain
     httpd.useBlurHash=useBlurHash

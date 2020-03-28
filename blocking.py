@@ -8,6 +8,7 @@ __status__="Production"
 
 import os
 from utils import isEvil
+from utils import evilIncarnate
 
 def addGlobalBlock(baseDir: str, \
                    blockNickname: str,blockDomain: str) -> bool:
@@ -112,6 +113,23 @@ def isBlockedHashtag(baseDir: str,hashtag: str) -> bool:
         if hashtag+'\n' in open(globalBlockingFilename).read():
             return True
     return False
+
+def getDomainBlocklist(baseDir: str) -> str:
+    """Returns all globally blocked domains as a string
+    This can be used for fast matching to mitigate flooding
+    """
+    blockedStr=''
+
+    evilDomains=evilIncarnate()
+    for evil in evilDomains:
+        blockedStr+=evil+'\n'
+
+    globalBlockingFilename=baseDir+'/accounts/blocking.txt'
+    if not os.path.isfile(globalBlockingFilename):
+        return blockedStr
+    with open(globalBlockingFilename, 'r') as file:
+        blockedStr += file.read()
+    return blockedStr
 
 def isBlockedDomain(baseDir: str,domain: str) -> bool:
     """Is the given domain blocked?

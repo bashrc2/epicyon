@@ -93,12 +93,15 @@ def getStatusNumber() -> (str,str):
     published=currTime.strftime("%Y-%m-%dT%H:%M:%SZ")
     return statusNumber,published
 
+def evilIncarnate() -> []:
+    return ('gab.com','gabfed.com','spinster.xyz','kiwifarms.cc','djitter.com')
+
 def isEvil(domain: str) -> bool:
     if not isinstance(domain, str):
         print('WARN: Malformed domain '+str(domain))
         return True
     # https://www.youtube.com/watch?v=5qw1hcevmdU
-    evilDomains=('gab.com','gabfed.com','spinster.xyz','kiwifarms.cc','djitter.com')
+    evilDomains=evilIncarnate()
     for concentratedEvil in evilDomains:
         if domain.endswith(concentratedEvil):
             return True
