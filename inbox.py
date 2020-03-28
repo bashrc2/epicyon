@@ -2138,6 +2138,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
 
                     if quotasPerMin['domains'].get(postDomain):
                         domainMaxPostsPerMin=int(domainMaxPostsPerDay/(24*60))
+                        if domainMaxPostsPerMin<10:
+                            domainMaxPostsPerMin=10
                         if quotasPerMin['domains'][postDomain]>domainMaxPostsPerMin:
                             print('DEBUG: Quota per min - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerMin)+')')
                             if len(queue)>0:
@@ -2169,6 +2171,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
 
                     if quotasPerMin['accounts'].get(postHandle):
                         accountMaxPostsPerMin=int(accountMaxPostsPerDay/(24*60))
+                        if accountMaxPostsPerMin<10:
+                            accountMaxPostsPerMin=10
                         if quotasPerMin['accounts'][postHandle]>accountMaxPostsPerMin:
                             print('DEBUG: Quota account posts per min - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerMin)+')')
                             if len(queue)>0:

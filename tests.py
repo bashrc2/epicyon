@@ -577,7 +577,7 @@ def testPostMessageBetweenServers():
     outboxAfterAnnounceCount=len([name for name in os.listdir(outboxPath) if os.path.isfile(os.path.join(outboxPath, name))])
     print('inbox items after announce: '+str(afterAnnounceCount))
     print('outbox items after announce: '+str(outboxAfterAnnounceCount))
-    #assert afterAnnounceCount==beforeAnnounceCount+1
+    assert afterAnnounceCount==beforeAnnounceCount+1
     assert outboxAfterAnnounceCount==outboxBeforeAnnounceCount+1
     # stop the servers
     thrAlice.kill()
