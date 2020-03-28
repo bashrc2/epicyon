@@ -1243,9 +1243,13 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,11)
 
         if self.path.startswith('/about'):
-            msg=htmlAbout(self.server.baseDir, \
-                          self.server.httpPrefix, \
-                          self.server.domainFull).encode()
+            if not callingDomain.endswith('.onion'):
+                msg=htmlAbout(self.server.baseDir, \
+                              self.server.httpPrefix, \
+                              self.server.domainFull).encode()
+            else:
+                msg=htmlAbout(self.server.baseDir,'http', \
+                              self.server.onionDomain).encode()
             self._login_headers('text/html',len(msg))
             self._write(msg)
             return
