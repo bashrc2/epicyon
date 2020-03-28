@@ -1870,6 +1870,7 @@ def htmlProfile(defaultTimeline: str, \
     editProfileStr=''
     logoutStr=''
     actor=profileJson['id']
+    usersPath='/users/'+actor.split('/users/')[1]
 
     donateSection=''
     donateUrl=getDonationUrl(profileJson)
@@ -1917,7 +1918,7 @@ def htmlProfile(defaultTimeline: str, \
             translate['Login']+'</button></a>'
     else:
         editProfileStr= \
-            '<a href="'+actor+ \
+            '<a href="'+usersPath+ \
             '/editprofile"><button class="button"><span>'+ \
             translate['Edit']+' </span></button></a>'
         logoutStr= \
@@ -2006,25 +2007,25 @@ def htmlProfile(defaultTimeline: str, \
     profileStr+='<div class="container">\n'
     profileStr+='  <center>'
     profileStr+= \
-        '    <a href="'+actor+'"><button class="'+postsButton+ \
+        '    <a href="'+usersPath+'"><button class="'+postsButton+ \
         '"><span>'+translate['Posts']+' </span></button></a>'
     profileStr+= \
-        '    <a href="'+actor+'/following"><button class="'+ \
+        '    <a href="'+usersPath+'/following"><button class="'+ \
         followingButton+'"><span>'+translate['Following']+ \
         ' </span></button></a>'
     profileStr+= \
-        '    <a href="'+actor+'/followers"><button class="'+ \
+        '    <a href="'+usersPath+'/followers"><button class="'+ \
         followersButton+'"><span>'+translate['Followers']+ \
         ' </span></button></a>'
     profileStr+= \
-        '    <a href="'+actor+'/roles"><button class="'+ \
+        '    <a href="'+usersPath+'/roles"><button class="'+ \
         rolesButton+'"><span>'+translate['Roles']+' </span></button></a>'
     profileStr+= \
-        '    <a href="'+actor+'/skills"><button class="'+ \
+        '    <a href="'+usersPath+'/skills"><button class="'+ \
         skillsButton+'"><span>'+translate['Skills']+ \
         ' </span></button></a>'
     profileStr+= \
-        '    <a href="'+actor+'/shares"><button class="'+ \
+        '    <a href="'+usersPath+'/shares"><button class="'+ \
         sharesButton+'"><span>'+translate['Shares']+ \
         ' </span></button></a>'
     profileStr+=editProfileStr+logoutStr
