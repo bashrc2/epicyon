@@ -400,54 +400,59 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
-    def _login_headers(self,fileFormat: str,length: int) -> None:
+    def _login_headers(self,fileFormat: str,length: int, \
+                       callingDomain: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
-        self.send_header('Host', self.server.domainFull)
+        self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate', \
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
-    def _logout_headers(self,fileFormat: str,length: int) -> None:
+    def _logout_headers(self,fileFormat: str,length: int, \
+                        callingDomain: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         self.send_header('Content-Length', str(length))
         self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Host', self.server.domainFull)
+        self.send_header('Host', callingDomain)
         self.send_header('WWW-Authenticate', \
                          'title="Login to Epicyon", Basic realm="epicyon"')
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
-    def _set_headers_base(self,fileFormat: str,length: int,cookie: str) -> None:
+    def _set_headers_base(self,fileFormat: str,length: int,cookie: str, \
+                          callingDomain: str) -> None:
         self.send_response(200)
         self.send_header('Content-type', fileFormat)
         if length>-1:
             self.send_header('Content-Length', str(length))
         if cookie:
             self.send_header('Cookie', cookie)
-        self.send_header('Host', self.server.domainFull)
+        self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Robots-Tag','noindex')
         self.send_header('Cache-Control','public, max-age=0')
         self.send_header('X-Clacks-Overhead','GNU Natalie Nguyen')
         self.send_header('Accept-Ranges','none')
 
-    def _set_headers(self,fileFormat: str,length: int,cookie: str) -> None:
-        self._set_headers_base(fileFormat,length,cookie)
+    def _set_headers(self,fileFormat: str,length: int,cookie: str, \
+                     callingDomain: str) -> None:
+        self._set_headers_base(fileFormat,length,cookie,callingDomain)
         self.end_headers()
 
-    def _set_headers_head(self,fileFormat: str,length: int,etag: str) -> None:
-        self._set_headers_base(fileFormat,length,None)
+    def _set_headers_head(self,fileFormat: str,length: int,etag: str, \
+                          callingDomain: str) -> None:
+        self._set_headers_base(fileFormat,length,None,callingDomain)
         if etag:
             self.send_header('ETag',etag)
         self.end_headers()
 
     def _set_headers_etag(self,mediaFilename: str,fileFormat: str, \
-                          data,cookie: str) -> None:
-        self._set_headers_base(fileFormat,len(data),cookie)
+                          data,cookie: str,callingDomain: str) -> None:
+        self._set_headers_base(fileFormat,len(data),cookie,callingDomain)
         etag=None
         if os.path.isfile(mediaFilename+'.etag'):
             try:
@@ -466,7 +471,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('ETag',etag)
         self.end_headers()
 
-    def _redirect_headers(self,redirect: str,cookie: str) -> None:
+    def _redirect_headers(self,redirect: str,cookie: str,callingDomain: str) -> None:
         self.send_response(303)
         #self.send_header('Content-type', 'text/html')
         if cookie:
@@ -474,14 +479,15 @@ class PubServer(BaseHTTPRequestHandler):
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url '+redirect)
         self.send_header('Location', redirect)
-        self.send_header('Host', self.server.domainFull)
+        self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag','noindex')
         self.end_headers()
 
     def _httpReturnCode(self,httpCode: int,httpDescription: str) -> None:
-        msg="<html><head></head><body><h1>"+str(httpCode)+" "+httpDescription+"</h1></body></html>"
+        msg="<html><head></head><body><h1>"+str(httpCode)+" "+ \
+            httpDescription+"</h1></body></html>"
         msg=msg.encode('utf-8')
         self.send_response(httpCode)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -525,11 +531,11 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         msg='User-agent: *\nDisallow: /'
         msg=msg.encode('utf-8')
-        self._set_headers('text/plain; charset=utf-8',len(msg),None)
+        self._set_headers('text/plain; charset=utf-8',len(msg),None,self.server.domainFull)
         self._write(msg)
         return True
 
-    def _mastoApi(self) -> bool:
+    def _mastoApi(self,callingDomain: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
         https://mastopeek.app-dist.eu
@@ -557,11 +563,11 @@ class PubServer(BaseHTTPRequestHandler):
             msg=json.dumps(instanceJson).encode('utf-8')
             if self.headers.get('Accept'):
                 if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json',len(msg),None)
+                    self._set_headers('application/ld+json',len(msg),None,callingDomain)
                 else:
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
             else:
-                self._set_headers('application/ld+json',len(msg),None)
+                self._set_headers('application/ld+json',len(msg),None,callingDomain)
             self._write(msg)
             print('instance metadata sent')
             return True
@@ -574,11 +580,11 @@ class PubServer(BaseHTTPRequestHandler):
             msg=json.dumps(['mastodon.social',self.server.domainFull]).encode('utf-8')
             if self.headers.get('Accept'):
                 if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json',len(msg),None)
+                    self._set_headers('application/ld+json',len(msg),None,callingDomain)
                 else:
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
             else:
-                self._set_headers('application/ld+json',len(msg),None)
+                self._set_headers('application/ld+json',len(msg),None,callingDomain)
             self._write(msg)
             print('instance peers metadata sent')
             return True
@@ -587,18 +593,18 @@ class PubServer(BaseHTTPRequestHandler):
             msg=json.dumps([]).encode('utf-8')
             if self.headers.get('Accept'):
                 if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json',len(msg),None)
+                    self._set_headers('application/ld+json',len(msg),None,callingDomain)
                 else:
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
             else:
-                self._set_headers('application/ld+json',len(msg),None)
+                self._set_headers('application/ld+json',len(msg),None,callingDomain)
             self._write(msg)
             print('instance activity metadata sent')
             return True
         self._404()
         return True
 
-    def _nodeinfo(self) -> bool:
+    def _nodeinfo(self,callingDomain: str) -> bool:
         if not self.path.startswith('/nodeinfo/2.0'):
             return False
         if self.server.debug:
@@ -608,11 +614,11 @@ class PubServer(BaseHTTPRequestHandler):
             msg=json.dumps(info).encode('utf-8')
             if self.headers.get('Accept'):
                 if 'application/ld+json' in self.headers['Accept']:
-                    self._set_headers('application/ld+json',len(msg),None)
+                    self._set_headers('application/ld+json',len(msg),None,callingDomain)
                 else:
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
             else:
-                self._set_headers('application/ld+json',len(msg),None)
+                self._set_headers('application/ld+json',len(msg),None,callingDomain)
             self._write(msg)
             print('nodeinfo sent')
             return True
@@ -638,7 +644,7 @@ class PubServer(BaseHTTPRequestHandler):
                     webfingerMeta('http',self.server.onionDomain)
             if wfResult:
                 msg=wfResult.encode('utf-8')
-                self._set_headers('application/xrd+xml',len(msg),None)
+                self._set_headers('application/xrd+xml',len(msg),None,callingDomain)
                 self._write(msg)
                 return True
             self._404()
@@ -656,11 +662,11 @@ class PubServer(BaseHTTPRequestHandler):
                 msg=json.dumps(wfResult).encode('utf-8')
                 if self.headers.get('Accept'):
                     if 'application/ld+json' in self.headers['Accept']:
-                        self._set_headers('application/ld+json',len(msg),None)
+                        self._set_headers('application/ld+json',len(msg),None,callingDomain)
                     else:
-                        self._set_headers('application/json',len(msg),None)
+                        self._set_headers('application/json',len(msg),None,callingDomain)
                 else:
-                    self._set_headers('application/ld+json',len(msg),None)
+                    self._set_headers('application/ld+json',len(msg),None,callingDomain)
                 self._write(msg)
                 return True
             self._404()
@@ -674,7 +680,7 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.port,self.server.debug)
         if wfResult:
             msg=json.dumps(wfResult).encode('utf-8')
-            self._set_headers('application/jrd+json',len(msg),None)
+            self._set_headers('application/jrd+json',len(msg),None,callingDomain)
             self._write(msg)
         else:
             if self.server.debug:
@@ -934,7 +940,7 @@ class PubServer(BaseHTTPRequestHandler):
         return locatePost(baseDir,nickname,domain,messageId),nickname
 
     def do_GET(self):
-        callingDomain=None
+        callingDomain=self.server.domainFull
         if self.headers.get('Host'):
             callingDomain=self.headers['Host']
             if self.server.onionDomain:
@@ -967,13 +973,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         # Since fediverse crawlers are quite active, make returning info to them high priority
         # get nodeinfo endpoint
-        if self._nodeinfo():
+        if self._nodeinfo(callingDomain):
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,1)
 
         # minimal mastodon api
-        if self._mastoApi():
+        if self._mastoApi(callingDomain):
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,2)
@@ -981,7 +987,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path=='/logout':
             msg=htmlLogin(self.server.translate, \
                           self.server.baseDir,False).encode('utf-8')
-            self._logout_headers('text/html',len(msg))
+            self._logout_headers('text/html',len(msg),callingDomain)
             self._write(msg)
             return
 
@@ -1083,7 +1089,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         maxPostsInRSSFeed,1)
                     if msg!=None:
                         msg=msg.encode()
-                        self._set_headers('text/xml',len(msg),cookie)
+                        self._set_headers('text/xml',len(msg),cookie,callingDomain)
                         self._write(msg)
                         return
                 self._404()
@@ -1107,7 +1113,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  maxPostsInBlogsFeed)
                 if msg!=None:
                     msg=msg.encode()
-                    self._set_headers('text/html',len(msg),cookie)
+                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                     self._write(msg)
                     return
                 self._404()
@@ -1146,7 +1152,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  maxPostsInBlogsFeed,pageNumber)
                 if msg!=None:
                     msg=msg.encode()
-                    self._set_headers('text/html',len(msg),cookie)
+                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                     self._write(msg)
                     return
                 self._404()
@@ -1194,7 +1200,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           xmppAddress,matrixAddress, \
                                           ssbAddress,toxAddress, \
                                           PGPpubKey,emailAddress).encode()
-                    self._set_headers('text/html',len(msg),cookie)
+                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                     self._write(msg)
                     return
                 if not callingDomain.endswith('.onion') or \
@@ -1202,7 +1208,7 @@ class PubServer(BaseHTTPRequestHandler):
                     originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
                 else:
                     originPathStrAbsolute='http://'+self.server.onionDomain+originPathStr
-                self._redirect_headers(originPathStrAbsolute,cookie)
+                self._redirect_headers(originPathStrAbsolute,cookie,callingDomain)
                 return
 
             # show blog post
@@ -1224,7 +1230,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      postJsonObject)
                     if msg!=None:
                         msg=msg.encode()
-                        self._set_headers('text/html',len(msg),cookie)
+                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                         self._write(msg)
                         return
                     self._404()
@@ -1245,9 +1251,9 @@ class PubServer(BaseHTTPRequestHandler):
             if not msg:
                if callingDomain.endswith('.onion') and self.server.onionDomain:
                    actor='http://'+self.server.onionDomain+usersPath
-               self._redirect_headers(actor+'/tlshares',cookie)
+               self._redirect_headers(actor+'/tlshares',cookie,callingDomain)
                return
-            self._set_headers('text/html',len(msg),cookie)
+            self._set_headers('text/html',len(msg),cookie,callingDomain)
             self._write(msg)
             return
 
@@ -1257,7 +1263,7 @@ class PubServer(BaseHTTPRequestHandler):
             msg=htmlTermsOfService(self.server.baseDir, \
                                    self.server.httpPrefix, \
                                    self.server.domainFull).encode()
-            self._login_headers('text/html',len(msg))
+            self._login_headers('text/html',len(msg),callingDomain)
             self._write(msg)
             return
 
@@ -1271,7 +1277,7 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 msg=htmlAbout(self.server.baseDir,'http', \
                               self.server.onionDomain).encode()
-            self._login_headers('text/html',len(msg))
+            self._login_headers('text/html',len(msg),callingDomain)
             self._write(msg)
             return
 
@@ -1341,7 +1347,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries+=1
                 msg=css.encode('utf-8')
-                self._set_headers('text/css',len(msg),cookie)
+                self._set_headers('text/css',len(msg),cookie,callingDomain)
                 self._write(msg)
                 return
             self._404()
@@ -1370,7 +1376,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries+=1
                 if mediaBinary:
-                    self._set_headers('image/png',len(mediaBinary),cookie)
+                    self._set_headers('image/png',len(mediaBinary),cookie,callingDomain)
                     self._write(mediaBinary)
                     return
             self._404()
@@ -1395,7 +1401,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries+=1
                 if mediaBinary:
-                    self._set_headers('image/png',len(mediaBinary),cookie)
+                    self._set_headers('image/png',len(mediaBinary),cookie,callingDomain)
                     self._write(mediaBinary)
                     return
             self._404()
@@ -1420,7 +1426,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries+=1
                 if mediaBinary:
-                    self._set_headers('image/png',len(mediaBinary),cookie)
+                    self._set_headers('image/png',len(mediaBinary),cookie,callingDomain)
                     self._write(mediaBinary)
                     return
             self._404()
@@ -1448,7 +1454,7 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaImageType='gif'
                     with open(emojiFilename, 'rb') as avFile:
                         mediaBinary=avFile.read()
-                        self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie)
+                        self._set_headers('image/'+mediaImageType,len(mediaBinary),cookie,callingDomain)
                         self._write(mediaBinary)
                     return
             self._404()
@@ -1512,7 +1518,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 return
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary=avFile.read()
-                        self._set_headers_etag(mediaFilename,mediaFileType,mediaBinary,cookie)
+                        self._set_headers_etag(mediaFilename,mediaFileType, \
+                                               mediaBinary,cookie,callingDomain)
                         self._write(mediaBinary)
                     return
             self._404()
@@ -1542,7 +1549,7 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaFileType='gif'
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary=avFile.read()
-                        self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie)
+                        self._set_headers('image/'+mediaFileType,len(mediaBinary),cookie,callingDomain)
                         self._write(mediaBinary)
                     return
             self._404()
@@ -1559,14 +1566,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir+'/img/icons/'+mediaStr
                 if self.server.iconsCache.get(mediaStr):
                     mediaBinary=self.server.iconsCache[mediaStr]
-                    self._set_headers('image/png',len(mediaBinary),cookie)
+                    self._set_headers('image/png',len(mediaBinary),cookie,callingDomain)
                     self._write(mediaBinary)
                     return
                 else:
                     if os.path.isfile(mediaFilename):
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary=avFile.read()
-                            self._set_headers('image/png',len(mediaBinary),cookie)
+                            self._set_headers('image/png',len(mediaBinary),cookie,callingDomain)
                             self._write(mediaBinary)
                             self.server.iconsCache[mediaStr]=mediaBinary
                         return
@@ -1584,14 +1591,14 @@ class PubServer(BaseHTTPRequestHandler):
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary=avFile.read()
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png',len(mediaBinary),cookie)
+                        self._set_headers('image/png',len(mediaBinary),cookie,callingDomain)
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg',len(mediaBinary),cookie)
+                        self._set_headers('image/jpeg',len(mediaBinary),cookie,callingDomain)
                     elif mediaFilename.endswith('.gif'):
-                        self._set_headers('image/gif',len(mediaBinary),cookie)
+                        self._set_headers('image/gif',len(mediaBinary),cookie,callingDomain)
                     else:
                         # default to jpeg
-                        self._set_headers('image/jpeg',len(mediaBinary),cookie)
+                        self._set_headers('image/jpeg',len(mediaBinary),cookie,callingDomain)
                         #self._404()
                         return
                     self._write(mediaBinary)
@@ -1634,7 +1641,8 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(avatarFilename, 'rb') as avFile:
                             mediaBinary=avFile.read()
                             self._set_headers('image/'+mediaImageType, \
-                                              len(mediaBinary),cookie)
+                                              len(mediaBinary),cookie, \
+                                              callingDomain)
                             self._write(mediaBinary)
                         return
 
@@ -1674,7 +1682,7 @@ class PubServer(BaseHTTPRequestHandler):
             # request basic auth
             msg=htmlLogin(self.server.translate, \
                           self.server.baseDir).encode('utf-8')
-            self._login_headers('text/html',len(msg))
+            self._login_headers('text/html',len(msg),callingDomain)
             self._write(msg)
             self.server.GETbusy=False
             return
@@ -1694,7 +1702,7 @@ class PubServer(BaseHTTPRequestHandler):
                 hashtag=hashtag.split('?page=')[0]
             if isBlockedHashtag(self.server.baseDir,hashtag):
                 msg=htmlHashtagBlocked(self.server.baseDir).encode('utf-8')
-                self._login_headers('text/html',len(msg))
+                self._login_headers('text/html',len(msg),callingDomain)
                 self._write(msg)
                 self.server.GETbusy=False
                 return
@@ -1717,14 +1725,14 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.projectVersion)
             if hashtagStr:
                 msg=hashtagStr.encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
             else:
                 originPathStr=self.path.split('/tags/')[0]
                 originPathStrAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     originPathStrAbsolute='http://'+self.server.onionDomain+originPathStr
-                self._redirect_headers(originPathStrAbsolute+'/search',cookie)
+                self._redirect_headers(originPathStrAbsolute+'/search',cookie,callingDomain)
             self.server.GETbusy=False
             return
 
@@ -1740,7 +1748,7 @@ class PubServer(BaseHTTPRequestHandler):
                # show the search screen
                msg=htmlSearch(self.server.translate, \
                               self.server.baseDir,self.path).encode()
-               self._set_headers('text/html',len(msg),cookie)
+               self._set_headers('text/html',len(msg),cookie,callingDomain)
                self._write(msg)
                self.server.GETbusy=False
                return
@@ -1755,7 +1763,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.baseDir,self.path, \
                                 self.server.httpPrefix, \
                                 self.server.domainFull).encode()
-               self._set_headers('text/html',len(msg),cookie)
+               self._set_headers('text/html',len(msg),cookie,callingDomain)
                self._write(msg)
                self.server.GETbusy=False
                return
@@ -1795,10 +1803,10 @@ class PubServer(BaseHTTPRequestHandler):
                        actor= \
                            'http://'+self.server.onionDomain+ \
                            self.path.split('/eventdelete')[0]
-                   self._redirect_headers(actor+'/calendar',cookie)
+                   self._redirect_headers(actor+'/calendar',cookie,callingDomain)
                    return
                msg=msg.encode()
-               self._set_headers('text/html',len(msg),cookie)
+               self._set_headers('text/html',len(msg),cookie,callingDomain)
                self._write(msg)
                self.server.GETbusy=False
                return
@@ -1812,7 +1820,7 @@ class PubServer(BaseHTTPRequestHandler):
                msg=htmlSearchEmojiTextEntry(self.server.translate, \
                                             self.server.baseDir, \
                                             self.path).encode()
-               self._set_headers('text/html',len(msg),cookie)
+               self._set_headers('text/html',len(msg),cookie,callingDomain)
                self._write(msg)
                self.server.GETbusy=False
                return
@@ -1855,7 +1863,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
-                                       '?page='+str(pageNumber),cookie)
+                                       '?page='+str(pageNumber),cookie,callingDomain)
                 return
             if not self.server.session:
                 self.server.session= \
@@ -1887,7 +1895,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
-                                   timelineBookmark,cookie)
+                                   timelineBookmark,cookie,callingDomain)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,32)
@@ -1928,7 +1936,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
-                                       str(pageNumber),cookie)
+                                       str(pageNumber),cookie,callingDomain)
                 return
             if not self.server.session:
                 self.server.session= \
@@ -1958,7 +1966,7 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+'?page='+ \
                                    str(pageNumber)+ \
-                                   timelineBookmark,cookie)
+                                   timelineBookmark,cookie,callingDomain)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,33)
@@ -1993,7 +2001,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStrAbsolute= \
                     'http://'+self.server.onionDomain+originPathStr
-            self._redirect_headers(originPathStrAbsolute,cookie)
+            self._redirect_headers(originPathStrAbsolute,cookie,callingDomain)
             self.server.GETbusy=False
             return
 
@@ -2024,7 +2032,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix+'://'+self.server.domainFull+originPathStr
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStrAbsolute='http://'+self.server.onionDomain+originPathStr
-            self._redirect_headers(originPathStrAbsolute,cookie)
+            self._redirect_headers(originPathStrAbsolute,cookie,callingDomain)
             self.server.GETbusy=False
             return
 
@@ -2064,7 +2072,8 @@ class PubServer(BaseHTTPRequestHandler):
                     actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                        '?page='+str(pageNumber)+ \
-                                       timelineBookmark,cookie)
+                                       timelineBookmark,cookie, \
+                                       callingDomain)
                 return
             if not self.server.session:
                 self.server.session= \
@@ -2089,7 +2098,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
-                                   timelineBookmark,cookie)
+                                   timelineBookmark,cookie, \
+                                   callingDomain)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,36)
@@ -2126,7 +2136,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
-                                       '?page='+str(pageNumber),cookie)
+                                       '?page='+str(pageNumber),cookie, \
+                                       callingDomain)
                 return
             if not self.server.session:
                 self.server.session= \
@@ -2156,7 +2167,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
-                                   timelineBookmark,cookie)
+                                   timelineBookmark,cookie, \
+                                   callingDomain)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,36)
@@ -2194,7 +2206,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
-                                       '?page='+str(pageNumber),cookie)
+                                       '?page='+str(pageNumber),cookie, \
+                                       callingDomain)
                 return
             if not self.server.session:
                 self.server.session= \
@@ -2216,7 +2229,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
-                                   timelineBookmark,cookie)
+                                   timelineBookmark,cookie, \
+                                   callingDomain)
             return
 
         # undo a bookmark from the web interface icon
@@ -2251,7 +2265,8 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actorAbsolute='http://'+self.server.onionDomain+actor
                 self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
-                                       '?page='+str(pageNumber),cookie)
+                                       '?page='+str(pageNumber),cookie, \
+                                       callingDomain)
                 return
             if not self.server.session:
                 self.server.session= \
@@ -2278,7 +2293,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actorAbsolute='http://'+self.server.onionDomain+actor
             self._redirect_headers(actorAbsolute+'/'+timelineStr+ \
                                    '?page='+str(pageNumber)+ \
-                                   timelineBookmark,cookie)
+                                   timelineBookmark,cookie, \
+                                   callingDomain)
             return
 
         self._benchmarkGETtimings(GETstartTime,GETtimings,37)
@@ -2314,7 +2330,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     if callingDomain.endswith('.onion') and self.server.onionDomain:
                         actor='http://'+self.server.onionDomain+usersPath
-                    self._redirect_headers(actor+'/'+timelineStr,cookie)
+                    self._redirect_headers(actor+'/'+timelineStr,cookie,callingDomain)
                     return
                 self.postToNickname=getNicknameFromActor(actor)
                 if not self.postToNickname:
@@ -2322,7 +2338,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.GETbusy=False
                     if callingDomain.endswith('.onion') and self.server.onionDomain:
                         actor='http://'+self.server.onionDomain+usersPath
-                    self._redirect_headers(actor+'/'+timelineStr,cookie)
+                    self._redirect_headers(actor+'/'+timelineStr,cookie,callingDomain)
                     return
                 if not self.server.session:
                     self.server.session= \
@@ -2337,14 +2353,14 @@ class PubServer(BaseHTTPRequestHandler):
                                    __version__,self.server.cachedWebfingers, \
                                    self.server.personCache)
                 if deleteStr:
-                    self._set_headers('text/html',len(deleteStr),cookie)
+                    self._set_headers('text/html',len(deleteStr),cookie,callingDomain)
                     self._write(deleteStr.encode())
                     self.server.GETbusy=False
                     return
             self.server.GETbusy=False
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actor='http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(actor+'/'+timelineStr,cookie)
+            self._redirect_headers(actor+'/'+timelineStr,cookie,callingDomain)
             return
 
         # mute a post from the web interface icon
@@ -2381,7 +2397,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actor= \
                     'http://'+self.server.onionDomain+ \
                     self.path.split('?mute=')[0]
-            self._redirect_headers(actor+'/'+timelineStr+timelineBookmark,cookie)
+            self._redirect_headers(actor+'/'+timelineStr+timelineBookmark, \
+                                   cookie,callingDomain)
             return
 
         # unmute a post from the web interface icon
@@ -2418,7 +2435,8 @@ class PubServer(BaseHTTPRequestHandler):
                 actor= \
                     'http://'+ \
                     self.server.onionDomain+self.path.split('?unmute=')[0]
-            self._redirect_headers(actor+'/'+timelineStr+timelineBookmark,cookie)
+            self._redirect_headers(actor+'/'+timelineStr+timelineBookmark, \
+                                   cookie,callingDomain)
             return
 
         # reply from the web interface icon
@@ -2522,7 +2540,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      postUrl)
                     if msg:
                         msg=msg.encode()
-                        self._set_headers('text/html',len(msg),cookie)
+                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                         self._write(msg)
                         self.server.GETbusy=False
                         return
@@ -2534,7 +2552,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.path,self.server.domain, \
                                     self.server.port, \
                                     self.server.httpPrefix).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.GETbusy=False
                 return
@@ -2559,7 +2577,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 shareDescription, \
                                 replyPageNumber, \
                                 nickname,self.server.domain).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.GETbusy=False
                 return
@@ -2609,12 +2627,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                            authorized,postJsonObject, \
                                                            self.server.httpPrefix, \
                                                            self.server.projectVersion).encode('utf-8')
-                                    self._set_headers('text/html',len(msg),cookie)
+                                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                                     self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
                                         msg=json.dumps(postJsonObject,ensure_ascii=False).encode('utf-8')
-                                        self._set_headers('application/json',len(msg),None)
+                                        self._set_headers('application/json',len(msg),None,callingDomain)
                                         self._write(msg)
                                     else:
                                         self._404()
@@ -2676,13 +2694,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                             repliesJson, \
                                                             self.server.httpPrefix, \
                                                             self.server.projectVersion).encode('utf-8')
-                                        self._set_headers('text/html',len(msg),cookie)
+                                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                                         print('----------------------------------------------------')
                                         self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
                                             msg=json.dumps(repliesJson,ensure_ascii=False).encode('utf-8')
-                                            self._set_headers('application/json',len(msg),None)
+                                            self._set_headers('application/json',len(msg),None,callingDomain)
                                             self._write(msg)
                                         else:
                                             self._404()
@@ -2726,12 +2744,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                             repliesJson, \
                                                             self.server.httpPrefix, \
                                                             self.server.projectVersion).encode('utf-8')
-                                        self._set_headers('text/html',len(msg),cookie)
+                                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                                         self._write(msg)
                                     else:
                                         if self._fetchAuthenticated():
                                             msg=json.dumps(repliesJson,ensure_ascii=False).encode('utf-8')
-                                            self._set_headers('application/json',len(msg),None)
+                                            self._set_headers('application/json',len(msg),None,callingDomain)
                                             self._write(msg)
                                         else:
                                             self._404()
@@ -2773,12 +2791,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.personCache, \
                                                     actorJson['roles'], \
                                                     None,None).encode('utf-8')
-                                    self._set_headers('text/html',len(msg),cookie)
+                                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                                     self._write(msg)
                             else:
                                 if self._fetchAuthenticated():
                                     msg=json.dumps(actorJson['roles'],ensure_ascii=False).encode('utf-8')
-                                    self._set_headers('application/json',len(msg),None)
+                                    self._set_headers('application/json',len(msg),None,callingDomain)
                                     self._write(msg)
                                 else:
                                     self._404()
@@ -2819,12 +2837,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.personCache, \
                                                     actorJson['skills'], \
                                                     None,None).encode('utf-8')
-                                    self._set_headers('text/html',len(msg),cookie)
+                                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                                     self._write(msg)
                             else:
                                 if self._fetchAuthenticated():
                                     msg=json.dumps(actorJson['skills'],ensure_ascii=False).encode('utf-8')
-                                    self._set_headers('application/json',len(msg),None)
+                                    self._set_headers('application/json',len(msg),None,callingDomain)
                                     self._write(msg)
                                 else:
                                     self._404()
@@ -2834,7 +2852,7 @@ class PubServer(BaseHTTPRequestHandler):
             actorAbsolute=self.server.httpPrefix+'://'+self.server.domainFull+actor
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actorAbsolute='http://'+self.server.onionDomain+actor
-            self._redirect_headers(actorAbsolute,cookie)
+            self._redirect_headers(actorAbsolute,cookie,callingDomain)
             self.server.GETbusy=False
             return
 
@@ -2882,12 +2900,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                            authorized,postJsonObject, \
                                                            self.server.httpPrefix, \
                                                            self.server.projectVersion).encode('utf-8')
-                                    self._set_headers('text/html',len(msg),cookie)
+                                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                                     self._write(msg)
                                 else:
                                     if self._fetchAuthenticated():
                                         msg=json.dumps(postJsonObject,ensure_ascii=False).encode('utf-8')
-                                        self._set_headers('application/json',len(msg),None)
+                                        self._set_headers('application/json',len(msg),None,callingDomain)
                                         self._write(msg)
                                     else:
                                         self._404()
@@ -2953,13 +2971,13 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.allowDeletion, \
                                           self.server.httpPrefix, \
                                           self.server.projectVersion).encode('utf-8')
-                            self._set_headers('text/html',len(msg),cookie)
+                            self._set_headers('text/html',len(msg),cookie,callingDomain)
                             self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(inboxFeed,ensure_ascii=False).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
+                            self._set_headers('application/json',len(msg),None,callingDomain)
                             self._write(msg)
                         self.server.GETbusy=False
                         return
@@ -3032,13 +3050,13 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.allowDeletion, \
                                              self.server.httpPrefix, \
                                              self.server.projectVersion).encode('utf-8')
-                            self._set_headers('text/html',len(msg),cookie)
+                            self._set_headers('text/html',len(msg),cookie,callingDomain)
                             self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(inboxDMFeed,ensure_ascii=False).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
+                            self._set_headers('application/json',len(msg),None,callingDomain)
                             self._write(msg)
                         self.server.GETbusy=False
                         return
@@ -3112,13 +3130,13 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.allowDeletion, \
                                              self.server.httpPrefix, \
                                              self.server.projectVersion).encode('utf-8')
-                        self._set_headers('text/html',len(msg),cookie)
+                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                         self._write(msg)
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
                         msg=json.dumps(inboxRepliesFeed,ensure_ascii=False).encode('utf-8')
-                        self._set_headers('application/json',len(msg),None)
+                        self._set_headers('application/json',len(msg),None,callingDomain)
                         self._write(msg)
                     self.server.GETbusy=False
                     return
@@ -3192,13 +3210,13 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.allowDeletion, \
                                            self.server.httpPrefix, \
                                            self.server.projectVersion).encode('utf-8')
-                        self._set_headers('text/html',len(msg),cookie)
+                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                         self._write(msg)
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
                         msg=json.dumps(inboxMediaFeed,ensure_ascii=False).encode('utf-8')
-                        self._set_headers('application/json',len(msg),None)
+                        self._set_headers('application/json',len(msg),None,callingDomain)
                         self._write(msg)
                     self.server.GETbusy=False
                     return
@@ -3270,13 +3288,13 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.allowDeletion, \
                                            self.server.httpPrefix, \
                                            self.server.projectVersion).encode('utf-8')
-                        self._set_headers('text/html',len(msg),cookie)
+                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                         self._write(msg)
                     else:
                         # don't need authenticated fetch here because there is
                         # already the authorization check
                         msg=json.dumps(inboxBlogsFeed,ensure_ascii=False).encode('utf-8')
-                        self._set_headers('application/json',len(msg),None)
+                        self._set_headers('application/json',len(msg),None,callingDomain)
                         self._write(msg)
                     self.server.GETbusy=False
                     return
@@ -3325,7 +3343,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.allowDeletion, \
                                        self.server.httpPrefix, \
                                        self.server.projectVersion).encode('utf-8')
-                        self._set_headers('text/html',len(msg),cookie)
+                        self._set_headers('text/html',len(msg),cookie,callingDomain)
                         self._write(msg)
                         self.server.GETbusy=False
                         return
@@ -3390,13 +3408,13 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.allowDeletion, \
                                               self.server.httpPrefix, \
                                               self.server.projectVersion).encode('utf-8')
-                            self._set_headers('text/html',len(msg),cookie)
+                            self._set_headers('text/html',len(msg),cookie,callingDomain)
                             self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(inboxFeed,ensure_ascii=False).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
+                            self._set_headers('application/json',len(msg),None,callingDomain)
                             self._write(msg)
                         self.server.GETbusy=False
                         return
@@ -3465,12 +3483,12 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.allowDeletion, \
                                self.server.httpPrefix, \
                                self.server.projectVersion).encode('utf-8')
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(outboxFeed,ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
                     self._write(msg)
                 else:
                     self._404()
@@ -3534,13 +3552,13 @@ class PubServer(BaseHTTPRequestHandler):
                                                True, \
                                                self.server.httpPrefix, \
                                                self.server.projectVersion).encode('utf-8')
-                            self._set_headers('text/html',len(msg),cookie)
+                            self._set_headers('text/html',len(msg),cookie,callingDomain)
                             self._write(msg)
                         else:
                             # don't need authenticated fetch here because there is
                             # already the authorization check
                             msg=json.dumps(moderationFeed,ensure_ascii=False).encode('utf-8')
-                            self._set_headers('application/json',len(msg),None)
+                            self._set_headers('application/json',len(msg),None,callingDomain)
                             self._write(msg)
                         self.server.GETbusy=False
                         return
@@ -3607,14 +3625,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache, \
                                     shares, \
                                     pageNumber,sharesPerPage).encode('utf-8')
-                    self._set_headers('text/html',len(msg),cookie)
+                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                     self._write(msg)
                     self.server.GETbusy=False
                     return
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(shares,ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
                     self._write(msg)
                 else:
                     self._404()
@@ -3669,14 +3687,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache, \
                                     following, \
                                     pageNumber,followsPerPage).encode('utf-8')
-                    self._set_headers('text/html',len(msg),cookie)
+                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                     self._write(msg)
                     self.server.GETbusy=False
                     return
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(following,ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
                     self._write(msg)
                 else:
                     self._404()
@@ -3730,14 +3748,14 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.personCache, \
                                     followers, \
                                     pageNumber,followsPerPage).encode('utf-8')
-                    self._set_headers('text/html',len(msg),cookie)
+                    self._set_headers('text/html',len(msg),cookie,callingDomain)
                     self._write(msg)
                     self.server.GETbusy=False
                     return
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(followers,ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
                     self._write(msg)
                 else:
                     self._404()
@@ -3771,12 +3789,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.cachedWebfingers, \
                                 self.server.personCache, \
                                 None,None).encode('utf-8')
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
             else:
                 if self._fetchAuthenticated():
                     msg=json.dumps(getPerson,ensure_ascii=False).encode('utf-8')
-                    self._set_headers('application/json',len(msg),None)
+                    self._set_headers('application/json',len(msg),None,callingDomain)
                     self._write(msg)
                 else:
                     self._404()
@@ -3808,7 +3826,7 @@ class PubServer(BaseHTTPRequestHandler):
                 content=File.read()
                 contentJson=json.loads(content)
                 msg=json.dumps(contentJson,ensure_ascii=False).encode('utf-8')
-                self._set_headers('application/json',len(msg),None)
+                self._set_headers('application/json',len(msg),None,callingDomain)
                 self._write(msg)
         else:
             if self.server.debug:
@@ -3819,6 +3837,23 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime,GETtimings,55)
 
     def do_HEAD(self):
+        callingDomain=self.server.domainFull
+        if self.headers.get('Host'):
+            callingDomain=self.headers['Host']
+            if self.server.onionDomain:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull and \
+                   callingDomain != self.server.onionDomain:
+                    print('HEAD domain blocked: '+callingDomain)
+                    self._400()
+                    return
+            else:
+                if callingDomain != self.server.domain and \
+                   callingDomain != self.server.domainFull:
+                    print('HEAD domain blocked: '+callingDomain)
+                    self._400()
+                    return
+
         checkPath=self.path
         etag=None
         fileLength=-1
@@ -3872,7 +3907,7 @@ class PubServer(BaseHTTPRequestHandler):
         elif checkPath.endswith('.ogg'):
             mediaFileType='audio/ogg'
 
-        self._set_headers_head(mediaFileType,fileLength,etag)
+        self._set_headers_head(mediaFileType,fileLength,etag,callingDomain)
 
     def _receiveNewPostProcess(self,authorized: bool, \
                                postType: str,path: str,headers: {},
@@ -4399,7 +4434,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self.server.lastPOST=currTimePOST
 
-        callingDomain=None
+        callingDomain=self.server.domainFull
         if self.headers.get('Host'):
             callingDomain=self.headers['Host']
             if self.server.onionDomain:
@@ -4487,10 +4522,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         if callingDomain.endswith('.onion') and \
                            self.server.onionDomain:
-                            self._redirect_headers('http://'+self.server.onionDomain+'/login',cookie)
+                            self._redirect_headers('http://'+self.server.onionDomain+'/login', \
+                                                   cookie,callingDomain)
                         else:
                             self._redirect_headers(self.server.httpPrefix+'://'+ \
-                                                   self.server.domainFull+'/login',cookie)
+                                                   self.server.domainFull+'/login', \
+                                                   cookie,callingDomain)
                         return
                 authHeader=createBasicAuthHeader(loginNickname,loginPassword)
                 if not authorizeBasic(self.server.baseDir,'/users/'+ \
@@ -4502,7 +4539,7 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     if isSuspended(self.server.baseDir,loginNickname):
                         msg=htmlSuspended(self.server.baseDir).encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
@@ -4590,7 +4627,7 @@ class PubServer(BaseHTTPRequestHandler):
                         actorStr= \
                             'http://'+self.server.onionDomain+usersPath
                     print('WARN: nickname not found in '+actorStr)
-                    self._redirect_headers(actorStr,cookie)
+                    self._redirect_headers(actorStr,cookie,callingDomain)
                     self.server.POSTbusy=False
                     return
                 length=int(self.headers['Content-length'])
@@ -4599,7 +4636,7 @@ class PubServer(BaseHTTPRequestHandler):
                         actorStr= \
                             'http://'+self.server.onionDomain+usersPath
                     print('Maximum profile data length exceeded '+str(length))
-                    self._redirect_headers(actorStr,cookie)
+                    self._redirect_headers(actorStr,cookie,callingDomain)
                     self.server.POSTbusy=False
                     return
 
@@ -5012,7 +5049,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actorStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(actorStr,cookie)
+            self._redirect_headers(actorStr,cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5042,7 +5079,7 @@ class PubServer(BaseHTTPRequestHandler):
                         msg=htmlModerationInfo(self.server.translate, \
                                                self.server.baseDir, \
                                                self.server.httpPrefix).encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
@@ -5131,7 +5168,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actorStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(actorStr+'/moderation',cookie)
+            self._redirect_headers(actorStr+'/moderation',cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5166,7 +5203,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actor='http://'+self.server.onionDomain+usersPath
                 self._redirect_headers(actor+'/'+self.server.defaultTimeline+'?page='+ \
-                                       str(pageNumber),cookie)
+                                       str(pageNumber),cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             # get the parameters
@@ -5189,7 +5226,8 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actor='http://'+self.server.onionDomain+usersPath
             self._redirect_headers(actor+'/'+self.server.defaultTimeline+ \
-                                   '?page='+str(pageNumber),cookie)
+                                   '?page='+str(pageNumber),cookie, \
+                                   callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5217,7 +5255,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # go back on search screen
                 if callingDomain.endswith('.onion') and self.server.onionDomain:
                     actorStr='http://'+self.server.onionDomain+usersPath
-                self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
+                self._redirect_headers(actorStr+'/'+self.server.defaultTimeline, \
+                                       cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             if 'searchtext=' in searchParams:
@@ -5248,7 +5287,7 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.projectVersion)
                     if hashtagStr:
                         msg=hashtagStr.encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
@@ -5264,7 +5303,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          64)
                     if skillStr:
                         msg=skillStr.encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
@@ -5291,14 +5330,14 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.projectVersion)
                     if profileStr:
                         msg=profileStr.encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
                     else:
                         if callingDomain.endswith('.onion') and self.server.onionDomain:
                             actorStr='http://'+self.server.onionDomain+usersPath
-                        self._redirect_headers(actorStr+'/search',cookie)
+                        self._redirect_headers(actorStr+'/search',cookie,callingDomain)
                         self.server.POSTbusy=False
                         return
                 elif searchStr.startswith(':') or \
@@ -5315,7 +5354,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         searchStr)
                     if emojiStr:
                         msg=emojiStr.encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
@@ -5331,13 +5370,14 @@ class PubServer(BaseHTTPRequestHandler):
                                               actorStr)
                     if sharedItemsStr:
                         msg=sharedItemsStr.encode('utf-8')
-                        self._login_headers('text/html',len(msg))
+                        self._login_headers('text/html',len(msg),callingDomain)
                         self._write(msg)
                         self.server.POSTbusy=False
                         return
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actorStr='http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(actorStr+'/'+self.server.defaultTimeline,cookie)
+            self._redirect_headers(actorStr+'/'+self.server.defaultTimeline, \
+                                   cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5367,7 +5407,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(originPathStr+'/tlshares',cookie)
+            self._redirect_headers(originPathStr+'/tlshares',cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5428,10 +5468,10 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr='http://'+self.server.onionDomain+usersPath
             if pageNumber==1:
-                self._redirect_headers(originPathStr+'/outbox',cookie)
+                self._redirect_headers(originPathStr+'/outbox',cookie,callingDomain)
             else:
                 self._redirect_headers(originPathStr+'/outbox?page='+ \
-                                       str(pageNumber),cookie)
+                                       str(pageNumber),cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5450,7 +5490,7 @@ class PubServer(BaseHTTPRequestHandler):
                     followConfirmParams.replace('%3A',':').replace('%2F','/').split('actor=')[1]
                 if '&' in followingActor:
                     followingActor=followingActor.split('&')[0]
-                self._redirect_headers(followingActor,cookie)
+                self._redirect_headers(followingActor,cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             if '&submitYes=' in followConfirmParams:
@@ -5487,7 +5527,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(originPathStr,cookie)
+            self._redirect_headers(originPathStr,cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5540,7 +5580,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(originPathStr,cookie)
+            self._redirect_headers(originPathStr,cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5557,7 +5597,7 @@ class PubServer(BaseHTTPRequestHandler):
                     originPathStr= \
                         'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+originPathStr)
-                self._redirect_headers(originPathStr,cookie)
+                self._redirect_headers(originPathStr,cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             length=int(self.headers['Content-length'])
@@ -5573,7 +5613,7 @@ class PubServer(BaseHTTPRequestHandler):
                         originPathStr= \
                             'http://'+self.server.onionDomain+usersPath
                     print('WARN: unable to find nickname in '+blockingActor)
-                    self._redirect_headers(originPathStr,cookie)
+                    self._redirect_headers(originPathStr,cookie,callingDomain)
                     self.server.POSTbusy=False
                     return
                 blockingDomain,blockingPort=getDomainFromActor(blockingActor)
@@ -5596,7 +5636,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(originPathStr,cookie)
+            self._redirect_headers(originPathStr,cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5613,7 +5653,7 @@ class PubServer(BaseHTTPRequestHandler):
                     originPathStr= \
                         'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+originPathStr)
-                self._redirect_headers(originPathStr,cookie)
+                self._redirect_headers(originPathStr,cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             length=int(self.headers['Content-length'])
@@ -5629,7 +5669,7 @@ class PubServer(BaseHTTPRequestHandler):
                         originPathStr= \
                             'http://'+self.server.onionDomain+usersPath
                     print('WARN: unable to find nickname in '+blockingActor)
-                    self._redirect_headers(originPathStr,cookie)
+                    self._redirect_headers(originPathStr,cookie,callingDomain)
                     self.server.POSTbusy=False
                     return
                 blockingDomain,blockingPort= \
@@ -5655,7 +5695,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(originPathStr,cookie)
+            self._redirect_headers(originPathStr,cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5675,7 +5715,7 @@ class PubServer(BaseHTTPRequestHandler):
                     originPathStr= \
                         'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+originPathStr)
-                self._redirect_headers(originPathStr,cookie)
+                self._redirect_headers(originPathStr,cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             length=int(self.headers['Content-length'])
@@ -5709,7 +5749,7 @@ class PubServer(BaseHTTPRequestHandler):
                     originPathStr= \
                         'http://'+self.server.onionDomain+usersPath
                 print('WARN: unable to find nickname in '+optionsActor)
-                self._redirect_headers(originPathStr,cookie)
+                self._redirect_headers(originPathStr,cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             optionsDomain,optionsPort=getDomainFromActor(optionsActor)
@@ -5727,7 +5767,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitView=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Viewing '+optionsActor)
-                self._redirect_headers(optionsActor,cookie)
+                self._redirect_headers(optionsActor,cookie,callingDomain)
                 self.server.POSTbusy=False
                 return
             if '&submitBlock=' in optionsConfirmParams:
@@ -5745,7 +5785,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        originPathStr, \
                                        optionsActor, \
                                        optionsAvatarUrl).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.POSTbusy=False
                 return
@@ -5757,7 +5797,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       originPathStr, \
                                       optionsActor, \
                                       optionsAvatarUrl).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.POSTbusy=False
                 return
@@ -5769,7 +5809,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         originPathStr, \
                                         optionsActor, \
                                         optionsAvatarUrl).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.POSTbusy=False
                 return
@@ -5784,7 +5824,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 [optionsActor],None, \
                                 pageNumber, \
                                 chooserNickname,self.server.domain).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.POSTbusy=False
                 return
@@ -5802,7 +5842,8 @@ class PubServer(BaseHTTPRequestHandler):
                             'http://'+self.server.onionDomain+usersPath
                     self._redirect_headers(thisActor+ \
                                            '/'+self.server.defaultTimeline+ \
-                                           '?page='+str(pageNumber),cookie)
+                                           '?page='+str(pageNumber),cookie, \
+                                           callingDomain)
                     self.server.POSTbusy=False
                     return
             if '&submitUnSnooze=' in optionsConfirmParams:
@@ -5819,7 +5860,8 @@ class PubServer(BaseHTTPRequestHandler):
                             'http://'+self.server.onionDomain+usersPath
                     self._redirect_headers(thisActor+ \
                                            '/'+self.server.defaultTimeline+ \
-                                           '?page='+str(pageNumber),cookie)
+                                           '?page='+str(pageNumber),cookie, \
+                                           callingDomain)
                     self.server.POSTbusy=False
                     return
             if '&submitReport=' in optionsConfirmParams:
@@ -5832,7 +5874,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 reportPath,None,[], \
                                 postUrl,pageNumber, \
                                 chooserNickname,self.server.domain).encode()
-                self._set_headers('text/html',len(msg),cookie)
+                self._set_headers('text/html',len(msg),cookie,callingDomain)
                 self._write(msg)
                 self.server.POSTbusy=False
                 return
@@ -5840,7 +5882,7 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
                     'http://'+self.server.onionDomain+usersPath
-            self._redirect_headers(originPathStr,cookie)
+            self._redirect_headers(originPathStr,cookie,callingDomain)
             self.server.POSTbusy=False
             return
 
@@ -5865,12 +5907,14 @@ class PubServer(BaseHTTPRequestHandler):
                     self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
                                            '/users/'+nickname+ \
                                            '/'+postRedirect+ \
-                                           '?page='+str(pageNumber),cookie)
+                                           '?page='+str(pageNumber),cookie, \
+                                           callingDomain)
                 else:
                     self._redirect_headers('http://'+self.server.onionDomain+ \
                                            '/users/'+nickname+ \
                                            '/'+postRedirect+ \
-                                           '?page='+str(pageNumber),cookie)
+                                           '?page='+str(pageNumber),cookie, \
+                                           callingDomain)
                 self.server.POSTbusy=False
                 return
 
