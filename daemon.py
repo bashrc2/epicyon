@@ -3948,10 +3948,12 @@ class PubServer(BaseHTTPRequestHandler):
             # Instead we use the multipart mime parser from the email module
             if self.server.debug:
                 print('DEBUG: extracting media from POST')
-            mediaBytes,postBytes=extractMediaInFormPOST(postBytes,boundary,'attachpic')
+            mediaBytes,postBytes= \
+                extractMediaInFormPOST(postBytes,boundary,'attachpic')
             if self.server.debug:
                 if mediaBytes:
-                    print('DEBUG: media was found. '+str(len(mediaBytes))+' bytes')
+                    print('DEBUG: media was found. '+ \
+                          str(len(mediaBytes))+' bytes')
                 else:
                     print('DEBUG: no media was found in POST')
 
@@ -3981,12 +3983,14 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(postImageFilename):
                         print('POST media saved to '+postImageFilename)
                     else:
-                        print('ERROR: POST media could not be saved to '+postImageFilename)
+                        print('ERROR: POST media could not be saved to '+ \
+                              postImageFilename)
                 else:
                     if os.path.isfile(filename):
                         os.rename(filename,filename.replace('.temp',''))
 
-            fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
+            fields= \
+                extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
             if self.server.debug:
                 if fields:
                     print('DEBUG: text field extracted from POST '+str(fields))
@@ -4153,7 +4157,8 @@ class PubServer(BaseHTTPRequestHandler):
                         print('Edited blog post, resaved '+postFilename)
                         return 1
                     else:
-                        print('Edited blog post, unable to load json for '+postFilename)
+                        print('Edited blog post, unable to load json for '+ \
+                              postFilename)
                 else:
                     print('Edited blog post not found '+str(fields['postUrl']))
                 return -1
@@ -4218,7 +4223,8 @@ class PubServer(BaseHTTPRequestHandler):
                     messageJson= \
                         createDirectMessagePost(self.server.baseDir, \
                                                 nickname, \
-                                                self.server.domain,self.server.port, \
+                                                self.server.domain, \
+                                                self.server.port, \
                                                 self.server.httpPrefix, \
                                                 fields['message'],True,False,False, \
                                                 filename,attachmentMediaType, \
@@ -4342,11 +4348,13 @@ class PubServer(BaseHTTPRequestHandler):
             return None
 
         if '/users/' not in path:
-            print('Not receiving new post for '+path+' because /users/ not in path')
+            print('Not receiving new post for '+path+ \
+                  ' because /users/ not in path')
             return None
 
         if '?'+postType+'?' not in path:
-            print('Not receiving new post for '+path+' because ?'+postType+'? not in path')
+            print('Not receiving new post for '+path+' because ?'+ \
+                  postType+'? not in path')
             return None
 
         print('New post begins: '+postType+' '+path)
@@ -4371,7 +4379,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.newPostThread.get(newPostThreadName):
             print('Waiting for previous new post thread to end')
             waitCtr=0
-            while self.server.newPostThread[newPostThreadName].isAlive() and waitCtr<8:
+            while self.server.newPostThread[newPostThreadName].isAlive() and \
+                  waitCtr<8:
                 time.sleep(1)
                 waitCtr+=1
             if waitCtr>=8:
@@ -4412,10 +4421,13 @@ class PubServer(BaseHTTPRequestHandler):
                     print('POST size too large')
                     return None
 
-                # Note sending new posts needs to be synchronous, otherwise any attachments
-                # can get mangled if other events happen during their decoding
+                # Note sending new posts needs to be synchronous,
+                # otherwise any attachments can get mangled if
+                # other events happen during their decoding
                 print('Creating new post from: '+newPostThreadName)
-                self._receiveNewPostProcess(authorized,postType,path,headers,length,postBytes,boundary)
+                self._receiveNewPostProcess(authorized,postType, \
+                                            path,headers,length, \
+                                            postBytes,boundary)
         return pageNumber
 
     def do_POST(self):
@@ -4527,7 +4539,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.POSTbusy=False
                         if callingDomain.endswith('.onion') and \
                            self.server.onionDomain:
-                            self._redirect_headers('http://'+self.server.onionDomain+'/login', \
+                            self._redirect_headers('http://'+ \
+                                                   self.server.onionDomain+ \
+                                                   '/login', \
                                                    cookie,callingDomain)
                         else:
                             self._redirect_headers(self.server.httpPrefix+'://'+ \
@@ -4552,7 +4566,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Login success: '+loginNickname)
                     self.send_response(303)
                     # re-activate account if needed
-                    activateAccount(self.server.baseDir,loginNickname,self.server.domain)
+                    activateAccount(self.server.baseDir,loginNickname, \
+                                    self.server.domain)
                     # This produces a deterministic token based on nick+password+salt
                     saltFilename= \
                         self.server.baseDir+'/accounts/'+ \
@@ -4573,7 +4588,8 @@ class PubServer(BaseHTTPRequestHandler):
                             print('WARN: Unable to save salt for '+ \
                                   loginNickname+' '+str(e))
 
-                    token=sha256((loginNickname+loginPassword+salt).encode('utf-8')).hexdigest()
+                    tokenText=loginNickname+loginPassword+salt
+                    token=sha256(tokenText.encode('utf-8')).hexdigest()
                     self.server.tokens[loginNickname]=token
                     loginHandle=loginNickname+'@'+self.server.domain
                     tokenFilename= \
@@ -4583,14 +4599,19 @@ class PubServer(BaseHTTPRequestHandler):
                         with open(tokenFilename, 'w') as fp:
                             fp.write(token)
                     except Exception as e:
-                        print('WARN: Unable to save token for '+loginNickname+' '+str(e))
+                        print('WARN: Unable to save token for '+ \
+                              loginNickname+' '+str(e))
 
                     personUpgradeActor(self.server.baseDir,None,loginHandle, \
-                                       self.server.baseDir+'/accounts/'+loginHandle+'.json')
+                                       self.server.baseDir+'/accounts/'+ \
+                                       loginHandle+'.json')
 
-                    self.server.tokensLookup[self.server.tokens[loginNickname]]=loginNickname
+                    self.server.tokensLookup[self.server.tokens[loginNickname]]= \
+                        loginNickname
                     self.send_header('Set-Cookie', \
-                                     'epicyon='+self.server.tokens[loginNickname]+'; SameSite=Strict')
+                                     'epicyon='+ \
+                                     self.server.tokens[loginNickname]+ \
+                                     '; SameSite=Strict')
                     if not callingDomain.endswith('.onion') or \
                        not self.server.onionDomain:
                         self.send_header('Location', \
@@ -4618,7 +4639,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # update of profile/avatar from web interface
         if authorized and self.path.endswith('/profiledata'):
-            usersPath=self.path.replace('/profiledata','').replace('/editprofile','')
+            usersPath= \
+                self.path.replace('/profiledata','').replace('/editprofile','')
             actorStr= \
                 self.server.httpPrefix+'://'+self.server.domainFull+usersPath
             if ' boundary=' in self.headers['Content-type']:
@@ -4628,7 +4650,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                 nickname=getNicknameFromActor(actorStr)
                 if not nickname:
-                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    if callingDomain.endswith('.onion') and \
+                       self.server.onionDomain:
                         actorStr= \
                             'http://'+self.server.onionDomain+usersPath
                     print('WARN: nickname not found in '+actorStr)
@@ -4637,7 +4660,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 length=int(self.headers['Content-length'])
                 if length>self.server.maxPostLength:
-                    if callingDomain.endswith('.onion') and self.server.onionDomain:
+                    if callingDomain.endswith('.onion') and \
+                       self.server.onionDomain:
                         actorStr= \
                             'http://'+self.server.onionDomain+usersPath
                     print('Maximum profile data length exceeded '+str(length))
@@ -4654,14 +4678,19 @@ class PubServer(BaseHTTPRequestHandler):
                 profileMediaTypesUploaded={}
                 for mType in profileMediaTypes:
                     if self.server.debug:
-                        print('DEBUG: profile update extracting '+mType+' image from POST')
-                    mediaBytes,postBytes=extractMediaInFormPOST(postBytes,boundary,mType)
+                        print('DEBUG: profile update extracting '+mType+ \
+                              ' image from POST')
+                    mediaBytes,postBytes= \
+                        extractMediaInFormPOST(postBytes,boundary,mType)
                     if mediaBytes:
                         if self.server.debug:
-                            print('DEBUG: profile update '+mType+' image was found. '+str(len(mediaBytes))+' bytes')
+                            print('DEBUG: profile update '+mType+ \
+                                  ' image was found. '+ \
+                                  str(len(mediaBytes))+' bytes')
                     else:
                         if self.server.debug:
-                            print('DEBUG: profile update, no '+mType+' image was found in POST')
+                            print('DEBUG: profile update, no '+mType+ \
+                                  ' image was found in POST')
                         continue
 
                     # Note: a .temp extension is used here so that at no time is
@@ -4675,13 +4704,16 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.baseDir+'/accounts/login.temp'
 
                     filename,attachmentMediaType= \
-                        saveMediaInFormPOST(mediaBytes,self.server.debug,filenameBase)
+                        saveMediaInFormPOST(mediaBytes,self.server.debug, \
+                                            filenameBase)
                     if filename:
                         if self.server.debug:
-                            print('DEBUG: profile update POST '+mType+' media filename is '+filename)
+                            print('DEBUG: profile update POST '+mType+ \
+                                  ' media filename is '+filename)
                     else:
                         if self.server.debug:
-                            print('DEBUG: profile update, no '+mType+' media filename in POST')
+                            print('DEBUG: profile update, no '+mType+ \
+                                  ' media filename in POST')
                         continue
 
                     if self.server.debug:
@@ -4689,20 +4721,28 @@ class PubServer(BaseHTTPRequestHandler):
                     postImageFilename=filename.replace('.temp','')
                     removeMetaData(filename,postImageFilename)
                     if os.path.isfile(postImageFilename):
-                        print('profile update POST '+mType+' image saved to '+postImageFilename)
+                        print('profile update POST '+mType+ \
+                              ' image saved to '+postImageFilename)
                         if mType!='instanceLogo':
-                            lastPartOfImageFilename=postImageFilename.split('/')[-1]
-                            profileMediaTypesUploaded[mType]=lastPartOfImageFilename
+                            lastPartOfImageFilename= \
+                                postImageFilename.split('/')[-1]
+                            profileMediaTypesUploaded[mType]= \
+                                lastPartOfImageFilename
                             actorChanged=True
                     else:
-                        print('ERROR: profile update POST '+mType+' image could not be saved to '+postImageFilename)
+                        print('ERROR: profile update POST '+mType+ \
+                              ' image could not be saved to '+postImageFilename)
 
-                fields=extractTextFieldsInPOST(postBytes,boundary,self.server.debug)
+                fields= \
+                    extractTextFieldsInPOST(postBytes,boundary, \
+                                            self.server.debug)
                 if self.server.debug:
                     if fields:
-                        print('DEBUG: profile update text field extracted from POST '+str(fields))
+                        print('DEBUG: profile update text '+ \
+                              'field extracted from POST '+str(fields))
                     else:
-                        print('WARN: profile update, no text fields could be extracted from POST')
+                        print('WARN: profile update, no text '+ \
+                              'fields could be extracted from POST')
 
                 actorFilename= \
                     self.server.baseDir+'/accounts/'+ \
@@ -4714,7 +4754,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # update the avatar/image url file extension
                         for mType,lastPartOfImageFilename in profileMediaTypesUploaded.items():
                             if mType=='avatar':
-                                lastPartOfUrl=actorJson['icon']['url'].split('/')[-1]
+                                lastPartOfUrl= \
+                                    actorJson['icon']['url'].split('/')[-1]
                                 actorJson['icon']['url']= \
                                     actorJson['icon']['url'].replace('/'+lastPartOfUrl, \
                                                                      '/'+lastPartOfImageFilename)
@@ -4750,7 +4791,9 @@ class PubServer(BaseHTTPRequestHandler):
                                 if actorJson['password']==fields['passwordconfirm']:
                                     if len(actorJson['password'])>2:
                                         # set password
-                                        storeBasicCredentials(self.server.baseDir,nickname,actorJson['password'])
+                                        storeBasicCredentials(self.server.baseDir, \
+                                                              nickname, \
+                                                              actorJson['password'])
                         if fields.get('displayNickname'):
                             if fields['displayNickname']!=actorJson['name']:
                                 actorJson['name']=fields['displayNickname']
@@ -4822,23 +4865,35 @@ class PubServer(BaseHTTPRequestHandler):
                                 setDonationUrl(actorJson,'')
                                 actorChanged=True
                         if fields.get('instanceTitle'):
-                            currInstanceTitle=getConfigParam(self.server.baseDir,'instanceTitle')
+                            currInstanceTitle= \
+                                getConfigParam(self.server.baseDir,'instanceTitle')
                             if fields['instanceTitle']!=currInstanceTitle:
-                                setConfigParam(self.server.baseDir,'instanceTitle',fields['instanceTitle'])
-                        currInstanceDescriptionShort=getConfigParam(self.server.baseDir,'instanceDescriptionShort')
+                                setConfigParam(self.server.baseDir,'instanceTitle', \
+                                               fields['instanceTitle'])
+                        currInstanceDescriptionShort= \
+                            getConfigParam(self.server.baseDir, \
+                                           'instanceDescriptionShort')
                         if fields.get('instanceDescriptionShort'):
                             if fields['instanceDescriptionShort']!=currInstanceDescriptionShort:
-                                setConfigParam(self.server.baseDir,'instanceDescriptionShort',fields['instanceDescriptionShort'])
+                                setConfigParam(self.server.baseDir, \
+                                               'instanceDescriptionShort', \
+                                               fields['instanceDescriptionShort'])
                         else:
                             if currInstanceDescriptionShort:
-                                setConfigParam(self.server.baseDir,'instanceDescriptionShort','')
-                        currInstanceDescription=getConfigParam(self.server.baseDir,'instanceDescription')
+                                setConfigParam(self.server.baseDir, \
+                                               'instanceDescriptionShort','')
+                        currInstanceDescription= \
+                            getConfigParam(self.server.baseDir, \
+                                           'instanceDescription')
                         if fields.get('instanceDescription'):
                             if fields['instanceDescription']!=currInstanceDescription:
-                                setConfigParam(self.server.baseDir,'instanceDescription',fields['instanceDescription'])
+                                setConfigParam(self.server.baseDir, \
+                                               'instanceDescription', \
+                                               fields['instanceDescription'])
                         else:
                             if currInstanceDescription:
-                                setConfigParam(self.server.baseDir,'instanceDescription','')
+                                setConfigParam(self.server.baseDir, \
+                                               'instanceDescription','')
                         if fields.get('bio'):
                             if fields['bio']!=actorJson['summary']:
                                 actorTags={}
@@ -4858,9 +4913,11 @@ class PubServer(BaseHTTPRequestHandler):
                                 actorJson['summary']=''
                                 actorChanged=True
                         if fields.get('moderators'):
-                            adminNickname=getConfigParam(self.server.baseDir,'admin')
+                            adminNickname= \
+                                getConfigParam(self.server.baseDir,'admin')
                             if self.path.startswith('/users/'+adminNickname+'/'):
-                                moderatorsFile=self.server.baseDir+'/accounts/moderators.txt'
+                                moderatorsFile= \
+                                    self.server.baseDir+'/accounts/moderators.txt'
                                 clearModeratorStatus(self.server.baseDir)
                                 if ',' in fields['moderators']:
                                     # if the list was given as comma separated
@@ -4901,13 +4958,16 @@ class PubServer(BaseHTTPRequestHandler):
 
                         if fields.get('removeScheduledPosts'):
                             if fields['removeScheduledPosts']=='on':
-                                removeScheduledPosts(self.server.baseDir,nickname,self.server.domain)
+                                removeScheduledPosts(self.server.baseDir, \
+                                                     nickname, \
+                                                     self.server.domain)
                         approveFollowers=False
                         if fields.get('approveFollowers'):
                             if fields['approveFollowers']=='on':
                                 approveFollowers=True
                         if approveFollowers!=actorJson['manuallyApprovesFollowers']:
-                            actorJson['manuallyApprovesFollowers']=approveFollowers
+                            actorJson['manuallyApprovesFollowers']= \
+                                approveFollowers
                             actorChanged=True
                         if fields.get('mediaInstance'):
                             self.server.mediaInstance=False
@@ -5014,7 +5074,8 @@ class PubServer(BaseHTTPRequestHandler):
                         # save allowed instances list
                         allowedInstancesFilename= \
                             self.server.baseDir+'/accounts/'+ \
-                            nickname+'@'+self.server.domain+'/allowedinstances.txt'
+                            nickname+'@'+self.server.domain+ \
+                            '/allowedinstances.txt'
                         if fields.get('allowedInstances'):
                             with open(allowedInstancesFilename, "w") as allowedInstancesFile:
                                 allowedInstancesFile.write(fields['allowedInstances'])
@@ -5030,7 +5091,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                actorJson['id'],actorJson, \
                                                self.server.personCache)
                             # clear any cached images for this actor
-                            removeAvatarFromCache(self.server.baseDir,actorJson['id'].replace('/','-'))
+                            removeAvatarFromCache(self.server.baseDir, \
+                                                  actorJson['id'].replace('/','-'))
                             # save the actor to the cache
                             actorCacheFilename= \
                                 self.server.baseDir+'/cache/actors/'+ \
@@ -5044,10 +5106,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 'cc': ['https://www.w3.org/ns/activitystreams#Public'],
                                 'object': actorJson
                             }
-                            self._postToOutbox(updateActorJson,__version__,nickname)
+                            self._postToOutbox(updateActorJson, \
+                                               __version__,nickname)
                         if fields.get('deactivateThisAccount'):
                             if fields['deactivateThisAccount']=='on':
-                                deactivateAccount(self.server.baseDir,nickname,self.server.domain)
+                                deactivateAccount(self.server.baseDir,nickname, \
+                                                  self.server.domain)
                                 self._clearLoginDetails(nickname)
                                 self.server.POSTbusy=False
                                 return
@@ -5473,7 +5537,8 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr='http://'+self.server.onionDomain+usersPath
             if pageNumber==1:
-                self._redirect_headers(originPathStr+'/outbox',cookie,callingDomain)
+                self._redirect_headers(originPathStr+'/outbox',cookie, \
+                                       callingDomain)
             else:
                 self._redirect_headers(originPathStr+'/outbox?page='+ \
                                        str(pageNumber),cookie,callingDomain)
@@ -5560,7 +5625,8 @@ class PubServer(BaseHTTPRequestHandler):
                         print('You cannot unfollow yourself!')
                 else:
                     if self.server.debug:
-                        print(followerNickname+' stops following '+followingActor)
+                        print(followerNickname+' stops following '+ \
+                              followingActor)
                     followActor= \
                         self.server.httpPrefix+'://'+ \
                         self.server.domainFull+ \
@@ -5636,7 +5702,8 @@ class PubServer(BaseHTTPRequestHandler):
                 else:
                     if self.server.debug:
                         print(blockerNickname+' stops blocking '+blockingActor)
-                    removeBlock(self.server.baseDir,blockerNickname,self.server.domain, \
+                    removeBlock(self.server.baseDir, \
+                                blockerNickname,self.server.domain, \
                                 blockingNickname,blockingDomainFull)
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr= \
@@ -5841,7 +5908,8 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Snoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
-                    personSnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    personSnooze(self.server.baseDir,nickname, \
+                                 self.server.domain,optionsActor)
                     if callingDomain.endswith('.onion') and self.server.onionDomain:
                         thisActor= \
                             'http://'+self.server.onionDomain+usersPath
@@ -5854,12 +5922,14 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitUnSnooze=' in optionsConfirmParams:
                 usersPath=self.path.split('/personoptions')[0]
                 thisActor= \
-                    self.server.httpPrefix+'://'+self.server.domainFull+usersPath
+                    self.server.httpPrefix+'://'+ \
+                    self.server.domainFull+usersPath
                 if self.server.debug:
                     print('Unsnoozing '+optionsActor+' '+thisActor)
                 if '/users/' in thisActor:
                     nickname=thisActor.split('/users/')[1]
-                    personUnsnooze(self.server.baseDir,nickname,self.server.domain,optionsActor)
+                    personUnsnooze(self.server.baseDir,nickname, \
+                                   self.server.domain,optionsActor)
                     if callingDomain.endswith('.onion') and self.server.onionDomain:
                         thisActor= \
                             'http://'+self.server.onionDomain+usersPath
@@ -5894,7 +5964,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime,POSTtimings,14)
 
         # receive different types of post created by htmlNewPost
-        postTypes=["newpost","newblog","newunlisted","newfollowers","newdm","newreport","newshare","newquestion","editblogpost"]
+        postTypes=("newpost","newblog","newunlisted","newfollowers", \
+                   "newdm","newreport","newshare","newquestion","editblogpost")
         for currPostType in postTypes:
             if currPostType!='newshare':
                 postRedirect=self.server.defaultTimeline
@@ -5909,7 +5980,8 @@ class PubServer(BaseHTTPRequestHandler):
 
                 if not callingDomain.endswith('.onion') or \
                    not self.server.onionDomain:
-                    self._redirect_headers(self.server.httpPrefix+'://'+self.server.domainFull+ \
+                    self._redirect_headers(self.server.httpPrefix+'://'+ \
+                                           self.server.domainFull+ \
                                            '/users/'+nickname+ \
                                            '/'+postRedirect+ \
                                            '?page='+str(pageNumber),cookie, \
@@ -5980,7 +6052,8 @@ class PubServer(BaseHTTPRequestHandler):
            '/users/' in self.path:
             if not self.outboxAuthenticated:
                 if self.server.debug:
-                    print('DEBUG: unauthenticated attempt to post image to outbox')
+                    print('DEBUG: unauthenticated attempt to '+ \
+                          'post image to outbox')
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -6048,7 +6121,8 @@ class PubServer(BaseHTTPRequestHandler):
             elif self.headers.get('content-length'):
                 length=int(self.headers['content-length'])
             if length>10240:
-                print('WARN: post to shared inbox is too long '+str(length)+' bytes')
+                print('WARN: post to shared inbox is too long '+ \
+                      str(length)+' bytes')
                 self._400()
                 self.server.POSTbusy=False
                 return
@@ -6059,7 +6133,8 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/sharedInbox' or self.path == '/inbox':
             lenMessage=len(messageBytes)
             if lenMessage>10240:
-                print('WARN: post to shared inbox is too long '+str(lenMessage)+' bytes')
+                print('WARN: post to shared inbox is too long '+ \
+                      str(lenMessage)+' bytes')
                 self._400()
                 self.server.POSTbusy=False
                 return
@@ -6097,7 +6172,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.path=='/sharedInbox':
             if not inboxMessageHasParams(messageJson):
                 if self.server.debug:
-                    print("DEBUG: inbox message doesn't have the required parameters")
+                    print("DEBUG: inbox message doesn't have the "+ \
+                          "required parameters")
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -6108,7 +6184,8 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.headers.get('signature'):
             if 'keyId=' not in self.headers['signature']:
                 if self.server.debug:
-                    print('DEBUG: POST to inbox has no keyId in header signature parameter')
+                    print('DEBUG: POST to inbox has no keyId in '+ \
+                          'header signature parameter')
                 self.send_response(403)
                 self.end_headers()
                 self.server.POSTbusy=False
@@ -6278,7 +6355,8 @@ def runDaemon(blogsInstance: bool,mediaInstance: bool, \
         httpd=ThreadingHTTPServer(serverAddress, pubHandler)
     except Exception as e:
         if e.errno==98:
-            print('ERROR: HTTP server address is already in use. '+str(serverAddress))
+            print('ERROR: HTTP server address is already in use. '+ \
+                  str(serverAddress))
             return False
 
         print('ERROR: HTTP server failed to start. '+str(e))
