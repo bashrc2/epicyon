@@ -1398,6 +1398,10 @@ def testWebLinks():
     resultText=removeLongWords(exampleText,40,[])
     assert resultText==exampleText
 
+    exampleText='<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C744E8C45AB3C5E42C361C837155AFCFD9D448</p>'
+    resultText=removeLongWords(exampleText,40,[])
+    assert resultText=='<p>Tox address is 88AB9DED6F9FBEF43E105FB72060A2D89F9B93C7\n44E8C45AB3C5E42C361C837155AFCFD9D448</p>'
+
     exampleText='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABCABC</p>'
     resultText=removeLongWords(exampleText,40,[])
     assert resultText=='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
@@ -1405,6 +1409,7 @@ def testWebLinks():
     exampleText='"the nucleus of mutual-support institutions, habits, and customs remains alive with the millions; it keeps them together; and they prefer to cling to their customs, beliefs, and traditions rather than to accept the teachings of a war of each against all"\n\n--Peter Kropotkin'
     resultText=removeLongWords(addWebLinks(exampleText),40,[])
     assert resultText==exampleText
+    assert 'ellipsis' not in resultText
 
 
 def testAddEmoji():
