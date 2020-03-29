@@ -1402,6 +1402,10 @@ def testWebLinks():
     resultText=removeLongWords(exampleText,40,[])
     assert resultText=='<p>ABCABCABCABCABCABCABCABCABCABCABCABCABCA<\p>'
 
+    exampleText='"the nucleus of mutual-support institutions, habits, and customs remains alive with the millions; it keeps them together; and they prefer to cling to their customs, beliefs, and traditions rather than to accept the teachings of a war of each against all"\n\n--Peter Kropotkin'
+    resultText=removeLongWords(addWebLinks(exampleText),40,[])
+    assert resultText==exampleText
+
 
 def testAddEmoji():
     print('testAddEmoji')

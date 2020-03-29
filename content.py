@@ -95,13 +95,17 @@ def replaceEmojiFromTags(content: str,tag: [],messageType: str) -> str:
             htmlClass='emojiheader'
         if messageType=='profile':
             htmlClass='emojiprofile'
-        emojiHtml="<img src=\""+tagItem['icon']['url']+"\" alt=\""+tagItem['name'].replace(':','')+"\" align=\"middle\" class=\""+htmlClass+"\"/>"
+        emojiHtml= \
+            "<img src=\""+tagItem['icon']['url']+"\" alt=\""+ \
+            tagItem['name'].replace(':','')+ \
+            "\" align=\"middle\" class=\""+htmlClass+"\"/>"
         content=content.replace(tagItem['name'],emojiHtml)
     return content
 
 
 def addMusicTag(content: str,tag: str) -> str:
-    """If a music link is found then ensure that the post is tagged appropriately
+    """If a music link is found then ensure that the post is
+    tagged appropriately
     """
     if '#' not in tag:
         tag='#'+tag
@@ -142,11 +146,16 @@ def addWebLinks(content: str) -> str:
                 markup+='<span class="invisible">i2p://</span>'
             elif w.startswith('dat://'):
                 markup+='<span class="invisible">dat://</span>'
-            linkText=w.replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','')
+            linkText= \
+                w.replace('https://','').replace('http://','').replace('dat://','').replace('i2p://','')
             # prevent links from becoming too long
             if len(linkText)>maxLinkLength:
-                markup+='<span class="ellipsis">'+linkText[:maxLinkLength]+'</span>'
-                markup+='<span class="invisible">'+linkText[maxLinkLength:]+'</span></a>'
+                markup+= \
+                    '<span class="ellipsis">'+ \
+                    linkText[:maxLinkLength]+'</span>'
+                markup+= \
+                    '<span class="invisible">'+ \
+                    linkText[maxLinkLength:]+'</span></a>'
             else:
                 markup+='<span class="ellipsis">'+linkText+'</span></a>'
             replaceDict[w]=markup
@@ -181,7 +190,9 @@ def addHashTags(wordStr: str,httpPrefix: str,domain: str, \
         'type': 'Hashtag'
     }
     replaceHashTags[wordStr]= \
-        "<a href=\""+hashtagUrl+"\" class=\"mention hashtag\" rel=\"tag\">#<span>"+hashtag+"</span></a>"
+        "<a href=\""+hashtagUrl+ \
+        "\" class=\"mention hashtag\" rel=\"tag\">#<span>"+ \
+        hashtag+"</span></a>"
     return True
 
 def loadEmojiDict(emojiDataFilename: str,emojiDict: {}) -> None:
@@ -204,7 +215,8 @@ def loadEmojiDict(emojiDataFilename: str,emojiDict: {}) -> None:
                 continue
             if '..' in emojiUnicode:
                 emojiUnicode=emojiUnicode.split('..')[0]
-            emojiName=line.split(')',1)[1].strip().replace('\n','').replace(' ','').replace('-','')
+            emojiName= \
+                line.split(')',1)[1].strip().replace('\n','').replace(' ','').replace('-','')
             if '..' in emojiName:
                 emojiName=emojiName.split('..')[0]
             emojiDict[emojiName.lower()]=emojiUnicode
@@ -249,8 +261,10 @@ def addEmoji(baseDir: str,wordStr: str, \
     }
     return True
 
-def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},recipients: [],tags: {}) -> bool:
-    """Detects mentions and adds them to the replacements dict and recipients list
+def addMention(wordStr: str,httpPrefix: str,following: str, \
+               replaceMentions: {},recipients: [],tags: {}) -> bool:
+    """Detects mentions and adds them to the replacements dict and
+    recipients list
     """
     possibleHandle=wordStr[1:]
     # @nick
@@ -261,7 +275,8 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         for follow in following:
             if follow.startswith(possibleNickname+'@'):
                 replaceDomain=follow.replace('\n','').split('@')[1]
-                recipientActor=httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
+                recipientActor= \
+                    httpPrefix+"://"+replaceDomain+"/users/"+possibleNickname
                 if recipientActor not in recipients:
                     recipients.append(recipientActor)
                 tags[wordStr]={
@@ -269,7 +284,11 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
                     'name': wordStr,
                     'type': 'Mention'
                 }
-                replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+replaceDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+                replaceMentions[wordStr]= \
+                    "<span class=\"h-card\"><a href=\""+httpPrefix+ \
+                    "://"+replaceDomain+"/@"+possibleNickname+ \
+                    "\" class=\"u-url mention\">@<span>"+possibleNickname+ \
+                    "</span></a></span>"
                 return True
         return False
     possibleNickname=None
@@ -286,7 +305,8 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         for follow in following:
             if follow.replace('\n','')!=possibleHandle:
                 continue
-            recipientActor=httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
+            recipientActor= \
+                httpPrefix+"://"+possibleDomain+"/users/"+possibleNickname
             if recipientActor not in recipients:
                 recipients.append(recipientActor)
             tags[wordStr]={
@@ -294,7 +314,11 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
                 'name': wordStr,
                 'type': 'Mention'
             }
-            replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+            replaceMentions[wordStr]= \
+                "<span class=\"h-card\"><a href=\""+httpPrefix+ \
+                "://"+possibleDomain+"/@"+possibleNickname+ \
+                "\" class=\"u-url mention\">@<span>"+possibleNickname+ \
+                "</span></a></span>"
             return True
     # @nick@domain
     if not (possibleDomain=='localhost' or '.' in possibleDomain):
@@ -307,11 +331,16 @@ def addMention(wordStr: str,httpPrefix: str,following: str,replaceMentions: {},r
         'name': wordStr,
         'type': 'Mention'
     }
-    replaceMentions[wordStr]="<span class=\"h-card\"><a href=\""+httpPrefix+"://"+possibleDomain+"/@"+possibleNickname+"\" class=\"u-url mention\">@<span>"+possibleNickname+"</span></a></span>"
+    replaceMentions[wordStr]= \
+        "<span class=\"h-card\"><a href=\""+httpPrefix+ \
+        "://"+possibleDomain+"/@"+possibleNickname+ \
+        "\" class=\"u-url mention\">@<span>"+possibleNickname+ \
+        "</span></a></span>"
     return True
 
 def removeLongWords(content: str,maxWordLength: int,longWordsList: []) -> str:
-    """Breaks up long words so that on mobile screens this doesn't disrupt the layout
+    """Breaks up long words so that on mobile screens this doesn't
+    disrupt the layout
     """
     if ' ' not in content:
         # handle a single very long string with no spaces
@@ -410,7 +439,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     originalDomain=domain
     if ':' in domain:
         domain=domain.split(':')[0]
-    followingFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
+    followingFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/following.txt'
 
     # read the following list so that we can detect just @nick
     # in addition to @nick@domain
@@ -429,23 +459,29 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
                 longWordsList.append(wordStr)
             firstChar=wordStr[0]
             if firstChar=='@':
-                if addMention(wordStr,httpPrefix,following,replaceMentions,recipients,hashtags):
+                if addMention(wordStr,httpPrefix,following, \
+                              replaceMentions,recipients,hashtags):
                     continue
             elif firstChar=='#':
-                if addHashTags(wordStr,httpPrefix,originalDomain,replaceHashTags,hashtags):
+                if addHashTags(wordStr,httpPrefix,originalDomain, \
+                               replaceHashTags,hashtags):
                     continue
             elif ':' in wordStr:
                 #print('TAG: emoji located - '+wordStr)
                 wordStr2=wordStr.split(':')[1]
                 if not emojiDict:
-                    # emoji.json is generated so that it can be customized and the changes
-                    # will be retained even if default_emoji.json is subsequently updated
+                    # emoji.json is generated so that it can be customized and
+                    # the changes will be retained even if default_emoji.json
+                    # is subsequently updated
                     if not os.path.isfile(baseDir+'/emoji/emoji.json'):
-                        copyfile(baseDir+'/emoji/default_emoji.json',baseDir+'/emoji/emoji.json')
+                        copyfile(baseDir+'/emoji/default_emoji.json', \
+                                 baseDir+'/emoji/emoji.json')
                 emojiDict=loadJson(baseDir+'/emoji/emoji.json')
 
                 #print('TAG: looking up emoji for :'+wordStr2+':')
-                addEmoji(baseDir,':'+wordStr2+':',httpPrefix,originalDomain,replaceEmoji,hashtags,emojiDict)
+                addEmoji(baseDir,':'+wordStr2+':',httpPrefix, \
+                         originalDomain,replaceEmoji,hashtags, \
+                         emojiDict)
 
     # replace words with their html versions
     for wordStr,replaceStr in replaceMentions.items():
@@ -462,7 +498,8 @@ def addHtmlTags(baseDir: str,httpPrefix: str, \
     content=content.replace(' --linebreak-- ','</p><p>')
     return '<p>'+content+'</p>'
 
-def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\"") -> []:
+def getMentionsFromHtml(htmlText: str, \
+                        matchStr="<span class=\"h-card\"><a href=\"") -> []:
     """Extracts mentioned actors from the given html content string
     """
     mentions=[]
@@ -481,10 +518,13 @@ def getMentionsFromHtml(htmlText: str,matchStr="<span class=\"h-card\"><a href=\
     return mentions
 
 def extractMediaInFormPOST(postBytes,boundary,name: str):
-    """Extracts the binary encoding for image/video/audio within a http form POST
+    """Extracts the binary encoding for image/video/audio within a http
+    form POST
     Returns the media bytes and the remaining bytes
     """
-    imageStartBoundary=b'Content-Disposition: form-data; name="'+name.encode('utf8', 'ignore')+b'";'
+    imageStartBoundary= \
+        b'Content-Disposition: form-data; name="'+ \
+        name.encode('utf8', 'ignore')+b'";'
     imageStartLocation=postBytes.find(imageStartBoundary)
     if imageStartLocation==-1:
         return None,postBytes
@@ -566,7 +606,8 @@ def saveMediaInFormPOST(mediaBytes,debug: bool, \
     for ex in extensionTypes:
         if ex==detectedExtension:
             continue
-        possibleOtherFormat=filename.replace('.temp','').replace('.'+detectedExtension,'.'+ex)
+        possibleOtherFormat= \
+            filename.replace('.temp','').replace('.'+detectedExtension,'.'+ex)
         if os.path.isfile(possibleOtherFormat):
             os.remove(possibleOtherFormat)
 
@@ -582,7 +623,8 @@ def extractTextFieldsInPOST(postBytes,boundary,debug: bool) -> {}:
     """
     msg=email.parser.BytesParser().parsebytes(postBytes)
     if debug:
-        print('DEBUG: POST arriving '+msg.get_payload(decode=True).decode('utf-8'))
+        print('DEBUG: POST arriving '+ \
+              msg.get_payload(decode=True).decode('utf-8'))
     messageFields=msg.get_payload(decode=True).decode('utf-8').split(boundary)
     fields={}
     # examine each section of the POST, separated by the boundary
