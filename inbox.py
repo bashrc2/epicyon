@@ -2079,8 +2079,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
             queue.sort()
             queueFilename=queue[0]
             if not os.path.isfile(queueFilename):
-                if debug:
-                    print("DEBUG: queue item rejected because it has no file: "+queueFilename)
+                print("Queue: queue item rejected because it has no file: "+queueFilename)
                 if len(queue)>0:
                     queue.pop(0)
                 continue
@@ -2090,7 +2089,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
             # Load the queue json
             queueJson=loadJson(queueFilename,1)
             if not queueJson:
-                print('WARN: runInboxQueue failed to load inbox queue item '+queueFilename)
+                print('Queue: runInboxQueue failed to load inbox queue item '+queueFilename)
                 # Assume that the file is probably corrupt/unreadable
                 if len(queue)>0:
                     queue.pop(0)
@@ -2124,7 +2123,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 if domainMaxPostsPerDay>0:
                     if quotasDaily['domains'].get(postDomain):
                         if quotasDaily['domains'][postDomain]>domainMaxPostsPerDay:
-                            print('DEBUG: Quota per day - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerDay)+')')
+                            print('Queue: Quota per day - Maximum posts for '+ \
+                                  postDomain+' reached ('+str(domainMaxPostsPerDay)+')')
                             if len(queue)>0:
                                 try:
                                     os.remove(queueFilename)
@@ -2141,7 +2141,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         if domainMaxPostsPerMin<10:
                             domainMaxPostsPerMin=10
                         if quotasPerMin['domains'][postDomain]>domainMaxPostsPerMin:
-                            print('DEBUG: Quota per min - Maximum posts for '+postDomain+' reached ('+str(domainMaxPostsPerMin)+')')
+                            print('Queue: Quota per min - Maximum posts for '+ \
+                                  postDomain+' reached ('+str(domainMaxPostsPerMin)+')')
                             if len(queue)>0:
                                 try:
                                     os.remove(queueFilename)
@@ -2157,7 +2158,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     postHandle=queueJson['postNickname']+'@'+postDomain
                     if quotasDaily['accounts'].get(postHandle):
                         if quotasDaily['accounts'][postHandle]>accountMaxPostsPerDay:
-                            print('DEBUG: Quota account posts per day - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerDay)+')')
+                            print('Queue: Quota account posts per day - Maximum posts for '+ \
+                                  postHandle+' reached ('+str(accountMaxPostsPerDay)+')')
                             if len(queue)>0:
                                 try:
                                     os.remove(queueFilename)
@@ -2174,7 +2176,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         if accountMaxPostsPerMin<10:
                             accountMaxPostsPerMin=10
                         if quotasPerMin['accounts'][postHandle]>accountMaxPostsPerMin:
-                            print('DEBUG: Quota account posts per min - Maximum posts for '+postHandle+' reached ('+str(accountMaxPostsPerMin)+')')
+                            print('Queue: Quota account posts per min - Maximum posts for '+ \
+                                  postHandle+' reached ('+str(accountMaxPostsPerMin)+')')
                             if len(queue)>0:
                                 try:
                                     os.remove(queueFilename)
@@ -2204,9 +2207,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                             keyId=signatureItem.split('"')[1]
                             break
                 if not keyId:
-                    if debug:
-                        print('DEBUG: No keyId in signature: '+ \
-                              queueJson['httpHeaders']['signature'])
+                    print('Queue: No keyId in signature: '+ \
+                          queueJson['httpHeaders']['signature'])
                     if os.path.isfile(queueFilename):
                         os.remove(queueFilename)
                     if len(queue)>0:
@@ -2229,8 +2231,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                 time.sleep(5)
 
             if not pubKey:
-                if debug:
-                    print('DEBUG: public key could not be obtained from '+keyId)
+                print('Queue: public key could not be obtained from '+keyId)
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue)>0:
@@ -2248,12 +2249,11 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                      queueJson['digest'], \
                                      json.dumps(queueJson['post']), \
                                      debug):
-                if debug:
-                    print('DEBUG: Header signature check failed')
-                    if os.path.isfile(queueFilename):
-                        os.remove(queueFilename)
-                    if len(queue)>0:
-                        queue.pop(0)
+                print('Queue: Header signature check failed')
+                if os.path.isfile(queueFilename):
+                    os.remove(queueFilename)
+                if len(queue)>0:
+                    queue.pop(0)
                 continue
 
             if debug:
@@ -2273,8 +2273,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                            federationList, \
                            debug, \
                            acceptedCaps=["inbox:write","objects:read"]):
-                if debug:
-                    print('DEBUG: Undo accepted from '+keyId)
+                print('Queue: Undo accepted from '+keyId)
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue)>0:
@@ -2296,8 +2295,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                     os.remove(queueFilename)
                 if len(queue)>0:
                     queue.pop(0)
-                if debug:
-                    print('DEBUG: Follow activity for '+keyId+' removed from accepted from queue')
+                print('Queue: Follow activity for '+keyId+' removed from accepted from queue')
                 continue
             else:
                 if debug:
@@ -2311,8 +2309,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                    queueJson['post'], \
                                    federationList, \
                                    debug):
-                if debug:
-                    print('DEBUG: Accept/Reject received from '+keyId)
+                print('Queue: Accept/Reject received from '+keyId)
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue)>0:
@@ -2329,8 +2326,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                              federationList, \
                              queueJson['postNickname'], \
                              debug):
-                if debug:
-                    print('DEBUG: Update accepted from '+keyId)
+                print('Queue: Update accepted from '+keyId)
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue)>0:
@@ -2343,9 +2339,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                     httpPrefix,domain,port,debug)
             if len(recipientsDict.items())==0 and \
                len(recipientsDictFollowers.items())==0:
-                if debug:
-                    pprint(queueJson['post'])
-                    print('DEBUG: no recipients were resolved for post arriving in inbox')
+                print('Queue: no recipients were resolved for post arriving in inbox')
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue)>0:
@@ -2376,8 +2370,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
 
             if queueJson['post'].get('capability'):
                 if not isinstance(queueJson['post']['capability'], list):
-                    if debug:
-                        print('DEBUG: capability on post should be a list')
+                    print('Queue: capability on post should be a list')
                     if os.path.isfile(queueFilename):
                         os.remove(queueFilename)
                     if len(queue)>0:
@@ -2423,8 +2416,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                                maxMentions,maxEmoji, \
                                                translate,unitTest)
                     else:
+                        print('Queue: object capabilities check has failed')
                         if debug:
-                            print('DEBUG: object capabilities check has failed')
                             pprint(queueJson['post'])
                 else:
                     if not ocapAlways:
@@ -2447,10 +2440,8 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                         pprint(queueJson['post'])
                         print('No capability list within post')
                         print('ocapAlways: '+str(ocapAlways))
-                        print('DEBUG: object capabilities check failed')
 
-                if debug:
-                    print('DEBUG: Queue post accepted')
+                print('Queue: Queue post accepted')
             if os.path.isfile(queueFilename):
                 os.remove(queueFilename)
             if len(queue)>0:
