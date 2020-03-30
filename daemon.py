@@ -1178,6 +1178,7 @@ class PubServer(BaseHTTPRequestHandler):
                     PGPpubKey=None
                     xmppAddress=None
                     matrixAddress=None
+                    toxAddress=None
                     ssbAddress=None
                     emailAddress=None
                     actorJson=getPersonFromCache(self.server.baseDir,optionsActor,self.server.personCache)
