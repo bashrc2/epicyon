@@ -12,7 +12,8 @@ import datetime
 from utils import loadJson
 from utils import saveJson
 
-def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {}) -> None:
+def storePersonInCache(baseDir: str,personUrl: str, \
+                       personJson: {},personCache: {}) -> None:
     """Store an actor in the cache
     """
     currTime=datetime.datetime.utcnow()
@@ -25,7 +26,8 @@ def storePersonInCache(baseDir: str,personUrl: str,personJson: {},personCache: {
 
     # store to file
     if os.path.isdir(baseDir+'/cache/actors'):
-        cacheFilename=baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
+        cacheFilename= \
+            baseDir+'/cache/actors/'+personUrl.replace('/','#')+'.json'
         if not os.path.isfile(cacheFilename):
             saveJson(personJson,cacheFilename)
 

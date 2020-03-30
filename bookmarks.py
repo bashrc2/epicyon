@@ -85,7 +85,8 @@ def undoBookmarksCollectionEntry(recentPostsCache: {}, \
     saveJson(postJsonObject,postFilename)
 
     # remove from the index
-    bookmarksIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
+    bookmarksIndexFilename= \
+        baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
     if not os.path.isfile(bookmarksIndexFilename):
         return
     if '/' in postFilename:
@@ -192,7 +193,8 @@ def updateBookmarksCollection(recentPostsCache: {}, \
         saveJson(postJsonObject,postFilename)
 
         # prepend to the index
-        bookmarksIndexFilename=baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
+        bookmarksIndexFilename= \
+            baseDir+'/accounts/'+nickname+'@'+domain+'/bookmarks.index'
         bookmarkIndex=postFilename.split('/')[-1]
         if os.path.isfile(bookmarksIndexFilename):
             if bookmarkIndex not in open(bookmarksIndexFilename).read():
@@ -255,13 +257,15 @@ def bookmark(recentPostsCache: {}, \
     bookmarkedPostPort=None
     if actorBookmarked:
         bookmarkedPostNickname=getNicknameFromActor(actorBookmarked)
-        bookmarkedPostDomain,bookmarkedPostPort=getDomainFromActor(actorBookmarked)
+        bookmarkedPostDomain,bookmarkedPostPort= \
+            getDomainFromActor(actorBookmarked)
     else:
         if '/users/' in objectUrl or \
            '/channel/' in objectUrl or \
            '/profile/' in objectUrl:
             bookmarkedPostNickname=getNicknameFromActor(objectUrl)
-            bookmarkedPostDomain,bookmarkedPostPort=getDomainFromActor(objectUrl)
+            bookmarkedPostDomain,bookmarkedPostPort= \
+                getDomainFromActor(objectUrl)
 
     if bookmarkedPostNickname:
         postFilename=locatePost(baseDir,nickname,domain,objectUrl)
@@ -278,7 +282,8 @@ def bookmark(recentPostsCache: {}, \
 
         sendSignedJson(newBookmarkJson,session,baseDir, \
                        nickname,domain,port, \
-                       bookmarkedPostNickname,bookmarkedPostDomain,bookmarkedPostPort, \
+                       bookmarkedPostNickname, \
+                       bookmarkedPostDomain,bookmarkedPostPort, \
                        'https://www.w3.org/ns/activitystreams#Public', \
                        httpPrefix,True,clientToServer,federationList, \
                        sendThreads,postLog,cachedWebfingers,personCache, \
@@ -369,13 +374,15 @@ def undoBookmark(recentPostsCache: {}, \
     bookmarkedPostPort=None
     if actorBookmarked:
         bookmarkedPostNickname=getNicknameFromActor(actorBookmarked)
-        bookmarkedPostDomain,bookmarkedPostPort=getDomainFromActor(actorBookmarked)
+        bookmarkedPostDomain,bookmarkedPostPort= \
+            getDomainFromActor(actorBookmarked)
     else:
         if '/users/' in objectUrl or \
            '/channel/' in objectUrl or \
            '/profile/' in objectUrl:
             bookmarkedPostNickname=getNicknameFromActor(objectUrl)
-            bookmarkedPostDomain,bookmarkedPostPort=getDomainFromActor(objectUrl)
+            bookmarkedPostDomain,bookmarkedPostPort= \
+                getDomainFromActor(objectUrl)
 
     if bookmarkedPostNickname:
         postFilename=locatePost(baseDir,nickname,domain,objectUrl)
@@ -400,8 +407,8 @@ def undoBookmark(recentPostsCache: {}, \
 
 def undoBookmarkPost(session,baseDir: str,federationList: [], \
                      nickname: str,domain: str,port: int,httpPrefix: str, \
-                     bookmarkNickname: str,bookmarkedomain: str,bookmarkPort: int, \
-                     ccList: [], \
+                     bookmarkNickname: str,bookmarkedomain: str, \
+                     bookmarkPort: int,ccList: [], \
                      bookmarkStatusNumber: int,clientToServer: bool, \
                      sendThreads: [],postLog: [], \
                      personCache: {},cachedWebfingers: {}, \

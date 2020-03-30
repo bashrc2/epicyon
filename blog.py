@@ -220,7 +220,8 @@ def htmlBlogPostContent(authorized: bool, \
 
     if not linkedAuthor:
         blogStr+= \
-            '<p class="about"><a class="about" href="'+httpPrefix+'://'+domainFull+ \
+            '<p class="about"><a class="about" href="'+ \
+            httpPrefix+'://'+domainFull+ \
             '/users/'+nickname+'">'+translate['About the author']+'</a></p>\n'
 
     replies= \
@@ -347,14 +348,16 @@ def htmlBlogPage(authorized: bool, session, \
             if pageNumber>1:
                 # show previous button
                 navigateStr+= \
-                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber-1)+'">'+ \
+                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+ \
+                    nickname+'?page='+str(pageNumber-1)+'">'+ \
                     '<img loading="lazy" alt="<" title="<" '+ \
                     'src="/'+iconsDir+ \
                     '/prev.png" class="buttonprev"/></a>\n'
             if len(timelineJson['orderedItems'])>=noOfItems:
                 # show next button
                 navigateStr+= \
-                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+'?page='+str(pageNumber+1)+'">'+ \
+                    '<a href="'+httpPrefix+'://'+domainFull+'/blog/'+nickname+ \
+                    '?page='+str(pageNumber+1)+'">'+ \
                     '<img loading="lazy" alt=">" title=">" '+ \
                     'src="/'+iconsDir+ \
                     '/prev.png" class="buttonnext"/></a>\n'
@@ -552,7 +555,9 @@ def htmlEditBlog(mediaInstance: bool,translate: {}, \
 
     iconsDir=getIconsDir(baseDir)
 
-    editBlogText='<p class="new-post-text">'+translate['Write your post text below.']+'</p>'
+    editBlogText= \
+        '<p class="new-post-text">'+ \
+        translate['Write your post text below.']+'</p>'
 
     if os.path.isfile(baseDir+'/accounts/newpost.txt'):
         with open(baseDir+'/accounts/newpost.txt', 'r') as file:

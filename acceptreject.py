@@ -136,14 +136,16 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
     followedActor=messageJson['object']['object']
     followedDomain,port=getDomainFromActor(followedActor)
     if not followedDomain:
-        print('DEBUG: no domain found within Follow activity object '+followedActor)
+        print('DEBUG: no domain found within Follow activity object '+ \
+              followedActor)
         return
     followedDomainFull=followedDomain
     if port:
         followedDomainFull=followedDomain+':'+str(port)
     followedNickname=getNicknameFromActor(followedActor)
     if not followedNickname:
-        print('DEBUG: no nickname found within Follow activity object '+followedActor)
+        print('DEBUG: no nickname found within Follow activity object '+ \
+              followedActor)
         return
 
     acceptedDomainFull=acceptedDomain
@@ -158,7 +160,8 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
                                     messageJson['capabilities'])
 
     # has this person already been unfollowed?
-    unfollowedFilename=baseDir+'/accounts/'+nickname+'@'+acceptedDomainFull+'/unfollowed.txt'
+    unfollowedFilename= \
+        baseDir+'/accounts/'+nickname+'@'+acceptedDomainFull+'/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
         if followedNickname+'@'+followedDomainFull in open(unfollowedFilename).read():
             if debug:
@@ -212,7 +215,8 @@ def receiveAcceptReject(session,baseDir: str, \
         nickname='dev'
         if debug:
             print('DEBUG: '+messageJson['type']+ \
-                  ' does not contain a nickname. Assuming single user instance.')
+                  ' does not contain a nickname. '+ \
+                  'Assuming single user instance.')
     handle=nickname.lower()+'@'+domain.lower()
     # receive follow accept
     acceptFollow(baseDir,domain,messageJson,federationList,debug)

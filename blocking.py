@@ -448,9 +448,11 @@ def outboxUndoBlock(baseDir: str,httpPrefix: str, \
         return
     nicknameBlocked=getNicknameFromActor(messageJson['object']['object'])
     if not nicknameBlocked:
-        print('WARN: unable to find nickname in '+messageJson['object']['object'])
+        print('WARN: unable to find nickname in '+ \
+              messageJson['object']['object'])
         return
-    domainBlocked,portBlocked=getDomainFromActor(messageJson['object']['object'])
+    domainBlocked,portBlocked= \
+        getDomainFromActor(messageJson['object']['object'])
     domainBlockedFull=domainBlocked
     if portBlocked:
         if portBlocked!=80 and portBlocked!=443:

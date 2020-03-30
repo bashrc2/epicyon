@@ -84,7 +84,8 @@ def undoAnnounceCollectionEntry(recentPostsCache: {}, \
     """
     postJsonObject=loadJson(postFilename)
     if postJsonObject:
-        # remove any cached version of this announce so that the announce icon is changed
+        # remove any cached version of this announce so that the announce
+        # icon is changed
         nickname=getNicknameFromActor(actor)
         cachedPostFilename= \
             getCachedPostFilename(baseDir,nickname,domain,postJsonObject)

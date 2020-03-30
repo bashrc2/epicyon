@@ -17,9 +17,10 @@ def hashPassword(password: str) -> str:
     """Hash a password for storing
     """
     salt=hashlib.sha256(os.urandom(60)).hexdigest().encode('ascii')
-    pwdhash=hashlib.pbkdf2_hmac('sha512', \
-                                password.encode('utf-8'), \
-                                salt, 100000)
+    pwdhash= \
+        hashlib.pbkdf2_hmac('sha512', \
+                            password.encode('utf-8'), \
+                            salt, 100000)
     pwdhash=binascii.hexlify(pwdhash)
     return (salt+pwdhash).decode('ascii')
 
@@ -28,10 +29,11 @@ def verifyPassword(storedPassword: str,providedPassword: str) -> bool:
     """
     salt=storedPassword[:64]
     storedPassword=storedPassword[64:]
-    pwdhash=hashlib.pbkdf2_hmac('sha512', \
-                                providedPassword.encode('utf-8'), \
-                                salt.encode('ascii'), \
-                                100000)
+    pwdhash= \
+        hashlib.pbkdf2_hmac('sha512', \
+                            providedPassword.encode('utf-8'), \
+                            salt.encode('ascii'), \
+                            100000)
     pwdhash=binascii.hexlify(pwdhash).decode('ascii')
     return pwdhash==storedPassword
 
@@ -46,7 +48,8 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     """
     if ' ' not in authHeader:
         if debug:
-            print('DEBUG: Authorixation header does not contain a space character')
+            print('DEBUG: Authorixation header does not '+ \
+                  'contain a space character')
         return False
     if '/users/' not in path and \
        '/channel/' not in path and \
@@ -64,7 +67,8 @@ def authorizeBasic(baseDir: str,path: str,authHeader: str,debug: bool) -> bool:
     plain=base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
         if debug:
-            print('DEBUG: Basic Auth header does not contain a ":" separator for username:password')
+            print('DEBUG: Basic Auth header does not contain a ":" '+ \
+                  'separator for username:password')
         return False
     nickname=plain.split(':')[0]
     if nickname!=nicknameFromPath:
