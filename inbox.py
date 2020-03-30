@@ -2250,6 +2250,7 @@ def runInboxQueue(recentPostsCache: {},maxRecentPosts: int, \
                                      json.dumps(queueJson['post']), \
                                      debug):
                 print('Queue: Header signature check failed')
+                pprint(queueJson['httpHeaders'])
                 if os.path.isfile(queueFilename):
                     os.remove(queueFilename)
                 if len(queue)>0:
