@@ -413,7 +413,8 @@ def getPosts(session,outboxUrl: str,maxPosts: int, \
             break
     return personPosts
 
-def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None:
+def deleteAllPosts(baseDir: str, \
+                   nickname: str, domain: str,boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
     """
     if boxname!='inbox' and boxname!='outbox' and boxname!='tlblogs':
@@ -430,7 +431,7 @@ def deleteAllPosts(baseDir: str,nickname: str, domain: str,boxname: str) -> None
             print(e)
 
 def savePostToBox(baseDir: str,httpPrefix: str,postId: str, \
-                  nickname: str, domain: str,postJsonObject: {}, \
+                  nickname: str,domain: str,postJsonObject: {}, \
                   boxname: str) -> str:
     """Saves the give json to the give box
     Returns the filename
@@ -569,7 +570,8 @@ def createPostBase(baseDir: str,nickname: str,domain: str,port: int, \
     if followersOnly:
         postTo=postCC
         postCC=''
-    newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    newPostId= \
+        httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
 
     sensitive=False
     summary=None
@@ -803,7 +805,8 @@ def outboxMessageCreateWrap(httpPrefix: str, \
     statusNumber,published=getStatusNumber()
     if messageJson.get('published'):
         published=messageJson['published']
-    newPostId=httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
+    newPostId= \
+        httpPrefix+'://'+domain+'/users/'+nickname+'/statuses/'+statusNumber
     cc=[]
     if messageJson.get('cc'):
         cc=messageJson['cc']
@@ -1103,8 +1106,8 @@ def createDirectMessagePost(baseDir: str,
     return messageJson
 
 def createReportPost(baseDir: str,
-                     nickname: str, domain: str, port: int,httpPrefix: str, \
-                     content: str, followersOnly: bool, saveToFile: bool,
+                     nickname: str,domain: str,port: int,httpPrefix: str, \
+                     content: str,followersOnly: bool,saveToFile: bool,
                      clientToServer: bool,\
                      attachImageFilename: str,mediaType: str, \
                      imageDescription: str,useBlurhash: bool, \
@@ -1208,7 +1211,7 @@ def createReportPost(baseDir: str,
     return postJsonObject
 
 def threadSendPost(session,postJsonStr: str,federationList: [],\
-                   inboxUrl: str, baseDir: str, \
+                   inboxUrl: str,baseDir: str, \
                    signatureHeaderJson: {},postLog: [], \
                    debug :bool) -> None:
     """Sends a with retries
@@ -1257,14 +1260,14 @@ def threadSendPost(session,postJsonStr: str,federationList: [],\
         tries+=1
 
 def sendPost(projectVersion: str, \
-             session,baseDir: str,nickname: str, domain: str, port: int, \
-             toNickname: str, toDomain: str, toPort: int, cc: str, \
-             httpPrefix: str, content: str, followersOnly: bool, \
-             saveToFile: bool, clientToServer: bool, \
+             session,baseDir: str,nickname: str,domain: str,port: int, \
+             toNickname: str,toDomain: str,toPort: int,cc: str, \
+             httpPrefix: str,content: str,followersOnly: bool, \
+             saveToFile: bool,clientToServer: bool, \
              attachImageFilename: str,mediaType: str, \
              imageDescription: str,useBlurhash: bool, \
              federationList: [],\
-             sendThreads: [], postLog: [], cachedWebfingers: {},personCache: {}, \
+             sendThreads: [],postLog: [],cachedWebfingers: {},personCache: {}, \
              isArticle: bool, \
              debug=False,inReplyTo=None,inReplyToAtomUri=None,subject=None) -> int:
     """Post to another inbox
@@ -1366,9 +1369,9 @@ def sendPost(projectVersion: str, \
 
 def sendPostViaServer(projectVersion: str, \
                       baseDir: str,session,fromNickname: str,password: str, \
-                      fromDomain: str, fromPort: int, \
-                      toNickname: str, toDomain: str, toPort: int, cc: str, \
-                      httpPrefix: str, content: str, followersOnly: bool, \
+                      fromDomain: str,fromPort: int, \
+                      toNickname: str,toDomain: str,toPort: int,cc: str, \
+                      httpPrefix: str,content: str,followersOnly: bool, \
                       attachImageFilename: str,mediaType: str, \
                       imageDescription: str,useBlurhash: bool, \
                       cachedWebfingers: {},personCache: {}, \
@@ -1536,12 +1539,12 @@ def addFollowersToPublicPost(postJsonObject: {}) -> None:
         postJsonObject['object']['cc']=postJsonObject['actor']+'/followers'
 
 def sendSignedJson(postJsonObject: {},session,baseDir: str, \
-                   nickname: str, domain: str, port: int, \
-                   toNickname: str, toDomain: str, toPort: int, cc: str, \
-                   httpPrefix: str, saveToFile: bool, clientToServer: bool, \
+                   nickname: str,domain: str,port: int, \
+                   toNickname: str,toDomain: str,toPort: int,cc: str, \
+                   httpPrefix: str,saveToFile: bool,clientToServer: bool, \
                    federationList: [], \
-                   sendThreads: [], postLog: [], cachedWebfingers: {}, \
-                   personCache: {}, debug: bool,projectVersion: str) -> int:
+                   sendThreads: [],postLog: [],cachedWebfingers: {}, \
+                   personCache: {},debug: bool,projectVersion: str) -> int:
     """Sends a signed json object to an inbox/outbox
     """
     if debug:
@@ -2809,9 +2812,13 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
         if postJsonObject:
             return postJsonObject
     else:
-        asHeader={'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'}
+        asHeader={
+            'Accept': 'application/activity+json; profile="https://www.w3.org/ns/activitystreams"'
+        }
         if '/channel/' in postJsonObject['actor']:
-            asHeader={'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'}
+            asHeader={
+                'Accept': 'application/ld+json; profile="https://www.w3.org/ns/activitystreams"'
+            }
         actorNickname=getNicknameFromActor(postJsonObject['actor'])
         actorDomain,actorPort=getDomainFromActor(postJsonObject['actor'])
         if not actorDomain:
@@ -2819,7 +2826,8 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
                   str(postJsonObject['actor']))
             return None
         if isBlocked(baseDir,nickname,domain,actorNickname,actorDomain):
-            print('Announce download blocked actor: '+actorNickname+'@'+actorDomain)
+            print('Announce download blocked actor: '+ \
+                  actorNickname+'@'+actorDomain)
             return None
         objectNickname=getNicknameFromActor(postJsonObject['object'])
         objectDomain,objectPort=getDomainFromActor(postJsonObject['object'])
@@ -2829,9 +2837,11 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
             return None
         if isBlocked(baseDir,nickname,domain,objectNickname,objectDomain):
             if objectNickname and objectDomain:
-                print('Announce download blocked object: '+objectNickname+'@'+objectDomain)
+                print('Announce download blocked object: '+ \
+                      objectNickname+'@'+objectDomain)
             else:
-                print('Announce download blocked object: '+str(postJsonObject['object']))
+                print('Announce download blocked object: '+ \
+                      str(postJsonObject['object']))
             return None
         print('Downloading Announce content for '+postJsonObject['object'])
         announcedJson= \
@@ -2842,7 +2852,8 @@ def downloadAnnounce(session,baseDir: str,httpPrefix: str, \
             return None
 
         if not isinstance(announcedJson, dict):
-            print('WARN: announce json is not a dict - '+postJsonObject['object'])
+            print('WARN: announce json is not a dict - '+ \
+                  postJsonObject['object'])
             rejectAnnounce(announceFilename)
             return None
         if not announcedJson.get('id'):
