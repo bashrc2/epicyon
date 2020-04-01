@@ -584,7 +584,8 @@ def outboxLike(recentPostsCache: {}, \
     if debug:
         print('DEBUG: post liked via c2s - '+postFilename)
 
-def outboxUndoLike(baseDir: str,httpPrefix: str, \
+def outboxUndoLike(recentPostsCache: {}, \
+                   baseDir: str,httpPrefix: str, \
                    nickname: str,domain: str,port: int, \
                    messageJson: {},debug: bool) -> None:
     """ When an undo like request is received by the outbox from c2s
@@ -627,7 +628,7 @@ def outboxUndoLike(baseDir: str,httpPrefix: str, \
             print('DEBUG: c2s undo like post not found in inbox or outbox')
             print(messageId)
         return True
-    undoLikesCollectionEntry(baseDir,postFilename,messageId, \
+    undoLikesCollectionEntry(recentPostsCache,baseDir,postFilename,messageId, \
                              messageJson['actor'],domain,debug)
     if debug:
         print('DEBUG: post undo liked via c2s - '+postFilename)

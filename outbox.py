@@ -254,7 +254,8 @@ def postMessageToOutbox(messageJson: {},postToNickname: str, \
                messageJson,debug)
     if debug:
         print('DEBUG: handle any undo like requests')
-    outboxUndoLike(baseDir,httpPrefix, \
+    outboxUndoLike(recentPostsCache, \
+                   baseDir,httpPrefix, \
                    postToNickname,domain,port, \
                    messageJson,debug)
 
