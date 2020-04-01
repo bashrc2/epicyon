@@ -1,13 +1,11 @@
-__filename__="availability.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "availability.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
-import json
-import time
 import os
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
@@ -18,42 +16,45 @@ from utils import getDomainFromActor
 from utils import loadJson
 from utils import saveJson
 
-def setAvailability(baseDir: str,nickname: str,domain: str, \
+
+def setAvailability(baseDir: str, nickname: str, domain: str,
                     status: str) -> bool:
     """Set an availability status
     """
     # avoid giant strings
-    if len(status)>128:
+    if len(status) > 128:
         return False
-    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
     if not os.path.isfile(actorFilename):
         return False
-    actorJson=loadJson(actorFilename)
+    actorJson = loadJson(actorFilename)
     if actorJson:
-        actorJson['availability']=status
-        saveJson(actorJson,actorFilename)
+        actorJson['availability'] = status
+        saveJson(actorJson, actorFilename)
     return True
 
-def getAvailability(baseDir: str,nickname: str,domain: str) -> str:
+
+def getAvailability(baseDir: str, nickname: str, domain: str) -> str:
     """Returns the availability for a given person
     """
-    actorFilename=baseDir+'/accounts/'+nickname+'@'+domain+'.json'
+    actorFilename = baseDir + '/accounts/' + nickname + '@' + domain + '.json'
     if not os.path.isfile(actorFilename):
         return False
-    actorJson=loadJson(actorFilename)
+    actorJson = loadJson(actorFilename)
     if actorJson:
         if not actorJson.get('availability'):
             return None
         return actorJson['availability']
     return None
 
-def outboxAvailability(baseDir: str,nickname: str,messageJson: {}, \
+
+def outboxAvailability(baseDir: str, nickname: str, messageJson: {},
                        debug: bool) -> bool:
     """Handles receiving an availability update
     """
     if not messageJson.get('type'):
         return False
-    if not messageJson['type']=='Availability':
+    if not messageJson['type'] == 'Availability':
         return False
     if not messageJson.get('actor'):
         return False
@@ -62,37 +63,39 @@ def outboxAvailability(baseDir: str,nickname: str,messageJson: {}, \
     if not isinstance(messageJson['object'], str):
         return False
 
-    actorNickname=getNicknameFromActor(messageJson['actor'])
-    if actorNickname!=nickname:
+    actorNickname = getNicknameFromActor(messageJson['actor'])
+    if actorNickname != nickname:
         return False
-    domain,port=getDomainFromActor(messageJson['actor'])
-    status=messageJson['object'].replace('"','')
+    domain, port = getDomainFromActor(messageJson['actor'])
+    status = messageJson['object'].replace('"', '')
 
-    return setAvailability(baseDir,nickname,domain,status)
+    return setAvailability(baseDir, nickname, domain, status)
 
-def sendAvailabilityViaServer(baseDir: str,session, \
-                              nickname: str,password: str, \
-                              domain: str,port: int, \
-                              httpPrefix: str, \
-                              status: str, \
-                              cachedWebfingers: {},personCache: {}, \
-                              debug: bool,projectVersion: str) -> {}:
+
+def sendAvailabilityViaServer(baseDir: str, session,
+                              nickname: str, password: str,
+                              domain: str, port: int,
+                              httpPrefix: str,
+                              status: str,
+                              cachedWebfingers: {}, personCache: {},
+                              debug: bool, projectVersion: str) -> {}:
     """Sets the availability for a person via c2s
     """
     if not session:
         print('WARN: No session for sendAvailabilityViaServer')
         return 6
 
-    domainFull=domain
+    domainFull = domain
     if port:
-        if port!=80 and port!=443:
+        if port != 80 and port != 443:
             if ':' not in domain:
-                domainFull=domain+':'+str(port)
+                domainFull = domain + ':' + str(port)
 
-    toUrl=httpPrefix+'://'+domainFull+'/users/'+nickname
-    ccUrl=httpPrefix+'://'+domainFull+'/users/'+nickname+'/followers'
+    toUrl = httpPrefix + '://' + domainFull + '/users/' + nickname
+    ccUrl = httpPrefix + '://' + domainFull + '/users/' + nickname + \
+        '/followers'
 
-    newAvailabilityJson={
+    newAvailabilityJson = {
         'type': 'Availability',
         'actor': httpPrefix+'://'+domainFull+'/users/'+nickname,
         'object': '"'+status+'"',
@@ -100,42 +103,48 @@ def sendAvailabilityViaServer(baseDir: str,session, \
         'cc': [ccUrl]
     }
 
-    handle=httpPrefix+'://'+domainFull+'/@'+nickname
+    handle = httpPrefix + '://' + domainFull + '/@' + nickname
 
     # lookup the inbox for the To handle
-    wfRequest= \
-        webfingerHandle(session,handle,httpPrefix,cachedWebfingers, \
-                        domain,projectVersion)
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                domain, projectVersion)
     if not wfRequest:
         if debug:
-            print('DEBUG: announce webfinger failed for '+handle)
+            print('DEBUG: announce webfinger failed for ' + handle)
         return 1
 
-    postToBox='outbox'
+    postToBox = 'outbox'
 
     # get the actor inbox for the To handle
-    inboxUrl,pubKeyId,pubKey,fromPersonId,sharedInbox,capabilityAcquisition,avatarUrl,displayName= \
-        getPersonBox(baseDir,session,wfRequest,personCache, \
-                     projectVersion,httpPrefix,nickname,domain,postToBox)
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     capabilityAcquisition,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache, projectVersion,
+                                            httpPrefix, nickname,
+                                            domain, postToBox)
 
     if not inboxUrl:
         if debug:
-            print('DEBUG: No '+postToBox+' was found for '+handle)
+            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
         return 3
     if not fromPersonId:
         if debug:
-            print('DEBUG: No actor was found for '+handle)
+            print('DEBUG: No actor was found for ' + handle)
         return 4
 
-    authHeader=createBasicAuthHeader(Nickname,password)
+    authHeader = createBasicAuthHeader(nickname, password)
 
-    headers={
-        'host': domain, \
-        'Content-type': 'application/json', \
+    headers = {
+        'host': domain,
+        'Content-type': 'application/json',
         'Authorization': authHeader
     }
-    postResult= \
-        postJson(session,newAvailabilityJson,[],inboxUrl,headers,"inbox:write")
+    postResult = postJson(session, newAvailabilityJson, [],
+                          inboxUrl, headers, "inbox:write")
+    if not postResult:
+        print('WARN: failed to post availability')
 
     if debug:
         print('DEBUG: c2s POST availability success')
