@@ -20,6 +20,8 @@ from skills import setSkillLevel
 from roles import setRole
 from person import setOrganizationScheme
 from webfinger import webfingerHandle
+from posts import sendBlockViaServer
+from posts import sendUndoBlockViaServer
 from posts import getPosts
 from posts import createPublicPost
 from posts import deleteAllPosts
@@ -69,8 +71,6 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from like import sendLikeViaServer
 from like import sendUndoLikeViaServer
-from blocking import sendBlockViaServer
-from blocking import sendUndoBlockViaServer
 from roles import sendRoleViaServer
 from skills import sendSkillViaServer
 from availability import setAvailability

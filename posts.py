@@ -2972,3 +2972,168 @@ def unmutePost(baseDir: str,nickname: str,domain: str,postId: str, \
         if os.path.isfile(cachedPostFilename):
             os.remove(cachedPostFilename)
     removePostFromCache(postJsonObject,recentPostsCache)
+
+
+def sendBlockViaServer(baseDir: str, session,
+                       fromNickname: str, password: str,
+                       fromDomain: str, fromPort: int,
+                       httpPrefix: str, blockedUrl: str,
+                       cachedWebfingers: {}, personCache: {},
+                       debug: bool, projectVersion: str) -> {}:
+    """Creates a block via c2s
+    """
+    if not session:
+        print('WARN: No session for sendBlockViaServer')
+        return 6
+
+    fromDomainFull = fromDomain
+    if fromPort:
+        if fromPort != 80 and fromPort != 443:
+            if ':' not in fromDomain:
+                fromDomainFull = fromDomain + ':' + str(fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + \
+        fromNickname + '/followers'
+
+    blockActor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    newBlockJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Block',
+        'actor': blockActor,
+        'object': blockedUrl,
+        'to': [toUrl],
+        'cc': [ccUrl]
+    }
+
+    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                fromDomain, projectVersion)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for ' + handle)
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     capabilityAcquisition, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix, fromNickname,
+                                 fromDomain, postToBox)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, newBlockJson, [], inboxUrl,
+                          headers, "inbox:write")
+    if not postResult:
+        print('WARN: Unable to post block')
+
+    if debug:
+        print('DEBUG: c2s POST block success')
+
+    return newBlockJson
+
+
+def sendUndoBlockViaServer(baseDir: str, session,
+                           fromNickname: str, password: str,
+                           fromDomain: str, fromPort: int,
+                           httpPrefix: str, blockedUrl: str,
+                           cachedWebfingers: {}, personCache: {},
+                           debug: bool, projectVersion: str) -> {}:
+    """Creates a block via c2s
+    """
+    if not session:
+        print('WARN: No session for sendBlockViaServer')
+        return 6
+
+    fromDomainFull = fromDomain
+    if fromPort:
+        if fromPort != 80 and fromPort != 443:
+            if ':' not in fromDomain:
+                fromDomainFull = fromDomain + ':' + str(fromPort)
+
+    toUrl = 'https://www.w3.org/ns/activitystreams#Public'
+    ccUrl = httpPrefix + '://' + fromDomainFull + '/users/' + \
+        fromNickname + '/followers'
+
+    blockActor = httpPrefix + '://' + fromDomainFull + '/users/' + fromNickname
+    newBlockJson = {
+        "@context": "https://www.w3.org/ns/activitystreams",
+        'type': 'Undo',
+        'actor': blockActor,
+        'object': {
+            'type': 'Block',
+            'actor': blockActor,
+            'object': blockedUrl,
+            'to': [toUrl],
+            'cc': [ccUrl]
+        }
+    }
+
+    handle = httpPrefix + '://' + fromDomainFull + '/@' + fromNickname
+
+    # lookup the inbox for the To handle
+    wfRequest = webfingerHandle(session, handle, httpPrefix,
+                                cachedWebfingers,
+                                fromDomain, projectVersion)
+    if not wfRequest:
+        if debug:
+            print('DEBUG: announce webfinger failed for ' + handle)
+        return 1
+
+    postToBox = 'outbox'
+
+    # get the actor inbox for the To handle
+    (inboxUrl, pubKeyId, pubKey,
+     fromPersonId, sharedInbox,
+     capabilityAcquisition, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest, personCache,
+                                 projectVersion, httpPrefix, fromNickname,
+                                 fromDomain, postToBox)
+
+    if not inboxUrl:
+        if debug:
+            print('DEBUG: No ' + postToBox + ' was found for ' + handle)
+        return 3
+    if not fromPersonId:
+        if debug:
+            print('DEBUG: No actor was found for ' + handle)
+        return 4
+
+    authHeader = createBasicAuthHeader(fromNickname, password)
+
+    headers = {
+        'host': fromDomain,
+        'Content-type': 'application/json',
+        'Authorization': authHeader
+    }
+    postResult = postJson(session, newBlockJson, [], inboxUrl,
+                          headers, "inbox:write")
+    if not postResult:
+        print('WARN: Unable to post block')
+
+    if debug:
+        print('DEBUG: c2s POST block success')
+
+    return newBlockJson
