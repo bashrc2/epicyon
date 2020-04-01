@@ -1,27 +1,25 @@
-__filename__="acceptreject.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "acceptreject.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
 import os
-import json
 from capabilities import capabilitiesAccept
 from capabilities import capabilitiesGrantedSave
-from utils import getStatusNumber
-from utils import createOutboxDir
 from utils import urlPermitted
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import domainPermitted
 from utils import followPerson
 
-def createAcceptReject(baseDir: str,federationList: [], \
-                       nickname: str,domain: str,port: int, \
-                       toUrl: str,ccUrl: str,httpPrefix: str, \
-                       objectJson: {},ocapJson,acceptType: str) -> {}:
+
+def createAcceptReject(baseDir: str, federationList: [],
+                       nickname: str, domain: str, port: int,
+                       toUrl: str, ccUrl: str, httpPrefix: str,
+                       objectJson: {}, ocapJson, acceptType: str) -> {}:
     """Accepts or rejects something (eg. a follow request or offer)
     Typically toUrl will be https://www.w3.org/ns/activitystreams#Public
     and ccUrl might be a specific person favorited or repeated and
@@ -31,15 +29,15 @@ def createAcceptReject(baseDir: str,federationList: [], \
     if not objectJson.get('actor'):
         return None
 
-    if not urlPermitted(objectJson['actor'],federationList,"inbox:write"):
+    if not urlPermitted(objectJson['actor'], federationList, "inbox:write"):
         return None
 
     if port:
-        if port!=80 and port!=443:
+        if port != 80 and port != 443:
             if ':' not in domain:
-                domain=domain+':'+str(port)
+                domain = domain + ':' + str(port)
 
-    newAccept={
+    newAccept = {
         "@context": "https://www.w3.org/ns/activitystreams",
         'type': acceptType,
         'actor': httpPrefix+'://'+domain+'/users/'+nickname,
@@ -48,45 +46,48 @@ def createAcceptReject(baseDir: str,federationList: [], \
         'object': objectJson
     }
     if ccUrl:
-        if len(ccUrl)>0:
-            newAccept['cc']=[ccUrl]
+        if len(ccUrl) > 0:
+            newAccept['cc'] = [ccUrl]
     # attach capabilities for follow accept
     if ocapJson:
-        newAccept['capabilities']=ocapJson
+        newAccept['capabilities'] = ocapJson
     return newAccept
 
-def createAccept(baseDir: str,federationList: [], \
-                 nickname: str,domain: str,port: int, \
-                 toUrl: str,ccUrl: str,httpPrefix: str, \
-                 objectJson: {}, \
-                 acceptedCaps=["inbox:write","objects:read"]) -> {}:
+
+def createAccept(baseDir: str, federationList: [],
+                 nickname: str, domain: str, port: int,
+                 toUrl: str, ccUrl: str, httpPrefix: str,
+                 objectJson: {},
+                 acceptedCaps=["inbox:write", "objects:read"]) -> {}:
     # create capabilities accept
-    ocapNew= \
-        capabilitiesAccept(baseDir,httpPrefix, \
-                           nickname,domain,port,toUrl,True,acceptedCaps)
-    return createAcceptReject(baseDir,federationList, \
-                              nickname,domain,port, \
-                              toUrl,ccUrl,httpPrefix, \
-                              objectJson,ocapNew,'Accept')
+    ocapNew = capabilitiesAccept(baseDir, httpPrefix,
+                                 nickname, domain, port,
+                                 toUrl, True, acceptedCaps)
+    return createAcceptReject(baseDir, federationList,
+                              nickname, domain, port,
+                              toUrl, ccUrl, httpPrefix,
+                              objectJson, ocapNew, 'Accept')
 
-def createReject(baseDir: str,federationList: [], \
-                 nickname: str,domain: str,port: int, \
-                 toUrl: str,ccUrl: str,httpPrefix: str, \
+
+def createReject(baseDir: str, federationList: [],
+                 nickname: str, domain: str, port: int,
+                 toUrl: str, ccUrl: str, httpPrefix: str,
                  objectJson: {}) -> {}:
-    return createAcceptReject(baseDir,federationList, \
-                              nickname,domain,port, \
-                              toUrl,ccUrl, \
-                              httpPrefix,objectJson,None,'Reject')
+    return createAcceptReject(baseDir, federationList,
+                              nickname, domain, port,
+                              toUrl, ccUrl,
+                              httpPrefix, objectJson, None, 'Reject')
 
-def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
-                 federationList: [],debug : bool) -> None:
+
+def acceptFollow(baseDir: str, domain: str, messageJson: {},
+                 federationList: [], debug: bool) -> None:
     """Receiving a follow Accept activity
     """
     if not messageJson.get('object'):
         return
     if not messageJson['object'].get('type'):
         return
-    if not messageJson['object']['type']=='Follow':
+    if not messageJson['object']['type'] == 'Follow':
         return
     if debug:
         print('DEBUG: receiving Follow activity')
@@ -103,12 +104,12 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
         return
     if debug:
         print('DEBUG: follow Accept received')
-    thisActor=messageJson['object']['actor']
-    nickname=getNicknameFromActor(thisActor)
+    thisActor = messageJson['object']['actor']
+    nickname = getNicknameFromActor(thisActor)
     if not nickname:
         print('WARN: no nickname found in '+thisActor)
         return
-    acceptedDomain,acceptedPort=getDomainFromActor(thisActor)
+    acceptedDomain, acceptedPort = getDomainFromActor(thisActor)
     if not acceptedDomain:
         if debug:
             print('DEBUG: domain not found in '+thisActor)
@@ -118,108 +119,110 @@ def acceptFollow(baseDir: str,domain : str,messageJson: {}, \
             print('DEBUG: nickname not found in '+thisActor)
         return
     if acceptedPort:
-        if '/'+acceptedDomain+':'+str(acceptedPort)+'/users/'+nickname not in thisActor:
+        if '/' + acceptedDomain + ':' + str(acceptedPort) + \
+           '/users/' + nickname not in thisActor:
             if debug:
                 print('Port: '+str(acceptedPort))
-                print('Expected: /'+acceptedDomain+':'+str(acceptedPort)+ \
-                      '/users/'+nickname)
+                print('Expected: /' + acceptedDomain + ':' +
+                      str(acceptedPort) + '/users/'+nickname)
                 print('Actual:   '+thisActor)
                 print('DEBUG: unrecognized actor '+thisActor)
             return
     else:
-        if not '/'+acceptedDomain+'/users/'+nickname in thisActor:
+        if not '/' + acceptedDomain+'/users/' + nickname in thisActor:
             if debug:
                 print('Expected: /'+acceptedDomain+'/users/'+nickname)
                 print('Actual:   '+thisActor)
                 print('DEBUG: unrecognized actor '+thisActor)
             return
-    followedActor=messageJson['object']['object']
-    followedDomain,port=getDomainFromActor(followedActor)
+    followedActor = messageJson['object']['object']
+    followedDomain, port = getDomainFromActor(followedActor)
     if not followedDomain:
-        print('DEBUG: no domain found within Follow activity object '+ \
+        print('DEBUG: no domain found within Follow activity object ' +
               followedActor)
         return
-    followedDomainFull=followedDomain
+    followedDomainFull = followedDomain
     if port:
-        followedDomainFull=followedDomain+':'+str(port)
-    followedNickname=getNicknameFromActor(followedActor)
+        followedDomainFull = followedDomain+':' + str(port)
+    followedNickname = getNicknameFromActor(followedActor)
     if not followedNickname:
-        print('DEBUG: no nickname found within Follow activity object '+ \
+        print('DEBUG: no nickname found within Follow activity object ' +
               followedActor)
         return
 
-    acceptedDomainFull=acceptedDomain
+    acceptedDomainFull = acceptedDomain
     if acceptedPort:
-        acceptedDomainFull=acceptedDomain+':'+str(acceptedPort)
+        acceptedDomainFull = acceptedDomain + ':' + str(acceptedPort)
 
     # are capabilities attached? If so then store them
     if messageJson.get('capabilities'):
         if isinstance(messageJson['capabilities'], dict):
-            capabilitiesGrantedSave(baseDir, \
-                                    nickname,acceptedDomainFull, \
+            capabilitiesGrantedSave(baseDir,
+                                    nickname, acceptedDomainFull,
                                     messageJson['capabilities'])
 
     # has this person already been unfollowed?
-    unfollowedFilename= \
-        baseDir+'/accounts/'+nickname+'@'+acceptedDomainFull+'/unfollowed.txt'
+    unfollowedFilename = baseDir + '/accounts/' + \
+        nickname + '@' + acceptedDomainFull + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
-        if followedNickname+'@'+followedDomainFull in open(unfollowedFilename).read():
+        if followedNickname + '@' + followedDomainFull in \
+           open(unfollowedFilename).read():
             if debug:
-                print('DEBUG: follow accept arrived for '+ \
-                      nickname+'@'+acceptedDomainFull+ \
-                      ' from '+followedNickname+'@'+followedDomainFull+ \
+                print('DEBUG: follow accept arrived for ' +
+                      nickname + '@' + acceptedDomainFull +
+                      ' from ' + followedNickname + '@' + followedDomainFull +
                       ' but they have been unfollowed')
             return
 
-    if followPerson(baseDir, \
-                    nickname,acceptedDomainFull, \
-                    followedNickname,followedDomainFull, \
-                    federationList,debug):
+    if followPerson(baseDir,
+                    nickname, acceptedDomainFull,
+                    followedNickname, followedDomainFull,
+                    federationList, debug):
         if debug:
-            print('DEBUG: '+nickname+'@'+acceptedDomainFull+ \
-                  ' followed '+followedNickname+'@'+followedDomainFull)
+            print('DEBUG: ' + nickname + '@' + acceptedDomainFull +
+                  ' followed ' + followedNickname + '@' + followedDomainFull)
     else:
         if debug:
-            print('DEBUG: Unable to create follow - '+ \
-                  nickname+'@'+acceptedDomain+' -> '+ \
-                  followedNickname+'@'+followedDomain)
+            print('DEBUG: Unable to create follow - ' +
+                  nickname + '@' + acceptedDomain+' -> ' +
+                  followedNickname + '@' + followedDomain)
 
-def receiveAcceptReject(session,baseDir: str, \
-                        httpPrefix: str,domain :str,port: int, \
-                        sendThreads: [],postLog: [],cachedWebfingers: {}, \
-                        personCache: {},messageJson: {},federationList: [], \
-                        debug : bool) -> bool:
+
+def receiveAcceptReject(session, baseDir: str,
+                        httpPrefix: str, domain: str, port: int,
+                        sendThreads: [], postLog: [], cachedWebfingers: {},
+                        personCache: {}, messageJson: {}, federationList: [],
+                        debug: bool) -> bool:
     """Receives an Accept or Reject within the POST section of HTTPServer
     """
-    if messageJson['type']!='Accept' and messageJson['type']!='Reject':
+    if messageJson['type'] != 'Accept' and messageJson['type'] != 'Reject':
         return False
     if not messageJson.get('actor'):
         if debug:
-            print('DEBUG: '+messageJson['type']+' has no actor')
+            print('DEBUG: ' + messageJson['type'] + ' has no actor')
         return False
     if '/users/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
-            print('DEBUG: "users" or "profile" missing from actor in '+ \
-                  messageJson['type']+'. Assuming single user instance.')
-    domain,tempPort=getDomainFromActor(messageJson['actor'])
-    if not domainPermitted(domain,federationList):
+            print('DEBUG: "users" or "profile" missing from actor in ' +
+                  messageJson['type'] + '. Assuming single user instance.')
+    domain, tempPort = getDomainFromActor(messageJson['actor'])
+    if not domainPermitted(domain, federationList):
         if debug:
-            print('DEBUG: '+messageJson['type']+ \
-                  ' from domain not permitted - '+domain)
+            print('DEBUG: ' + messageJson['type'] +
+                  ' from domain not permitted - ' + domain)
         return False
-    nickname=getNicknameFromActor(messageJson['actor'])
+    nickname = getNicknameFromActor(messageJson['actor'])
     if not nickname:
         # single user instance
-        nickname='dev'
+        nickname = 'dev'
         if debug:
-            print('DEBUG: '+messageJson['type']+ \
-                  ' does not contain a nickname. '+ \
+            print('DEBUG: ' + messageJson['type'] +
+                  ' does not contain a nickname. ' +
                   'Assuming single user instance.')
-    handle=nickname.lower()+'@'+domain.lower()
     # receive follow accept
-    acceptFollow(baseDir,domain,messageJson,federationList,debug)
+    acceptFollow(baseDir, domain, messageJson, federationList, debug)
     if debug:
-        print('DEBUG: Uh, '+messageJson['type']+', I guess')
+        print('DEBUG: Uh, ' + messageJson['type'] + ', I guess')
     return True
