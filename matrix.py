@@ -1,12 +1,11 @@
-__filename__="matrix.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "matrix.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
-import json
 
 def getMatrixAddress(actorJson: {}) -> str:
     """Returns matrix address for the given actor
@@ -22,7 +21,7 @@ def getMatrixAddress(actorJson: {}) -> str:
             continue
         if not propertyValue.get('value'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
         if '@' not in propertyValue['value']:
             continue
@@ -35,14 +34,15 @@ def getMatrixAddress(actorJson: {}) -> str:
         return propertyValue['value']
     return ''
 
-def setMatrixAddress(actorJson: {},matrixAddress: str) -> None:
+
+def setMatrixAddress(actorJson: {}, matrixAddress: str) -> None:
     """Sets an matrix address for the given actor
     """
     if not actorJson.get('attachment'):
-        actorJson['attachment']=[]
+        actorJson['attachment'] = []
 
     # remove any existing value
-    propertyFound=None
+    propertyFound = None
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -50,7 +50,7 @@ def setMatrixAddress(actorJson: {},matrixAddress: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('matrix'):
             continue
-        propertyFound=propertyValue
+        propertyFound = propertyValue
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
@@ -73,12 +73,12 @@ def setMatrixAddress(actorJson: {},matrixAddress: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('matrix'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
-        propertyValue['value']=matrixAddress
+        propertyValue['value'] = matrixAddress
         return
 
-    newMatrixAddress={
+    newMatrixAddress = {
         "name": "Matrix",
         "type": "PropertyValue",
         "value": matrixAddress
