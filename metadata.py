@@ -1,24 +1,24 @@
-__filename__="metadata.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "metadata.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
 import os
-import json
 from utils import loadJson
 from utils import noOfAccounts
 from utils import noOfActiveAccountsMonthly
 
-def metaDataNodeInfo(baseDir: str,registration: bool,version: str) -> {}:
+
+def metaDataNodeInfo(baseDir: str, registration: bool, version: str) -> {}:
     """ /nodeinfo/2.0 endpoint
     """
-    activeAccounts=noOfAccounts(baseDir)
-    activeAccountsMonthly=noOfActiveAccountsMonthly(baseDir,1)
-    activeAccountsHalfYear=noOfActiveAccountsMonthly(baseDir,6)
-    nodeinfo={
+    activeAccounts = noOfAccounts(baseDir)
+    activeAccountsMonthly = noOfActiveAccountsMonthly(baseDir, 1)
+    activeAccountsHalfYear = noOfActiveAccountsMonthly(baseDir, 6)
+    nodeinfo = {
         'openRegistrations': registration,
         'protocols': ['activitypub'],
         'software': {
@@ -37,29 +37,35 @@ def metaDataNodeInfo(baseDir: str,registration: bool,version: str) -> {}:
     }
     return nodeinfo
 
-def metaDataInstance(instanceTitle: str, \
-                     instanceDescriptionShort: str, \
-                     instanceDescription: str, \
-                     httpPrefix: str,baseDir: str, \
-                     adminNickname: str,domain: str,domainFull: str, \
-                     registration: bool,systemLanguage: str, \
+
+def metaDataInstance(instanceTitle: str,
+                     instanceDescriptionShort: str,
+                     instanceDescription: str,
+                     httpPrefix: str, baseDir: str,
+                     adminNickname: str, domain: str, domainFull: str,
+                     registration: bool, systemLanguage: str,
                      version: str) -> {}:
     """ /api/v1/instance endpoint
     """
-    adminActorFilename=baseDir+'/accounts/'+adminNickname+'@'+domain+'.json'
+    adminActorFilename = \
+        baseDir + '/accounts/' + adminNickname + '@' + domain + '.json'
     if not os.path.isfile(adminActorFilename):
         return {}
 
-    adminActor=loadJson(adminActorFilename,0)
+    adminActor = loadJson(adminActorFilename, 0)
     if not adminActor:
         print('WARN: json load exception metaDataInstance')
         return {}
 
-    isBot=False
-    if adminActor['type']!='Person':
-        isBot=True
+    isBot = False
+    if adminActor['type'] != 'Person':
+        isBot = True
 
-    instance={
+    url = \
+        httpPrefix + '://' + domainFull + '/@' + \
+        adminActor['preferredUsername']
+
+    instance = {
         'approval_required': False,
         'contact_account': {
             'acct': adminActor['preferredUsername'],
@@ -79,7 +85,7 @@ def metaDataInstance(instanceTitle: str, \
             'locked': adminActor['manuallyApprovesFollowers'],
             'note': '<p>Admin of '+domain+'</p>',
             'statuses_count': 1,
-            'url': httpPrefix+'://'+domainFull+'/@'+adminActor['preferredUsername'],
+            'url': url,
             'username': adminActor['preferredUsername']
         },
         'description': instanceDescription,
