@@ -1,12 +1,11 @@
-__filename__="pgp.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "pgp.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
-import json
 
 def getEmailAddress(actorJson: {}) -> str:
     """Returns the email address for the given actor
@@ -22,7 +21,7 @@ def getEmailAddress(actorJson: {}) -> str:
             continue
         if not propertyValue.get('value'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
         if '@' not in propertyValue['value']:
             continue
@@ -30,6 +29,7 @@ def getEmailAddress(actorJson: {}) -> str:
             continue
         return propertyValue['value']
     return ''
+
 
 def getPGPpubKey(actorJson: {}) -> str:
     """Returns PGP public key for the given actor
@@ -45,21 +45,22 @@ def getPGPpubKey(actorJson: {}) -> str:
             continue
         if not propertyValue.get('value'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
         if '--BEGIN PGP PUBLIC KEY' not in propertyValue['value']:
             continue
         return propertyValue['value']
     return ''
 
-def setEmailAddress(actorJson: {},emailAddress: str) -> None:
+
+def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
     """Sets the email address for the given actor
     """
     if not actorJson.get('attachment'):
-        actorJson['attachment']=[]
+        actorJson['attachment'] = []
 
     # remove any existing value
-    propertyFound=None
+    propertyFound = None
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -67,7 +68,7 @@ def setEmailAddress(actorJson: {},emailAddress: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('email'):
             continue
-        propertyFound=propertyValue
+        propertyFound = propertyValue
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
@@ -86,26 +87,27 @@ def setEmailAddress(actorJson: {},emailAddress: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('email'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
-        propertyValue['value']=emailAddress
+        propertyValue['value'] = emailAddress
         return
 
-    newEmailAddress={
+    newEmailAddress = {
         "name": "Email",
         "type": "PropertyValue",
         "value": emailAddress
     }
     actorJson['attachment'].append(newEmailAddress)
 
-def setPGPpubKey(actorJson: {},PGPpubKey: str) -> None:
+
+def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
     """Sets a PGP public key for the given actor
     """
     if not actorJson.get('attachment'):
-        actorJson['attachment']=[]
+        actorJson['attachment'] = []
 
     # remove any existing value
-    propertyFound=None
+    propertyFound = None
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -113,7 +115,7 @@ def setPGPpubKey(actorJson: {},PGPpubKey: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('pgp'):
             continue
-        propertyFound=propertyValue
+        propertyFound = propertyValue
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyValue)
@@ -128,12 +130,12 @@ def setPGPpubKey(actorJson: {},PGPpubKey: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('pgp'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
-        propertyValue['value']=PGPpubKey
+        propertyValue['value'] = PGPpubKey
         return
 
-    newPGPpubKey={
+    newPGPpubKey = {
         "name": "PGP",
         "type": "PropertyValue",
         "value": PGPpubKey
