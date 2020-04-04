@@ -1,87 +1,96 @@
-__filename__="theme.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "theme.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
 import os
 from utils import loadJson
 from utils import saveJson
 
-def setThemeInConfig(baseDir: str,name: str) -> bool:
-    configFilename=baseDir+'/config.json'
+
+def setThemeInConfig(baseDir: str, name: str) -> bool:
+    configFilename = baseDir + '/config.json'
     if not os.path.isfile(configFilename):
         return False
-    configJson=loadJson(configFilename,0)
+    configJson = loadJson(configFilename, 0)
     if not configJson:
         return False
-    configJson['theme']=name
-    return saveJson(configJson,configFilename)
+    configJson['theme'] = name
+    return saveJson(configJson, configFilename)
+
 
 def removeTheme(baseDir: str):
-    themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css','blog.css')
+    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
+                  'suspended.css', 'calendar.css', 'blog.css')
     for filename in themeFiles:
-        if os.path.isfile(baseDir+'/'+filename):
-            os.remove(baseDir+'/'+filename)
+        if os.path.isfile(baseDir + '/' + filename):
+            os.remove(baseDir + '/' + filename)
+
 
 def setThemeDefault(baseDir: str):
     removeTheme(baseDir)
-    setThemeInConfig(baseDir,'default')
+    setThemeInConfig(baseDir, 'default')
 
-def setCSSparam(css: str,param: str,value: str) -> str:
+
+def setCSSparam(css: str, param: str, value: str) -> str:
     """Sets a CSS parameter to a given value
     """
     # is this just a simple string replacement?
     if ';' in param:
-        return css.replace(param,value)
+        return css.replace(param, value)
     # color replacement
     if param.startswith('rgba('):
-        return css.replace(param,value)
+        return css.replace(param, value)
     # if the parameter begins with * then don't prepend --
     if param.startswith('*'):
-        searchStr=param.replace('*','')+':'
+        searchStr = param.replace('*', '') + ':'
     else:
-        searchStr='--'+param+':'
+        searchStr = '--' + param + ':'
     if searchStr not in css:
         return css
-    s=css.split(searchStr)
-    newcss=''
+    s = css.split(searchStr)
+    newcss = ''
     for sectionStr in s:
         if not newcss:
             if sectionStr:
-                newcss=sectionStr
+                newcss = sectionStr
             else:
-                newcss=' '
+                newcss = ' '
         else:
             if ';' in sectionStr:
-                newcss+=searchStr+' '+value+';'+sectionStr.split(';',1)[1]
+                newcss += \
+                    searchStr + ' ' + value + ';' + sectionStr.split(';', 1)[1]
             else:
-                newcss+=searchStr+' '+sectionStr
+                newcss += searchStr + ' ' + sectionStr
     return newcss.strip()
 
-def setThemeFromDict(baseDir: str,name: str,themeParams: {}):
+
+def setThemeFromDict(baseDir: str, name: str, themeParams: {}):
     """Uses a dictionary to set a theme
     """
-    setThemeInConfig(baseDir,name)
-    themeFiles=('epicyon.css','login.css','follow.css','suspended.css','calendar.css','blog.css')
+    setThemeInConfig(baseDir, name)
+    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
+                  'suspended.css', 'calendar.css', 'blog.css')
     for filename in themeFiles:
-        templateFilename=baseDir+'/epicyon-'+filename
-        if filename=='epicyon.css':
-            templateFilename=baseDir+'/epicyon-profile.css'
+        templateFilename = baseDir + '/epicyon-' + filename
+        if filename == 'epicyon.css':
+            templateFilename = baseDir + '/epicyon-profile.css'
         if not os.path.isfile(templateFilename):
             continue
         with open(templateFilename, 'r') as cssfile:
-            css=cssfile.read()
-            for paramName,paramValue in themeParams.items():
-                css=setCSSparam(css,paramName,paramValue)
-            filename=baseDir+'/'+filename
+            css = cssfile.read()
+            for paramName, paramValue in themeParams.items():
+                css = setCSSparam(css, paramName, paramValue)
+            filename = baseDir + '/' + filename
             with open(filename, 'w') as cssfile:
                 cssfile.write(css)
 
+
 def setThemeHighVis(baseDir: str):
-    themeParams={
+    themeParams = {
         "font-size-header": "22px",
         "font-size": "45px",
         "font-size2": "45px",
@@ -91,10 +100,11 @@ def setThemeHighVis(baseDir: str):
         "gallery-font-size": "35px",
         "gallery-font-size-mobile": "55px"
     }
-    setThemeFromDict(baseDir,'highvis',themeParams)
+    setThemeFromDict(baseDir, 'highvis', themeParams)
+
 
 def setThemePurple(baseDir: str):
-    themeParams={
+    themeParams = {
         "main-bg-color": "#1f152d",
         "main-bg-color-reply": "#1a142d",
         "main-bg-color-report": "#12152d",
@@ -103,7 +113,6 @@ def setThemePurple(baseDir: str):
         "border-color": "#3f2145",
         "main-link-color": "#ff42a0",
         "main-visited-color": "#f93bb0",
-        "time-color": "#f98bb0",
         "button-selected": "#c042a0",
         "button-background": "#ff42a0",
         "button-text": "white",
@@ -124,10 +133,11 @@ def setThemePurple(baseDir: str):
         "title-background": "#ff42a0",
         "gallery-text-color": "#ccc"
     }
-    setThemeFromDict(baseDir,'purple',themeParams)
+    setThemeFromDict(baseDir, 'purple', themeParams)
+
 
 def setThemeHacker(baseDir: str):
-    themeParams={
+    themeParams = {
         "main-bg-color": "black",
         "main-bg-color-reply": "#030202",
         "main-bg-color-report": "#050202",
@@ -136,7 +146,6 @@ def setThemeHacker(baseDir: str):
         "border-color": "darkgreen",
         "main-link-color": "#266020",
         "main-visited-color": "#3c8234",
-        "time-color": "green",
         "button-selected": "#063200",
         "button-background": "#062200",
         "button-text": "green",
@@ -160,10 +169,11 @@ def setThemeHacker(baseDir: str):
         "title-background": "darkgreen",
         "gallery-text-color": "green"
     }
-    setThemeFromDict(baseDir,'hacker',themeParams)
+    setThemeFromDict(baseDir, 'hacker', themeParams)
+
 
 def setThemeLight(baseDir: str):
-    themeParams={
+    themeParams = {
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "main-bg-color": "#e6ebf0",
         "main-bg-color-reply": "#e0dbf0",
@@ -173,7 +183,6 @@ def setThemeLight(baseDir: str):
         "border-color": "#c0cdd9",
         "main-link-color": "#2a2c37",
         "main-visited-color": "#232c37",
-        "time-color": "#555",
         "text-entry-foreground": "#111",
         "text-entry-background": "white",
         "font-color-header": "black",
@@ -185,7 +194,6 @@ def setThemeLight(baseDir: str):
         "lines-color": "darkblue",
         "day-number": "black",
         "day-number2": "#282c37",
-        "time-color": "black",
         "place-color": "black",
         "event-color": "#282c37",
         "today-foreground": "white",
@@ -196,22 +204,23 @@ def setThemeLight(baseDir: str):
         "title-background": "#ccc",
         "gallery-text-color": "black"
     }
-    setThemeFromDict(baseDir,'light',themeParams)
+    setThemeFromDict(baseDir, 'light', themeParams)
 
-def setTheme(baseDir: str,name: str) -> bool:
-    if name=='default':
+
+def setTheme(baseDir: str, name: str) -> bool:
+    if name == 'default':
         setThemeDefault(baseDir)
         return True
-    elif name=='purple':
+    elif name == 'purple':
         setThemePurple(baseDir)
         return True
-    elif name=='light':
+    elif name == 'light':
         setThemeLight(baseDir)
         return True
-    elif name=='hacker':
+    elif name == 'hacker':
         setThemeHacker(baseDir)
         return True
-    elif name=='highvis':
+    elif name == 'highvis':
         setThemeHighVis(baseDir)
         return True
     return False
