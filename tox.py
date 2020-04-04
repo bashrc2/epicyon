@@ -1,12 +1,11 @@
-__filename__="tox.py"
-__author__="Bob Mottram"
-__license__="AGPL3+"
-__version__="1.1.0"
-__maintainer__="Bob Mottram"
-__email__="bob@freedombone.net"
-__status__="Production"
+__filename__ = "tox.py"
+__author__ = "Bob Mottram"
+__license__ = "AGPL3+"
+__version__ = "1.1.0"
+__maintainer__ = "Bob Mottram"
+__email__ = "bob@freedombone.net"
+__status__ = "Production"
 
-import json
 
 def getToxAddress(actorJson: {}) -> str:
     """Returns tox address for the given actor
@@ -22,12 +21,12 @@ def getToxAddress(actorJson: {}) -> str:
             continue
         if not propertyValue.get('value'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
-        propertyValue['value']=propertyValue['value'].strip()
-        if len(propertyValue['value'])!=76:
+        propertyValue['value'] = propertyValue['value'].strip()
+        if len(propertyValue['value']) != 76:
             continue
-        if propertyValue['value'].upper()!=propertyValue['value']:
+        if propertyValue['value'].upper() != propertyValue['value']:
             continue
         if '"' in propertyValue['value']:
             continue
@@ -40,14 +39,15 @@ def getToxAddress(actorJson: {}) -> str:
         return propertyValue['value']
     return ''
 
-def setToxAddress(actorJson: {},toxAddress: str) -> None:
+
+def setToxAddress(actorJson: {}, toxAddress: str) -> None:
     """Sets an tox address for the given actor
     """
     if not actorJson.get('attachment'):
-        actorJson['attachment']=[]
+        actorJson['attachment'] = []
 
     # remove any existing value
-    propertyFound=None
+    propertyFound = None
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
@@ -55,14 +55,14 @@ def setToxAddress(actorJson: {},toxAddress: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('tox'):
             continue
-        propertyFound=propertyValue
+        propertyFound = propertyValue
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
 
-    if len(toxAddress)!=76:
+    if len(toxAddress) != 76:
         return
-    if toxAddress.upper()!=toxAddress:
+    if toxAddress.upper() != toxAddress:
         return
     if '"' in toxAddress:
         return
@@ -80,12 +80,12 @@ def setToxAddress(actorJson: {},toxAddress: str) -> None:
             continue
         if not propertyValue['name'].lower().startswith('tox'):
             continue
-        if propertyValue['type']!='PropertyValue':
+        if propertyValue['type'] != 'PropertyValue':
             continue
-        propertyValue['value']=toxAddress
+        propertyValue['value'] = toxAddress
         return
 
-    newToxAddress={
+    newToxAddress = {
         "name": "Tox",
         "type": "PropertyValue",
         "value": toxAddress
