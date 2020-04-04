@@ -1531,7 +1531,7 @@ def sendPostViaServer(projectVersion: str,
         if not postResult:
             if debug:
                 print('DEBUG: Failed to upload image')
-            return 9
+#            return 9
 
     headers = {
         'host': fromDomain,
