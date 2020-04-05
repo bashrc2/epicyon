@@ -186,6 +186,14 @@ systemctl restart nginx
 
 If you are using the [Caddy web server](https://caddyserver.com) then see *caddy.example.conf*
 
+## Running Static Analysis
+
+Static analysis can be run with:
+
+``` bash
+./static_analysis
+```
+
 ## Running Unit Tests
 
 To run the unit tests:
