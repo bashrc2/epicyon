@@ -10,7 +10,7 @@ echo "Starting static analysis"
 
 for sourceFile in *.py
 do
-    if [[ "$sourceFile" == 'tests.py' || "$sourceFile" == 'blurhash.py' || "$sourceFile" == 'capabilities.py' ]]; then
+    if [[ "$sourceFile" == 'tests.py' || "$sourceFile" == 'blurhash.py' ]]; then
         continue
     fi
     result=$($cmd "$sourceFile")
