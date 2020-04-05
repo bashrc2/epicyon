@@ -12,9 +12,6 @@ from utils import locatePost
 from utils import evilIncarnate
 from utils import getDomainFromActor
 from utils import getNicknameFromActor
-from session import postJson
-from auth import createBasicAuthHeader
-from webfinger import webfingerHandle
 
 
 def addGlobalBlock(baseDir: str,

@@ -586,8 +586,11 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogImageSection += '      <label class="labels">' + \
         translate['Image description'] + '</label>'
     editBlogImageSection += '      <input type="text" name="imageDescription">'
-    editBlogImageSection += '      <input type="file" id="attachpic" name="attachpic"'
-    editBlogImageSection += '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, .webm, .ogv, .mp3, .ogg">'
+    editBlogImageSection += \
+        '      <input type="file" id="attachpic" name="attachpic"'
+    editBlogImageSection += \
+        '            accept=".png, .jpg, .jpeg, .gif, .webp, ' + \
+        '.mp4, .webm, .ogv, .mp3, .ogg">'
     editBlogImageSection += '    </div>'
 
     placeholderMessage = translate['Write something'] + '...'
@@ -599,34 +602,48 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     dateAndLocation = ''
     dateAndLocation = '<div class="container">'
 
-    dateAndLocation += '<p><input type="checkbox" class="profilecheckbox" name="schedulePost"><label class="labels">' + \
+    dateAndLocation += \
+        '<p><input type="checkbox" class="profilecheckbox" ' + \
+        'name="schedulePost"><label class="labels">' + \
         translate['This is a scheduled post.'] + '</label></p>'
 
-    dateAndLocation += '<p><img loading="lazy" alt="" title="" class="emojicalendar" src="/' + \
+    dateAndLocation += \
+        '<p><img loading="lazy" alt="" title="" ' + \
+        'class="emojicalendar" src="/' + \
         iconsDir + '/calendar.png"/>'
-    dateAndLocation += '<label class="labels">' + translate['Date'] + ': </label>'
+    dateAndLocation += \
+        '<label class="labels">' + translate['Date'] + ': </label>'
     dateAndLocation += '<input type="date" name="eventDate">'
     dateAndLocation += '<label class="labelsright">' + translate['Time'] + ':'
     dateAndLocation += '<input type="time" name="eventTime"></label></p>'
     dateAndLocation += '</div>'
     dateAndLocation += '<div class="container">'
-    dateAndLocation += '<br><label class="labels">' + translate['Location'] + ': </label>'
+    dateAndLocation += \
+        '<br><label class="labels">' + translate['Location'] + ': </label>'
     dateAndLocation += '<input type="text" name="location">'
     dateAndLocation += '</div>'
 
     editBlogForm = htmlHeader(cssFilename, editBlogCSS)
 
-    editBlogForm += '<form enctype="multipart/form-data" method="POST" accept-charset="UTF-8" action="' + \
+    editBlogForm += \
+        '<form enctype="multipart/form-data" method="POST" ' + \
+        'accept-charset="UTF-8" action="' + \
         pathBase + '?' + endpoint + '?page=' + str(pageNumber) + '">'
-    editBlogForm += '  <input type="hidden" name="postUrl" value="' + postUrl + '">'
-    editBlogForm += '  <input type="hidden" name="pageNumber" value="' + str(pageNumber) + '">'
+    editBlogForm += \
+        '  <input type="hidden" name="postUrl" value="' + postUrl + '">'
+    editBlogForm += \
+        '  <input type="hidden" name="pageNumber" value="' + \
+        str(pageNumber) + '">'
     editBlogForm += '  <div class="vertical-center">'
-    editBlogForm += '    <label for="nickname"><b>' + editBlogText + '</b></label>'
+    editBlogForm += \
+        '    <label for="nickname"><b>' + editBlogText + '</b></label>'
     editBlogForm += '    <div class="container">'
 
     editBlogForm += '      <div class="dropbtn">'
-    editBlogForm += '        <img loading="lazy" alt="" title="" src="/' + iconsDir + \
-        '/' + scopeIcon + '"/><b class="scope-desc">' + scopeDescription + '</b>'
+    editBlogForm += \
+        '        <img loading="lazy" alt="" title="" src="/' + iconsDir + \
+        '/' + scopeIcon + '"/><b class="scope-desc">' + \
+        scopeDescription + '</b>'
     editBlogForm += '      </div>'
 
     editBlogForm += '      <a href="' + pathBase + \
@@ -644,19 +661,23 @@ def htmlEditBlog(mediaInstance: bool, translate: {},
     editBlogForm += '    </center></div>'
     if mediaInstance:
         editBlogForm += editBlogImageSection
-    editBlogForm += '    <label class="labels">' + placeholderSubject + '</label><br>'
+    editBlogForm += \
+        '    <label class="labels">' + placeholderSubject + '</label><br>'
     titleStr = ''
     if postJsonObject['object'].get('summary'):
         titleStr = postJsonObject['object']['summary']
-    editBlogForm += '    <input type="text" name="subject" value="' + titleStr + '">'
+    editBlogForm += \
+        '    <input type="text" name="subject" value="' + titleStr + '">'
     editBlogForm += ''
     editBlogForm += '    <br><label class="labels">' + \
         placeholderMessage + '</label>'
     messageBoxHeight = 800
 
-    contentStr = postJsonObject['object']['content'].replace('<p>', '').replace('</p>', '\n')
+    contentStr = postJsonObject['object']['content']
+    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
-    editBlogForm += '    <textarea id="message" name="message" style="height:' + \
+    editBlogForm += \
+        '    <textarea id="message" name="message" style="height:' + \
         str(messageBoxHeight) + 'px">' + contentStr + '</textarea>'
     editBlogForm += dateAndLocation
     if not mediaInstance:
