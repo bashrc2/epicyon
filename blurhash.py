@@ -8,8 +8,8 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-* The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+* The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
 * You and any organization you work for may not promote white supremacy, hate
 speech and homo- or transphobia - this license is void if you do.
 
@@ -33,7 +33,9 @@ import math
 
 
 # Alphabet for base 83
-alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~"
+alphabet = \
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" + \
+    "abcdefghijklmnopqrstuvwxyz#$%*+,-.:;=?@[]^_{|}~"
 alphabet_values = dict(zip(alphabet, range(len(alphabet))))
 
 
@@ -55,10 +57,11 @@ def base83_encode(value, length):
     if the specified length is too short.
     """
     if int(value) // (83 ** (length)) != 0:
-        raise ValueError("Specified length is too short to encode given value.")
+        raise ValueError("Specified length is too short to " +
+                         "encode given value.")
 
     result = ""
-    for i in range(1, length+1):
+    for i in range(1, length + 1):
         digit = int(value) // (83 ** (length - i)) % 83
         result += alphabet[int(digit)]
     return result
@@ -130,7 +133,7 @@ def blurhash_decode(blurhash, width, height, punch=1.0, linear=False):
     size_x = (size_info % 9) + 1
 
     quant_max_value = base83_decode(blurhash[1])
-    real_max_value = (float(quant_max_value+1) / 166.0) * punch
+    real_max_value = (float(quant_max_value + 1) / 166.0) * punch
 
     # Make sure we at least have the right number of characters
     if len(blurhash) != 4 + 2 * size_x * size_y:
@@ -148,9 +151,12 @@ def blurhash_decode(blurhash, width, height, punch=1.0, linear=False):
     for component in range(1, size_x * size_y):
         ac_value = base83_decode(blurhash[4+component*2:4+(component+1)*2])
         colours.append((
-            sign_pow((float(int(ac_value / (19 * 19))) - 9.0) / 9.0, 2.0) * real_max_value,
-            sign_pow((float(int(ac_value / 19) % 19) - 9.0) / 9.0, 2.0) * real_max_value,
-            sign_pow((float(ac_value % 19) - 9.0) / 9.0, 2.0) * real_max_value
+            sign_pow((float(int(ac_value / (19 * 19))) - 9.0)
+                     / 9.0, 2.0) * real_max_value,
+            sign_pow((float(int(ac_value / 19) % 19) - 9.0)
+                     / 9.0, 2.0) * real_max_value,
+            sign_pow((float(ac_value % 19) - 9.0)
+                     / 9.0, 2.0) * real_max_value
         ))
 
     # Return image RGB values, as a list of lists of lists,
@@ -163,13 +169,15 @@ def blurhash_decode(blurhash, width, height, punch=1.0, linear=False):
 
             for j in range(size_y):
                 for i in range(size_x):
-                    basis = math.cos(math.pi * float(x) * float(i) / float(width)) * \
+                    basis = \
+                        math.cos(math.pi * float(x) * float(i) /
+                                 float(width)) * \
                         math.cos(math.pi * float(y) * float(j) / float(height))
                     colour = colours[i + j * size_x]
                     pixel[0] += colour[0] * basis
                     pixel[1] += colour[1] * basis
                     pixel[2] += colour[2] * basis
-            if linear == False:
+            if linear is False:
                 pixel_row.append([
                     linear_to_srgb(pixel[0]),
                     linear_to_srgb(pixel[1]),
@@ -183,15 +191,18 @@ def blurhash_decode(blurhash, width, height, punch=1.0, linear=False):
 
 def blurhash_encode(image, components_x=4, components_y=4, linear=False):
     """
-    Calculates the blurhash for an image using the given x and y component counts.
+    Calculates the blurhash for an image using the given x and y
+     component counts.
 
-    Image should be a 3-dimensional array, with the first dimension being y, the second
-    being x, and the third being the three rgb components that are assumed to be 0-255
-    srgb integers (incidentally, this is the format you will get from a PIL RGB image).
+    Image should be a 3-dimensional array, with the first dimension
+    being y, the second being x, and the third being the three rgb
+    components that are assumed to be 0-255 srgb integers
+    (incidentally, this is the format you will get from a PIL RGB image).
 
-    You can also pass in already linear data - to do this, set linear to True. This is
-    useful if you want to encode a version of your image resized to a smaller size (which
-    you should ideally do in linear colour).
+    You can also pass in already linear data - to do this, set linear
+    to True. This is useful if you want to encode a version of your
+    image resized to a smaller size (which you should ideally do in
+    linear colour).
     """
     if components_x < 1 or components_x > 9 or \
        components_y < 1 or components_y > 9:
@@ -202,7 +213,7 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
 
     # Convert to linear if neeeded
     image_linear = []
-    if linear == False:
+    if linear is False:
         for y in range(int(height)):
             image_linear_line = []
             for x in range(int(width)):
@@ -224,7 +235,9 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
             component = [0.0, 0.0, 0.0]
             for y in range(int(height)):
                 for x in range(int(width)):
-                    basis = norm_factor * math.cos(math.pi * float(i) * float(x) / width) * \
+                    basis = \
+                        norm_factor * \
+                        math.cos(math.pi * float(i) * float(x) / width) * \
                         math.cos(math.pi * float(j) * float(y) / height)
                     component[0] += basis * image_linear[y][x][0]
                     component[1] += basis * image_linear[y][x][1]
@@ -235,9 +248,10 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
             component[2] /= (width * height)
             components.append(component)
 
-            if not (i==0 and j==0):
-                max_ac_component = max(max_ac_component,abs(component[0]),
-                                       abs(component[1]),abs(component[2]))
+            if not (i == 0 and j == 0):
+                max_ac_component = \
+                    max(max_ac_component, abs(component[0]),
+                        abs(component[1]), abs(component[2]))
 
     # Encode components
     dc_value = (linear_to_srgb(components[0][0]) << 16) + \
@@ -251,10 +265,16 @@ def blurhash_encode(image, components_x=4, components_y=4, linear=False):
 
     ac_values = []
     for r, g, b in components[1:]:
+        r2 = r / ac_component_norm_factor
+        g2 = g / ac_component_norm_factor
+        b2 = b / ac_component_norm_factor
+        r3 = math.floor(sign_pow(r2, 0.5) * 9.0 + 9.5)
+        g3 = math.floor(sign_pow(g2, 0.5) * 9.0 + 9.5)
+        b3 = math.floor(sign_pow(b2, 0.5) * 9.0 + 9.5)
         ac_values.append(
-            int(max(0.0,min(18.0,math.floor(sign_pow(r / ac_component_norm_factor, 0.5) * 9.0 + 9.5)))) * 19 * 19 + \
-            int(max(0.0,min(18.0, math.floor(sign_pow(g / ac_component_norm_factor, 0.5) * 9.0 + 9.5)))) * 19 + \
-            int(max(0.0,min(18.0, math.floor(sign_pow(b / ac_component_norm_factor, 0.5) * 9.0 + 9.5))))
+            int(max(0.0, min(18.0, r3))) * 19 * 19 +
+            int(max(0.0, min(18.0, g3))) * 19 +
+            int(max(0.0, min(18.0, b3)))
         )
 
     # Build final blurhash
