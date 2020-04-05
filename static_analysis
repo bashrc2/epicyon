@@ -15,11 +15,14 @@ do
     fi
     result=$($cmd "$sourceFile")
     if [ "$result" ]; then
+	echo ''
 	echo "$result"
 	exit 1
     fi
+    echo -n '.'
 done
 
+echo ''
 echo "Static analysis complete"
 
 exit 0
