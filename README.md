@@ -20,9 +20,9 @@ On Arch/Parabola:
 
 ``` bash
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
-               imagemagick python-pillow \
-			   python-requests perl-image-exiftool python-numpy \
-			   python-dateutil certbot
+               imagemagick python-pillow python-requests \
+	       perl-image-exiftool python-numpy python-dateutil \
+	       certbot flake8
 ```
 
 Or on Debian:
@@ -31,9 +31,11 @@ Or on Debian:
 sudo apt install -y \
     tor python3-socks imagemagick \
     python3-numpy python3-setuptools \
-	python3-crypto python3-cryptodome \
-    python3-dateutil python3-pil.imagetk python3-idna \
-	python3-requests libimage-exiftool-perl certbot nginx
+    python3-crypto python3-cryptodome \
+    python3-dateutil python3-pil.imagetk
+    python3-idna python3-requests \
+    libimage-exiftool-perl python3-flake8 \
+    certbot nginx
 ```
 
 ## Installation
