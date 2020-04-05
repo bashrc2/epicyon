@@ -2637,9 +2637,9 @@ def addEmbeddedVideoFromSites(translate: {}, content: str,
                 "allowfullscreen></iframe></center>"
             return content
 
-        invidiousSites = ('https://invidio.us',
-                          'axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
-                          'bzzsg2ii4fv2iid.onion')
+    invidiousSites = ('https://invidio.us',
+                      'axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
+                      'bzzsg2ii4fv2iid.onion')
     for videoSite in invidiousSites:
         if '"' + videoSite in content:
             url = content.split('"' + videoSite)[1]
