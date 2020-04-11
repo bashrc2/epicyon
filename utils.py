@@ -740,17 +740,21 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     """
     path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
     if not os.path.isdir(path):
+        print('SEARCH: directory does not exist ' + path)
         return []
-    regObj = re.compile(searchRegex)
-
+    searchRegex = searchRegex.strip()
+    # regObj = re.compile(searchRegex)
+    
     res = []
     for root, dirs, fnames in os.walk(path):
         for fname in fnames:
             filePath = os.path.join(root, fname)
-            with open(filePath, 'r') as file:
-                data = file.read()
-                if not regObj.match(data):
-                    continue
+            with open(filePath, 'r') as postFile:
+                data = postFile.read()
+                # if not regObj.match(data):
+                if searchRegex not in data:
+                     continue
+
                 res.append(filePath)
                 if len(res) >= maxResults:
                     return res
