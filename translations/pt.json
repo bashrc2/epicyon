@@ -90,7 +90,7 @@
     "View": "Visão",
     "Stop blocking": "Pare de bloquear",
     "Enter an emoji name to search for": "Digite um nome emoji para procurar",
-    "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "Digite um endereço, item compartilhado, #hashtag, * skill ou: emoji: para procurar",
+    "Enter an address, shared item, !history, #hashtag, *skill or :emoji: to search for": "Digite um endereço, item compartilhado,! History, #hashtag, * skill ou: emoji: para procurar",
     "Go Back": "Volte",
     "Moderation Information": "Informações sobre moderação",
     "Suspended accounts": "Contas suspensas",
@@ -218,5 +218,6 @@
     "Title": "Título",
     "About the author": "Sobre o autor",
     "Edit blog post": "Editar postagem do blog",
-    "Publicly visible post": "Postagem publicamente visível"
+    "Publicly visible post": "Postagem publicamente visível",
+    "Your Posts": "Seus posts"
 }

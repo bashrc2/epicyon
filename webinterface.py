@@ -23,6 +23,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import searchBoxPosts
 from utils import isBlogPost
 from utils import updateRecentPostsCache
 from utils import getNicknameFromActor
@@ -735,6 +736,96 @@ def htmlSkillsSearch(translate: {}, baseDir: str,
         skillSearchForm += '</center>'
     skillSearchForm += htmlFooter()
     return skillSearchForm
+
+
+def htmlHistorySearch(translate: {}, baseDir: str,
+                      httpPrefix: str,
+                      nickname: str, domain: str,
+                      historysearch: str,
+                      postsPerPage: int, pageNumber: int,
+                      projectVersion: str,
+                      recentPostsCache: {},
+                      maxRecentPosts: int,
+                      session,
+                      wfRequest,
+                      personCache: {},
+                      port: int) -> str:
+    """Show a page containing search results for your post history
+    """
+    if historysearch.startswith('!'):
+        historysearch = historysearch[1:].strip()
+
+    historysearch = historysearch.lower().strip('\n')
+
+    lines = \
+        searchBoxPosts(baseDir, nickname, domain,
+                       historysearch, postsPerPage)
+
+    cssFilename = baseDir + '/epicyon-profile.css'
+    if os.path.isfile(baseDir + '/epicyon.css'):
+        cssFilename = baseDir + '/epicyon.css'
+    with open(cssFilename, 'r') as cssFile:
+        historySearchCSS = cssFile.read()
+        if httpPrefix != 'https':
+            historySearchCSS = \
+                historySearchCSS.replace('https://',
+                                         httpPrefix + '://')
+    historySearchForm = htmlHeader(cssFilename, historySearchCSS)
+
+    # add the page title
+    historySearchForm += \
+        '<center><h1>' + translate['Your Posts'] + '</h1></center>'
+
+    if len(lines) == 0:
+        historySearchForm += \
+            '<center><h5>' + translate['No results'] + \
+            '</h5></center>'
+        return historySearchForm
+
+    iconsDir = getIconsDir(baseDir)
+
+    # ensure that the page number is in bounds
+    if not pageNumber:
+        pageNumber = 1
+    elif pageNumber < 1:
+        pageNumber = 1
+
+    # get the start end end within the index file
+    startIndex = int((pageNumber - 1) * postsPerPage)
+    endIndex = startIndex + postsPerPage
+    noOfLines = len(lines)
+    if endIndex >= noOfLines and noOfLines > 0:
+        endIndex = noOfLines - 1
+
+    index = startIndex
+    while index <= endIndex:
+        postFilename = lines[index]
+        if not postFilename:
+            index += 1
+            continue
+        postJsonObject = loadJson(postFilename)
+        if not postJsonObject:
+            continue
+        showIndividualPostIcons = True
+        allowDeletion = False
+        historySearchForm += \
+            individualPostAsHtml(recentPostsCache,
+                                 maxRecentPosts,
+                                 iconsDir, translate, None,
+                                 baseDir, session, wfRequest,
+                                 personCache,
+                                 nickname, domain, port,
+                                 postJsonObject,
+                                 None, True, allowDeletion,
+                                 httpPrefix, projectVersion,
+                                 'search',
+                                 showIndividualPostIcons,
+                                 showIndividualPostIcons,
+                                 False, False, False)
+        index += 1
+
+    historySearchForm += htmlFooter()
+    return historySearchForm
 
 
 def scheduledPostsExist(baseDir: str, nickname: str, domain: str) -> bool:
@@ -5507,7 +5598,7 @@ def htmlSearch(translate: {},
     followStr += '<div class="follow">'
     followStr += '  <div class="followAvatar">'
     followStr += '  <center>'
-    idx = 'Enter an address, shared item, #hashtag, ' + \
+    idx = 'Enter an address, shared item, !history, #hashtag, ' + \
         '*skill or :emoji: to search for'
     followStr += \
         '  <p class="followText">' + translate[idx] + '</p>'

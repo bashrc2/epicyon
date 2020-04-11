@@ -127,6 +127,7 @@ from webinterface import htmlProfileAfterSearch
 from webinterface import htmlEditProfile
 from webinterface import htmlTermsOfService
 from webinterface import htmlSkillsSearch
+from webinterface import htmlHistorySearch
 from webinterface import htmlHashtagSearch
 from webinterface import htmlModerationInfo
 from webinterface import htmlSearchSharedItems
@@ -5963,6 +5964,33 @@ class PubServer(BaseHTTPRequestHandler):
                                          64)
                     if skillStr:
                         msg = skillStr.encode('utf-8')
+                        self._login_headers('text/html',
+                                            len(msg), callingDomain)
+                        self._write(msg)
+                        self.server.POSTbusy = False
+                        return
+                elif searchStr.startswith('!'):
+                    # your post history search
+                    nickname = getNicknameFromActor(actorStr)
+                    searchStr = searchStr.replace('!', '').strip()
+                    historyStr = \
+                        htmlHistorySearch(self.server.translate,
+                                          self.server.baseDir,
+                                          self.server.httpPrefix,
+                                          nickname,
+                                          self.server.domain,
+                                          searchStr,
+                                          maxPostsInFeed,
+                                          pageNumber,
+                                          self.server.projectVersion,
+                                          self.server.recentPostsCache,
+                                          self.server.maxRecentPosts,
+                                          self.server.session,
+                                          self.server.cachedWebfingers,
+                                          self.server.personCache,
+                                          self.server.port)
+                    if historyStr:
+                        msg = historyStr.encode('utf-8')
                         self._login_headers('text/html',
                                             len(msg), callingDomain)
                         self._write(msg)

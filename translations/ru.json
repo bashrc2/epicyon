@@ -90,7 +90,7 @@
     "View": "Посмотреть",
     "Stop blocking": "Прекратить блокировку",
     "Enter an emoji name to search for": "Введите имя смайлика для поиска",
-    "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "Введите адрес, общий элемент, #hashtag, *skill или: emoji: для поиска",
+    "Enter an address, shared item, !history, #hashtag, *skill or :emoji: to search for": "Введите адрес, общий элемент,! History, #hashtag, * skill или: emoji: для поиска",
     "Go Back": "Вернитесь назад",
     "Moderation Information": "Модерация Информация",
     "Suspended accounts": "Приостановленные аккаунты",
@@ -218,5 +218,6 @@
     "Title": "заглавие",
     "About the author": "Об авторе",
     "Edit blog post": "Редактировать сообщение в блоге",
-    "Publicly visible post": "Публично видимый пост"
+    "Publicly visible post": "Публично видимый пост",
+    "Your Posts": "Ваши сообщения"
 }

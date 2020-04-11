@@ -90,8 +90,7 @@
     "View": "视图",
     "Stop blocking": "停止封锁",
     "Enter an emoji name to search for": "输入表情符号名称以进行搜索",
-    "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "输入地址，共享项，＃标签，*技能或：emoji：搜索",
-    "Go Back": "回去",
+    "Enter an address, shared item, !history, #hashtag, *skill or :emoji: to search for": "输入地址，共享项，！历史，##标签，*技能或：emoji：进行搜索",
     "Moderation Information": "审核信息",
     "Suspended accounts": "暂停的帐户",
     "These are currently suspended": "这些目前已暂停",
@@ -218,5 +217,6 @@
     "Title": "标题",
     "About the author": "关于作者",
     "Edit blog post": "编辑博客文章",
-    "Publicly visible post": "公开可见的帖子"
+    "Publicly visible post": "公开可见的帖子",
+    "Your Posts": "您的帖子"
 }

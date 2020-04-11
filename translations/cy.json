@@ -90,7 +90,7 @@
     "View": "Gweld",
     "Stop blocking": "Stopiwch rwystro",
     "Enter an emoji name to search for": "Rhowch enw emoji i chwilio amdano",
-    "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "Rhowch gyfeiriad, eitem a rennir, #hashtag, * sgil neu: emoji: i chwilio amdano",
+    "Enter an address, shared item, !history, #hashtag, *skill or :emoji: to search for": "Rhowch gyfeiriad, eitem a rennir ,! Hanes, #hashtag, * sgil neu: emoji: i chwilio amdano",
     "Go Back": "Go Back",
     "Moderation Information": "Gwybodaeth Cymedroli",
     "Suspended accounts": "Cyfrifon gohiriedig",
@@ -218,5 +218,6 @@
     "Title": "Teitl",
     "About the author": "Am yr awdur",
     "Edit blog post": "Golygu post blog",
-    "Publicly visible post": "Post sy'n weladwy i'r cyhoedd"
+    "Publicly visible post": "Post sy'n weladwy i'r cyhoedd",
+    "Your Posts": "Eich Swyddi"
 }

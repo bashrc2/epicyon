@@ -90,7 +90,7 @@
     "View": "Zeigen",
     "Stop blocking": "Sperre aufheben",
     "Enter an emoji name to search for": "Geben Sie einen Emojinamen ein, nach dem gesucht werden soll",
-    "Enter an address, shared item, #hashtag, *skill or :emoji: to search for": "Geben Sie eine Adresse, eine freigegebene Sache, einen #hashtag, eine *Fertigkeit oder ein :Emoji: ein, nach dem gesucht werden soll",
+    "Enter an address, shared item, !history, #hashtag, *skill or :emoji: to search for": "Geben Sie eine Adresse, ein freigegebenes Element ,! History, #hashtag, * Skill oder: emoji: ein, nach der gesucht werden soll",
     "Go Back": "Zurück",
     "Moderation Information": "Moderationsinformationen",
     "Suspended accounts": "Temporäre gesperrte Benutzer",
@@ -218,5 +218,6 @@
     "Title": "Titel",
     "About the author": "Über den Autor",
     "Edit blog post": "Blog-Beitrag bearbeiten",
-    "Publicly visible post": "Öffentlich sichtbarer Beitrag"
+    "Publicly visible post": "Öffentlich sichtbarer Beitrag",
+    "Your Posts": "Deine Posts"
 }
