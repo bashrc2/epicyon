@@ -757,7 +757,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
 
     historysearch = historysearch.lower().strip('\n')
 
-    lines = \
+    boxFilenames = \
         searchBoxPosts(baseDir, nickname, domain,
                        historysearch, postsPerPage)
 
@@ -776,7 +776,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
     historySearchForm += \
         '<center><h1>' + translate['Your Posts'] + '</h1></center>'
 
-    if len(lines) == 0:
+    if len(boxFilenames) == 0:
         historySearchForm += \
             '<center><h5>' + translate['No results'] + \
             '</h5></center>'
@@ -793,18 +793,19 @@ def htmlHistorySearch(translate: {}, baseDir: str,
     # get the start end end within the index file
     startIndex = int((pageNumber - 1) * postsPerPage)
     endIndex = startIndex + postsPerPage
-    noOfLines = len(lines)
-    if endIndex >= noOfLines and noOfLines > 0:
-        endIndex = noOfLines - 1
+    noOfBoxFilenames = len(boxFilenames)
+    if endIndex >= noOfBoxFilenames and noOfBoxFilenames > 0:
+        endIndex = noOfBoxFilenames - 1
 
     index = startIndex
     while index <= endIndex:
-        postFilename = lines[index]
+        postFilename = boxFilenames[index]
         if not postFilename:
             index += 1
             continue
         postJsonObject = loadJson(postFilename)
         if not postJsonObject:
+            index += 1
             continue
         showIndividualPostIcons = True
         allowDeletion = False
