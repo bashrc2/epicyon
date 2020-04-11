@@ -739,7 +739,6 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     """
     path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
     if not os.path.isdir(path):
-        print('SEARCH: directory does not exist ' + path)
         return []
     searchStr = searchStr.lower().strip()
 
@@ -747,6 +746,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
         searchWords = searchStr.split('+')
         for index in range(len(searchWords)):
             searchWords[index] = searchWords[index].strip()
+        print('SEARCH: ' + str(searchWords))
     else:
         searchWords = [searchStr]
 
@@ -761,7 +761,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
                 for keyword in searchWords:
                     if keyword not in data:
                         notFound = True
-                        continue
+                        break
                 if notFound:
                     continue
 
