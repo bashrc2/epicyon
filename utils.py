@@ -741,7 +741,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     if not os.path.isdir(path):
         print('SEARCH: directory does not exist ' + path)
         return []
-    searchStr = searchStr.strip()
+    searchStr = searchStr.lower().strip()
 
     if '+' in searchStr:
         searchWords = searchStr.split('+')
@@ -755,7 +755,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
         for fname in fnames:
             filePath = os.path.join(root, fname)
             with open(filePath, 'r') as postFile:
-                data = postFile.read()
+                data = postFile.read().lower()
 
                 notFound = False
                 for keyword in searchWords:
