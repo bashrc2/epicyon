@@ -5922,6 +5922,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchStr.replace('+', ' ').replace('%20', ' ')
                 searchStr = searchStr.replace('%40', '@').replace('%3A', ':')
                 searchStr = searchStr.replace('%2F', '/').replace('%23', '#')
+                searchStr = searchStr.replace('%21', '!')
                 searchStr = searchStr.strip()
                 if self.server.debug:
                     print('searchStr: ' + searchStr)
