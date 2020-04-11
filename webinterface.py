@@ -771,6 +771,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
                 historySearchCSS.replace('https://',
                                          httpPrefix + '://')
     historySearchForm = htmlHeader(cssFilename, historySearchCSS)
+    historySearchForm += '<script>' + contentWarningScript() + '</script>'
 
     # add the page title
     historySearchForm += \

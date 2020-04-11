@@ -7,7 +7,6 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
-import re
 import time
 import shutil
 import datetime
@@ -733,27 +732,25 @@ def isBlogPost(postJsonObject: {}) -> bool:
 
 
 def searchBoxPosts(baseDir: str, nickname: str, domain: str,
-                   searchRegex: str, maxResults: int,
+                   searchStr: str, maxResults: int,
                    boxName='outbox') -> []:
-    """Uses a regular expression to search for posts
-    and returns a list of the filenames
+    """Search your posts and return a list of the filenames
+    containing matching strings
     """
     path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
     if not os.path.isdir(path):
         print('SEARCH: directory does not exist ' + path)
         return []
-    searchRegex = searchRegex.strip()
-    # regObj = re.compile(searchRegex)
-    
+    searchStr = searchStr.strip()
+
     res = []
     for root, dirs, fnames in os.walk(path):
         for fname in fnames:
             filePath = os.path.join(root, fname)
             with open(filePath, 'r') as postFile:
                 data = postFile.read()
-                # if not regObj.match(data):
-                if searchRegex not in data:
-                     continue
+                if searchStr not in data:
+                    continue
 
                 res.append(filePath)
                 if len(res) >= maxResults:
