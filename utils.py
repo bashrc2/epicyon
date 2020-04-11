@@ -743,14 +743,23 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
         return []
     searchStr = searchStr.strip()
 
+    if '+' in searchStr:
+        searchWords = searchStr.split('+')
+        for index in range(len(searchWords)):
+            searchWords[index] = searchWords[index].strip()
+    else:
+        searchWords = [searchStr]
+
     res = []
     for root, dirs, fnames in os.walk(path):
         for fname in fnames:
             filePath = os.path.join(root, fname)
             with open(filePath, 'r') as postFile:
                 data = postFile.read()
-                if searchStr not in data:
-                    continue
+
+                for keyword in searchWords:
+                    if keyword not in data:
+                        continue
 
                 res.append(filePath)
                 if len(res) >= maxResults:
