@@ -757,9 +757,13 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
             with open(filePath, 'r') as postFile:
                 data = postFile.read()
 
+                notFound = False
                 for keyword in searchWords:
                     if keyword not in data:
+                        notFound = True
                         continue
+                if notFound:
+                    continue
 
                 res.append(filePath)
                 if len(res) >= maxResults:
