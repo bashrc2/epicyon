@@ -738,7 +738,7 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
     """Uses a regular expression to search for posts
     and returns a list of the filenames
     """
-    path = baseDir + '/accounts' + nickname + '@' + domain + '/' + boxName
+    path = baseDir + '/accounts/' + nickname + '@' + domain + '/' + boxName
     if not os.path.isdir(path):
         return []
     regObj = re.compile(searchRegex)
