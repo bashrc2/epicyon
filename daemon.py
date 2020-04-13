@@ -1670,18 +1670,26 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaStr = self.path.split('/icons/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/img/icons/' + mediaStr
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
                 if self.server.iconsCache.get(mediaStr):
                     mediaBinary = self.server.iconsCache[mediaStr]
-                    self._set_headers('image/png', len(mediaBinary),
-                                      cookie, callingDomain)
+                    self._set_headers_etag(mediaFilename,
+                                           'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
                     self._write(mediaBinary)
                     return
                 else:
                     if os.path.isfile(mediaFilename):
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            self._set_headers('image/png', len(mediaBinary),
-                                              cookie, callingDomain)
+                            self._set_headers_etag(mediaFilename,
+                                                   'image/png',
+                                                   mediaBinary, cookie,
+                                                   callingDomain)
                             self._write(mediaBinary)
                             self.server.iconsCache[mediaStr] = mediaBinary
                         return
