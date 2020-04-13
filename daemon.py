@@ -1440,8 +1440,10 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers('image/png', len(mediaBinary),
-                                      cookie, callingDomain)
+                    self._set_headers_etag(mediaFilename,
+                                           'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
                     self._write(mediaBinary)
                     return
             self._404()
@@ -1466,8 +1468,9 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers('image/png', len(mediaBinary),
-                                      cookie, callingDomain)
+                    self._set_headers_etag(mediaFilename, 'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
                     self._write(mediaBinary)
                     return
             self._404()
@@ -1492,8 +1495,9 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers('image/png', len(mediaBinary),
-                                      cookie, callingDomain)
+                    self._set_headers_etag(mediaFilename, 'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
                     self._write(mediaBinary)
                     return
             self._404()
@@ -1521,9 +1525,10 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaImageType = 'gif'
                     with open(emojiFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
-                        self._set_headers('image/' + mediaImageType,
-                                          len(mediaBinary),
-                                          cookie, callingDomain)
+                        self._set_headers_etag(emojiFilename,
+                                               'image/' + mediaImageType,
+                                               mediaBinary, cookie,
+                                               callingDomain)
                         self._write(mediaBinary)
                     return
             self._404()
