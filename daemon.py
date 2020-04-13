@@ -1642,6 +1642,11 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaFilename = \
                     self.server.baseDir + '/sharefiles/' + mediaStr
                 if os.path.isfile(mediaFilename):
+                    if self._etag_exists(mediaFilename):
+                        # The file has not changed
+                        self._304()
+                        return
+
                     mediaFileType = 'png'
                     if mediaFilename.endswith('.png'):
                         mediaFileType = 'png'
@@ -1653,9 +1658,10 @@ class PubServer(BaseHTTPRequestHandler):
                         mediaFileType = 'gif'
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
-                        self._set_headers('image/' + mediaFileType,
-                                          len(mediaBinary),
-                                          cookie, callingDomain)
+                        self._set_headers_etag(mediaFilename,
+                                               'image/' + mediaFileType,
+                                               mediaBinary, cookie,
+                                               callingDomain)
                         self._write(mediaBinary)
                     return
             self._404()
@@ -1704,21 +1710,38 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = \
                 self.server.baseDir + '/cache/' + self.path
             if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
                 with open(mediaFilename, 'rb') as avFile:
                     mediaBinary = avFile.read()
                     if mediaFilename.endswith('.png'):
-                        self._set_headers('image/png', len(mediaBinary),
-                                          cookie, callingDomain)
+                        self._set_headers_etag(mediaFilename,
+                                               'image/png',
+                                               mediaBinary, cookie,
+                                               callingDomain)
                     elif mediaFilename.endswith('.jpg'):
-                        self._set_headers('image/jpeg', len(mediaBinary),
-                                          cookie, callingDomain)
+                        self._set_headers_etag(mediaFilename,
+                                               'image/jpeg',
+                                               mediaBinary, cookie,
+                                               callingDomain)
                     elif mediaFilename.endswith('.gif'):
-                        self._set_headers('image/gif', len(mediaBinary),
-                                          cookie, callingDomain)
+                        self._set_headers_etag(mediaFilename,
+                                               'image/gif',
+                                               mediaBinary, cookie,
+                                               callingDomain)
+                    elif mediaFilename.endswith('.webp'):
+                        self._set_headers_etag(mediaFilename,
+                                               'image/webp',
+                                               mediaBinary, cookie,
+                                               callingDomain)
                     else:
                         # default to jpeg
-                        self._set_headers('image/jpeg', len(mediaBinary),
-                                          cookie, callingDomain)
+                        self._set_headers_etag(mediaFilename,
+                                               'image/jpeg',
+                                               mediaBinary, cookie,
+                                               callingDomain)
                         # self._404()
                         return
                     self._write(mediaBinary)
