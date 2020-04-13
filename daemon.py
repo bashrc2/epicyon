@@ -450,6 +450,30 @@ class PubServer(BaseHTTPRequestHandler):
             self.send_header('ETag', etag)
         self.end_headers()
 
+    def _etag_exists(self, mediaFilename: str) -> bool:
+        """Does an etag header exist for the given file?
+        """
+        etagHeader = 'If-None-Match'
+        if not self.headers.get(etagHeader):
+            etagHeader = 'if-none-match'
+            if not self.headers.get(etagHeader):
+                etagHeader = 'If-none-match'
+
+        if self.headers.get(etagHeader):
+            oldEtag = self.headers['If-None-Match']
+            if os.path.isfile(mediaFilename + '.etag'):
+                # load the etag from file
+                currEtag = ''
+                try:
+                    with open(mediaFilename, 'r') as etagFile:
+                        currEtag = etagFile.read()
+                except BaseException:
+                    pass
+                if oldEtag == currEtag:
+                    # The file has not changed
+                    return True
+        return False
+
     def _redirect_headers(self, redirect: str, cookie: str,
                           callingDomain: str) -> None:
         self.send_response(303)
@@ -1428,6 +1452,11 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = \
                 self.server.baseDir + '/accounts' + self.path
             if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
                 tries = 0
                 mediaBinary = None
                 while tries < 5:
@@ -1456,6 +1485,11 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = \
                 self.server.baseDir + '/accounts/login-background.png'
             if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
                 tries = 0
                 mediaBinary = None
                 while tries < 5:
@@ -1483,6 +1517,11 @@ class PubServer(BaseHTTPRequestHandler):
             mediaFilename = \
                 self.server.baseDir + '/accounts/follow-background.png'
             if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
                 tries = 0
                 mediaBinary = None
                 while tries < 5:
@@ -1514,6 +1553,11 @@ class PubServer(BaseHTTPRequestHandler):
                 emojiFilename = \
                     self.server.baseDir + '/emoji/' + emojiStr
                 if os.path.isfile(emojiFilename):
+                    if self._etag_exists(emojiFilename):
+                        # The file has not changed
+                        self._304()
+                        return
+
                     mediaImageType = 'png'
                     if emojiFilename.endswith('.png'):
                         mediaImageType = 'png'
@@ -1551,6 +1595,11 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr
                 if os.path.isfile(mediaFilename):
+                    if self._etag_exists(mediaFilename):
+                        # The file has not changed
+                        self._304()
+                        return
+
                     mediaFileType = 'image/png'
                     if mediaFilename.endswith('.png'):
                         mediaFileType = 'image/png'
@@ -1569,27 +1618,6 @@ class PubServer(BaseHTTPRequestHandler):
                     elif mediaFilename.endswith('.ogg'):
                         mediaFileType = 'audio/ogg'
 
-                    # does an etag header exist?
-                    etagHeader = 'If-None-Match'
-                    if not self.headers.get(etagHeader):
-                        etagHeader = 'if-none-match'
-                        if not self.headers.get(etagHeader):
-                            etagHeader = 'If-none-match'
-
-                    if self.headers.get(etagHeader):
-                        oldEtag = self.headers['If-None-Match']
-                        if os.path.isfile(mediaFilename + '.etag'):
-                            # load the etag from file
-                            currEtag = ''
-                            try:
-                                with open(mediaFilename, 'r') as etagFile:
-                                    currEtag = etagFile.read()
-                            except BaseException:
-                                pass
-                            if oldEtag == currEtag:
-                                # The file has not changed
-                                self._304()
-                                return
                     with open(mediaFilename, 'rb') as avFile:
                         mediaBinary = avFile.read()
                         self._set_headers_etag(mediaFilename, mediaFileType,
