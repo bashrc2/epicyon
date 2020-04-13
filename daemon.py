@@ -1772,6 +1772,10 @@ class PubServer(BaseHTTPRequestHandler):
                         avatarNickname + '@' + \
                         self.server.domain + '/' + avatarFile
                     if os.path.isfile(avatarFilename):
+                        if self._etag_exists(avatarFilename):
+                            # The file has not changed
+                            self._304()
+                            return
                         mediaImageType = 'png'
                         if avatarFile.endswith('.png'):
                             mediaImageType = 'png'
@@ -1783,9 +1787,10 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaImageType = 'webp'
                         with open(avatarFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            self._set_headers('image/' + mediaImageType,
-                                              len(mediaBinary), cookie,
-                                              callingDomain)
+                            self._set_headers_etag(avatarFilename,
+                                                   'image/' + mediaImageType,
+                                                   mediaBinary, cookie,
+                                                   callingDomain)
                             self._write(mediaBinary)
                         return
 
