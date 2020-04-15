@@ -172,13 +172,13 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {}) -> str:
     avatarImagePath = baseDir + '/cache/avatars/' + actorStr
     if os.path.isfile(avatarImagePath + '.png'):
         return '/avatars/' + actorStr + '.png'
-    if os.path.isfile(avatarImagePath + '.jpg'):
+    elif os.path.isfile(avatarImagePath + '.jpg'):
         return '/avatars/' + actorStr + '.jpg'
-    if os.path.isfile(avatarImagePath + '.gif'):
+    elif os.path.isfile(avatarImagePath + '.gif'):
         return '/avatars/' + actorStr + '.gif'
-    if os.path.isfile(avatarImagePath + '.webp'):
+    elif os.path.isfile(avatarImagePath + '.webp'):
         return '/avatars/' + actorStr + '.webp'
-    if os.path.isfile(avatarImagePath):
+    elif os.path.isfile(avatarImagePath):
         return '/avatars/' + actorStr
 
     if personJson.get('icon'):
@@ -1289,16 +1289,16 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
     loginImageFilename = None
     if os.path.isfile(baseDir + '/accounts/' + loginImage):
         loginImageFilename = baseDir + '/accounts/' + loginImage
-    if os.path.isfile(baseDir + '/accounts/login.jpg'):
+    elif os.path.isfile(baseDir + '/accounts/login.jpg'):
         loginImage = 'login.jpg'
         loginImageFilename = baseDir + '/accounts/' + loginImage
-    if os.path.isfile(baseDir + '/accounts/login.jpeg'):
+    elif os.path.isfile(baseDir + '/accounts/login.jpeg'):
         loginImage = 'login.jpeg'
         loginImageFilename = baseDir + '/accounts/' + loginImage
-    if os.path.isfile(baseDir + '/accounts/login.gif'):
+    elif os.path.isfile(baseDir + '/accounts/login.gif'):
         loginImage = 'login.gif'
         loginImageFilename = baseDir + '/accounts/' + loginImage
-    if os.path.isfile(baseDir + '/accounts/login.webp'):
+    elif os.path.isfile(baseDir + '/accounts/login.webp'):
         loginImage = 'login.webp'
         loginImageFilename = baseDir + '/accounts/' + loginImage
 
