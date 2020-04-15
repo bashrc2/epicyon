@@ -5549,9 +5549,13 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                 tagCtr = 0
                 while line:
                     if '  ' not in line:
+                        line = tagsFile.readline()
+                        lineCtr += 1
                         continue
                     postDaysSinceEpochStr = line.split('  ')[0]
                     if not postDaysSinceEpochStr.isdigit():
+                        line = tagsFile.readline()
+                        lineCtr += 1
                         continue
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
                     if postDaysSinceEpoch < daysSinceEpoch:
