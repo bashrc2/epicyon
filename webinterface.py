@@ -8,6 +8,7 @@ __status__ = "Production"
 
 import time
 import os
+import urllib.parse
 from collections import OrderedDict
 from datetime import datetime
 from datetime import date
@@ -500,6 +501,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     """
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
+    hashtag = urllib.parse.unquote(hashtag)
     hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
         print('WARN: hashtag file not found ' + hashtagIndexFile)
