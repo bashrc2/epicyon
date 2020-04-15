@@ -273,8 +273,7 @@ def htmlSearchSharedItems(translate: {},
     currPage = 1
     ctr = 0
     sharedItemsForm = ''
-    searchStrLower = searchStr.replace('%2B', '+').replace('%40', '@')
-    searchStrLower = searchStrLower.replace('%3A', ':').replace('%23', '#')
+    searchStrLower = urllib.parse.unquote(searchStr)
     searchStrLower = searchStrLower.lower().strip('\n')
     searchStrLowerList = searchStrLower.split('+')
     cssFilename = baseDir + '/epicyon-profile.css'

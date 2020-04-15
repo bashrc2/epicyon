@@ -14,6 +14,7 @@ except ImportError:
     from Crypto.PublicKey import RSA
     from Crypto.Util import number
 import os
+import urllib.parse
 from session import getJson
 from cache import storeWebfingerInCache
 from cache import getWebfingerFromCache
@@ -220,8 +221,7 @@ def webfingerLookup(path: str, baseDir: str,
     else:
         if 'resource=acct%3A' in path:
             handle = path.split('resource=acct%3A')[1]
-            handle = handle.replace('%40', '@', 1)
-            handle = handle.replace('%3A', ':', 1).strip()
+            handle = urllib.parse.unquote(handle.strip())
             if debug:
                 print('DEBUG: WEBFINGER handle ' + handle)
     if not handle:
