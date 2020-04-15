@@ -835,7 +835,6 @@ def outboxMessageCreateWrap(httpPrefix: str,
     cc = []
     if messageJson.get('cc'):
         cc = messageJson['cc']
-    # TODO
     capabilityUrl = []
     newPost = {
         "@context": "https://www.w3.org/ns/activitystreams",
