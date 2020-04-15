@@ -498,12 +498,14 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
                       httpPrefix: str, projectVersion: str) -> str:
     """Show a page containing search results for a hashtag
     """
-    iconsDir = getIconsDir(baseDir)
     if hashtag.startswith('#'):
         hashtag = hashtag[1:]
     hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
+        print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
+
+    iconsDir = getIconsDir(baseDir)
 
     # check that the directory for the nickname exists
     if nickname:
