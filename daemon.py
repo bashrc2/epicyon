@@ -10,6 +10,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import time
 import locale
+import urllib.parse
 from functools import partial
 # for saving images
 from hashlib import sha256
@@ -1315,9 +1316,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             shareName = self.path.split('?rmshare=')[1]
-            shareName = shareName.replace('%20', ' ').replace('%40', '@')
-            shareName = shareName.replace('%3A', ':').replace('%2F', '/')
-            shareName = shareName.replace('%23', '#').strip()
+            shareName = urllib.parse.unquote(shareName.strip())
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.httpPrefix + '://' + \
@@ -2724,11 +2723,8 @@ class PubServer(BaseHTTPRequestHandler):
                     if inReplyToUrl.startswith('sharedesc:'):
                         shareDescription = \
                             inReplyToUrl.replace('sharedesc:', '')
-                        shareDescription = shareDescription.replace('%20', ' ')
-                        shareDescription = shareDescription.replace('%40', '@')
-                        shareDescription = shareDescription.replace('%3A', ':')
-                        shareDescription = shareDescription.replace('%2F', '/')
-                        shareDescription = shareDescription.replace('%23', '#')
+                        shareDescription = \
+                            urllib.parse.unquote(shareDescription.strip())
                 self.path = self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)
@@ -5780,10 +5776,8 @@ class PubServer(BaseHTTPRequestHandler):
                             moderationText = \
                                 moderationStr.split('=')[1].strip()
                             moderationText = moderationText.replace('+', ' ')
-                            moderationText = moderationText.replace('%40', '@')
-                            moderationText = moderationText.replace('%3A', ':')
-                            moderationText = moderationText.replace('%23', '#')
-                            moderationText = moderationText.strip()
+                            moderationText = \
+                                urllib.parse.unquote(moderationText.strip())
                     elif moderationStr.startswith('submitInfo'):
                         msg = htmlModerationInfo(self.server.translate,
                                                  self.server.baseDir,
@@ -5928,11 +5922,9 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             questionParams = self.rfile.read(length).decode('utf-8')
             questionParams = questionParams.replace('+', ' ')
-            questionParams = questionParams.replace('%40', '@')
-            questionParams = questionParams.replace('%3A', ':')
-            questionParams = questionParams.replace('%23', '#')
-            questionParams = questionParams.replace('%2F', '/')
-            questionParams = questionParams.replace('%3F', '').strip()
+            questionParams = questionParams.replace('%3F', '')
+            questionParams = \
+                urllib.parse.unquote(questionParams.strip())
             # post being voted on
             messageId = None
             if 'messageId=' in questionParams:
@@ -5989,11 +5981,9 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr = searchStr.split('&')[0]
-                searchStr = searchStr.replace('+', ' ').replace('%20', ' ')
-                searchStr = searchStr.replace('%40', '@').replace('%3A', ':')
-                searchStr = searchStr.replace('%2F', '/').replace('%23', '#')
-                searchStr = searchStr.replace('%21', '!').replace('%2B', '+')
-                searchStr = searchStr.strip()
+                searchStr = searchStr.replace('+', ' ')
+                searchStr = \
+                    urllib.parse.unquote(searchStr.strip())
                 if self.server.debug:
                     print('searchStr: ' + searchStr)
                 if searchForEmoji:
@@ -6162,17 +6152,9 @@ class PubServer(BaseHTTPRequestHandler):
             removeShareConfirmParams = self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removeShareConfirmParams:
                 removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('%20', ' ')
-                removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('%40', '@')
-                removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('%3A', ':')
-                removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('%2F', '/')
-                removeShareConfirmParams = \
-                    removeShareConfirmParams.replace('%23', '#')
-                removeShareConfirmParams = \
                     removeShareConfirmParams.replace('+', ' ').strip()
+                removeShareConfirmParams = \
+                    urllib.parse.unquote(removeShareConfirmParams)
                 shareActor = removeShareConfirmParams.split('actor=')[1]
                 if '&' in shareActor:
                     shareActor = shareActor.split('&')[0]
@@ -6206,15 +6188,7 @@ class PubServer(BaseHTTPRequestHandler):
             removePostConfirmParams = self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in removePostConfirmParams:
                 removePostConfirmParams = \
-                    removePostConfirmParams.replace('%20', ' ')
-                removePostConfirmParams = \
-                    removePostConfirmParams.replace('%40', '@')
-                removePostConfirmParams = \
-                    removePostConfirmParams.replace('%3A', ':')
-                removePostConfirmParams = \
-                    removePostConfirmParams.replace('%2F', '/')
-                removePostConfirmParams = \
-                    removePostConfirmParams.replace('%23', '#').strip()
+                    urllib.parse.unquote(removePostConfirmParams)
                 removeMessageId = \
                     removePostConfirmParams.split('messageId=')[1]
                 if '&' in removeMessageId:
@@ -6284,8 +6258,8 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             followConfirmParams = self.rfile.read(length).decode('utf-8')
             if '&submitView=' in followConfirmParams:
-                followingActor = followConfirmParams.replace('%3A', ':')
-                followingActor = followingActor.replace('%2F', '/')
+                followingActor = \
+                    urllib.parse.unquote(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -6293,8 +6267,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             if '&submitYes=' in followConfirmParams:
-                followingActor = followConfirmParams.replace('%3A', ':')
-                followingActor = followingActor.replace('%2F', '/')
+                followingActor = \
+                    urllib.parse.unquote(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -6344,8 +6318,8 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             followConfirmParams = self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in followConfirmParams:
-                followingActor = followConfirmParams.replace('%3A', ':')
-                followingActor = followingActor.replace('%2F', '/')
+                followingActor = \
+                    urllib.parse.unquote(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -6412,8 +6386,8 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             blockConfirmParams = self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
-                blockingActor = blockConfirmParams.replace('%3A', ':')
-                blockingActor = blockingActor.replace('%2F', '/')
+                blockingActor = \
+                    urllib.parse.unquote(blockConfirmParams)
                 blockingActor = blockingActor.split('actor=')[1]
                 if '&' in blockingActor:
                     blockingActor = blockingActor.split('&')[0]
@@ -6479,8 +6453,8 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             blockConfirmParams = self.rfile.read(length).decode('utf-8')
             if '&submitYes=' in blockConfirmParams:
-                blockingActor = blockConfirmParams.replace('%3A', ':')
-                blockingActor = blockingActor.replace('%2F', '/')
+                blockingActor = \
+                    urllib.parse.unquote(blockConfirmParams)
                 blockingActor = blockingActor.split('actor=')[1]
                 if '&' in blockingActor:
                     blockingActor = blockingActor.split('&')[0]
@@ -6547,8 +6521,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             length = int(self.headers['Content-length'])
             optionsConfirmParams = self.rfile.read(length).decode('utf-8')
-            optionsConfirmParams = optionsConfirmParams.replace('%3A', ':')
-            optionsConfirmParams = optionsConfirmParams.replace('%2F', '/')
+            optionsConfirmParams = \
+                urllib.parse.unquote(optionsConfirmParams)
             # page number to return to
             if 'pageNumber=' in optionsConfirmParams:
                 pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
