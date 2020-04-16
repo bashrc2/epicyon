@@ -6967,11 +6967,6 @@ class PubServer(BaseHTTPRequestHandler):
                     queueStatus = \
                         self._updateInboxQueue(self.postToNickname,
                                                messageJson, messageBytes)
-                    if queueStatus == 0:
-                        self.send_response(200)
-                        self.end_headers()
-                        self.server.POSTbusy = False
-                        return
                     if queueStatus == 1:
                         self.send_response(503)
                         self.end_headers()
@@ -6992,11 +6987,6 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: POST to shared inbox')
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
-                if queueStatus == 0:
-                    self.send_response(200)
-                    self.end_headers()
-                    self.server.POSTbusy = False
-                    return
                 elif queueStatus == 1:
                     self.send_response(503)
                     self.end_headers()

@@ -2238,8 +2238,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # heartbeat to monitor whether the inbox queue is running
         heartBeatCtr += 5
         if heartBeatCtr >= 10:
-            print('>>> Heartbeat Q:' +
-                  str(len(queue)) + ' ' +
+            print('>>> Heartbeat Q:' + str(len(queue)) + ' ' +
                   '{:%F %T}'.format(datetime.datetime.now()))
             heartBeatCtr = 0
 
@@ -2250,6 +2249,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 queueRestoreCtr = 0
                 restoreQueueItems(baseDir, queue)
             continue
+
         currTime = int(time.time())
 
         # recreate the session periodically
