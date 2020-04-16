@@ -807,7 +807,8 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.inboxQueue.pop(0)
         timeDiff = str(int((time.time() - cleardownStartTime) * 1000))
         print('Inbox cleardown took ' + timeDiff + ' mS. Removed ' +
-              str(removals) + ' items.')
+              str(removals) + ' items. Queue length is now ' +
+              str(len(self.server.inboxQueue)))
 
     def _updateInboxQueue(self, nickname: str, messageJson: {},
                           messageBytes: str) -> int:
@@ -4896,16 +4897,11 @@ class PubServer(BaseHTTPRequestHandler):
                 return 1
         return -1
 
-    def _receiveNewPost(self, authorized: bool, postType: str,
-                        path: str) -> int:
+    def _receiveNewPost(self, postType: str, path: str) -> int:
         """A new post has been created
         This creates a thread to send the new post
         """
         pageNumber = 1
-        if not authorized:
-            print('Not receiving new post for ' + path +
-                  ' because not authorized')
-            return None
 
         if '/users/' not in path:
             print('Not receiving new post for ' + path +
@@ -6715,13 +6711,15 @@ class PubServer(BaseHTTPRequestHandler):
                      "newdm", "newreport", "newshare", "newquestion",
                      "editblogpost")
         for currPostType in postTypes:
+            if not authorized:
+                break
+
             if currPostType != 'newshare':
                 postRedirect = self.server.defaultTimeline
             else:
                 postRedirect = 'shares'
 
-            pageNumber = self._receiveNewPost(authorized, currPostType,
-                                              self.path)
+            pageNumber = self._receiveNewPost(currPostType, self.path)
             if pageNumber:
                 nickname = self.path.split('/users/')[1]
                 if '/' in nickname:
