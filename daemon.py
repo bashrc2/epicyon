@@ -866,7 +866,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy = False
             return 0
-        return 2
+        return 1
 
     def _isAuthorized(self) -> bool:
         if self.path.startswith('/icons/') or \
