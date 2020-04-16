@@ -6935,7 +6935,7 @@ class PubServer(BaseHTTPRequestHandler):
                     queueStatus = \
                         self._updateInboxQueue(self.postToNickname,
                                                messageJson, messageBytes)
-                    if queueStatus >= 0 and queueStatus <= 2:
+                    if queueStatus >= 0 and queueStatus <= 3:
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited ' +
@@ -6952,7 +6952,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: POST to shared inbox')
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
-                if queueStatus >= 0 and queueStatus <= 2:
+                if queueStatus >= 0 and queueStatus <= 3:
                     return
         self._200()
         self.server.POSTbusy = False
