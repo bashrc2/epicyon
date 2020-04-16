@@ -2407,11 +2407,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                 if not keyId:
                     print('Queue: No keyId in signature: ' +
                           queueJson['httpHeaders']['signature'])
-                    if os.path.isfile(queueFilename):
-                        os.remove(queueFilename)
-                    if len(queue) > 0:
-                        queue.pop(0)
-                    continue
+                    pubKey = None
+                    break
 
                 pubKey = \
                     getPersonPubKey(baseDir, session, keyId,
