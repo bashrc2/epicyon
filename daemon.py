@@ -791,6 +791,11 @@ class PubServer(BaseHTTPRequestHandler):
         """
         # if the inbox queue is full then return a busy code
         if len(self.server.inboxQueue) >= self.server.maxQueueLength:
+            if messageJson.get('actor'):
+                print('Queue: Inbox queue is full. Incoming post from ' +
+                      messageJson['actor'])
+            else:
+                print('Queue: Inbox queue is full')
             self._503()
             self.server.POSTbusy = False
             return 2
