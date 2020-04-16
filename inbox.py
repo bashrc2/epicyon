@@ -2233,7 +2233,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
     queueRestoreCtr = 0
 
     while True:
-        time.sleep(5)
+        time.sleep(1)
 
         # heartbeat to monitor whether the inbox queue is running
         heartBeatCtr += 5
@@ -2423,7 +2423,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if debug:
                 print('DEBUG: Retry ' + str(tries+1) +
                       ' obtaining public key for ' + keyId)
-            time.sleep(5)
+            time.sleep(1)
 
         if not pubKey:
             print('Queue: public key could not be obtained from ' + keyId)

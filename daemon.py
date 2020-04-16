@@ -7144,7 +7144,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.inboxQueue = []
     httpd.sendThreads = sendThreads
     httpd.postLog = []
-    httpd.maxQueueLength = 256
+    httpd.maxQueueLength = 64
     httpd.ocapAlways = ocapAlways
     httpd.allowDeletion = allowDeletion
     httpd.lastLoginTime = 0
