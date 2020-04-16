@@ -86,6 +86,7 @@ from blocking import removeBlock
 from blocking import addGlobalBlock
 from blocking import removeGlobalBlock
 from blocking import isBlockedHashtag
+from blocking import isBlockedDomain
 from blocking import getDomainBlocklist
 from config import setConfigParam
 from config import getConfigParam
@@ -789,9 +790,18 @@ class PubServer(BaseHTTPRequestHandler):
                           messageBytes: str) -> int:
         """Update the inbox queue
         """
+        # check for blocked domains so that they can be rejected early
+        messageDomain = None
+        if messageJson.get('actor'):
+            messageDomain = getDomainFromActor(messageJson['actor'])
+            if isBlockedDomain(self.server.baseDir, messageDomain):
+                self._400()
+                self.server.POSTbusy = False
+                return 3
+
         # if the inbox queue is full then return a busy code
         if len(self.server.inboxQueue) >= self.server.maxQueueLength:
-            if messageJson.get('actor'):
+            if messageDomain:
                 print('Queue: Inbox queue is full. Incoming post from ' +
                       messageJson['actor'])
             else:
