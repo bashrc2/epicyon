@@ -795,6 +795,7 @@ class PubServer(BaseHTTPRequestHandler):
         if messageJson.get('actor'):
             messageDomain = getDomainFromActor(messageJson['actor'])
             if isBlockedDomain(self.server.baseDir, messageDomain):
+                print('POST from blocked domain ' + messageDomain)
                 self._400()
                 self.server.POSTbusy = False
                 return 3
