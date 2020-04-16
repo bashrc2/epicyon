@@ -4446,8 +4446,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._set_headers_head(mediaFileType, fileLength,
                                etag, callingDomain)
 
-    def _receiveNewPostProcess(self, authorized: bool,
-                               postType: str, path: str, headers: {},
+    def _receiveNewPostProcess(self, postType: str, path: str, headers: {},
                                length: int, postBytes, boundary: str) -> int:
         # Note: this needs to happen synchronously
         # 0=this is not a new post
@@ -4982,7 +4981,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # otherwise any attachments can get mangled if
                 # other events happen during their decoding
                 print('Creating new post from: ' + newPostThreadName)
-                self._receiveNewPostProcess(authorized, postType,
+                self._receiveNewPostProcess(postType,
                                             path, headers, length,
                                             postBytes, boundary)
         return pageNumber
