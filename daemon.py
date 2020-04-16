@@ -866,6 +866,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy = False
             return 0
+        self.send_response(503)
+        self.end_headers()
+        self.server.POSTbusy = False
         return 1
 
     def _isAuthorized(self) -> bool:
@@ -6967,12 +6970,7 @@ class PubServer(BaseHTTPRequestHandler):
                     queueStatus = \
                         self._updateInboxQueue(self.postToNickname,
                                                messageJson, messageBytes)
-                    if queueStatus == 0:
-                        return
-                    elif queueStatus == 1:
-                        self.send_response(503)
-                        self.end_headers()
-                        self.server.POSTbusy = False
+                    if queueStatus == 0 or queueStatus == 1:
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited ' +
@@ -6989,12 +6987,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: POST to shared inbox')
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
-                if queueStatus == 0:
-                    return
-                elif queueStatus == 1:
-                    self.send_response(503)
-                    self.end_headers()
-                    self.server.POSTbusy = False
+                if queueStatus == 0 or queueStatus == 1:
                     return
         self.send_response(200)
         self.end_headers()
