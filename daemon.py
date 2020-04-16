@@ -5154,8 +5154,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.server.POSTbusy = False
                     return
-            self.send_response(200)
-            self.end_headers()
+            self._200()
             self.server.POSTbusy = False
             return
 
@@ -6938,8 +6937,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
                 if queueStatus >= 0 and queueStatus <= 2:
                     return
-        self.send_response(200)
-        self.end_headers()
+        self._200()
         self.server.POSTbusy = False
 
 
