@@ -785,36 +785,15 @@ class PubServer(BaseHTTPRequestHandler):
         self.server.outboxThread[accountOutboxThreadName].start()
         return True
 
-    def _inboxQueueCleardown(self) -> None:
-        """ Check if the queue is full and remove oldest items if it is
-        """
-        if len(self.server.inboxQueue) < self.server.maxQueueLength:
-            return
-        print('Inbox queue is full (' + str(self.server.maxQueueLength) +
-              ' items). Removing oldest items.')
-        cleardownStartTime = time.time()
-        removals = 0
-        while len(self.server.inboxQueue) >= self.server.maxQueueLength / 2:
-            queueFilename = self.server.inboxQueue[0]
-            if os.path.isfile(queueFilename):
-                try:
-                    os.remove(queueFilename)
-                    removals += 1
-                except BaseException:
-                    print('WARN: unable to remove inbox queue file ' +
-                          queueFilename)
-                    pass
-            self.server.inboxQueue.pop(0)
-        timeDiff = str(int((time.time() - cleardownStartTime) * 1000))
-        print('Inbox cleardown took ' + timeDiff + ' mS. Removed ' +
-              str(removals) + ' items. Queue length is now ' +
-              str(len(self.server.inboxQueue)))
-
     def _updateInboxQueue(self, nickname: str, messageJson: {},
                           messageBytes: str) -> int:
         """Update the inbox queue
         """
-        self._inboxQueueCleardown()
+        # if the inbox queue is full then return a busy code
+        if len(self.server.inboxQueue) >= self.server.maxQueueLength:
+            self._503()
+            self.server.POSTbusy = False
+            return 2
 
         # Convert the headers needed for signature verification to dict
         headersDict = {}
@@ -866,8 +845,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy = False
             return 0
-        self.send_response(503)
-        self.end_headers()
+        self._503()
         self.server.POSTbusy = False
         return 1
 
@@ -1015,19 +993,6 @@ class PubServer(BaseHTTPRequestHandler):
                     print('GET domain blocked: ' + callingDomain)
                     self._400()
                     return
-
-#            if self.server.blocklistUpdateCtr<=0:
-#                self.server.blocklistUpdateCtr = \
-#                    self.server.blocklistUpdateInterval
-#                self.server.domainBlocklist = \
-#                    getDomainBlocklist(self.server.baseDir)
-
-#            self.server.blocklistUpdateCtr-=1
-
-#            if callingDomain in self.server.domainBlocklist:
-#                print('GET domain blocked: '+callingDomain)
-#                self._400()
-#                return
 
         GETstartTime = time.time()
         GETtimings = []
@@ -4350,6 +4315,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('WARN: Unauthenticated GET')
             self._404()
+            self.server.GETbusy = False
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 54)
@@ -5027,22 +4993,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self._400()
                     return
 
-#            if self.server.blocklistUpdateCtr<=0:
-#                self.server.blocklistUpdateCtr=self.server.blocklistUpdateInterval
-#                self.server.domainBlocklist=getDomainBlocklist(self.server.baseDir)
-
-#            self.server.blocklistUpdateCtr-=1
-
-#            if callingDomain in self.server.domainBlocklist:
-#                print('POST domain blocked: '+callingDomain)
-#                self._400()
-#                return
-
         self.server.POSTbusy = True
         if not self.headers.get('Content-type'):
             print('Content-type header missing')
-            self.send_response(400)
-            self.end_headers()
+            self._400()
             self.server.POSTbusy = False
             return
 
@@ -5057,6 +5011,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/inbox':
             if not self.server.enableSharedInbox:
                 self._503()
+                self.server.POSTbusy = False
                 return
 
         cookie = None
@@ -6769,8 +6724,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.path.endswith('/caps/new') or
                 self.path == '/sharedInbox'):
             print('Attempt to POST to invalid path ' + self.path)
-            self.send_response(400)
-            self.end_headers()
+            self._400()
             self.server.POSTbusy = False
             return
 
@@ -6785,15 +6739,13 @@ class PubServer(BaseHTTPRequestHandler):
            not self.headers['Content-type'].startswith('audio/'):
             if length > self.server.maxMessageLength:
                 print('Maximum message length exceeded ' + str(length))
-                self.send_response(400)
-                self.end_headers()
+                self._400()
                 self.server.POSTbusy = False
                 return
         else:
             if length > self.server.maxMediaSize:
                 print('Maximum media size exceeded ' + str(length))
-                self.send_response(400)
-                self.end_headers()
+                self._400()
                 self.server.POSTbusy = False
                 return
 
@@ -6810,8 +6762,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             pathUsersSection = self.path.split('/users/')[1]
             if '/' not in pathUsersSection:
-                self.send_response(404)
-                self.end_headers()
+                self._404()
                 self.server.POSTbusy = False
                 return
             self.postFromNickname = pathUsersSection.split('/')[0]
@@ -6819,8 +6770,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.baseDir + '/accounts/' + \
                 self.postFromNickname + '@' + self.server.domain
             if not os.path.isdir(accountsDir):
-                self.send_response(404)
-                self.end_headers()
+                self._404()
                 self.server.POSTbusy = False
                 return
             mediaBytes = self.rfile.read(length)
@@ -6851,8 +6801,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if length < self.server.maxPostLength:
                     unknownPost = self.rfile.read(length).decode('utf-8')
                     print(str(unknownPost))
-            self.send_response(400)
-            self.end_headers()
+            self._400()
             self.server.POSTbusy = False
             return
 
@@ -6970,7 +6919,7 @@ class PubServer(BaseHTTPRequestHandler):
                     queueStatus = \
                         self._updateInboxQueue(self.postToNickname,
                                                messageJson, messageBytes)
-                    if queueStatus == 0 or queueStatus == 1:
+                    if queueStatus >= 0 and queueStatus <= 2:
                         return
                     if self.server.debug:
                         print('_updateInboxQueue exited ' +
@@ -6987,7 +6936,7 @@ class PubServer(BaseHTTPRequestHandler):
                 print('DEBUG: POST to shared inbox')
                 queueStatus = \
                     self._updateInboxQueue('inbox', messageJson, messageBytes)
-                if queueStatus == 0 or queueStatus == 1:
+                if queueStatus >= 0 and queueStatus <= 2:
                     return
         self.send_response(200)
         self.end_headers()
