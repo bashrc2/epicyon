@@ -793,7 +793,8 @@ class PubServer(BaseHTTPRequestHandler):
         # check for blocked domains so that they can be rejected early
         messageDomain = None
         if messageJson.get('actor'):
-            messageDomain,messagePort = getDomainFromActor(messageJson['actor'])
+            messageDomain, messagePort = \
+                getDomainFromActor(messageJson['actor'])
             if isBlockedDomain(self.server.baseDir, messageDomain):
                 print('POST from blocked domain ' + messageDomain)
                 self._400()
