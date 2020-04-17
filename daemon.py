@@ -1344,11 +1344,13 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlAbout(self.server.baseDir,
                               self.server.httpPrefix,
-                              self.server.domainFull).encode()
+                              self.server.domainFull,
+                              self.server.onionDomain).encode()
             else:
                 msg = \
                     htmlAbout(self.server.baseDir, 'http',
-                              self.server.onionDomain).encode()
+                              self.server.onionDomain,
+                              None).encode()
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             return

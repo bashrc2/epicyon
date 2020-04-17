@@ -1437,7 +1437,8 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
     return TOSForm
 
 
-def htmlAbout(baseDir: str, httpPrefix: str, domainFull: str) -> str:
+def htmlAbout(baseDir: str, httpPrefix: str,
+              domainFull: str, onionDomain: str) -> str:
     """Show the about screen
     """
     adminNickname = getConfigParam(baseDir, 'admin')
@@ -1466,6 +1467,9 @@ def htmlAbout(baseDir: str, httpPrefix: str, domainFull: str) -> str:
 
         aboutForm = htmlHeader(cssFilename, termsCSS)
         aboutForm += '<div class="container">' + aboutText + '</div>'
+        if onionDomain:
+            aboutForm += \
+                '<div class="container">http://' + onionDomain + '</div>'
         if adminNickname:
             adminActor = \
                 httpPrefix + '://' + domainFull + '/users/' + adminNickname
