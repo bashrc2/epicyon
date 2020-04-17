@@ -1469,7 +1469,8 @@ def htmlAbout(baseDir: str, httpPrefix: str,
         aboutForm += '<div class="container">' + aboutText + '</div>'
         if onionDomain:
             aboutForm += \
-                '<div class="container">http://' + onionDomain + '</div>'
+                '<div class="container"><center>http://' + \
+                onionDomain + '</center></div>'
         if adminNickname:
             adminActor = \
                 httpPrefix + '://' + domainFull + '/users/' + adminNickname
