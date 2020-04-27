@@ -790,6 +790,12 @@ class PubServer(BaseHTTPRequestHandler):
                           messageBytes: str) -> int:
         """Update the inbox queue
         """
+        if self.server.restartInboxQueueInProgress:
+            self._503()
+            print('Message arrrived but currently restarting inbox queue')
+            self.server.POSTbusy = False
+            return 2
+
         # check for blocked domains so that they can be rejected early
         messageDomain = None
         if messageJson.get('actor'):
@@ -810,6 +816,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Queue: Inbox queue is full')
             self._503()
             self.server.POSTbusy = False
+            if not restartInboxQueueInProgress:
+                self.server.restartInboxQueue=True
             return 2
 
         # Convert the headers needed for signature verification to dict
@@ -7258,6 +7266,11 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.thrPostSchedule = \
         threadWithTrace(target=runPostSchedule,
                         args=(baseDir, httpd, 20), daemon=True)
+
+    # flags used when restarting the inbox queue
+    httpd.restartInboxQueueInProgress=False
+    httpd.restartInboxQueue=False
+
     if not unitTest:
         print('Creating inbox queue watchdog')
         httpd.thrWatchdog = \
