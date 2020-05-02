@@ -271,6 +271,7 @@ a:link {
 }
 
 .gitpatch {
+    float: none;
     width: 90%;
     font-family: monospace;
 }
