@@ -5695,7 +5695,7 @@ class PubServer(BaseHTTPRequestHandler):
                             '/gitprojects.txt'
                         if fields.get('gitProjects'):
                             with open(gitProjectsFilename, "w") as aFile:
-                                aFile.write(fields['gitProjects'])
+                                aFile.write(fields['gitProjects'].lower())
                         else:
                             if os.path.isfile(gitProjectsFilename):
                                 os.remove(gitProjectsFilename)
