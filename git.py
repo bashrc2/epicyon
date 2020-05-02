@@ -15,7 +15,7 @@ def gitFormatContent(content: str) -> str:
     """
     contentStr = content.replace('<br>', '\n').replace('<br \\>', '\n')
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
-    contentSTr = contentStr.replace('&lt;', '<').replace('&gt;', '>')
+    contentStr = contentStr.replace('&lt;', '<').replace('&gt;', '>')
     if 'From ' in contentStr:
         contentStr = 'From ' + contentStr.split('From ', 1)[1]
     return contentStr
