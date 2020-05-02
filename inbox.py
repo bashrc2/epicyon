@@ -2052,7 +2052,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                            messageJson['object']['content']):
             gitPatchNotify(baseDir, handle,
                            messageJson['object']['summary'],
-                           messageJson['object']['content']):
+                           messageJson['object']['content'])
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject)
