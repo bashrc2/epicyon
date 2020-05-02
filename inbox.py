@@ -2047,26 +2047,20 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                         postJsonObject, maxMentions, maxEmoji):
 
         # check for incoming git patches
-        print('Debug git 1')
         if isinstance(postJsonObject['object'], dict):
-            print('Debug git 2')
             pprint(postJsonObject)
             if postJsonObject['object'].get('content') and \
                postJsonObject['object'].get('summary'):
-                print('Debug git 3')
                 if receiveGitPatch(baseDir, nickname, domain,
                                    postJsonObject['object']['summary'],
                                    postJsonObject['object']['content']):
-                    print('Debug git 4')
                     gitPatchNotify(baseDir, handle,
                                    postJsonObject['object']['summary'],
                                    postJsonObject['object']['content'])
                 elif '[PATCH]' in postJsonObject['object']['content']:
-                    print('Debug git 5')
                     print('WARN: git patch not accepted - ' +
                           postJsonObject['object']['summary'])
                     return False
-                print('Debug git 6')
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject)
