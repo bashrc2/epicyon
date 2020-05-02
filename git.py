@@ -83,7 +83,10 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
 
     patchLines = contentStr.split('\n')
     patchFilename = None
-    patchDir = None
+    projectDir = None
+    patchesDir = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/patches'
     # get the subject line and turn it into a filename
     for line in patchLines:
         if line.startswith('Subject:'):
@@ -93,11 +96,13 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             patchSubject = patchSubject.replace(' ', '_')
             projectName = \
                 getGitProjectName(baseDir, nickname, domain, subject)
-            patchDir = \
-                baseDir + '/accounts/' + nickname + '@' + domain + \
-                '/patches/' + projectName
+            if not os.path.isdir(patchesDir):
+                os.mkdir(patchesDir)
+            projectDir = patchesDir + '/' + projectName
+            if not os.path.isdir(projectDir):
+                os.mkdir(projectDir)
             patchFilename = \
-                patchDir + '/' + patchSubject + '.patch'
+                projectDir + '/' + patchSubject + '.patch'
             break
     if not patchFilename:
         return False
