@@ -219,5 +219,7 @@
     "About the author": "عن المؤلف",
     "Edit blog post": "تحرير بلوق وظيفة",
     "Publicly visible post": "مشاركة مرئية بشكل عام",
-    "Your Posts": "منشوراتك"
+    "Your Posts": "منشوراتك",
+    "Git Projects": "مشاريع Git",
+    "List of project names that you wish to receive git patches for": "قائمة بأسماء المشاريع التي ترغب في تلقي تصحيحات git لها"
 }

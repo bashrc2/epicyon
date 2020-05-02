@@ -951,6 +951,14 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         with open(allowedInstancesFilename, 'r') as allowedInstancesFile:
             allowedInstancesStr = allowedInstancesFile.read()
 
+    gitProjectsStr = ''
+    gitProjectsFilename = \
+        baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/gitprojects.txt'
+    if os.path.isfile(gitProjectsFilename):
+        with open(gitProjectsFilename, 'r') as gitProjectsFile:
+            gitProjectsStr = gitProjectsFile.read()
+
     skills = getSkills(baseDir, nickname, domain)
     skillsStr = ''
     skillCtr = 1
@@ -1215,6 +1223,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="blocked" style="height:200px">' + \
         blockedStr + '</textarea>'
+
     editProfileForm += \
         '      <br><b><label class="labels">' + \
         translate['Federation list'] + '</label></b>'
@@ -1226,6 +1235,18 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="allowedInstances" ' + \
         'style="height:200px">' + allowedInstancesStr + '</textarea>'
+
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['Git Projects'] + '</label></b>'
+    idx = 'List of project names that you wish to receive git patches for'
+    editProfileForm += \
+        '      <br><label class="labels">' + \
+        translate[idx] + '</label>'
+    editProfileForm += \
+        '      <textarea id="message" name="gitProjects" ' + \
+        'style="height:100px">' + gitProjectsStr + '</textarea>'
+
     editProfileForm += '    </div>'
     editProfileForm += '    <div class="container">'
     editProfileForm += \

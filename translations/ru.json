@@ -219,5 +219,7 @@
     "About the author": "Об авторе",
     "Edit blog post": "Редактировать сообщение в блоге",
     "Publicly visible post": "Публично видимый пост",
-    "Your Posts": "Ваши сообщения"
+    "Your Posts": "Ваши сообщения",
+    "Git Projects": "Git Projects",
+    "List of project names that you wish to receive git patches for": "Список имен проектов, для которых вы хотите получать git-патчи"
 }

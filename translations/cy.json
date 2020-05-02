@@ -219,5 +219,7 @@
     "About the author": "Am yr awdur",
     "Edit blog post": "Golygu post blog",
     "Publicly visible post": "Post sy'n weladwy i'r cyhoedd",
-    "Your Posts": "Eich Swyddi"
+    "Your Posts": "Eich Swyddi",
+    "Git Projects": "Prosiectau Git",
+    "List of project names that you wish to receive git patches for": "Rhestr o enwau prosiectau yr ydych yn dymuno derbyn darnau git ar eu cyfer"
 }

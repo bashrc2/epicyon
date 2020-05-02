@@ -218,5 +218,7 @@
     "About the author": "关于作者",
     "Edit blog post": "编辑博客文章",
     "Publicly visible post": "公开可见的帖子",
-    "Your Posts": "您的帖子"
+    "Your Posts": "您的帖子",
+    "Git Projects": "Git项目",
+    "List of project names that you wish to receive git patches for": "您希望收到git补丁的项目名称列表"
 }

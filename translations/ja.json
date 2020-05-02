@@ -219,5 +219,7 @@
     "About the author": "著者について",
     "Edit blog post": "ブログ投稿を編集",
     "Publicly visible post": "一般公開の投稿",
-    "Your Posts": "あなたの投稿"
+    "Your Posts": "あなたの投稿",
+    "Git Projects": "Gitプロジェクト",
+    "List of project names that you wish to receive git patches for": "gitパッチを受け取りたいプロジェクト名のリスト"
 }

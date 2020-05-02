@@ -219,5 +219,7 @@
     "About the author": "Über den Autor",
     "Edit blog post": "Blog-Beitrag bearbeiten",
     "Publicly visible post": "Öffentlich sichtbarer Beitrag",
-    "Your Posts": "Deine Posts"
+    "Your Posts": "Deine Posts",
+    "Git Projects": "Git-Projekte",
+    "List of project names that you wish to receive git patches for": "Liste der Projektnamen, für die Sie Git-Patches erhalten möchten"
 }

@@ -5688,6 +5688,17 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if os.path.isfile(allowedInstancesFilename):
                                 os.remove(allowedInstancesFilename)
+                        # save git project names list
+                        gitProjectsFilename = \
+                            self.server.baseDir + '/accounts/' + \
+                            nickname + '@' + self.server.domain + \
+                            '/gitprojects.txt'
+                        if fields.get('gitProjects'):
+                            with open(gitProjectsFilename, "w") as aFile:
+                                aFile.write(fields['gitProjects'])
+                        else:
+                            if os.path.isfile(gitProjectsFilename):
+                                os.remove(gitProjectsFilename)
                         # save actor json file within accounts
                         if actorChanged:
                             randomizeActorImages(actorJson)
