@@ -21,7 +21,8 @@ def getGitProjectName(baseDir: str, nickname: str, domain: str,
     if not os.path.isfile(gitProjectsFilename):
         return None
     projectName = None
-    for word in subject.lower().split(' '):
+    subjectLineWords = subject.lower().split(' ')
+    for word in subjectLineWords:
         if word + '\n' in open(gitProjectsFilename).read():
             return word
     return projectName
@@ -64,9 +65,12 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     if not isGitPatch(baseDir, nickname, domain,
                       subject, content):
         return False
+
+    # replace html formatting, so that it's more
+    # like the original patch file
     contentStr = content.replace('<br>','\n').replace('<br />','\n')
     contentStr = contentStr.replace('<p>','').replace('</p>','\n')
-    
+
     patchLines = contentStr.split('\n')
     patchFilename = None
     patchDir = None
@@ -76,8 +80,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             patchSubject = \
                 line.replace('Subject:', '').replace('/', '|').strip()
             projectName = \
-                getGitProjectName(baseDir, nickname, domain,
-                                  subject)
+                getGitProjectName(baseDir, nickname, domain, subject)
             patchDir = \
                 baseDir + '/accounts/' + nickname + '@' + domain + \
                 '/patches/' + projectName
