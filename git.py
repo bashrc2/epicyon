@@ -16,16 +16,16 @@ def getGitProjectName(baseDir: str, nickname: str, domain: str,
     and should match against a list of projects which the account
     holder wants to receive
     """
+    print('Debug git subject ' + subject)
     gitProjectsFilename = \
         baseDir + '/accounts/' + nickname + '@' + domain + '/gitprojects.txt'
     if not os.path.isfile(gitProjectsFilename):
         return None
-    projectName = None
     subjectLineWords = subject.lower().split(' ')
     for word in subjectLineWords:
         if word + '\n' in open(gitProjectsFilename).read():
             return word
-    return projectName
+    return None
 
 
 def isGitPatch(baseDir: str, nickname: str, domain: str,
@@ -33,28 +33,38 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     """Is the given post content a git patch?
     """
     # must have a subject line
+    print('Debug git 11: ' + content)
     if not subject:
         return False
+    print('Debug git 12')
     if '[PATCH]' not in content:
         return False
+    print('Debug git 13')
     if '---' not in content:
         return False
+    print('Debug git 14')
     if 'diff ' not in content:
         return False
+    print('Debug git 15')
     if 'From:' not in content:
         return False
+    print('Debug git 16')
     if 'Date:' not in content:
         return False
+    print('Debug git 17')
     if 'Subject:' not in content:
         return False
+    print('Debug git 18')
     if '<br>' not in content:
         if '<br />' not in content:
             return False
+    print('Debug git 19')
     projectName = \
         getGitProjectName(baseDir, nickname, domain,
                           subject)
     if not projectName:
         return False
+    print('Debug git 20')
     return True
 
 
