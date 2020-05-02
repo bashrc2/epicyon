@@ -69,7 +69,6 @@ from happening import thisWeeksEventsCheck
 from happening import getCalendarEvents
 from happening import getTodaysEvents
 from git import isGitPatch
-from git import gitFormatContent
 
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
@@ -3935,10 +3934,15 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     if not postJsonObject['object'].get('content'):
         return ''
-    objectContent = \
-        removeLongWords(postJsonObject['object']['content'], 40, [])
-    objectContent = \
-        switchWords(baseDir, nickname, domain, objectContent)
+    isPatch = isGitPatch(baseDir, nickname, domain,
+                         postJsonObject['object']['summary'],
+                         postJsonObject['object']['content'])
+
+    if not isPatch:
+        objectContent = \
+            removeLongWords(postJsonObject['object']['content'], 40, [])
+        objectContent = \
+            switchWords(baseDir, nickname, domain, objectContent)
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
         contentStr = addEmbeddedElements(translate, contentStr)
@@ -3959,12 +3963,14 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             "'" + postID + "'" + ')">' + translate['SHOW MORE'] + '</button>'
         contentStr += '<div class="cwText" id="' + postID + '">'
         contentStr += objectContent + attachmentStr
-        contentStr = addEmbeddedElements(translate, contentStr)
-        contentStr = insertQuestion(baseDir, translate, nickname, domain, port,
-                                    contentStr, postJsonObject, pageNumber)
+        if not isPatch:
+            contentStr = addEmbeddedElements(translate, contentStr)
+            contentStr = \
+                insertQuestion(baseDir, translate, nickname, domain, port,
+                               contentStr, postJsonObject, pageNumber)
         contentStr += '</div>'
 
-    if postJsonObject['object'].get('tag'):
+    if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
             replaceEmojiFromTags(contentStr,
                                  postJsonObject['object']['tag'],
@@ -3973,9 +3979,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if isMuted:
         contentStr = ''
     else:
-        if not isGitPatch(baseDir, nickname, domain,
-                          postJsonObject['object']['summary'],
-                          postJsonObject['object']['content']):
+        if not isPatch:
             contentStr = '<div class="message">' + contentStr + '</div>'
         else:
             contentStr = \
