@@ -10,7 +10,7 @@ import os
 
 
 def getGitProjectName(baseDir: str, nickname: str, domain: str,
-                      subject: str, content: str) -> str:
+                      subject: str) -> str:
     """Returns the project name for a git patch
     The project name should be contained within the subject line
     and should match against a list of projects which the account
@@ -46,11 +46,12 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
         return False
     if 'Subject:' not in content:
         return False
-    if '\n' not in content:
-        return False
+    if '<br>' not in content:
+        if '<br />' not in content:
+            return False
     projectName = \
         getGitProjectName(baseDir, nickname, domain,
-                          subject, content)
+                          subject)
     if not projectName:
         return False
     return True
@@ -63,7 +64,10 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     if not isGitPatch(baseDir, nickname, domain,
                       subject, content):
         return False
-    patchLines = content.split('\n')
+    contentStr = content.replace('<br>','\n').replace('<br />','\n')
+    contentStr = contentStr.replace('<p>','').replace('</p>','\n')
+    
+    patchLines = contentStr.split('\n')
     patchFilename = None
     patchDir = None
     # get the subject line and turn it into a filename
@@ -73,7 +77,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
                 line.replace('Subject:', '').replace('/', '|').strip()
             projectName = \
                 getGitProjectName(baseDir, nickname, domain,
-                                  subject, content)
+                                  subject)
             patchDir = \
                 baseDir + '/accounts/' + nickname + '@' + domain + \
                 '/patches/' + projectName
@@ -85,6 +89,6 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     patchFile = open(patchFilename, "w")
     if not patchFile:
         return False
-    patchFile.write(content)
+    patchFile.write(contentStr)
     patchFile.close()
     return True
