@@ -60,7 +60,7 @@ from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
-
+from git import gitFormatContent
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
@@ -1708,12 +1708,9 @@ def gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     with open(patchFile, 'w') as fp:
         fp.write(subject)
-    contentStr = content.replace('<br>', '\n').replace('<br \>', '\n')
-    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
-    if 'From ' in contentStr:
-        contentStr = contentStr.split('From ', 1)[1]
+    
     with open(patchFile + 'Content', 'w') as fp:
-        fp.write(contentStr)
+        fp.write(gitFormatContent(content))
 
 
 def groupHandle(baseDir: str, handle: str) -> bool:

@@ -9,6 +9,17 @@ __status__ = "Production"
 import os
 
 
+def gitFormatContent(content) -> str:
+    """ replace html formatting, so that it's more
+    like the original patch file
+    """
+    contentStr = content.replace('<br>', '\n').replace('<br \>', '\n')
+    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
+    if 'From ' in contentStr:
+        contentStr = contentStr.split('From ', 1)[1]
+    return contentStr
+
+
 def getGitProjectName(baseDir: str, nickname: str, domain: str,
                       subject: str) -> str:
     """Returns the project name for a git patch
@@ -76,10 +87,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
                       subject, content):
         return False
 
-    # replace html formatting, so that it's more
-    # like the original patch file
-    contentStr = content.replace('<br>', '\n').replace('<br />', '\n')
-    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
+    contentStr = gitFormatContent(content)
 
     patchLines = contentStr.split('\n')
     patchFilename = None
