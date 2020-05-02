@@ -68,6 +68,7 @@ from happening import todaysEventsCheck
 from happening import thisWeeksEventsCheck
 from happening import getCalendarEvents
 from happening import getTodaysEvents
+from git import isGitPatch
 
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
@@ -3971,7 +3972,12 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if isMuted:
         contentStr = ''
     else:
-        contentStr = '<div class="message">' + contentStr + '</div>'
+        if not isGitPatch(baseDir, nickname, domain,
+                          postJsonObject['object']['summary'],
+                          postJsonObject['object']['content']):
+            contentStr = '<div class="message">' + contentStr + '</div>'
+        else:
+            contentStr = '<div class="gitpatch">' + contentStr + '</div>'
 
     postHtml = ''
     if boxName != 'tlmedia':
