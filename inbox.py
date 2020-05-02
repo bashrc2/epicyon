@@ -1708,8 +1708,12 @@ def gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     with open(patchFile, 'w') as fp:
         fp.write(subject)
+    contentStr = content.replace('<br>', '\n').replace('<br \>', '\n')
+    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
+    if 'From ' in contentStr:
+        contentStr = contentStr.split('From ', 1)[1]
     with open(patchFile + 'Content', 'w') as fp:
-        fp.write(content)
+        fp.write(contentStr)
 
 
 def groupHandle(baseDir: str, handle: str) -> bool:
