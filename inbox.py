@@ -62,6 +62,7 @@ from git import isGitPatch
 from git import receiveGitPatch
 from git import gitFormatContent
 
+
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
     """Extracts hashtags from an incoming post and updates the
     relevant tags files.
@@ -1708,7 +1709,7 @@ def gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     with open(patchFile, 'w') as fp:
         fp.write(subject)
-    
+
     with open(patchFile + 'Content', 'w') as fp:
         fp.write(gitFormatContent(content))
 

@@ -9,14 +9,14 @@ __status__ = "Production"
 import os
 
 
-def gitFormatContent(content) -> str:
+def gitFormatContent(content: str) -> str:
     """ replace html formatting, so that it's more
     like the original patch file
     """
-    contentStr = content.replace('<br>', '\n').replace('<br \>', '\n')
+    contentStr = content.replace('<br>', '\n').replace('<br \\>', '\n')
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
     if 'From ' in contentStr:
-        contentStr = contentStr.split('From ', 1)[1]
+        contentStr = 'From ' + contentStr.split('From ', 1)[1]
     return contentStr
 
 
