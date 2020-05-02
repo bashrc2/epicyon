@@ -60,7 +60,6 @@ from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
-from git import gitFormatContent
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1709,9 +1708,6 @@ def gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     with open(patchFile, 'w') as fp:
         fp.write(subject)
-
-    with open(patchFile + 'Content', 'w') as fp:
-        fp.write(gitFormatContent(content))
 
 
 def groupHandle(baseDir: str, handle: str) -> bool:

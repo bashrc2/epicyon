@@ -117,5 +117,10 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
         return False
     with open(patchFilename, "w") as patchFile:
         patchFile.write(contentStr)
+        patchNotifyFilename = \
+            baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.newPatchContent'
+        with open(patchNotifyFilename, "w") as patchFile:
+            patchFile.write(contentStr)
         return True
     return False
