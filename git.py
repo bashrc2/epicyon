@@ -68,8 +68,8 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
 
     # replace html formatting, so that it's more
     # like the original patch file
-    contentStr = content.replace('<br>','\n').replace('<br />','\n')
-    contentStr = contentStr.replace('<p>','').replace('</p>','\n')
+    contentStr = content.replace('<br>', '\n').replace('<br />', '\n')
+    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
 
     patchLines = contentStr.split('\n')
     patchFilename = None
