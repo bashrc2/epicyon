@@ -88,7 +88,9 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
     for line in patchLines:
         if line.startswith('Subject:'):
             patchSubject = \
-                line.replace('Subject:', '').replace('/', '|').strip()
+                line.replace('Subject:', '').replace('/', '|')
+            patchSubject = patchSubject.replace('[PATCH]', '').strip()
+            patchSubject = patchSubject.replace(' ', '_')
             projectName = \
                 getGitProjectName(baseDir, nickname, domain, subject)
             patchDir = \
@@ -99,9 +101,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             break
     if not patchFilename:
         return False
-    patchFile = open(patchFilename, "w")
-    if not patchFile:
-        return False
-    patchFile.write(contentStr)
-    patchFile.close()
-    return True
+    with open(patchFilename, "w") as patchFile:
+        patchFile.write(contentStr)
+        return True
+    return False
