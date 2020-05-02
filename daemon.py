@@ -816,8 +816,8 @@ class PubServer(BaseHTTPRequestHandler):
                 print('Queue: Inbox queue is full')
             self._503()
             self.server.POSTbusy = False
-            if not restartInboxQueueInProgress:
-                self.server.restartInboxQueue=True
+            if not self.server.restartInboxQueueInProgress:
+                self.server.restartInboxQueue = True
             return 2
 
         # Convert the headers needed for signature verification to dict
@@ -7268,8 +7268,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                         args=(baseDir, httpd, 20), daemon=True)
 
     # flags used when restarting the inbox queue
-    httpd.restartInboxQueueInProgress=False
-    httpd.restartInboxQueue=False
+    httpd.restartInboxQueueInProgress = False
+    httpd.restartInboxQueue = False
 
     if not unitTest:
         print('Creating inbox queue watchdog')

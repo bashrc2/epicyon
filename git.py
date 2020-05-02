@@ -14,7 +14,7 @@ def extractPatch(baseDir: str, nickname: str, domain: str,
     """Is the given post content a git patch?
     """
     # must have a subject line
-    if not subject:        
+    if not subject:
         return False
     if '[PATCH]' not in content:
         return False
@@ -48,7 +48,7 @@ def extractPatch(baseDir: str, nickname: str, domain: str,
     for line in patchLines:
         if line.startswith('Subject:'):
             patchSubject = \
-                line.replace('Subject:','').replace('/','|').strip()
+                line.replace('Subject:', '').replace('/', '|').strip()
             patchDir = \
                 baseDir + '/accounts/' + nickname + '@' + domain + \
                 '/patches/' + projectName

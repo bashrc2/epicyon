@@ -2186,14 +2186,14 @@ def runInboxQueueWatchdog(projectVersion: str, httpd) -> None:
     while True:
         time.sleep(20)
         if not httpd.thrInboxQueue.isAlive() or httpd.restartInboxQueue:
-            httpd.restartInboxQueueInProgress=True
+            httpd.restartInboxQueueInProgress = True
             httpd.thrInboxQueue.kill()
             httpd.thrInboxQueue = inboxQueueOriginal.clone(runInboxQueue)
             httpd.inboxQueue.clear()
             httpd.thrInboxQueue.start()
             print('Restarting inbox queue...')
-            httpd.restartInboxQueueInProgress=False
-            httpd.restartInboxQueue=False
+            httpd.restartInboxQueueInProgress = False
+            httpd.restartInboxQueue = False
 
 
 def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
