@@ -3979,6 +3979,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             contentStr = '<div class="message">' + contentStr + '</div>'
         else:
             patchStr = gitFormatContent(postJsonObject['object']['content'])
+            patchStr = patchStr.replace('\n','<br>').replace('\t','    ')
             contentStr = \
                 '<div class="gitpatch">' + \
                 patchStr.replace('\n','<br>') + \
