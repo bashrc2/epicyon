@@ -13,7 +13,7 @@ def gitFormatContent(content: str) -> str:
     """ replace html formatting, so that it's more
     like the original patch file
     """
-    contentStr = content.replace('<br>', '\n').replace('<br \\>', '\n')
+    contentStr = content.replace('<br>', '\n').replace('<br />', '\n')
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
     contentStr = contentStr.replace('&lt;', '<').replace('&gt;', '>')
     if 'From ' in contentStr:
