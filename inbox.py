@@ -2047,12 +2047,19 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     nickname = handle.split('@')[0]
     if validPostContent(baseDir, nickname, domain,
                         postJsonObject, maxMentions, maxEmoji):
-        if receiveGitPatch(baseDir, nickname, domain,
-                           messageJson['object']['summary'],
-                           messageJson['object']['content']):
-            gitPatchNotify(baseDir, handle,
-                           messageJson['object']['summary'],
-                           messageJson['object']['content'])
+        if isinstance(messageJson['object'], dict):
+            if messageJson['object'].get('content') and \
+               messageJson['object'].get('summary'):
+                if receiveGitPatch(baseDir, nickname, domain,
+                                   messageJson['object']['summary'],
+                                   messageJson['object']['content']):
+                    gitPatchNotify(baseDir, handle,
+                                   messageJson['object']['summary'],
+                                   messageJson['object']['content'])
+                elif '[PATCH]' in messageJson['object']['content']:
+                    print('WARN: git patch not accepted - ' +
+                          messageJson['object']['summary'])
+                    return False
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject)
