@@ -2052,6 +2052,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
         print('Debug git 1')
         if isinstance(postJsonObject['object'], dict):
             print('Debug git 2')
+            pprint(postJsonObject)            
             if postJsonObject['object'].get('content') and \
                postJsonObject['object'].get('summary'):
                 print('Debug git 3')
