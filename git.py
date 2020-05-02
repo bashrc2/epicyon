@@ -9,8 +9,26 @@ __status__ = "Production"
 import os
 
 
-def extractPatch(baseDir: str, nickname: str, domain: str,
-                 subject: str, content: str) -> bool:
+def getGitProjectName(baseDir: str, nickname: str, domain: str,
+                      subject: str, content: str) -> str:
+    """Returns the project name for a git patch
+    The project name should be contained within the subject line
+    and should match against a list of projects which the account
+    holder wants to receive
+    """
+    gitProjectsFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/gitprojects.txt'
+    if not os.path.isfile(gitProjectsFilename):
+        return None
+    projectName = None
+    for word in subject.lower().split(' '):
+        if word + '\n' in open(gitProjectsFilename).read():
+            return word
+    return projectName
+
+
+def isGitPatch(baseDir: str, nickname: str, domain: str,
+               subject: str, content: str) -> bool:
     """Is the given post content a git patch?
     """
     # must have a subject line
@@ -30,16 +48,20 @@ def extractPatch(baseDir: str, nickname: str, domain: str,
         return False
     if '\n' not in content:
         return False
-    gitProjectsFilename = \
-        baseDir + '/accounts/' + nickname + '@' + domain + '/gitprojects.txt'
-    if not os.path.isfile(gitProjectsFilename):
-        return False
-    projectName = None
-    for word in subject.lower().split(' '):
-        if word + '\n' in open(gitProjectsFilename).read():
-            projectName = word
-            break
+    projectName = \
+        getGitProjectName(baseDir, nickname, domain,
+                          subject, content)
     if not projectName:
+        return False
+    return True
+
+
+def receiveGitPatch(baseDir: str, nickname: str, domain: str,
+                    subject: str, content: str) -> bool:
+    """Receive a git patch
+    """
+    if not isGitPatch(baseDir, nickname, domain,
+                      subject, content):
         return False
     patchLines = content.split('\n')
     patchFilename = None
@@ -49,6 +71,9 @@ def extractPatch(baseDir: str, nickname: str, domain: str,
         if line.startswith('Subject:'):
             patchSubject = \
                 line.replace('Subject:', '').replace('/', '|').strip()
+            projectName = \
+                getGitProjectName(baseDir, nickname, domain,
+                                  subject, content)
             patchDir = \
                 baseDir + '/accounts/' + nickname + '@' + domain + \
                 '/patches/' + projectName

@@ -58,6 +58,8 @@ from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
 from question import questionUpdateVotes
 from media import replaceYouTube
+from git import isGitPatch
+from git import receiveGitPatch
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1578,6 +1580,10 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
+    if isGitPatch(baseDir, nickname, domain,
+                  messageJson['object']['summary'],
+                  messageJson['object']['content']):
+        return True
     # check for bad html
     invalidStrings = ('<script>', '<canvas>', '<style>',
                       '</html>', '</body>', '<br>', '<hr>')
@@ -2027,6 +2033,10 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     nickname = handle.split('@')[0]
     if validPostContent(baseDir, nickname, domain,
                         postJsonObject, maxMentions, maxEmoji):
+        receiveGitPatch(baseDir, nickname, domain,
+                        messageJson['object']['summary'],
+                        messageJson['object']['content'])
+
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject)
 
