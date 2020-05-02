@@ -2047,6 +2047,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     nickname = handle.split('@')[0]
     if validPostContent(baseDir, nickname, domain,
                         postJsonObject, maxMentions, maxEmoji):
+
+        # check for incoming git patches
         if isinstance(messageJson['object'], dict):
             if messageJson['object'].get('content') and \
                messageJson['object'].get('summary'):
