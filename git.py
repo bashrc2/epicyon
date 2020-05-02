@@ -84,12 +84,15 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
                     subject: str, content: str) -> bool:
     """Receive a git patch
     """
+    print('Debug git 21')
     if not isGitPatch(baseDir, nickname, domain,
                       subject, content):
         return False
 
+    print('Debug git 22')
     contentStr = gitFormatContent(content)
 
+    print('Debug git 23: ' + contentStr)
     patchLines = contentStr.split('\n')
     patchFilename = None
     projectDir = None
@@ -97,6 +100,7 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
         baseDir + '/accounts/' + nickname + '@' + domain + \
         '/patches'
     # get the subject line and turn it into a filename
+    print('Debug git 24: ' + str(patchLines))
     for line in patchLines:
         if line.startswith('Subject:'):
             patchSubject = \
@@ -114,7 +118,9 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
                 projectDir + '/' + patchSubject + '.patch'
             break
     if not patchFilename:
+        print('Debug git 25')
         return False
+    print('Debug git 26')
     with open(patchFilename, "w") as patchFile:
         patchFile.write(contentStr)
         patchNotifyFilename = \
@@ -122,5 +128,6 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             nickname + '@' + domain + '/.newPatchContent'
         with open(patchNotifyFilename, "w") as patchFile:
             patchFile.write(contentStr)
-        return True
+            return True
+    print('Debug git 27')
     return False
