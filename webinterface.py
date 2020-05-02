@@ -3986,7 +3986,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             contentStr = '<div class="message">' + contentStr + '</div>'
         else:
             contentStr = \
-                '<div class="gitpatch">' + contentStr + '</div>'
+                '<div class="gitpatch"><pre><code>' + contentStr + '</code></pre></div>'
 
     postHtml = ''
     if boxName != 'tlmedia':
