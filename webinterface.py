@@ -3978,10 +3978,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                           postJsonObject['object']['content']):
             contentStr = '<div class="message">' + contentStr + '</div>'
         else:
-            patchStr = gitFormatContent(postJsonObject['object']['content'])
-            patchStr = patchStr.replace('\n','<br>').replace('\t','    ')
             contentStr = \
-                '<div class="gitpatch">' + patchStr + '</div>'
+                '<div class="gitpatch">' + contentStr + '</div>'
 
     postHtml = ''
     if boxName != 'tlmedia':
