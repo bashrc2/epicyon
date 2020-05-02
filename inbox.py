@@ -1698,6 +1698,18 @@ def replyNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
+def gitPatchNotify(baseDir: str, handle: str) -> None:
+    """Creates a notification that a new git patch has arrived
+    """
+    accountDir = baseDir + '/accounts/' + handle
+    if not os.path.isdir(accountDir):
+        return
+    patchFile = accountDir + '/.newPatch'
+    if not os.path.isfile(patchFile):
+        with open(patchFile, 'w') as fp:
+            fp.write('\n')
+
+
 def groupHandle(baseDir: str, handle: str) -> bool:
     """Is the given account handle a group?
     """
@@ -2033,9 +2045,10 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     nickname = handle.split('@')[0]
     if validPostContent(baseDir, nickname, domain,
                         postJsonObject, maxMentions, maxEmoji):
-        receiveGitPatch(baseDir, nickname, domain,
-                        messageJson['object']['summary'],
-                        messageJson['object']['content'])
+        if receiveGitPatch(baseDir, nickname, domain,
+                           messageJson['object']['summary'],
+                           messageJson['object']['content']):
+            gitPatchNotify(baseDir, handle)
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject)
