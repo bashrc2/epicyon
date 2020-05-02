@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+import urllib.parse
 
 
 def gitFormatContent(content: str) -> str:
@@ -15,7 +16,7 @@ def gitFormatContent(content: str) -> str:
     """
     contentStr = content.replace('<br>', '\n').replace('<br />', '\n')
     contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
-    contentStr = contentStr.replace('&lt;', '<').replace('&gt;', '>')
+    contentStr = urllib.parse.unquote(contentStr)
     if 'From ' in contentStr:
         contentStr = 'From ' + contentStr.split('From ', 1)[1]
     return contentStr
