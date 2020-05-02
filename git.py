@@ -23,7 +23,7 @@ def getGitProjectName(baseDir: str, nickname: str, domain: str,
         return None
     subjectLineWords = subject.lower().split(' ')
     for word in subjectLineWords:
-        if word + '\n' in open(gitProjectsFilename).read():
+        if word in open(gitProjectsFilename).read():
             return word
     return None
 
