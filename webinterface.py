@@ -3943,6 +3943,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             removeLongWords(postJsonObject['object']['content'], 40, [])
         objectContent = \
             switchWords(baseDir, nickname, domain, objectContent)
+    else:
+        objectContent = postJsonObject['object']['content']
+
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
         contentStr = addEmbeddedElements(translate, contentStr)
