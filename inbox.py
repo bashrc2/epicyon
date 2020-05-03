@@ -2062,6 +2062,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                     if fromPort != 80 and fromPort != 443:
                         fromDomain += ':' + str(fromPort)
                 if receiveGitPatch(baseDir, nickname, domain,
+                                   postJsonObject['object']['type'],
                                    postJsonObject['object']['summary'],
                                    postJsonObject['object']['content'],
                                    fromNickname, fromDomain):

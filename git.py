@@ -155,12 +155,12 @@ def gitAddFromHandle(patchStr: str, handle: str) -> str:
 
 
 def receiveGitPatch(baseDir: str, nickname: str, domain: str,
-                    subject: str, content: str,
+                    messageType: str, subject: str, content: str,
                     fromNickname: str, fromDomain: str) -> bool:
     """Receive a git patch
     """
     if not isGitPatch(baseDir, nickname, domain,
-                      subject, content):
+                      messageType, subject, content):
         return False
 
     patchStr = gitFormatContent(content)

@@ -3935,6 +3935,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if not postJsonObject['object'].get('content'):
         return ''
     isPatch = isGitPatch(baseDir, nickname, domain,
+                         postJsonObject['object']['type'],
                          postJsonObject['object']['summary'],
                          postJsonObject['object']['content'])
 
