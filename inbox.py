@@ -1581,6 +1581,7 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
     if 'Z' not in messageJson['object']['published']:
         return False
     if isGitPatch(baseDir, nickname, domain,
+                  messageJson['object']['type'],
                   messageJson['object']['summary'],
                   messageJson['object']['content']):
         return True

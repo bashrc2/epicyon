@@ -2251,6 +2251,7 @@ def isDM(postJsonObject: {}) -> bool:
     if not isinstance(postJsonObject['object'], dict):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'Commit' and \
        postJsonObject['object']['type'] != 'Article':
         return False
     if postJsonObject['object'].get('moderationStatus'):
@@ -2427,6 +2428,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
     # must be a "Note" or "Announce" type
     if ('"Note"' in postStr or
         '"Article"' in postStr or
+        '"Commit"' in postStr or
         '"Announce"' in postStr or
         ('"Question"' in postStr and
          ('"Create"' in postStr or '"Update"' in postStr))):
