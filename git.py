@@ -83,7 +83,8 @@ def gitAddFromHandle(contentStr: str, handle: str) -> str:
     for line in patchLines:
         contentStr += line + '\n'
         if line.startswith('From:'):
-            contentStr += fromStr + handle + '\n'
+            if fromStr not in contentStr:
+                contentStr += fromStr + handle + '\n'
     return contentStr
 
 
