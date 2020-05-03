@@ -1699,15 +1699,18 @@ def replyNotify(baseDir: str, handle: str, url: str) -> None:
 
 
 def gitPatchNotify(baseDir: str, handle: str,
-                   subject: str, content: str) -> None:
+                   subject: str, content: str,
+                   fromNickname: str, fromDomain: str) -> None:
     """Creates a notification that a new git patch has arrived
     """
     accountDir = baseDir + '/accounts/' + handle
     if not os.path.isdir(accountDir):
         return
     patchFile = accountDir + '/.newPatch'
+    subject = subject.replace('[PATCH]', '').strip()
+    handle = '@' + fromNickname + '@' + fromDomain
     with open(patchFile, 'w') as fp:
-        fp.write(subject)
+        fp.write('git ' + handle + ' ' + subject)
 
 
 def groupHandle(baseDir: str, handle: str) -> bool:
@@ -2063,7 +2066,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                                    fromNickname, fromDomain):
                     gitPatchNotify(baseDir, handle,
                                    postJsonObject['object']['summary'],
-                                   postJsonObject['object']['content'])
+                                   postJsonObject['object']['content'],
+                                   fromNickname, fromDomain)
                 elif '[PATCH]' in postJsonObject['object']['content']:
                     print('WARN: git patch not accepted - ' +
                           postJsonObject['object']['summary'])
