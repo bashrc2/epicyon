@@ -756,6 +756,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             'sensitive': sensitive,
             'atomUri': newPostId,
             'inReplyToAtomUri': inReplyToAtomUri,
+            'mediaType': 'text/html',
             'content': content,
             'contentMap': {
                 'en': content
