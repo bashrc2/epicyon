@@ -42,7 +42,8 @@ def getGitProjectName(baseDir: str, nickname: str, domain: str,
 
 def isGitPatch(baseDir: str, nickname: str, domain: str,
                messageType: str,
-               subject: str, content: str) -> bool:
+               subject: str, content: str,
+               checkProjectName=True) -> bool:
     """Is the given post content a git patch?
     """
     if messageType != 'Note' and \
@@ -57,6 +58,8 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
         return False
     if 'diff ' not in content:
         return False
+    if 'From ' not in content:
+        return False
     if 'From:' not in content:
         return False
     if 'Date:' not in content:
@@ -66,11 +69,11 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     if '<br>' not in content:
         if '<br />' not in content:
             return False
-    projectName = \
-        getGitProjectName(baseDir, nickname, domain,
-                          subject)
-    if not projectName:
-        return False
+    if checkProjectName:
+        projectName = \
+            getGitProjectName(baseDir, nickname, domain, subject)
+        if not projectName:
+            return False
     return True
 
 
@@ -86,6 +89,48 @@ def getGitHash(patchStr: str) -> str:
                     return words[1]
             break
     return None
+
+
+def convertPostToCommit(baseDir: str, nickname: str, domain: str,
+                        postJsonObject: {}) -> bool:
+    """Detects whether the given post contains a patch
+    and if so then converts it to a Commit ActivityPub type
+    """
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('type'):
+        return False
+    if postJsonObject['object']['type'] == 'Commit':
+        return True
+    if not postJsonObject['object'].get('summary'):
+        return False
+    if not postJsonObject['object'].get('content'):
+        return False
+    if not postJsonObject['object'].get('attributedTo'):
+        return False
+    if not isGitPatch(baseDir, nickname, domain,
+                      postJsonObject['object']['type'],
+                      postJsonObject['object']['summary'],
+                      postJsonObject['object']['content'],
+                      False):
+        return False
+    postJsonObject['object']['type'] = 'Commit'
+    # add a commitedBy parameter
+    if not postJsonObject['object'].get('committedBy'):
+        postJsonObject['object']['committedBy'] = \
+            postJsonObject['object']['attributedTo']
+    patchStr = gitFormatContent(postJsonObject['object']['content'])
+    commitHash = getGitHash(patchStr)
+    if commitHash:
+        postJsonObject['object']['hash'] = commitHash
+    postJsonObject['object']['description'] = {
+        "mediaType": "text/plain",
+        "content": patchStr
+    }
+    print('Converted post to Commit type')
+    return True
 
 
 def gitAddFromHandle(patchStr: str, handle: str) -> str:

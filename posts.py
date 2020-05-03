@@ -49,6 +49,7 @@ from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
+from git import convertPostToCommit
 # try:
 #     from BeautifulSoup import BeautifulSoup
 # except ImportError:
@@ -794,6 +795,10 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         if modFile:
             modFile.write(newPostId + '\n')
             modFile.close()
+
+    # If a commit has been posted - i.e. the output from
+    # git format-patch - then convert the activitypub type
+    convertPostToCommit(baseDir, nickname, domain, newPost)
 
     if schedulePost:
         if eventDate and eventTime:
