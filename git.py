@@ -14,12 +14,12 @@ def gitFormatContent(content: str) -> str:
     """ replace html formatting, so that it's more
     like the original patch file
     """
-    contentStr = content.replace('<br>', '\n').replace('<br />', '\n')
-    contentStr = contentStr.replace('<p>', '').replace('</p>', '\n')
-    contentStr = html.unescape(contentStr)
-    if 'From ' in contentStr:
-        contentStr = 'From ' + contentStr.split('From ', 1)[1]
-    return contentStr
+    patchStr = content.replace('<br>', '\n').replace('<br />', '\n')
+    patchStr = patchStr.replace('<p>', '').replace('</p>', '\n')
+    patchStr = html.unescape(patchStr)
+    if 'From ' in patchStr:
+        patchStr = 'From ' + patchStr.split('From ', 1)[1]
+    return patchStr
 
 
 def getGitProjectName(baseDir: str, nickname: str, domain: str,
@@ -74,10 +74,10 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     return True
 
 
-def getGitHash(contentStr: str) -> str:
+def getGitHash(patchStr: str) -> str:
     """Returns the commit hash from a given patch
     """
-    patchLines = contentStr.split('\n')
+    patchLines = patchStr.split('\n')
     for line in patchLines:
         if line.startswith('From '):
             words = line.split(' ')
@@ -88,22 +88,22 @@ def getGitHash(contentStr: str) -> str:
     return None
 
 
-def gitAddFromHandle(contentStr: str, handle: str) -> str:
+def gitAddFromHandle(patchStr: str, handle: str) -> str:
     """Adds the activitypub handle of the sender to the patch
     """
     fromStr = 'AP-signed-off-by: '
-    if fromStr in contentStr:
-        return contentStr
+    if fromStr in patchStr:
+        return patchStr
 
-    prevContentStr = contentStr
+    prevContentStr = patchStr
     patchLines = prevContentStr.split('\n')
-    contentStr = ''
+    patchStr = ''
     for line in patchLines:
-        contentStr += line + '\n'
+        patchStr += line + '\n'
         if line.startswith('From:'):
-            if fromStr not in contentStr:
-                contentStr += fromStr + handle + '\n'
-    return contentStr
+            if fromStr not in patchStr:
+                patchStr += fromStr + handle + '\n'
+    return patchStr
 
 
 def receiveGitPatch(baseDir: str, nickname: str, domain: str,
@@ -115,9 +115,9 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
                       subject, content):
         return False
 
-    contentStr = gitFormatContent(content)
+    patchStr = gitFormatContent(content)
 
-    patchLines = contentStr.split('\n')
+    patchLines = patchStr.split('\n')
     patchFilename = None
     projectDir = None
     patchesDir = \
@@ -142,14 +142,14 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             break
     if not patchFilename:
         return False
-    contentStr = \
-        gitAddFromHandle(contentStr, '@' + fromNickname + '@' + fromDomain)
+    patchStr = \
+        gitAddFromHandle(patchStr, '@' + fromNickname + '@' + fromDomain)
     with open(patchFilename, "w") as patchFile:
-        patchFile.write(contentStr)
+        patchFile.write(patchStr)
         patchNotifyFilename = \
             baseDir + '/accounts/' + \
             nickname + '@' + domain + '/.newPatchContent'
         with open(patchNotifyFilename, "w") as patchFile:
-            patchFile.write(contentStr)
+            patchFile.write(patchStr)
             return True
     return False
