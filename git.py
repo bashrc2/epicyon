@@ -74,6 +74,20 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     return True
 
 
+def getGitHash(contentStr: str) -> str:
+    """Returns the commit hash from a given patch
+    """
+    patchLines = contentStr.split('\n')
+    for line in patchLines:
+        if line.startswith('From '):
+            words = line.split(' ')
+            if len(words) > 1:
+                if len(words[1]) > 20:
+                    return words[1]
+            break
+    return None
+
+
 def gitAddFromHandle(contentStr: str, handle: str) -> str:
     """Adds the activitypub handle of the sender to the patch
     """
