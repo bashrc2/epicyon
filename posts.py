@@ -2430,7 +2430,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
                             postsInBox: [], boxActor: str) -> bool:
     """ is this a valid timeline post?
     """
-    # must be a "Note" or "Announce" type
+    # must be a recognized ActivityPub type
     if ('"Note"' in postStr or
         '"Article"' in postStr or
         '"Patch"' in postStr or
