@@ -91,6 +91,22 @@ def getGitHash(patchStr: str) -> str:
     return None
 
 
+def getPatchDescription(patchStr: str) -> str:
+    """Returns the description from a given patch
+    """
+    patchLines = patchStr.split('\n')
+    description = ''
+    started = False
+    for line in patchLines:
+        if started:
+            if line.strip() == '---':
+                break
+            description += line + '\n'
+        if line.startswith('Subject:'):
+            started = True
+    return description
+
+
 def convertPostToPatch(baseDir: str, nickname: str, domain: str,
                        postJsonObject: {}) -> bool:
     """Detects whether the given post contains a patch
@@ -128,7 +144,7 @@ def convertPostToPatch(baseDir: str, nickname: str, domain: str,
     postJsonObject['object']['hash'] = commitHash
     postJsonObject['object']['description'] = {
         "mediaType": "text/plain",
-        "content": patchStr
+        "content": getPatchDescription(patchStr)
     }
     # remove content map
     if postJsonObject['object'].get('contentMap'):
