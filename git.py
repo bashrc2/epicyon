@@ -95,8 +95,7 @@ def gitAddFromHandle(patchStr: str, handle: str) -> str:
     if fromStr in patchStr:
         return patchStr
 
-    prevContentStr = patchStr
-    patchLines = prevContentStr.split('\n')
+    patchLines = patchStr.split('\n')
     patchStr = ''
     for line in patchLines:
         patchStr += line + '\n'
