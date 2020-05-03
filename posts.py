@@ -694,7 +694,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             httpPrefix + '://' + domain + '/users/' + nickname + \
             '/statuses/' + statusNumber + '/replies'
         newPost = {
-            "@context": postContext,
+            '@context': postContext,
             'id': newPostId+'/activity',
             'capability': capabilityIdList,
             'type': 'Create',
@@ -715,6 +715,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
                 'sensitive': sensitive,
                 'atomUri': newPostId,
                 'inReplyToAtomUri': inReplyToAtomUri,
+                'mediaType': 'text/html',
                 'content': content,
                 'contentMap': {
                     'en': content
