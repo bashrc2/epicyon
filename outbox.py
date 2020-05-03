@@ -188,7 +188,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
            messageJson['type'] == 'Question' or \
            messageJson['type'] == 'Note' or \
            messageJson['type'] == 'Article' or \
-           messageJson['type'] == 'Commit' or \
+           messageJson['type'] == 'Patch' or \
            messageJson['type'] == 'Announce':
             indexes = [outboxName, "inbox"]
             for boxNameIndex in indexes:

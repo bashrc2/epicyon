@@ -47,7 +47,7 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     """Is the given post content a git patch?
     """
     if messageType != 'Note' and \
-       messageType != 'Commit':
+       messageType != 'Patch':
         return False
     # must have a subject line
     if not subject:
@@ -91,10 +91,10 @@ def getGitHash(patchStr: str) -> str:
     return None
 
 
-def convertPostToCommit(baseDir: str, nickname: str, domain: str,
-                        postJsonObject: {}) -> bool:
+def convertPostToPatch(baseDir: str, nickname: str, domain: str,
+                       postJsonObject: {}) -> bool:
     """Detects whether the given post contains a patch
-    and if so then converts it to a Commit ActivityPub type
+    and if so then converts it to a Patch ActivityPub type
     """
     if not postJsonObject.get('object'):
         return False
@@ -102,7 +102,7 @@ def convertPostToCommit(baseDir: str, nickname: str, domain: str,
         return False
     if not postJsonObject['object'].get('type'):
         return False
-    if postJsonObject['object']['type'] == 'Commit':
+    if postJsonObject['object']['type'] == 'Patch':
         return True
     if not postJsonObject['object'].get('summary'):
         return False
@@ -120,7 +120,7 @@ def convertPostToCommit(baseDir: str, nickname: str, domain: str,
     commitHash = getGitHash(patchStr)
     if not commitHash:
         return False
-    postJsonObject['object']['type'] = 'Commit'
+    postJsonObject['object']['type'] = 'Patch'
     # add a commitedBy parameter
     if not postJsonObject['object'].get('committedBy'):
         postJsonObject['object']['committedBy'] = \
@@ -130,7 +130,10 @@ def convertPostToCommit(baseDir: str, nickname: str, domain: str,
         "mediaType": "text/plain",
         "content": patchStr
     }
-    print('Converted post to Commit type')
+    # remove content map
+    if postJsonObject['object'].get('contentMap'):
+        del postJsonObject['object']['contentMap']
+    print('Converted post to Patch ActivityPub type')
     return True
 
 

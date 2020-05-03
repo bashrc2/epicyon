@@ -49,7 +49,7 @@ from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
-from git import convertPostToCommit
+from git import convertPostToPatch
 # try:
 #     from BeautifulSoup import BeautifulSoup
 # except ImportError:
@@ -796,9 +796,9 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             modFile.write(newPostId + '\n')
             modFile.close()
 
-    # If a commit has been posted - i.e. the output from
+    # If a patch has been posted - i.e. the output from
     # git format-patch - then convert the activitypub type
-    convertPostToCommit(baseDir, nickname, domain, newPost)
+    convertPostToPatch(baseDir, nickname, domain, newPost)
 
     if schedulePost:
         if eventDate and eventTime:
@@ -2256,7 +2256,7 @@ def isDM(postJsonObject: {}) -> bool:
     if not isinstance(postJsonObject['object'], dict):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
-       postJsonObject['object']['type'] != 'Commit' and \
+       postJsonObject['object']['type'] != 'Patch' and \
        postJsonObject['object']['type'] != 'Article':
         return False
     if postJsonObject['object'].get('moderationStatus'):
@@ -2433,7 +2433,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
     # must be a "Note" or "Announce" type
     if ('"Note"' in postStr or
         '"Article"' in postStr or
-        '"Commit"' in postStr or
+        '"Patch"' in postStr or
         '"Announce"' in postStr or
         ('"Question"' in postStr and
          ('"Create"' in postStr or '"Update"' in postStr))):
