@@ -116,15 +116,16 @@ def convertPostToCommit(baseDir: str, nickname: str, domain: str,
                       postJsonObject['object']['content'],
                       False):
         return False
+    patchStr = gitFormatContent(postJsonObject['object']['content'])
+    commitHash = getGitHash(patchStr)
+    if not commitHash:
+        return False
     postJsonObject['object']['type'] = 'Commit'
     # add a commitedBy parameter
     if not postJsonObject['object'].get('committedBy'):
         postJsonObject['object']['committedBy'] = \
             postJsonObject['object']['attributedTo']
-    patchStr = gitFormatContent(postJsonObject['object']['content'])
-    commitHash = getGitHash(patchStr)
-    if commitHash:
-        postJsonObject['object']['hash'] = commitHash
+    postJsonObject['object']['hash'] = commitHash
     postJsonObject['object']['description'] = {
         "mediaType": "text/plain",
         "content": patchStr
