@@ -70,8 +70,26 @@ def isGitPatch(baseDir: str, nickname: str, domain: str,
     return True
 
 
+def gitAddFromHandle(contentStr: str, handle: str) -> str:
+    """Adds the activitypub handle of the sender to the patch
+    """
+    fromStr = 'AP-signed-off-by: '
+    if fromStr in contentStr:
+        return contentStr
+
+    prevContentStr = contentStr
+    patchLines = prevContentStr.split('\n')
+    contentStr = ''
+    for line in patchLines:
+        contentStr += line + '\n'
+        if line.startswith('From:'):
+            contentStr += fromStr + handle + '\n'
+    return contentStr
+
+
 def receiveGitPatch(baseDir: str, nickname: str, domain: str,
-                    subject: str, content: str) -> bool:
+                    subject: str, content: str,
+                    fromNickname: str, fromDomain: str) -> bool:
     """Receive a git patch
     """
     if not isGitPatch(baseDir, nickname, domain,
@@ -105,6 +123,8 @@ def receiveGitPatch(baseDir: str, nickname: str, domain: str,
             break
     if not patchFilename:
         return False
+    contentStr = \
+        gitAddFromHandle(contentStr, '@' + fromNickname + '@' + fromDomain)
     with open(patchFilename, "w") as patchFile:
         patchFile.write(contentStr)
         patchNotifyFilename = \

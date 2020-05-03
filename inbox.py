@@ -2048,12 +2048,19 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
 
         # check for incoming git patches
         if isinstance(postJsonObject['object'], dict):
-            pprint(postJsonObject)
             if postJsonObject['object'].get('content') and \
-               postJsonObject['object'].get('summary'):
+               postJsonObject['object'].get('summary') and \
+               postJsonObject['object'].get('attributedTo'):
+                attributedTo = postJsonObject['object']['attributedTo']
+                fromNickname = getNicknameFromActor(attributedTo)
+                fromDomain, fromPort = getDomainFromActor(attributedTo)
+                if fromPort:
+                    if fromPort != 80 and fromPort != 443:
+                        fromDomain += ':' + str(fromPort)
                 if receiveGitPatch(baseDir, nickname, domain,
                                    postJsonObject['object']['summary'],
-                                   postJsonObject['object']['content']):
+                                   postJsonObject['object']['content'],
+                                   fromNickname, fromDomain):
                     gitPatchNotify(baseDir, handle,
                                    postJsonObject['object']['summary'],
                                    postJsonObject['object']['content'])
