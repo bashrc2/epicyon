@@ -280,6 +280,7 @@ def webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
 
     webfingerPropertyName = {
         "xmpp": "xmpp",
+        "matrix": "matrix",
         "email": "mailto",
         "ssb": "ssb",
         "tox": "toxId"
@@ -291,6 +292,7 @@ def webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
         propertyName = propertyValue['name'].lower()
         if not (propertyName.startswith('ssb') or
                 propertyName.startswith('xmpp') or
+                propertyName.startswith('matrix') or
                 propertyName.startswith('email') or
                 propertyName.startswith('tox')):
             continue
