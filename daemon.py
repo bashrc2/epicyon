@@ -20,6 +20,7 @@ from webfinger import parseHandle
 from webfinger import webfingerMeta
 from webfinger import webfingerNodeInfo
 from webfinger import webfingerLookup
+from webfinger import webfingerUpdate
 from metadata import metaDataInstance
 from metadata import metaDataNodeInfo
 from pgp import getEmailAddress
@@ -5726,6 +5727,11 @@ class PubServer(BaseHTTPRequestHandler):
                         if actorChanged:
                             randomizeActorImages(actorJson)
                             saveJson(actorJson, actorFilename)
+                            webfingerUpdate(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain,
+                                            self.server.onionDomain,
+                                            self.server.cachedWebfingers)
                             # also copy to the actors cache and
                             # personCache in memory
                             storePersonInCache(self.server.baseDir,

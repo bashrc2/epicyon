@@ -267,3 +267,85 @@ def webfingerLookup(path: str, baseDir: str,
     if not wfJson:
         wfJson = {"nickname": "unknown"}
     return wfJson
+
+
+def webfingerUpdateFromProfile(wfJson: {}, actorJson: {}) -> bool:
+    """Updates webfinger Email/blog/xmpp links from profile
+    Returns true if one or more tags has been changed
+    """
+    if not actorJson.get('attachment'):
+        return False
+
+    changed = False
+
+    webfingerPropertyName = {
+        "xmpp": "xmpp",
+        "email": "mailto",
+        "ssb": "ssb",
+        "tox": "toxId"
+    }
+
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        propertyName = propertyValue['name'].lower()
+        if not (propertyName.startswith('ssb') or
+                propertyName.startswith('xmpp') or
+                propertyName.startswith('email') or
+                propertyName.startswith('tox')):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+
+        newValue = propertyValue['value'].strip()
+        aliasIndex = 0
+        found = False
+        for alias in wfJson['aliases']:
+            if alias.startswith(webfingerPropertyName[propertyName] + ':'):
+                found = True
+                break
+            aliasIndex += 1
+        newAlias = webfingerPropertyName[propertyName] + ':' + newValue
+        if found:
+            if wfJson['aliases'][aliasIndex] != newAlias:
+                changed = True
+                wfJson['aliases'][aliasIndex] = newAlias
+        else:
+            wfJson['aliases'].append(newAlias)
+            changed = True
+    return changed
+
+
+def webfingerUpdate(baseDir: str, nickname: str, domain: str,
+                    onionDomain: str,
+                    cachedWebfingers: {}) -> None:
+    handle = nickname + '@' + domain
+    wfSubdir = '/wfendpoints'
+    if not os.path.isdir(baseDir + wfSubdir):
+        return
+
+    filename = baseDir + wfSubdir + '/' + handle.lower() + '.json'
+    onionify = False
+    if onionDomain:
+        if onionDomain in handle:
+            handle = handle.replace(onionDomain, domain)
+            onionify = True
+    if not onionify:
+        wfJson = loadJson(filename)
+    else:
+        wfJson = loadJsonOnionify(filename, domain, onionDomain)
+    if not wfJson:
+        return
+
+    actorFilename = baseDir + '/accounts/' + handle.lower() + '.json'
+    actorJson = loadJson(actorFilename)
+    if not actorJson:
+        return
+
+    if webfingerUpdateFromProfile(wfJson, actorJson):
+        if saveJson(wfJson, filename):
+            cachedWebfingers[handle] = wfJson

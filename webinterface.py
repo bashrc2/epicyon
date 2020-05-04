@@ -79,7 +79,7 @@ def getBlogAddress(actorJson: {}) -> str:
     for propertyValue in actorJson['attachment']:
         if not propertyValue.get('name'):
             continue
-        if not propertyValue['name'].lower().startswith('Blog'):
+        if not propertyValue['name'].lower().startswith('blog'):
             continue
         if not propertyValue.get('type'):
             continue
@@ -116,7 +116,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
             continue
         if not propertyValue.get('type'):
             continue
-        if not propertyValue['name'].lower().startswith('Blog'):
+        if not propertyValue['name'].lower().startswith('blog'):
             continue
         propertyFound = propertyValue
         break
