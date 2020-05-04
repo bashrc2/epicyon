@@ -12,6 +12,7 @@ from utils import loadJson
 from utils import saveJson
 from utils import getFileCaseInsensitive
 
+
 def storePersonInCache(baseDir: str, personUrl: str,
                        personJson: {}, personCache: {}) -> None:
     """Store an actor in the cache
