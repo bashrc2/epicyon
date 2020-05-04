@@ -97,8 +97,8 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
-from blog import getBlogAddress
-from blog import setBlogAddress
+from webinterface import getBlogAddress
+from webinterface import setBlogAddress
 from webinterface import htmlCalendarDeleteConfirm
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout

@@ -21,7 +21,6 @@ from pgp import getEmailAddress
 from pgp import getPGPpubKey
 from xmpp import getXmppAddress
 from ssb import getSSBAddress
-from blog import getBlogAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
@@ -70,6 +69,90 @@ from happening import thisWeeksEventsCheck
 from happening import getCalendarEvents
 from happening import getTodaysEvents
 from git import isGitPatch
+
+
+def getBlogAddress(actorJson: {}) -> str:
+    """Returns blog address for the given actor
+    """
+    if not actorJson.get('attachment'):
+        return ''
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue['name'].lower().startswith('Blog'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        propertyValue['value'] = propertyValue['value'].strip()
+        if not (propertyValue['value'].startswith('https://') or
+                propertyValue['value'].startswith('http://') or
+                propertyValue['value'].startswith('dat://') or
+                propertyValue['value'].startswith('i2p://')):
+            continue
+        if '.' not in propertyValue['value']:
+            continue
+        if ' ' in propertyValue['value']:
+            continue
+        if ',' in propertyValue['value']:
+            continue
+        return propertyValue['value']
+    return ''
+
+
+def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
+    """Sets an blog address for the given actor
+    """
+    if not actorJson.get('attachment'):
+        actorJson['attachment'] = []
+
+    # remove any existing value
+    propertyFound = None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower().startswith('Blog'):
+            continue
+        propertyFound = propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyFound)
+
+    if not (blogAddress.startswith('https://') or
+            blogAddress.startswith('http://') or
+            blogAddress.startswith('dat://') or
+            blogAddress.startswith('i2p://')):
+        return
+    if '.' not in blogAddress:
+        return
+    if ' ' in blogAddress:
+        return
+    if ',' in blogAddress:
+        return
+
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower().startswith('blog'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        propertyValue['value'] = blogAddress
+        return
+
+    newBlogAddress = {
+        "name": "Blog",
+        "type": "PropertyValue",
+        "value": blogAddress
+    }
+    actorJson['attachment'].append(newBlogAddress)
 
 
 def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
