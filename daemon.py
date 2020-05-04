@@ -97,6 +97,8 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from blog import getBlogAddress
+from blog import setBlogAddress
 from webinterface import htmlCalendarDeleteConfirm
 from webinterface import htmlDeletePost
 from webinterface import htmlAbout
@@ -1249,6 +1251,7 @@ class PubServer(BaseHTTPRequestHandler):
                         xmppAddress = getXmppAddress(actorJson)
                         matrixAddress = getMatrixAddress(actorJson)
                         ssbAddress = getSSBAddress(actorJson)
+                        blogAddress = getBlogAddress(actorJson)
                         toxAddress = getToxAddress(actorJson)
                         emailAddress = getEmailAddress(actorJson)
                         PGPpubKey = getPGPpubKey(actorJson)
@@ -1261,8 +1264,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             optionsLink,
                                             pageNumber, donateUrl,
                                             xmppAddress, matrixAddress,
-                                            ssbAddress, toxAddress,
-                                            PGPpubKey, emailAddress).encode()
+                                            ssbAddress, blogAddress,
+                                            toxAddress, PGPpubKey,
+                                            emailAddress).encode()
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
@@ -5370,6 +5374,7 @@ class PubServer(BaseHTTPRequestHandler):
                             setTheme(self.server.baseDir,
                                      fields['themeDropdown'])
 #                            self.server.iconsCache={}
+
                         currentEmailAddress = getEmailAddress(actorJson)
                         if fields.get('email'):
                             if fields['email'] != currentEmailAddress:
@@ -5379,6 +5384,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentEmailAddress:
                                 setEmailAddress(actorJson, '')
                                 actorChanged = True
+
                         currentXmppAddress = getXmppAddress(actorJson)
                         if fields.get('xmppAddress'):
                             if fields['xmppAddress'] != currentXmppAddress:
@@ -5389,6 +5395,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentXmppAddress:
                                 setXmppAddress(actorJson, '')
                                 actorChanged = True
+
                         currentMatrixAddress = getMatrixAddress(actorJson)
                         if fields.get('matrixAddress'):
                             if fields['matrixAddress'] != currentMatrixAddress:
@@ -5399,6 +5406,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentMatrixAddress:
                                 setMatrixAddress(actorJson, '')
                                 actorChanged = True
+
                         currentSSBAddress = getSSBAddress(actorJson)
                         if fields.get('ssbAddress'):
                             if fields['ssbAddress'] != currentSSBAddress:
@@ -5409,6 +5417,18 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentSSBAddress:
                                 setSSBAddress(actorJson, '')
                                 actorChanged = True
+
+                        currentBlogAddress = getBlogAddress(actorJson)
+                        if fields.get('blogAddress'):
+                            if fields['blogAddress'] != currentBlogAddress:
+                                setBlogAddress(actorJson,
+                                               fields['blogAddress'])
+                                actorChanged = True
+                        else:
+                            if currentBlogAddress:
+                                setBlogAddress(actorJson, '')
+                                actorChanged = True
+
                         currentToxAddress = getToxAddress(actorJson)
                         if fields.get('toxAddress'):
                             if fields['toxAddress'] != currentToxAddress:
@@ -5419,6 +5439,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentToxAddress:
                                 setToxAddress(actorJson, '')
                                 actorChanged = True
+
                         currentPGPpubKey = getPGPpubKey(actorJson)
                         if fields.get('pgp'):
                             if fields['pgp'] != currentPGPpubKey:
@@ -5429,6 +5450,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentPGPpubKey:
                                 setPGPpubKey(actorJson, '')
                                 actorChanged = True
+
                         currentDonateUrl = getDonationUrl(actorJson)
                         if fields.get('donateUrl'):
                             if fields['donateUrl'] != currentDonateUrl:
@@ -5439,6 +5461,7 @@ class PubServer(BaseHTTPRequestHandler):
                             if currentDonateUrl:
                                 setDonationUrl(actorJson, '')
                                 actorChanged = True
+
                         if fields.get('instanceTitle'):
                             currInstanceTitle = \
                                 getConfigParam(self.server.baseDir,

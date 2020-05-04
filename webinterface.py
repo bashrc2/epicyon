@@ -21,6 +21,7 @@ from pgp import getEmailAddress
 from pgp import getPGPpubKey
 from xmpp import getXmppAddress
 from ssb import getSSBAddress
+from blog import getBlogAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
@@ -881,6 +882,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     xmppAddress = ''
     matrixAddress = ''
     ssbAddress = ''
+    blogAddress = ''
     toxAddress = ''
     manuallyApprovesFollowers = ''
     actorJson = loadJson(actorFilename)
@@ -889,6 +891,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         xmppAddress = getXmppAddress(actorJson)
         matrixAddress = getMatrixAddress(actorJson)
         ssbAddress = getSSBAddress(actorJson)
+        blogAddress = getBlogAddress(actorJson)
         toxAddress = getToxAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
@@ -1120,10 +1123,17 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="text" name="matrixAddress" value="' + \
         matrixAddress+'">'
+
     editProfileForm += '<label class="labels">SSB</label><br>'
     editProfileForm += \
         '      <input type="text" name="ssbAddress" value="' + \
         ssbAddress + '">'
+
+    editProfileForm += '<label class="labels">Blog</label><br>'
+    editProfileForm += \
+        '      <input type="text" name="blogAddress" value="' + \
+        blogAddress + '">'
+
     editProfileForm += '<label class="labels">Tox</label><br>'
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
@@ -5055,6 +5065,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                       xmppAddress: str,
                       matrixAddress: str,
                       ssbAddress: str,
+                      blogAddress: str,
                       toxAddress: str,
                       PGPpubKey: str,
                       emailAddress) -> str:
@@ -5139,6 +5150,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     if ssbAddress:
         optionsStr += \
             '<p class="imText">SSB: ' + ssbAddress + '</p>'
+    if blogAddress:
+        optionsStr += \
+            '<p class="imText">Blog: <a href="' + blogAddress + '">' + \
+            blogAddress + '</a></p>'
     if toxAddress:
         optionsStr += \
             '<p class="imText">Tox: ' + toxAddress + '</p>'
