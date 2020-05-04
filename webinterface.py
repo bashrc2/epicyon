@@ -2630,6 +2630,8 @@ def individualFollowAsHtml(translate: {},
                            httpPrefix: str,
                            projectVersion: str,
                            buttons=[]) -> str:
+    """An individual follow entry on the profile screen
+    """
     nickname = getNicknameFromActor(followUrl)
     domain, port = getDomainFromActor(followUrl)
     titleStr = '@' + nickname + '@' + domain
