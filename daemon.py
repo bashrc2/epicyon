@@ -1241,6 +1241,7 @@ class PubServer(BaseHTTPRequestHandler):
                     PGPpubKey = None
                     xmppAddress = None
                     matrixAddress = None
+                    blogAddress = None
                     toxAddress = None
                     ssbAddress = None
                     emailAddress = None
