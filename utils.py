@@ -769,3 +769,14 @@ def searchBoxPosts(baseDir: str, nickname: str, domain: str,
                 if len(res) >= maxResults:
                     return res
     return res
+
+
+def getFileCaseInsensitive(filename: str) -> str:
+    """Returns a case specific filename given a case insensitive version of it
+    """
+    directory, filename = os.path.split(filename)
+    directory, filename = (directory or '.'), filename.lower()
+    for f in os.listdir(directory):
+        newFilename = os.path.join(directory, f)
+        if os.path.isfile(newFilename) and f.lower() == filename:
+            return newFilename

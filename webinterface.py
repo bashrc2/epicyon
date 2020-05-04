@@ -24,6 +24,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import getFileCaseInsensitive
 from utils import searchBoxPosts
 from utils import isBlogPost
 from utils import updateRecentPostsCache
@@ -254,7 +255,8 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {}) -> str:
         return None
     # get from locally stored image
     actorStr = personJson['id'].replace('/', '-')
-    avatarImagePath = baseDir + '/cache/avatars/' + actorStr
+    avatarImagePath = \
+        getFileCaseInsensitive(baseDir + '/cache/avatars/' + actorStr
     if os.path.isfile(avatarImagePath + '.png'):
         return '/avatars/' + actorStr + '.png'
     elif os.path.isfile(avatarImagePath + '.jpg'):
