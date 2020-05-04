@@ -10,7 +10,7 @@ import os
 import datetime
 from utils import loadJson
 from utils import saveJson
-
+from utils import getFileCaseInsensitive
 
 def storePersonInCache(baseDir: str, personUrl: str,
                        personJson: {}, personCache: {}) -> None:
@@ -40,8 +40,8 @@ def getPersonFromCache(baseDir: str, personUrl: str, personCache: {}) -> {}:
     if not personCache.get(personUrl):
         cacheFilename = baseDir + '/cache/actors/' + \
             personUrl.replace('/', '#')+'.json'
-        if os.path.isfile(cacheFilename):
-            personJson = loadJson(cacheFilename)
+        if os.path.isfile(getFileCaseInsensitive(cacheFilename)):
+            personJson = loadJson(getFileCaseInsensitive(cacheFilename))
             if personJson:
                 storePersonInCache(baseDir, personUrl, personJson, personCache)
                 loadedFromFile = True
