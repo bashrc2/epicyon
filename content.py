@@ -137,6 +137,7 @@ def addWebLinks(content: str) -> str:
            w.startswith('http://') or \
            w.startswith('i2p://') or \
            w.startswith('gemini://') or \
+           w.startswith('gopher://') or \
            w.startswith('dat://'):
             if w.endswith('.') or w.endswith(';'):
                 w = w[:-1]
@@ -152,9 +153,12 @@ def addWebLinks(content: str) -> str:
                 markup += '<span class="invisible">dat://</span>'
             elif w.startswith('gemini://'):
                 markup += '<span class="invisible">gemini://</span>'
+            elif w.startswith('gopher://'):
+                markup += '<span class="invisible">gopher://</span>'
             linkText = w.replace('https://', '').replace('http://', '')
             linkText = linkText.replace('dat://', '').replace('i2p://', '')
             linkText = linkText.replace('gemini://', '')
+            linkText = linkText.replace('gopher://', '')
             # prevent links from becoming too long
             if len(linkText) > maxLinkLength:
                 markup += '<span class="ellipsis">' + \
