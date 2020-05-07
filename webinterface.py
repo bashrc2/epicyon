@@ -5792,7 +5792,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                            baseDir: str, path: str, httpPrefix: str,
                            nickname: str, domain: str, port: int,
                            profileHandle: str,
-                           session, wfRequest: {}, personCache: {},
+                           session, cachedWebfingers: {}, personCache: {},
                            debug: bool, projectVersion: str) -> str:
     """Show a profile page after a search for a fediverse address
     """
@@ -5841,12 +5841,12 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         wf = \
             webfingerHandle(session,
                             searchNickname + '@' + searchDomainFull,
-                            httpPrefix, wfRequest,
-                            domain, projectVersion)
+                            httpPrefix, cachedWebfingers,
+                            None, projectVersion)
         if not wf:
             print('DEBUG: Unable to webfinger ' +
                   searchNickname + '@' + searchDomainFull)
-            print('DEBUG: wfRequest ' + str(wfRequest))
+            print('DEBUG: cachedWebfingers ' + str(cachedWebfingers))
             print('DEBUG: httpPrefix ' + httpPrefix)
             print('DEBUG: domain ' + domain)
             return None
@@ -5979,7 +5979,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             profileStr += \
                 individualPostAsHtml(recentPostsCache, maxRecentPosts,
                                      iconsDir, translate, None, baseDir,
-                                     session, wfRequest, personCache,
+                                     session, cachedWebfingers, personCache,
                                      nickname, domain, port,
                                      item, avatarUrl, False, False,
                                      httpPrefix, projectVersion, 'inbox',

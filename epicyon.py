@@ -1019,7 +1019,7 @@ if args.actor:
             sys.exit()
         nickname = args.actor.split('@')[0]
         domain = args.actor.split('@')[1].replace('\n', '')
-    wfCache = {}
+    cachedWebfingers = {}
     if args.http or domain.endswith('.onion'):
         httpPrefix = 'http'
         port = 80
@@ -1032,7 +1032,7 @@ if args.actor:
         nickname = domain
 
     wfRequest = webfingerHandle(session, nickname + '@' + domain,
-                                httpPrefix, wfCache,
+                                httpPrefix, cachedWebfingers,
                                 None, __version__)
     if not wfRequest:
         print('Unable to webfinger ' + nickname + '@' + domain)
