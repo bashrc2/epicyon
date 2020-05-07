@@ -6004,8 +6004,7 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchStr.replace('+', ' ')
                 searchStr = \
                     urllib.parse.unquote(searchStr.strip())
-                if self.server.debug:
-                    print('searchStr: ' + searchStr)
+                print('searchStr: ' + searchStr)
                 if searchForEmoji:
                     searchStr = ':' + searchStr + ':'
                 if searchStr.startswith('#'):

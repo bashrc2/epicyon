@@ -5846,9 +5846,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                             httpPrefix, wfRequest,
                             domain, projectVersion)
         if not wf:
-            if debug:
-                print('DEBUG: Unable to webfinger ' +
-                      searchNickname + '@' + searchDomainFull)
+            print('DEBUG: Unable to webfinger ' +
+                  searchNickname + '@' + searchDomainFull)
             return None
         personUrl = None
         if wf.get('errors'):
@@ -5878,8 +5877,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                 getJson(session, personUrl, asHeader, None,
                         projectVersion, httpPrefix, domain)
         if not profileJson:
-            if debug:
-                print('DEBUG: No actor returned from ' + personUrl)
+            print('DEBUG: No actor returned from ' + personUrl)
             return None
         avatarUrl = ''
         if profileJson.get('icon'):
