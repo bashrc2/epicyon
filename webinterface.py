@@ -5804,14 +5804,12 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         searchDomain, searchPort = getDomainFromActor(profileHandle)
     else:
         if '@' not in profileHandle:
-            if debug:
-                print('DEBUG: no @ in ' + profileHandle)
+            print('DEBUG: no @ in ' + profileHandle)
             return None
         if profileHandle.startswith('@'):
             profileHandle = profileHandle[1:]
         if '@' not in profileHandle:
-            if debug:
-                print('DEBUG: no @ in ' + profileHandle)
+            print('DEBUG: no @ in ' + profileHandle)
             return None
         searchNickname = profileHandle.split('@')[0]
         searchDomain = profileHandle.split('@')[1]
@@ -5821,14 +5819,14 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if searchPortStr.isdigit():
                 searchPort = int(searchPortStr)
             searchDomain = searchDomain.split(':')[0]
+    print('DEBUG: Search for handle ' + searchNickname + '@' searchDomain + ':' + str(searchPort))
     if not searchNickname:
-        if debug:
-            print('DEBUG: No nickname found in ' + profileHandle)
+        print('DEBUG: No nickname found in ' + profileHandle)
         return None
     if not searchDomain:
-        if debug:
-            print('DEBUG: No domain found in ' + profileHandle)
+        print('DEBUG: No domain found in ' + profileHandle)
         return None
+
     searchDomainFull = searchDomain
     if searchPort:
         if searchPort != 80 and searchPort != 443:
@@ -5848,7 +5846,11 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         if not wf:
             print('DEBUG: Unable to webfinger ' +
                   searchNickname + '@' + searchDomainFull)
+            print('DEBUG: wfRequest ' + str(wfRequest))
+            print('DEBUG: httpPrefix ' + httpPrefix)
+            print('DEBUG: domain ' + domain)
             return None
+
         personUrl = None
         if wf.get('errors'):
             personUrl = httpPrefix + '://' + \
