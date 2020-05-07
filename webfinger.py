@@ -76,17 +76,19 @@ def webfingerHandle(session, handle: str, httpPrefix: str,
             getJson(session, url, hdr, par, projectVersion,
                     httpPrefix, fromDomain)
     except Exception as e:
-        print("Unable to webfinger " + url)
-        print('nickname: ' + str(nickname))
-        print('domain: ' + str(wfDomain))
-        print('headers: ' + str(hdr))
-        print('params: ' + str(par))
         print(e)
         return None
 
     if result:
         storeWebfingerInCache(nickname + '@' + wfDomain,
                               result, cachedWebfingers)
+    else:
+        print("WARN: Unable to webfinger " + url + ' ' +
+              'nickname: ' + str(nickname) + ' ' +
+              'domain: ' + str(wfDomain) + ' ' +
+              'headers: ' + str(hdr) + ' ' +
+              'params: ' + str(par))
+
     return result
 
 
