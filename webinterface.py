@@ -5842,7 +5842,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             webfingerHandle(session,
                             searchNickname + '@' + searchDomainFull,
                             httpPrefix, cachedWebfingers,
-                            None, projectVersion)
+                            domain, projectVersion)
         if not wf:
             print('DEBUG: Unable to webfinger ' +
                   searchNickname + '@' + searchDomainFull)
