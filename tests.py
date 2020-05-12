@@ -1644,7 +1644,7 @@ def testWebLinks():
 
     exampleText = \
         '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \
-        'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ<<\p>'
+        'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ<<\\p>'
     resultText = replaceContentDuplicates(exampleText)
     assert resultText == \
         '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \

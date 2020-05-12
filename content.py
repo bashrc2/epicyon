@@ -362,7 +362,7 @@ def replaceContentDuplicates(content: str) -> str:
         content = content.replace('<<', '<')
     while '>>' in content:
         content = content.replace('>>', '>')
-    content = content.replace('<\p>', '')
+    content = content.replace('<\\p>', '')
     return content
 
 
