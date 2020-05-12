@@ -355,11 +355,23 @@ def addMention(wordStr: str, httpPrefix: str, following: str,
     return True
 
 
+def replaceContentDuplicates(content: str) -> str:
+    """Replaces invalid duplicates within content
+    """
+    while '<<' in content:
+        content = content.replace('<<', '<')
+    while '>>' in content:
+        content = content.replace('>>', '>')
+    content = content.replace('<\p>', '')
+    return content
+
+
 def removeLongWords(content: str, maxWordLength: int,
                     longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't
     disrupt the layout
     """
+    content = replaceContentDuplicates(content)
     if ' ' not in content:
         # handle a single very long string with no spaces
         contentStr = content.replace('<p>', '').replace(r'<\p>', '')

@@ -66,6 +66,7 @@ from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import removeLongWords
+from content import replaceContentDuplicates
 from theme import setCSSparam
 
 testServerAliceRunning = False
@@ -1640,6 +1641,15 @@ def testWebLinks():
     resultText = removeLongWords(addWebLinks(exampleText), 40, [])
     assert resultText == exampleText
     assert 'ellipsis' not in resultText
+
+    exampleText = \
+        '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \
+        'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ<<\p>'
+    resultText = replaceContentDuplicates(exampleText)
+    print(resultText)
+    assert resultText == \
+        '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \
+        'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ'
 
 
 def testAddEmoji():
