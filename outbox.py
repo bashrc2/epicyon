@@ -194,9 +194,17 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
             for boxNameIndex in indexes:
                 if boxNameIndex == 'inbox' and outboxName == 'tlblogs':
                     continue
-                inboxUpdateIndex(boxNameIndex, baseDir,
-                                 postToNickname + '@' + domain,
-                                 savedFilename, debug)
+                selfActor = \
+                    httpPrefix + '://' + domainFull + \
+                    '/users/' + postToNickname
+                # avoid duplicates of the message if already going
+                # back to the inbox of the same account
+                if selfActor not in messageJson['to']:
+                    # show sent post within the inbox,
+                    # as is the typical convention
+                    inboxUpdateIndex(boxNameIndex, baseDir,
+                                     postToNickname + '@' + domain,
+                                     savedFilename, debug)
     if outboxAnnounce(recentPostsCache,
                       baseDir, messageJson, debug):
         if debug:
