@@ -230,22 +230,23 @@ def getDomainFromActor(actor: str) -> (str, int):
     if '/profile/' in actor:
         domain = actor.split('/profile/')[0].replace('https://', '')
         domain = domain.replace('http://', '').replace('i2p://', '')
-        domain = domain.replace('dat://', '')
+        domain = domain.replace('dat://', '').replace('hyper://', '')
     else:
         if '/channel/' in actor:
             domain = actor.split('/channel/')[0].replace('https://', '')
             domain = domain.replace('http://', '').replace('i2p://', '')
-            domain = domain.replace('dat://', '')
+            domain = domain.replace('dat://', '').replace('hyper://', '')
         else:
             if '/users/' not in actor:
                 domain = actor.replace('https://', '').replace('http://', '')
-                domain = domain.replace('i2p://', '').replace('dat://', '')
+                domain = domain.replace('i2p://', '')
+                domain = domain.replace('dat://', '').replace('hyper://', '')
                 if '/' in actor:
                     domain = domain.split('/')[0]
             else:
                 domain = actor.split('/users/')[0].replace('https://', '')
                 domain = domain.replace('http://', '').replace('i2p://', '')
-                domain = domain.replace('dat://',  '')
+                domain = domain.replace('dat://',  '').replace('hyper://', '')
     if ':' in domain:
         portStr = domain.split(':')[1]
         if not portStr.isdigit():
@@ -481,10 +482,10 @@ def deletePost(baseDir: str, httpPrefix: str,
                         lines = f.readlines()
                     if lines:
                         newlines = ''
-                        for l in lines:
-                            if postId in l:
+                        for fileLine in lines:
+                            if postId in fileLine:
                                 continue
-                            newlines += l
+                            newlines += fileLine
                         if not newlines.strip():
                             # if there are no lines then remove the
                             # hashtag file

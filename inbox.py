@@ -1361,6 +1361,7 @@ def receiveAnnounce(recentPostsCache: {},
     objectDomain = objectDomain.replace('http://', '')
     objectDomain = objectDomain.replace('i2p://', '')
     objectDomain = objectDomain.replace('dat://', '')
+    objectDomain = objectDomain.replace('hyper://', '')
     if '/' in objectDomain:
         objectDomain = objectDomain.split('/')[0]
     if isBlockedDomain(baseDir, objectDomain):

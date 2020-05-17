@@ -461,8 +461,8 @@ def noOfFollowRequests(baseDir: str,
         lines = f.readlines()
         if followType != "onion":
             return len(lines)
-        for l in lines:
-            if '.onion' in l:
+        for fileLine in lines:
+            if '.onion' in fileLine:
                 ctr += 1
     return ctr
 

@@ -171,6 +171,9 @@ parser.add_argument("--http", type=str2bool, nargs='?',
 parser.add_argument("--dat", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use dat protocol only")
+parser.add_argument("--hyper", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Use hypercore protocol only")
 parser.add_argument("--i2p", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use i2p protocol only")
@@ -977,6 +980,8 @@ if args.ocap:
     ocapAlways = args.ocap
 if args.dat:
     httpPrefix = 'dat'
+if args.hyper:
+    httpPrefix = 'hyper'
 if args.i2p:
     httpPrefix = 'i2p'
 
@@ -990,6 +995,7 @@ if args.actor:
         args.actor = args.actor.replace('https://', '')
         args.actor = args.actor.replace('http://', '')
         args.actor = args.actor.replace('dat://', '')
+        args.actor = args.actor.replace('hyper://', '')
         args.actor = args.actor.replace('i2p://', '')
         args.actor = args.actor.replace('/@', '/users/')
         if '/users/' not in args.actor and \

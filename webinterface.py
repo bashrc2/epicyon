@@ -92,6 +92,7 @@ def getBlogAddress(actorJson: {}) -> str:
         if not (propertyValue['value'].startswith('https://') or
                 propertyValue['value'].startswith('http://') or
                 propertyValue['value'].startswith('dat://') or
+                propertyValue['value'].startswith('hyper://') or
                 propertyValue['value'].startswith('i2p://')):
             continue
         if '.' not in propertyValue['value']:
@@ -127,6 +128,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     if not (blogAddress.startswith('https://') or
             blogAddress.startswith('http://') or
             blogAddress.startswith('dat://') or
+            blogAddress.startswith('hyper://') or
             blogAddress.startswith('i2p://')):
         return
     if '.' not in blogAddress:
@@ -2764,7 +2766,8 @@ def addEmbeddedAudio(translate: {}, content: str) -> str:
             continue
 
         if not (w.startswith('http') or w.startswith('dat:') or
-                w.startswith('i2p:') or '/' in w):
+                w.startswith('hyper:') or w.startswith('i2p:') or
+                '/' in w):
             continue
         url = w
         content += '<center><audio controls>'
@@ -2809,7 +2812,8 @@ def addEmbeddedVideo(translate: {}, content: str,
         if not w.endswith(extension):
             continue
         if not (w.startswith('http') or w.startswith('dat:') or
-                w.startswith('i2p:') or '/' in w):
+                w.startswith('hyper:') or w.startswith('i2p:') or
+                '/' in w):
             continue
         url = w
         content += \
@@ -3945,6 +3949,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                             postJsonObject['object']['inReplyTo']
                         postDomain = postDomain.replace('https://', '')
                         postDomain = postDomain.replace('http://', '')
+                        postDomain = postDomain.replace('hyper://', '')
                         postDomain = postDomain.replace('dat://', '')
                         postDomain = postDomain.replace('i2p://', '')
                         if '/' in postDomain:
@@ -4099,7 +4104,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         postHtml = galleryStr
 
     if not showPublicOnly and storeToCache and \
-       boxName != 'tlmedia'and boxName != 'tlbookmarks':
+       boxName != 'tlmedia' and boxName != 'tlbookmarks':
         saveIndividualPostAsHtmlToCache(baseDir, nickname, domain,
                                         postJsonObject, postHtml)
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,

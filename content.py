@@ -138,6 +138,7 @@ def addWebLinks(content: str) -> str:
            w.startswith('i2p://') or \
            w.startswith('gemini://') or \
            w.startswith('gopher://') or \
+           w.startswith('hyper://') or \
            w.startswith('dat://'):
             if w.endswith('.') or w.endswith(';'):
                 w = w[:-1]
@@ -151,12 +152,15 @@ def addWebLinks(content: str) -> str:
                 markup += '<span class="invisible">i2p://</span>'
             elif w.startswith('dat://'):
                 markup += '<span class="invisible">dat://</span>'
+            elif w.startswith('hyper://'):
+                markup += '<span class="invisible">hyper://</span>'
             elif w.startswith('gemini://'):
                 markup += '<span class="invisible">gemini://</span>'
             elif w.startswith('gopher://'):
                 markup += '<span class="invisible">gopher://</span>'
             linkText = w.replace('https://', '').replace('http://', '')
             linkText = linkText.replace('dat://', '').replace('i2p://', '')
+            linkText = linkText.replace('hyper://', '')
             linkText = linkText.replace('gemini://', '')
             linkText = linkText.replace('gopher://', '')
             # prevent links from becoming too long
@@ -415,6 +419,10 @@ def removeLongWords(content: str, maxWordLength: int,
             continue
         elif 'dat:' in wordStr:
             continue
+        elif 'hyper:' in wordStr:
+            continue
+        elif 'briar:' in wordStr:
+            continue
         if '<' in wordStr:
             replaceWord = wordStr.split('<', 1)[0]
             content = content.replace(wordStr, replaceWord)
@@ -540,6 +548,7 @@ def getMentionsFromHtml(htmlText: str,
         actorStr = mentionStr.split('"')[0]
         if actorStr.startswith('http') or \
            actorStr.startswith('i2p') or \
+           actorStr.startswith('hyper') or \
            actorStr.startswith('dat:'):
             if actorStr not in mentions:
                 mentions.append(actorStr)
