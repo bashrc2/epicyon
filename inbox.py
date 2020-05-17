@@ -2104,7 +2104,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
 
         if not isGroup:
             # create a DM notification file if needed
-            if isDM(postJsonObject):
+            postIsDM = isDM(postJsonObject)
+            if postIsDM:
                 if nickname != 'inbox':
                     followDMsFilename = \
                         baseDir + '/accounts/' + \
@@ -2147,7 +2148,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                 '/users/' + handle.split('@')[0]
 
             # create a reply notification file if needed
-            if isReply(postJsonObject, actor):
+            if not postIsDM and isReply(postJsonObject, actor):
                 if nickname != 'inbox':
                     # replies index will be updated
                     updateIndexList.append('tlreplies')
