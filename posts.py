@@ -1645,7 +1645,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         handle = handleBase + toNickname
     else:
         singleUserInstanceNickname = 'dev'
-        handle = handleBase+singleUserInstanceNickname
+        handle = handleBase + singleUserInstanceNickname
 
     if debug:
         print('DEBUG: handle - ' + handle + ' toPort ' + str(toPort))
@@ -1669,13 +1669,12 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         postToBox = 'outbox'
 
     # get the actor inbox/outbox/capabilities for the To handle
-    (inboxUrl, pubKeyId, pubKey,
-     toPersonId, sharedInboxUrl,
-     capabilityAcquisition,
-     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
-                                            personCache,
-                                            projectVersion, httpPrefix,
-                                            nickname, domain, postToBox)
+    (inboxUrl, pubKeyId, pubKey, toPersonId, sharedInboxUrl,
+     capabilityAcquisition, avatarUrl,
+     displayName) = getPersonBox(baseDir, session, wfRequest,
+                                 personCache,
+                                 projectVersion, httpPrefix,
+                                 nickname, domain, postToBox)
 
     if nickname == 'capabilities':
         inboxUrl = capabilityAcquisition
