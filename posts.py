@@ -3068,6 +3068,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         if isFiltered(baseDir, nickname, domain, announcedJson['content']):
             rejectAnnounce(announceFilename)
             return None
+        # remove any long words
+        announcedJson['content'] = \
+            removeLongWords(announcedJson['content'], 40, [])
 
         # wrap in create to be consistent with other posts
         announcedJson = \
@@ -3082,9 +3085,6 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         # set the id to the original status
         announcedJson['id'] = postJsonObject['object']
         announcedJson['object']['id'] = postJsonObject['object']
-        # remove any long words
-        announcedJson['content'] = \
-            removeLongWords(announcedJson['content'], 40, [])
         # check that the repeat isn't for a blocked account
         attributedNickname = \
             getNicknameFromActor(announcedJson['object']['id'])
