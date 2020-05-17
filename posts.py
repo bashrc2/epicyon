@@ -43,6 +43,7 @@ from capabilities import getOcapFilename
 from capabilities import capabilitiesUpdate
 from media import attachMedia
 from media import replaceYouTube
+from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from auth import createBasicAuthHeader
@@ -3081,6 +3082,9 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         # set the id to the original status
         announcedJson['id'] = postJsonObject['object']
         announcedJson['object']['id'] = postJsonObject['object']
+        # remove any long words
+        announcedJson['content'] = \
+            removeLongWords(announcedJson['content'], 40, [])
         # check that the repeat isn't for a blocked account
         attributedNickname = \
             getNicknameFromActor(announcedJson['object']['id'])
