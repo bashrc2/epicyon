@@ -440,6 +440,11 @@ def deletePost(baseDir: str, httpPrefix: str,
             if bookmarkIndex in open(bookmarksIndexFilename).read():
                 return
 
+        # don't remove replies to blog posts
+        if isReplyToBlogPost(baseDir, nickname, domain,
+                             postJsonObject):
+            return
+
         # remove any attachment
         removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
 
@@ -453,9 +458,7 @@ def deletePost(baseDir: str, httpPrefix: str,
             getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
-                if not isReplyToBlogPost(baseDir, nickname, domain,
-                                         postJsonObject):
-                    os.remove(cachedPostFilename)
+                os.remove(cachedPostFilename)
         # removePostFromCache(postJsonObject,recentPostsCache)
 
         hasObject = False
