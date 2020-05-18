@@ -239,8 +239,7 @@ def htmlBlogPostContent(authorized: bool,
     if replies > 0:
         if not authorized:
             blogStr += '<p class="blogreplies">' + \
-                translate['Replies'].lower() + ': ' + str(replies) + \
-                '</p>'
+                translate['Replies'].lower() + ': ' + str(replies)
         else:
             blogStr += '<h1>' + translate['Replies'] + '</h1>\n'
             blogStr += '<script>' + contentWarningScriptOpen() + '</script>\n'
@@ -253,8 +252,7 @@ def htmlBlogPostContent(authorized: bool,
                                                 nickname, domain, domainFull,
                                                 postJsonObject['object']['id'])
                 blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
-            blogStr += '<br>'
-    blogStr += '<hr>\n'
+    blogStr += '<br><br><hr>\n'
     return blogStr
 
 
