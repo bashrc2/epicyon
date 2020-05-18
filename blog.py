@@ -53,15 +53,31 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                 return 1
         return 0
 
+    removals = []
     replies = 0
+    lines = []
     with open(postFilename, "r") as f:
         lines = f.readlines()
         for replyPostId in lines:
             replyPostId = replyPostId.replace('\n', '').replace('.json', '')
-            replyPostId = replyPostId.replace('.replies', '')
-            replies += 1 + noOfBlogReplies(baseDir, httpPrefix, translate,
-                                           nickname, domain, domainFull,
-                                           replyPostId, depth+1)
+            if locatePost(baseDir, nickname, domain, replyPostId):
+                replyPostId = replyPostId.replace('.replies', '')
+                replies += 1 + noOfBlogReplies(baseDir, httpPrefix, translate,
+                                               nickname, domain, domainFull,
+                                               replyPostId, depth+1)
+            else:
+                # remove post which no longer exists
+                removals.append(replyPostId)
+
+    # remove posts from .replies file if they don't exist
+    if lines and removals:
+        print('Rewriting ' + postFilename + ' to remove ' +
+              str(len(removals)) + ' entries')
+        with open(postFilename, "w") as f:
+            for replyPostId in lines:
+                if replyPostId not in removals:
+                    f.write(replyPostId + '\n')
+
     return replies
 
 
