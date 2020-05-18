@@ -149,7 +149,8 @@ def htmlBlogPostContent(authorized: bool,
                         baseDir: str, httpPrefix: str, translate: {},
                         nickname: str, domain: str, domainFull: str,
                         postJsonObject: {},
-                        handle: str, restrictToDomain: bool) -> str:
+                        handle: str, restrictToDomain: bool,
+                        blogSeparator='<hr>') -> str:
     """Returns the content for a single blog post
     """
     linkedAuthor = False
@@ -236,23 +237,32 @@ def htmlBlogPostContent(authorized: bool,
     replies = noOfBlogReplies(baseDir, httpPrefix, translate,
                               nickname, domain, domainFull,
                               postJsonObject['object']['id'])
-    if replies > 0:
-        if not authorized:
-            blogStr += '<p class="blogreplies">' + \
-                translate['Replies'].lower() + ': ' + str(replies) + '</p>'
+
+    # separator between blogs should be centered
+    if '<center>' not in blogSeparator:
+        blogSeparator = '<center>' + blogSeparator + '</center>'
+
+    if replies == 0:
+        blogStr += blogSeparator + '\n'
+        return blogStr
+
+    if not authorized:
+        blogStr += '<p class="blogreplies">' + \
+            translate['Replies'].lower() + ': ' + str(replies) + '</p>'
+        blogStr += '<br><br><br>' + blogSeparator + '\n'
+    else:
+        blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
+        blogStr += '<script>' + contentWarningScriptOpen() + '</script>\n'
+        if not titleStr:
+            blogStr += getBlogReplies(baseDir, httpPrefix, translate,
+                                      nickname, domain, domainFull,
+                                      postJsonObject['object']['id'])
         else:
-            blogStr += '<h1>' + translate['Replies'] + '</h1>\n'
-            blogStr += '<script>' + contentWarningScriptOpen() + '</script>\n'
-            if not titleStr:
-                blogStr += getBlogReplies(baseDir, httpPrefix, translate,
-                                          nickname, domain, domainFull,
-                                          postJsonObject['object']['id'])
-            else:
-                blogRepliesStr = getBlogReplies(baseDir, httpPrefix, translate,
-                                                nickname, domain, domainFull,
-                                                postJsonObject['object']['id'])
-                blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
-    blogStr += '<br><br><hr>\n'
+            blogRepliesStr = getBlogReplies(baseDir, httpPrefix, translate,
+                                            nickname, domain, domainFull,
+                                            postJsonObject['object']['id'])
+            blogStr += blogRepliesStr.replace('>' + titleStr + '<', '')
+
     return blogStr
 
 
