@@ -403,6 +403,27 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
                                   ' from moderation index')
 
 
+def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
+                      postJsonObject: str):
+    """Is the given post a reply to a blog post?
+    """
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('inReplyTo'):
+        return False
+    blogsIndexFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/tlblogs.index'
+    if not os.path.isfile(blogsIndexFilename):
+        return False
+    postId = postJsonObject['object']['inReplyTo'].replace('/activity', '')
+    postId = postId.replace('/', '#')
+    if postId in open(blogsIndexFilename).read():
+        return True
+    return False
+
+
 def deletePost(baseDir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
                debug: bool) -> None:
@@ -432,7 +453,9 @@ def deletePost(baseDir: str, httpPrefix: str,
             getCachedPostFilename(baseDir, nickname, domain, postJsonObject)
         if cachedPostFilename:
             if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
+                if not isReplyToBlogPost(baseDir, nickname, domain,
+                                         postJsonObject):
+                    os.remove(cachedPostFilename)
         # removePostFromCache(postJsonObject,recentPostsCache)
 
         hasObject = False
