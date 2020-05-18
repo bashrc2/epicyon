@@ -239,7 +239,7 @@ def htmlBlogPostContent(authorized: bool,
     if replies > 0:
         if not authorized:
             blogStr += '<p class="blogreplies">' + \
-                translate['Replies'].lower() + ': ' + str(replies)
+                translate['Replies'].lower() + ': ' + str(replies) + '</p>'
         else:
             blogStr += '<h1>' + translate['Replies'] + '</h1>\n'
             blogStr += '<script>' + contentWarningScriptOpen() + '</script>\n'
