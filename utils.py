@@ -339,28 +339,20 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     # if this post in the shared inbox?
     postUrl = postUrl.replace('/', '#').replace('/activity', '').strip()
 
-    boxName = 'inbox'
-    postFilename = baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/' + boxName + '/' + postUrl + '.' + extension
-    if os.path.isfile(postFilename):
-        return postFilename
+    # search boxes
+    boxes = ('inbox', 'outbox', 'tlblogs')
+    for boxName in boxes:
+        postFilename = baseDir + '/accounts/' + nickname + '@' + domain + \
+            '/' + boxName + '/' + postUrl + '.' + extension
+        if os.path.isfile(postFilename):
+            return postFilename
 
-    boxName = 'outbox'
-    postFilename = baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/' + boxName + '/' + postUrl + '.' + extension
-    if os.path.isfile(postFilename):
-        return postFilename
-
-    boxName = 'tlblogs'
-    postFilename = baseDir + '/accounts/' + nickname + '@' + domain + \
-        '/' + boxName + '/' + postUrl + '.'+extension
-    if os.path.isfile(postFilename):
-        return postFilename
-
+    # is it in the announce cache?
     postFilename = baseDir + '/cache/announce/' + \
         nickname + '/' + postUrl + '.' + extension
     if os.path.isfile(postFilename):
         return postFilename
+
     print('WARN: unable to locate ' + nickname + ' ' +
           postUrl + '.' + extension)
     return None
