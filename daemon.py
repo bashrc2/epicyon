@@ -1295,7 +1295,7 @@ class PubServer(BaseHTTPRequestHandler):
             if blogFilename and nickname:
                 postJsonObject = loadJson(blogFilename)
                 if isBlogPost(postJsonObject):
-                    msg = htmlBlogPost(True,
+                    msg = htmlBlogPost(authorized,
                                        self.server.baseDir,
                                        self.server.httpPrefix,
                                        self.server.translate,

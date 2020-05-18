@@ -85,7 +85,7 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
 def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                    nickname: str, domain: str, domainFull: str,
                    postId: str, depth=0) -> str:
-    """Returns the number of replies on the post
+    """Returns a string containing html blog posts
     """
     if depth > 4:
         return ''
@@ -106,7 +106,7 @@ def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
         for postBox in tryPostBox:
             postFilename = baseDir + '/accounts/' + \
                 nickname + '@' + domain + '/' + postBox + '/' + \
-                postId.replace('/', '#')
+                postId.replace('/', '#') + '.json'
             if os.path.isfile(postFilename):
                 postFilename = baseDir + '/accounts/' + \
                     nickname + '@' + domain + \
