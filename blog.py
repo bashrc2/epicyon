@@ -131,9 +131,11 @@ def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
                 continue
             with open(postFilename, "r") as postFile:
                 repliesStr += postFile.read() + '\n'
-            repliesStr += getBlogReplies(baseDir, httpPrefix, translate,
-                                         nickname, domain, domainFull,
-                                         replyPostId, depth+1)
+            rply = getBlogReplies(baseDir, httpPrefix, translate,
+                                  nickname, domain, domainFull,
+                                  replyPostId, depth+1)
+            if rply not in repliesStr:
+                repliesStr += rply
 
         # indicate the reply indentation level
         indentStr = '>'
