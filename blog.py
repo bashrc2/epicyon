@@ -75,6 +75,7 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
               str(len(removals)) + ' entries')
         with open(postFilename, "w") as f:
             for replyPostId in lines:
+                replyPostId = replyPostId.replace('\n', '')
                 if replyPostId not in removals:
                     f.write(replyPostId + '\n')
 
