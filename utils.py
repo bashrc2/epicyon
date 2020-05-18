@@ -339,22 +339,25 @@ def locatePost(baseDir: str, nickname: str, domain: str,
     # if this post in the shared inbox?
     postUrl = postUrl.replace('/', '#').replace('/activity', '').strip()
 
+    # add the extension
+    postUrl = postUrl + '.' + extension
+
     # search boxes
     boxes = ('inbox', 'outbox', 'tlblogs')
+    accountDir = baseDir + '/accounts/' + nickname + '@' + domain + '/'
     for boxName in boxes:
-        postFilename = baseDir + '/accounts/' + nickname + '@' + domain + \
-            '/' + boxName + '/' + postUrl + '.' + extension
+        postFilename = accountDir + boxName + '/' + postUrl
         if os.path.isfile(postFilename):
             return postFilename
 
     # is it in the announce cache?
     postFilename = baseDir + '/cache/announce/' + \
-        nickname + '/' + postUrl + '.' + extension
+        nickname + '/' + postUrl
     if os.path.isfile(postFilename):
         return postFilename
 
     print('WARN: unable to locate ' + nickname + ' ' +
-          postUrl + '.' + extension)
+          postUrl)
     return None
 
 
