@@ -2484,23 +2484,9 @@ def createBoxIndexed(recentPostsCache: {},
     if boxname != 'inbox' and boxname != 'dm' and \
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and \
-       boxname != 'outbox' and boxname != 'tlbookmarks':
+       boxname != 'outbox' and boxname != 'tlbookmarks' and \
+       boxname != 'bookmarks':
         return None
-
-#    if boxname != 'dm' and boxname != 'tlreplies' and \
-#       boxname != 'tlmedia' and boxname != 'tlblogs' and \
-#       boxname != 'tlbookmarks':
-#        boxDir = createPersonDir(nickname, domain, baseDir, boxname)
-#    else:
-#        # extract DMs or replies or media from the inbox
-#        boxDir = createPersonDir(nickname, domain, baseDir, 'inbox')
-
-#    announceCacheDir = baseDir + '/cache/announce/' + nickname
-
-#    sharedBoxDir = None
-#    if boxname == 'inbox' or boxname == 'tlreplies' or \
-#       boxname == 'tlmedia' or boxname == 'tlblogs':
-#        sharedBoxDir = createPersonDir('inbox', domain, baseDir, boxname)
 
     # bookmarks timeline is like the inbox but has its own separate index
     indexBoxName = boxname
