@@ -3449,7 +3449,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if pageNumber:
         pageNumberParam = '?page=' + str(pageNumber)
 
-    if not showPublicOnly and storeToCache and boxName != 'tlmedia':
+    if (not showPublicOnly and
+        (storeToCache or boxName == 'bookmarks' or
+         boxName == 'tlbookmarks') and
+       boxName != 'tlmedia'):
         # update avatar if needed
         if not avatarUrl:
             avatarUrl = \
