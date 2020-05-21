@@ -3825,7 +3825,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get the bookmarks for a given person
         if self.path.endswith('/tlbookmarks') or \
-           '/tlbookmarks?page=' in self.path:
+           '/tlbookmarks?page=' in self.path or \
+           self.path.endswith('/bookmarks') or \
+           '/bookmarks?page=' in self.path:
             if '/users/' in self.path:
                 if authorized:
                     bookmarksFeed = \
@@ -3842,6 +3844,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self._requestHTTP():
                             nickname = self.path.replace('/users/', '')
                             nickname = nickname.replace('/tlbookmarks', '')
+                            nickname = nickname.replace('/bookmarks', '')
                             pageNumber = 1
                             if '?page=' in nickname:
                                 pageNumber = nickname.split('?page=')[1]
@@ -3902,6 +3905,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         nickname = self.path.replace('/users/', '')
                         nickname = nickname.replace('/tlbookmarks', '')
+                        nickname = nickname.replace('/bookmarks', '')
                         print('DEBUG: ' + nickname +
                               ' was not authorized to access ' + self.path)
             if self.server.debug:

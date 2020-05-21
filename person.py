@@ -546,7 +546,7 @@ def personBoxJson(recentPostsCache: {},
        boxname != 'tlreplies' and boxname != 'tlmedia' and \
        boxname != 'tlblogs' and \
        boxname != 'outbox' and boxname != 'moderation' and \
-       boxname != 'tlbookmarks':
+       boxname != 'tlbookmarks' and boxname != 'bookmarks':
         return None
 
     if not '/' + boxname in path:
@@ -589,7 +589,7 @@ def personBoxJson(recentPostsCache: {},
         return createDMTimeline(session, baseDir, nickname, domain, port,
                                 httpPrefix,
                                 noOfItems, headerOnly, ocapAlways, pageNumber)
-    elif boxname == 'tlbookmarks':
+    elif boxname == 'tlbookmarks' or boxname == 'bookmarks':
         return createBookmarksTimeline(session, baseDir, nickname, domain,
                                        port, httpPrefix,
                                        noOfItems, headerOnly, ocapAlways,
