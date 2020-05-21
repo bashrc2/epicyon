@@ -3181,7 +3181,7 @@ def preparePostFromHtmlCache(postHtml: str, boxName: str,
     """Sets the page number on a cached html post
     """
     # if on the bookmarks timeline then remain there
-    if boxName == 'tlbookmarks':
+    if boxName == 'tlbookmarks' or boxName == 'bookmarks':
         postHtml = postHtml.replace('?tl=inbox', '?tl=tlbookmarks')
     withPageNumber = postHtml.replace(';-999;', ';' + str(pageNumber) + ';')
     withPageNumber = withPageNumber.replace('?page=-999',
@@ -3515,7 +3515,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
-    if boxName == 'tlbookmarks':
+    if boxName == 'tlbookmarks' or boxName == 'bookmarks':
         return ''
 
     timelinePostBookmark = postJsonObject['id'].replace('/activity', '')
@@ -4104,7 +4104,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         postHtml = galleryStr
 
     if not showPublicOnly and storeToCache and \
-       boxName != 'tlmedia' and boxName != 'tlbookmarks':
+       boxName != 'tlmedia' and boxName != 'tlbookmarks' and \
+       boxName != 'bookmarks':
         saveIndividualPostAsHtmlToCache(baseDir, nickname, domain,
                                         postJsonObject, postHtml)
         updateRecentPostsCache(recentPostsCache, maxRecentPosts,
@@ -4258,7 +4259,7 @@ def htmlTimeline(defaultTimeline: str,
         sharesButton = 'buttonselected'
         if newShare:
             sharesButton = 'buttonselectedhighlighted'
-    elif boxName == 'tlbookmarks':
+    elif boxName == 'tlbookmarks' or boxName == 'bookmarks':
         bookmarksButton = 'buttonselected'
 
     fullDomain = domain
