@@ -42,6 +42,28 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
             os.remove(cachedPostFilename)
     removePostFromCache(postJsonObject, recentPostsCache)
 
+    # remove from the index
+    bookmarksIndexFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/bookmarks.index'
+    if not os.path.isfile(bookmarksIndexFilename):
+        return
+    if '/' in postFilename:
+        bookmarkIndex = postFilename.split('/')[-1].strip()
+    else:
+        bookmarkIndex = postFilename.strip()
+    if bookmarkIndex not in open(bookmarksIndexFilename).read():
+        return
+    indexStr = ''
+    indexStrChanged = False
+    with open(bookmarksIndexFilename, 'r') as indexFile:
+        indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
+        indexStrChanged = True
+    if indexStrChanged:
+        bookmarksIndexFile = open(bookmarksIndexFilename, 'w')
+        if bookmarksIndexFile:
+            bookmarksIndexFile.write(indexStr)
+            bookmarksIndexFile.close()
+
     if not postJsonObject.get('type'):
         return
     if postJsonObject['type'] != 'Create':
@@ -84,28 +106,6 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         bmItLen = len(postJsonObject['object']['bookmarks']['items'])
         postJsonObject['object']['bookmarks']['totalItems'] = bmItLen
     saveJson(postJsonObject, postFilename)
-
-    # remove from the index
-    bookmarksIndexFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/bookmarks.index'
-    if not os.path.isfile(bookmarksIndexFilename):
-        return
-    if '/' in postFilename:
-        bookmarkIndex = postFilename.split('/')[-1].strip()
-    else:
-        bookmarkIndex = postFilename.strip()
-    if bookmarkIndex not in open(bookmarksIndexFilename).read():
-        return
-    indexStr = ''
-    indexStrChanged = False
-    with open(bookmarksIndexFilename, 'r') as indexFile:
-        indexStr = indexFile.read().replace(bookmarkIndex + '\n', '')
-        indexStrChanged = True
-    if indexStrChanged:
-        bookmarksIndexFile = open(bookmarksIndexFilename, 'w')
-        if bookmarksIndexFile:
-            bookmarksIndexFile.write(indexStr)
-            bookmarksIndexFile.close()
 
 
 def bookmarkedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
