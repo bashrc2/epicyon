@@ -2547,8 +2547,7 @@ def createBoxIndexed(recentPostsCache: {},
                 postFilename = indexFile.readline()
 
                 if not postFilename:
-                    postsCtr += 1
-                    continue
+                    break
 
                 # Skip through any posts previous to the current page
                 if postsCtr < int((pageNumber - 1) * itemsPerPage):
