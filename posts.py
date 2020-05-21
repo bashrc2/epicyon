@@ -2552,7 +2552,7 @@ def createBoxIndexed(recentPostsCache: {},
         '/' + indexBoxName + '.index'
     postsCtr = 0
     if os.path.isfile(indexFilename):
-        maxPostCtr = itemsPerPage*pageNumber
+        maxPostCtr = itemsPerPage * pageNumber
         with open(indexFilename, 'r') as indexFile:
             while postsCtr < maxPostCtr:
                 postFilename = indexFile.readline()
@@ -2576,7 +2576,6 @@ def createBoxIndexed(recentPostsCache: {},
                 postUrl = \
                     postFilename.replace('\n', '').replace('.json', '').strip()
 
-                postAdded = False
                 # is the post cached in memory?
                 if recentPostsCache.get('index'):
                     if postUrl in recentPostsCache['index']:
@@ -2585,18 +2584,18 @@ def createBoxIndexed(recentPostsCache: {},
                             addPostStringToTimeline(url,
                                                     boxname, postsInBox,
                                                     boxActor)
-                            postAdded = True
+                            postsCtr += 1
+                            continue
 
-                if not postAdded:
-                    # read the post from file
-                    fullPostFilename = \
-                        locatePost(baseDir, nickname,
-                                   domain, postUrl, False)
-                    if fullPostFilename:
-                        addPostToTimeline(fullPostFilename, boxname,
-                                          postsInBox, boxActor)
-                    else:
-                        print('WARN: unable to locate post ' + postUrl)
+                # read the post from file
+                fullPostFilename = \
+                    locatePost(baseDir, nickname,
+                               domain, postUrl, False)
+                if fullPostFilename:
+                    addPostToTimeline(fullPostFilename, boxname,
+                                      postsInBox, boxActor)
+                else:
+                    print('WARN: unable to locate post ' + postUrl)
 
                 postsCtr += 1
 
