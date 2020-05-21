@@ -171,6 +171,8 @@ from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
 from outbox import postMessageToOutbox
 from happening import removeCalendarEvent
+from bookmarks import bookmark
+from bookmarks import undoBookmark
 import os
 
 
@@ -2410,14 +2412,30 @@ class PubServer(BaseHTTPRequestHandler):
             bookmarkActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
-            bookmarkJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'type': 'Bookmark',
-                'actor': bookmarkActor,
-                'to': [bookmarkActor],
-                'object': bookmarkUrl
-            }
-            self._postToOutbox(bookmarkJson, self.server.projectVersion)
+            # bookmarkJson = {
+            #     "@context": "https://www.w3.org/ns/activitystreams",
+            #     'type': 'Bookmark',
+            #     'actor': bookmarkActor,
+            #     'to': [bookmarkActor],
+            #     'object': bookmarkUrl
+            # }
+            ccList = []
+            bookmark(self.server.recentPostsCache,
+                     self.server.session,
+                     self.server.baseDir,
+                     self.server.federationList,
+                     self.postToNickname,
+                     self.server.domain, self.server.port,
+                     ccList,
+                     self.server.httpPrefix,
+                     bookmarkUrl, bookmarkActor, False,
+                     self.server.sendThreads,
+                     self.server.postLog,
+                     self.server.personCache,
+                     self.server.cachedWebfingers,
+                     self.server.debug,
+                     self.server.projectVersion)
+            # self._postToOutbox(bookmarkJson, self.server.projectVersion)
             self.server.GETbusy = False
             actorAbsolute = \
                 self.server.httpPrefix + '://' + self.server.domainFull + actor
@@ -2474,19 +2492,35 @@ class PubServer(BaseHTTPRequestHandler):
             undoActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
-            undoBookmarkJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'type': 'Undo',
-                'actor': undoActor,
-                'to': [undoActor],
-                'object': {
-                    'type': 'Bookmark',
-                    'actor': undoActor,
-                    'to': [undoActor],
-                    'object': bookmarkUrl
-                }
-            }
-            self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
+            # undoBookmarkJson = {
+            #     "@context": "https://www.w3.org/ns/activitystreams",
+            #     'type': 'Undo',
+            #     'actor': undoActor,
+            #     'to': [undoActor],
+            #     'object': {
+            #         'type': 'Bookmark',
+            #         'actor': undoActor,
+            #         'to': [undoActor],
+            #         'object': bookmarkUrl
+            #     }
+            # }
+            ccList = []
+            undoBookmark(self.server.recentPostsCache,
+                         self.server.session,
+                         self.server.baseDir,
+                         self.server.federationList,
+                         self.postToNickname,
+                         self.server.domain, self.server.port,
+                         ccList,
+                         self.server.httpPrefix,
+                         bookmarkUrl, undoActor, False,
+                         self.server.sendThreads,
+                         self.server.postLog,
+                         self.server.personCache,
+                         self.server.cachedWebfingers,
+                         self.server.debug,
+                         self.server.projectVersion)
+            # self._postToOutbox(undoBookmarkJson, self.server.projectVersion)
             self.server.GETbusy = False
             actorAbsolute = \
                 self.server.httpPrefix + '://' + self.server.domainFull + actor
