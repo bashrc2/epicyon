@@ -16,7 +16,6 @@ from utils import locatePost
 from utils import getCachedPostFilename
 from utils import loadJson
 from utils import saveJson
-from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
@@ -283,15 +282,6 @@ def bookmark(recentPostsCache: {},
         updateBookmarksCollection(recentPostsCache,
                                   baseDir, postFilename, objectUrl,
                                   newBookmarkJson['actor'], domain, debug)
-        
-        #sendSignedJson(newBookmarkJson, session, baseDir,
-        #               nickname, domain, port,
-        #               bookmarkedPostNickname,
-        #               bookmarkedPostDomain, bookmarkedPostPort,
-        #               'https://www.w3.org/ns/activitystreams#Public',
-        #               httpPrefix, True, clientToServer, federationList,
-        #               sendThreads, postLog, cachedWebfingers, personCache,
-        #               debug, projectVersion)
 
     return newBookmarkJson
 
@@ -389,15 +379,6 @@ def undoBookmark(recentPostsCache: {},
                                      baseDir, postFilename, objectUrl,
                                      newUndoBookmarkJson['actor'],
                                      domain, debug)
-
-        #sendSignedJson(newUndoBookmarkJson, session, baseDir,
-        #               nickname, domain, port,
-        #               bookmarkedPostNickname, bookmarkedPostDomain,
-        #               bookmarkedPostPort,
-        #               'https://www.w3.org/ns/activitystreams#Public',
-        #               httpPrefix, True, clientToServer, federationList,
-        #               sendThreads, postLog, cachedWebfingers, personCache,
-        #               debug, projectVersion)
     else:
         return None
 
