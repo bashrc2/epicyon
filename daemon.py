@@ -2412,13 +2412,6 @@ class PubServer(BaseHTTPRequestHandler):
             bookmarkActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
-            # bookmarkJson = {
-            #     "@context": "https://www.w3.org/ns/activitystreams",
-            #     'type': 'Bookmark',
-            #     'actor': bookmarkActor,
-            #     'to': [bookmarkActor],
-            #     'object': bookmarkUrl
-            # }
             ccList = []
             bookmark(self.server.recentPostsCache,
                      self.server.session,
@@ -2492,18 +2485,6 @@ class PubServer(BaseHTTPRequestHandler):
             undoActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
-            # undoBookmarkJson = {
-            #     "@context": "https://www.w3.org/ns/activitystreams",
-            #     'type': 'Undo',
-            #     'actor': undoActor,
-            #     'to': [undoActor],
-            #     'object': {
-            #         'type': 'Bookmark',
-            #         'actor': undoActor,
-            #         'to': [undoActor],
-            #         'object': bookmarkUrl
-            #     }
-            # }
             ccList = []
             undoBookmark(self.server.recentPostsCache,
                          self.server.session,
