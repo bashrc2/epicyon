@@ -283,15 +283,15 @@ def bookmark(recentPostsCache: {},
         updateBookmarksCollection(recentPostsCache,
                                   baseDir, postFilename, objectUrl,
                                   newBookmarkJson['actor'], domain, debug)
-
-        sendSignedJson(newBookmarkJson, session, baseDir,
-                       nickname, domain, port,
-                       bookmarkedPostNickname,
-                       bookmarkedPostDomain, bookmarkedPostPort,
-                       'https://www.w3.org/ns/activitystreams#Public',
-                       httpPrefix, True, clientToServer, federationList,
-                       sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion)
+        
+        #sendSignedJson(newBookmarkJson, session, baseDir,
+        #               nickname, domain, port,
+        #               bookmarkedPostNickname,
+        #               bookmarkedPostDomain, bookmarkedPostPort,
+        #               'https://www.w3.org/ns/activitystreams#Public',
+        #               httpPrefix, True, clientToServer, federationList,
+        #               sendThreads, postLog, cachedWebfingers, personCache,
+        #               debug, projectVersion)
 
     return newBookmarkJson
 
@@ -390,14 +390,14 @@ def undoBookmark(recentPostsCache: {},
                                      newUndoBookmarkJson['actor'],
                                      domain, debug)
 
-        sendSignedJson(newUndoBookmarkJson, session, baseDir,
-                       nickname, domain, port,
-                       bookmarkedPostNickname, bookmarkedPostDomain,
-                       bookmarkedPostPort,
-                       'https://www.w3.org/ns/activitystreams#Public',
-                       httpPrefix, True, clientToServer, federationList,
-                       sendThreads, postLog, cachedWebfingers, personCache,
-                       debug, projectVersion)
+        #sendSignedJson(newUndoBookmarkJson, session, baseDir,
+        #               nickname, domain, port,
+        #               bookmarkedPostNickname, bookmarkedPostDomain,
+        #               bookmarkedPostPort,
+        #               'https://www.w3.org/ns/activitystreams#Public',
+        #               httpPrefix, True, clientToServer, federationList,
+        #               sendThreads, postLog, cachedWebfingers, personCache,
+        #               debug, projectVersion)
     else:
         return None
 
