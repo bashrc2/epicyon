@@ -2510,6 +2510,8 @@ def createBoxIndexed(recentPostsCache: {},
 
     pageStr = '?page=true'
     if pageNumber:
+        if pageNumber < 1:
+            pageNumber = 1
         try:
             pageStr = '?page=' + str(pageNumber)
         except BaseException:
@@ -2517,15 +2519,15 @@ def createBoxIndexed(recentPostsCache: {},
     boxUrl = httpPrefix + '://' + domain + '/users/' + nickname + '/' + boxname
     boxHeader = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'first': boxUrl+'?page=true',
+        'first': boxUrl + '?page=true',
         'id': boxUrl,
-        'last': boxUrl+'?page=true',
+        'last': boxUrl + '?page=true',
         'totalItems': 0,
         'type': 'OrderedCollection'
     }
     boxItems = {
         '@context': 'https://www.w3.org/ns/activitystreams',
-        'id': boxUrl+pageStr,
+        'id': boxUrl + pageStr,
         'orderedItems': [
         ],
         'partOf': boxUrl,
