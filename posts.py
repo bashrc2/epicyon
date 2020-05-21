@@ -2490,16 +2490,9 @@ def createBoxIndexed(recentPostsCache: {},
 
     # bookmarks timeline is like the inbox but has its own separate index
     indexBoxName = boxname
-    boxes = {
-        "tlbookmarks": "bookmarks",
-        "dm": "dm",
-        "tlreplies": "tlreplies",
-        "tlmedia": "tlmedia",
-        "tlblogs": "tlblogs"
-    }
-    if boxes.get(boxname):
-        indexBoxName = boxes[boxname]
-        boxname = boxes[boxname]
+    if boxname == "tlbookmarks":
+        boxname = "bookmarks"
+        indexBoxName = boxname
 
     if port:
         if port != 80 and port != 443:
