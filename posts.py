@@ -2513,6 +2513,7 @@ def createBoxIndexed(recentPostsCache: {},
     }
     if boxes.get(boxname):
         indexBoxName = boxes[boxname]
+        boxname = boxes[boxname]
 
     if port:
         if port != 80 and port != 443:
