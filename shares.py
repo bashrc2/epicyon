@@ -26,7 +26,8 @@ def getValidSharedItemID(displayName: str) -> str:
     displayName = displayName.replace(' ', '').replace('+', '-')
     displayName = displayName.replace('/', '-').replace('\\', '-')
     displayName = displayName.replace('.', '_').replace('?', '-')
-    displayName = displayName.replace('\n', '').replace("’", "'")
+    displayName = displayName.replace('\n', '').replace('\r', '')
+    displayName = displayName.replace("’", "'")
     return displayName.replace('&', '-')
 
 

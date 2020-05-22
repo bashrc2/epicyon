@@ -149,7 +149,9 @@ def getFollowersOfPerson(baseDir: str,
                 continue
             with open(filename, 'r') as followingfile:
                 for followingHandle in followingfile:
-                    if followingHandle.replace('\n', '') == handle:
+                    followingHandle2 = followingHandle.replace('\n', '')
+                    followingHandle2 = followingHandle2.replace('\r', '')
+                    if followingHandle2 == handle:
                         if account not in followers:
                             followers.append(account)
                         break
@@ -209,7 +211,7 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
         lines = f.readlines()
     with open(filename, "w") as f:
         for line in lines:
-            if line.strip("\n") != handleToUnfollow:
+            if line.strip("\n").strip("\r") != handleToUnfollow:
                 f.write(line)
 
     # write to an unfollowed file so that if a follow accept
@@ -389,17 +391,20 @@ def getFollowingFeed(baseDir: str, domain: str, port: int, path: str,
                     pageCtr += 1
                     totalCtr += 1
                     if currPage == pageNumber:
+                        line2 = \
+                            line.lower().replace('\n', '').replace('\r', '')
                         url = httpPrefix + '://' + \
-                            line.lower().replace('\n', '').split('@')[1] + \
+                            line2.split('@')[1] + \
                             '/users/' + \
-                            line.lower().replace('\n', '').split('@')[0]
+                            line2.split('@')[0]
                         following['orderedItems'].append(url)
                 elif ((line.startswith('http') or
                        line.startswith('dat')) and '/users/' in line):
                     pageCtr += 1
                     totalCtr += 1
                     if currPage == pageNumber:
-                        appendStr = line.lower().replace('\n', '')
+                        appendStr = \
+                            line.lower().replace('\n', '').replace('\r', '')
                         following['orderedItems'].append(appendStr)
             if pageCtr >= followsPerPage:
                 pageCtr = 0

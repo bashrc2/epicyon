@@ -69,7 +69,7 @@ def removeGlobalBlock(baseDir: str,
                 with open(unblockingFilename, 'r') as fp:
                     with open(unblockingFilename + '.new', 'w') as fpnew:
                         for line in fp:
-                            handle = line.replace('\n', '')
+                            handle = line.replace('\n', '').replace('\r', '')
                             if unblockHandle not in line:
                                 fpnew.write(handle + '\n')
                 if os.path.isfile(unblockingFilename + '.new'):
@@ -82,7 +82,8 @@ def removeGlobalBlock(baseDir: str,
                 with open(unblockingFilename, 'r') as fp:
                     with open(unblockingFilename + '.new', 'w') as fpnew:
                         for line in fp:
-                            blockLine = line.replace('\n', '')
+                            blockLine = \
+                                line.replace('\n', '').replace('\r', '')
                             if unblockHashtag not in line:
                                 fpnew.write(blockLine + '\n')
                 if os.path.isfile(unblockingFilename + '.new'):
@@ -105,7 +106,7 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
             with open(unblockingFilename, 'r') as fp:
                 with open(unblockingFilename + '.new', 'w') as fpnew:
                     for line in fp:
-                        handle = line.replace('\n', '')
+                        handle = line.replace('\n', '').replace('\r', '')
                         if unblockHandle not in line:
                             fpnew.write(handle + '\n')
             if os.path.isfile(unblockingFilename + '.new'):
@@ -119,7 +120,7 @@ def isBlockedHashtag(baseDir: str, hashtag: str) -> bool:
     """
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(globalBlockingFilename):
-        hashtag = hashtag.strip('\n')
+        hashtag = hashtag.strip('\n').strip('\r')
         if hashtag + '\n' in open(globalBlockingFilename).read():
             return True
     return False

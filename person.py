@@ -52,7 +52,7 @@ def setProfileImage(baseDir: str, httpPrefix: str, nickname: str, domain: str,
     """Saves the given image file as an avatar or background
     image for the given person
     """
-    imageFilename = imageFilename.replace('\n', '')
+    imageFilename = imageFilename.replace('\n', '').replace('\r', '')
     if not (imageFilename.endswith('.png') or
             imageFilename.endswith('.jpg') or
             imageFilename.endswith('.jpeg') or
@@ -712,7 +712,7 @@ def isSuspended(baseDir: str, nickname: str) -> bool:
         with open(suspendedFilename, "r") as f:
             lines = f.readlines()
         for suspended in lines:
-            if suspended.strip('\n') == nickname:
+            if suspended.strip('\n').strip('\r') == nickname:
                 return True
     return False
 
@@ -726,7 +726,7 @@ def unsuspendAccount(baseDir: str, nickname: str) -> None:
             lines = f.readlines()
         suspendedFile = open(suspendedFilename, "w+")
         for suspended in lines:
-            if suspended.strip('\n') != nickname:
+            if suspended.strip('\n').strip('\r') != nickname:
                 suspendedFile.write(suspended)
         suspendedFile.close()
 
@@ -745,7 +745,7 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
         with open(moderatorsFile, "r") as f:
             lines = f.readlines()
         for moderator in lines:
-            if moderator.strip('\n') == nickname:
+            if moderator.strip('\n').strip('\r') == nickname:
                 return
 
     saltFilename = baseDir + '/accounts/' + \
@@ -762,7 +762,7 @@ def suspendAccount(baseDir: str, nickname: str, domain: str) -> None:
         with open(suspendedFilename, "r") as f:
             lines = f.readlines()
         for suspended in lines:
-            if suspended.strip('\n') == nickname:
+            if suspended.strip('\n').strip('\r') == nickname:
                 return
         suspendedFile = open(suspendedFilename, 'a+')
         if suspendedFile:
@@ -949,7 +949,8 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
         for line in snoozedFile:
             # is this the entry for the actor?
             if line.startswith(snoozeActor + ' '):
-                snoozedTimeStr = line.split(' ')[1].replace('\n', '')
+                snoozedTimeStr = \
+                    line.split(' ')[1].replace('\n', '').replace('\r', '')
                 # is there a time appended?
                 if snoozedTimeStr.isdigit():
                     snoozedTime = int(snoozedTimeStr)

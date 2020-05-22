@@ -285,7 +285,7 @@ def htmlSearchEmoji(translate: {}, baseDir: str, httpPrefix: str,
         copyfile(baseDir + '/emoji/default_emoji.json',
                  baseDir + '/emoji/emoji.json')
 
-    searchStr = searchStr.lower().replace(':', '').strip('\n')
+    searchStr = searchStr.lower().replace(':', '').strip('\n').strip('\r')
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
@@ -362,7 +362,7 @@ def htmlSearchSharedItems(translate: {},
     ctr = 0
     sharedItemsForm = ''
     searchStrLower = urllib.parse.unquote(searchStr)
-    searchStrLower = searchStrLower.lower().strip('\n')
+    searchStrLower = searchStrLower.lower().strip('\n').strip('\r')
     searchStrLowerList = searchStrLower.split('+')
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -647,7 +647,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
             '"></a></center>'
     index = startIndex
     while index <= endIndex:
-        postId = lines[index].strip('\n')
+        postId = lines[index].strip('\n').strip('\r')
         if '  ' not in postId:
             nickname = getNicknameFromActor(postId)
             if not nickname:
@@ -710,7 +710,7 @@ def htmlSkillsSearch(translate: {}, baseDir: str,
     if skillsearch.startswith('*'):
         skillsearch = skillsearch[1:].strip()
 
-    skillsearch = skillsearch.lower().strip('\n')
+    skillsearch = skillsearch.lower().strip('\n').strip('\r')
 
     results = []
     # search instance accounts
@@ -846,7 +846,7 @@ def htmlHistorySearch(translate: {}, baseDir: str,
     if historysearch.startswith('!'):
         historysearch = historysearch[1:].strip()
 
-    historysearch = historysearch.lower().strip('\n')
+    historysearch = historysearch.lower().strip('\n').strip('\r')
 
     boxFilenames = \
         searchBoxPosts(baseDir, nickname, domain,
@@ -4156,8 +4156,8 @@ def htmlTimeline(defaultTimeline: str,
     if os.path.isfile(calendarFile):
         calendarImage = 'calendar_notify.png'
         with open(calendarFile, 'r') as calfile:
-            calendarPath = \
-                calfile.read().replace('##sent##', '').replace('\n', '')
+            calendarPath = calfile.read().replace('##sent##', '')
+            calendarPath = calendarPath.replace('\n', '').replace('\r', '')
 
     # should the DM button be highlighted?
     newDM = False

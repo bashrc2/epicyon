@@ -59,7 +59,8 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
     with open(postFilename, "r") as f:
         lines = f.readlines()
         for replyPostId in lines:
-            replyPostId = replyPostId.replace('\n', '').replace('.json', '')
+            replyPostId = replyPostId.replace('\n', '').replace('\r', '')
+            replyPostId = replyPostId.replace('.json', '')
             if locatePost(baseDir, nickname, domain, replyPostId):
                 replyPostId = replyPostId.replace('.replies', '')
                 replies += 1 + noOfBlogReplies(baseDir, httpPrefix, translate,
@@ -75,7 +76,7 @@ def noOfBlogReplies(baseDir: str, httpPrefix: str, translate: {},
               str(len(removals)) + ' entries')
         with open(postFilename, "w") as f:
             for replyPostId in lines:
-                replyPostId = replyPostId.replace('\n', '')
+                replyPostId = replyPostId.replace('\n', '').replace('\r', '')
                 if replyPostId not in removals:
                     f.write(replyPostId + '\n')
 
@@ -121,12 +122,13 @@ def getBlogReplies(baseDir: str, httpPrefix: str, translate: {},
         lines = f.readlines()
         repliesStr = ''
         for replyPostId in lines:
-            replyPostId = replyPostId.replace('\n', '').replace('.json', '')
+            replyPostId = replyPostId.replace('\n', '').replace('\r', '')
+            replyPostId = replyPostId.replace('.json', '')
             replyPostId = replyPostId.replace('.replies', '')
             postFilename = baseDir + '/accounts/' + \
                 nickname + '@' + domain + \
                 '/postcache/' + \
-                replyPostId.replace('\n', '').replace('/', '#') + '.html'
+                replyPostId.replace('/', '#') + '.html'
             if not os.path.isfile(postFilename):
                 continue
             with open(postFilename, "r") as postFile:
@@ -334,7 +336,8 @@ def htmlBlogPage(authorized: bool, session,
                  noOfItems: int, pageNumber: int) -> str:
     """Returns a html blog page containing posts
     """
-    if ' ' in nickname or '@' in nickname or '\n' in nickname:
+    if ' ' in nickname or '@' in nickname or \
+       '\n' in nickname or '\r' in nickname:
         return None
     blogStr = ''
 
@@ -436,7 +439,8 @@ def htmlBlogPageRSS(authorized: bool, session,
                     noOfItems: int, pageNumber: int) -> str:
     """Returns an rss feed containing posts
     """
-    if ' ' in nickname or '@' in nickname or '\n' in nickname:
+    if ' ' in nickname or '@' in nickname or \
+       '\n' in nickname or '\r' in nickname:
         return None
 
     domainFull = domain

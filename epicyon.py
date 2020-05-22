@@ -628,7 +628,7 @@ if args.followerspending:
     if os.path.isfile(approveFollowsFilename):
         with open(approveFollowsFilename, 'r') as approvefile:
             for approve in approvefile:
-                print(approve.replace('\n', ''))
+                print(approve.replace('\n', '').replace('\r', ''))
                 approveCtr += 1
     if approveCtr == 0:
         print('There are no follow requests pending approval.')
@@ -657,7 +657,8 @@ if args.message:
         sys.exit()
     if '@' in args.sendto:
         toNickname = args.sendto.split('@')[0]
-        toDomain = args.sendto.split('@')[1].replace('\n', '')
+        toDomain = args.sendto.split('@')[1]
+        toDomain = toDomain.replace('\n', '').replace('\r', '')
         toPort = 443
         if ':' in toDomain:
             toPort = toDomain.split(':')[1]
@@ -1005,13 +1006,16 @@ if args.actor:
                   'https://domain/@nick or https://domain/users/nick')
             sys.exit()
         if '/users/' in args.actor:
-            nickname = args.actor.split('/users/')[1].replace('\n', '')
+            nickname = args.actor.split('/users/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.actor.split('/users/')[0]
         elif '/profile/' in args.actor:
-            nickname = args.actor.split('/profile/')[1].replace('\n', '')
+            nickname = args.actor.split('/profile/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.actor.split('/profile/')[0]
         else:
-            nickname = args.actor.split('/channel/')[1].replace('\n', '')
+            nickname = args.actor.split('/channel/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.actor.split('/channel/')[0]
     else:
         # format: @nick@domain
@@ -1024,7 +1028,8 @@ if args.actor:
             print('Syntax: --actor nickname@domain')
             sys.exit()
         nickname = args.actor.split('@')[0]
-        domain = args.actor.split('@')[1].replace('\n', '')
+        domain = args.actor.split('@')[1]
+        domain = domain.replace('\n', '').replace('\r', '')
     cachedWebfingers = {}
     if args.http or domain.endswith('.onion'):
         httpPrefix = 'http'
@@ -1379,7 +1384,8 @@ if args.block:
         sys.exit()
 
     if '@' in args.block:
-        blockedDomain = args.block.split('@')[1].replace('\n', '')
+        blockedDomain = args.block.split('@')[1]
+        blockedDomain = blockedDomain.replace('\n', '').replace('\r', '')
         blockedNickname = args.block.split('@')[0]
         blockedActor = httpPrefix + '://' + blockedDomain + \
             '/users/' + blockedNickname
@@ -1488,7 +1494,8 @@ if args.unblock:
         sys.exit()
 
     if '@' in args.unblock:
-        blockedDomain = args.unblock.split('@')[1].replace('\n', '')
+        blockedDomain = args.unblock.split('@')[1]
+        blockedDomain = blockedDomain.replace('\n', '').replace('\r', '')
         blockedNickname = args.unblock.split('@')[0]
         blockedActor = httpPrefix + '://' + blockedDomain + \
             '/users/' + blockedNickname

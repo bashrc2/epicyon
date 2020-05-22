@@ -22,7 +22,7 @@ def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
         return content
     with open(switchWordsFilename, 'r') as fp:
         for line in fp:
-            replaceStr = line.replace('\n', '')
+            replaceStr = line.replace('\n', '').replace('\r', '')
             wordTransform = None
             if '->' in replaceStr:
                 wordTransform = replaceStr.split('->')
@@ -130,6 +130,7 @@ def addWebLinks(content: str) -> str:
         return content
 
     maxLinkLength = 40
+    content = content.replace('\r', '')
     words = content.replace('\n', ' --linebreak-- ').split(' ')
     replaceDict = {}
     for w in words:
@@ -231,7 +232,8 @@ def loadEmojiDict(emojiDataFilename: str, emojiDict: {}) -> None:
                 continue
             if '..' in emojiUnicode:
                 emojiUnicode = emojiUnicode.split('..')[0]
-            emojiName = line.split(')', 1)[1].strip().replace('\n', '')
+            emojiName = line.split(')', 1)[1].strip()
+            emojiName = emojiName.replace('\n', '').replace('\r', '')
             emojiName = emojiName.replace(' ', '').replace('-', '')
             if '..' in emojiName:
                 emojiName = emojiName.split('..')[0]
@@ -293,7 +295,8 @@ def addMention(wordStr: str, httpPrefix: str, following: str,
         possibleNickname = possibleHandle
         for follow in following:
             if follow.startswith(possibleNickname + '@'):
-                replaceDomain = follow.replace('\n', '').split('@')[1]
+                replaceDomain = \
+                    follow.replace('\n', '').replace('\r', '').split('@')[1]
                 recipientActor = httpPrefix + "://" + \
                     replaceDomain + "/users/" + possibleNickname
                 if recipientActor not in recipients:
@@ -317,12 +320,13 @@ def addMention(wordStr: str, httpPrefix: str, following: str,
     possibleNickname = possibleHandle.split('@')[0]
     if not possibleNickname:
         return False
-    possibleDomain = possibleHandle.split('@')[1].strip('\n')
+    possibleDomain = \
+        possibleHandle.split('@')[1].strip('\n').strip('\r')
     if not possibleDomain:
         return False
     if following:
         for follow in following:
-            if follow.replace('\n', '') != possibleHandle:
+            if follow.replace('\n', '').replace('\r', '') != possibleHandle:
                 continue
             recipientActor = httpPrefix + "://" + \
                 possibleDomain + "/users/" + possibleNickname
@@ -451,6 +455,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     if content.startswith('<p>'):
         return content
     maxWordLength = 40
+    content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
     content = addMusicTag(content, 'nowplaying')
     words = content.replace(',', ' ').replace(';', ' ').split(' ')

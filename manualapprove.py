@@ -45,7 +45,8 @@ def manualDenyFollowRequest(session, baseDir: str,
     rejectsFile.close()
 
     denyNickname = denyHandle.split('@')[0]
-    denyDomain = denyHandle.split('@')[1].replace('\n', '')
+    denyDomain = \
+        denyHandle.split('@')[1].replace('\n', '').replace('\r', '')
     denyPort = port
     if ':' in denyDomain:
         denyPort = denyDomain.split(':')[1]
@@ -112,7 +113,7 @@ def manualApproveFollowRequest(session, baseDir: str,
             # is this the approved follow?
             if handleOfFollowRequester.startswith(approveHandle):
                 handleOfFollowRequester = \
-                    handleOfFollowRequester.replace('\n', '')
+                    handleOfFollowRequester.replace('\n', '').replace('\r', '')
                 port2 = port
                 if ':' in handleOfFollowRequester:
                     port2Str = handleOfFollowRequester.split(':')[1]
@@ -125,8 +126,9 @@ def manualApproveFollowRequest(session, baseDir: str,
                     followJson = loadJson(followActivityfilename)
                     if followJson:
                         approveNickname = approveHandle.split('@')[0]
+                        approveDomain = approveHandle.split('@')[1]
                         approveDomain = \
-                            approveHandle.split('@')[1].replace('\n', '')
+                            approveDomain.replace('\n', '').replace('\r', '')
                         approvePort = port2
                         if ':' in approveDomain:
                             approvePort = approveDomain.split(':')[1]

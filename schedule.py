@@ -37,7 +37,7 @@ def updatePostSchedule(baseDir: str, handle: str, httpd,
             dateStr = line.split(' ')[0]
             if 'T' not in dateStr:
                 continue
-            postId = line.split(' ', 1)[1].replace('\n', '')
+            postId = line.split(' ', 1)[1].replace('\n', '').replace('\r', '')
             postFilename = scheduleDir + postId + '.json'
             if deleteSchedulePost:
                 # delete extraneous scheduled posts

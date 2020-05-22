@@ -395,7 +395,7 @@ def removeModerationPostFromIndex(baseDir: str, postUrl: str,
             lines = f.readlines()
             with open(moderationIndexFile, "w+") as f:
                 for line in lines:
-                    if line.strip("\n") != postId:
+                    if line.strip("\n").strip("\r") != postId:
                         f.write(line)
                     else:
                         if debug:

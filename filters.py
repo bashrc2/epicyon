@@ -71,7 +71,7 @@ def isFiltered(baseDir: str, nickname: str, domain: str, content: str) -> bool:
     if os.path.isfile(filtersFilename):
         with open(filtersFilename, 'r') as fp:
             for line in fp:
-                filterStr = line.replace('\n', '')
+                filterStr = line.replace('\n', '').replace('\r', '')
                 if '+' not in filterStr:
                     if filterStr in content:
                         return True

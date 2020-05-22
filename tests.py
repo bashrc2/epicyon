@@ -997,7 +997,8 @@ def testFollows():
              '/following.txt', "r")
     domainFound = False
     for followingDomain in f:
-        testDomain = followingDomain.split('@')[1].replace('\n', '')
+        testDomain = followingDomain.split('@')[1]
+        testDomain = testDomain.replace('\n', '').replace('\r', '')
         if testDomain == 'mesh.com':
             domainFound = True
         if testDomain not in federationList:
@@ -1009,7 +1010,8 @@ def testFollows():
 
     domainFound = False
     for followingDomain in f:
-        testDomain = followingDomain.split('@')[1].replace('\n', '')
+        testDomain = followingDomain.split('@')[1]
+        testDomain = testDomain.replace('\n', '').replace('\r', '')
         if testDomain == 'mesh.com':
             domainFound = True
     assert(domainFound is False)
@@ -1029,7 +1031,8 @@ def testFollows():
     f = open(baseDir + '/accounts/' + nickname + '@' + domain +
              '/followers.txt', "r")
     for followerDomain in f:
-        testDomain = followerDomain.split('@')[1].replace('\n', '')
+        testDomain = followerDomain.split('@')[1]
+        testDomain = testDomain.replace('\n', '').replace('\r', '')
         if testDomain not in federationList:
             print(testDomain)
             assert(False)

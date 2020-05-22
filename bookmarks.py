@@ -51,7 +51,7 @@ def undoBookmarksCollectionEntry(recentPostsCache: {},
         bookmarkIndex = postFilename.split('/')[-1].strip()
     else:
         bookmarkIndex = postFilename.strip()
-    bookmarkIndex = bookmarkIndex.replace('\n', '')
+    bookmarkIndex = bookmarkIndex.replace('\n', '').replace('\r', '')
     if bookmarkIndex not in open(bookmarksIndexFilename).read():
         return
     indexStr = ''

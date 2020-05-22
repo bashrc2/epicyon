@@ -73,7 +73,7 @@ def isModerator(baseDir: str, nickname: str) -> bool:
             if getConfigParam(baseDir, 'admin') == nickname:
                 return True
         for moderator in lines:
-            moderator = moderator.strip('\n')
+            moderator = moderator.strip('\n').strip('\r')
             if moderator == nickname:
                 return True
     return False
@@ -91,8 +91,9 @@ def noOfFollowersOnDomain(baseDir: str, handle: str,
     with open(filename, "r") as followersFilename:
         for followerHandle in followersFilename:
             if '@' in followerHandle:
-                followerDomain = \
-                    followerHandle.split('@')[1].replace('\n', '')
+                followerDomain = followerHandle.split('@')[1]
+                followerDomain = followerDomain.replace('\n', '')
+                followerDomain = followerDomain.replace('\r', '')
                 if domain == followerDomain:
                     ctr += 1
     return ctr
@@ -1105,7 +1106,7 @@ def getMentionedPeople(baseDir: str, httpPrefix: str,
                         externalDomain == 'localhost'):
                     continue
             mentionedNickname = handle.split('@')[0]
-            mentionedDomain = handle.split('@')[1].strip('\n')
+            mentionedDomain = handle.split('@')[1].strip('\n').strip('\r')
             if ':' in mentionedDomain:
                 mentionedDomain = mentionedDomain.split(':')[0]
             if not validNickname(mentionedDomain, mentionedNickname):
@@ -1188,7 +1189,7 @@ def createReportPost(baseDir: str,
     if os.path.isfile(moderatorsFile):
         with open(moderatorsFile, "r") as fileHandler:
             for line in fileHandler:
-                line = line.strip('\n')
+                line = line.strip('\n').strip('\r')
                 if line.startswith('#'):
                     continue
                 if line.startswith('/users/'):
@@ -1569,7 +1570,8 @@ def groupFollowersByDomain(baseDir: str, nickname: str, domain: str) -> {}:
     with open(followersFilename, "r") as f:
         for followerHandle in f:
             if '@' in followerHandle:
-                fHandle = followerHandle.strip().replace('\n', '')
+                fHandle = \
+                    followerHandle.strip().replace('\n', '').replace('\r', '')
                 followerDomain = fHandle.split('@')[1]
                 if not grouped.get(followerDomain):
                     grouped[followerDomain] = [fHandle]
@@ -2221,7 +2223,7 @@ def createModeration(baseDir: str, nickname: str, domain: str, port: int,
                     startLineNumber = 0
                 lineNumber = startLineNumber
                 while lineNumber >= endLineNumber:
-                    pageLines.append(lines[lineNumber].strip('\n'))
+                    pageLines.append(lines[lineNumber].strip('\n').strip('\r'))
                     lineNumber -= 1
 
             for postUrl in pageLines:
@@ -2555,7 +2557,8 @@ def createBoxIndexed(recentPostsCache: {},
                 # This should also correspond to any index entry in
                 # the posts cache
                 postUrl = \
-                    postFilename.replace('\n', '').replace('.json', '').strip()
+                    postFilename.replace('\n', '').replace('\r', '')
+                postUrl = postUrl.replace('.json', '').strip()
 
                 # is the post cached in memory?
                 if recentPostsCache.get('index'):
@@ -2883,12 +2886,13 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
             replyFound = False
             # examine inbox and outbox
             for boxname in repliesBoxes:
+                messageId2 = messageId.replace('\n', '').replace('\r', '')
                 searchFilename = \
                     baseDir + \
                     '/accounts/' + nickname + '@' + \
                     domain+'/' + \
                     boxname+'/' + \
-                    messageId.replace('\n', '').replace('/', '#') + '.json'
+                    messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
                     if authorized or \
                        pubStr in open(searchFilename).read():
@@ -2910,11 +2914,12 @@ def populateRepliesJson(baseDir: str, nickname: str, domain: str,
                     break
             # if not in either inbox or outbox then examine the shared inbox
             if not replyFound:
+                messageId2 = messageId.replace('\n', '').replace('\r', '')
                 searchFilename = \
                     baseDir + \
                     '/accounts/inbox@' + \
                     domain+'/inbox/' + \
-                    messageId.replace('\n', '').replace('/', '#') + '.json'
+                    messageId2.replace('/', '#') + '.json'
                 if os.path.isfile(searchFilename):
                     if authorized or \
                        pubStr in open(searchFilename).read():

@@ -70,7 +70,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     recreateEventsFile = False
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
-            postId = postId.replace('\n', '')
+            postId = postId.replace('\n', '').replace('\r', '')
             postFilename = locatePost(baseDir, nickname, domain, postId)
             if not postFilename:
                 recreateEventsFile = True
@@ -115,7 +115,7 @@ def getTodaysEvents(baseDir: str, nickname: str, domain: str,
     if recreateEventsFile:
         calendarFile = open(calendarFilename, "w")
         for postId in calendarPostIds:
-            calendarFile.write(postId+'\n')
+            calendarFile.write(postId + '\n')
         calendarFile.close()
 
     return events
@@ -138,7 +138,7 @@ def todaysEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
     eventsExist = False
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
-            postId = postId.replace('\n', '')
+            postId = postId.replace('\n', '').replace('\r', '')
             postFilename = locatePost(baseDir, nickname, domain, postId)
             if not postFilename:
                 continue
@@ -185,7 +185,7 @@ def thisWeeksEventsCheck(baseDir: str, nickname: str, domain: str) -> bool:
     eventsExist = False
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
-            postId = postId.replace('\n', '')
+            postId = postId.replace('\n', '').replace('\r', '')
             postFilename = locatePost(baseDir, nickname, domain, postId)
             if not postFilename:
                 continue
@@ -239,7 +239,7 @@ def getThisWeeksEvents(baseDir: str, nickname: str, domain: str) -> {}:
     recreateEventsFile = False
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
-            postId = postId.replace('\n', '')
+            postId = postId.replace('\n', '').replace('\r', '')
             postFilename = locatePost(baseDir, nickname, domain, postId)
             if not postFilename:
                 recreateEventsFile = True
@@ -324,7 +324,7 @@ def getCalendarEvents(baseDir: str, nickname: str, domain: str,
     recreateEventsFile = False
     with open(calendarFilename, 'r') as eventsFile:
         for postId in eventsFile:
-            postId = postId.replace('\n', '')
+            postId = postId.replace('\n', '').replace('\r', '')
             postFilename = locatePost(baseDir, nickname, domain, postId)
             if not postFilename:
                 recreateEventsFile = True

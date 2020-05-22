@@ -40,7 +40,10 @@ def verifyPassword(storedPassword: str, providedPassword: str) -> bool:
 def createBasicAuthHeader(nickname: str, password: str) -> str:
     """This is only used by tests
     """
-    authStr = nickname.replace('\n', '') + ':' + password.replace('\n', '')
+    authStr = \
+        nickname.replace('\n', '').replace('\r', '') + \
+        ':' + \
+        password.replace('\n', '').replace('\r', '')
     return 'Basic ' + base64.b64encode(authStr.encode('utf-8')).decode('utf-8')
 
 
@@ -65,7 +68,8 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
             print('DEBUG: This is not a users endpoint')
         return False
     nicknameFromPath = pathUsersSection.split('/')[0]
-    base64Str = authHeader.split(' ')[1].replace('\n', '')
+    base64Str = \
+        authHeader.split(' ')[1].replace('\n', '').replace('\r', '')
     plain = base64.b64decode(base64Str).decode('utf-8')
     if ':' not in plain:
         if debug:
@@ -88,7 +92,8 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
     passfile = open(passwordFile, "r")
     for line in passfile:
         if line.startswith(nickname+':'):
-            storedPassword = line.split(':')[1].replace('\n', '')
+            storedPassword = \
+                line.split(':')[1].replace('\n', '').replace('\r', '')
             success = verifyPassword(storedPassword, providedPassword)
             if not success:
                 if debug:
@@ -104,8 +109,8 @@ def storeBasicCredentials(baseDir: str, nickname: str, password: str) -> bool:
     """
     if ':' in nickname or ':' in password:
         return False
-    nickname = nickname.replace('\n', '').strip()
-    password = password.replace('\n', '').strip()
+    nickname = nickname.replace('\n', '').replace('\r', '').strip()
+    password = password.replace('\n', '').replace('\r', '').strip()
 
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
