@@ -1199,6 +1199,8 @@ class PubServer(BaseHTTPRequestHandler):
                     pageNumberStr = self.path.split('?page=')[1]
                     if '?' in pageNumberStr:
                         pageNumberStr = pageNumberStr.split('?')[0]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
                     if pageNumberStr.isdigit():
                         pageNumber = int(pageNumberStr)
                         if pageNumber < 1:
@@ -1848,6 +1850,8 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber = 1
             if '?page=' in self.path:
                 pageNumberStr = self.path.split('?page=')[1]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             hashtag = self.path.split('/tags/')[1]
@@ -2014,6 +2018,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             timelineStr = 'inbox'
@@ -2096,6 +2102,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             timelineStr = 'inbox'
@@ -2243,6 +2251,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             timelineStr = 'inbox'
@@ -2313,6 +2323,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             timelineStr = 'inbox'
@@ -2387,6 +2399,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             timelineStr = 'inbox'
@@ -2459,6 +2473,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             timelineStr = 'inbox'
@@ -2525,6 +2541,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             deleteUrl = self.path.split('?delete=')[1]
@@ -2595,6 +2613,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             muteUrl = self.path.split('?mute=')[1]
@@ -2635,6 +2655,8 @@ class PubServer(BaseHTTPRequestHandler):
                 pageNumberStr = self.path.split('?page=')[1]
                 if '?' in pageNumberStr:
                     pageNumberStr = pageNumberStr.split('?')[0]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
             muteUrl = self.path.split('?unmute=')[1]
@@ -4116,6 +4138,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                sharesPerPage)
                 else:
                     pageNumberStr = self.path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
                     if pageNumberStr.isdigit():
                         pageNumber = int(pageNumberStr)
                     searchPath = self.path.split('?page=')[0]
@@ -4188,6 +4212,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          authorized, followsPerPage)
                 else:
                     pageNumberStr = self.path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
                     if pageNumberStr.isdigit():
                         pageNumber = int(pageNumberStr)
                     searchPath = self.path.split('?page=')[0]
@@ -4260,6 +4286,8 @@ class PubServer(BaseHTTPRequestHandler):
                                          'followers')
                 else:
                     pageNumberStr = self.path.split('?page=')[1]
+                    if '#' in pageNumberStr:
+                        pageNumberStr = pageNumberStr.split('#')[0]
                     if pageNumberStr.isdigit():
                         pageNumber = int(pageNumberStr)
                     searchPath = self.path.split('?page=')[0]
@@ -4941,6 +4969,8 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumberStr = path.split('?page=')[1]
             if '?' in pageNumberStr:
                 pageNumberStr = pageNumberStr.split('?')[0]
+            if '#' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('#')[0]
             if pageNumberStr.isdigit():
                 pageNumber = int(pageNumberStr)
                 path = path.split('?page=')[0]
@@ -5940,6 +5970,8 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber = 1
             if '?page=' in self.path:
                 pageNumberStr = self.path.split('?page=')[1]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
                 self.path = self.path.split('?page=')[0]
@@ -5998,6 +6030,8 @@ class PubServer(BaseHTTPRequestHandler):
             pageNumber = 1
             if '/searchhandle?page=' in self.path:
                 pageNumberStr = self.path.split('/searchhandle?page=')[1]
+                if '#' in pageNumberStr:
+                    pageNumberStr = pageNumberStr.split('#')[0]
                 if pageNumberStr.isdigit():
                     pageNumber = int(pageNumberStr)
                 self.path = self.path.split('?page=')[0]
