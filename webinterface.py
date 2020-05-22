@@ -3183,6 +3183,12 @@ def preparePostFromHtmlCache(postHtml: str, boxName: str,
     # if on the bookmarks timeline then remain there
     if boxName == 'tlbookmarks' or boxName == 'bookmarks':
         postHtml = postHtml.replace('?tl=inbox', '?tl=tlbookmarks')
+        if '?page=' in postHtml:
+            pageNumberStr = postHtml.split('?page=')[1]
+            if '?' in pageNumberStr:
+                pageNumberStr = pageNumberStr.split('?')[0]
+            postHtml = postHtml.replace('?page=' + pageNumberStr, '?page=-999')
+
     withPageNumber = postHtml.replace(';-999;', ';' + str(pageNumber) + ';')
     withPageNumber = withPageNumber.replace('?page=-999',
                                             '?page=' + str(pageNumber))
