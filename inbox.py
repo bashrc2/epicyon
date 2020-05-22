@@ -2220,8 +2220,11 @@ def restoreQueueItems(baseDir: str, queue: []) -> None:
         for account in dirs:
             queueDir = baseDir + '/accounts/' + account + '/queue'
             if os.path.isdir(queueDir):
+                print('Searching inbox queue ' + queueDir)
                 for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
                     for qfile in queuefiles:
+                        print('Adding inbox queue file ' +
+                              os.path.join(queueDir, qfile))
                         queue.append(os.path.join(queueDir, qfile))
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
