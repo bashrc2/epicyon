@@ -64,6 +64,7 @@ from posts import createDirectMessagePost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
+from inbox import clearQueueItems
 from inbox import inboxPermittedMessage
 from inbox import inboxMessageHasParams
 from inbox import runInboxQueue
@@ -820,9 +821,10 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('Queue: Inbox queue is full')
             self._503()
-            self.server.POSTbusy = False
+            clearQueueItems(self.server.baseDir, self.server.inboxQueue)
             if not self.server.restartInboxQueueInProgress:
                 self.server.restartInboxQueue = True
+            self.server.POSTbusy = False
             return 2
 
         # Convert the headers needed for signature verification to dict

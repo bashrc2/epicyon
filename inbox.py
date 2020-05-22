@@ -2212,6 +2212,26 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
     return True
 
 
+def clearQueueItems(baseDir: str, queue: []) -> None:
+    """Clears the queue for each account and appends filenames
+    """
+    ctr = 0
+    queue.clear()
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for account in dirs:
+            queueDir = baseDir + '/accounts/' + account + '/queue'
+            if os.path.isdir(queueDir):
+                for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
+                    for qfile in queuefiles:
+                        try:
+                            os.remove(os.path.join(queueDir, qfile))
+                            ctr += 1
+                        except BaseException:
+                            pass
+    if ctr > 0:
+        print('Removed ' + str(ctr) + ' inbox queue items')
+
+
 def restoreQueueItems(baseDir: str, queue: []) -> None:
     """Checks the queue for each account and appends filenames
     """
@@ -2220,11 +2240,8 @@ def restoreQueueItems(baseDir: str, queue: []) -> None:
         for account in dirs:
             queueDir = baseDir + '/accounts/' + account + '/queue'
             if os.path.isdir(queueDir):
-                print('Searching inbox queue ' + queueDir)
                 for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
                     for qfile in queuefiles:
-                        print('Adding inbox queue file ' +
-                              os.path.join(queueDir, qfile))
                         queue.append(os.path.join(queueDir, qfile))
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
