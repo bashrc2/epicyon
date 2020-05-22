@@ -2213,7 +2213,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
 
 
 def clearQueueItems(baseDir: str, queue: []) -> None:
-    """Clears the queue for each account and appends filenames
+    """Clears the queue for each account
     """
     ctr = 0
     queue.clear()
