@@ -295,6 +295,29 @@ def htmlBlogPostRSS2(authorized: bool,
     return rssStr
 
 
+def htmlBlogPostRSS3(authorized: bool,
+                     baseDir: str, httpPrefix: str, translate: {},
+                     nickname: str, domain: str, domainFull: str,
+                     postJsonObject: {},
+                     handle: str, restrictToDomain: bool) -> str:
+    """Returns the RSS version 3 feed for a single blog post
+    """
+    messageLink = ''
+    if postJsonObject['object'].get('id'):
+        messageLink = postJsonObject['object']['id'].replace('/statuses/', '/')
+        if not restrictToDomain or \
+           (restrictToDomain and '/' + domain in messageLink):
+            if postJsonObject['object'].get('summary'):
+                published = postJsonObject['object']['published']
+                pubDate = datetime.strptime(published, "%Y-%m-%dT%H:%M:%SZ")
+                titleStr = postJsonObject['object']['summary']
+                rssDateStr = pubDate.strftime("%a, %d %b %Y %H:%M:%S UT")
+                rssStr = 'title: ' + titleStr + '\n'
+                rssStr += 'link: ' + messageLink + '\n'
+                rssStr += 'created: ' + rssDateStr + '\n\n'
+    return rssStr
+
+
 def htmlBlogPost(authorized: bool,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
@@ -317,14 +340,21 @@ def htmlBlogPost(authorized: bool,
                                        domainFull, postJsonObject,
                                        None, False)
 
-        # show rss link
+        # show rss links
         iconsDir = getIconsDir(baseDir)
         blogStr += '<p class="rssfeed">'
+
         blogStr += '<a href="' + httpPrefix + '://' + \
             domainFull + '/blog/' + nickname + '/rss.xml">'
-        blogStr += '<img loading="lazy" alt="RSS" title="RSS" src="/' + \
-            iconsDir + '/rss.png" />'
-        blogStr += '</a></p>'
+        blogStr += '<img loading="lazy" alt="RSS 2.0" title="RSS 2.0" src="/' + \
+            iconsDir + '/rss.png" /></a>'
+
+        blogStr += '<a href="' + httpPrefix + '://' + \
+            domainFull + '/blog/' + nickname + '/rss.txt">'
+        blogStr += '<img loading="lazy" alt="RSS 3.0" title="RSS 3.0" src="/' + \
+            iconsDir + '/rss3.png" /></a>'
+
+        blogStr += '</p>'
 
         return blogStr + htmlFooter()
     return None
@@ -477,6 +507,52 @@ def htmlBlogPageRSS2(authorized: bool, session,
                                  None, True)
 
     return blogRSS2 + rss2Footer()
+
+
+def htmlBlogPageRSS3(authorized: bool, session,
+                     baseDir: str, httpPrefix: str, translate: {},
+                     nickname: str, domain: str, port: int,
+                     noOfItems: int, pageNumber: int) -> str:
+    """Returns an RSS version 3 feed containing posts
+    """
+    if ' ' in nickname or '@' in nickname or \
+       '\n' in nickname or '\r' in nickname:
+        return None
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+
+    blogRSS3 = ''
+
+    blogsIndex = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/tlblogs.index'
+    if not os.path.isfile(blogsIndex):
+        return blogRSS3
+
+    timelineJson = createBlogsTimeline(session, baseDir,
+                                       nickname, domain, port,
+                                       httpPrefix,
+                                       noOfItems, False, False,
+                                       pageNumber)
+
+    if not timelineJson:
+        return blogRSS3
+
+    if pageNumber is not None:
+        for item in timelineJson['orderedItems']:
+            if item['type'] != 'Create':
+                continue
+
+            blogRSS3 += \
+                htmlBlogPostRSS3(authorized, baseDir,
+                                 httpPrefix, translate,
+                                 nickname, domain,
+                                 domainFull, item,
+                                 None, True)
+
+    return blogRSS3
 
 
 def getBlogIndexesForAccounts(baseDir: str) -> {}:

@@ -95,6 +95,7 @@ from config import getConfigParam
 from roles import setRole
 from roles import clearModeratorStatus
 from blog import htmlBlogPageRSS2
+from blog import htmlBlogPageRSS3
 from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
@@ -1128,6 +1129,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 8)
 
+        # RSS 2.0
         if self.path.startswith('/blog/') and \
            self.path.endswith('/rss.xml'):
             nickname = self.path.split('/blog/')[1]
@@ -1154,6 +1156,38 @@ class PubServer(BaseHTTPRequestHandler):
                         msg = msg.encode()
                         self._set_headers('text/xml', len(msg),
                                           cookie, callingDomain)
+                        self._write(msg)
+                        return
+                self._404()
+                return
+
+        # RSS 3.0
+        if self.path.startswith('/blog/') and \
+           self.path.endswith('/rss.txt'):
+            nickname = self.path.split('/blog/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+            if not nickname.startswith('rss.'):
+                if os.path.isdir(self.server.baseDir +
+                                 '/accounts/' + nickname +
+                                 '@' + self.server.domain):
+                    if not self.server.session:
+                        self.server.session = \
+                            createSession(self.server.useTor)
+                    msg = \
+                        htmlBlogPageRSS3(authorized,
+                                         self.server.session,
+                                         self.server.baseDir,
+                                         self.server.httpPrefix,
+                                         self.server.translate,
+                                         nickname,
+                                         self.server.domain,
+                                         self.server.port,
+                                         maxPostsInRSSFeed, 1)
+                    if msg is not None:
+                        msg = msg.encode()
+                        self._set_headers('text/plain; charset=utf-8',
+                                          len(msg), cookie, callingDomain)
                         self._write(msg)
                         return
                 self._404()
