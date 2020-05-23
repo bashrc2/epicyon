@@ -4006,7 +4006,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               bookmarksFeed,
                                               self.server.allowDeletion,
                                               self.server.httpPrefix,
-                                              self.server.projectVersion)
+                                              self.server.projectVersion,
+                                              self._isMinimal(nickname))
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
