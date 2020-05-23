@@ -4455,7 +4455,7 @@ def htmlTimeline(defaultTimeline: str,
     tlStr += \
         '    <a href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
-        '/refresh.png" title="' + translate['Show/Hide Buttons'] + \
+        '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>'
     tlStr += followApprovals
