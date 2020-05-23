@@ -220,7 +220,7 @@ class PubServer(BaseHTTPRequestHandler):
         """Returns true if minimal buttons should be shown
         for the given account
         """
-        accountDir = self.baseDir + '/accounts/' + \
+        accountDir = self.server.baseDir + '/accounts/' + \
             nickname + '@' + self.server.domain
         if not os.path.isdir(accountDir):
             return False
@@ -232,7 +232,7 @@ class PubServer(BaseHTTPRequestHandler):
     def _setMinimal(self, nickname: str, minimal: bool) -> None:
         """Sets whether an account should display minimal buttons
         """
-        accountDir = self.baseDir + '/accounts/' + \
+        accountDir = self.server.baseDir + '/accounts/' + \
             nickname + '@' + self.server.domain
         if not os.path.isdir(accountDir):
             return
