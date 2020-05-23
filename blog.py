@@ -438,11 +438,20 @@ def htmlBlogPage(authorized: bool, session,
 
         # show rss link
         blogStr += '<p class="rssfeed">'
+
         blogStr += '<a href="' + httpPrefix + '://' + \
             domainFull + '/blog/' + nickname + '/rss.xml">'
-        blogStr += '<img loading="lazy" alt="RSS" title="RSS" src="/' + \
-            iconsDir + '/rss.png" />'
-        blogStr += '</a></p>'
+        blogStr += '<img loading="lazy" alt="RSS 2.0" ' + \
+            'title="RSS 2.0" src="/' + \
+            iconsDir + '/rss.png" /></a>'
+
+        blogStr += '<a href="' + httpPrefix + '://' + \
+            domainFull + '/blog/' + nickname + '/rss.txt">'
+        blogStr += '<img loading="lazy" alt="RSS 3.0" ' + \
+            'title="RSS 3.0" src="/' + \
+            iconsDir + '/rss3.png" /></a>'
+
+        blogStr += '</p>'
 
         return blogStr + htmlFooter()
     return None
