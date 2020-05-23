@@ -221,5 +221,6 @@
     "Publicly visible post": "सार्वजनिक रूप से दिखाई देने वाली पोस्ट",
     "Your Posts": "आपके पोस्ट",
     "Git Projects": "गिट परियोजनाओं",
-    "List of project names that you wish to receive git patches for": "उन प्रोजेक्ट नामों की सूची, जिनके लिए आप git पैच प्राप्त करना चाहते हैं"
+    "List of project names that you wish to receive git patches for": "उन प्रोजेक्ट नामों की सूची, जिनके लिए आप git पैच प्राप्त करना चाहते हैं",
+    "Show/Hide Buttons": "बटन दिखाएँ / छिपाएँ"
 }

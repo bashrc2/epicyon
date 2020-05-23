@@ -216,6 +216,34 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _isMinimal(self, nickname: str) -> bool:
+        """Returns true if minimal buttons should be shown
+        for the given account
+        """
+        accountDir = self.baseDir + '/accounts/' + \
+            nickname + '@' + self.server.domain
+        if not os.path.isdir(accountDir):
+            return False
+        minimalFilename = accountDir + '/minimal'
+        if os.path.isfile(minimalFilename):
+            return True
+        return False
+
+    def _setMinimal(self, nickname: str, minimal: bool) -> None:
+        """Sets whether an account should display minimal buttons
+        """
+        accountDir = self.baseDir + '/accounts/' + \
+            nickname + '@' + self.server.domain
+        if not os.path.isdir(accountDir):
+            return
+        minimalFilename = accountDir + '/minimal'
+        minimalFileExists = os.path.isfile(minimalFilename)
+        if not minimal and minimalFileExists:
+            os.remove(minimalFilename)
+        elif minimal and not minimalFileExists:
+            with open(minimalFilename, 'w') as fp:
+                fp.write('\n')
+
     def _sendReplyToQuestion(self, nickname: str, messageId: str,
                              answer: str) -> None:
         """Sends a reply to a question
@@ -1937,6 +1965,23 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 28)
 
+        # show or hide buttons in the web interface
+        if htmlGET and '/users/' in self.path and \
+           self.path.endswith('/minimal') and \
+           authorized:
+            nickname = self.path.split('/users/')[1]
+            if '/' in nickname:
+                nickname = nickname.split('/')[0]
+                self._setMinimal(nickname, not self._isMinimal(nickname))
+                if not (self.server.mediaInstance or
+                        self.server.blogsInstance):
+                    self.path = '/users/' + nickname + '/inbox'
+                else:
+                    if self.server.blogsInstance:
+                        self.path = '/users/' + nickname + '/tlblogs'
+                    else:
+                        self.path = '/users/' + nickname + '/tlmedia'
+
         # search for a fediverse address, shared item or emoji
         # from the web interface by selecting search icon
         if htmlGET and '/users/' in self.path:
@@ -3458,7 +3503,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             inboxFeed,
                                             self.server.allowDeletion,
                                             self.server.httpPrefix,
-                                            self.server.projectVersion)
+                                            self.server.projectVersion,
+                                            self._isMinimal(nickname))
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
@@ -3548,7 +3594,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              inboxDMFeed,
                                              self.server.allowDeletion,
                                              self.server.httpPrefix,
-                                             self.server.projectVersion)
+                                             self.server.projectVersion,
+                                             self._isMinimal(nickname))
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
@@ -3637,7 +3684,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              inboxRepliesFeed,
                                              self.server.allowDeletion,
                                              self.server.httpPrefix,
-                                             self.server.projectVersion)
+                                             self.server.projectVersion,
+                                             self._isMinimal(nickname))
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -3727,7 +3775,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            inboxMediaFeed,
                                            self.server.allowDeletion,
                                            self.server.httpPrefix,
-                                           self.server.projectVersion)
+                                           self.server.projectVersion,
+                                           self.server._isMinimal(nickname))
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -3815,7 +3864,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            inboxBlogsFeed,
                                            self.server.allowDeletion,
                                            self.server.httpPrefix,
-                                           self.server.projectVersion)
+                                           self.server.projectVersion,
+                                           self._isMinimal(nickname))
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -4041,7 +4091,8 @@ class PubServer(BaseHTTPRequestHandler):
                                outboxFeed,
                                self.server.allowDeletion,
                                self.server.httpPrefix,
-                               self.server.projectVersion)
+                               self.server.projectVersion,
+                               self._isMinimal(nickname))
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html',
                                   len(msg),

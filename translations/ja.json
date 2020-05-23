@@ -221,5 +221,6 @@
     "Publicly visible post": "一般公開の投稿",
     "Your Posts": "あなたの投稿",
     "Git Projects": "Gitプロジェクト",
-    "List of project names that you wish to receive git patches for": "gitパッチを受け取りたいプロジェクト名のリスト"
+    "List of project names that you wish to receive git patches for": "gitパッチを受け取りたいプロジェクト名のリスト",
+    "Show/Hide Buttons": "ボタンの表示/非表示"
 }

@@ -4150,7 +4150,8 @@ def htmlTimeline(defaultTimeline: str,
                  nickname: str, domain: str, port: int, timelineJson: {},
                  boxName: str, allowDeletion: bool,
                  httpPrefix: str, projectVersion: str,
-                 manuallyApproveFollowers: bool) -> str:
+                 manuallyApproveFollowers: bool,
+                 minimal: bool) -> str:
     """Show the timeline as html
     """
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
@@ -4299,22 +4300,25 @@ def htmlTimeline(defaultTimeline: str,
                     break
 
     moderationButtonStr = ''
-    if moderator:
+    if moderator and not minimal:
         moderationButtonStr = \
             '<a href="' + usersPath + \
             '/moderation"><button class="' + \
             moderationButton + '"><span>' + \
             translate['Mod'] + ' </span></button></a>'
 
-    sharesButtonStr = \
-        '<a href="' + usersPath + '/tlshares"><button class="' + \
-        sharesButton + '"><span>' + translate['Shares'] + \
-        ' </span></button></a>'
+    sharesButtonStr = ''
+    bookmarksButtonStr = ''
+    if not minimal:
+        sharesButtonStr = \
+            '<a href="' + usersPath + '/tlshares"><button class="' + \
+            sharesButton + '"><span>' + translate['Shares'] + \
+            ' </span></button></a>'
 
-    bookmarksButtonStr = \
-        '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
-        bookmarksButton + '"><span>' + translate['Bookmarks'] + \
-        ' </span></button></a>'
+        bookmarksButtonStr = \
+            '<a href="' + usersPath + '/tlbookmarks"><button class="' + \
+            bookmarksButton + '"><span>' + translate['Bookmarks'] + \
+            ' </span></button></a>'
 
     tlStr = htmlHeader(cssFilename, profileStyle)
 
@@ -4398,31 +4402,35 @@ def htmlTimeline(defaultTimeline: str,
 
     # typically the media button
     if defaultTimeline != 'tlmedia':
-        tlStr += \
-            '    <a href="' + usersPath + \
-            '/tlmedia"><button class="' + \
-            mediaButton + '"><span>' + translate['Media'] + \
-            '</span></button></a>'
+        if not minimal:
+            tlStr += \
+                '    <a href="' + usersPath + \
+                '/tlmedia"><button class="' + \
+                mediaButton + '"><span>' + translate['Media'] + \
+                '</span></button></a>'
     else:
-        tlStr += \
-            '    <a href="' + usersPath + \
-            '/inbox"><button class="' + \
-            inboxButton+'"><span>' + translate['Inbox'] + \
-            '</span></button></a>'
+        if not minimal:
+            tlStr += \
+                '    <a href="' + usersPath + \
+                '/inbox"><button class="' + \
+                inboxButton+'"><span>' + translate['Inbox'] + \
+                '</span></button></a>'
 
     # typically the blogs button
     if defaultTimeline != 'tlblogs':
-        tlStr += \
-            '    <a href="' + usersPath + \
-            '/tlblogs"><button class="' + \
-            blogsButton + '"><span>' + translate['Blogs'] + \
-            '</span></button></a>'
+        if not minimal:
+            tlStr += \
+                '    <a href="' + usersPath + \
+                '/tlblogs"><button class="' + \
+                blogsButton + '"><span>' + translate['Blogs'] + \
+                '</span></button></a>'
     else:
-        tlStr += \
-            '    <a href="' + usersPath + \
-            '/inbox"><button class="' + \
-            inboxButton + '"><span>' + translate['Inbox'] + \
-            '</span></button></a>'
+        if not minimal:
+            tlStr += \
+                '    <a href="' + usersPath + \
+                '/inbox"><button class="' + \
+                inboxButton + '"><span>' + translate['Inbox'] + \
+                '</span></button></a>'
 
     tlStr += \
         '    <a href="' + usersPath + \
@@ -4445,10 +4453,10 @@ def htmlTimeline(defaultTimeline: str,
         '" alt="' + translate['Calendar'] + \
         '" class="timelineicon"/></a>'
     tlStr += \
-        '    <a href="' + usersPath + '/' + boxName + \
+        '    <a href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
-        '/refresh.png" title="' + translate['Refresh'] + \
-        '" alt="' + translate['Refresh'] + \
+        '/refresh.png" title="' + translate['Show/Hide Buttons'] + \
+        '" alt="' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>'
     tlStr += followApprovals
     tlStr += '</div>'
@@ -4617,7 +4625,8 @@ def htmlShares(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, None,
                         'tlshares', allowDeletion,
-                        httpPrefix, projectVersion, manuallyApproveFollowers)
+                        httpPrefix, projectVersion, manuallyApproveFollowers,
+                        False)
 
 
 def htmlInbox(defaultTimeline: str,
@@ -4626,7 +4635,8 @@ def htmlInbox(defaultTimeline: str,
               session, baseDir: str, wfRequest: {}, personCache: {},
               nickname: str, domain: str, port: int, inboxJson: {},
               allowDeletion: bool,
-              httpPrefix: str, projectVersion: str) -> str:
+              httpPrefix: str, projectVersion: str,
+              minimal: bool) -> str:
     """Show the inbox as html
     """
     manuallyApproveFollowers = \
@@ -4637,7 +4647,8 @@ def htmlInbox(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson,
                         'inbox', allowDeletion,
-                        httpPrefix, projectVersion, manuallyApproveFollowers)
+                        httpPrefix, projectVersion, manuallyApproveFollowers,
+                        minimal)
 
 
 def htmlBookmarks(defaultTimeline: str,
@@ -4646,7 +4657,8 @@ def htmlBookmarks(defaultTimeline: str,
                   session, baseDir: str, wfRequest: {}, personCache: {},
                   nickname: str, domain: str, port: int, bookmarksJson: {},
                   allowDeletion: bool,
-                  httpPrefix: str, projectVersion: str) -> str:
+                  httpPrefix: str, projectVersion: str,
+                  minimal: bool) -> str:
     """Show the bookmarks as html
     """
     manuallyApproveFollowers = \
@@ -4657,7 +4669,8 @@ def htmlBookmarks(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, bookmarksJson,
                         'tlbookmarks', allowDeletion,
-                        httpPrefix, projectVersion, manuallyApproveFollowers)
+                        httpPrefix, projectVersion, manuallyApproveFollowers,
+                        minimal)
 
 
 def htmlInboxDMs(defaultTimeline: str,
@@ -4666,14 +4679,15 @@ def htmlInboxDMs(defaultTimeline: str,
                  session, baseDir: str, wfRequest: {}, personCache: {},
                  nickname: str, domain: str, port: int, inboxJson: {},
                  allowDeletion: bool,
-                 httpPrefix: str, projectVersion: str) -> str:
+                 httpPrefix: str, projectVersion: str,
+                 minimal: bool) -> str:
     """Show the DM timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'dm', allowDeletion,
-                        httpPrefix, projectVersion, False)
+                        httpPrefix, projectVersion, False, minimal)
 
 
 def htmlInboxReplies(defaultTimeline: str,
@@ -4682,14 +4696,16 @@ def htmlInboxReplies(defaultTimeline: str,
                      session, baseDir: str, wfRequest: {}, personCache: {},
                      nickname: str, domain: str, port: int, inboxJson: {},
                      allowDeletion: bool,
-                     httpPrefix: str, projectVersion: str) -> str:
+                     httpPrefix: str, projectVersion: str,
+                     minimal: bool) -> str:
     """Show the replies timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlreplies',
-                        allowDeletion, httpPrefix, projectVersion, False)
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal)
 
 
 def htmlInboxMedia(defaultTimeline: str,
@@ -4698,14 +4714,16 @@ def htmlInboxMedia(defaultTimeline: str,
                    session, baseDir: str, wfRequest: {}, personCache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
-                   httpPrefix: str, projectVersion: str) -> str:
+                   httpPrefix: str, projectVersion: str,
+                   minimal: bool) -> str:
     """Show the media timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlmedia',
-                        allowDeletion, httpPrefix, projectVersion, False)
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal)
 
 
 def htmlInboxBlogs(defaultTimeline: str,
@@ -4714,14 +4732,16 @@ def htmlInboxBlogs(defaultTimeline: str,
                    session, baseDir: str, wfRequest: {}, personCache: {},
                    nickname: str, domain: str, port: int, inboxJson: {},
                    allowDeletion: bool,
-                   httpPrefix: str, projectVersion: str) -> str:
+                   httpPrefix: str, projectVersion: str,
+                   minimal: bool) -> str:
     """Show the blogs timeline as html
     """
     return htmlTimeline(defaultTimeline, recentPostsCache, maxRecentPosts,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'tlblogs',
-                        allowDeletion, httpPrefix, projectVersion, False)
+                        allowDeletion, httpPrefix, projectVersion, False,
+                        minimal)
 
 
 def htmlModeration(defaultTimeline: str,
@@ -4737,7 +4757,7 @@ def htmlModeration(defaultTimeline: str,
                         translate, pageNumber,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, inboxJson, 'moderation',
-                        allowDeletion, httpPrefix, projectVersion, True)
+                        allowDeletion, httpPrefix, projectVersion, True, False)
 
 
 def htmlOutbox(defaultTimeline: str,
@@ -4746,7 +4766,8 @@ def htmlOutbox(defaultTimeline: str,
                session, baseDir: str, wfRequest: {}, personCache: {},
                nickname: str, domain: str, port: int, outboxJson: {},
                allowDeletion: bool,
-               httpPrefix: str, projectVersion: str) -> str:
+               httpPrefix: str, projectVersion: str,
+               minimal: bool) -> str:
     """Show the Outbox as html
     """
     manuallyApproveFollowers = \
@@ -4756,7 +4777,7 @@ def htmlOutbox(defaultTimeline: str,
                         itemsPerPage, session, baseDir, wfRequest, personCache,
                         nickname, domain, port, outboxJson, 'outbox',
                         allowDeletion, httpPrefix, projectVersion,
-                        manuallyApproveFollowers)
+                        manuallyApproveFollowers, minimal)
 
 
 def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,

@@ -221,5 +221,6 @@
     "Publicly visible post": "Message publiquement visible",
     "Your Posts": "Vos publications",
     "Git Projects": "Projets Git",
-    "List of project names that you wish to receive git patches for": "Liste des noms de projets pour lesquels vous souhaitez recevoir des correctifs git"
+    "List of project names that you wish to receive git patches for": "Liste des noms de projets pour lesquels vous souhaitez recevoir des correctifs git",
+    "Show/Hide Buttons": "Afficher / masquer les boutons"
 }

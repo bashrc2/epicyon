@@ -221,5 +221,6 @@
     "Publicly visible post": "مشاركة مرئية بشكل عام",
     "Your Posts": "منشوراتك",
     "Git Projects": "مشاريع Git",
-    "List of project names that you wish to receive git patches for": "قائمة بأسماء المشاريع التي ترغب في تلقي تصحيحات git لها"
+    "List of project names that you wish to receive git patches for": "قائمة بأسماء المشاريع التي ترغب في تلقي تصحيحات git لها",
+    "Show/Hide Buttons": "إظهار / إخفاء الأزرار"
 }
