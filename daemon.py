@@ -94,7 +94,7 @@ from config import setConfigParam
 from config import getConfigParam
 from roles import setRole
 from roles import clearModeratorStatus
-from blog import htmlBlogPageRSS
+from blog import htmlBlogPageRSS2
 from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
@@ -1141,15 +1141,15 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.session = \
                             createSession(self.server.useTor)
                     msg = \
-                        htmlBlogPageRSS(authorized,
-                                        self.server.session,
-                                        self.server.baseDir,
-                                        self.server.httpPrefix,
-                                        self.server.translate,
-                                        nickname,
-                                        self.server.domain,
-                                        self.server.port,
-                                        maxPostsInRSSFeed, 1)
+                        htmlBlogPageRSS2(authorized,
+                                         self.server.session,
+                                         self.server.baseDir,
+                                         self.server.httpPrefix,
+                                         self.server.translate,
+                                         nickname,
+                                         self.server.domain,
+                                         self.server.port,
+                                         maxPostsInRSSFeed, 1)
                     if msg is not None:
                         msg = msg.encode()
                         self._set_headers('text/xml', len(msg),

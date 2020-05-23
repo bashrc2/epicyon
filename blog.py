@@ -270,12 +270,12 @@ def htmlBlogPostContent(authorized: bool,
     return blogStr
 
 
-def htmlBlogPostRSS(authorized: bool,
-                    baseDir: str, httpPrefix: str, translate: {},
-                    nickname: str, domain: str, domainFull: str,
-                    postJsonObject: {},
-                    handle: str, restrictToDomain: bool) -> str:
-    """Returns the RSS feed for a single blog post
+def htmlBlogPostRSS2(authorized: bool,
+                     baseDir: str, httpPrefix: str, translate: {},
+                     nickname: str, domain: str, domainFull: str,
+                     postJsonObject: {},
+                     handle: str, restrictToDomain: bool) -> str:
+    """Returns the RSS version 2 feed for a single blog post
     """
     messageLink = ''
     if postJsonObject['object'].get('id'):
@@ -416,8 +416,8 @@ def htmlBlogPage(authorized: bool, session,
     return None
 
 
-def rssHeader(httpPrefix: str,
-              nickname: str, domainFull: str, translate: {}) -> str:
+def rss2Header(httpPrefix: str,
+               nickname: str, domainFull: str, translate: {}) -> str:
     rssStr = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"
     rssStr += "<rss version=\"2.0\">"
     rssStr += '<channel>'
@@ -427,17 +427,17 @@ def rssHeader(httpPrefix: str,
     return rssStr
 
 
-def rssFooter() -> str:
+def rss2Footer() -> str:
     rssStr = '</channel>'
     rssStr += '</rss>'
     return rssStr
 
 
-def htmlBlogPageRSS(authorized: bool, session,
-                    baseDir: str, httpPrefix: str, translate: {},
-                    nickname: str, domain: str, port: int,
-                    noOfItems: int, pageNumber: int) -> str:
-    """Returns an rss feed containing posts
+def htmlBlogPageRSS2(authorized: bool, session,
+                     baseDir: str, httpPrefix: str, translate: {},
+                     nickname: str, domain: str, port: int,
+                     noOfItems: int, pageNumber: int) -> str:
+    """Returns an RSS version 2 feed containing posts
     """
     if ' ' in nickname or '@' in nickname or \
        '\n' in nickname or '\r' in nickname:
@@ -448,12 +448,12 @@ def htmlBlogPageRSS(authorized: bool, session,
         if port != 80 and port != 443:
             domainFull = domain + ':' + str(port)
 
-    blogRSS = rssHeader(httpPrefix, nickname, domainFull, translate)
+    blogRSS2 = rss2Header(httpPrefix, nickname, domainFull, translate)
 
     blogsIndex = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/tlblogs.index'
     if not os.path.isfile(blogsIndex):
-        return blogRSS + rssFooter()
+        return blogRSS2 + rss2Footer()
 
     timelineJson = createBlogsTimeline(session, baseDir,
                                        nickname, domain, port,
@@ -462,20 +462,21 @@ def htmlBlogPageRSS(authorized: bool, session,
                                        pageNumber)
 
     if not timelineJson:
-        return blogRSS + rssFooter()
+        return blogRSS2 + rss2Footer()
 
     if pageNumber is not None:
         for item in timelineJson['orderedItems']:
             if item['type'] != 'Create':
                 continue
 
-            blogRSS += htmlBlogPostRSS(authorized, baseDir,
-                                       httpPrefix, translate,
-                                       nickname, domain,
-                                       domainFull, item,
-                                       None, True)
+            blogRSS2 += \
+                htmlBlogPostRSS2(authorized, baseDir,
+                                 httpPrefix, translate,
+                                 nickname, domain,
+                                 domainFull, item,
+                                 None, True)
 
-    return blogRSS + rssFooter()
+    return blogRSS2 + rss2Footer()
 
 
 def getBlogIndexesForAccounts(baseDir: str) -> {}:
