@@ -1738,6 +1738,46 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 21)
 
+        # get fonts
+        if self.path.startswith('/fonts/'):
+            if self.path.endswith('.ttf') or \
+               self.path.endswith('.woff') or \
+               self.path.endswith('.woff2'):
+                if self.path.endswith('.ttf'):
+                    fontType = 'application/x-font-ttf'
+                elif self.path.endswith('.woff'):
+                    fontType = 'application/font-woff'
+                else:
+                    fontType = 'application/font-woff2'
+                fontStr = self.path.split('/fonts/')[1]
+                fontFilename = \
+                    self.server.baseDir + '/fonts/' + fontStr
+                if self._etag_exists(fontFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+                if self.server.fontsCache.get(fontStr):
+                    fontBinary = self.server.fontsCache[fontStr]
+                    self._set_headers_etag(fontFilename,
+                                           fontType,
+                                           fontBinary, cookie,
+                                           callingDomain)
+                    self._write(fontBinary)
+                    return
+                else:
+                    if os.path.isfile(fontFilename):
+                        with open(fontFilename, 'rb') as avFile:
+                            fontBinary = avFile.read()
+                            self._set_headers_etag(fontFilename,
+                                                   fontType,
+                                                   fontBinary, cookie,
+                                                   callingDomain)
+                            self._write(fontBinary)
+                            self.server.fontsCache[fontStr] = fontBinary
+                        return
+            self._404()
+            return
+
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
         if self.path.startswith('/icons/'):
@@ -7428,6 +7468,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.recentPostsCache = {}
     httpd.maxRecentPosts = maxRecentPosts
     httpd.iconsCache = {}
+    httpd.fontsCache = {}
 
     print('Creating inbox queue')
     httpd.thrInboxQueue = \

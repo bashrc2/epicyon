@@ -1,0 +1,1 @@
+Add any fonts that you may want to use within themes to this directory. They can be in ttf, woff or woff2 format.
