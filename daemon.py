@@ -1115,29 +1115,29 @@ class PubServer(BaseHTTPRequestHandler):
                     fontType = 'application/font-woff2'
                 fontFilename = \
                     self.server.baseDir + '/fonts/' + fontStr
-                if self._etag_exists(fontFilename):
+                #if self._etag_exists(fontFilename):
                     # The file has not changed
-                    self._304()
+                #    self._304()
+                #    return
+                #if self.server.fontsCache.get(fontStr):
+                #    fontBinary = self.server.fontsCache[fontStr]
+                #    self._set_headers_etag(fontFilename,
+                #                           fontType,
+                #                           fontBinary, cookie,
+                #                           callingDomain)
+                #    self._write(fontBinary)
+                #    return
+                #else:
+                if os.path.isfile(fontFilename):
+                    with open(fontFilename, 'rb') as avFile:
+                        fontBinary = avFile.read()
+                        self._set_headers_etag(fontFilename,
+                                               fontType,
+                                               fontBinary, cookie,
+                                               callingDomain)
+                        self._write(fontBinary)
+                        self.server.fontsCache[fontStr] = fontBinary
                     return
-                if self.server.fontsCache.get(fontStr):
-                    fontBinary = self.server.fontsCache[fontStr]
-                    self._set_headers_etag(fontFilename,
-                                           fontType,
-                                           fontBinary, cookie,
-                                           callingDomain)
-                    self._write(fontBinary)
-                    return
-                else:
-                    if os.path.isfile(fontFilename):
-                        with open(fontFilename, 'rb') as avFile:
-                            fontBinary = avFile.read()
-                            self._set_headers_etag(fontFilename,
-                                                   fontType,
-                                                   fontBinary, cookie,
-                                                   callingDomain)
-                            self._write(fontBinary)
-                            self.server.fontsCache[fontStr] = fontBinary
-                        return
             self._404()
             return
 
