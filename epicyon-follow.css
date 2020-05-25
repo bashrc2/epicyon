@@ -76,15 +76,18 @@ a:link {
 
 .followText {
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .imText {
     font-size: var(--font-size4);
+    font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
 }
 
 .pgp {
     font-size: var(--font-size5);
+    font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
     font-family: 'monospace';
 }
@@ -97,6 +100,7 @@ a:link {
     text-align: center;
     padding: 10px;
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
     width: 20%;
     max-width: 200px;
     min-width: 100px;
@@ -113,6 +117,7 @@ input[type=text] {
     width: 90%;
     clear: both;
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
     text-align: center;
     color: var(--text-entry-foreground);
     background-color: var(--text-entry-background);
@@ -125,6 +130,7 @@ input[type=text] {
     color: var(--button-text);
     text-align: center;
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
     padding: 2px;
     cursor: pointer;
     margin: 5px;
@@ -136,6 +142,7 @@ input[type=text] {
 
 .options {
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .options img {
@@ -145,21 +152,25 @@ input[type=text] {
 @media screen and (min-width: 400px) {
     .hashtagswarm {
 	font-size: 30px;
+	font-family: Arial, Helvetica, sans-serif;
 	padding: 30px;
 	line-height: 60px;
     }
     .hashtagswarm2 {
 	font-size: 40px;
+	font-family: Arial, Helvetica, sans-serif;
 	padding: 30px;
 	line-height: 60px;
     }
     .followText {
         font-size: 24px;
+	font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text] {
         width: 90%;
         clear: both;
         font-size: 24px;
+	font-family: Arial, Helvetica, sans-serif;
         text-align: center;
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
@@ -172,6 +183,7 @@ input[type=text] {
         text-align: center;
         padding: 10px;
         font-size: 24px;
+	font-family: Arial, Helvetica, sans-serif;
         width: 20%;
         max-width: 200px;
         min-width: 100px;
@@ -183,21 +195,25 @@ input[type=text] {
 @media screen and (max-width: 1000px) {
     .hashtagswarm {
 	font-size: 40px;
+	font-family: Arial, Helvetica, sans-serif;
 	padding: 40px;
 	line-height: 70px;
     }
     .hashtagswarm2 {
 	font-size: 50px;
+	font-family: Arial, Helvetica, sans-serif;
 	padding: 40px;
 	line-height: 70px;
     }
     .followText {
         font-size: 40px;
+	font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text] {
         width: 90%;
         clear: both;
         font-size: 40px;
+	font-family: Arial, Helvetica, sans-serif;
         text-align: center;
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
@@ -210,6 +226,7 @@ input[type=text] {
         text-align: center;
         padding: 10px;
         font-size: 40px;
+	font-family: Arial, Helvetica, sans-serif;
         width: 20%;
         max-width: 200px;
         min-width: 100px;

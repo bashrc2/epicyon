@@ -67,6 +67,7 @@ input[type=text], input[type=password] {
     border: 1px solid #ccc;
     box-sizing: border-box;
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 button {
@@ -78,10 +79,12 @@ button {
     cursor: pointer;
     width: 100%;
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .login-text {
     font-size: var(--font-size);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 button:hover {
@@ -125,11 +128,13 @@ span.psw {
         min-width: 600px;
         margin: 0 auto;
         font-size: var(--font-size);
+	font-family: Arial, Helvetica, sans-serif;
         position: relative;
         top: 3%;
     }
     .login-text {
         font-size: var(--font-size);
+	font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text], input[type=password] {
         width: 100%;
@@ -139,6 +144,7 @@ span.psw {
         border: 1px solid #ccc;
         box-sizing: border-box;
         font-size: var(--font-size);
+	font-family: Arial, Helvetica, sans-serif;
     }
     button {
         background-color: var(--button-background);
@@ -149,6 +155,7 @@ span.psw {
         cursor: pointer;
         width: 100%;
         font-size: var(--font-size);
+	font-family: Arial, Helvetica, sans-serif;
     }
 }
 
@@ -164,11 +171,13 @@ span.psw {
         min-width: 600px;
         margin: 0 auto;
         font-size: var(--font-size-mobile);
+	font-family: Arial, Helvetica, sans-serif;
         position: relative;
         top: 5%;
     }
     .login-text {
         font-size: var(--font-size-mobile);
+	font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text], input[type=password] {
         width: 100%;
@@ -178,6 +187,7 @@ span.psw {
         border: 1px solid #ccc;
         box-sizing: border-box;
         font-size: var(--font-size-mobile);
+	font-family: Arial, Helvetica, sans-serif;
     }
     button {
         background-color: var(--button-background);
@@ -188,5 +198,6 @@ span.psw {
         cursor: pointer;
         width: 100%;
         font-size: var(--font-size-mobile);
+	font-family: Arial, Helvetica, sans-serif;
     }
 }
