@@ -547,7 +547,7 @@ def validNickname(domain: str, nickname: str) -> bool:
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses',
                      'updates', 'repeat', 'announce',
-                     'shares')
+                     'shares', 'fonts', 'icons')
     if nickname in reservedNames:
         return False
     return True
