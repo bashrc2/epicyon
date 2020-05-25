@@ -1740,16 +1740,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get fonts
         if self.path.startswith('/fonts/'):
-            if self.path.endswith('.ttf') or \
-               self.path.endswith('.woff') or \
-               self.path.endswith('.woff2'):
-                if self.path.endswith('.ttf'):
+            fontStr = self.path.split('/fonts/')[1]
+            if fontsStr.endswith('.ttf') or \
+               fontsStr.endswith('.woff') or \
+               fontsStr.endswith('.woff2'):
+                if fontsStr.endswith('.ttf'):
                     fontType = 'application/x-font-ttf'
-                elif self.path.endswith('.woff'):
+                elif fontsStr.endswith('.woff'):
                     fontType = 'application/font-woff'
                 else:
                     fontType = 'application/font-woff2'
-                fontStr = self.path.split('/fonts/')[1]
                 fontFilename = \
                     self.server.baseDir + '/fonts/' + fontStr
                 if self._etag_exists(fontFilename):
