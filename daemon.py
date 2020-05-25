@@ -917,7 +917,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # token based authenticated used by the web interface
-        if self.headers.get('Cookie') and '/fonts/' not in self.path:
+        if self.headers.get('Cookie'):
             if self.headers['Cookie'].startswith('epicyon='):
                 tokenStr = self.headers['Cookie'].split('=', 1)[1].strip()
                 if ';' in tokenStr:
@@ -1097,6 +1097,49 @@ class PubServer(BaseHTTPRequestHandler):
 
         if self.server.debug:
             print(str(self.headers))
+
+        # get fonts
+        if '/fonts/' in self.path:
+            fontStr = self.path.split('/fonts/')[1]
+            if fontStr.endswith('.otf') or \
+               fontStr.endswith('.ttf') or \
+               fontStr.endswith('.woff') or \
+               fontStr.endswith('.woff2'):
+                if fontStr.endswith('.otf'):
+                    fontType = 'application/x-font-opentype'
+                elif fontStr.endswith('.ttf'):
+                    fontType = 'application/x-font-truetype'
+                elif fontStr.endswith('.woff'):
+                    fontType = 'application/font-woff'
+                else:
+                    fontType = 'application/font-woff2'
+                fontFilename = \
+                    self.server.baseDir + '/fonts/' + fontStr
+                if self._etag_exists(fontFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+                if self.server.fontsCache.get(fontStr):
+                    fontBinary = self.server.fontsCache[fontStr]
+                    self._set_headers_etag(fontFilename,
+                                           fontType,
+                                           fontBinary, cookie,
+                                           callingDomain)
+                    self._write(fontBinary)
+                    return
+                else:
+                    if os.path.isfile(fontFilename):
+                        with open(fontFilename, 'rb') as avFile:
+                            fontBinary = avFile.read()
+                            self._set_headers_etag(fontFilename,
+                                                   fontType,
+                                                   fontBinary, cookie,
+                                                   callingDomain)
+                            self._write(fontBinary)
+                            self.server.fontsCache[fontStr] = fontBinary
+                        return
+            self._404()
+            return
 
         cookie = None
         if self.headers.get('Cookie'):
@@ -1737,49 +1780,6 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 21)
-
-        # get fonts
-        if '/fonts/' in self.path:
-            fontStr = self.path.split('/fonts/')[1]
-            if fontStr.endswith('.otf') or \
-               fontStr.endswith('.ttf') or \
-               fontStr.endswith('.woff') or \
-               fontStr.endswith('.woff2'):
-                if fontStr.endswith('.otf'):
-                    fontType = 'application/x-font-opentype'
-                elif fontStr.endswith('.ttf'):
-                    fontType = 'application/x-font-truetype'
-                elif fontStr.endswith('.woff'):
-                    fontType = 'application/font-woff'
-                else:
-                    fontType = 'application/font-woff2'
-                fontFilename = \
-                    self.server.baseDir + '/fonts/' + fontStr
-                if self._etag_exists(fontFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-                if self.server.fontsCache.get(fontStr):
-                    fontBinary = self.server.fontsCache[fontStr]
-                    self._set_headers_etag(fontFilename,
-                                           fontType,
-                                           fontBinary, cookie,
-                                           callingDomain)
-                    self._write(fontBinary)
-                    return
-                else:
-                    if os.path.isfile(fontFilename):
-                        with open(fontFilename, 'rb') as avFile:
-                            fontBinary = avFile.read()
-                            self._set_headers_etag(fontFilename,
-                                                   fontType,
-                                                   fontBinary, cookie,
-                                                   callingDomain)
-                            self._write(fontBinary)
-                            self.server.fontsCache[fontStr] = fontBinary
-                        return
-            self._404()
-            return
 
         # icon images
         # Note that this comes before the busy flag to avoid conflicts
