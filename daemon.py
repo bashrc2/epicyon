@@ -1741,15 +1741,15 @@ class PubServer(BaseHTTPRequestHandler):
         # get fonts
         if '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
-            if fontsStr.endswith('.otf') or \
-               fontsStr.endswith('.ttf') or \
-               fontsStr.endswith('.woff') or \
-               fontsStr.endswith('.woff2'):
-                if fontsStr.endswith('.otf'):
+            if fontStr.endswith('.otf') or \
+               fontStr.endswith('.ttf') or \
+               fontStr.endswith('.woff') or \
+               fontStr.endswith('.woff2'):
+                if fontStr.endswith('.otf'):
                     fontType = 'application/x-font-opentype'
-                elif fontsStr.endswith('.ttf'):
+                elif fontStr.endswith('.ttf'):
                     fontType = 'application/x-font-truetype'
-                elif fontsStr.endswith('.woff'):
+                elif fontStr.endswith('.woff'):
                     fontType = 'application/font-woff'
                 else:
                     fontType = 'application/font-woff2'
