@@ -1098,6 +1098,10 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print(str(self.headers))
 
+        cookie = None
+        if self.headers.get('Cookie'):
+            cookie = self.headers['Cookie']
+
         # get fonts
         if '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
@@ -1140,10 +1144,6 @@ class PubServer(BaseHTTPRequestHandler):
                     return
             self._404()
             return
-
-        cookie = None
-        if self.headers.get('Cookie'):
-            cookie = self.headers['Cookie']
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
 
