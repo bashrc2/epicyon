@@ -21,6 +21,14 @@
     --button-selected: #666;
 }
 
+@font-face {
+  font-family: 'Bedstead';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('./fonts/bedstead.otf') format('opentype');
+}
+
 body, html {
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);

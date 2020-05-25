@@ -42,6 +42,14 @@
     --timeline-border-radius: 30px;
 }
 
+@font-face {
+  font-family: 'Bedstead';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('./fonts/bedstead.otf') format('opentype');
+}
+
 body, html {
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
@@ -272,7 +280,7 @@ a:link {
 
 .gitpatch {
     width: 90%;
-    font-family: monospace;
+    font-family: 'monospace';
 }
 
 .container p.administeredby {
