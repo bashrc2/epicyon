@@ -1739,7 +1739,7 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings, 21)
 
         # get fonts
-        if self.path.startswith('/fonts/'):
+        if '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
             if fontsStr.endswith('.otf') or \
                fontsStr.endswith('.ttf') or \
