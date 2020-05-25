@@ -1356,6 +1356,8 @@ def receiveAnnounce(recentPostsCache: {},
                   '"users", "channel" or "profile" missing in ' +
                   messageJson['type'])
         return False
+
+    # is the domain of the announce actor blocked?
     objectDomain = \
         messageJson['object'].replace('https://', '')
     objectDomain = objectDomain.replace('http://', '')
@@ -1370,9 +1372,18 @@ def receiveAnnounce(recentPostsCache: {},
         return False
     if not os.path.isdir(baseDir + '/accounts/' + handle):
         print('DEBUG: unknown recipient of announce - ' + handle)
-    # is this post in the outbox of the person?
+
+    # is the announce actor blocked?
     nickname = handle.split('@')[0]
-    postFilename = locatePost(baseDir, nickname, handle.split('@')[1],
+    actorNickname = getNicknameFromActor(messageJson['actor'])
+    actorDomain, actorPort = getDomainFromActor(messageJson['actor'])
+    if isBlocked(baseDir, nickname, domain, actorNickname, actorDomain):
+        print('Receive announce blocked for actor: ' +
+              actorNickname + '@' + actorDomain)
+        return False
+
+    # is this post in the outbox of the person?
+    postFilename = locatePost(baseDir, nickname, domain,
                               messageJson['object'])
     if not postFilename:
         if debug:
