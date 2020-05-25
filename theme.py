@@ -143,7 +143,7 @@ def setThemeHacker(baseDir: str):
         "main-bg-color-report": "#050202",
         "main-header-color-roles": "#1f192d",
         "main-fg-color": "green",
-        "border-color": "darkgreen",
+        "border-color": "#035103",
         "main-link-color": "#266020",
         "main-visited-color": "#3c8234",
         "button-selected": "#063200",
