@@ -152,6 +152,7 @@ def setThemeHacker(baseDir: str):
         "button-corner-radius": "4px",
         "timeline-border-radius": "4px",
         "*font-family": "'Bedstead'",
+        "*src": "url('./fonts/bedstead.otf') format('opentype')"
         "background-color: #554;": "background-color: #062200;",
         "color: #FFFFFE;": "color: green;",
         "calendar-bg-color": "black",
