@@ -199,6 +199,7 @@ a:link {
     background-color: #ddd;
     text-align: center;
     cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .hero-text button:hover {
@@ -215,6 +216,7 @@ a:link {
 }
 
 .button span {
+    font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -222,6 +224,7 @@ a:link {
 }
 
 .button span:after {
+    font-family: Arial, Helvetica, sans-serif;
     content: '\00bb';
     position: absolute;
     opacity: 0;
@@ -240,6 +243,7 @@ a:link {
 }
 
 .buttonselected span {
+    font-family: Arial, Helvetica, sans-serif;
     cursor: pointer;
     display: inline-block;
     position: relative;
@@ -247,6 +251,7 @@ a:link {
 }
 
 .buttonselected span:after {
+    font-family: Arial, Helvetica, sans-serif;
     content: '\00bb';
     position: absolute;
     opacity: 0;
@@ -346,7 +351,6 @@ a:link {
 
 .pgp {
     font-size: var(--font-size5);
-    font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
     font-family: 'monospace';
 }
@@ -432,6 +436,7 @@ a:link {
     width: 10%;
     height: 30px;
     background-color: var(--button-background);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 input[type=number] {
@@ -662,29 +667,29 @@ div.gallery img {
 @media screen and (min-width: 400px) {
     body, html {
         font-size: var(--font-size4);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
     }
     .galleryContainer {
-	display: grid;
-	grid-template-columns: 50% 50%;
-	grid-column-gap: 5px;
-	background-color: var(--main-bg-color);
+        display: grid;
+        grid-template-columns: 50% 50%;
+        grid-column-gap: 5px;
+        background-color: var(--main-bg-color);
     }
     div.gallerytext {
-	color: var(--gallery-text-color);
-	font-size: var(--gallery-font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        color: var(--gallery-text-color);
+        font-size: var(--gallery-font-size);
+        font-family: Arial, Helvetica, sans-serif;
     }
     div.gallery {
-	margin: 5px;
-	border: 1px solid var(--gallery-border);
-	float: left;
-	width: 100%;
-	object-fit: scale-down;
+        margin: 5px;
+        border: 1px solid var(--gallery-border);
+        float: left;
+        width: 100%;
+        object-fit: scale-down;
     }
     div.imagedesc {
-	padding: 22px;
-	text-align: center;
+        padding: 22px;
+        text-align: center;
     }
     .container img {
         float: left;
@@ -707,21 +712,21 @@ div.gallery img {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
-	float: right;
-	margin-left: 0px;
-	margin-right:0;
-	padding: 0 0;
-	margin: 0 0;
-	width: 50px;
+        float: right;
+        margin-left: 0px;
+        margin-right:0;
+        padding: 0 0;
+        margin: 0 0;
+        width: 50px;
     }
     .container img.emojiheader {
-	float: none;
-	width: 25px;
-	margin-left: 0px;
-	margin-right: 0px;
-	padding-right: 0px;
-	border-radius: 0px;
-	vertical-align: middle;
+        float: none;
+        width: 25px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: middle;
     }
     .containericons img {
         float: right;
@@ -759,7 +764,7 @@ div.gallery img {
         color: #FFFFFE;
         text-align: center;
         font-size: var(--font-size5);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: 2px;
         cursor: pointer;
         margin: 5px;
@@ -771,7 +776,7 @@ div.gallery img {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding);
         transition: all 0.5s;
         cursor: pointer;
@@ -784,7 +789,7 @@ div.gallery img {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -794,20 +799,20 @@ div.gallery img {
         margin: 5px;
     }
     .buttonhighlighted {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-highlighted);
-	border: none;
-	color: var(--button-text);
-	text-align: center;
-	font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding);
-	width: 10%;
-	max-width: 100px;
-	min-width: 80px;
-	transition: all 0.5s;
-	cursor: pointer;
-	margin: 5px;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-highlighted);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 10%;
+        max-width: 100px;
+        min-width: 80px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
     }
     .buttonselected {
         border-radius: var(--button-corner-radius);
@@ -816,7 +821,7 @@ div.gallery img {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding);
         width: 10%;
         max-width: 100px;
@@ -826,52 +831,52 @@ div.gallery img {
         margin: 5px;
     }
     .buttonselectedhighlighted {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-selected-highlighted);
-	border: none;
-	color: var(--button-text);
-	text-align: center;
-	font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding);
-	width: 10%;
-	max-width: 100px;
-	min-width: 80px;
-	transition: all 0.5s;
-	cursor: pointer;
-	margin: 5px;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-selected-highlighted);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 10%;
+        max-width: 100px;
+        min-width: 80px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
     }
     .followApprove {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-approve);
-	border: none;
-	color: #FFFFFF;
-	text-align: center;
-	font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding);
-	width: 20%;
-	max-width: 200px;
-	min-width: 80px;
-	cursor: pointer;
-	margin: 0 5px;
-	float: right;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-approve);
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 20%;
+        max-width: 200px;
+        min-width: 80px;
+        cursor: pointer;
+        margin: 0 5px;
+        float: right;
     }
     .followDeny {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-deny);
-	border: none;
-	color: #FFFFFF;
-	text-align: center;
-	font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding);
-	width: 20%;
-	max-width: 200px;
-	min-width: 80px;
-	cursor: pointer;
-	margin: 0 5px;
-	float: right;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-deny);
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 20%;
+        max-width: 200px;
+        min-width: 80px;
+        cursor: pointer;
+        margin: 0 5px;
+        float: right;
     }
     .pageicon {
         width: 4%;
@@ -891,7 +896,7 @@ div.gallery img {
         margin-bottom: 16px;
         resize: vertical;
         font-size: var(--font-size2);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
@@ -899,29 +904,29 @@ div.gallery img {
         background-color: var(--button-background);
         color: var(--button-text);
         padding: var(--button-height-padding);
-	display: inline-block;
+        display: inline-block;
         margin: 15px;
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
     }
     .question {
-	font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .questionresult {
-	font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size);
+        font-family: Arial, Helvetica, sans-serif;
     }
     input[type=radio] {
-	font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
-	width: 32px;
-	vertical-align: middle;
-	margin-right: 20px;
+        font-size: var(--font-size);
+        font-family: Arial, Helvetica, sans-serif;
+        width: 32px;
+        vertical-align: middle;
+        margin-right: 20px;
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
@@ -933,7 +938,7 @@ div.gallery img {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
     }
     input[type=file] {
@@ -945,7 +950,7 @@ div.gallery img {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 96%;
     }
     .cancelbtn {
@@ -954,33 +959,33 @@ div.gallery img {
         padding: var(--button-height-padding);
         margin: 15px;
         border: none;
-	display: inline-block;
+        display: inline-block;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
     }
     .scope-desc {
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
     }
     .buttonunfollow {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-background);
-	border: none;
-	color: var(--button-text);
-	text-align: center;
-	font-size: var(--font-size-header);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding);
-	width: 20%;
-	max-width: 200px;
-	min-width: 100px;
-	transition: all 0.5s;
-	cursor: pointer;
-	margin: 5px;
-	float: right;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding);
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        float: right;
     }
     .license {
         float: right;
@@ -988,53 +993,53 @@ div.gallery img {
         width: 10%;
     }
     .donateButton {
-	background-color: var(--button-background);
-	color: var(--button-text);
-	float: none;
-	margin: 0px 10px;
-	padding: 12px 40px;
-	border: none;
-	border-radius: var(--button-corner-radius);
-	cursor: pointer;
-	font-size: var(--font-size2);
-	font-family: Arial, Helvetica, sans-serif;
-	opacity: 0.7;
+        background-color: var(--button-background);
+        color: var(--button-text);
+        float: none;
+        margin: 0px 10px;
+        padding: 12px 40px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size2);
+        font-family: Arial, Helvetica, sans-serif;
+        opacity: 0.7;
     }
 }
 
 @media screen and (min-width: 2200px) {
     .galleryContainer {
-	display: grid;
-	grid-template-columns: 33% 33% 33%;
-	grid-column-gap: 5px;
-	background-color: var(--main-bg-color);
+        display: grid;
+        grid-template-columns: 33% 33% 33%;
+        grid-column-gap: 5px;
+        background-color: var(--main-bg-color);
     }
 }
 
 @media screen and (max-width: 1000px) {
     body, html {
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
     }
     div.gallerytext {
-	color: var(--gallery-text-color);
-	font-size: var(--gallery-font-size-mobile);
-	font-family: Arial, Helvetica, sans-serif;
+        color: var(--gallery-text-color);
+        font-size: var(--gallery-font-size-mobile);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .galleryContainer {
-	display: grid;
-	grid-template-columns: auto;
-	background-color: var(--main-bg-color);
+        display: grid;
+        grid-template-columns: auto;
+        background-color: var(--main-bg-color);
     }
     div.gallery {
-	margin: 5px;
-	border: 1px solid var(--gallery-border);
-	float: left;
-	width: 100%;
+        margin: 5px;
+        border: 1px solid var(--gallery-border);
+        float: left;
+        width: 100%;
     }
     div.imagedesc {
-	padding: 35px;
-	text-align: center;
+        padding: 35px;
+        text-align: center;
     }
     .container img {
         float: left;
@@ -1057,21 +1062,21 @@ div.gallery img {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
-	float: right;
-	margin-left: 0px;
-	margin-right:0;
-	padding: 0 0;
-	margin: 0 0;
-	width: 100px;
+        float: right;
+        margin-left: 0px;
+        margin-right:0;
+        padding: 0 0;
+        margin: 0 0;
+        width: 100px;
     }
     .container img.emojiheader {
-	float: none;
-	width: 45px;
-	margin-left: 0px;
-	margin-right: 0px;
-	padding-right: 0px;
-	border-radius: 0px;
-	vertical-align: middle;
+        float: none;
+        width: 45px;
+        margin-left: 0px;
+        margin-right: 0px;
+        padding-right: 0px;
+        border-radius: 0px;
+        vertical-align: middle;
     }
     div.mediaavatar img {
         float: left;
@@ -1109,8 +1114,8 @@ div.gallery img {
         color: #FFFFFE;
         text-align: center;
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: 2px;
         cursor: pointer;
         margin: 5px;
@@ -1122,7 +1127,7 @@ div.gallery img {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
         transition: all 0.5s;
         cursor: pointer;
@@ -1135,7 +1140,7 @@ div.gallery img {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -1145,20 +1150,20 @@ div.gallery img {
         margin: 15px;
     }
     .buttonhighlighted {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-highlighted);
-	border: none;
-	color: var(--button-text);
-	text-align: center;
-	font-size: var(--font-size-button-mobile);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding-mobile);
-	width: 20%;
-	max-width: 400px;
-	min-width: 80px;
-	transition: all 0.5s;
-	cursor: pointer;
-	margin: 15px;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-highlighted);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 400px;
+        min-width: 80px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
     }
     .buttonselected {
         border-radius: var(--button-corner-radius);
@@ -1167,7 +1172,7 @@ div.gallery img {
         color: var(--button-text);
         text-align: center;
         font-size: var(--font-size-button-mobile);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         padding: var(--button-height-padding-mobile);
         width: 20%;
         max-width: 400px;
@@ -1177,52 +1182,52 @@ div.gallery img {
         margin: 15px;
     }
     .buttonselectedhighlighted {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-selected-highlighted);
-	border: none;
-	color: var(--button-text);
-	text-align: center;
-	font-size: var(--font-size-button-mobile);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding-mobile);
-	width: 20%;
-	max-width: 400px;
-	min-width: 80px;
-	transition: all 0.5s;
-	cursor: pointer;
-	margin: 15px;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-selected-highlighted);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 400px;
+        min-width: 80px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 15px;
     }
     .followApprove {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-approve);
-	border: none;
-	color: #FFFFFF;
-	text-align: center;
-	font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding-mobile);
-	width: 20%;
-	max-width: 400px;
-	min-width: 80px;
-	cursor: pointer;
-	margin: 0 15px;
-	float: right;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-approve);
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 400px;
+        min-width: 80px;
+        cursor: pointer;
+        margin: 0 15px;
+        float: right;
     }
     .followDeny {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-deny);
-	border: none;
-	color: #FFFFFF;
-	text-align: center;
-	font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding-mobile);
-	width: 20%;
-	max-width: 400px;
-	min-width: 80px;
-	cursor: pointer;
-	margin: 0 15px;
-	float: right;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-deny);
+        border: none;
+        color: #FFFFFF;
+        text-align: center;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 400px;
+        min-width: 80px;
+        cursor: pointer;
+        margin: 0 15px;
+        float: right;
     }
     .pageicon {
         width: 14%;
@@ -1242,37 +1247,37 @@ div.gallery img {
         margin-bottom: 16px;
         resize: vertical;
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         background-color: var(--main-bg-color-reply);
         color: var(--main-fg-color);
     }
     input[type=button], input[type=submit] {
         background-color: var(--button-background);
         color: var(--button-text);
-	display: inline-block;
+        display: inline-block;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
     }
     .question {
-	font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .questionresult {
-	font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
     }
     input[type=radio] {
-	font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
-	height: 90px;
-	vertical-align: middle;
-	margin-right: 20px;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        height: 90px;
+        vertical-align: middle;
+        margin-right: 20px;
     }
     input.vote[type=submit] {
         background-color: var(--button-background);
@@ -1284,7 +1289,7 @@ div.gallery img {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
     }
     input[type=file] {
@@ -1296,42 +1301,42 @@ div.gallery img {
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 95.4%;
     }
     .cancelbtn {
         background-color: var(--button-background);
         color: var(--button-text);
-	display: inline-block;
+        display: inline-block;
         padding: var(--button-height-padding-mobile);
         margin: 15px;
         border: none;
         border-radius: var(--button-corner-radius);
         cursor: pointer;
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
     }
     .scope-desc {
         font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
+        font-family: Arial, Helvetica, sans-serif;
     }
     .buttonunfollow {
-	border-radius: var(--button-corner-radius);
-	background-color: var(--button-background);
-	border: none;
-	color: var(--button-text);
-	text-align: center;
-	font-size: var(--font-size-button-mobile);
-	font-family: Arial, Helvetica, sans-serif;
-	padding: var(--button-height-padding-mobile);
-	width: 20%;
-	max-width: 200px;
-	min-width: 100px;
-	transition: all 0.5s;
-	cursor: pointer;
-	margin: 5px;
-	float: right;
+        border-radius: var(--button-corner-radius);
+        background-color: var(--button-background);
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        font-size: var(--font-size-button-mobile);
+        font-family: Arial, Helvetica, sans-serif;
+        padding: var(--button-height-padding-mobile);
+        width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+        float: right;
     }
     .license {
         float: right;
@@ -1339,16 +1344,16 @@ div.gallery img {
         width: 20%;
     }
     .donateButton {
-	background-color: var(--button-background);
-	color: var(--button-text);
-	float: none;
-	margin: 0px 10px;
-	padding: 12px 40px;
-	border: none;
-	border-radius: var(--button-corner-radius);
-	cursor: pointer;
-	font-size: var(--font-size3);
-	font-family: Arial, Helvetica, sans-serif;
-	opacity: 0.7;
+        background-color: var(--button-background);
+        color: var(--button-text);
+        float: none;
+        margin: 0px 10px;
+        padding: 12px 40px;
+        border: none;
+        border-radius: var(--button-corner-radius);
+        cursor: pointer;
+        font-size: var(--font-size3);
+        font-family: Arial, Helvetica, sans-serif;
+        opacity: 0.7;
     }
 }
