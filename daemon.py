@@ -917,7 +917,7 @@ class PubServer(BaseHTTPRequestHandler):
             return False
 
         # token based authenticated used by the web interface
-        if self.headers.get('Cookie'):
+        if self.headers.get('Cookie') and '/fonts/' not in self.path:
             if self.headers['Cookie'].startswith('epicyon='):
                 tokenStr = self.headers['Cookie'].split('=', 1)[1].strip()
                 if ';' in tokenStr:
