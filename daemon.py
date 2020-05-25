@@ -5962,12 +5962,10 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull + usersPath
             length = int(self.headers['Content-length'])
             moderationParams = self.rfile.read(length).decode('utf-8')
-            print('moderationParams: ' + moderationParams)
             if '&' in moderationParams:
                 moderationText = None
                 moderationButton = None
                 for moderationStr in moderationParams.split('&'):
-                    print('moderationStr: ' + moderationStr)
                     if moderationStr.startswith('moderationAction'):
                         if '=' in moderationStr:
                             moderationText = \
