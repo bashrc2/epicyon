@@ -1120,12 +1120,6 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         instanceStr += \
             '  <input type="file" id="instanceLogo" name="instanceLogo"'
         instanceStr += '      accept="' + imageFormats + '">'
-        instanceStr += \
-            '  <label class="labels">' + \
-            translate['Custom Font'] + '</label>'
-        instanceStr += \
-            '  <input type="file" id="customFont" name="customFont"'
-        instanceStr += '      accept="' + fontFormats + '">'
         instanceStr += '</div>'
 
         moderators = ''
@@ -1158,6 +1152,12 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         themesDropdown += '    <option value="highvis">' + \
             translate['HighVis'] + '</option>'
         themesDropdown += '  </select><br>'
+        themesDropdown += \
+            '  <label class="labels">' + \
+            translate['Custom Font'] + '</label>'
+        themesDropdown += \
+            '  <input type="file" id="customFont" name="customFont"'
+        themesDropdown += '      accept="' + fontFormats + '">'
         themesDropdown += '</div>'
         themeName = getConfigParam(baseDir, 'theme')
         themesDropdown = \
