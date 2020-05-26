@@ -15,6 +15,7 @@ from functools import partial
 # for saving images
 from hashlib import sha256
 from hashlib import sha1
+from shutil import copyfile
 from session import createSession
 from webfinger import parseHandle
 from webfinger import webfingerMeta
@@ -5413,7 +5414,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # extract each image type
                 actorChanged = True
                 profileMediaTypes = ('avatar', 'image',
-                                     'banner', 'instanceLogo')
+                                     'banner', 'instanceLogo',
+                                     'customFont')
                 profileMediaTypesUploaded = {}
                 for mType in profileMediaTypes:
                     if self.server.debug:
@@ -5435,36 +5437,41 @@ class PubServer(BaseHTTPRequestHandler):
                     # Note: a .temp extension is used here so that at no
                     # time is an image with metadata publicly exposed,
                     # even for a few mS
-                    if mType != 'instanceLogo':
+                    if mType == 'instanceLogo':
+                        filenameBase = \
+                            self.server.baseDir + '/accounts/login.temp'
+                    elif mType == 'customFont':
+                        filenameBase = \
+                            self.server.baseDir + '/fonts/' + \
+                            '/custom.temp'
+                    else:
                         filenameBase = \
                             self.server.baseDir + '/accounts/' + \
                             nickname + '@' + self.server.domain + \
                             '/' + mType + '.temp'
-                    else:
-                        filenameBase = \
-                            self.server.baseDir + '/accounts/login.temp'
 
                     filename, attachmentMediaType = \
                         saveMediaInFormPOST(mediaBytes, self.server.debug,
                                             filenameBase)
                     if filename:
-                        if self.server.debug:
-                            print('DEBUG: profile update POST ' + mType +
-                                  ' media filename is ' + filename)
+                        print('Profile update POST ' + mType +
+                              ' media filename is ' + filename)
                     else:
-                        if self.server.debug:
-                            print('DEBUG: profile update, no ' + mType +
-                                  ' media filename in POST')
+                        print('Profile update, no ' + mType +
+                              ' media filename in POST')
                         continue
 
                     if self.server.debug:
                         print('DEBUG: POST ' + mType +
                               ' media removing metadata')
                     postImageFilename = filename.replace('.temp', '')
-                    removeMetaData(filename, postImageFilename)
+                    if mType == 'customFont':
+                        copyfile(filename, postImageFilename)
+                    else:
+                        removeMetaData(filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('profile update POST ' + mType +
-                              ' image saved to ' + postImageFilename)
+                              ' image or font saved to ' + postImageFilename)
                         if mType != 'instanceLogo':
                             lastPartOfImageFilename = \
                                 postImageFilename.split('/')[-1]
@@ -5473,7 +5480,7 @@ class PubServer(BaseHTTPRequestHandler):
                             actorChanged = True
                     else:
                         print('ERROR: profile update POST ' + mType +
-                              ' image could not be saved to ' +
+                              ' image or font could not be saved to ' +
                               postImageFilename)
 
                 fields = \

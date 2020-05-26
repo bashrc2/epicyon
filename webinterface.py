@@ -938,6 +938,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     imageFormats = '.png, .jpg, .jpeg, .gif, .webp'
+    fontFormats = '.woff, .woff2, .ttf, .otf'
     pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
@@ -1119,6 +1120,12 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         instanceStr += \
             '  <input type="file" id="instanceLogo" name="instanceLogo"'
         instanceStr += '      accept="' + imageFormats + '">'
+        instanceStr += \
+            '  <label class="labels">' + \
+            translate['Custom Font'] + '</label>'
+        instanceStr += \
+            '  <input type="file" id="customFont" name="customFont"'
+        instanceStr += '      accept="' + fontFormats + '">'
         instanceStr += '</div>'
 
         moderators = ''
