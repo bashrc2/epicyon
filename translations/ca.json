@@ -223,5 +223,6 @@
     "Git Projects": "Git Projectes",
     "List of project names that you wish to receive git patches for": "Llista de noms de projectes dels quals voleu rebre els pedaços de git",
     "Show/Hide Buttons": "Mostra / Oculta els botons",
-    "Custom Font": "Tipus de lletra personalitzats"
+    "Custom Font": "Tipus de lletra personalitzats",
+    "Remove the custom font": "Elimineu el tipus de lletra personalitzat"
 }

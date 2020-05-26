@@ -223,5 +223,6 @@
     "Git Projects": "Proyectos Git",
     "List of project names that you wish to receive git patches for": "Lista de nombres de proyectos para los que desea recibir parches git",
     "Show/Hide Buttons": "Botones Mostrar / Ocultar",
-    "Custom Font": "Fuente personalizada"
+    "Custom Font": "Fuente personalizada",
+    "Remove the custom font": "Eliminar la fuente personalizada"
 }
