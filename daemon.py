@@ -163,6 +163,7 @@ from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
+from content import saveFontInFormPOST
 from content import extractTextFieldsInPOST
 from media import removeMetaData
 from cache import storePersonInCache
@@ -5450,9 +5451,14 @@ class PubServer(BaseHTTPRequestHandler):
                             nickname + '@' + self.server.domain + \
                             '/' + mType + '.temp'
 
-                    filename, attachmentMediaType = \
-                        saveMediaInFormPOST(mediaBytes, self.server.debug,
-                                            filenameBase)
+                    if mType == 'customFont':
+                        filename, attachmentMediaType = \
+                            saveFontInFormPOST(mediaBytes, self.server.debug,
+                                               filenameBase)
+                    else:
+                        filename, attachmentMediaType = \
+                            saveMediaInFormPOST(mediaBytes, self.server.debug,
+                                                filenameBase)
                     if filename:
                         print('Profile update POST ' + mType +
                               ' media or font filename is ' + filename)

@@ -603,7 +603,6 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
 
     mediaLocation = -1
     searchStr = ''
-    startPos = 0
     filename = None
 
     # directly search the binary array for the beginning
@@ -616,14 +615,9 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'mp4': 'video/mp4',
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
-        'ogg': 'audio/ogg',
-        'wOFF': 'application/font-woff',
-        'wOF2': 'application/font-woff2',
-        'ttf': 'application/x-font-truetype',
-        'OTTO': 'application/x-font-opentype'
+        'ogg': 'audio/ogg'
     }
     detectedExtension = None
-    isFont = False
     for extension, contentType in extensionList.items():
         searchStr = b'Content-Type: ' + contentType.encode('utf8', 'ignore')
         mediaLocation = mediaBytes.find(searchStr)
@@ -638,38 +632,21 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 searchStr.decode().split('/')[0].replace('Content-Type: ', '')
             detectedExtension = extension
             break
-        else:
-            # font binaries
-            searchStr = extension.encode('utf8', 'ignore')
-            mediaLocation = mediaBytes.find(searchStr)
-            if mediaLocation > -1:
-                if extension == 'wOFF':
-                    detectedExtension = 'woff'
-                elif extension == 'wOF2':
-                    detectedExtension = 'woff2'
-                elif extension == 'OTTO':
-                    detectedExtension = 'otf'
-                isFont = True
-                break
 
     if not filename:
         return None, None
 
-    if isFont:
-        startPos = mediaLocation
-    else:
-        # locate the beginning of the image, after any
-        # carriage returns
-        startPos = mediaLocation + len(searchStr)
-        for offset in range(1, 8):
-            if mediaBytes[startPos+offset] != 10:
-                if mediaBytes[startPos+offset] != 13:
-                    startPos += offset
-                    break
+    # locate the beginning of the image, after any
+    # carriage returns
+    startPos = mediaLocation + len(searchStr)
+    for offset in range(1, 8):
+        if mediaBytes[startPos+offset] != 10:
+            if mediaBytes[startPos+offset] != 13:
+                startPos += offset
+                break
 
     # remove any existing image files with a different format
-    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp',
-                      'woff', 'woff2', 'ttf', 'otf')
+    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp')
     for ex in extensionTypes:
         if ex == detectedExtension:
             continue
@@ -682,6 +659,74 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
 
     fd = open(filename, 'wb')
     fd.write(mediaBytes[startPos:])
+    fd.close()
+
+    return filename, attachmentMediaType
+
+
+def saveFontInFormPOST(fontBytes, debug: bool,
+                       filenameBase=None) -> (str, str):
+    """Saves the given font bytes extracted from http form POST
+    Returns the filename and attachment type
+    """
+    if not fontBytes:
+        if debug:
+            print('DEBUG: No font found within POST')
+        return None, None
+
+    fontLocation = -1
+    searchStr = ''
+    filename = None
+
+    # directly search the binary array for the beginning
+    # of a font file
+    extensionList = {
+        'wOFF': 'application/font-woff',
+        'wOF2': 'application/font-woff2',
+        'ttf': 'application/x-font-truetype',
+        'OTTO': 'application/x-font-opentype'
+    }
+    detectedExtension = None
+    for extension, contentType in extensionList.items():
+        # font binaries
+        searchStr = extension.encode('utf8', 'ignore')
+        fontLocation = fontBytes.find(searchStr)
+        if fontLocation > -1:
+            if extension == 'wOFF':
+                detectedExtension = 'woff'
+            elif extension == 'wOF2':
+                detectedExtension = 'woff2'
+            elif extension == 'OTTO':
+                detectedExtension = 'otf'
+
+            if detectedExtension:
+                filename = filenameBase + '.' + detectedExtension
+                attachmentMediaType = contentType
+            break
+
+    if not filename:
+        # default to ttf if file type not explicitly detected
+        detectedExtension = 'ttf'
+        filename = filenameBase + '.' + detectedExtension
+        attachmentMediaType = 'ttf'
+        fontLocation = 0
+
+    startPos = fontLocation
+
+    # remove any existing image files with a different format
+    extensionTypes = ('woff', 'woff2', 'ttf', 'otf')
+    for ex in extensionTypes:
+        if ex == detectedExtension:
+            continue
+        possibleOtherFormat = \
+            filename.replace('.temp', '').replace('.' +
+                                                  detectedExtension, '.' +
+                                                  ex)
+        if os.path.isfile(possibleOtherFormat):
+            os.remove(possibleOtherFormat)
+
+    fd = open(filename, 'wb')
+    fd.write(fontBytes[startPos:])
     fd.close()
 
     return filename, attachmentMediaType
