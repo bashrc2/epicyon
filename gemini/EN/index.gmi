@@ -1,9 +1,15 @@
-# Epicyon
 
-=> https://epicyon.net/epicyon.tar.gz Download
-=> https://epicyon.net/#install Install
-=> https://gitlab.com/bashrc2/epicyon Repo
-=> https://www.patreon.com/freedombone Donate
+  █▀▀ █▀█ █ █▀▀ █▄█ █▀█ █▄░█
+  ██▄ █▀▀ █ █▄▄ ░█░ █▄█ █░▀█
+
+                     __
+       ,           ," e`--o
+      ((          (  | __,'
+       \\~-------' \_;/
+       (             /
+       /) .______.  )
+      (( (      (( (
+       ``-'      ``-'
 
 Epicyon is an AGPL licensed ActivityPub protocol compliant federated social network server suitable for hosting a small number of accounts on low power systems requiring minimal maintenance, such as single board computers. It's the ActivityPub equivalent of an email server, storing posts as human readable JSON on file, rather than in a database. It also uses only a small amount of RAM.
 
@@ -13,6 +19,10 @@ Epicyon is written in Python with a HTML+CSS web interface and uses almost no ja
 
 Emojis, hashtags, photos, video and audio attachments, instance and account level blocking controls, moderation functions and reports are all supported. Build the community you want and avoid the stuff you don't. No ads. No blockchains or other Silicon Valley garbage.
 
+=> https://epicyon.net/epicyon.tar.gz Download
+=> https://epicyon.net/#install Install
+=> https://gitlab.com/bashrc2/epicyon Repo
+=> https://www.patreon.com/freedombone Donate
 => features.gmi Features
 => install.gmi How to install
 => upgrade.gmi Upgrading
