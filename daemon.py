@@ -5420,18 +5420,18 @@ class PubServer(BaseHTTPRequestHandler):
                 for mType in profileMediaTypes:
                     if self.server.debug:
                         print('DEBUG: profile update extracting ' + mType +
-                              ' image from POST')
+                              ' image or font from POST')
                     mediaBytes, postBytes = \
                         extractMediaInFormPOST(postBytes, boundary, mType)
                     if mediaBytes:
                         if self.server.debug:
                             print('DEBUG: profile update ' + mType +
-                                  ' image was found. ' +
+                                  ' image or font was found. ' +
                                   str(len(mediaBytes)) + ' bytes')
                     else:
                         if self.server.debug:
                             print('DEBUG: profile update, no ' + mType +
-                                  ' image was found in POST')
+                                  ' image or font was found in POST')
                         continue
 
                     # Note: a .temp extension is used here so that at no
@@ -5455,19 +5455,21 @@ class PubServer(BaseHTTPRequestHandler):
                                             filenameBase)
                     if filename:
                         print('Profile update POST ' + mType +
-                              ' media filename is ' + filename)
+                              ' media or font filename is ' + filename)
                     else:
                         print('Profile update, no ' + mType +
-                              ' media filename in POST')
+                              ' media or font filename in POST')
                         continue
 
-                    if self.server.debug:
-                        print('DEBUG: POST ' + mType +
-                              ' media removing metadata')
                     postImageFilename = filename.replace('.temp', '')
                     if mType == 'customFont':
                         copyfile(filename, postImageFilename)
+                        print('profile POST ' + mType +
+                              ' image or font filename ' + postImageFilename)
                     else:
+                        if self.server.debug:
+                            print('DEBUG: POST ' + mType +
+                                  ' media removing metadata')
                         removeMetaData(filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('profile update POST ' + mType +
