@@ -5792,22 +5792,20 @@ class PubServer(BaseHTTPRequestHandler):
 
                         if fields.get('removeCustomFont'):
                             if fields['removeCustomFont'] == 'on':
-                                if os.path.isfile(self.server.baseDir +
-                                                  '/fonts/custom.woff'):
-                                    os.remove(self.server.baseDir +
-                                              '/fonts/custom.woff')
-                                elif os.path.isfile(self.server.baseDir +
-                                                    '/fonts/custom.woff2'):
-                                    os.remove(self.server.baseDir +
-                                              '/fonts/custom.woff2')
-                                elif os.path.isfile(self.server.baseDir +
-                                                    '/fonts/custom.otf'):
-                                    os.remove(self.server.baseDir +
-                                              '/fonts/custom.otf')
-                                elif os.path.isfile(self.server.baseDir +
-                                                    '/fonts/custom.ttf'):
-                                    os.remove(self.server.baseDir +
-                                              '/fonts/custom.ttf')
+                                fontExt = ('woff', 'woff2', 'otf', 'ttf')
+                                for ext in fontExt:
+                                    if os.path.isfile(self.server.baseDir +
+                                                      '/fonts/custom.' + ext):
+                                        os.remove(self.server.baseDir +
+                                                  '/fonts/custom.' + ext)
+                                        setTheme(self.server.baseDir,
+                                                 getTheme(self.server.baseDir))
+                                    if os.path.isfile(self.server.baseDir +
+                                                      '/fonts/custom.' + ext +
+                                                      '.etag'):
+                                        os.remove(self.server.baseDir +
+                                                  '/fonts/custom.' + ext +
+                                                  '.etag')
 
                         if fields.get('mediaInstance'):
                             self.server.mediaInstance = False
