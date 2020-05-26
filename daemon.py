@@ -5469,7 +5469,7 @@ class PubServer(BaseHTTPRequestHandler):
 
                     postImageFilename = filename.replace('.temp', '')
                     if mType == 'customFont':
-                        copyfile(filename, postImageFilename)
+                        os.rename(filename, postImageFilename)
                         print('profile POST ' + mType +
                               ' image or font filename ' + postImageFilename)
                     else:
