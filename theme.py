@@ -123,9 +123,7 @@ def setCustomFont(baseDir: str):
     themeFiles = ('epicyon.css', 'login.css', 'follow.css',
                   'suspended.css', 'calendar.css', 'blog.css')
     for filename in themeFiles:
-        templateFilename = baseDir + '/epicyon-' + filename
-        if filename == 'epicyon.css':
-            templateFilename = baseDir + '/epicyon-profile.css'
+        templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
             continue
         with open(templateFilename, 'r') as cssfile:
