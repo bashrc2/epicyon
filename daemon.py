@@ -5444,7 +5444,7 @@ class PubServer(BaseHTTPRequestHandler):
                     elif mType == 'customFont':
                         filenameBase = \
                             self.server.baseDir + '/fonts/' + \
-                            '/custom.temp'
+                            'custom.temp'
                     else:
                         filenameBase = \
                             self.server.baseDir + '/accounts/' + \
