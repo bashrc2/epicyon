@@ -603,6 +603,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
 
     mediaLocation = -1
     searchStr = ''
+    startPos = 0
     filename = None
 
     # directly search the binary array for the beginning
@@ -616,16 +617,17 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
         'ogg': 'audio/ogg',
-        'woff': 'application/font-woff',
-        'woff2': 'application/font-woff2',
+        'wOFF': 'application/font-woff',
+        'wOF2': 'application/font-woff2',
         'ttf': 'application/x-font-truetype',
-        'otf': 'application/x-font-opentype'
+        'OTTO': 'application/x-font-opentype'
     }
     detectedExtension = None
     for extension, contentType in extensionList.items():
         searchStr = b'Content-Type: ' + contentType.encode('utf8', 'ignore')
         mediaLocation = mediaBytes.find(searchStr)
         if mediaLocation > -1:
+            # image/video/audio binaries
             if extension == 'jpeg':
                 extension = 'jpg'
             elif extension == 'mpeg':
@@ -635,6 +637,18 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 searchStr.decode().split('/')[0].replace('Content-Type: ', '')
             detectedExtension = extension
             break
+        else:
+            # font binaries
+            searchStr = extension.encode('utf8', 'ignore')
+            mediaLocation = mediaBytes.find(searchStr)
+            if mediaLocation > -1:
+                if extension == 'wOFF':
+                    detectedExtension = 'woff'
+                elif extension == 'wOF2':
+                    detectedExtension = 'woff2'
+                elif extension == 'OTTO':
+                    detectedExtension = 'otf'                    
+                break
 
     if not filename:
         return None, None
