@@ -681,10 +681,10 @@ def saveFontInFormPOST(fontBytes, debug: bool,
     # directly search the binary array for the beginning
     # of a font file
     extensionList = {
-        'wOFF': 'application/font-woff',
-        'wOF2': 'application/font-woff2',
-        'ttf': 'application/x-font-truetype',
-        'OTTO': 'application/x-font-opentype'
+        'wOFF': 'font/woff',
+        'wOF2': 'font/woff2',
+        'ttf': 'font/ttf',
+        'OTTO': 'font/otf'
     }
     detectedExtension = None
     for extension, contentType in extensionList.items():

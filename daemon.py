@@ -1112,13 +1112,13 @@ class PubServer(BaseHTTPRequestHandler):
                fontStr.endswith('.woff') or \
                fontStr.endswith('.woff2'):
                 if fontStr.endswith('.otf'):
-                    fontType = 'application/x-font-opentype'
+                    fontType = 'font/otf'
                 elif fontStr.endswith('.ttf'):
-                    fontType = 'application/x-font-truetype'
+                    fontType = 'font/ttf'
                 elif fontStr.endswith('.woff'):
-                    fontType = 'application/font-woff'
+                    fontType = 'font/woff'
                 else:
-                    fontType = 'application/font-woff2'
+                    fontType = 'font/woff2'
                 fontFilename = \
                     self.server.baseDir + '/fonts/' + fontStr
                 if self._etag_exists(fontFilename):
