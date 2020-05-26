@@ -615,7 +615,11 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'mp4': 'video/mp4',
         'ogv': 'video/ogv',
         'mp3': 'audio/mpeg',
-        'ogg': 'audio/ogg'
+        'ogg': 'audio/ogg',
+        'woff': 'application/font-woff',
+        'woff2': 'application/font-woff2',
+        'ttf': 'application/x-font-truetype',
+        'otf': 'application/x-font-opentype'
     }
     detectedExtension = None
     for extension, contentType in extensionList.items():
@@ -645,7 +649,8 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 break
 
     # remove any existing image files with a different format
-    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp')
+    extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp',
+                      'woff', 'woff2', 'ttf', 'otf')
     for ex in extensionTypes:
         if ex == detectedExtension:
             continue
