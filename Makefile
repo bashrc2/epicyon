@@ -15,5 +15,7 @@ source:
 clean:
 	rm -f *.*~ *~
 	rm -f orgs/*~
+	rm -f website/EN/*~
+	rm -f gemini/EN/*~
 	rm -f scripts/*~
 	rm -rf __pycache__
