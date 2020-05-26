@@ -623,6 +623,7 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
         'OTTO': 'application/x-font-opentype'
     }
     detectedExtension = None
+    isFont = False
     for extension, contentType in extensionList.items():
         searchStr = b'Content-Type: ' + contentType.encode('utf8', 'ignore')
         mediaLocation = mediaBytes.find(searchStr)
@@ -647,20 +648,24 @@ def saveMediaInFormPOST(mediaBytes, debug: bool,
                 elif extension == 'wOF2':
                     detectedExtension = 'woff2'
                 elif extension == 'OTTO':
-                    detectedExtension = 'otf'                    
+                    detectedExtension = 'otf'
+                isFont = True
                 break
 
     if not filename:
         return None, None
 
-    # locate the beginning of the image, after any
-    # carriage returns
-    startPos = mediaLocation + len(searchStr)
-    for offset in range(1, 8):
-        if mediaBytes[startPos+offset] != 10:
-            if mediaBytes[startPos+offset] != 13:
-                startPos += offset
-                break
+    if isFont:
+        startPos = mediaLocation
+    else:
+        # locate the beginning of the image, after any
+        # carriage returns
+        startPos = mediaLocation + len(searchStr)
+        for offset in range(1, 8):
+            if mediaBytes[startPos+offset] != 10:
+                if mediaBytes[startPos+offset] != 13:
+                    startPos += offset
+                    break
 
     # remove any existing image files with a different format
     extensionTypes = ('png', 'jpg', 'jpeg', 'gif', 'webp',
