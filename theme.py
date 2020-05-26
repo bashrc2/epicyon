@@ -22,6 +22,18 @@ def setThemeInConfig(baseDir: str, name: str) -> bool:
     return saveJson(configJson, configFilename)
 
 
+def getTheme(baseDir: str) -> str:
+    configFilename = baseDir + '/config.json'
+    if not os.path.isfile(configFilename):
+        return 'default'
+    configJson = loadJson(configFilename, 0)
+    if not configJson:
+        return 'default'
+    if configJson.get('theme'):
+        return configJson['theme']
+    return 'default'
+
+
 def removeTheme(baseDir: str):
     themeFiles = ('epicyon.css', 'login.css', 'follow.css',
                   'suspended.css', 'calendar.css', 'blog.css')
@@ -84,6 +96,46 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}):
             css = cssfile.read()
             for paramName, paramValue in themeParams.items():
                 css = setCSSparam(css, paramName, paramValue)
+            filename = baseDir + '/' + filename
+            with open(filename, 'w') as cssfile:
+                cssfile.write(css)
+
+
+def setCustomFont(baseDir: str):
+    """Uses a dictionary to set a theme
+    """
+    customFontExt = None
+    customFontType = None
+    fontExtension = {
+        'woff': 'woff',
+        'woff2': 'woff2',
+        'otf': 'opentype',
+        'ttf': 'truetype'
+    }
+    for ext, extType in fontExtension.items():
+        filename = baseDir + '/fonts/custom.' + ext
+        if os.path.isfile(filename):
+            customFontExt = ext
+            customFontType = extType
+    if not customFontExt:
+        return
+
+    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
+                  'suspended.css', 'calendar.css', 'blog.css')
+    for filename in themeFiles:
+        templateFilename = baseDir + '/epicyon-' + filename
+        if filename == 'epicyon.css':
+            templateFilename = baseDir + '/epicyon-profile.css'
+        if not os.path.isfile(templateFilename):
+            continue
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
+            css = \
+                setCSSparam(css, "*src",
+                            "url('./fonts/custom." +
+                            customFontExt +
+                            "') format('" +
+                            customFontType + "')")
             filename = baseDir + '/' + filename
             with open(filename, 'w') as cssfile:
                 cssfile.write(css)
@@ -209,19 +261,21 @@ def setThemeLight(baseDir: str):
 
 
 def setTheme(baseDir: str, name: str) -> bool:
+    result = False
     if name == 'default':
         setThemeDefault(baseDir)
-        return True
+        result = True
     elif name == 'purple':
         setThemePurple(baseDir)
-        return True
+        result = True
     elif name == 'light':
         setThemeLight(baseDir)
-        return True
+        result = True
     elif name == 'hacker':
         setThemeHacker(baseDir)
-        return True
+        result = True
     elif name == 'highvis':
         setThemeHighVis(baseDir)
-        return True
-    return False
+        result = True
+    setCustomFont(baseDir)
+    return result

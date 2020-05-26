@@ -15,7 +15,6 @@ from functools import partial
 # for saving images
 from hashlib import sha256
 from hashlib import sha1
-from shutil import copyfile
 from session import createSession
 from webfinger import parseHandle
 from webfinger import webfingerMeta
@@ -170,6 +169,7 @@ from cache import storePersonInCache
 from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 from theme import setTheme
+from theme import getTheme
 from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
@@ -5470,6 +5470,8 @@ class PubServer(BaseHTTPRequestHandler):
                     postImageFilename = filename.replace('.temp', '')
                     if mType == 'customFont':
                         os.rename(filename, postImageFilename)
+                        setTheme(self.server.baseDir,
+                                 getTheme(self.server.baseDir))
                         print('profile POST ' + mType +
                               ' image or font filename ' + postImageFilename)
                     else:
