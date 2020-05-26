@@ -136,6 +136,7 @@ def setCustomFont(baseDir: str):
                             customFontExt +
                             "') format('" +
                             customFontType + "')")
+            css = setCSSparam(css, "*font-family", "'CustomFont'")
             filename = baseDir + '/' + filename
             with open(filename, 'w') as cssfile:
                 cssfile.write(css)
