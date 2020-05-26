@@ -5779,6 +5779,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 removeScheduledPosts(self.server.baseDir,
                                                      nickname,
                                                      self.server.domain)
+
                         approveFollowers = False
                         if fields.get('approveFollowers'):
                             if fields['approveFollowers'] == 'on':
@@ -5788,6 +5789,26 @@ class PubServer(BaseHTTPRequestHandler):
                             actorJson['manuallyApprovesFollowers'] = \
                                 approveFollowers
                             actorChanged = True
+
+                        if fields.get('removeCustomFont'):
+                            if fields['removeCustomFont'] == 'on':
+                                if os.path.isfile(self.server.baseDir +
+                                                  '/fonts/custom.woff'):
+                                    os.remove(self.server.baseDir +
+                                              '/fonts/custom.woff')
+                                elif os.path.isfile(self.server.baseDir +
+                                                    '/fonts/custom.woff2'):
+                                    os.remove(self.server.baseDir +
+                                              '/fonts/custom.woff2')
+                                elif os.path.isfile(self.server.baseDir +
+                                                    '/fonts/custom.otf'):
+                                    os.remove(self.server.baseDir +
+                                              '/fonts/custom.otf')
+                                elif os.path.isfile(self.server.baseDir +
+                                                    '/fonts/custom.ttf'):
+                                    os.remove(self.server.baseDir +
+                                              '/fonts/custom.ttf')
+
                         if fields.get('mediaInstance'):
                             self.server.mediaInstance = False
                             self.server.defaultTimeline = 'inbox'

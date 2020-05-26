@@ -1158,6 +1158,14 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         themesDropdown += \
             '  <input type="file" id="customFont" name="customFont"'
         themesDropdown += '      accept="' + fontFormats + '">'
+        if os.path.isfile(baseDir + '/fonts/custom.woff') or \
+           os.path.isfile(baseDir + '/fonts/custom.woff2') or \
+           os.path.isfile(baseDir + '/fonts/custom.otf') or \
+           os.path.isfile(baseDir + '/fonts/custom.ttf'):
+            themesDropdown += \
+                '      <input type="checkbox" class="profilecheckbox" ' + \
+                'name="removeCustomFont">' + \
+                translate['Remove the custom font'] + '<br>'
         themesDropdown += '</div>'
         themeName = getConfigParam(baseDir, 'theme')
         themesDropdown = \
