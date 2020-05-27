@@ -24,13 +24,11 @@ def setThemeInConfig(baseDir: str, name: str) -> bool:
 
 def getTheme(baseDir: str) -> str:
     configFilename = baseDir + '/config.json'
-    if not os.path.isfile(configFilename):
-        return 'default'
-    configJson = loadJson(configFilename, 0)
-    if not configJson:
-        return 'default'
-    if configJson.get('theme'):
-        return configJson['theme']
+    if os.path.isfile(configFilename):
+        configJson = loadJson(configFilename, 0)
+        if configJson:
+            if configJson.get('theme'):
+                return configJson['theme']
     return 'default'
 
 
