@@ -172,8 +172,6 @@ def setThemePurple(baseDir: str):
         "background-color: #554;": "background-color: #ff42a0;",
         "color: #FFFFFE;": "color: #1f152d;",
         "calendar-bg-color": "#eee",
-        "*font-family": "'Judges'",
-        "*src": "url('./fonts/Judges.woff') format('woff')",
         "lines-color": "#ff42a0",
         "day-number": "#3f2145",
         "day-number2": "#1f152d",
