@@ -938,7 +938,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     imageFormats = '.png, .jpg, .jpeg, .gif, .webp'
-    fontFormats = '.woff, .woff2, .ttf, .otf'
+    # fontFormats = '.woff, .woff2, .ttf, .otf'
     pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
