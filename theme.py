@@ -43,6 +43,10 @@ def removeTheme(baseDir: str):
 def setThemeDefault(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, 'default')
+    themeParams = {
+        "dummyValue": "1234",
+    }
+    setThemeFromDict(baseDir, 'default', themeParams)
 
 
 def setCSSparam(css: str, param: str, value: str) -> str:
@@ -78,7 +82,7 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     return newcss.strip()
 
 
-def setThemeFromDict(baseDir: str, name: str, themeParams: {}):
+def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
     """Uses a dictionary to set a theme
     """
     setThemeInConfig(baseDir, name)
