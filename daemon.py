@@ -170,6 +170,7 @@ from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 from theme import setTheme
 from theme import getTheme
+from theme import setCustomFont
 from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
@@ -5473,8 +5474,7 @@ class PubServer(BaseHTTPRequestHandler):
                     postImageFilename = filename.replace('.temp', '')
                     if mType == 'customFont':
                         os.rename(filename, postImageFilename)
-                        setTheme(self.server.baseDir,
-                                 getTheme(self.server.baseDir))
+                        setCustomFont(self.server.baseDir)
                         print('profile POST ' + mType +
                               ' image or font filename ' + postImageFilename)
                     else:
@@ -5801,14 +5801,14 @@ class PubServer(BaseHTTPRequestHandler):
                                                       '/fonts/custom.' + ext):
                                         os.remove(self.server.baseDir +
                                                   '/fonts/custom.' + ext)
-                                        setTheme(self.server.baseDir,
-                                                 getTheme(self.server.baseDir))
                                     if os.path.isfile(self.server.baseDir +
                                                       '/fonts/custom.' + ext +
                                                       '.etag'):
                                         os.remove(self.server.baseDir +
                                                   '/fonts/custom.' + ext +
                                                   '.etag')
+                                setTheme(self.server.baseDir,
+                                         getTheme(self.server.baseDir))
 
                         if fields.get('mediaInstance'):
                             self.server.mediaInstance = False
