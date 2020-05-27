@@ -194,6 +194,14 @@ Static analysis can be run with:
 ./static_analysis
 ```
 
+## Custom Fonts
+
+If you want to use a particular font then copy it into the *fonts* directory, rename it as *custom.ttf/woff/woff2/otf* and then restart the epicyon daemon.
+
+``` bash
+systemctl restart epicyon
+```
+
 ## Running Unit Tests
 
 To run the unit tests:
