@@ -261,10 +261,7 @@ def setThemeLight(baseDir: str):
 
 def setTheme(baseDir: str, name: str) -> bool:
     result = False
-    if name == 'default':
-        setThemeDefault(baseDir)
-        result = True
-    elif name == 'purple':
+    if name == 'purple':
         setThemePurple(baseDir)
         result = True
     elif name == 'light':
@@ -275,6 +272,10 @@ def setTheme(baseDir: str, name: str) -> bool:
         result = True
     elif name == 'highvis':
         setThemeHighVis(baseDir)
+        result = True
+    else:
+        # default
+        setThemeDefault(baseDir)
         result = True
     setCustomFont(baseDir)
     return result
