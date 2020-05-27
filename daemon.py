@@ -5485,7 +5485,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if os.path.isfile(postImageFilename):
                         print('profile update POST ' + mType +
                               ' image or font saved to ' + postImageFilename)
-                        if mType != 'instanceLogo':
+                        if mType != 'instanceLogo' and mType != 'customFont':
                             lastPartOfImageFilename = \
                                 postImageFilename.split('/')[-1]
                             profileMediaTypesUploaded[mType] = \
