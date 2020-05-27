@@ -1098,22 +1098,37 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         instanceStr += \
             '  <label class="labels">' + \
             translate['Instance Title'] + '</label>'
-        instanceStr += \
-            '  <input type="text" name="instanceTitle" value="' + \
-            instanceTitle + '"><br>'
+        if instanceTitle:
+            instanceStr += \
+                '  <input type="text" name="instanceTitle" value="' + \
+                instanceTitle + '"><br>'
+        else:
+            instanceStr += \
+                '  <input type="text" name="instanceTitle" value=""><br>'
         instanceStr += \
             '  <label class="labels">' + \
             translate['Instance Short Description'] + '</label>'
-        instanceStr += \
-            '  <input type="text" name="instanceDescriptionShort" value="' + \
-            instanceDescriptionShort + '"><br>'
+        if instanceDescriptionShort:
+            instanceStr += \
+                '  <input type="text" ' + \
+                'name="instanceDescriptionShort" value="' + \
+                instanceDescriptionShort + '"><br>'
+        else:
+            instanceStr += \
+                '  <input type="text" ' + \
+                'name="instanceDescriptionShort" value=""><br>'
         instanceStr += \
             '  <label class="labels">' + \
             translate['Instance Description'] + '</label>'
-        instanceStr += \
-            '  <textarea id="message" name="instanceDescription" ' + \
-            'style="height:200px">' + \
-            instanceDescription + '</textarea>'
+        if instanceDescription:
+            instanceStr += \
+                '  <textarea id="message" name="instanceDescription" ' + \
+                'style="height:200px">' + \
+                instanceDescription + '</textarea>'
+        else:
+            instanceStr += \
+                '  <textarea id="message" name="instanceDescription" ' + \
+                'style="height:200px"></textarea>'
         instanceStr += \
             '  <label class="labels">' + \
             translate['Instance Logo'] + '</label>'

@@ -2934,9 +2934,12 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.path, self.server.domain,
                                       self.server.port,
                                       self.server.httpPrefix).encode()
-                self._set_headers('text/html', len(msg),
-                                  cookie, callingDomain)
-                self._write(msg)
+                if msg:
+                    self._set_headers('text/html', len(msg),
+                                      cookie, callingDomain)
+                    self._write(msg)
+                else:
+                    self._404()
                 self.server.GETbusy = False
                 return
 
