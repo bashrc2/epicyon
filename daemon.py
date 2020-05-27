@@ -5807,8 +5807,9 @@ class PubServer(BaseHTTPRequestHandler):
                                         os.remove(self.server.baseDir +
                                                   '/fonts/custom.' + ext +
                                                   '.etag')
-                                setTheme(self.server.baseDir,
-                                         getTheme(self.server.baseDir))
+                                currTheme = getTheme(self.server.baseDir)
+                                if currTheme:
+                                    setTheme(self.server.baseDir, currTheme)
 
                         if fields.get('mediaInstance'):
                             self.server.mediaInstance = False
