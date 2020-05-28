@@ -210,7 +210,7 @@ def setThemeLCD(baseDir: str):
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
     }
-    setThemeFromDict(baseDir, 'highvis', themeParams)
+    setThemeFromDict(baseDir, 'lcd', themeParams)
 
 
 def setThemePurple(baseDir: str):
