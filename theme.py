@@ -17,7 +17,7 @@ def getThemesList() -> []:
     also used to create the web interface dropdown list
     and to lookup function names
     """
-    return ('Default', 'Light', 'Purple', 'Hacker', 'HighVis')
+    return ('Default', 'LCD', 'Light', 'Purple', 'Hacker', 'HighVis')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -163,6 +163,49 @@ def setThemeHighVis(baseDir: str):
         "gallery-font-size-mobile": "55px",
         "*font-family": "'LinBiolinum_Rah'",
         "*src": "url('./fonts/LinBiolinum_Rah.ttf') format('truetype')"
+    }
+    setThemeFromDict(baseDir, 'highvis', themeParams)
+
+
+def setThemeLCD(baseDir: str):
+    themeParams = {
+        "main-bg-color": "#9fb42b",
+        "main-bg-color-reply": "#1a142d",
+        "main-bg-color-report": "#12152d",
+        "main-header-color-roles": "#1f192d",
+        "main-fg-color": "#33390d",
+        "border-color": "#33390d",
+        "main-link-color": "#ff42a0",
+        "main-visited-color": "#f93bb0",
+        "button-selected": "#c042a0",
+        "button-background": "#ff42a0",
+        "button-text": "white",
+        "background-color: #554;": "background-color: #ff42a0;",
+        "color: #FFFFFE;": "color: #9fb42b;",
+        "calendar-bg-color": "#eee",
+        "lines-color": "#ff42a0",
+        "day-number": "#3f2145",
+        "day-number2": "#9fb42b",
+        "time-color": "#ff42a0",
+        "place-color": "black",
+        "event-color": "#282c37",
+        "today-foreground": "white",
+        "today-circle": "red",
+        "event-background": "yellow",
+        "event-foreground": "white",
+        "title-text": "white",
+        "title-background": "#ff42a0",
+        "gallery-text-color": "#ccc",
+        "font-size-header": "22px",
+        "font-size": "45px",
+        "font-size2": "45px",
+        "font-size3": "45px",
+        "font-size4": "35px",
+        "font-size5": "29px",
+        "gallery-font-size": "35px",
+        "gallery-font-size-mobile": "55px",
+        "*font-family": "'LcdSolid'",
+        "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'highvis', themeParams)
 
