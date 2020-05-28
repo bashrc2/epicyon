@@ -160,7 +160,9 @@ def setThemeHighVis(baseDir: str):
         "font-size4": "35px",
         "font-size5": "29px",
         "gallery-font-size": "35px",
-        "gallery-font-size-mobile": "55px"
+        "gallery-font-size-mobile": "55px",
+        "*font-family": "'LinBiolinum_Kah'",
+        "*src": "url('./fonts/LinBiolinum_Kah.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'highvis', themeParams)
 
