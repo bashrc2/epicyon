@@ -9,6 +9,7 @@ __status__ = "Production"
 import os
 from utils import loadJson
 from utils import saveJson
+from shutil import copyfile
 
 
 def getThemesList() -> []:
@@ -189,7 +190,6 @@ def setThemeLCD(baseDir: str):
         "button-text": "#9fb42b",
         "color: #FFFFFE;": "color: #9fb42b;",
         "calendar-bg-color": "#eee",
-        "lines-color": "#ff42a0",
         "day-number": "#3f2145",
         "day-number2": "#9fb42b",
         "time-color": "#9fb42b",
@@ -200,8 +200,7 @@ def setThemeLCD(baseDir: str):
         "event-background": "yellow",
         "event-foreground": "white",
         "title-text": "white",
-        "title-background": "#ff42a0",
-        "gallery-text-color": "#ccc",
+        "gallery-text-color": "#33390d",
         "font-size-header": "22px",
         "font-size": "45px",
         "font-size2": "45px",
@@ -226,6 +225,8 @@ def setThemeLCD(baseDir: str):
 
 
 def setThemePurple(baseDir: str):
+    fontStr = \
+        "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
     themeParams = {
         "main-bg-color": "#1f152d",
         "link-bg-color": "#1f152d",
@@ -256,7 +257,7 @@ def setThemePurple(baseDir: str):
         "title-background": "#ff42a0",
         "gallery-text-color": "#ccc",
         "*font-family": "'CheGuevaraTextSans-Regular'",
-        "*src": "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
+        "*src": fontStr
     }
     setThemeFromDict(baseDir, 'purple', themeParams)
 
@@ -340,10 +341,45 @@ def setThemeLight(baseDir: str):
 def setTheme(baseDir: str, name: str) -> bool:
     result = False
 
+    prevThemeName = getTheme(baseDir)
+
     themes = getThemesList()
     for themeName in themes:
-        if name == themeName.lower():
+        themeNameLower = themeName.lower()
+        if name == themeNameLower:
             globals()['setTheme' + themeName](baseDir)
+            if prevThemeName:
+                if prevThemeName.lower() != themeNameLower:
+                    # change the banner and profile image
+                    # to the default for the theme
+                    if themeNameLower == 'default':
+                        profileImageFilename = \
+                            baseDir + '/img/image.png'
+                        bannerFilename = \
+                            baseDir + '/img/banner.png'
+                    else:
+                        profileImageFilename = \
+                            baseDir + '/img/image_' + themeNameLower + '.png'
+                        bannerFilename = \
+                            baseDir + '/img/banner_' + themeNameLower + '.png'
+                    if os.path.isfile(profileImageFilename) and \
+                       os.path.isfile(bannerFilename):
+                        for subdir, dirs, files in os.walk(baseDir +
+                                                           '/accounts'):
+                            for acct in dirs:
+                                if '@' not in acct:
+                                    continue
+                                if 'inbox@' in acct:
+                                    continue
+                                accountDir = \
+                                    os.path.join(baseDir + '/accounts', acct)
+                                try:
+                                    copyfile(profileImageFilename,
+                                             accountDir + '/image.png')
+                                    copyfile(bannerFilename,
+                                             accountDir + '/banner.png')
+                                except BaseException:
+                                    pass
             result = True
 
     if not result:
