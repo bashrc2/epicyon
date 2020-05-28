@@ -171,6 +171,7 @@ def setThemeLCD(baseDir: str):
     themeParams = {
         "main-bg-color": "#9fb42b",
         "link-bg-color": "#33390d",
+        "cw-background": "#13390d",
         "main-bg-color-reply": "#9fb42b",
         "main-bg-color-report": "#12152d",
         "main-header-color-roles": "#1f192d",

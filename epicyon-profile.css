@@ -43,6 +43,7 @@
     --gallery-font-size-mobile: 35px;
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
+    --cw-background: #554;
 }
 
 @font-face {
@@ -766,7 +767,7 @@ div.gallery img {
     }
     .cwButton {
         border-radius: var(--button-corner-radius);
-        background-color: #554;
+        background-color: var(--cw-background);
         border: none;
         color: #FFFFFE;
         text-align: center;
@@ -1116,7 +1117,7 @@ div.gallery img {
     }
     .cwButton {
         border-radius: var(--button-corner-radius);
-        background-color: #554;
+        background-color: var(--cw-background);
         border: none;
         color: #FFFFFE;
         text-align: center;
