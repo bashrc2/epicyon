@@ -938,7 +938,6 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     """Shows the edit profile screen
     """
     imageFormats = '.png, .jpg, .jpeg, .gif, .webp'
-    # fontFormats = '.woff, .woff2, .ttf, .otf'
     pathOriginal = path
     path = path.replace('/inbox', '').replace('/outbox', '')
     path = path.replace('/shares', '')
@@ -1167,12 +1166,6 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         themesDropdown += '    <option value="highvis">' + \
             translate['HighVis'] + '</option>'
         themesDropdown += '  </select><br>'
-        # themesDropdown += \
-        #     '  <label class="labels">' + \
-        #     translate['Custom Font'] + '</label>'
-        # themesDropdown += \
-        #     '  <input type="file" id="customFont" name="customFont"'
-        # themesDropdown += '      accept="' + fontFormats + '">'
         if os.path.isfile(baseDir + '/fonts/custom.woff') or \
            os.path.isfile(baseDir + '/fonts/custom.woff2') or \
            os.path.isfile(baseDir + '/fonts/custom.otf') or \
