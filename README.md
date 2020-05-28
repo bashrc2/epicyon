@@ -208,6 +208,8 @@ If you want to add a new theme then open `theme.py` and add the theme name to th
 
 Add the name of your theme to the translations files.
 
+Within the `img` directory add a default profile background image called `image_[YourThemeName].png` and a banner image `banner_[YourThemeName].png`. Because the banner image will be reloaded occasionally it should be small - preferably kilobytes rather than megabytes.
+
 On a running instance you can experiment with colors or fonts by editing `epicyon.css` and then reloading the web page. Once you are happy with the results then you can update the changed values within your `setTheme` function.
 
 
