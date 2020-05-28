@@ -6,6 +6,7 @@
     --dropdown-fg-color: #dddddd;
     --dropdown-bg-color: #111;
     --dropdown-bg-color-hover: #333;
+    --dropdown-fg-color-hover: #dddddd;
     --main-bg-color-reply: #212c37;
     --main-bg-color-dm: #222;
     --main-bg-color-report: #221c27;
@@ -596,7 +597,10 @@ input[type=submit]:hover {
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: var(--dropdown-bg-color-hover);}
+.dropdown-content a:hover {
+    color: var(--dropdown-fg-color-hover);
+    background-color: var(--dropdown-bg-color-hover);
+}
 
 /* Show the dropdown menu on hover */
 .show {display: block;}
