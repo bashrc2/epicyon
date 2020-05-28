@@ -338,6 +338,42 @@ def setThemeLight(baseDir: str):
     setThemeFromDict(baseDir, 'light', themeParams)
 
 
+def setThemeImages(baseDir: str, name: str) -> None:
+    """Changes the profile background image
+    and banner to the defaults
+    """
+    themeNameLower = name.lower()
+
+    if themeNameLower == 'default':
+        profileImageFilename = \
+            baseDir + '/img/image.png'
+        bannerFilename = \
+            baseDir + '/img/banner.png'
+    else:
+        profileImageFilename = \
+            baseDir + '/img/image_' + themeNameLower + '.png'
+        bannerFilename = \
+            baseDir + '/img/banner_' + themeNameLower + '.png'
+    if os.path.isfile(profileImageFilename) and \
+       os.path.isfile(bannerFilename):
+        for subdir, dirs, files in os.walk(baseDir +
+                                           '/accounts'):
+            for acct in dirs:
+                if '@' not in acct:
+                    continue
+                if 'inbox@' in acct:
+                    continue
+                accountDir = \
+                    os.path.join(baseDir + '/accounts', acct)
+                try:
+                    copyfile(profileImageFilename,
+                             accountDir + '/image.png')
+                    copyfile(bannerFilename,
+                             accountDir + '/banner.png')
+                except BaseException:
+                    pass
+
+
 def setTheme(baseDir: str, name: str) -> bool:
     result = False
 
@@ -352,34 +388,7 @@ def setTheme(baseDir: str, name: str) -> bool:
                 if prevThemeName.lower() != themeNameLower:
                     # change the banner and profile image
                     # to the default for the theme
-                    if themeNameLower == 'default':
-                        profileImageFilename = \
-                            baseDir + '/img/image.png'
-                        bannerFilename = \
-                            baseDir + '/img/banner.png'
-                    else:
-                        profileImageFilename = \
-                            baseDir + '/img/image_' + themeNameLower + '.png'
-                        bannerFilename = \
-                            baseDir + '/img/banner_' + themeNameLower + '.png'
-                    if os.path.isfile(profileImageFilename) and \
-                       os.path.isfile(bannerFilename):
-                        for subdir, dirs, files in os.walk(baseDir +
-                                                           '/accounts'):
-                            for acct in dirs:
-                                if '@' not in acct:
-                                    continue
-                                if 'inbox@' in acct:
-                                    continue
-                                accountDir = \
-                                    os.path.join(baseDir + '/accounts', acct)
-                                try:
-                                    copyfile(profileImageFilename,
-                                             accountDir + '/image.png')
-                                    copyfile(bannerFilename,
-                                             accountDir + '/banner.png')
-                                except BaseException:
-                                    pass
+                    setThemeImages(baseDir, name)
             result = True
 
     if not result:
