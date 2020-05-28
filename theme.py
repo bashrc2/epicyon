@@ -211,8 +211,9 @@ def setThemeLCD(baseDir: str):
         "gallery-font-size-mobile": "55px",
         "button-corner-radius": "1px",
         "timeline-border-radius": "1px",
-        "dropdown-bg-color": "#9fb42b",
-        "dropdown-bg-color-hover": "#4fb42b",
+        "dropdown-bg-color": "#33390d",
+        "dropdown-bg-color-hover": "#03390d",
+        "dropdown-fg-color": "#9fb42b",
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
     }
