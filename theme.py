@@ -170,23 +170,24 @@ def setThemeHighVis(baseDir: str):
 def setThemeLCD(baseDir: str):
     themeParams = {
         "main-bg-color": "#9fb42b",
+        "link-bg-color": "#33390d",
         "main-bg-color-reply": "#1a142d",
         "main-bg-color-report": "#12152d",
         "main-header-color-roles": "#1f192d",
         "main-fg-color": "#33390d",
         "border-color": "#33390d",
-        "main-link-color": "#ff42a0",
-        "main-visited-color": "#f93bb0",
-        "button-selected": "#c042a0",
-        "button-background": "#ff42a0",
-        "button-text": "white",
+        "main-link-color": "#9fb42b",
+        "main-visited-color": "#9fb42b",
+        "button-selected": "#01b82b",
+        "button-background": "#65d82b",
+        "button-text": "black",
         "background-color: #554;": "background-color: #ff42a0;",
         "color: #FFFFFE;": "color: #9fb42b;",
         "calendar-bg-color": "#eee",
         "lines-color": "#ff42a0",
         "day-number": "#3f2145",
         "day-number2": "#9fb42b",
-        "time-color": "#ff42a0",
+        "time-color": "#9fb42b",
         "place-color": "black",
         "event-color": "#282c37",
         "today-foreground": "white",
@@ -204,6 +205,8 @@ def setThemeLCD(baseDir: str):
         "font-size5": "29px",
         "gallery-font-size": "35px",
         "gallery-font-size-mobile": "55px",
+        "button-corner-radius": "1px",
+        "timeline-border-radius": "1px",
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
     }
@@ -213,6 +216,7 @@ def setThemeLCD(baseDir: str):
 def setThemePurple(baseDir: str):
     themeParams = {
         "main-bg-color": "#1f152d",
+        "link-bg-color": "#1f152d",
         "main-bg-color-reply": "#1a142d",
         "main-bg-color-report": "#12152d",
         "main-header-color-roles": "#1f192d",
@@ -248,6 +252,7 @@ def setThemePurple(baseDir: str):
 def setThemeHacker(baseDir: str):
     themeParams = {
         "main-bg-color": "black",
+        "link-bg-color": "black",
         "main-bg-color-reply": "#030202",
         "main-bg-color-report": "#050202",
         "main-header-color-roles": "#1f192d",
@@ -286,6 +291,7 @@ def setThemeLight(baseDir: str):
     themeParams = {
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "main-bg-color": "#e6ebf0",
+        "link-bg-color": "#e6ebf0",
         "main-bg-color-reply": "#e0dbf0",
         "main-bg-color-report": "#e3dbf0",
         "main-header-color-roles": "#ebebf0",
