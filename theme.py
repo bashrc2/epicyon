@@ -193,7 +193,9 @@ def setThemePurple(baseDir: str):
         "event-foreground": "white",
         "title-text": "white",
         "title-background": "#ff42a0",
-        "gallery-text-color": "#ccc"
+        "gallery-text-color": "#ccc",
+        "*font-family": "'CheGuevaraTextSans-Regular'",
+        "*src": "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'purple', themeParams)
 
