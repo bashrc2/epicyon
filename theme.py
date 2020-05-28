@@ -183,7 +183,6 @@ def setThemeLCD(baseDir: str):
         "button-selected": "#01b82b",
         "button-background": "#65d82b",
         "button-text": "black",
-        "cw-background": "#ff42a0",
         "color: #FFFFFE;": "color: #9fb42b;",
         "calendar-bg-color": "#eee",
         "lines-color": "#ff42a0",
