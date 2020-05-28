@@ -2,6 +2,7 @@
 
 :root {
     --main-bg-color: #282c37;
+    --link-bg-color: #282c37;
     --main-fg-color: #dddddd;
     --main-link-color: #999;
     --main-visited-color: #888;
@@ -46,11 +47,13 @@ a, u {
 
 a:visited{
     color: var(--main-visited-color);
+    background: var(--link-bg-color);
     font-weight: bold;
 }
 
 a:link {
     color: var(--main-link-color);
+    background: var(--link-bg-color);
     font-weight: bold;
 }
 
@@ -83,12 +86,14 @@ a:link {
     font-size: var(--font-size4);
     font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
+    background: var(--link-bg-color);
 }
 
 .pgp {
     font-size: var(--font-size5);
     font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
+    background: var(--link-bg-color);
     font-family: 'monospace';
 }
 

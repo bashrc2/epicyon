@@ -13,6 +13,7 @@
     --main-link-color: #999;
     --main-visited-color: #888;
     --border-color: #505050;
+    --border-width: 2px;
     --font-size-header: 18px;
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
@@ -274,7 +275,7 @@ a:link {
 }
 
 .container {
-    border: 2px solid var(--border-color);
+    border: var(--border-width) solid var(--border-color);
     background-color: var(--main-bg-color);
     border-radius: var(--timeline-border-radius);
     padding: 20px;

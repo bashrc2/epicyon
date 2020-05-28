@@ -171,11 +171,12 @@ def setThemeLCD(baseDir: str):
     themeParams = {
         "main-bg-color": "#9fb42b",
         "link-bg-color": "#33390d",
-        "main-bg-color-reply": "#1a142d",
+        "main-bg-color-reply": "#9fb42b",
         "main-bg-color-report": "#12152d",
         "main-header-color-roles": "#1f192d",
         "main-fg-color": "#33390d",
         "border-color": "#33390d",
+        "border-width": "5px",
         "main-link-color": "#9fb42b",
         "main-visited-color": "#9fb42b",
         "button-selected": "#01b82b",
