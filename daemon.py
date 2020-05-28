@@ -162,7 +162,6 @@ from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import extractMediaInFormPOST
 from content import saveMediaInFormPOST
-from content import saveFontInFormPOST
 from content import extractTextFieldsInPOST
 from media import removeMetaData
 from cache import storePersonInCache
@@ -170,7 +169,6 @@ from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 from theme import setTheme
 from theme import getTheme
-from theme import setCustomFont
 from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
@@ -5444,24 +5442,15 @@ class PubServer(BaseHTTPRequestHandler):
                     if mType == 'instanceLogo':
                         filenameBase = \
                             self.server.baseDir + '/accounts/login.temp'
-                    elif mType == 'customFont':
-                        filenameBase = \
-                            self.server.baseDir + '/fonts/' + \
-                            'custom.temp'
                     else:
                         filenameBase = \
                             self.server.baseDir + '/accounts/' + \
                             nickname + '@' + self.server.domain + \
                             '/' + mType + '.temp'
 
-                    if mType == 'customFont':
-                        filename, attachmentMediaType = \
-                            saveFontInFormPOST(mediaBytes, self.server.debug,
-                                               filenameBase)
-                    else:
-                        filename, attachmentMediaType = \
-                            saveMediaInFormPOST(mediaBytes, self.server.debug,
-                                                filenameBase)
+                    filename, attachmentMediaType = \
+                        saveMediaInFormPOST(mediaBytes, self.server.debug,
+                                            filenameBase)
                     if filename:
                         print('Profile update POST ' + mType +
                               ' media or font filename is ' + filename)
@@ -5471,20 +5460,14 @@ class PubServer(BaseHTTPRequestHandler):
                         continue
 
                     postImageFilename = filename.replace('.temp', '')
-                    if mType == 'customFont':
-                        os.rename(filename, postImageFilename)
-                        setCustomFont(self.server.baseDir)
-                        print('profile POST ' + mType +
-                              ' image or font filename ' + postImageFilename)
-                    else:
-                        if self.server.debug:
-                            print('DEBUG: POST ' + mType +
-                                  ' media removing metadata')
-                        removeMetaData(filename, postImageFilename)
+                    if self.server.debug:
+                        print('DEBUG: POST ' + mType +
+                              ' media removing metadata')
+                    removeMetaData(filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('profile update POST ' + mType +
                               ' image or font saved to ' + postImageFilename)
-                        if mType != 'instanceLogo' and mType != 'customFont':
+                        if mType != 'instanceLogo':
                             lastPartOfImageFilename = \
                                 postImageFilename.split('/')[-1]
                             profileMediaTypesUploaded[mType] = \
