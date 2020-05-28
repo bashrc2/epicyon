@@ -105,7 +105,7 @@ a:link {
 }
 
 .ssbaddr {
-    font-size: var(--font-size5);
+    font-size: var(--font-size-pgp-key);
     font-family: Arial, Helvetica, sans-serif;
 }
 
