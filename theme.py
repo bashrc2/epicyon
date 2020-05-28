@@ -276,7 +276,7 @@ def setTheme(baseDir: str, name: str) -> bool:
     themes = getThemesList()
     for themeName in themes:
         if name == themeName.lower():
-            themeFunctionName = setTheme + themeName
+            themeFunctionName = 'setTheme' + themeName
             themeFunctionName(baseDir)
             result = True
 
