@@ -70,6 +70,7 @@ from happening import thisWeeksEventsCheck
 from happening import getCalendarEvents
 from happening import getTodaysEvents
 from git import isGitPatch
+from theme import getThemesList
 
 
 def getBlogAddress(actorJson: {}) -> str:
@@ -1151,20 +1152,15 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
             '..." style="height:200px">' + moderators + '</textarea>'
         moderatorsStr += '</div>'
 
+        themes = getThemesList()
         themesDropdown = '<div class="container">'
         themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
         themesDropdown += '  <select id="themeDropdown" ' + \
             'name="themeDropdown" class="theme">'
-        themesDropdown += '    <option value="default">' + \
-            translate['Default'] + '</option>'
-        themesDropdown += '    <option value="light">' + \
-            translate['Light'] + '</option>'
-        themesDropdown += '    <option value="purple">' + \
-            translate['Purple'] + '</option>'
-        themesDropdown += '    <option value="hacker">' + \
-            translate['Hacker'] + '</option>'
-        themesDropdown += '    <option value="highvis">' + \
-            translate['HighVis'] + '</option>'
+        for themeName in themes:
+            themesDropdown += '    <option value="' + \
+                themeName.lower() + '">' + \
+                translate[themeName] + '</option>'
         themesDropdown += '  </select><br>'
         if os.path.isfile(baseDir + '/fonts/custom.woff') or \
            os.path.isfile(baseDir + '/fonts/custom.woff2') or \

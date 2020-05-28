@@ -11,6 +11,15 @@ from utils import loadJson
 from utils import saveJson
 
 
+def getThemesList() -> []:
+    """Returns the list of available themes
+    Note that these should be capitalized, since they're
+    also used to create the web interface dropdown list
+    and to lookup function names
+    """
+    return ('Default', 'Light', 'Purple', 'Hacker', 'HighVis')
+
+
 def setThemeInConfig(baseDir: str, name: str) -> bool:
     configFilename = baseDir + '/config.json'
     if not os.path.isfile(configFilename):
@@ -263,21 +272,18 @@ def setThemeLight(baseDir: str):
 
 def setTheme(baseDir: str, name: str) -> bool:
     result = False
-    if name == 'purple':
-        setThemePurple(baseDir)
-        result = True
-    elif name == 'light':
-        setThemeLight(baseDir)
-        result = True
-    elif name == 'hacker':
-        setThemeHacker(baseDir)
-        result = True
-    elif name == 'highvis':
-        setThemeHighVis(baseDir)
-        result = True
-    else:
+
+    themes = getThemesList()
+    for themeName in themes:
+        if name == themeName.lower():
+            themeFunctionName = setTheme + themeName
+            themeFunctionName(baseDir)
+            result = True
+
+    if not result:
         # default
         setThemeDefault(baseDir)
         result = True
+
     setCustomFont(baseDir)
     return result
