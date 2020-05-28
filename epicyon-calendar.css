@@ -15,6 +15,14 @@
     --title-background: #ccc;
 }
 
+@font-face {
+  font-family: 'Bedstead';
+  font-style: normal;
+  font-weight: normal;
+  font-display: swap;
+  src: url('./fonts/bedstead.otf') format('opentype');
+}
+
 body {
     background-color: var(--main-bg-color);
     color: var(--day-number2);

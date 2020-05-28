@@ -175,9 +175,9 @@ def setThemeLCD(baseDir: str):
         "text-entry-foreground": "#33390d",
         "text-entry-background": "#9fb42b",
         "main-bg-color-reply": "#9fb42b",
-        "main-bg-color-report": "#12152d",
+        "main-bg-color-report": "#9fb42b",
         "main-bg-color-dm": "#5fb42b",
-        "main-header-color-roles": "#1f192d",
+        "main-header-color-roles": "#9fb42b",
         "main-fg-color": "#33390d",
         "border-color": "#33390d",
         "border-width": "5px",
@@ -216,6 +216,9 @@ def setThemeLCD(baseDir: str):
         "dropdown-bg-color-hover": "#7fb42b",
         "dropdown-fg-color-hover": "black",
         "dropdown-fg-color": "#9fb42b",
+        "font-color-header": "#9fb42b",
+        "lines-color": "#33390d",
+        "title-background": "#33390d",
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
     }
