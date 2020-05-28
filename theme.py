@@ -267,7 +267,9 @@ def setThemeLight(baseDir: str):
         "event-foreground": "white",
         "title-text": "#282c37",
         "title-background": "#ccc",
-        "gallery-text-color": "black"
+        "gallery-text-color": "black",
+        "*font-family": "'ElectrumADFExp-Regular'",
+        "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
     }
     setThemeFromDict(baseDir, 'light', themeParams)
 
