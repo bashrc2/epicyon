@@ -206,6 +206,8 @@ systemctl restart epicyon
 
 If you want to add a new theme then open `theme.py` and add the theme name to the list within `getThemesList`. Add a function with the name `setTheme[YourThemeName]`. Have a look at the other themes to get an idea of how to set the colors and fonts.
 
+Add the name of your theme to the translations files.
+
 On a running instance you can experiment with colors or fonts by editing `epicyon.css` and then reloading the web page. Once you are happy with the results then you can update the changed values within your `setTheme` function.
 
 

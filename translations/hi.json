@@ -224,5 +224,6 @@
     "List of project names that you wish to receive git patches for": "उन प्रोजेक्ट नामों की सूची, जिनके लिए आप git पैच प्राप्त करना चाहते हैं",
     "Show/Hide Buttons": "बटन दिखाएँ / छिपाएँ",
     "Custom Font": "कस्टम फ़ॉन्ट",
-    "Remove the custom font": "कस्टम फ़ॉन्ट निकालें"
+    "Remove the custom font": "कस्टम फ़ॉन्ट निकालें",
+    "LCD": "LCD"
 }

@@ -224,5 +224,6 @@
     "List of project names that you wish to receive git patches for": "Список имен проектов, для которых вы хотите получать git-патчи",
     "Show/Hide Buttons": "Показать / Скрыть кнопки",
     "Custom Font": "Пользовательский шрифт",
-    "Remove the custom font": "Удалить пользовательский шрифт"
+    "Remove the custom font": "Удалить пользовательский шрифт",
+    "LCD": "LCD"
 }

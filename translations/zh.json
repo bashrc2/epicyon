@@ -223,5 +223,6 @@
     "List of project names that you wish to receive git patches for": "您希望收到git补丁的项目名称列表",
     "Show/Hide Buttons": "显示/隐藏按钮",
     "Custom Font": "自定义字体",
-    "Remove the custom font": "删除自定义字体"
+    "Remove the custom font": "删除自定义字体",
+    "LCD": "LCD"
 }

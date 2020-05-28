@@ -224,5 +224,6 @@
     "List of project names that you wish to receive git patches for": "Elenco di nomi di progetti per i quali si desidera ricevere patch git",
     "Show/Hide Buttons": "Mostra / Nascondi pulsanti",
     "Custom Font": "Carattere personalizzato",
-    "Remove the custom font": "Rimuovi il carattere personalizzato"
+    "Remove the custom font": "Rimuovi il carattere personalizzato",
+    "LCD": "LCD"
 }

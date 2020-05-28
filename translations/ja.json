@@ -224,5 +224,6 @@
     "List of project names that you wish to receive git patches for": "gitパッチを受け取りたいプロジェクト名のリスト",
     "Show/Hide Buttons": "ボタンの表示/非表示",
     "Custom Font": "カスタムフォント",
-    "Remove the custom font": "カスタムフォントを削除する"
+    "Remove the custom font": "カスタムフォントを削除する",
+    "LCD": "LCD"
 }

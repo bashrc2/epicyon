@@ -224,5 +224,6 @@
     "List of project names that you wish to receive git patches for": "قائمة بأسماء المشاريع التي ترغب في تلقي تصحيحات git لها",
     "Show/Hide Buttons": "إظهار / إخفاء الأزرار",
     "Custom Font": "خط مخصص",
-    "Remove the custom font": "إزالة الخط المخصص"
+    "Remove the custom font": "إزالة الخط المخصص",
+    "LCD": "LCD"
 }
