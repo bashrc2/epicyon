@@ -315,6 +315,7 @@ def setThemeHacker(baseDir: str):
     themeParams = {
         "main-bg-color": "black",
         "link-bg-color": "black",
+        "main-bg-color-dm": "#0b0a0a",
         "main-bg-color-reply": "#030202",
         "main-bg-color-report": "#050202",
         "main-header-color-roles": "#1f192d",
