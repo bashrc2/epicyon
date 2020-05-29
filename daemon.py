@@ -1105,6 +1105,42 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
 
+        # favicon image
+        if 'favicon.ico' in self.path:
+            favFilename = 'favicon.ico'
+            # custom favicon
+            faviconFilename = \
+                self.server.baseDir + '/' + favFilename
+            if not os.path.isfile(faviconFilename):
+                # default favicon
+                faviconFilename = \
+                    self.server.baseDir + '/img/icons/' + favFilename
+            if self._etag_exists(faviconFilename):
+                # The file has not changed
+                self._304()
+                return
+            if self.server.iconsCache.get(favFilename):
+                favBinary = self.server.iconsCache[favFilename]
+                self._set_headers_etag(faviconFilename,
+                                       'image/x-icon',
+                                       favBinary, cookie,
+                                       callingDomain)
+                self._write(favBinary)
+                return
+            else:
+                if os.path.isfile(faviconFilename):
+                    with open(faviconFilename, 'rb') as favFile:
+                        favBinary = favFile.read()
+                        self._set_headers_etag(faviconFilename,
+                                               'image/x-icon',
+                                               favBinary, cookie,
+                                               callingDomain)
+                        self._write(favBinary)
+                        self.server.iconsCache[favFilename] = favBinary
+                        return
+            self._404()
+            return
+
         # check authorization
         authorized = self._isAuthorized()
         if self.server.debug:
@@ -1140,42 +1176,6 @@ class PubServer(BaseHTTPRequestHandler):
             else:
                 print('WARN: No Accept header ' + str(self.headers))
                 self._400()
-            return
-
-        # favicon image
-        if 'favicon.ico' in self.path:
-            favFilename = 'favicon.ico'
-            # custom favicon
-            faviconFilename = \
-                self.server.baseDir + '/' + favFilename
-            if not os.path.isfile(faviconFilename):
-                # default favicon
-                faviconFilename = \
-                    self.server.baseDir + '/img/icons/' + favFilename
-            if self._etag_exists(faviconFilename):
-                # The file has not changed
-                self._304()
-                return
-            if self.server.iconsCache.get(favFilename):
-                favBinary = self.server.iconsCache[favFilename]
-                self._set_headers_etag(faviconFilename,
-                                       'image/x-icon',
-                                       favBinary, cookie,
-                                       callingDomain)
-                self._write(favBinary)
-                return
-            else:
-                if os.path.isfile(faviconFilename):
-                    with open(faviconFilename, 'rb') as favFile:
-                        favBinary = favFile.read()
-                        self._set_headers_etag(faviconFilename,
-                                               'image/x-icon',
-                                               favBinary, cookie,
-                                               callingDomain)
-                        self._write(favBinary)
-                        self.server.iconsCache[favFilename] = favBinary
-                        return
-            self._404()
             return
 
         # get fonts
