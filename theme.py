@@ -161,15 +161,7 @@ def setThemeBlue(baseDir: str):
         "text-entry-background": "#002365",
         "main-bg-color-reply": "#002365",
         "main-bg-color-report": "#002365",
-        "main-header-color-roles": "#002365",
-        "main-link-color": "#002365",
-        "main-visited-color": "#002365",
-        "button-text": "#002365",
-        "color: #FFFFFE;": "color: #002365;",
         "day-number2": "#002365",
-        "time-color": "#002365",
-        "dropdown-fg-color": "#002365",
-        "font-color-header": "#002365",
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
     }
