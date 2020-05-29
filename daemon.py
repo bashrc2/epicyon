@@ -1107,10 +1107,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         # favicon image
         if 'favicon.ico' in self.path:
+            favType = 'image/x-icon'
             favFilename = 'favicon.ico'
             if self.headers.get('Accept'):
                 if 'image/webp' in self.headers['Accept']:
+                    favType = 'image/webp'
                     favFilename = 'favicon.webp'
+                    print('Sending webp favicon')
             # custom favicon
             faviconFilename = \
                 self.server.baseDir + '/' + favFilename
@@ -1118,28 +1121,33 @@ class PubServer(BaseHTTPRequestHandler):
                 # default favicon
                 faviconFilename = \
                     self.server.baseDir + '/img/icons/' + favFilename
+            print('faviconFilename: ' + faviconFilename)
             if self._etag_exists(faviconFilename):
                 # The file has not changed
                 self._304()
                 return
             if self.server.iconsCache.get(favFilename):
+                print('Get favicon from cache')
                 favBinary = self.server.iconsCache[favFilename]
                 self._set_headers_etag(faviconFilename,
-                                       'image/x-icon',
+                                       favType,
                                        favBinary, cookie,
                                        callingDomain)
                 self._write(favBinary)
                 return
             else:
+                print('Get favicon from file')
                 if os.path.isfile(faviconFilename):
+                    print('favicon file found')
                     with open(faviconFilename, 'rb') as favFile:
                         favBinary = favFile.read()
                         self._set_headers_etag(faviconFilename,
-                                               'image/x-icon',
+                                               favType,
                                                favBinary, cookie,
                                                callingDomain)
                         self._write(favBinary)
                         self.server.iconsCache[favFilename] = favBinary
+                        print('favicon file send')
                         return
             self._404()
             return
