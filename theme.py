@@ -353,6 +353,7 @@ def setThemeLight(baseDir: str):
     themeParams = {
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "main-bg-color": "#e6ebf0",
+        "main-bg-color-dm": "#e3dbf0",
         "link-bg-color": "#e6ebf0",
         "main-bg-color-reply": "#e0dbf0",
         "main-bg-color-report": "#e3dbf0",
