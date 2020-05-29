@@ -1818,35 +1818,35 @@ class PubServer(BaseHTTPRequestHandler):
         # favicon image
         if '/favicon.ico' in self.path:
             # custom favicon
-            mediaFilename = \
+            faviconFilename = \
                 self.server.baseDir + '/favicon.ico'
-            if not os.path.isfile(mediaFilename):
+            if not os.path.isfile(faviconFilename):
                 # default favicon
-                mediaFilename = \
+                faviconFilename = \
                     self.server.baseDir + '/img/icons/favicon.ico'
-            if self._etag_exists(mediaFilename):
+            if self._etag_exists(faviconFilename):
                 # The file has not changed
                 self._304()
                 return
             if self.server.iconsCache.get('favicon.ico'):
-                mediaBinary = self.server.iconsCache['favicon.ico']
-                self._set_headers_etag(mediaFilename,
+                favBinary = self.server.iconsCache['favicon.ico']
+                self._set_headers_etag(faviconFilename,
                                        'image/png',
-                                       mediaBinary, cookie,
+                                       favBinary, cookie,
                                        callingDomain)
-                self._write(mediaBinary)
+                self._write(favBinary)
                 return
             else:
-                if os.path.isfile(mediaFilename):
-                    with open(mediaFilename, 'rb') as avFile:
-                        mediaBinary = avFile.read()
-                        self._set_headers_etag(mediaFilename,
+                if os.path.isfile(faviconFilename):
+                    with open(faviconFilename, 'rb') as favFile:
+                        favBinary = favFile.read()
+                        self._set_headers_etag(faviconFilename,
                                                'image/png',
-                                               mediaBinary, cookie,
+                                               favBinary, cookie,
                                                callingDomain)
-                        self._write(mediaBinary)
-                        self.server.iconsCache['favicon.ico'] = mediaBinary
-                    return
+                        self._write(favBinary)
+                        self.server.iconsCache['favicon.ico'] = favBinary
+                        return
             self._404()
             return
 
