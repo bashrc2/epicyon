@@ -364,6 +364,8 @@ def setThemeLight(baseDir: str):
         "text-entry-foreground": "#111",
         "text-entry-background": "white",
         "font-color-header": "black",
+        "dropdown-fg-color": "#222",
+        "dropdown-fg-color-hover": "#222",
         "dropdown-bg-color": "white",
         "dropdown-bg-color-hover": "lightgrey",
         "cw-background": "white",
