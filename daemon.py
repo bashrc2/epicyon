@@ -1828,8 +1828,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # The file has not changed
                 self._304()
                 return
-            if self.server.iconsCache.get(mediaStr):
-                mediaBinary = self.server.iconsCache[mediaStr]
+            if self.server.iconsCache.get('favicon.ico'):
+                mediaBinary = self.server.iconsCache['favicon.ico']
                 self._set_headers_etag(mediaFilename,
                                        'image/png',
                                        mediaBinary, cookie,
@@ -1845,7 +1845,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                mediaBinary, cookie,
                                                callingDomain)
                         self._write(mediaBinary)
-                        self.server.iconsCache[mediaStr] = mediaBinary
+                        self.server.iconsCache['favicon.ico'] = mediaBinary
                     return
             self._404()
             return
