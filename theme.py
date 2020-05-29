@@ -195,7 +195,8 @@ def setThemeZen(baseDir: str):
         "button-selected": "#26201d",
         "main-bg-color-dm": "#5c4a40",
         "main-header-color-roles": "#5c4e41",
-        "cw-background": "#463b35"
+        "cw-background": "#463b35",
+        "dropdown-bg-color": "#463b35"
     }
     setThemeFromDict(baseDir, 'zen', themeParams)
 
