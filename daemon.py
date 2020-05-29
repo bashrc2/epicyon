@@ -1103,8 +1103,87 @@ class PubServer(BaseHTTPRequestHandler):
         if self.headers.get('Cookie'):
             cookie = self.headers['Cookie']
 
+        self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
+
+        # check authorization
+        authorized = self._isAuthorized()
+        if self.server.debug:
+            if authorized:
+                print('GET Authorization granted')
+            else:
+                print('GET Not authorized')
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings, 5)
+
+        if not self.server.session:
+            print('Starting new session')
+            self.server.session = createSession(self.server.useTor)
+
+        self._benchmarkGETtimings(GETstartTime, GETtimings, 6)
+
+        # is this a html request?
+        htmlGET = False
+        if self.headers.get('Accept'):
+            if self._requestHTTP():
+                htmlGET = True
+        else:
+            if self.headers.get('Connection'):
+                # https://developer.mozilla.org/en-US/
+                # docs/Web/HTTP/Protocol_upgrade_mechanism
+                if self.headers.get('Upgrade'):
+                    print('HTTP Connection request: ' +
+                          self.headers['Upgrade'])
+                else:
+                    print('HTTP Connection request: ' +
+                          self.headers['Connection'])
+                self._200()
+            else:
+                print('WARN: No Accept header ' + str(self.headers))
+                self._400()
+            return
+
+        # favicon image
+        if htmlGET and '/favicon.ico' in self.path:
+            # custom favicon
+            faviconFilename = \
+                self.server.baseDir + '/favicon.ico'
+            if not os.path.isfile(faviconFilename):
+                # default favicon
+                faviconFilename = \
+                    self.server.baseDir + '/img/icons/favicon.ico'
+            print('favicon: ' + faviconFilename)
+            if self._etag_exists(faviconFilename):
+                print('favicon etag exists')
+                # The file has not changed
+                self._304()
+                return
+            if self.server.iconsCache.get('favicon.ico'):
+                favBinary = self.server.iconsCache['favicon.ico']
+                self._set_headers_etag(faviconFilename,
+                                       'image/x-icon',
+                                       favBinary, cookie,
+                                       callingDomain)
+                self._write(favBinary)
+                print('favicon sent from cache')
+                return
+            else:
+                if os.path.isfile(faviconFilename):
+                    print('favicon image file exists')
+                    with open(faviconFilename, 'rb') as favFile:
+                        favBinary = favFile.read()
+                        self._set_headers_etag(faviconFilename,
+                                               'image/x-icon',
+                                               favBinary, cookie,
+                                               callingDomain)
+                        self._write(favBinary)
+                        self.server.iconsCache['favicon.ico'] = favBinary
+                        print('favicon sent')
+                        return
+            self._404()
+            return
+
         # get fonts
-        if '/fonts/' in self.path:
+        if htmlGET and '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
             if fontStr.endswith('.otf') or \
                fontStr.endswith('.ttf') or \
@@ -1144,45 +1223,6 @@ class PubServer(BaseHTTPRequestHandler):
                             self.server.fontsCache[fontStr] = fontBinary
                         return
             self._404()
-            return
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
-
-        # check authorization
-        authorized = self._isAuthorized()
-        if self.server.debug:
-            if authorized:
-                print('GET Authorization granted')
-            else:
-                print('GET Not authorized')
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 5)
-
-        if not self.server.session:
-            print('Starting new session')
-            self.server.session = createSession(self.server.useTor)
-
-        self._benchmarkGETtimings(GETstartTime, GETtimings, 6)
-
-        # is this a html request?
-        htmlGET = False
-        if self.headers.get('Accept'):
-            if self._requestHTTP():
-                htmlGET = True
-        else:
-            if self.headers.get('Connection'):
-                # https://developer.mozilla.org/en-US/
-                # docs/Web/HTTP/Protocol_upgrade_mechanism
-                if self.headers.get('Upgrade'):
-                    print('HTTP Connection request: ' +
-                          self.headers['Upgrade'])
-                else:
-                    print('HTTP Connection request: ' +
-                          self.headers['Connection'])
-                self._200()
-            else:
-                print('WARN: No Accept header ' + str(self.headers))
-                self._400()
             return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 7)
@@ -1811,46 +1851,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                    callingDomain)
                             self._write(mediaBinary)
                             self.server.iconsCache[mediaStr] = mediaBinary
-                        return
-            self._404()
-            return
-
-        # favicon image
-        if '/favicon.ico' in self.path:
-            # custom favicon
-            faviconFilename = \
-                self.server.baseDir + '/favicon.ico'
-            if not os.path.isfile(faviconFilename):
-                # default favicon
-                faviconFilename = \
-                    self.server.baseDir + '/img/icons/favicon.ico'
-            print('favicon: ' + faviconFilename)
-            if self._etag_exists(faviconFilename):
-                print('favicon etag exists')
-                # The file has not changed
-                self._304()
-                return
-            if self.server.iconsCache.get('favicon.ico'):
-                favBinary = self.server.iconsCache['favicon.ico']
-                self._set_headers_etag(faviconFilename,
-                                       'image/x-icon',
-                                       favBinary, cookie,
-                                       callingDomain)
-                self._write(favBinary)
-                print('favicon sent from cache')
-                return
-            else:
-                if os.path.isfile(faviconFilename):
-                    print('favicon image file exists')
-                    with open(faviconFilename, 'rb') as favFile:
-                        favBinary = favFile.read()
-                        self._set_headers_etag(faviconFilename,
-                                               'image/x-icon',
-                                               favBinary, cookie,
-                                               callingDomain)
-                        self._write(favBinary)
-                        self.server.iconsCache['favicon.ico'] = favBinary
-                        print('favicon sent')
                         return
             self._404()
             return
