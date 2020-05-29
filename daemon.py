@@ -1108,6 +1108,9 @@ class PubServer(BaseHTTPRequestHandler):
         # favicon image
         if 'favicon.ico' in self.path:
             favFilename = 'favicon.ico'
+            if self.headers.get('Accept'):
+                if 'image/webp' in self.headers['Accept']:
+                    favFilename = 'favicon.webp'
             # custom favicon
             faviconFilename = \
                 self.server.baseDir + '/' + favFilename
