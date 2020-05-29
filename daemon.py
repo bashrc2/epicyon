@@ -1144,19 +1144,20 @@ class PubServer(BaseHTTPRequestHandler):
 
         # favicon image
         if 'favicon.ico' in self.path:
+            favFilename = 'favicon.ico'
             # custom favicon
             faviconFilename = \
-                self.server.baseDir + '/favicon.ico'
+                self.server.baseDir + '/' + favFilename
             if not os.path.isfile(faviconFilename):
                 # default favicon
                 faviconFilename = \
-                    self.server.baseDir + '/img/icons/favicon.ico'
+                    self.server.baseDir + '/img/icons/' + favFilename
             if self._etag_exists(faviconFilename):
                 # The file has not changed
                 self._304()
                 return
-            if self.server.iconsCache.get('favicon.ico'):
-                favBinary = self.server.iconsCache['favicon.ico']
+            if self.server.iconsCache.get(favFilename):
+                favBinary = self.server.iconsCache[favFilename]
                 self._set_headers_etag(faviconFilename,
                                        'image/x-icon',
                                        favBinary, cookie,
@@ -1172,7 +1173,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                favBinary, cookie,
                                                callingDomain)
                         self._write(favBinary)
-                        self.server.iconsCache['favicon.ico'] = favBinary
+                        self.server.iconsCache[favFilename] = favBinary
                         return
             self._404()
             return
