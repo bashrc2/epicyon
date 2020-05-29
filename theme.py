@@ -186,7 +186,11 @@ def setThemeZen(baseDir: str):
         "link-bg-color": "#5c4e41",
         "main-bg-color-reply": "#5c4e41",
         "main-bg-color-report": "#5c4e41",
-        "day-number2": "#5c4e41"
+        "day-number2": "#5c4e41",
+        "border-color": "#463b35",
+        "border-width": "7px",
+        "main-link-color": "#dddddd",
+        "main-visited-color": "#dddddd"
     }
     setThemeFromDict(baseDir, 'zen', themeParams)
 
