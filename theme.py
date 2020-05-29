@@ -171,8 +171,6 @@ def setThemeBlue(baseDir: str):
         "main-bg-color-reply": "#002365",
         "main-bg-color-report": "#002365",
         "day-number2": "#002365",
-        "*linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(\"banner.png\");": "linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url(\"banner.png\");",
-        "*linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(\"image.png\");": "linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url(\"image.png\");",
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
     }
