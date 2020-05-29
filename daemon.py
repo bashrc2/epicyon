@@ -1831,7 +1831,7 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.iconsCache.get('favicon.ico'):
                 favBinary = self.server.iconsCache['favicon.ico']
                 self._set_headers_etag(faviconFilename,
-                                       'image/png',
+                                       'image/x-icon',
                                        favBinary, cookie,
                                        callingDomain)
                 self._write(favBinary)
@@ -1841,7 +1841,7 @@ class PubServer(BaseHTTPRequestHandler):
                     with open(faviconFilename, 'rb') as favFile:
                         favBinary = favFile.read()
                         self._set_headers_etag(faviconFilename,
-                                               'image/png',
+                                               'image/x-icon',
                                                favBinary, cookie,
                                                callingDomain)
                         self._write(favBinary)
