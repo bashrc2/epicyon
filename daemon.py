@@ -1151,9 +1151,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # default favicon
                 faviconFilename = \
                     self.server.baseDir + '/img/icons/favicon.ico'
-            print('favicon: ' + faviconFilename)
             if self._etag_exists(faviconFilename):
-                print('favicon etag exists')
                 # The file has not changed
                 self._304()
                 return
@@ -1164,11 +1162,9 @@ class PubServer(BaseHTTPRequestHandler):
                                        favBinary, cookie,
                                        callingDomain)
                 self._write(favBinary)
-                print('favicon sent from cache')
                 return
             else:
                 if os.path.isfile(faviconFilename):
-                    print('favicon image file exists')
                     with open(faviconFilename, 'rb') as favFile:
                         favBinary = favFile.read()
                         self._set_headers_etag(faviconFilename,
@@ -1177,7 +1173,6 @@ class PubServer(BaseHTTPRequestHandler):
                                                callingDomain)
                         self._write(favBinary)
                         self.server.iconsCache['favicon.ico'] = favBinary
-                        print('favicon sent')
                         return
             self._404()
             return
