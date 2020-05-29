@@ -18,7 +18,8 @@ def getThemesList() -> []:
     also used to create the web interface dropdown list
     and to lookup function names
     """
-    return ('Default', 'LCD', 'Light', 'Purple', 'Hacker', 'HighVis')
+    return ('Default', 'Blue', 'LCD', 'Light',
+            'Purple', 'Hacker', 'HighVis')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -48,15 +49,6 @@ def removeTheme(baseDir: str):
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
             os.remove(baseDir + '/' + filename)
-
-
-def setThemeDefault(baseDir: str):
-    removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'default')
-    themeParams = {
-        "dummyValue": "1234",
-    }
-    setThemeFromDict(baseDir, 'default', themeParams)
 
 
 def setCSSparam(css: str, param: str, value: str) -> str:
@@ -150,6 +142,38 @@ def setCustomFont(baseDir: str):
             filename = baseDir + '/' + filename
             with open(filename, 'w') as cssfile:
                 cssfile.write(css)
+
+
+def setThemeDefault(baseDir: str):
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, 'default')
+    themeParams = {
+        "dummyValue": "1234"
+    }
+    setThemeFromDict(baseDir, 'default', themeParams)
+
+
+def setThemeBlue(baseDir: str):
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, 'blue')
+    themeParams = {
+        "main-bg-color": "#002365",
+        "text-entry-background": "#002365",
+        "main-bg-color-reply": "#002365",
+        "main-bg-color-report": "#002365",
+        "main-header-color-roles": "#002365",
+        "main-link-color": "#002365",
+        "main-visited-color": "#002365",
+        "button-text": "#002365",
+        "color: #FFFFFE;": "color: #002365;",
+        "day-number2": "#002365",
+        "time-color": "#002365",
+        "dropdown-fg-color": "#002365",
+        "font-color-header": "#002365",
+        "*font-family": "'Domestic_Manners'",
+        "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
+    }
+    setThemeFromDict(baseDir, 'blue', themeParams)
 
 
 def setThemeHighVis(baseDir: str):

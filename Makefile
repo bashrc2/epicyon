@@ -5,6 +5,7 @@ all:
 debug:
 source:
 	rm -f *.*~ *~
+	rm -f translations/*~
 	rm -f orgs/*~
 	rm -f scripts/*~
 	rm -rf __pycache__
