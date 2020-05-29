@@ -157,6 +157,14 @@ def setThemeBlue(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, 'blue')
     themeParams = {
+        "font-size-header": "22px",
+        "font-size": "45px",
+        "font-size2": "45px",
+        "font-size3": "45px",
+        "font-size4": "35px",
+        "font-size5": "29px",
+        "gallery-font-size": "35px",
+        "gallery-font-size-mobile": "55px",
         "main-bg-color": "#002365",
         "text-entry-background": "#002365",
         "link-bg-color": "#002365",
