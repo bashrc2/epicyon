@@ -1143,7 +1143,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # favicon image
-        if htmlGET and 'favicon.ico' in self.path:
+        if 'favicon.ico' in self.path:
             # custom favicon
             faviconFilename = \
                 self.server.baseDir + '/favicon.ico'
