@@ -1815,6 +1815,41 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
+        # favicon image
+        if '/favicon.ico' in self.path:
+            # custom favicon
+            mediaFilename = \
+                self.server.baseDir + '/favicon.ico'
+            if not os.path.isfile(mediaFilename):
+                # default favicon
+                mediaFilename = \
+                    self.server.baseDir + '/img/icons/favicon.ico'
+            if self._etag_exists(mediaFilename):
+                # The file has not changed
+                self._304()
+                return
+            if self.server.iconsCache.get(mediaStr):
+                mediaBinary = self.server.iconsCache[mediaStr]
+                self._set_headers_etag(mediaFilename,
+                                       'image/png',
+                                       mediaBinary, cookie,
+                                       callingDomain)
+                self._write(mediaBinary)
+                return
+            else:
+                if os.path.isfile(mediaFilename):
+                    with open(mediaFilename, 'rb') as avFile:
+                        mediaBinary = avFile.read()
+                        self._set_headers_etag(mediaFilename,
+                                               'image/png',
+                                               mediaBinary, cookie,
+                                               callingDomain)
+                        self._write(mediaBinary)
+                        self.server.iconsCache[mediaStr] = mediaBinary
+                    return
+            self._404()
+            return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings, 22)
 
         # cached avatar images

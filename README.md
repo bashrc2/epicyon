@@ -202,6 +202,11 @@ If you want to use a particular font then copy it into the *fonts* directory, re
 systemctl restart epicyon
 ```
 
+## Custom Favicon
+
+If you want to use your own favicon then copy your `favicon.ico` file to the base directory where you installed Epicyon.
+
+
 ## Adding Themes
 
 If you want to add a new theme then open `theme.py` and add the theme name to the list within `getThemesList`. Add a function with the name `setTheme[YourThemeName]`. Have a look at the other themes to get an idea of how to set the colors and fonts.
