@@ -159,6 +159,7 @@ def setThemeBlue(baseDir: str):
     themeParams = {
         "main-bg-color": "#002365",
         "text-entry-background": "#002365",
+        "link-bg-color": "#002365",
         "main-bg-color-reply": "#002365",
         "main-bg-color-report": "#002365",
         "day-number2": "#002365",
