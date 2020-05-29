@@ -18,8 +18,8 @@ def getThemesList() -> []:
     also used to create the web interface dropdown list
     and to lookup function names
     """
-    return ('Default', 'Blue', 'LCD', 'Light',
-            'Purple', 'Hacker', 'HighVis')
+    return ('Default', 'Blue', 'Hacker', 'HighVis',
+            'LCD', 'Light', 'Purple')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
