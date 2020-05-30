@@ -1335,6 +1335,9 @@
       And paste the following:
     </p>
     <div class="shell">
+      proxy_cache_path /var/www/cache levels=1:2 keys_zone=my_cache:10m max_size=10g
+                       inactive=60m use_temp_path=off;
+
       server {<br>
       listen 80;<br>
       listen [::]:80;<br>
@@ -1401,6 +1404,8 @@
       proxy_redirect off;<br>
       proxy_request_buffering on;<br>
       proxy_buffering on;<br>
+      proxy_cache my_cache;<br>
+      proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;<br>
       proxy_pass http://localhost:7156;<br>
       }<br>
       }
@@ -1410,7 +1415,8 @@
       Enable the site:
     </p>
     <div class="shell">
-      ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
+      ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/<br>
+      mkdir /var/www/cache
     </div>
 
     <p class="intro">

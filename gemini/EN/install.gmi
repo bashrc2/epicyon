@@ -56,6 +56,8 @@ Create a web server configuration:
 
 And paste the following:
 
+    proxy_cache_path /var/www/cache levels=1:2 keys_zone=my_cache:10m max_size=10g
+                     inactive=60m use_temp_path=off;
     server {
         listen 80;
         listen [::]:80;
@@ -122,6 +124,8 @@ And paste the following:
             proxy_redirect off;
             proxy_request_buffering on;
             proxy_buffering on;
+	    proxy_cache my_cache;
+	    proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
             proxy_pass http://localhost:7156;
         }
     }
@@ -129,6 +133,7 @@ And paste the following:
 Enable the site:
 
     ln -s /etc/nginx/sites-available/YOUR_DOMAIN /etc/nginx/sites-enabled/
+    mkdir /var/www/cache
 
 Forward port 443 from your internet router to your server. If you have dynamic DNS make sure its configured. Add a TLS certificate:
 
