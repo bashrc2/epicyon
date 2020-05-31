@@ -171,6 +171,8 @@ def setThemeBlue(baseDir: str):
         "main-bg-color-reply": "#002365",
         "main-bg-color-report": "#002365",
         "day-number2": "#002365",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
     }
@@ -212,6 +214,8 @@ def setThemeHighVis(baseDir: str):
         "font-size5": "29px",
         "gallery-font-size": "35px",
         "gallery-font-size-mobile": "55px",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
         "*font-family": "'LinBiolinum_Rah'",
         "*src": "url('./fonts/LinBiolinum_Rah.ttf') format('truetype')"
     }
