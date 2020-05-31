@@ -5725,15 +5725,15 @@ def htmlCalendar(translate: {},
     return calendarStr
 
 
-def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
-    """Returns a tag swarm of today's hashtags
+def removeOldHashtags(baseDir: str, maxMonths: int) -> str:
+    """Remove old hashtags
     """
-    currTime = datetime.utcnow()
-    daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
-    maxDaysSinceEpoch = (currTime - datetime(1970, 3, 1)).days
-    daysSinceEpochStr = str(daysSinceEpoch) + ' '
-    tagSwarm = []
+    if maxMonths > 11:
+        maxMonths = 11
+    maxDaysSinceEpoch = \
+        (datetime.utcnow() - datetime(1970, 1 + maxMonths, 1)).days
     removeHashtags = []
+
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
             tagsFilename = os.path.join(baseDir + '/tags', f)
@@ -5743,10 +5743,35 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
             modTimesinceEpoc = os.path.getmtime(tagsFilename)
             lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
             fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
+
             # check of the file is too old
             if fileDaysSinceEpoch < maxDaysSinceEpoch:
                 removeHashtags.append(tagsFilename)
+
+    for removeFilename in removeHashtags:
+        try:
+            os.remove(removeFilename)
+        except BaseException:
+            pass
+
+
+def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
+    """Returns a tag swarm of today's hashtags
+    """
+    currTime = datetime.utcnow()
+    daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
+    daysSinceEpochStr = str(daysSinceEpoch) + ' '
+    tagSwarm = []
+
+    for subdir, dirs, files in os.walk(baseDir + '/tags'):
+        for f in files:
+            tagsFilename = os.path.join(baseDir + '/tags', f)
+            if not os.path.isfile(tagsFilename):
                 continue
+            # get last modified datetime
+            modTimesinceEpoc = os.path.getmtime(tagsFilename)
+            lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
+            fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
             # check if the file was last modified today
             if fileDaysSinceEpoch != daysSinceEpoch:
                 continue
@@ -5790,13 +5815,6 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                     # don't read too many lines
                     if lineCtr >= maxLineCtr:
                         break
-
-    # remove old hashtags
-    for removeFilename in removeHashtags:
-        try:
-            os.remove(removeFilename)
-        except BaseException:
-            pass
 
     if not tagSwarm:
         return ''

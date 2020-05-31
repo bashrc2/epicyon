@@ -56,6 +56,7 @@ from posts import sendSignedJson
 from posts import sendToFollowersThread
 from webinterface import individualPostAsHtml
 from webinterface import getIconsDir
+from webinterface import removeOldHashtags
 from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
@@ -108,6 +109,7 @@ def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
                 except Exception as e:
                     print('WARN: Failed to write entry to tags file ' +
                           tagsFilename + ' ' + str(e))
+                removeOldHashtags(baseDir, 3)
 
 
 def inboxStorePostToHtmlCache(recentPostsCache: {}, maxRecentPosts: int,
