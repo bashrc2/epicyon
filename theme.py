@@ -173,6 +173,7 @@ def setThemeBlue(baseDir: str):
         "day-number2": "#002365",
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
+        "time-vertical-align": "-10px",
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
     }
@@ -216,6 +217,7 @@ def setThemeHighVis(baseDir: str):
         "gallery-font-size-mobile": "55px",
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
+        "time-vertical-align": "-10px",
         "*font-family": "'LinBiolinum_Rah'",
         "*src": "url('./fonts/LinBiolinum_Rah.ttf') format('truetype')"
     }

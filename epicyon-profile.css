@@ -28,6 +28,7 @@
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
+    --time-vertical-align: 4px;
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
@@ -898,7 +899,7 @@ div.gallery img {
     .time-right {
         float: right;
         color: var(--time-color);
-        margin: 4px 20px;
+        margin: var(--time-vertical-align) 20px;
     }
     input[type=text], select, textarea {
         width: 100%;
