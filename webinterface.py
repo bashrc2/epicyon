@@ -5728,15 +5728,23 @@ def htmlCalendar(translate: {},
 def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
     """Returns a tag swarm of today's hashtags
     """
-    daysSinceEpoch = (datetime.utcnow() - datetime(1970, 1, 1)).days
+    currTime = datetime.utcnow()
+    daysSinceEpoch = (currTime - datetime(1970, 1, 1)).days
+    maxDaysSinceEpoch = (currTime - datetime(1970, 3, 1)).days
     daysSinceEpochStr = str(daysSinceEpoch) + ' '
     tagSwarm = []
-    tagSwarmCtr = []
+    removeHashtags = []
     for subdir, dirs, files in os.walk(baseDir + '/tags'):
         for f in files:
             tagsFilename = os.path.join(baseDir + '/tags', f)
             if not os.path.isfile(tagsFilename):
                 continue
+            lastModifiedDate = os.stat(tagsFilename)
+            fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
+            if fileDaysSinceEpoch < maxDaysSinceEpoch:
+                removeHashtags.append(tagsFilename)
+                continue
+
             hashTagName = f.split('.')[0]
             if isBlockedHashtag(baseDir, hashTagName):
                 continue
@@ -5746,12 +5754,13 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                 line = tagsFile.readline()
                 lineCtr = 1
                 tagCtr = 0
+                maxLineCtr = 4
                 while line:
                     if '  ' not in line:
                         line = tagsFile.readline()
                         lineCtr += 1
                         # don't read too many lines
-                        if lineCtr > 4:
+                        if lineCtr > maxLineCtr:
                             break
                         continue
                     postDaysSinceEpochStr = line.split('  ')[0]
@@ -5759,7 +5768,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                         line = tagsFile.readline()
                         lineCtr += 1
                         # don't read too many lines
-                        if lineCtr > 4:
+                        if lineCtr > maxLineCtr:
                             break
                         continue
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
@@ -5769,31 +5778,29 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                         if tagCtr == 0:
                             tagSwarm.append(hashTagName)
                         tagCtr += 1
-                        if tagCtr > 3:
-                            break
 
                     line = tagsFile.readline()
                     lineCtr += 1
                     # don't read too many lines
-                    if lineCtr > 4:
+                    if lineCtr > maxLineCtr:
                         break
 
-                if tagCtr > 0:
-                    tagSwarmCtr.append(tagCtr)
+    # remove old hashtags
+    for removeFilename in removeHashtags:
+        try:
+            os.remove(removeFilename)
+        except BaseException:
+            pass
+
     if not tagSwarm:
         return ''
     tagSwarm.sort()
     tagSwarmStr = ''
     ctr = 0
     for tagName in tagSwarm:
-        if tagSwarmCtr[ctr] < 4:
-            tagSwarmStr += \
-                '<a href="' + actor + '/tags/' + tagName + \
-                '" class="hashtagswarm">' + tagName + '</a> '
-        else:
-            tagSwarmStr += \
-                '<a href="' + actor + '/tags/' + tagName + \
-                '" class="hashtagswarm2">' + tagName + '</a> '
+        tagSwarmStr += \
+            '<a href="' + actor + '/tags/' + tagName + \
+            '" class="hashtagswarm">' + tagName + '</a> '
         ctr += 1
     tagSwarmHtml = tagSwarmStr.strip() + '\n'
     return tagSwarmHtml
