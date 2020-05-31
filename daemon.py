@@ -5504,6 +5504,12 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: POST ' + mType +
                               ' media removing metadata')
+                    # remove existing etag
+                    if os.path.isfile(postImageFilename + '.etag'):
+                        try:
+                            os.remove(postImageFilename + '.etag')
+                        except BaseException:
+                            pass
                     removeMetaData(filename, postImageFilename)
                     if os.path.isfile(postImageFilename):
                         print('profile update POST ' + mType +
