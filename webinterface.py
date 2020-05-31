@@ -592,6 +592,10 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
     hashtag = urllib.parse.unquote(hashtag)
     hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
     if not os.path.isfile(hashtagIndexFile):
+        if hashtag != hashtag.lower():
+            hashtag = hashtag.lower()
+            hashtagIndexFile = baseDir + '/tags/' + hashtag + '.txt'
+    if not os.path.isfile(hashtagIndexFile):
         print('WARN: hashtag file not found ' + hashtagIndexFile)
         return None
 
