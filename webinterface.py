@@ -5755,13 +5755,13 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                 line = tagsFile.readline()
                 lineCtr = 1
                 tagCtr = 0
-                maxLineCtr = 4
+                maxLineCtr = 1
                 while line:
                     if '  ' not in line:
                         line = tagsFile.readline()
                         lineCtr += 1
                         # don't read too many lines
-                        if lineCtr > maxLineCtr:
+                        if lineCtr >= maxLineCtr:
                             break
                         continue
                     postDaysSinceEpochStr = line.split('  ')[0]
@@ -5769,7 +5769,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                         line = tagsFile.readline()
                         lineCtr += 1
                         # don't read too many lines
-                        if lineCtr > maxLineCtr:
+                        if lineCtr >= maxLineCtr:
                             break
                         continue
                     postDaysSinceEpoch = int(postDaysSinceEpochStr)
@@ -5783,7 +5783,7 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
                     line = tagsFile.readline()
                     lineCtr += 1
                     # don't read too many lines
-                    if lineCtr > maxLineCtr:
+                    if lineCtr >= maxLineCtr:
                         break
 
     # remove old hashtags
