@@ -5739,11 +5739,16 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
             tagsFilename = os.path.join(baseDir + '/tags', f)
             if not os.path.isfile(tagsFilename):
                 continue
+            # get last modified datetime
             modTimesinceEpoc = os.path.getmtime(tagsFilename)
             lastModifiedDate = datetime.fromtimestamp(modTimesinceEpoc)
             fileDaysSinceEpoch = (lastModifiedDate - datetime(1970, 1, 1)).days
+            # check of the file is too old
             if fileDaysSinceEpoch < maxDaysSinceEpoch:
                 removeHashtags.append(tagsFilename)
+                continue
+            # check if the file was last modified today
+            if fileDaysSinceEpoch != daysSinceEpoch:
                 continue
 
             hashTagName = f.split('.')[0]
