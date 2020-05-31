@@ -20,6 +20,15 @@
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
+    --hashtag-margin: 2%;
+    --hashtag-vertical-spacing1: 40px;
+    --hashtag-vertical-spacing2: 80px;
+    --hashtag-vertical-spacing3: 50px;
+    --hashtag-vertical-spacing4: 100px;
+    --hashtag-size1: 30px;
+    --hashtag-size2: 40px;
+    --hashtag-size3: 40px;
+    --hashtag-size4: 50px;
 }
 
 @font-face {
@@ -156,16 +165,16 @@ input[type=text] {
 
 @media screen and (min-width: 400px) {
     .hashtagswarm {
-        font-size: 30px;
+        font-size: var(--hashtag-size1);
         font-family: Arial, Helvetica, sans-serif;
-        padding: 30px;
-        line-height: 60px;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing1);
     }
     .hashtagswarm2 {
-        font-size: 40px;
+        font-size: var(--hashtag-size2);
         font-family: Arial, Helvetica, sans-serif;
-        padding: 30px;
-        line-height: 60px;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing2);
     }
     .followText {
         font-size: 24px;
@@ -199,16 +208,16 @@ input[type=text] {
 
 @media screen and (max-width: 1000px) {
     .hashtagswarm {
-        font-size: 40px;
+        font-size: var(--hashtag-size3);
         font-family: Arial, Helvetica, sans-serif;
-        padding: 40px;
-        line-height: 100px;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing3);
     }
     .hashtagswarm2 {
-        font-size: 50px;
+        font-size: var(--hashtag-size4);
         font-family: Arial, Helvetica, sans-serif;
-        padding: 40px;
-        line-height: 100px;
+        margin: var(--hashtag-margin);
+        line-height: var(--hashtag-vertical-spacing4);
     }
     .followText {
         font-size: 40px;
