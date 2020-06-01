@@ -27,8 +27,8 @@
     --hashtag-vertical-spacing4: 150px;
     --hashtag-size1: 30px;
     --hashtag-size2: 40px;
-    --hashtag-size3: 40px;
-    --hashtag-size4: 50px;
+    --follow-text-size1: 24px;
+    --follow-text-size2: 40px;
 }
 
 @font-face {
@@ -171,7 +171,7 @@ input[type=text] {
         line-height: var(--hashtag-vertical-spacing1);
     }
     .followText {
-        font-size: 24px;
+        font-size: var(--follow-text-size1);
         font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text] {
@@ -202,13 +202,13 @@ input[type=text] {
 
 @media screen and (max-width: 1000px) {
     .hashtagswarm {
-        font-size: var(--hashtag-size3);
+        font-size: var(--hashtag-size2);
         font-family: Arial, Helvetica, sans-serif;
         margin: var(--hashtag-margin);
         line-height: var(--hashtag-vertical-spacing3);
     }
     .followText {
-        font-size: 40px;
+        font-size: var(--follow-text-size2);
         font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text] {
