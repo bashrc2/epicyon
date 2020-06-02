@@ -2233,14 +2233,15 @@ def clearQueueItems(baseDir: str, queue: []) -> None:
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
             queueDir = baseDir + '/accounts/' + account + '/queue'
-            if os.path.isdir(queueDir):
-                for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
-                    for qfile in queuefiles:
-                        try:
-                            os.remove(os.path.join(queueDir, qfile))
-                            ctr += 1
-                        except BaseException:
-                            pass
+            if not os.path.isdir(queueDir):
+                continue
+            for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
+                for qfile in queuefiles:
+                    try:
+                        os.remove(os.path.join(queueDir, qfile))
+                        ctr += 1
+                    except BaseException:
+                        pass
     if ctr > 0:
         print('Removed ' + str(ctr) + ' inbox queue items')
 
@@ -2252,10 +2253,11 @@ def restoreQueueItems(baseDir: str, queue: []) -> None:
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for account in dirs:
             queueDir = baseDir + '/accounts/' + account + '/queue'
-            if os.path.isdir(queueDir):
-                for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
-                    for qfile in queuefiles:
-                        queue.append(os.path.join(queueDir, qfile))
+            if not os.path.isdir(queueDir):
+                continue
+            for queuesubdir, queuedirs, queuefiles in os.walk(queueDir):
+                for qfile in queuefiles:
+                    queue.append(os.path.join(queueDir, qfile))
     if len(queue) > 0:
         print('Restored ' + str(len(queue)) + ' inbox queue items')
 
