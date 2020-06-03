@@ -7336,7 +7336,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
               enableSharedInbox: bool, registration: bool,
               language: str, projectVersion: str,
               instanceId: str, clientToServer: bool,
-              baseDir: str, domain: str, onionDomain: str,
+              baseDir: str, domain: str,
+              onionDomain: str, i2pDomain: str,
               port=80, proxyPort=80, httpPrefix='https',
               fedList=[], maxMentions=10, maxEmoji=10,
               authenticatedFetch=False,
@@ -7379,6 +7380,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.domainBlocklist = getDomainBlocklist(baseDir)
 
     httpd.onionDomain = onionDomain
+    httpd.i2pDomain = i2pDomain
     httpd.useBlurHash = useBlurHash
     httpd.mediaInstance = mediaInstance
     httpd.blogsInstance = blogsInstance

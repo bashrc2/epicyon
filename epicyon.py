@@ -97,6 +97,10 @@ parser.add_argument('-o', '--onion', dest='onion', type=str,
                     default=None,
                     help='Onion domain name of the server if ' +
                     'primarily on clearnet')
+parser.add_argument('--i2pDomain', dest='i2pDomain', type=str,
+                    default=None,
+                    help='i2p domain name of the server if ' +
+                    'primarily on clearnet')
 parser.add_argument('-p', '--port', dest='port', type=int,
                     default=None,
                     help='Port number to run on')
@@ -467,6 +471,16 @@ if args.onion:
     onionDomain = args.onion
     setConfigParam(baseDir, 'onion', onionDomain)
 
+i2pDomain = None
+if args.i2pDomain:
+    if not args.i2pDomain.endswith('.i2p'):
+        print(args.i2pDomain + ' does not look like an i2p domain')
+        sys.exit()
+    if '://' in args.i2pDomain:
+        args.onion = args.onion.split('://')[1]
+    i2pDomain = args.i2pDomain
+    setConfigParam(baseDir, 'i2pDomain', i2pDomain)
+
 if not args.language:
     languageCode = getConfigParam(baseDir, 'language')
     if languageCode:
@@ -531,6 +545,13 @@ if configOnionDomain:
     onionDomain = configOnionDomain
 else:
     onionDomain = None
+
+# get i2p domain name from configuration
+configi2pDomain = getConfigParam(baseDir, 'i2pDomain')
+if configi2pDomain:
+    i2pDomain = configi2pDomain
+else:
+    i2pDomain = None
 
 # get port number from configuration
 configPort = getConfigParam(baseDir, 'port')
@@ -1659,7 +1680,8 @@ runDaemon(args.blogsinstance, args.mediainstance,
           not args.nosharedinbox,
           registration, args.language, __version__,
           instanceId, args.client, baseDir,
-          domain, onionDomain, port, proxyPort, httpPrefix,
+          domain, onionDomain, i2pDomain,
+          port, proxyPort, httpPrefix,
           federationList, args.maxMentions,
           args.maxEmoji, args.authenticatedFetch,
           args.noreply, args.nolike, args.nopics,
