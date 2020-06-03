@@ -699,14 +699,18 @@ class PubServer(BaseHTTPRequestHandler):
         if self.server.debug:
             print('DEBUG: WEBFINGER host-meta')
         if self.path.startswith('/.well-known/host-meta'):
-            if not callingDomain.endswith('.onion') or \
-               not self.server.onionDomain:
+            if callingDomain.endswith('.onion') and \
+               self.server.onionDomain:
+                wfResult = \
+                    webfingerMeta('http', self.server.onionDomain)
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                wfResult = \
+                    webfingerMeta('i2p', self.server.i2pDomain)
+            else:
                 wfResult = \
                     webfingerMeta(self.server.httpPrefix,
                                   self.server.domainFull)
-            else:
-                wfResult = \
-                    webfingerMeta('http', self.server.onionDomain)
             if wfResult:
                 msg = wfResult.encode('utf-8')
                 self._set_headers('application/xrd+xml', len(msg),
@@ -716,14 +720,18 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return True
         if self.path.startswith('/.well-known/nodeinfo'):
-            if not callingDomain.endswith('.onion') or \
-               not self.server.onionDomain:
+            if callingDomain.endswith('.onion') and \
+               self.server.onionDomain:
+                wfResult = \
+                    webfingerNodeInfo('http', self.server.onionDomain)
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                wfResult = \
+                    webfingerNodeInfo('i2p', self.server.i2pDomain)
+            else:
                 wfResult = \
                     webfingerNodeInfo(self.server.httpPrefix,
                                       self.server.domainFull)
-            else:
-                wfResult = \
-                    webfingerNodeInfo('http', self.server.onionDomain)
             if wfResult:
                 msg = json.dumps(wfResult).encode('utf-8')
                 if self.headers.get('Accept'):
@@ -1426,14 +1434,18 @@ class PubServer(BaseHTTPRequestHandler):
                                       cookie, callingDomain)
                     self._write(msg)
                     return
-                if not callingDomain.endswith('.onion') or \
-                   not self.server.onionDomain:
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    originPathStrAbsolute = \
+                        'http://' + self.server.onionDomain + originPathStr
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    originPathStrAbsolute = \
+                        'i2p://' + self.server.i2pDomain + originPathStr
+                else:
                     originPathStrAbsolute = \
                         self.server.httpPrefix + '://' + \
                         self.server.domainFull + originPathStr
-                else:
-                    originPathStrAbsolute = \
-                        'http://' + self.server.onionDomain + originPathStr
                 self._redirect_headers(originPathStrAbsolute, cookie,
                                        callingDomain)
                 return
@@ -1481,6 +1493,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'i2p://' + self.server.i2pDomain + usersPath
                 self._redirect_headers(actor + '/tlshares',
                                        cookie, callingDomain)
                 return
@@ -1492,14 +1507,18 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings, 10)
 
         if self.path.startswith('/terms'):
-            if not callingDomain.endswith('.onion') or \
-               not self.server.onionDomain:
+            if callingDomain.endswith('.onion') and \
+               self.server.onionDomain:
+                msg = htmlTermsOfService(self.server.baseDir, 'http',
+                                         self.server.onionDomain).encode()
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                msg = htmlTermsOfService(self.server.baseDir, 'i2p',
+                                         self.server.i2pDomain).encode()
+            else:
                 msg = htmlTermsOfService(self.server.baseDir,
                                          self.server.httpPrefix,
                                          self.server.domainFull).encode()
-            else:
-                msg = htmlTermsOfService(self.server.baseDir, 'http',
-                                         self.server.onionDomain).encode()
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             return
@@ -1507,17 +1526,22 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings, 11)
 
         if self.path.startswith('/about'):
-            if not callingDomain.endswith('.onion'):
+            if callingDomain.endswith('.onion'):
+                msg = \
+                    htmlAbout(self.server.baseDir, 'http',
+                              self.server.onionDomain,
+                              None).encode()
+            elif callingDomain.endswith('.i2p'):
+                msg = \
+                    htmlAbout(self.server.baseDir, 'i2p',
+                              self.server.i2pDomain,
+                              None).encode()
+            else:
                 msg = \
                     htmlAbout(self.server.baseDir,
                               self.server.httpPrefix,
                               self.server.domainFull,
                               self.server.onionDomain).encode()
-            else:
-                msg = \
-                    htmlAbout(self.server.baseDir, 'http',
-                              self.server.onionDomain,
-                              None).encode()
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             return
@@ -1558,15 +1582,20 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: authorized=' + str(authorized))
                         print('DEBUG: path=' + self.path)
                     self.send_response(303)
-                    if not callingDomain.endswith('.onion') or \
-                       not self.server.onionDomain:
-                        self.send_header('Location',
-                                         self.server.httpPrefix + '://' +
-                                         self.server.domainFull + '/login')
-                    else:
+                    if callingDomain.endswith('.onion') and \
+                       self.server.onionDomain:
                         self.send_header('Location',
                                          'http://' +
                                          self.server.onionDomain + '/login')
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        self.send_header('Location',
+                                         'i2p://' +
+                                         self.server.i2pDomain + '/login')
+                    else:
+                        self.send_header('Location',
+                                         self.server.httpPrefix + '://' +
+                                         self.server.domainFull + '/login')
                     self.send_header('Content-Length', '0')
                     self.send_header('X-Robots-Tag', 'noindex')
                     self.end_headers()
@@ -2043,6 +2072,10 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onionDomain:
                     originPathStrAbsolute = 'http://' + \
                         self.server.onionDomain + originPathStr
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.onionDomain):
+                    originPathStrAbsolute = 'i2p://' + \
+                        self.server.i2pDomain + originPathStr
                 self._redirect_headers(originPathStrAbsolute + '/search',
                                        cookie, callingDomain)
             self.server.GETbusy = False
@@ -2135,6 +2168,11 @@ class PubServer(BaseHTTPRequestHandler):
                         actor = \
                             'http://' + self.server.onionDomain + \
                             self.path.split('/eventdelete')[0]
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        actor = \
+                            'i2p://' + self.server.i2pDomain + \
+                            self.path.split('/eventdelete')[0]
                     self._redirect_headers(actor + '/calendar',
                                            cookie, callingDomain)
                     return
@@ -2202,6 +2240,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorAbsolute = 'http://' + self.server.onionDomain + actor
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
                 self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                        '?page=' + str(pageNumber), cookie,
                                        callingDomain)
@@ -2238,6 +2279,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute + '/' +
                                    timelineStr + '?page=' +
                                    str(pageNumber) +
@@ -2284,7 +2328,10 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.domainFull + actor
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
-                    actorAbsolute = 'http://' + self.server.onionDomain+actor
+                    actorAbsolute = 'http://' + self.server.onionDomain + actor
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
                 self._redirect_headers(actorAbsolute + '/' +
                                        timelineStr + '?page=' +
                                        str(pageNumber), cookie,
@@ -2317,6 +2364,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.onionDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute + '/' +
                                    timelineStr + '?page=' +
                                    str(pageNumber) +
@@ -2356,6 +2406,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStrAbsolute = \
                     'http://' + self.server.onionDomain + originPathStr
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStrAbsolute = \
+                    'i2p://' + self.server.i2pDomain + originPathStr
             self._redirect_headers(originPathStrAbsolute,
                                    cookie, callingDomain)
             self.server.GETbusy = False
@@ -2391,6 +2445,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStrAbsolute = 'http://' + \
                     self.server.onionDomain + originPathStr
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStrAbsolute = 'i2p://' + \
+                    self.server.i2pDomain + originPathStr
             self._redirect_headers(originPathStrAbsolute,
                                    cookie, callingDomain)
             self.server.GETbusy = False
@@ -2435,6 +2493,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorAbsolute = 'http://' + self.server.onionDomain + actor
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
                 self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                        '?page=' + str(pageNumber) +
                                        timelineBookmark, cookie,
@@ -2463,6 +2524,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
@@ -2507,6 +2571,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorAbsolute = 'http://' + self.server.onionDomain + actor
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.onionDomain):
+                    actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
                 self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                        '?page=' + str(pageNumber), cookie,
                                        callingDomain)
@@ -2538,6 +2605,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.onionDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
@@ -2583,6 +2653,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorAbsolute = 'http://' + self.server.onionDomain + actor
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
                 self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                        '?page=' + str(pageNumber), cookie,
                                        callingDomain)
@@ -2615,6 +2688,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
@@ -2658,6 +2734,10 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onionDomain:
                     actorAbsolute = 'http://' + \
                         self.server.onionDomain + actor
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actorAbsolute = 'i2p://' + \
+                        self.server.i2pDomain + actor
                 self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                        '?page=' + str(pageNumber), cookie,
                                        callingDomain)
@@ -2690,6 +2770,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute + '/' + timelineStr +
                                    '?page=' + str(pageNumber) +
                                    timelineBookmark, cookie,
@@ -2732,6 +2815,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if callingDomain.endswith('.onion') and \
                        self.server.onionDomain:
                         actor = 'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        actor = 'i2p://' + self.server.i2pDomain + usersPath
                     self._redirect_headers(actor + '/' + timelineStr,
                                            cookie, callingDomain)
                     return
@@ -2742,6 +2828,9 @@ class PubServer(BaseHTTPRequestHandler):
                     if callingDomain.endswith('.onion') and \
                        self.server.onionDomain:
                         actor = 'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        actor = 'i2p://' + self.server.i2pDomain + usersPath
                     self._redirect_headers(actor + '/' + timelineStr,
                                            cookie, callingDomain)
                     return
@@ -2766,6 +2855,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actor = 'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actor = 'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(actor + '/' + timelineStr,
                                    cookie, callingDomain)
             return
@@ -2807,6 +2899,11 @@ class PubServer(BaseHTTPRequestHandler):
                 actor = \
                     'http://' + self.server.onionDomain + \
                     self.path.split('?mute=')[0]
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actor = \
+                    'i2p://' + self.server.i2pDomain + \
+                    self.path.split('?mute=')[0]
             self._redirect_headers(actor + '/' +
                                    timelineStr + timelineBookmark,
                                    cookie, callingDomain)
@@ -2847,10 +2944,16 @@ class PubServer(BaseHTTPRequestHandler):
                        muteUrl,
                        self.server.recentPostsCache)
             self.server.GETbusy = False
-            if callingDomain.endswith('.onion') and self.server.onionDomain:
+            if callingDomain.endswith('.onion') and \
+               self.server.onionDomain:
                 actor = \
                     'http://' + \
                     self.server.onionDomain + self.path.split('?unmute=')[0]
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actor = \
+                    'i2p://' + \
+                    self.server.i2pDomain + self.path.split('?unmute=')[0]
             self._redirect_headers(actor + '/' + timelineStr +
                                    timelineBookmark,
                                    cookie, callingDomain)
@@ -3440,6 +3543,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorAbsolute = 'http://' + self.server.onionDomain + actor
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorAbsolute = 'i2p://' + self.server.i2pDomain + actor
             self._redirect_headers(actorAbsolute, cookie, callingDomain)
             self.server.GETbusy = False
             return
@@ -5318,6 +5424,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                    self.server.onionDomain +
                                                    '/login',
                                                    cookie, callingDomain)
+                        elif (callingDomain.endswith('.i2p') and
+                              self.server.i2pDomain):
+                            self._redirect_headers('i2p://' +
+                                                   self.server.i2pDomain +
+                                                   '/login',
+                                                   cookie, callingDomain)
                         else:
                             self._redirect_headers(self.server.httpPrefix +
                                                    '://' +
@@ -5394,17 +5506,24 @@ class PubServer(BaseHTTPRequestHandler):
                                      'epicyon=' +
                                      self.server.tokens[loginNickname] +
                                      '; SameSite=Strict')
-                    if not callingDomain.endswith('.onion') or \
-                       not self.server.onionDomain:
+                    if callingDomain.endswith('.onion') and \
+                       self.server.onionDomain:
                         self.send_header('Location',
-                                         self.server.httpPrefix+'://' +
-                                         self.server.domainFull +
+                                         'http://' +
+                                         self.server.onionDomain +
+                                         '/users/' + loginNickname + '/' +
+                                         self.server.defaultTimeline)
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        self.send_header('Location',
+                                         'i2p://' +
+                                         self.server.i2pDomain +
                                          '/users/' + loginNickname + '/' +
                                          self.server.defaultTimeline)
                     else:
                         self.send_header('Location',
-                                         'http://' +
-                                         self.server.onionDomain +
+                                         self.server.httpPrefix+'://' +
+                                         self.server.domainFull +
                                          '/users/' + loginNickname + '/' +
                                          self.server.defaultTimeline)
                     self.send_header('Content-Length', '0')
@@ -5436,6 +5555,10 @@ class PubServer(BaseHTTPRequestHandler):
                        self.server.onionDomain:
                         actorStr = \
                             'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        actorStr = \
+                            'i2p://' + self.server.i2pDomain + usersPath
                     print('WARN: nickname not found in ' + actorStr)
                     self._redirect_headers(actorStr, cookie, callingDomain)
                     self.server.POSTbusy = False
@@ -5446,6 +5569,10 @@ class PubServer(BaseHTTPRequestHandler):
                        self.server.onionDomain:
                         actorStr = \
                             'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        actorStr = \
+                            'i2p://' + self.server.i2pDomain + usersPath
                     print('Maximum profile data length exceeded ' +
                           str(length))
                     self._redirect_headers(actorStr, cookie, callingDomain)
@@ -6019,6 +6146,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 actorStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(actorStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -6141,6 +6272,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 actorStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actorStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(actorStr + '/moderation',
                                    cookie, callingDomain)
             self.server.POSTbusy = False
@@ -6181,6 +6316,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actor = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actor = 'i2p://' + self.server.i2pDomain + usersPath
                 self._redirect_headers(actor + '/' +
                                        self.server.defaultTimeline +
                                        '?page=' + str(pageNumber),
@@ -6209,6 +6347,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actor = 'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                actor = 'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(actor + '/' +
                                    self.server.defaultTimeline +
                                    '?page=' + str(pageNumber), cookie,
@@ -6243,6 +6384,9 @@ class PubServer(BaseHTTPRequestHandler):
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
                     actorStr = 'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    actorStr = 'i2p://' + self.server.i2pDomain + usersPath
                 self._redirect_headers(actorStr + '/' +
                                        self.server.defaultTimeline,
                                        cookie, callingDomain)
@@ -6363,6 +6507,10 @@ class PubServer(BaseHTTPRequestHandler):
                            self.server.onionDomain:
                             actorStr = 'http://' + self.server.onionDomain + \
                                 usersPath
+                        elif (callingDomain.endswith('.i2p') and
+                              self.server.i2pDomain):
+                            actorStr = 'i2p://' + self.server.i2pDomain + \
+                                usersPath
                         self._redirect_headers(actorStr + '/search',
                                                cookie, callingDomain)
                         self.server.POSTbusy = False
@@ -6405,6 +6553,8 @@ class PubServer(BaseHTTPRequestHandler):
                         return
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 actorStr = 'http://' + self.server.onionDomain + usersPath
+            elif callingDomain.endswith('.i2p') and self.server.i2pDomain:
+                actorStr = 'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(actorStr + '/' +
                                    self.server.defaultTimeline,
                                    cookie, callingDomain)
@@ -6441,6 +6591,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(originPathStr + '/tlshares',
                                    cookie, callingDomain)
             self.server.POSTbusy = False
@@ -6508,6 +6662,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 originPathStr = 'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStr = 'i2p://' + self.server.i2pDomain + usersPath
             if pageNumber == 1:
                 self._redirect_headers(originPathStr + '/outbox', cookie,
                                        callingDomain)
@@ -6574,6 +6731,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -6631,6 +6792,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -6649,6 +6814,10 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onionDomain:
                     originPathStr = \
                         'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    originPathStr = \
+                        'i2p://' + self.server.i2pDomain + usersPath
                 print('WARN: unable to find nickname in ' + originPathStr)
                 self._redirect_headers(originPathStr,
                                        cookie, callingDomain)
@@ -6668,6 +6837,10 @@ class PubServer(BaseHTTPRequestHandler):
                        self.server.onionDomain:
                         originPathStr = \
                             'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        originPathStr = \
+                            'i2p://' + self.server.i2pDomain + usersPath
                     print('WARN: unable to find nickname in ' + blockingActor)
                     self._redirect_headers(originPathStr,
                                            cookie, callingDomain)
@@ -6697,6 +6870,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(originPathStr,
                                    cookie, callingDomain)
             self.server.POSTbusy = False
@@ -6716,6 +6893,10 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onionDomain:
                     originPathStr = \
                         'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    originPathStr = \
+                        'i2p://' + self.server.i2pDomain + usersPath
                 print('WARN: unable to find nickname in ' + originPathStr)
                 self._redirect_headers(originPathStr,
                                        cookie, callingDomain)
@@ -6735,6 +6916,10 @@ class PubServer(BaseHTTPRequestHandler):
                        self.server.onionDomain:
                         originPathStr = \
                             'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        originPathStr = \
+                            'i2p://' + self.server.i2pDomain + usersPath
                     print('WARN: unable to find nickname in ' + blockingActor)
                     self._redirect_headers(originPathStr,
                                            cookie, callingDomain)
@@ -6765,6 +6950,10 @@ class PubServer(BaseHTTPRequestHandler):
                self.server.onionDomain:
                 originPathStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif (callingDomain.endswith('.i2p') and
+                  self.server.i2pDomain):
+                originPathStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -6786,6 +6975,10 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onionDomain:
                     originPathStr = \
                         'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    originPathStr = \
+                        'i2p://' + self.server.i2pDomain + usersPath
                 print('WARN: unable to find nickname in ' + originPathStr)
                 self._redirect_headers(originPathStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -6822,6 +7015,10 @@ class PubServer(BaseHTTPRequestHandler):
                    self.server.onionDomain:
                     originPathStr = \
                         'http://' + self.server.onionDomain + usersPath
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    originPathStr = \
+                        'i2p://' + self.server.i2pDomain + usersPath
                 print('WARN: unable to find nickname in ' + optionsActor)
                 self._redirect_headers(originPathStr, cookie, callingDomain)
                 self.server.POSTbusy = False
@@ -6927,6 +7124,10 @@ class PubServer(BaseHTTPRequestHandler):
                        self.server.onionDomain:
                         thisActor = \
                             'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        thisActor = \
+                            'i2p://' + self.server.i2pDomain + usersPath
                     self._redirect_headers(thisActor + '/' +
                                            self.server.defaultTimeline +
                                            '?page='+str(pageNumber), cookie,
@@ -6948,6 +7149,10 @@ class PubServer(BaseHTTPRequestHandler):
                        self.server.onionDomain:
                         thisActor = \
                             'http://' + self.server.onionDomain + usersPath
+                    elif (callingDomain.endswith('.i2p') and
+                          self.server.i2pDomain):
+                        thisActor = \
+                            'i2p://' + self.server.i2pDomain + usersPath
                     self._redirect_headers(thisActor + '/' +
                                            self.server.defaultTimeline +
                                            '?page=' + str(pageNumber), cookie,
@@ -6975,6 +7180,9 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and self.server.onionDomain:
                 originPathStr = \
                     'http://' + self.server.onionDomain + usersPath
+            elif callingDomain.endswith('.i2p') and self.server.i2pDomain:
+                originPathStr = \
+                    'i2p://' + self.server.i2pDomain + usersPath
             self._redirect_headers(originPathStr, cookie, callingDomain)
             self.server.POSTbusy = False
             return
@@ -7000,17 +7208,25 @@ class PubServer(BaseHTTPRequestHandler):
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
 
-                if not callingDomain.endswith('.onion') or \
-                   not self.server.onionDomain:
-                    self._redirect_headers(self.server.httpPrefix + '://' +
-                                           self.server.domainFull +
+                if callingDomain.endswith('.onion') and \
+                   self.server.onionDomain:
+                    self._redirect_headers('http://' +
+                                           self.server.onionDomain +
+                                           '/users/' + nickname +
+                                           '/' + postRedirect +
+                                           '?page=' + str(pageNumber), cookie,
+                                           callingDomain)
+                elif (callingDomain.endswith('.i2p') and
+                      self.server.i2pDomain):
+                    self._redirect_headers('i2p://' +
+                                           self.server.i2pDomain +
                                            '/users/' + nickname +
                                            '/' + postRedirect +
                                            '?page=' + str(pageNumber), cookie,
                                            callingDomain)
                 else:
-                    self._redirect_headers('http://' +
-                                           self.server.onionDomain +
+                    self._redirect_headers(self.server.httpPrefix + '://' +
+                                           self.server.domainFull +
                                            '/users/' + nickname +
                                            '/' + postRedirect +
                                            '?page=' + str(pageNumber), cookie,
