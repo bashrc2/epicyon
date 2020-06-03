@@ -1630,6 +1630,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     if toDomain.endswith('.onion'):
         httpPrefix = 'http'
+    elif toDomain.endswith('.i2p'):
+        httpPrefix = 'i2p'
 
 #    sharedInbox = False
     if toNickname == 'inbox':
@@ -1809,7 +1811,8 @@ def addToField(activityType: str, postJsonObject: {},
 
 def sendToNamedAddresses(session, baseDir: str,
                          nickname: str,
-                         domain: str, onionDomain: str, port: int,
+                         domain: str,
+                         onionDomain: str, i2pDomain: str, port: int,
                          httpPrefix: str, federationList: [],
                          sendThreads: [], postLog: [],
                          cachedWebfingers: {}, personCache: {},
@@ -1928,6 +1931,10 @@ def sendToNamedAddresses(session, baseDir: str,
             if toDomain.endswith('.onion'):
                 fromDomain = onionDomain
                 fromHttpPrefix = 'http'
+        elif i2pDomain:
+            if toDomain.endswith('.i2p'):
+                fromDomain = i2pDomain
+                fromHttpPrefix = 'i2p'
         cc = []
         sendSignedJson(postJsonObject, session, baseDir,
                        nickname, fromDomain, port,
@@ -1952,7 +1959,8 @@ def hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
 
 def sendToFollowers(session, baseDir: str,
                     nickname: str,
-                    domain: str, onionDomain: str, port: int,
+                    domain: str,
+                    onionDomain: str, i2pDomain: str, port: int,
                     httpPrefix: str, federationList: [],
                     sendThreads: [], postLog: [],
                     cachedWebfingers: {}, personCache: {},
@@ -2012,6 +2020,10 @@ def sendToFollowers(session, baseDir: str,
             if toDomain.endswith('.onion'):
                 fromDomain = onionDomain
                 fromHttpPrefix = 'http'
+        elif i2pDomain:
+            if toDomain.endswith('.i2p'):
+                fromDomain = i2pDomain
+                fromHttpPrefix = 'i2p'
 
         if withSharedInbox:
             toNickname = followerHandles[index].split('@')[0]
@@ -2079,7 +2091,8 @@ def sendToFollowers(session, baseDir: str,
 
 def sendToFollowersThread(session, baseDir: str,
                           nickname: str,
-                          domain: str, onionDomain: str, port: int,
+                          domain: str,
+                          onionDomain: str, i2pDomain: str, port: int,
                           httpPrefix: str, federationList: [],
                           sendThreads: [], postLog: [],
                           cachedWebfingers: {}, personCache: {},
@@ -2090,7 +2103,8 @@ def sendToFollowersThread(session, baseDir: str,
     sendThread = \
         threadWithTrace(target=sendToFollowers,
                         args=(session, baseDir,
-                              nickname, domain, onionDomain, port,
+                              nickname, domain,
+                              onionDomain, i2pDomain, port,
                               httpPrefix, federationList,
                               sendThreads, postLog,
                               cachedWebfingers, personCache,

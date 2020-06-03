@@ -464,11 +464,16 @@ def noOfFollowRequests(baseDir: str,
     ctr = 0
     with open(approveFollowsFilename, "r") as f:
         lines = f.readlines()
-        if followType != "onion":
+        if followType == "onion":
+            for fileLine in lines:
+                if '.onion' in fileLine:
+                    ctr += 1
+        elif followType == "i2p":
+            for fileLine in lines:
+                if '.i2p' in fileLine:
+                    ctr += 1
+        else:
             return len(lines)
-        for fileLine in lines:
-            if '.onion' in fileLine:
-                ctr += 1
     return ctr
 
 
@@ -618,19 +623,26 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     if followApprovalRequired(baseDir, nicknameToFollow,
                               domainToFollow, debug, approveHandle):
         print('Follow approval is required')
-        if not domain.endswith('.onion'):
-            if noOfFollowRequests(baseDir,
-                                  nicknameToFollow, domainToFollow,
-                                  nickname, domain, fromPort,
-                                  '') > 10:
-                print('Too many follow requests')
-                return False
-        else:
+        if domain.endswith('.onion'):
             if noOfFollowRequests(baseDir,
                                   nicknameToFollow, domainToFollow,
                                   nickname, domain, fromPort,
                                   'onion') > 5:
                 print('Too many follow requests from onion addresses')
+                return False
+        elif domain.endswith('.i2p'):
+            if noOfFollowRequests(baseDir,
+                                  nicknameToFollow, domainToFollow,
+                                  nickname, domain, fromPort,
+                                  'i2p') > 5:
+                print('Too many follow requests from i2p addresses')
+                return False
+        else:
+            if noOfFollowRequests(baseDir,
+                                  nicknameToFollow, domainToFollow,
+                                  nickname, domain, fromPort,
+                                  '') > 10:
+                print('Too many follow requests')
                 return False
 
         print('Storing follow request for approval')
