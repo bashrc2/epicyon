@@ -73,6 +73,16 @@ from git import isGitPatch
 from theme import getThemesList
 
 
+def getContentWarningButton(postID: str, translate: {},
+                            content: str) -> str:
+    """Returns the markup for a content warning button
+    """
+    return '<button class="cwButton" onclick="showContentWarning(' + \
+        "'" + postID + "'" + ')">' + translate['SHOW MORE'] + '</button>' + \
+        '<div class="cwText" id="' + postID + '">' + \
+        content + '</div>'
+
+
 def getBlogAddress(actorJson: {}) -> str:
     """Returns blog address for the given actor
     """
@@ -4095,17 +4105,15 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 '<b>' + postJsonObject['object']['summary'] + '</b> '
             if isModerationPost:
                 containerClass = 'container report'
-        contentStr += \
-            '<button class="cwButton" onclick="showContentWarning(' + \
-            "'" + postID + "'" + ')">' + translate['SHOW MORE'] + '</button>'
-        contentStr += '<div class="cwText" id="' + postID + '">'
-        contentStr += objectContent + attachmentStr
+        # get the content warning text
+        cwContentStr = objectContent + attachmentStr
         if not isPatch:
-            contentStr = addEmbeddedElements(translate, contentStr)
-            contentStr = \
+            cwContentStr = addEmbeddedElements(translate, cwContentStr)
+            cwContentStr = \
                 insertQuestion(baseDir, translate, nickname, domain, port,
-                               contentStr, postJsonObject, pageNumber)
-        contentStr += '</div>'
+                               cwContentStr, postJsonObject, pageNumber)
+        # get the content warning button
+        contentStr += getContentWarningButton(postID, translate, cwContentStr)
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
