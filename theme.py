@@ -183,6 +183,8 @@ def setThemeBlue(baseDir: str):
 def setThemeNight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, 'night')
+    fontStr = \
+        "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
     themeParams = {
         "main-bg-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
@@ -195,8 +197,8 @@ def setThemeNight(baseDir: str):
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
         "time-vertical-align": "-10px",
-        "*font-family": "'SundownerRegular'",
-        "*src": "url('./fonts/SundownerRegular.ttf') format('truetype')"
+        "*font-family": "'CheGuevaraTextSans-Regular'",
+        "*src": fontStr
     }
     setThemeFromDict(baseDir, 'night', themeParams)
 
