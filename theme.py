@@ -19,7 +19,7 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'HighVis',
-            'LCD', 'Light', 'Purple', 'Zen')
+            'LCD', 'Light', 'Night', 'Purple', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -178,6 +178,27 @@ def setThemeBlue(baseDir: str):
         "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'blue', themeParams)
+
+
+def setThemeNight(baseDir: str):
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, 'night')
+    themeParams = {
+        "main-bg-color": "#0f0d10",
+        "text-entry-background": "#0f0d10",
+        "link-bg-color": "#0f0d10",
+        "main-fg-color": "#7961ab",
+        "border-color": "#7961ab",
+        "main-bg-color-reply": "#0f0d10",
+        "main-bg-color-report": "#0f0d10",
+        "day-number2": "#0f0d10",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
+        "time-vertical-align": "-10px",
+        "*font-family": "'SundownerRegular'",
+        "*src": "url('./fonts/SundownerRegular.ttf') format('truetype')"
+    }
+    setThemeFromDict(baseDir, 'night', themeParams)
 
 
 def setThemeZen(baseDir: str):
