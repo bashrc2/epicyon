@@ -197,6 +197,8 @@ def setThemeNight(baseDir: str):
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
         "time-vertical-align": "-10px",
+        "button-background": "#7961ab",
+        "button-selected": "#86579d",
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
