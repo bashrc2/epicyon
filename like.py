@@ -6,79 +6,17 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-import os
-from pprint import pprint
-from utils import removePostFromCache
 from utils import urlPermitted
 from utils import getNicknameFromActor
 from utils import getDomainFromActor
 from utils import locatePost
-from utils import getCachedPostFilename
-from utils import loadJson
-from utils import saveJson
+from utils import updateLikesCollection
+from utils import undoLikesCollectionEntry
 from posts import sendSignedJson
 from session import postJson
 from webfinger import webfingerHandle
 from auth import createBasicAuthHeader
 from posts import getPersonBox
-
-
-def undoLikesCollectionEntry(recentPostsCache: {},
-                             baseDir: str, postFilename: str, objectUrl: str,
-                             actor: str, domain: str, debug: bool) -> None:
-    """Undoes a like for a particular actor
-    """
-    postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this post so that the
-        # like icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                                   domain, postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        removePostFromCache(postJsonObject, recentPostsCache)
-
-        if not postJsonObject.get('type'):
-            return
-        if postJsonObject['type'] != 'Create':
-            return
-        if not postJsonObject.get('object'):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post '+objectUrl+' has no object')
-            return
-        if not isinstance(postJsonObject['object'], dict):
-            return
-        if not postJsonObject['object'].get('likes'):
-            return
-        if not isinstance(postJsonObject['object']['likes'], dict):
-            return
-        if not postJsonObject['object']['likes'].get('items'):
-            return
-        totalItems = 0
-        if postJsonObject['object']['likes'].get('totalItems'):
-            totalItems = postJsonObject['object']['likes']['totalItems']
-        itemFound = False
-        for likeItem in postJsonObject['object']['likes']['items']:
-            if likeItem.get('actor'):
-                if likeItem['actor'] == actor:
-                    if debug:
-                        print('DEBUG: like was removed for ' + actor)
-                    postJsonObject['object']['likes']['items'].remove(likeItem)
-                    itemFound = True
-                    break
-        if itemFound:
-            if totalItems == 1:
-                if debug:
-                    print('DEBUG: likes was removed from post')
-                del postJsonObject['object']['likes']
-            else:
-                itlen = len(postJsonObject['object']['likes']['items'])
-                postJsonObject['object']['likes']['totalItems'] = itlen
-
-            saveJson(postJsonObject, postFilename)
 
 
 def likedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
@@ -108,68 +46,6 @@ def noOfLikes(postJsonObject: {}) -> int:
         postJsonObject['object']['likes']['items'] = []
         postJsonObject['object']['likes']['totalItems'] = 0
     return len(postJsonObject['object']['likes']['items'])
-
-
-def updateLikesCollection(recentPostsCache: {},
-                          baseDir: str, postFilename: str,
-                          objectUrl: str,
-                          actor: str, domain: str, debug: bool) -> None:
-    """Updates the likes collection within a post
-    """
-    postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this post so that the
-        # like icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                                   domain, postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        removePostFromCache(postJsonObject, recentPostsCache)
-
-        if not postJsonObject.get('object'):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post ' + objectUrl + ' has no object')
-            return
-        if not isinstance(postJsonObject['object'], dict):
-            return
-        if not objectUrl.endswith('/likes'):
-            objectUrl = objectUrl + '/likes'
-        if not postJsonObject['object'].get('likes'):
-            if debug:
-                print('DEBUG: Adding initial likes to '+objectUrl)
-            likesJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': objectUrl,
-                'type': 'Collection',
-                "totalItems": 1,
-                'items': [{
-                    'type': 'Like',
-                    'actor': actor
-                }]
-            }
-            postJsonObject['object']['likes'] = likesJson
-        else:
-            if not postJsonObject['object']['likes'].get('items'):
-                postJsonObject['object']['likes']['items'] = []
-            for likeItem in postJsonObject['object']['likes']['items']:
-                if likeItem.get('actor'):
-                    if likeItem['actor'] == actor:
-                        return
-            newLike = {
-                'type': 'Like',
-                'actor': actor
-            }
-            postJsonObject['object']['likes']['items'].append(newLike)
-            itlen = len(postJsonObject['object']['likes']['items'])
-            postJsonObject['object']['likes']['totalItems'] = itlen
-
-        if debug:
-            print('DEBUG: saving post with likes added')
-            pprint(postJsonObject)
-        saveJson(postJsonObject, postFilename)
 
 
 def like(recentPostsCache: {},

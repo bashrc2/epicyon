@@ -143,6 +143,8 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
+from utils import updateLikesCollection
+from utils import undoLikesCollectionEntry
 from utils import deletePost
 from utils import isBlogPost
 from utils import removeAvatarFromCache
@@ -176,8 +178,6 @@ from outbox import postMessageToOutbox
 from happening import removeCalendarEvent
 from bookmarks import bookmark
 from bookmarks import undoBookmark
-from like import updateLikesCollectionEntry
-from like import undoLikesCollectionEntry
 import os
 
 
@@ -2525,11 +2525,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain,
                                            actorLiked)
             if likedPostFilename:
-                updateLikesCollectionEntry(self.server.recentPostsCache,
-                                           self.server.baseDir,
-                                           likedPostFilename, likeUrl,
-                                           likeActor, self.server.domain,
-                                           self.server.debug)
+                updateLikesCollection(self.server.recentPostsCache,
+                                      self.server.baseDir,
+                                      likedPostFilename, likeUrl,
+                                      likeActor, self.server.domain,
+                                      self.server.debug)
             # send out the like to followers
             self._postToOutbox(likeJson, self.server.projectVersion)
             self.server.GETbusy = False
