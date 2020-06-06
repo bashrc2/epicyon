@@ -176,6 +176,8 @@ from outbox import postMessageToOutbox
 from happening import removeCalendarEvent
 from bookmarks import bookmark
 from bookmarks import undoBookmark
+from like import updateLikesCollectionEntry
+from like import undoLikesCollectionEntry
 import os
 
 
@@ -2517,6 +2519,18 @@ class PubServer(BaseHTTPRequestHandler):
                 'to': [actorLiked],
                 'object': likeUrl
             }
+            # directly like the post file
+            likedPostFilename = locatePost(self.server.baseDir,
+                                           self.postToNickname,
+                                           self.server.domain,
+                                           actorLiked)
+            if likedPostFilename:
+                updateLikesCollectionEntry(self.server.recentPostsCache,
+                                           self.server.baseDir,
+                                           likedPostFilename, likeUrl,
+                                           likeActor, self.server.domain,
+                                           self.server.debug)
+            # send out the like to followers
             self._postToOutbox(likeJson, self.server.projectVersion)
             self.server.GETbusy = False
             actorAbsolute = \
@@ -2599,6 +2613,18 @@ class PubServer(BaseHTTPRequestHandler):
                     'object': likeUrl
                 }
             }
+            # directly undo the like within the post file
+            likedPostFilename = locatePost(self.server.baseDir,
+                                           self.postToNickname,
+                                           self.server.domain,
+                                           actorLiked)
+            if likedPostFilename:
+                undoLikesCollectionEntry(self.server.recentPostsCache,
+                                         self.server.baseDir,
+                                         likedPostFilename, likeUrl,
+                                         likeActor, self.server.domain,
+                                         self.server.debug)
+            # send out the undo like to followers
             self._postToOutbox(undoLikeJson, self.server.projectVersion)
             self.server.GETbusy = False
             actorAbsolute = self.server.httpPrefix + '://' + \
