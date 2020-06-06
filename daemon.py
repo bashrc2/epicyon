@@ -143,8 +143,6 @@ from shares import getSharesFeedForPerson
 from shares import addShare
 from shares import removeShare
 from shares import expireShares
-from utils import undoAnnounceCollectionEntry
-from utils import updateAnnounceCollection
 from utils import updateLikesCollection
 from utils import undoLikesCollectionEntry
 from utils import deletePost
@@ -2277,18 +2275,6 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.debug,
                                self.server.projectVersion)
             if announceJson:
-                # directly announce the post file
-                announcePostFilename = \
-                    locatePost(self.server.baseDir,
-                               self.postToNickname,
-                               self.server.domain,
-                               repeatUrl)
-                if announcePostFilename:
-                    updateAnnounceCollection(self.server.recentPostsCache,
-                                             self.server.baseDir,
-                                             announcePostFilename,
-                                             actor, self.server.domain,
-                                             self.server.debug)
                 self._postToOutboxThread(announceJson)
             self.server.GETbusy = False
             actorAbsolute = self.server.httpPrefix + '://' + \
@@ -2374,18 +2360,6 @@ class PubServer(BaseHTTPRequestHandler):
                     'type': 'Announce'
                 }
             }
-            # directly undo announce in post file
-            announcePostFilename = \
-                locatePost(self.server.baseDir,
-                           self.postToNickname,
-                           self.server.domain,
-                           repeatUrl)
-            if announcePostFilename:
-                undoAnnounceCollectionEntry(self.server.recentPostsCache,
-                                            self.server.baseDir,
-                                            announcePostFilename,
-                                            actor, self.server.domain,
-                                            self.server.debug)
             self._postToOutboxThread(newUndoAnnounce)
             self.server.GETbusy = False
             actorAbsolute = self.server.httpPrefix + '://' + \
