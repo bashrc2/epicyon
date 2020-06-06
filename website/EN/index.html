@@ -1406,6 +1406,16 @@
       proxy_buffering on;<br>
       proxy_cache my_cache;<br>
       proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;<br>
+      location ~ ^/icons/(.*)/(like|repeat|calendar)(.*).png {<br>
+          expires epoch;<br>
+          proxy_no_cache 1;<br>
+          proxy_pass http://localhost:7156;<br>
+      }<br>
+      location ~ ^/icons/(like|repeat|calendar)(.*).png {<br>
+          expires epoch;<br>
+          proxy_no_cache 1;<br>
+          proxy_pass http://localhost:7156;<br>
+      }<br>
       proxy_pass http://localhost:7156;<br>
       }<br>
       }

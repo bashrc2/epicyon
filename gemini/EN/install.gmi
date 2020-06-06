@@ -126,6 +126,16 @@ And paste the following:
             proxy_buffering on;
 	    proxy_cache my_cache;
 	    proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
+            location ~ ^/icons/(.*)/(like|repeat|calendar)(.*).png {
+                expires epoch;
+                proxy_no_cache 1;
+                proxy_pass http://localhost:7156;
+            }
+            location ~ ^/icons/(like|repeat|calendar)(.*).png {
+                expires epoch;
+                proxy_no_cache 1;
+                proxy_pass http://localhost:7156;
+            }
             proxy_pass http://localhost:7156;
         }
     }
