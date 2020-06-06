@@ -136,6 +136,11 @@ And paste the following:
                 proxy_no_cache 1;
                 proxy_pass http://localhost:7156;
             }
+            location ~ ^/users/(.*)/(image|banner).png {
+                expires epoch;
+                proxy_no_cache 1;
+                proxy_pass http://localhost:7156;
+            }
             proxy_pass http://localhost:7156;
         }
     }

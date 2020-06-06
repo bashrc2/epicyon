@@ -1416,6 +1416,11 @@
           proxy_no_cache 1;<br>
           proxy_pass http://localhost:7156;<br>
       }<br>
+      location ~ ^/users/(.*)/(image|banner).png {<br>
+          expires epoch;<br>
+          proxy_no_cache 1;<br>
+          proxy_pass http://localhost:7156;<br>
+      }<br>
       proxy_pass http://localhost:7156;<br>
       }<br>
       }
