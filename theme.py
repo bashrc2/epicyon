@@ -201,6 +201,11 @@ def setThemeNight(baseDir: str):
         "hashtag-vertical-spacing4": "150px",
         "button-background": "#7961ab",
         "button-selected": "#86579d",
+        "calendar-bg-color": "#0f0d10",
+        "lines-color": "#7961ab",
+        "day-number": "#7961ab",
+        "day-number2": "#555",
+        "event-background": "#111",
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
