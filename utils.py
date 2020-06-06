@@ -923,3 +923,132 @@ def updateLikesCollection(recentPostsCache: {},
             print('DEBUG: saving post with likes added')
             pprint(postJsonObject)
         saveJson(postJsonObject, postFilename)
+
+
+def undoAnnounceCollectionEntry(recentPostsCache: {},
+                                baseDir: str, postFilename: str,
+                                actor: str, domain: str, debug: bool) -> None:
+    """Undoes an announce for a particular actor by removing it from
+    the "shares" collection within a post. Note that the "shares"
+    collection has no relation to shared items in shares.py. It's
+    shares of posts, not shares of physical objects.
+    """
+    postJsonObject = loadJson(postFilename)
+    if postJsonObject:
+        # remove any cached version of this announce so that the announce
+        # icon is changed
+        nickname = getNicknameFromActor(actor)
+        cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
+                                                   postJsonObject)
+        if cachedPostFilename:
+            if os.path.isfile(cachedPostFilename):
+                os.remove(cachedPostFilename)
+        removePostFromCache(postJsonObject, recentPostsCache)
+
+        if not postJsonObject.get('type'):
+            return
+        if postJsonObject['type'] != 'Create':
+            return
+        if not postJsonObject.get('object'):
+            if debug:
+                pprint(postJsonObject)
+                print('DEBUG: post has no object')
+            return
+        if not isinstance(postJsonObject['object'], dict):
+            return
+        if not postJsonObject['object'].get('shares'):
+            return
+        if not postJsonObject['object']['shares'].get('items'):
+            return
+        totalItems = 0
+        if postJsonObject['object']['shares'].get('totalItems'):
+            totalItems = postJsonObject['object']['shares']['totalItems']
+        itemFound = False
+        for announceItem in postJsonObject['object']['shares']['items']:
+            if announceItem.get('actor'):
+                if announceItem['actor'] == actor:
+                    if debug:
+                        print('DEBUG: Announce was removed for ' + actor)
+                    anIt = announceItem
+                    postJsonObject['object']['shares']['items'].remove(anIt)
+                    itemFound = True
+                    break
+        if itemFound:
+            if totalItems == 1:
+                if debug:
+                    print('DEBUG: shares (announcements) ' +
+                          'was removed from post')
+                del postJsonObject['object']['shares']
+            else:
+                itlen = len(postJsonObject['object']['shares']['items'])
+                postJsonObject['object']['shares']['totalItems'] = itlen
+
+            saveJson(postJsonObject, postFilename)
+
+
+def updateAnnounceCollection(recentPostsCache: {},
+                             baseDir: str, postFilename: str,
+                             actor: str, domain: str, debug: bool) -> None:
+    """Updates the announcements collection within a post
+    Confusingly this is known as "shares", but isn't the
+    same as shared items within shares.py
+    It's shares of posts, not shares of physical objects.
+    """
+    postJsonObject = loadJson(postFilename)
+    if postJsonObject:
+        # remove any cached version of this announce so that the announce
+        # icon is changed
+        nickname = getNicknameFromActor(actor)
+        cachedPostFilename = getCachedPostFilename(baseDir, nickname, domain,
+                                                   postJsonObject)
+        if cachedPostFilename:
+            if os.path.isfile(cachedPostFilename):
+                os.remove(cachedPostFilename)
+        removePostFromCache(postJsonObject, recentPostsCache)
+
+        if not postJsonObject.get('object'):
+            if debug:
+                pprint(postJsonObject)
+                print('DEBUG: post ' + postFilename + ' has no object')
+            return
+        if not isinstance(postJsonObject['object'], dict):
+            return
+        postUrl = postJsonObject['id'].replace('/activity', '') + '/shares'
+        if not postJsonObject['object'].get('shares'):
+            if debug:
+                print('DEBUG: Adding initial shares (announcements) to ' +
+                      postUrl)
+            announcementsJson = {
+                "@context": "https://www.w3.org/ns/activitystreams",
+                'id': postUrl,
+                'type': 'Collection',
+                "totalItems": 1,
+                'items': [{
+                    'type': 'Announce',
+                    'actor': actor
+                }]
+            }
+            postJsonObject['object']['shares'] = announcementsJson
+        else:
+            if postJsonObject['object']['shares'].get('items'):
+                sharesItems = postJsonObject['object']['shares']['items']
+                for announceItem in sharesItems:
+                    if announceItem.get('actor'):
+                        if announceItem['actor'] == actor:
+                            return
+                newAnnounce = {
+                    'type': 'Announce',
+                    'actor': actor
+                }
+                postJsonObject['object']['shares']['items'].append(newAnnounce)
+                itlen = len(postJsonObject['object']['shares']['items'])
+                postJsonObject['object']['shares']['totalItems'] = itlen
+            else:
+                if debug:
+                    print('DEBUG: shares (announcements) section of post ' +
+                          'has no items list')
+
+        if debug:
+            print('DEBUG: saving post with shares (announcements) added')
+            pprint(postJsonObject)
+        saveJson(postJsonObject, postFilename)
