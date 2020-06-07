@@ -47,6 +47,7 @@
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
     --cw-background: #554;
+    --icons-side: right;
 }
 
 @font-face {
@@ -404,14 +405,14 @@ a:link {
     padding-bottom: 3%;
 }
 .container img.right {
-    float: right;
+    float: var(--icons-side);
     margin-left: 0px;
     margin-right:0;
     padding: 0 0;
     margin: 0 0;
 }
 .containericons img.right {
-    float: right;
+    float: var(--icons-side);
     margin-left: 20px;
     margin-right: 0;
 }
@@ -727,7 +728,7 @@ div.gallery img {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
-        float: right;
+        float: var(--icons-side);
         margin-left: 0px;
         margin-right:0;
         padding: 0 0;
@@ -744,7 +745,7 @@ div.gallery img {
         vertical-align: middle;
     }
     .containericons img {
-        float: right;
+        float: var(--icons-side);
         max-width: 200px;
         width: 3%;
         margin: 0px 1%;
@@ -897,7 +898,7 @@ div.gallery img {
         width: 4%;
     }
     .time-right {
-        float: right;
+        float: var(--icons-side);
         color: var(--time-color);
         margin: var(--time-vertical-align) 20px;
     }
@@ -1077,7 +1078,7 @@ div.gallery img {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
-        float: right;
+        float: var(--icons-side);
         margin-left: 0px;
         margin-right:0;
         padding: 0 0;
@@ -1108,7 +1109,7 @@ div.gallery img {
         border-radius: 0%;
     }
     .containericons img {
-        float: right;
+        float: var(--icons-side);
         max-width: 200px;
         width: 7%;
         margin: 1% 3%;
@@ -1248,7 +1249,7 @@ div.gallery img {
         width: 14%;
     }
     .time-right {
-        float: right;
+        float: var(--icons-side);
         color: var(--time-color);
         margin: 25px 20px;
     }
