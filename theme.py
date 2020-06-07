@@ -19,7 +19,7 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'HighVis',
-            'LCD', 'Light', 'Night', 'Purple', 'Zen')
+            'LCD', 'Light', 'Night', 'Purple', 'Starlight', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -207,6 +207,33 @@ def setThemeNight(baseDir: str):
         "*src": fontStr
     }
     setThemeFromDict(baseDir, 'night', themeParams)
+
+
+def setThemeStarlight(baseDir: str):
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, 'starlight')
+    themeParams = {
+        "main-bg-color": "#0f0d10",
+        "text-entry-background": "#0f0d10",
+        "link-bg-color": "#0f0d10",
+        "main-fg-color": "#ffc4bc",
+        "main-bg-color-dm": "#0b0a0a",
+        "border-color": "#ffc4bc",
+        "main-bg-color-reply": "#0f0d10",
+        "main-bg-color-report": "#0f0d10",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
+        "button-background": "#ffc4bc",
+        "button-selected": "#a34046",
+        "calendar-bg-color": "#0f0d10",
+        "lines-color": "#ffc4bc",
+        "day-number": "#ffc4bc",
+        "day-number2": "#555",
+        "event-background": "#111",
+        "*font-family": "'SundownerRegular'",
+        "*src": "url('SundownerRegular.ttf') format('truetype')"
+    }
+    setThemeFromDict(baseDir, 'starlight', themeParams)
 
 
 def setThemeZen(baseDir: str):
