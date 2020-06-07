@@ -220,7 +220,8 @@ def setThemeStarlight(baseDir: str):
         "main-visited-color": "#bd666b",
         "main-fg-color": "#ffc4bc",
         "main-bg-color-dm": "#0b0a0a",
-        "border-color": "#a34046",
+        "border-color": "#69282c;",
+        "border-width": "4px",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
@@ -232,8 +233,8 @@ def setThemeStarlight(baseDir: str):
         "day-number": "#ffc4bc",
         "day-number2": "#555",
         "event-background": "#111",
-        "*font-family": "'SundownerRegular'",
-        "*src": "url('SundownerRegular.ttf') format('truetype')"
+        "*font-family": "'Absortile-Bold'",
+        "*src": "url('fonts/Absortile-Bold.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'starlight', themeParams)
 
