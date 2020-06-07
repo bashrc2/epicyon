@@ -233,8 +233,8 @@ def setThemeStarlight(baseDir: str):
         "day-number": "#ffc4bc",
         "day-number2": "#555",
         "event-background": "#111",
-        "*font-family": "'Absortile-Bold'",
-        "*src": "url('fonts/Absortile-Bold.ttf') format('truetype')"
+        "*font-family": "'SubZER0'",
+        "*src": "url('fonts/SubZER0.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'starlight', themeParams)
 
