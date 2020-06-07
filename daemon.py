@@ -2525,7 +2525,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain,
                                            likeUrl)
             if likedPostFilename:
-                print('Updating likes for ' + likedPostFilename)
+                if self.server.debug:
+                    print('Updating likes for ' + likedPostFilename)
                 updateLikesCollection(self.server.recentPostsCache,
                                       self.server.baseDir,
                                       likedPostFilename, likeUrl,
@@ -2623,7 +2624,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain,
                                            likeUrl)
             if likedPostFilename:
-                print('Removing likes for ' + likedPostFilename)
+                if self.server.debug:
+                    print('Removing likes for ' + likedPostFilename)
                 undoLikesCollectionEntry(self.server.recentPostsCache,
                                          self.server.baseDir,
                                          likedPostFilename, likeUrl,
