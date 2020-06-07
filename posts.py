@@ -684,10 +684,10 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
     removeFromCC = []
     for ccRecipient in toCC:
         for sendToActor in toRecipients:
-            if ccRecipient in sendToActor:
-                if ccRecipient not in removeFromCC:
-                    removeFromCC.append(ccRecipient)
-                    break
+            if ccRecipient in sendToActor and \
+               ccRecipient not in removeFromCC:
+                removeFromCC.append(ccRecipient)
+                break
     for ccRemoval in removeFromCC:
         toCC.remove(ccRemoval)
 
