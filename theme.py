@@ -216,6 +216,8 @@ def setThemeStarlight(baseDir: str):
         "main-bg-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
+        "main-link-color": "#a34046",
+        "main-visited-color": "#bd666b",
         "main-fg-color": "#ffc4bc",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#a34046",
