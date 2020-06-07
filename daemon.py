@@ -2627,7 +2627,7 @@ class PubServer(BaseHTTPRequestHandler):
                 undoLikesCollectionEntry(self.server.recentPostsCache,
                                          self.server.baseDir,
                                          likedPostFilename, likeUrl,
-                                         likeActor, self.server.domain,
+                                         undoActor, self.server.domain,
                                          self.server.debug)
             # send out the undo like to followers
             self._postToOutbox(undoLikeJson, self.server.projectVersion)
