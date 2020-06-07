@@ -2523,7 +2523,7 @@ class PubServer(BaseHTTPRequestHandler):
             likedPostFilename = locatePost(self.server.baseDir,
                                            self.postToNickname,
                                            self.server.domain,
-                                           actorLiked)
+                                           likeUrl)
             if likedPostFilename:
                 print('Updating likes for ' + likedPostFilename)
                 updateLikesCollection(self.server.recentPostsCache,
@@ -2621,7 +2621,7 @@ class PubServer(BaseHTTPRequestHandler):
             likedPostFilename = locatePost(self.server.baseDir,
                                            self.postToNickname,
                                            self.server.domain,
-                                           actorLiked)
+                                           likeUrl)
             if likedPostFilename:
                 print('Removing likes for ' + likedPostFilename)
                 undoLikesCollectionEntry(self.server.recentPostsCache,
