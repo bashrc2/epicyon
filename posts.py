@@ -678,6 +678,18 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
         }
     ]
 
+    # make sure that CC doesn't also contain a To address
+    # eg. To: [ "https://mydomain/users/foo/followers" ]
+    #     CC: [ "X", "Y", "https://mydomain/users/foo", "Z" ]
+    removeFromCC = []
+    for ccRecipient in toCC:
+        for sendToActor in toRecipients:
+            if ccRecipient in sendToActor:
+                if ccRecipient not in removeFromCC:
+                    removeFromCC.append(ccRecipient)
+    for ccRemoval in removeFromCC:
+        toCC.remove(ccRemoval)
+
     if not clientToServer:
         actorUrl = httpPrefix + '://' + domain + '/users/' + nickname
 
