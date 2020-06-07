@@ -226,7 +226,7 @@ def setThemeStarlight(baseDir: str):
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
-        "button-background": "#bd666b",
+        "button-background": "#69282c",
         "button-selected": "#a34046",
         "calendar-bg-color": "#0f0d10",
         "lines-color": "#ffc4bc",
