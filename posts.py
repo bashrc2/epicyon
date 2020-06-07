@@ -687,6 +687,7 @@ def createPostBase(baseDir: str, nickname: str, domain: str, port: int,
             if ccRecipient in sendToActor:
                 if ccRecipient not in removeFromCC:
                     removeFromCC.append(ccRecipient)
+                    break
     for ccRemoval in removeFromCC:
         toCC.remove(ccRemoval)
 
