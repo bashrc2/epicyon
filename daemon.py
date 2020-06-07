@@ -2525,11 +2525,15 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain,
                                            actorLiked)
             if likedPostFilename:
+                print('Updating likes for ' + likedPostFilename)
                 updateLikesCollection(self.server.recentPostsCache,
                                       self.server.baseDir,
                                       likedPostFilename, likeUrl,
                                       likeActor, self.server.domain,
                                       self.server.debug)
+            else:
+                print('WARN: unable to locate file for liked post ' +
+                      likeUrl)
             # send out the like to followers
             self._postToOutbox(likeJson, self.server.projectVersion)
             self.server.GETbusy = False
@@ -2619,6 +2623,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.domain,
                                            actorLiked)
             if likedPostFilename:
+                print('Removing likes for ' + likedPostFilename)
                 undoLikesCollectionEntry(self.server.recentPostsCache,
                                          self.server.baseDir,
                                          likedPostFilename, likeUrl,

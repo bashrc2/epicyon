@@ -892,7 +892,7 @@ def updateLikesCollection(recentPostsCache: {},
             objectUrl = objectUrl + '/likes'
         if not postJsonObject['object'].get('likes'):
             if debug:
-                print('DEBUG: Adding initial likes to '+objectUrl)
+                print('DEBUG: Adding initial like to ' + objectUrl)
             likesJson = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 'id': objectUrl,
