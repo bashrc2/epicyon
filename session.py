@@ -15,8 +15,13 @@ baseDirectory = None
 
 
 def createSession(onionRoute: bool):
-    session = requests.session()
-    if onionRoute:
+    session = None
+    try:
+        session = requests.session()
+    except BaseException:
+        print('ERROR: session request failed')
+        return None
+    if session and onionRoute:
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:9050'
         session.proxies['https'] = 'socks5h://localhost:9050'

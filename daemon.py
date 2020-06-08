@@ -399,6 +399,9 @@ class PubServer(BaseHTTPRequestHandler):
             if self.server.debug:
                 print('DEBUG: creating new session during authenticated fetch')
             self.server.session = createSession(self.server.useTor)
+            if not self.server.session:
+                print('ERROR: GET failed to create session 1')
+                return False
         # obtain the public key
         pubKey = \
             getPersonPubKey(self.server.baseDir, self.server.session, keyId,
@@ -1175,6 +1178,10 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.session:
             print('Starting new session')
             self.server.session = createSession(self.server.useTor)
+            if not self.server.session:
+                print('ERROR: GET failed to create session 2')
+                self._404()
+                return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 6)
 
@@ -1271,6 +1278,11 @@ class PubServer(BaseHTTPRequestHandler):
                     if not self.server.session:
                         self.server.session = \
                             createSession(self.server.useTor)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session 3')
+                            self._404()
+                            return
+
                     msg = \
                         htmlBlogPageRSS2(authorized,
                                          self.server.session,
@@ -1303,6 +1315,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if not self.server.session:
                         self.server.session = \
                             createSession(self.server.useTor)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session 4')
+                            self._404()
+                            return
                     msg = \
                         htmlBlogPageRSS3(authorized,
                                          self.server.session,
@@ -1331,6 +1347,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     self.server.session = \
                         createSession(self.server.useTor)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session 5')
+                        self._404()
+                        return
                 msg = htmlBlogView(authorized,
                                    self.server.session,
                                    self.server.baseDir,
@@ -1373,6 +1393,10 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     self.server.session = \
                         createSession(self.server.useTor)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session 6')
+                        self._404()
+                        return
                 msg = htmlBlogPage(authorized,
                                    self.server.session,
                                    self.server.baseDir,
@@ -2257,6 +2281,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if not self.server.session:
                 self.server.session = createSession(self.server.useTor)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session 7')
+                    self._404()
+                    return
             self.server.actorRepeat = self.path.split('?actor=')[1]
             announceToStr = \
                 self.server.httpPrefix + '://' + \
@@ -2347,6 +2375,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if not self.server.session:
                 self.server.session = createSession(self.server.useTor)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session 8')
+                    self._404()
+                    return
             undoAnnounceActor = \
                 self.server.httpPrefix + '://' + self.server.domainFull + \
                 '/users/' + self.postToNickname
@@ -2392,6 +2424,10 @@ class PubServer(BaseHTTPRequestHandler):
             if '@' in followingHandle:
                 if not self.server.session:
                     self.server.session = createSession(self.server.useTor)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session 9')
+                        self._404()
+                        return
                 manualApproveFollowRequest(self.server.session,
                                            self.server.baseDir,
                                            self.server.httpPrefix,
@@ -2511,6 +2547,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if not self.server.session:
                 self.server.session = createSession(self.server.useTor)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session 10')
+                    self._404()
+                    return
             likeActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
@@ -2605,6 +2645,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if not self.server.session:
                 self.server.session = createSession(self.server.useTor)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session 11')
+                    self._404()
+                    return
             undoActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
@@ -2701,6 +2745,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if not self.server.session:
                 self.server.session = createSession(self.server.useTor)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session 12')
+                    self._404()
+                    return
             bookmarkActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
@@ -2783,6 +2831,10 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if not self.server.session:
                 self.server.session = createSession(self.server.useTor)
+                if not self.server.session:
+                    print('ERROR: GET failed to create session 13')
+                    self._404()
+                    return
             undoActor = \
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + '/users/' + self.postToNickname
@@ -2875,6 +2927,10 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 if not self.server.session:
                     self.server.session = createSession(self.server.useTor)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session 14')
+                        self._404()
+                        return
 
                 deleteStr = \
                     htmlDeletePost(self.server.recentPostsCache,
@@ -3304,6 +3360,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.useTor
                                             self.server.session = \
                                                 createSession(useTor)
+                                            if not self.server.session:
+                                                print('ERROR: GET failed to ' +
+                                                      'create session 15')
+                                                self._404()
+                                                return
                                         recentPostsCache = \
                                             self.server.recentPostsCache
                                         maxRecentPosts = \
@@ -3398,6 +3459,11 @@ class PubServer(BaseHTTPRequestHandler):
                                             useTor = self.server.useTor
                                             self.server.session = \
                                                 createSession(useTor)
+                                            if not self.server.session:
+                                                print('ERROR: GET failed to ' +
+                                                      'create session 16')
+                                                self._404()
+                                                return
                                         recentPostsCache = \
                                             self.server.recentPostsCache
                                         maxRecentPosts = \
@@ -4472,6 +4538,10 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session = \
                             createSession(self.server.useTor)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session 17')
+                            self._404()
+                            return
                     msg = \
                         htmlProfile(self.server.defaultTimeline,
                                     self.server.recentPostsCache,
@@ -4546,6 +4616,10 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session = \
                             createSession(self.server.useTor)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session 18')
+                            self._404()
+                            return
 
                     msg = \
                         htmlProfile(self.server.defaultTimeline,
@@ -4620,6 +4694,10 @@ class PubServer(BaseHTTPRequestHandler):
                             print('DEBUG: creating new session')
                         self.server.session = \
                             createSession(self.server.useTor)
+                        if not self.server.session:
+                            print('ERROR: GET failed to create session 19')
+                            self._404()
+                            return
                     msg = \
                         htmlProfile(self.server.defaultTimeline,
                                     self.server.recentPostsCache,
@@ -4669,6 +4747,10 @@ class PubServer(BaseHTTPRequestHandler):
                         print('DEBUG: creating new session')
                     self.server.session = \
                         createSession(self.server.useTor)
+                    if not self.server.session:
+                        print('ERROR: GET failed to create session 20')
+                        self._404()
+                        return
                 msg = \
                     htmlProfile(self.server.defaultTimeline,
                                 self.server.recentPostsCache,
@@ -5366,6 +5448,10 @@ class PubServer(BaseHTTPRequestHandler):
             print('Starting new session from POST')
             self.server.session = \
                 createSession(self.server.useTor)
+            if not self.server.session:
+                print('ERROR: POST failed to create session 1')
+                self._404()
+                return
 
         if self.server.debug:
             print('DEBUG: POST to ' + self.server.baseDir +
@@ -6517,6 +6603,10 @@ class PubServer(BaseHTTPRequestHandler):
                     if not self.server.session:
                         self.server.session = \
                             createSession(self.server.useTor)
+                        if not self.server.session:
+                            print('ERROR: POST failed to create session 2')
+                            self._404()
+                            return
                     profilePathStr = self.path.replace('/searchhandle', '')
                     profileStr = \
                         htmlProfileAfterSearch(self.server.recentPostsCache,
