@@ -186,6 +186,23 @@ def setThemeNight(baseDir: str):
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
     themeParams = {
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "cw-glow-radius1": "30px",
+        "cw-glow-radius2": "40px",
+        "cw-glow-radius3": "50px",
+        "cw-glow-radius4": "60px",
+        "cw-glow-radius5": "70px",
+        "cw-glow-color1": "blue",
+        "cw-glow-color2": "blue",
+        "cw-glow-color3": "blue",
+        "cw-glow-color4": "blue",
+        "cw-glow-color5": "blue",
+        "cw-background": "black",
         "main-bg-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
@@ -361,6 +378,12 @@ def setThemePurple(baseDir: str):
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
     themeParams = {
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
         "main-bg-color": "#1f152d",
         "link-bg-color": "#1f152d",
         "main-bg-color-reply": "#1a142d",
