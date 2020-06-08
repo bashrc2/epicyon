@@ -2348,6 +2348,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         if not session or currTime - sessionLastUpdate > 1200:
             print('Creating inbox session')
             session = createSession(useTor)
+            if not session:
+                continue
             sessionLastUpdate = currTime
 
         # oldest item first
