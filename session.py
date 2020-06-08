@@ -51,10 +51,9 @@ def getJson(session, url: str, headers: {}, params: {},
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
     except Exception as e:
-        print('ERROR: getJson failed')
-        print('url: ' + str(url))
-        print('headers: ' + str(sessionHeaders))
-        print('params: ' + str(sessionParams))
+        print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
+              'headers: ' + str(sessionHeaders) + '\n' +
+              'params: ' + str(sessionParams))
         print(e)
     return None
 
@@ -71,10 +70,15 @@ def postJson(session, postJsonObject: {}, federationList: [],
             print('postJson: ' + inboxUrl + ' not permitted')
             return None
 
-    postResult = \
-        session.post(url=inboxUrl,
-                     data=json.dumps(postJsonObject),
-                     headers=headers)
+    try:
+        postResult = \
+            session.post(url=inboxUrl,
+                         data=json.dumps(postJsonObject),
+                         headers=headers)
+    except BaseException:
+        print('ERROR: postJson failed ' + inboxUrl + ' ' +
+              json.dumps(postJsonObject) + ' ' + str(headers))
+        return None
     if postResult:
         return postResult.text
     return None
@@ -100,8 +104,13 @@ def postJsonString(session, postJsonStr: str,
             print('postJson: ' + inboxUrl + ' not permitted by capabilities')
             return None, None
 
-    postResult = \
-        session.post(url=inboxUrl, data=postJsonStr, headers=headers)
+    try:
+        postResult = \
+            session.post(url=inboxUrl, data=postJsonStr, headers=headers)
+    except BaseException:
+        print('ERROR: postJsonString failed ' + inboxUrl + ' ' +
+              postJsonStr + ' ' + str(headers))
+        return None, None
     if postResult.status_code < 200 or postResult.status_code > 202:
         if postResult.status_code >= 400 and \
            postResult.status_code <= 405 and \
@@ -148,8 +157,13 @@ def postImage(session, attachImageFilename: str, federationList: [],
 
     with open(attachImageFilename, 'rb') as avFile:
         mediaBinary = avFile.read()
-        postResult = session.post(url=inboxUrl, data=mediaBinary,
-                                  headers=headers)
+        try:
+            postResult = session.post(url=inboxUrl, data=mediaBinary,
+                                      headers=headers)
+        except BaseException:
+            print('ERROR: postImage failed ' + inboxUrl + ' ' +
+                  str(headers))
+            return None
         if postResult:
             return postResult.text
     return None
