@@ -1,5 +1,5 @@
 #!/bin/bash
-journalctl -u epicyon | grep 'File "' > .errors.txt
+journalctl -u epicyon | grep 'File "\|ERROR:' > .errors.txt
 if [ ! -f .errors.txt ]; then
     echo 'No errors'
 else

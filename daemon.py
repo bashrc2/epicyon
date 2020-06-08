@@ -219,6 +219,11 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def handle_error(self, request, client_address):
+        print('ERROR: http server error: ' + str(request) + ', ' +
+              str(client_address))
+        pass
+
     def _isMinimal(self, nickname: str) -> bool:
         """Returns true if minimal buttons should be shown
         for the given account
