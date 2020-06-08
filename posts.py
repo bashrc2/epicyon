@@ -2831,6 +2831,8 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
     """ This is really just for test purposes
     """
     session = createSession(useTor)
+    if not session:
+        return
     personCache = {}
     cachedWebfingers = {}
     federationList = []

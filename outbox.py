@@ -214,8 +214,10 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     if not server.session:
         if debug:
             print('DEBUG: creating new session for c2s')
-        server.session = \
-            createSession(useTor)
+        server.session = createSession(useTor)
+        if not server.session:
+            print('ERROR: Failed to create session for postMessageToOutbox')
+            return False
     if debug:
         print('DEBUG: sending c2s post to followers')
     # remove inactive threads
