@@ -213,6 +213,12 @@ def setThemeStarlight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, 'starlight')
     themeParams = {
+        "font-size-button-mobile": "36px;",
+        "font-size": "32px;",
+        "font-size2": "26px;",
+        "font-size3": "40px;",
+        "font-size4": "24px;",
+        "font-size5": "22px;",
         "main-bg-color": "#0f0d10",
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
@@ -221,7 +227,7 @@ def setThemeStarlight(baseDir: str):
         "main-fg-color": "#ffc4bc",
         "main-bg-color-dm": "#0b0a0a",
         "border-color": "#69282c;",
-        "border-width": "4px",
+        "border-width": "3px",
         "main-bg-color-reply": "#0f0d10",
         "main-bg-color-report": "#0f0d10",
         "hashtag-vertical-spacing3": "100px",
@@ -233,6 +239,18 @@ def setThemeStarlight(baseDir: str):
         "day-number": "#ffc4bc",
         "day-number2": "#555",
         "event-background": "#111",
+        "cw-glow-radius1": "30px;",
+        "cw-glow-radius2": "40px;",
+        "cw-glow-radius3": "50px;",
+        "cw-glow-radius4": "60px;",
+        "cw-glow-radius5": "70px;",
+        "cw-glow-color1": "red;",
+        "cw-glow-color2": "red;",
+        "cw-glow-color3": "red;",
+        "cw-glow-color4": "red;",
+        "cw-glow-color5": "red;",
+        "cw-background": "black",
+        "timeline-border-radius": "20px;",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.ttf') format('truetype')"
     }
