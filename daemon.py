@@ -2284,6 +2284,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     print('ERROR: GET failed to create session 7')
                     self._404()
+                    self.server.GETbusy = False
                     return
             self.server.actorRepeat = self.path.split('?actor=')[1]
             announceToStr = \
@@ -2378,6 +2379,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     print('ERROR: GET failed to create session 8')
                     self._404()
+                    self.server.GETbusy = False
                     return
             undoAnnounceActor = \
                 self.server.httpPrefix + '://' + self.server.domainFull + \
@@ -2427,6 +2429,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not self.server.session:
                         print('ERROR: GET failed to create session 9')
                         self._404()
+                        self.server.GETbusy = False
                         return
                 manualApproveFollowRequest(self.server.session,
                                            self.server.baseDir,
@@ -2550,6 +2553,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     print('ERROR: GET failed to create session 10')
                     self._404()
+                    self.server.GETbusy = False
                     return
             likeActor = \
                 self.server.httpPrefix + '://' + \
@@ -2648,6 +2652,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     print('ERROR: GET failed to create session 11')
                     self._404()
+                    self.server.GETbusy = False
                     return
             undoActor = \
                 self.server.httpPrefix + '://' + \
@@ -2748,6 +2753,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     print('ERROR: GET failed to create session 12')
                     self._404()
+                    self.server.GETbusy = False
                     return
             bookmarkActor = \
                 self.server.httpPrefix + '://' + \
@@ -2834,6 +2840,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if not self.server.session:
                     print('ERROR: GET failed to create session 13')
                     self._404()
+                    self.server.GETbusy = False
                     return
             undoActor = \
                 self.server.httpPrefix + '://' + \
@@ -2930,6 +2937,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not self.server.session:
                         print('ERROR: GET failed to create session 14')
                         self._404()
+                        self.server.GETbusy = False
                         return
 
                 deleteStr = \
@@ -3364,6 +3372,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 print('ERROR: GET failed to ' +
                                                       'create session 15')
                                                 self._404()
+                                                self.server.GETbusy = False
                                                 return
                                         recentPostsCache = \
                                             self.server.recentPostsCache
@@ -3463,6 +3472,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                 print('ERROR: GET failed to ' +
                                                       'create session 16')
                                                 self._404()
+                                                self.server.GETbusy = False
                                                 return
                                         recentPostsCache = \
                                             self.server.recentPostsCache
@@ -4541,6 +4551,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if not self.server.session:
                             print('ERROR: GET failed to create session 17')
                             self._404()
+                            self.server.GETbusy = False
                             return
                     msg = \
                         htmlProfile(self.server.defaultTimeline,
@@ -4619,6 +4630,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if not self.server.session:
                             print('ERROR: GET failed to create session 18')
                             self._404()
+                            self.server.GETbusy = False
                             return
 
                     msg = \
@@ -4697,6 +4709,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if not self.server.session:
                             print('ERROR: GET failed to create session 19')
                             self._404()
+                            self.server.GETbusy = False
                             return
                     msg = \
                         htmlProfile(self.server.defaultTimeline,
@@ -4750,6 +4763,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if not self.server.session:
                         print('ERROR: GET failed to create session 20')
                         self._404()
+                        self.server.GETbusy = False
                         return
                 msg = \
                     htmlProfile(self.server.defaultTimeline,
@@ -5704,8 +5718,13 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.POSTbusy = False
                     return
 
-                # read the bytes of the http form POST
-                postBytes = self.rfile.read(length)
+                try:
+                    # read the bytes of the http form POST
+                    postBytes = self.rfile.read(length)
+                except BaseException:
+                    print('ERROR: failed to read bytes for POST')
+                    self.server.POSTbusy = False
+                    return
 
                 # extract each image type
                 actorChanged = True
@@ -6606,6 +6625,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if not self.server.session:
                             print('ERROR: POST failed to create session 2')
                             self._404()
+                            self.server.POSTbusy = False
                             return
                     profilePathStr = self.path.replace('/searchhandle', '')
                     profileStr = \
