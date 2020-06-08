@@ -114,7 +114,7 @@ And paste the following:
             proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forward-Proto http;
             proxy_set_header X-Nginx-Proxy true;
-            expires 7;
+            expires 7d;
             proxy_set_header Pragma public;
             proxy_set_header Cache-Control "public";
             proxy_temp_file_write_size 64k;
