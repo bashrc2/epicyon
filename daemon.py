@@ -5436,7 +5436,11 @@ class PubServer(BaseHTTPRequestHandler):
                 if ';' in boundary:
                     boundary = boundary.split(';')[0]
 
-                postBytes = self.rfile.read(length)
+                try:
+                    postBytes = self.rfile.read(length)
+                except BaseException:
+                    print('ERROR: POST postBytes rfile.read failed')
+                    return None
 
                 # second length check from the bytes received
                 # since Content-Length could be untruthful
@@ -5545,7 +5549,16 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            loginParams = self.rfile.read(length).decode('utf-8')
+
+            try:
+                loginParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
+
             loginNickname, loginPassword, register = \
                 htmlGetLoginCredentials(loginParams, self.server.lastLoginTime)
             if loginNickname:
@@ -5723,6 +5736,8 @@ class PubServer(BaseHTTPRequestHandler):
                     postBytes = self.rfile.read(length)
                 except BaseException:
                     print('ERROR: failed to read bytes for POST')
+                    self.send_response(400)
+                    self.end_headers()
                     self.server.POSTbusy = False
                     return
 
@@ -6308,7 +6323,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
             length = int(self.headers['Content-length'])
-            moderationParams = self.rfile.read(length).decode('utf-8')
+            try:
+                moderationParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST moderationParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&' in moderationParams:
                 moderationText = None
                 moderationButton = None
@@ -6471,7 +6493,14 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             # get the parameters
             length = int(self.headers['Content-length'])
-            questionParams = self.rfile.read(length).decode('utf-8')
+            try:
+                questionParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST questionParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             questionParams = questionParams.replace('+', ' ')
             questionParams = questionParams.replace('%3F', '')
             questionParams = \
@@ -6522,7 +6551,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
             length = int(self.headers['Content-length'])
-            searchParams = self.rfile.read(length).decode('utf-8')
+            try:
+                searchParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST searchParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if 'submitBack=' in searchParams:
                 # go back on search screen
                 if callingDomain.endswith('.onion') and \
@@ -6719,7 +6755,15 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
             length = int(self.headers['Content-length'])
-            removeShareConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                removeShareConfirmParams = \
+                    self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST removeShareConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&submitYes=' in removeShareConfirmParams:
                 removeShareConfirmParams = \
                     removeShareConfirmParams.replace('+', ' ').strip()
@@ -6759,7 +6803,15 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.httpPrefix + '://' + \
                 self.server.domainFull + usersPath
             length = int(self.headers['Content-length'])
-            removePostConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                removePostConfirmParams = \
+                    self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST removePostConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&submitYes=' in removePostConfirmParams:
                 removePostConfirmParams = \
                     urllib.parse.unquote(removePostConfirmParams)
@@ -6833,7 +6885,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull + usersPath
             followerNickname = getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
-            followConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                followConfirmParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST followConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&submitView=' in followConfirmParams:
                 followingActor = \
                     urllib.parse.unquote(followConfirmParams)
@@ -6897,7 +6956,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull + usersPath
             followerNickname = getNicknameFromActor(originPathStr)
             length = int(self.headers['Content-length'])
-            followConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                followConfirmParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST followConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&submitYes=' in followConfirmParams:
                 followingActor = \
                     urllib.parse.unquote(followConfirmParams)
@@ -6973,7 +7039,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             length = int(self.headers['Content-length'])
-            blockConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                blockConfirmParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST blockConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&submitYes=' in blockConfirmParams:
                 blockingActor = \
                     urllib.parse.unquote(blockConfirmParams)
@@ -7052,7 +7125,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             length = int(self.headers['Content-length'])
-            blockConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                blockConfirmParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST blockConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             if '&submitYes=' in blockConfirmParams:
                 blockingActor = \
                     urllib.parse.unquote(blockConfirmParams)
@@ -7133,7 +7213,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             length = int(self.headers['Content-length'])
-            optionsConfirmParams = self.rfile.read(length).decode('utf-8')
+            try:
+                optionsConfirmParams = self.rfile.read(length).decode('utf-8')
+            except BaseException:
+                print('ERROR: POST optionsConfirmParams rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             optionsConfirmParams = \
                 urllib.parse.unquote(optionsConfirmParams)
             # page number to return to
@@ -7456,7 +7543,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 self.server.POSTbusy = False
                 return
-            mediaBytes = self.rfile.read(length)
+            try:
+                mediaBytes = self.rfile.read(length)
+            except BaseException:
+                print('ERROR: POST mediaBytes rfile.read failed')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             mediaFilenameBase = accountsDir + '/upload'
             mediaFilename = mediaFilenameBase + '.png'
             if self.headers['Content-type'].endswith('jpeg'):
@@ -7482,7 +7576,14 @@ class PubServer(BaseHTTPRequestHandler):
                 print(str(self.headers))
                 length = int(self.headers['Content-length'])
                 if length < self.server.maxPostLength:
-                    unknownPost = self.rfile.read(length).decode('utf-8')
+                    try:
+                        unknownPost = self.rfile.read(length).decode('utf-8')
+                    except BaseException:
+                        print('ERROR: POST unknownPost rfile.read failed')
+                        self.send_response(400)
+                        self.end_headers()
+                        self.server.POSTbusy = False
+                        return
                     print(str(unknownPost))
             self._400()
             self.server.POSTbusy = False
@@ -7509,7 +7610,14 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
 
-        messageBytes = self.rfile.read(length)
+        try:
+            messageBytes = self.rfile.read(length)
+        except BaseException:
+            print('ERROR: POST messageBytes rfile.read failed')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
 
         # check content length after reading bytes
         if self.path == '/sharedInbox' or self.path == '/inbox':
