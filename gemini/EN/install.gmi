@@ -114,9 +114,8 @@ And paste the following:
             proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forward-Proto http;
             proxy_set_header X-Nginx-Proxy true;
-            expires 7d;
-            proxy_set_header Pragma public;
-            proxy_set_header Cache-Control "public";
+     	    expires epoch;
+            proxy_no_cache 1;
             proxy_temp_file_write_size 64k;
             proxy_connect_timeout 10080s;
             proxy_send_timeout 10080;
@@ -129,6 +128,10 @@ And paste the following:
             proxy_buffering on;
 	    proxy_cache my_cache;
 	    proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
+	    location ~ ^/(icons|images|media|emoji)/(.*)/(.*).png {
+	    	expires 7d;
+                proxy_pass http://localhost:7156;
+            }
             location ~ ^/icons/(.*)/(like|repeat|calendar)(.*).png {
                 expires epoch;
                 proxy_no_cache 1;
