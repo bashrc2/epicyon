@@ -31,6 +31,10 @@ def createSession(proxyType: str):
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:4447'
         session.proxies['https'] = 'socks5h://localhost:4447'
+    elif proxyType == 'gnunet':
+        session.proxies = {}
+        session.proxies['http'] = 'socks5h://localhost:7777'
+        session.proxies['https'] = 'socks5h://localhost:7777'
     return session
 
 
@@ -59,7 +63,7 @@ def getJson(session, url: str, headers: {}, params: {},
     except Exception as e:
         print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
-              'params: ' + str(sessionParams))
+              'params: ' + str(sessionParams) + '\n')
         print(e)
     return None
 

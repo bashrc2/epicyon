@@ -1364,6 +1364,7 @@ def receiveAnnounce(recentPostsCache: {},
         messageJson['object'].replace('https://', '')
     objectDomain = objectDomain.replace('http://', '')
     objectDomain = objectDomain.replace('i2p://', '')
+    objectDomain = objectDomain.replace('gnunet://', '')
     objectDomain = objectDomain.replace('dat://', '')
     objectDomain = objectDomain.replace('hyper://', '')
     if '/' in objectDomain:

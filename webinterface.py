@@ -102,6 +102,7 @@ def getBlogAddress(actorJson: {}) -> str:
         propertyValue['value'] = propertyValue['value'].strip()
         if not (propertyValue['value'].startswith('https://') or
                 propertyValue['value'].startswith('http://') or
+                propertyValue['value'].startswith('gnunet://') or
                 propertyValue['value'].startswith('dat://') or
                 propertyValue['value'].startswith('hyper://') or
                 propertyValue['value'].startswith('i2p://')):
@@ -138,6 +139,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
 
     if not (blogAddress.startswith('https://') or
             blogAddress.startswith('http://') or
+            blogAddress.startswith('gnunet://') or
             blogAddress.startswith('dat://') or
             blogAddress.startswith('hyper://') or
             blogAddress.startswith('i2p://')):
@@ -2800,6 +2802,7 @@ def addEmbeddedAudio(translate: {}, content: str) -> str:
 
         if not (w.startswith('http') or w.startswith('dat:') or
                 w.startswith('hyper:') or w.startswith('i2p:') or
+                w.startswith('gnunet:') or
                 '/' in w):
             continue
         url = w
@@ -2846,6 +2849,7 @@ def addEmbeddedVideo(translate: {}, content: str,
             continue
         if not (w.startswith('http') or w.startswith('dat:') or
                 w.startswith('hyper:') or w.startswith('i2p:') or
+                w.startswith('gnunet:') or
                 '/' in w):
             continue
         url = w
@@ -3992,6 +3996,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                         postDomain = postDomain.replace('https://', '')
                         postDomain = postDomain.replace('http://', '')
                         postDomain = postDomain.replace('hyper://', '')
+                        postDomain = postDomain.replace('gnunet://', '')
                         postDomain = postDomain.replace('dat://', '')
                         postDomain = postDomain.replace('i2p://', '')
                         if '/' in postDomain:

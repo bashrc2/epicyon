@@ -232,22 +232,26 @@ def getDomainFromActor(actor: str) -> (str, int):
         domain = actor.split('/profile/')[0].replace('https://', '')
         domain = domain.replace('http://', '').replace('i2p://', '')
         domain = domain.replace('dat://', '').replace('hyper://', '')
+        domain = domain.replace('gnunet://', '')
     else:
         if '/channel/' in actor:
             domain = actor.split('/channel/')[0].replace('https://', '')
             domain = domain.replace('http://', '').replace('i2p://', '')
             domain = domain.replace('dat://', '').replace('hyper://', '')
+            domain = domain.replace('gnunet://', '')
         else:
             if '/users/' not in actor:
                 domain = actor.replace('https://', '').replace('http://', '')
                 domain = domain.replace('i2p://', '')
                 domain = domain.replace('dat://', '').replace('hyper://', '')
+                domain = domain.replace('gnunet://', '')
                 if '/' in actor:
                     domain = domain.split('/')[0]
             else:
                 domain = actor.split('/users/')[0].replace('https://', '')
                 domain = domain.replace('http://', '').replace('i2p://', '')
                 domain = domain.replace('dat://',  '').replace('hyper://', '')
+                domain = domain.replace('gnunet://', '')
     if ':' in domain:
         portStr = domain.split(':')[1]
         if not portStr.isdigit():

@@ -137,6 +137,7 @@ def addWebLinks(content: str) -> str:
         if w.startswith('https://') or \
            w.startswith('http://') or \
            w.startswith('i2p://') or \
+           w.startswith('gnunet://') or \
            w.startswith('gemini://') or \
            w.startswith('gopher://') or \
            w.startswith('hyper://') or \
@@ -151,6 +152,8 @@ def addWebLinks(content: str) -> str:
                 markup += '<span class="invisible">http://</span>'
             elif w.startswith('i2p://'):
                 markup += '<span class="invisible">i2p://</span>'
+            elif w.startswith('gnunet://'):
+                markup += '<span class="invisible">gnunet://</span>'
             elif w.startswith('dat://'):
                 markup += '<span class="invisible">dat://</span>'
             elif w.startswith('hyper://'):
@@ -161,6 +164,7 @@ def addWebLinks(content: str) -> str:
                 markup += '<span class="invisible">gopher://</span>'
             linkText = w.replace('https://', '').replace('http://', '')
             linkText = linkText.replace('dat://', '').replace('i2p://', '')
+            linkText = linkText.replace('gnunet://', '')
             linkText = linkText.replace('hyper://', '')
             linkText = linkText.replace('gemini://', '')
             linkText = linkText.replace('gopher://', '')
@@ -421,6 +425,8 @@ def removeLongWords(content: str, maxWordLength: int,
             continue
         elif 'i2p:' in wordStr:
             continue
+        elif 'gnunet:' in wordStr:
+            continue
         elif 'dat:' in wordStr:
             continue
         elif 'hyper:' in wordStr:
@@ -552,6 +558,7 @@ def getMentionsFromHtml(htmlText: str,
             continue
         actorStr = mentionStr.split('"')[0]
         if actorStr.startswith('http') or \
+           actorStr.startswith('gnunet') or \
            actorStr.startswith('i2p') or \
            actorStr.startswith('hyper') or \
            actorStr.startswith('dat:'):

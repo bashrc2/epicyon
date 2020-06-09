@@ -29,6 +29,7 @@ def parseHandle(handle: str) -> (str, str):
     handleStr = handle.replace('https://', '').replace('http://', '')
     handleStr = handleStr.replace('dat://', '').replace('hyper://', '')
     handleStr = handleStr.replace('i2p://', '')
+    handleStr = handleStr.replace('gnunet://', '')
     if '/@' in handle:
         domain, nickname = handleStr.split('/@')
     else:

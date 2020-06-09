@@ -172,6 +172,9 @@ parser.add_argument("--instanceOnlySkillsSearch", type=str2bool, nargs='?',
 parser.add_argument("--http", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use http only")
+parser.add_argument("--gnunet", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Use gnunet protocol only")
 parser.add_argument("--dat", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Use dat protocol only")
@@ -391,6 +394,8 @@ if args.posts:
         proxyType = 'tor'
     elif args.i2p or domain.endswith('.i2p'):
         proxyType = 'i2p'
+    elif args.gnunet:
+        proxyType = 'gnunet'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
                            __version__)
@@ -409,6 +414,8 @@ if args.postsraw:
         proxyType = 'tor'
     elif args.i2p or domain.endswith('.i2p'):
         proxyType = 'i2p'
+    elif args.gnunet:
+        proxyType = 'gnunet'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
                            proxyType, args.port, httpPrefix, debug,
                            __version__)
@@ -603,6 +610,8 @@ if args.tor or domain.endswith('.onion'):
     proxyType = 'tor'
 elif args.i2p or domain.endswith('.i2p'):
     proxyType = 'i2p'
+elif args.gnunet:
+    proxyType = 'gnunet'
 
 if args.approve:
     if not args.nickname:
@@ -1012,6 +1021,8 @@ if args.proxyPort:
 ocapAlways = False
 if args.ocap:
     ocapAlways = args.ocap
+if args.gnunet:
+    httpPrefix = 'gnunet'
 if args.dat:
     httpPrefix = 'dat'
 if args.hyper:
@@ -1028,6 +1039,7 @@ if args.actor:
         # format: https://domain/@nick
         args.actor = args.actor.replace('https://', '')
         args.actor = args.actor.replace('http://', '')
+        args.actor = args.actor.replace('gnunet://', '')
         args.actor = args.actor.replace('dat://', '')
         args.actor = args.actor.replace('hyper://', '')
         args.actor = args.actor.replace('i2p://', '')
