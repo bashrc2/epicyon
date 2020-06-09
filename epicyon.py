@@ -375,6 +375,10 @@ if args.testsnetwork:
 httpPrefix = 'https'
 if args.http:
     httpPrefix = 'http'
+if args.i2p:
+    httpPrefix = 'i2p'
+elif args.gnunet:
+    httpPrefix = 'gnunet'
 
 baseDir = args.baseDir
 if baseDir.endswith('/'):
@@ -1076,14 +1080,18 @@ if args.actor:
         domain = args.actor.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
     cachedWebfingers = {}
-    if args.http or \
-       domain.endswith('.onion') or domain.endswith('.i2p'):
+    if args.http or domain.endswith('.onion'):
         httpPrefix = 'http'
         port = 80
-        if domain.endswith('.onion'):
-            proxyType = 'tor'
-        elif domain.endswith('.i2p'):
-            proxyType = 'i2p'
+        proxyType = 'tor'
+    elif domain.endswith('.i2p'):
+        httpPrefix = 'i2p'
+        port = 80
+        proxyType = 'i2p'
+    elif args.gnunet:
+        httpPrefix = 'gnunet'
+        port = 80
+        proxyType = 'gnunet'
     else:
         httpPrefix = 'https'
         port = 443
