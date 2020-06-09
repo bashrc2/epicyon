@@ -1937,7 +1937,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                            postLog: [], cachedWebfingers: {}, personCache: {},
                            queue: [], domain: str,
                            onionDomain: str, i2pDomain: str,
-                           port: int, useTor: bool,
+                           port: int, proxyType: str,
                            federationList: [], ocapAlways: bool, debug: bool,
                            acceptedCaps: [],
                            queueFilename: str, destinationFilename: str,
@@ -2288,7 +2288,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   baseDir: str, httpPrefix: str, sendThreads: [], postLog: [],
                   cachedWebfingers: {}, personCache: {}, queue: [],
                   domain: str,
-                  onionDomain: str, i2pDomain: str, port: int, useTor: bool,
+                  onionDomain: str, i2pDomain: str, port: int, proxyType: str,
                   federationList: [],
                   ocapAlways: bool, maxReplies: int,
                   domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
@@ -2300,7 +2300,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
     """
     currSessionTime = int(time.time())
     sessionLastUpdate = currSessionTime
-    session = createSession(useTor)
+    session = createSession(proxyType)
     inboxHandle = 'inbox@' + domain
     if debug:
         print('DEBUG: Inbox queue running')
@@ -2347,7 +2347,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
         # recreate the session periodically
         if not session or currTime - sessionLastUpdate > 1200:
             print('Creating inbox session')
-            session = createSession(useTor)
+            session = createSession(proxyType)
             if not session:
                 continue
             sessionLastUpdate = currTime
@@ -2705,7 +2705,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                            personCache, queue,
                                            domain,
                                            onionDomain, i2pDomain,
-                                           port, useTor,
+                                           port, proxyType,
                                            federationList, ocapAlways,
                                            debug, acceptedCaps,
                                            queueFilename, destination,
@@ -2728,7 +2728,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                            personCache, queue,
                                            domain,
                                            onionDomain, i2pDomain,
-                                           port, useTor,
+                                           port, proxyType,
                                            federationList, ocapAlways,
                                            debug, acceptedCaps,
                                            queueFilename, destination,

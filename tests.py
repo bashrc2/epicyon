@@ -233,7 +233,7 @@ def createServerAlice(path: str, domain: str, port: int,
     os.chdir(path)
     nickname = 'alice'
     httpPrefix = 'http'
-    useTor = False
+    proxyType = None
     password = 'alicepass'
     noreply = False
     nolike = False
@@ -280,7 +280,7 @@ def createServerAlice(path: str, domain: str, port: int,
               onionDomain, i2pDomain, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
-              useTor, maxReplies,
+              proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads, False)
 
@@ -296,7 +296,7 @@ def createServerBob(path: str, domain: str, port: int,
     os.chdir(path)
     nickname = 'bob'
     httpPrefix = 'http'
-    useTor = False
+    proxyType = None
     clientToServer = False
     password = 'bobpass'
     noreply = False
@@ -343,7 +343,7 @@ def createServerBob(path: str, domain: str, port: int,
               onionDomain, i2pDomain, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
-              useTor, maxReplies,
+              proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
               allowDeletion, True, True, False, sendThreads, False)
 
@@ -358,7 +358,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     os.chdir(path)
     nickname = 'eve'
     httpPrefix = 'http'
-    useTor = False
+    proxyType = None
     password = 'evepass'
     noreply = False
     nolike = False
@@ -383,7 +383,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               onionDomain, i2pDomain, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
-              useTor, maxReplies, allowDeletion, True, True, False,
+              proxyType, maxReplies, allowDeletion, True, True, False,
               sendThreads, False)
 
 
@@ -396,7 +396,7 @@ def testPostMessageBetweenServers():
     testServerBobRunning = False
 
     httpPrefix = 'http'
-    useTor = False
+    proxyType = None
 
     baseDir = os.getcwd()
     if os.path.isdir(baseDir + '/.tests'):
@@ -461,7 +461,7 @@ def testPostMessageBetweenServers():
     print('\n\n*******************************************************')
     print('Alice sends to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(useTor)
+    sessionAlice = createSession(proxyType)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -550,7 +550,7 @@ def testPostMessageBetweenServers():
     followPerson(aliceDir, 'alice', aliceDomain, 'bob',
                  bobDomain + ':' + str(bobPort), federationList, False)
 
-    sessionBob = createSession(useTor)
+    sessionBob = createSession(proxyType)
     bobPostLog = []
     bobPersonCache = {}
     bobCachedWebfingers = {}
@@ -654,7 +654,7 @@ def testFollowBetweenServers():
     testServerBobRunning = False
 
     httpPrefix = 'http'
-    useTor = False
+    proxyType = None
     federationList = []
 
     baseDir = os.getcwd()
@@ -727,7 +727,7 @@ def testFollowBetweenServers():
     print('*********************************************************')
     print('Alice sends a follow request to Bob')
     os.chdir(aliceDir)
-    sessionAlice = createSession(useTor)
+    sessionAlice = createSession(proxyType)
     inReplyTo = None
     inReplyToAtomUri = None
     subject = None
@@ -1205,7 +1205,7 @@ def testClientToServer():
     testServerBobRunning = False
 
     httpPrefix = 'http'
-    useTor = False
+    proxyType = None
     federationList = []
 
     baseDir = os.getcwd()
@@ -1276,7 +1276,7 @@ def testClientToServer():
     print('\n\n*******************************************************')
     print('Alice sends to Bob via c2s')
 
-    sessionAlice = createSession(useTor)
+    sessionAlice = createSession(proxyType)
     followersOnly = False
     attachedImageFilename = baseDir+'/img/logo.png'
     mediaType = getAttachmentMediaType(attachedImageFilename)
@@ -1415,7 +1415,7 @@ def testClientToServer():
         open(bobDir + '/accounts/bob@' + bobDomain + '/following.txt').read()
 
     print('\n\nBob likes the post')
-    sessionBob = createSession(useTor)
+    sessionBob = createSession(proxyType)
     password = 'bobpass'
     outboxPath = bobDir + '/accounts/bob@' + bobDomain + '/outbox'
     inboxPath = aliceDir + '/accounts/alice@' + aliceDomain + '/inbox'

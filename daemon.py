@@ -398,7 +398,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.session:
             if self.server.debug:
                 print('DEBUG: creating new session during authenticated fetch')
-            self.server.session = createSession(self.server.useTor)
+            self.server.session = createSession(self.server.proxyType)
             if not self.server.session:
                 print('ERROR: GET failed to create session 1')
                 return False
@@ -812,7 +812,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.cachedWebfingers,
                                    self.server.personCache,
                                    self.server.allowDeletion,
-                                   self.server.useTor, version,
+                                   self.server.proxyType, version,
                                    self.server.debug)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
@@ -1177,7 +1177,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         if not self.server.session:
             print('Starting new session')
-            self.server.session = createSession(self.server.useTor)
+            self.server.session = createSession(self.server.proxyType)
             if not self.server.session:
                 print('ERROR: GET failed to create session 2')
                 self._404()
@@ -1277,7 +1277,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  '@' + self.server.domain):
                     if not self.server.session:
                         self.server.session = \
-                            createSession(self.server.useTor)
+                            createSession(self.server.proxyType)
                         if not self.server.session:
                             print('ERROR: GET failed to create session 3')
                             self._404()
@@ -1314,7 +1314,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  '@' + self.server.domain):
                     if not self.server.session:
                         self.server.session = \
-                            createSession(self.server.useTor)
+                            createSession(self.server.proxyType)
                         if not self.server.session:
                             print('ERROR: GET failed to create session 4')
                             self._404()
@@ -1346,7 +1346,7 @@ class PubServer(BaseHTTPRequestHandler):
             if '/rss.xml' not in self.path:
                 if not self.server.session:
                     self.server.session = \
-                        createSession(self.server.useTor)
+                        createSession(self.server.proxyType)
                     if not self.server.session:
                         print('ERROR: GET failed to create session 5')
                         self._404()
@@ -1392,7 +1392,7 @@ class PubServer(BaseHTTPRequestHandler):
                             pageNumber = 10
                 if not self.server.session:
                     self.server.session = \
-                        createSession(self.server.useTor)
+                        createSession(self.server.proxyType)
                     if not self.server.session:
                         print('ERROR: GET failed to create session 6')
                         self._404()
@@ -2280,7 +2280,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
-                self.server.session = createSession(self.server.useTor)
+                self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
                     print('ERROR: GET failed to create session 7')
                     self._404()
@@ -2375,7 +2375,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
-                self.server.session = createSession(self.server.useTor)
+                self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
                     print('ERROR: GET failed to create session 8')
                     self._404()
@@ -2425,7 +2425,7 @@ class PubServer(BaseHTTPRequestHandler):
             followingHandle = self.path.split('/followapprove=')[1]
             if '@' in followingHandle:
                 if not self.server.session:
-                    self.server.session = createSession(self.server.useTor)
+                    self.server.session = createSession(self.server.proxyType)
                     if not self.server.session:
                         print('ERROR: GET failed to create session 9')
                         self._404()
@@ -2549,7 +2549,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
-                self.server.session = createSession(self.server.useTor)
+                self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
                     print('ERROR: GET failed to create session 10')
                     self._404()
@@ -2648,7 +2648,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
-                self.server.session = createSession(self.server.useTor)
+                self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
                     print('ERROR: GET failed to create session 11')
                     self._404()
@@ -2749,7 +2749,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
-                self.server.session = createSession(self.server.useTor)
+                self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
                     print('ERROR: GET failed to create session 12')
                     self._404()
@@ -2836,7 +2836,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
-                self.server.session = createSession(self.server.useTor)
+                self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
                     print('ERROR: GET failed to create session 13')
                     self._404()
@@ -2933,7 +2933,7 @@ class PubServer(BaseHTTPRequestHandler):
                                            cookie, callingDomain)
                     return
                 if not self.server.session:
-                    self.server.session = createSession(self.server.useTor)
+                    self.server.session = createSession(self.server.proxyType)
                     if not self.server.session:
                         print('ERROR: GET failed to create session 14')
                         self._404()
@@ -3364,10 +3364,10 @@ class PubServer(BaseHTTPRequestHandler):
                                             if self.server.debug:
                                                 print('DEBUG: ' +
                                                       'creating new session')
-                                            useTor = \
-                                                self.server.useTor
+                                            proxyType = \
+                                                self.server.proxyType
                                             self.server.session = \
-                                                createSession(useTor)
+                                                createSession(proxyType)
                                             if not self.server.session:
                                                 print('ERROR: GET failed to ' +
                                                       'create session 15')
@@ -3465,9 +3465,9 @@ class PubServer(BaseHTTPRequestHandler):
                                             if self.server.debug:
                                                 print('DEBUG: ' +
                                                       'creating new session')
-                                            useTor = self.server.useTor
+                                            proxyType = self.server.proxyType
                                             self.server.session = \
-                                                createSession(useTor)
+                                                createSession(proxyType)
                                             if not self.server.session:
                                                 print('ERROR: GET failed to ' +
                                                       'create session 16')
@@ -4547,7 +4547,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session = \
-                            createSession(self.server.useTor)
+                            createSession(self.server.proxyType)
                         if not self.server.session:
                             print('ERROR: GET failed to create session 17')
                             self._404()
@@ -4626,7 +4626,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session = \
-                            createSession(self.server.useTor)
+                            createSession(self.server.proxyType)
                         if not self.server.session:
                             print('ERROR: GET failed to create session 18')
                             self._404()
@@ -4705,7 +4705,7 @@ class PubServer(BaseHTTPRequestHandler):
                         if self.server.debug:
                             print('DEBUG: creating new session')
                         self.server.session = \
-                            createSession(self.server.useTor)
+                            createSession(self.server.proxyType)
                         if not self.server.session:
                             print('ERROR: GET failed to create session 19')
                             self._404()
@@ -4759,7 +4759,7 @@ class PubServer(BaseHTTPRequestHandler):
                     if self.server.debug:
                         print('DEBUG: creating new session')
                     self.server.session = \
-                        createSession(self.server.useTor)
+                        createSession(self.server.proxyType)
                     if not self.server.session:
                         print('ERROR: GET failed to create session 20')
                         self._404()
@@ -5465,7 +5465,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not self.server.session:
             print('Starting new session from POST')
             self.server.session = \
-                createSession(self.server.useTor)
+                createSession(self.server.proxyType)
             if not self.server.session:
                 print('ERROR: POST failed to create session 1')
                 self._404()
@@ -6657,7 +6657,7 @@ class PubServer(BaseHTTPRequestHandler):
                     nickname = getNicknameFromActor(actorStr)
                     if not self.server.session:
                         self.server.session = \
-                            createSession(self.server.useTor)
+                            createSession(self.server.proxyType)
                         if not self.server.session:
                             print('ERROR: POST failed to create session 2')
                             self._404()
@@ -7816,7 +7816,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
               authenticatedFetch=False,
               noreply=False, nolike=False, nopics=False,
               noannounce=False, cw=False, ocapAlways=False,
-              useTor=False, maxReplies=64,
+              proxyType=None, maxReplies=64,
               domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
               allowDeletion=False, debug=False, unitTest=False,
               instanceOnlySkillsSearch=False, sendThreads=[],
@@ -7922,7 +7922,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.instanceId = instanceId
     httpd.personCache = {}
     httpd.cachedWebfingers = {}
-    httpd.useTor = useTor
+    httpd.proxyType = proxyType
     httpd.session = None
     httpd.sessionLastUpdate = 0
     httpd.lastGET = 0
@@ -8023,7 +8023,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                               baseDir, httpPrefix, httpd.sendThreads,
                               httpd.postLog, httpd.cachedWebfingers,
                               httpd.personCache, httpd.inboxQueue,
-                              domain, onionDomain, i2pDomain, port, useTor,
+                              domain, onionDomain, i2pDomain, port, proxyType,
                               httpd.federationList,
                               httpd.ocapAlways, maxReplies,
                               domainMaxPostsPerDay, accountMaxPostsPerDay,

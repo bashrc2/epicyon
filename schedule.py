@@ -101,7 +101,7 @@ def updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.cachedWebfingers,
                                        httpd.personCache,
                                        httpd.allowDeletion,
-                                       httpd.useTor,
+                                       httpd.proxyType,
                                        httpd.projectVersion,
                                        httpd.debug):
                 indexLines.remove(line)

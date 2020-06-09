@@ -14,17 +14,23 @@ import json
 baseDirectory = None
 
 
-def createSession(onionRoute: bool):
+def createSession(proxyType: str):
     session = None
     try:
         session = requests.session()
     except BaseException:
         print('ERROR: session request failed')
         return None
-    if session and onionRoute:
+    if not session:
+        return None
+    if proxyType == 'tor':
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:9050'
         session.proxies['https'] = 'socks5h://localhost:9050'
+    elif proxyType == 'i2p':
+        session.proxies = {}
+        session.proxies['http'] = 'socks5h://localhost:4447'
+        session.proxies['https'] = 'socks5h://localhost:4447'
     return session
 
 

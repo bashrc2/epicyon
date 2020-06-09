@@ -2825,12 +2825,12 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
 
 
 def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
-                           raw: bool, simple: bool, useTor: bool,
+                           raw: bool, simple: bool, proxyType: str,
                            port: int, httpPrefix: str,
                            debug: bool, projectVersion: str) -> None:
     """ This is really just for test purposes
     """
-    session = createSession(useTor)
+    session = createSession(proxyType)
     if not session:
         return
     personCache = {}

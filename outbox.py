@@ -44,7 +44,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                         federationList: [], sendThreads: [],
                         postLog: [], cachedWebfingers: {},
                         personCache: {}, allowDeletion: bool,
-                        useTor: bool, version: str, debug: bool) -> bool:
+                        proxyType: str, version: str, debug: bool) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -214,7 +214,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     if not server.session:
         if debug:
             print('DEBUG: creating new session for c2s')
-        server.session = createSession(useTor)
+        server.session = createSession(proxyType)
         if not server.session:
             print('ERROR: Failed to create session for postMessageToOutbox')
             return False

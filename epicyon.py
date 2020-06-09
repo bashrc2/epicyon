@@ -386,8 +386,13 @@ if args.posts:
         args.port = 443
     nickname = args.posts.split('@')[0]
     domain = args.posts.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
-                           args.tor, args.port, httpPrefix, debug,
+                           proxyType, args.port, httpPrefix, debug,
                            __version__)
     sys.exit()
 
@@ -399,13 +404,18 @@ if args.postsraw:
         args.port = 443
     nickname = args.postsraw.split('@')[0]
     domain = args.postsraw.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, False,
-                           args.tor, args.port, httpPrefix, debug,
+                           proxyType, args.port, httpPrefix, debug,
                            __version__)
     sys.exit()
 
 if args.json:
-    session = createSession(False)
+    session = createSession(None)
     profileStr = 'https://www.w3.org/ns/activitystreams'
     asHeader = {
         'Accept': 'application/ld+json; profile="' + profileStr + '"'
@@ -588,9 +598,11 @@ else:
     if configFederationList:
         federationList = configFederationList
 
-useTor = args.tor
-if domain.endswith('.onion'):
-    useTor = True
+proxyType = None
+if args.tor or domain.endswith('.onion'):
+    proxyType = 'tor'
+elif args.i2p or domain.endswith('.i2p'):
+    proxyType = 'i2p'
 
 if args.approve:
     if not args.nickname:
@@ -599,7 +611,7 @@ if args.approve:
     if '@' not in args.approve:
         print('syntax: --approve nick@domain')
         sys.exit()
-    session = createSession(useTor)
+    session = createSession(proxyType)
     sendThreads = []
     postLog = []
     cachedWebfingers = {}
@@ -623,7 +635,7 @@ if args.deny:
     if '@' not in args.deny:
         print('syntax: --deny nick@domain')
         sys.exit()
-    session = createSession(useTor)
+    session = createSession(proxyType)
     sendThreads = []
     postLog = []
     cachedWebfingers = {}
@@ -665,7 +677,7 @@ if args.message:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     if not args.sendto:
         print('Specify an account to sent to: --sendto [nickname@domain]')
         sys.exit()
@@ -738,7 +750,7 @@ if args.announce:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending announce/repeat of ' + args.announce)
@@ -786,7 +798,7 @@ if args.itemName:
               'with the --duration option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending shared item: ' + args.itemName)
@@ -818,7 +830,7 @@ if args.undoItemName:
         print('Specify a nickname with the --nickname option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending undo of shared item: ' + args.undoItemName)
@@ -844,7 +856,7 @@ if args.like:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending like of ' + args.like)
@@ -869,7 +881,7 @@ if args.undolike:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending undo like of ' + args.undolike)
@@ -894,7 +906,7 @@ if args.delete:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending delete request of ' + args.delete)
@@ -929,7 +941,7 @@ if args.follow:
         sys.exit()
     followDomain, followPort = getDomainFromActor(args.follow)
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
@@ -967,7 +979,7 @@ if args.unfollow:
         sys.exit()
     followDomain, followPort = getDomainFromActor(args.unfollow)
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     followHttpPrefix = httpPrefix
@@ -1052,14 +1064,18 @@ if args.actor:
         domain = args.actor.split('@')[1]
         domain = domain.replace('\n', '').replace('\r', '')
     cachedWebfingers = {}
-    if args.http or domain.endswith('.onion'):
+    if args.http or \
+       domain.endswith('.onion') or domain.endswith('.i2p'):
         httpPrefix = 'http'
         port = 80
-        useTor = True
+        if domain.endswith('.onion'):
+            proxyType = 'tor'
+        elif domain.endswith('.i2p'):
+            proxyType = 'i2p'
     else:
         httpPrefix = 'https'
         port = 443
-    session = createSession(useTor)
+    session = createSession(proxyType)
     if nickname == 'inbox':
         nickname = domain
 
@@ -1348,7 +1364,7 @@ if args.skill:
         print('Skill level should be a percentage in the range 0-100')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending ' + args.skill + ' skill level ' +
@@ -1375,7 +1391,7 @@ if args.availability:
         print('Specify a password with the --password option')
         sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending availability status of ' + nickname +
@@ -1416,7 +1432,7 @@ if args.block:
             print(args.block + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending block of ' + args.block)
@@ -1452,7 +1468,7 @@ if args.delegate:
         delegatedNickname = args.delegate.split('@')[0]
         args.delegate = blockedActor
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending delegation for ' + args.delegate +
@@ -1487,7 +1503,7 @@ if args.undelegate:
         delegatedNickname = args.undelegate.split('@')[0]
         args.undelegate = blockedActor
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending delegation removal for ' + args.undelegate +
@@ -1526,7 +1542,7 @@ if args.unblock:
             print(args.unblock + ' does not look like an actor url')
             sys.exit()
 
-    session = createSession(useTor)
+    session = createSession(proxyType)
     personCache = {}
     cachedWebfingers = {}
     print('Sending undo block of ' + args.unblock)
@@ -1686,7 +1702,7 @@ runDaemon(args.blogsinstance, args.mediainstance,
           args.maxEmoji, args.authenticatedFetch,
           args.noreply, args.nolike, args.nopics,
           args.noannounce, args.cw, ocapAlways,
-          useTor, args.maxReplies,
+          proxyType, args.maxReplies,
           args.domainMaxPostsPerDay,
           args.accountMaxPostsPerDay,
           args.allowdeletion, debug, False,
