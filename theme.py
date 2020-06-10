@@ -461,6 +461,12 @@ def setThemeHacker(baseDir: str):
 
 def setThemeLight(baseDir: str):
     themeParams = {
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "main-bg-color": "#e6ebf0",
         "main-bg-color-dm": "#e3dbf0",

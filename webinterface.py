@@ -1294,7 +1294,8 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
 
     editProfileForm += '      <br><label class="labels">' + \
         translate['Search banner image'] + '</label>'
-    editProfileForm += '      <input type="file" id="search_banner" name="search_banner"'
+    editProfileForm += '      <input type="file" id="search_banner" '
+    editProfileForm += 'name="search_banner"'
     editProfileForm += '            accept="' + imageFormats + '">'
 
     editProfileForm += '    </div>'
