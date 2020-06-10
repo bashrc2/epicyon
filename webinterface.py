@@ -5869,7 +5869,7 @@ def htmlSearch(translate: {},
     # show a banner above the search box
     searchBannerFilename = \
         baseDir + '/accounts/' + searchNickname + '@' + domain + \
-        '/search-banner.png'
+        '/search_banner.png'
     if not os.path.isfile(searchBannerFilename):
         theme = getConfigParam(baseDir, 'theme').lower()
         if theme == 'default':
@@ -5883,8 +5883,8 @@ def htmlSearch(translate: {},
     if os.path.isfile(searchBannerFilename):
         followStr += \
             '<center>><div class="searchBanner">' \
-            '<img loading="lazy" src="/search_banner' + theme + \
-            '.png" title="" alt=""></div></center>'
+            '<img loading="lazy" src="/search_banner.png" ' \
+            'title="" alt=""></div></center>'
 
     # show the search box
     followStr += '<div class="follow">'
