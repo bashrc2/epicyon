@@ -1726,6 +1726,36 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
+        # search screen banner image
+        if self.path == '/search_banner.png':
+            mediaFilename = \
+                self.server.baseDir + '/accounts/search_banner.png'
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                tries = 0
+                mediaBinary = None
+                while tries < 5:
+                    try:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries += 1
+                if mediaBinary:
+                    self._set_headers_etag(mediaFilename, 'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                    return
+            self._404()
+            return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings, 17)
 
         # follow screen background image
