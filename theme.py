@@ -511,11 +511,15 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/image.png'
         bannerFilename = \
             baseDir + '/img/banner.png'
+        searchBannerFilename = \
+            baseDir + '/img/search_banner.png'
     else:
         profileImageFilename = \
             baseDir + '/img/image_' + themeNameLower + '.png'
         bannerFilename = \
             baseDir + '/img/banner_' + themeNameLower + '.png'
+        searchBannerFilename = \
+            baseDir + '/img/search_banner_' + themeNameLower + '.png'
     if os.path.isfile(profileImageFilename) and \
        os.path.isfile(bannerFilename):
         for subdir, dirs, files in os.walk(baseDir +
@@ -527,11 +531,23 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     continue
                 accountDir = \
                     os.path.join(baseDir + '/accounts', acct)
+
                 try:
                     copyfile(profileImageFilename,
                              accountDir + '/image.png')
+                except BaseException:
+                    pass
+
+                try:
                     copyfile(bannerFilename,
                              accountDir + '/banner.png')
+                except BaseException:
+                    pass
+
+                try:
+                    if os.path.isfile(searchBannerFilename):
+                        copyfile(searchBannerFilename,
+                                 accountDir + '/search_banner.png')
                 except BaseException:
                     pass
 
