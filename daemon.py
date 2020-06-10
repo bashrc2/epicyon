@@ -1727,9 +1727,12 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # search screen banner image
-        if self.path == '/search_banner.png':
+        if '/users/' in self.path and \
+           self.path.endswith('/search_banner.png'):
+            nickname = getNicknameFromActor(self.path)
             mediaFilename = \
-                self.server.baseDir + '/accounts/search_banner.png'
+                self.server.baseDir + '/accounts/' + \
+                nickname + '@' + self.server.domain + '/search_banner.png'
             if os.path.isfile(mediaFilename):
                 if self._etag_exists(mediaFilename):
                     # The file has not changed
