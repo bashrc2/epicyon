@@ -66,6 +66,10 @@ a:link {
     font-weight: bold;
 }
 
+.searchBanner {
+    height: 10%;
+}
+
 .follow {
     background-image: url("follow-background.png");
     height: 100%;

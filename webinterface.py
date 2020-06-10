@@ -5852,6 +5852,7 @@ def htmlSearch(translate: {},
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
+    searchNickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
 
     if os.path.isfile(baseDir + '/img/search-background.png'):
@@ -5865,6 +5866,28 @@ def htmlSearch(translate: {},
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
     followStr = htmlHeader(cssFilename, profileStyle)
+
+    # show a banner above the search box
+    searchBannerFilename = \
+        baseDir + '/accounts/' + searchNickname + '@' + domain + \
+        '/search-banner.png'
+    if not os.path.isfile(searchBannerFilename):
+        theme = getConfigParam(baseDir, 'theme').lower()
+        if theme == 'default':
+            theme = ''
+        else:
+            theme = '_' + theme
+        themeSearchBannerFilename = \
+            baseDir + '/img/search_banner' + theme + '.png'
+        if os.path.isfile(themeSearchBannerFilename):
+            copyfile(themeSearchBannerFilename, searchBannerFilename)
+    if os.path.isfile(searchBannerFilename):
+        followStr += \
+            '<center>><div class="searchBanner">' \
+            '<img loading="lazy" src="/search_banner' + theme + \
+            '.png" title="" alt=""></div></center>'
+
+    # show the search box
     followStr += '<div class="follow">'
     followStr += '  <div class="followAvatar">'
     followStr += '  <center>'
