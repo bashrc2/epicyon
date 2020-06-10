@@ -5883,7 +5883,7 @@ def htmlSearch(translate: {},
     if os.path.isfile(searchBannerFilename):
         followStr += \
             '<center>><div class="searchBanner">' \
-            '<img loading="lazy" src="/search_banner.png" ' \
+            '<img loading="lazy" src="' + actor + '/search_banner.png" ' \
             'title="" alt=""></div></center>'
 
     # show the search box
