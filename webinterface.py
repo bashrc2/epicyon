@@ -5881,7 +5881,8 @@ def htmlSearch(translate: {},
         if os.path.isfile(themeSearchBannerFilename):
             copyfile(themeSearchBannerFilename, searchBannerFilename)
     if os.path.isfile(searchBannerFilename):
-        followStr += '<center><div class="searchBanner"> <br></div></center>'
+        followStr += '<center><div class="searchBanner">' + \
+            '<br><br><br><br><br><br><br></div></center>'
 
     # show the search box
     followStr += '<div class="follow">'
