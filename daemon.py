@@ -5778,7 +5778,8 @@ class PubServer(BaseHTTPRequestHandler):
                 # extract each image type
                 actorChanged = True
                 profileMediaTypes = ('avatar', 'image',
-                                     'banner', 'instanceLogo')
+                                     'banner', 'search_banner',
+                                     'instanceLogo')
                 profileMediaTypesUploaded = {}
                 for mType in profileMediaTypes:
                     if self.server.debug:

@@ -1280,15 +1280,23 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="file" id="avatar" name="avatar"'
     editProfileForm += '            accept="' + imageFormats + '">'
+
     editProfileForm += \
         '      <br><label class="labels">' + \
         translate['Background image'] + '</label>'
     editProfileForm += '      <input type="file" id="image" name="image"'
     editProfileForm += '            accept="' + imageFormats + '">'
+
     editProfileForm += '      <br><label class="labels">' + \
         translate['Timeline banner image'] + '</label>'
     editProfileForm += '      <input type="file" id="banner" name="banner"'
     editProfileForm += '            accept="' + imageFormats + '">'
+
+    editProfileForm += '      <br><label class="labels">' + \
+        translate['Search banner image'] + '</label>'
+    editProfileForm += '      <input type="file" id="search_banner" name="search_banner"'
+    editProfileForm += '            accept="' + imageFormats + '">'
+
     editProfileForm += '    </div>'
     editProfileForm += '    <div class="container">'
     editProfileForm += \
