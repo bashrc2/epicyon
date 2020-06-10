@@ -5848,12 +5848,11 @@ def htmlHashTagSwarm(baseDir: str, actor: str) -> str:
 
 
 def htmlSearch(translate: {},
-               baseDir: str, path: str) -> str:
+               baseDir: str, path: str, domain: str) -> str:
     """Search called from the timeline icon
     """
     actor = path.replace('/search', '')
     searchNickname = getNicknameFromActor(actor)
-    domain, port = getDomainFromActor(actor)
 
     if os.path.isfile(baseDir + '/img/search-background.png'):
         if not os.path.isfile(baseDir + '/accounts/search-background.png'):
