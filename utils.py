@@ -15,6 +15,20 @@ from pprint import pprint
 from calendar import monthrange
 
 
+def getProtocolPrefixes() -> []:
+    """Returns a list of valid prefixes
+    """
+    return ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+            'hyper://', 'gemini://', 'gopher://')
+
+
+def getLinkPrefixes() -> []:
+    """Returns a list of valid web link prefixes
+    """
+    return ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+            'hyper://', 'gemini://', 'gopher://', 'briar:')
+
+
 def removeAvatarFromCache(baseDir: str, actorStr: str) -> None:
     """Removes any existing avatar entries from the cache
     This avoids duplicate entries with differing extensions

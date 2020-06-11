@@ -11,6 +11,7 @@ import email.parser
 from shutil import copyfile
 from utils import loadJson
 from utils import fileLastModified
+from utils import getLinkPrefixes
 
 
 def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
@@ -129,8 +130,7 @@ def addWebLinks(content: str) -> str:
     if ':' not in content:
         return content
 
-    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
-                'hyper://', 'gemini://', 'gopher://', 'briar:')
+    prefixes = getLinkPrefixes()
 
     # do any of these prefixes exist within the content?
     prefixFound = False

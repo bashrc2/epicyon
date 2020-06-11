@@ -21,13 +21,13 @@ from cache import getWebfingerFromCache
 from utils import loadJson
 from utils import loadJsonOnionify
 from utils import saveJson
+from utils import getProtocolPrefixes
 
 
 def parseHandle(handle: str) -> (str, str):
     if '.' not in handle:
         return None, None
-    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
-                'hyper://', 'gemini://', 'gopher://')
+    prefixes = getProtocolPrefixes()
     handleStr = handle
     for prefix in prefixes:
         handleStr = handleStr.replace(prefix, '')

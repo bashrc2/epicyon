@@ -24,6 +24,7 @@ from ssb import getSSBAddress
 from tox import getToxAddress
 from matrix import getMatrixAddress
 from donate import getDonationUrl
+from utils import getProtocolPrefixes
 from utils import getFileCaseInsensitive
 from utils import searchBoxPosts
 from utils import isBlogPost
@@ -100,8 +101,7 @@ def getBlogAddress(actorJson: {}) -> str:
         if propertyValue['type'] != 'PropertyValue':
             continue
         propertyValue['value'] = propertyValue['value'].strip()
-        prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
-                    'hyper://', 'gemini://', 'gopher://')
+        prefixes = getProtocolPrefixes()
         prefixFound = False
         for prefix in prefixes:
             if propertyValue['value'].startswith(prefix):
@@ -139,9 +139,7 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
 
-    prefixes = ('https://', 'http://', 'dat://', 'i2p://',
-                'gnunet://', 'hyper://', 'gemini://',
-                'gopher://')
+    prefixes = getProtocolPrefixes()
     prefixFound = False
     for prefix in prefixes:
         if blogAddress.startswith(prefix):
@@ -4007,9 +4005,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                     else:
                         postDomain = \
                             postJsonObject['object']['inReplyTo']
-                        prefixes = ('https://', 'http://', 'dat://', 'i2p://',
-                                    'gnunet://', 'hyper://', 'gemini://',
-                                    'gopher://')
+                        prefixes = getProtocolPrefixes()
                         for prefix in prefixes:
                             postDomain = postDomain.replace(prefix, '')
                         if '/' in postDomain:

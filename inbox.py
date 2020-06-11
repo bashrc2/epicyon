@@ -10,6 +10,7 @@ import json
 import os
 import datetime
 import time
+from utils import getProtocolPrefixes
 from utils import isBlogPost
 from utils import removeAvatarFromCache
 from utils import isPublicPost
@@ -1359,8 +1360,7 @@ def receiveAnnounce(recentPostsCache: {},
                   messageJson['type'])
         return False
 
-    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
-                'hyper://', 'gemini://', 'gopher://')
+    prefixes = getProtocolPrefixes()
     # is the domain of the announce actor blocked?
     objectDomain = messageJson['object']
     for prefix in prefixes:

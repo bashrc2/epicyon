@@ -49,6 +49,7 @@ from utils import getDomainFromActor
 from utils import getNicknameFromActor
 from utils import followPerson
 from utils import validNickname
+from utils import getProtocolPrefixes
 from media import archiveMedia
 from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
@@ -1041,8 +1042,7 @@ if args.actor:
        args.actor.startswith('http') or \
        args.actor.startswith('dat'):
         # format: https://domain/@nick
-        prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
-                    'hyper://', 'gemini://', 'gopher://')
+        prefixes = getProtocolPrefixes()
         for prefix in prefixes:
             args.actor = args.actor.replace(prefix, '')
         args.actor = args.actor.replace('/@', '/users/')
