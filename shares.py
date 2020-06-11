@@ -174,17 +174,18 @@ def addShare(baseDir: str,
     # indicate that a new share is available
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for handle in dirs:
-            if '@' in handle:
-                accountDir = baseDir + '/accounts/' + handle
-                newShareFile = accountDir + '/.newShare'
-                if not os.path.isfile(newShareFile):
-                    nickname = handle.split('@')[0]
-                    try:
-                        with open(newShareFile, 'w') as fp:
-                            fp.write(httpPrefix + '://' + domainFull +
-                                     '/users/' + nickname + '/tlshares')
-                    except BaseException:
-                        pass
+            if '@' not in handle:
+                continue
+            accountDir = baseDir + '/accounts/' + handle
+            newShareFile = accountDir + '/.newShare'
+            if not os.path.isfile(newShareFile):
+                nickname = handle.split('@')[0]
+                try:
+                    with open(newShareFile, 'w') as fp:
+                        fp.write(httpPrefix + '://' + domainFull +
+                                 '/users/' + nickname + '/tlshares')
+                except BaseException:
+                    pass
 
 
 def expireShares(baseDir: str) -> None:
