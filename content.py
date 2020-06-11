@@ -126,7 +126,10 @@ def addMusicTag(content: str, tag: str) -> str:
 def addWebLinks(content: str) -> str:
     """Adds markup for web links
     """
-    if not ('https://' in content or 'http://' in content):
+    if not ('https://' in content or 'http://' in content or
+            'i2p://' in content or 'gnunet://' in content or
+            'gemini://' in content or 'gopher://' in content or
+            'hyper://' in content or 'dat://' in content):
         return content
 
     maxLinkLength = 40
