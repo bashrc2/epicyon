@@ -4,15 +4,19 @@ RUN apt-get update && \
     apt-get -y install \
     imagemagick \
     python3-crypto \
+    python3-cryptodome \
     python3-dateutil \
     python3-idna \
+    python3-requests \
     python3-numpy \
     python3-pil.imagetk \
     python3-pip \
     python3-setuptools \
     python3-socks \
-    tor && \
-    pip3 install requests beautifulsoup4 pycryptodome
+    python3-idna \
+    libimage-exiftool-perl \
+    python3-flake8 \
+    tor
 RUN adduser --system --home=/opt/epicyon --group epicyon
 COPY --chown=epicyon:epicyon . /app
 EXPOSE 80 7156
