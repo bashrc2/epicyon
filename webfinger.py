@@ -26,10 +26,11 @@ from utils import saveJson
 def parseHandle(handle: str) -> (str, str):
     if '.' not in handle:
         return None, None
-    handleStr = handle.replace('https://', '').replace('http://', '')
-    handleStr = handleStr.replace('dat://', '').replace('hyper://', '')
-    handleStr = handleStr.replace('i2p://', '')
-    handleStr = handleStr.replace('gnunet://', '')
+    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+                'hyper://', 'gemini://', 'gopher://')
+    handleStr = handle
+    for prefix in prefixes:
+        handleStr = handleStr.replace(prefix, '')
     if '/@' in handle:
         domain, nickname = handleStr.split('/@')
     else:

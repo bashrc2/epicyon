@@ -100,12 +100,14 @@ def getBlogAddress(actorJson: {}) -> str:
         if propertyValue['type'] != 'PropertyValue':
             continue
         propertyValue['value'] = propertyValue['value'].strip()
-        if not (propertyValue['value'].startswith('https://') or
-                propertyValue['value'].startswith('http://') or
-                propertyValue['value'].startswith('gnunet://') or
-                propertyValue['value'].startswith('dat://') or
-                propertyValue['value'].startswith('hyper://') or
-                propertyValue['value'].startswith('i2p://')):
+        prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+                    'hyper://', 'gemini://', 'gopher://')
+        prefixFound = False
+        for prefix in prefixes:
+            if propertyValue['value'].startswith(prefix):
+                prefixFound = True
+                break
+        if not prefixFound:
             continue
         if '.' not in propertyValue['value']:
             continue
@@ -137,12 +139,15 @@ def setBlogAddress(actorJson: {}, blogAddress: str) -> None:
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
 
-    if not (blogAddress.startswith('https://') or
-            blogAddress.startswith('http://') or
-            blogAddress.startswith('gnunet://') or
-            blogAddress.startswith('dat://') or
-            blogAddress.startswith('hyper://') or
-            blogAddress.startswith('i2p://')):
+    prefixes = ('https://', 'http://', 'dat://', 'i2p://',
+                'gnunet://', 'hyper://', 'gemini://',
+                'gopher://')
+    prefixFound = False
+    for prefix in prefixes:
+        if blogAddress.startswith(prefix):
+            prefixFound = True
+            break
+    if not prefixFound:
         return
     if '.' not in blogAddress:
         return
@@ -4002,12 +4007,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                     else:
                         postDomain = \
                             postJsonObject['object']['inReplyTo']
-                        postDomain = postDomain.replace('https://', '')
-                        postDomain = postDomain.replace('http://', '')
-                        postDomain = postDomain.replace('hyper://', '')
-                        postDomain = postDomain.replace('gnunet://', '')
-                        postDomain = postDomain.replace('dat://', '')
-                        postDomain = postDomain.replace('i2p://', '')
+                        prefixes = ('https://', 'http://', 'dat://', 'i2p://',
+                                    'gnunet://', 'hyper://', 'gemini://',
+                                    'gopher://')
+                        for prefix in prefixes:
+                            postDomain = postDomain.replace(prefix, '')
                         if '/' in postDomain:
                             postDomain = postDomain.split('/', 1)[0]
                         if postDomain:

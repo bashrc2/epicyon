@@ -1041,12 +1041,10 @@ if args.actor:
        args.actor.startswith('http') or \
        args.actor.startswith('dat'):
         # format: https://domain/@nick
-        args.actor = args.actor.replace('https://', '')
-        args.actor = args.actor.replace('http://', '')
-        args.actor = args.actor.replace('gnunet://', '')
-        args.actor = args.actor.replace('dat://', '')
-        args.actor = args.actor.replace('hyper://', '')
-        args.actor = args.actor.replace('i2p://', '')
+        prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+                    'hyper://', 'gemini://', 'gopher://')
+        for prefix in prefixes:
+            args.actor = args.actor.replace(prefix, '')
         args.actor = args.actor.replace('/@', '/users/')
         if '/users/' not in args.actor and \
            '/channel/' not in args.actor and \
