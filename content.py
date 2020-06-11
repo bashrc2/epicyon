@@ -129,7 +129,8 @@ def addWebLinks(content: str) -> str:
     if not ('https://' in content or 'http://' in content or
             'i2p://' in content or 'gnunet://' in content or
             'gemini://' in content or 'gopher://' in content or
-            'hyper://' in content or 'dat://' in content):
+            'hyper://' in content or 'dat://' in content or
+            'briar:' in content):
         return content
 
     maxLinkLength = 40
@@ -140,6 +141,7 @@ def addWebLinks(content: str) -> str:
         if w.startswith('https://') or \
            w.startswith('http://') or \
            w.startswith('i2p://') or \
+           w.startswith('briar:') or \
            w.startswith('gnunet://') or \
            w.startswith('gemini://') or \
            w.startswith('gopher://') or \
@@ -165,12 +167,15 @@ def addWebLinks(content: str) -> str:
                 markup += '<span class="invisible">gemini://</span>'
             elif w.startswith('gopher://'):
                 markup += '<span class="invisible">gopher://</span>'
+            elif w.startswith('briar:'):
+                markup += '<span class="invisible">briar:</span>'
             linkText = w.replace('https://', '').replace('http://', '')
             linkText = linkText.replace('dat://', '').replace('i2p://', '')
             linkText = linkText.replace('gnunet://', '')
             linkText = linkText.replace('hyper://', '')
             linkText = linkText.replace('gemini://', '')
             linkText = linkText.replace('gopher://', '')
+            linkText = linkText.replace('briar:', '')
             # prevent links from becoming too long
             if len(linkText) > maxLinkLength:
                 markup += '<span class="ellipsis">' + \
