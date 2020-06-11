@@ -228,30 +228,28 @@ def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
     port = None
+    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+                'hyper://', 'gemini://', 'gopher://')
     if '/profile/' in actor:
-        domain = actor.split('/profile/')[0].replace('https://', '')
-        domain = domain.replace('http://', '').replace('i2p://', '')
-        domain = domain.replace('dat://', '').replace('hyper://', '')
-        domain = domain.replace('gnunet://', '')
+        domain = actor.split('/profile/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
     else:
         if '/channel/' in actor:
-            domain = actor.split('/channel/')[0].replace('https://', '')
-            domain = domain.replace('http://', '').replace('i2p://', '')
-            domain = domain.replace('dat://', '').replace('hyper://', '')
-            domain = domain.replace('gnunet://', '')
+            domain = actor.split('/channel/')[0]
+            for prefix in prefixes:
+                domain = domain.replace(prefix, '')
         else:
             if '/users/' not in actor:
-                domain = actor.replace('https://', '').replace('http://', '')
-                domain = domain.replace('i2p://', '')
-                domain = domain.replace('dat://', '').replace('hyper://', '')
-                domain = domain.replace('gnunet://', '')
+                domain = actor
+                for prefix in prefixes:
+                    domain = domain.replace(prefix, '')
                 if '/' in actor:
                     domain = domain.split('/')[0]
             else:
-                domain = actor.split('/users/')[0].replace('https://', '')
-                domain = domain.replace('http://', '').replace('i2p://', '')
-                domain = domain.replace('dat://',  '').replace('hyper://', '')
-                domain = domain.replace('gnunet://', '')
+                domain = actor.split('/users/')[0]
+                for prefix in prefixes:
+                    domain = domain.replace(prefix, '')
     if ':' in domain:
         portStr = domain.split(':')[1]
         if not portStr.isdigit():

@@ -1359,14 +1359,12 @@ def receiveAnnounce(recentPostsCache: {},
                   messageJson['type'])
         return False
 
+    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+                'hyper://', 'gemini://', 'gopher://')
     # is the domain of the announce actor blocked?
-    objectDomain = \
-        messageJson['object'].replace('https://', '')
-    objectDomain = objectDomain.replace('http://', '')
-    objectDomain = objectDomain.replace('i2p://', '')
-    objectDomain = objectDomain.replace('gnunet://', '')
-    objectDomain = objectDomain.replace('dat://', '')
-    objectDomain = objectDomain.replace('hyper://', '')
+    objectDomain = messageJson['object']
+    for prefix in prefixes:
+        objectDomain = objectDomain.replace(prefix, '')
     if '/' in objectDomain:
         objectDomain = objectDomain.split('/')[0]
     if isBlockedDomain(baseDir, objectDomain):
