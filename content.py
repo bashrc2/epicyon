@@ -112,7 +112,7 @@ def addMusicTag(content: str, tag: str) -> str:
         tag = '#'+tag
     if tag in content:
         return content
-    musicSites = ['soundcloud.com', 'bandcamp.com']
+    musicSites = ('soundcloud.com', 'bandcamp.com')
     musicSiteFound = False
     for site in musicSites:
         if site+'/' in content:
@@ -129,11 +129,18 @@ def addWebLinks(content: str) -> str:
     if ':' not in content:
         return content
 
-    if not ('https://' in content or 'http://' in content or
-            'i2p://' in content or 'gnunet://' in content or
-            'gemini://' in content or 'gopher://' in content or
-            'hyper://' in content or 'dat://' in content or
-            'briar:' in content):
+    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
+                'hyper://', 'gemini://', 'gopher://', 'briar:')
+
+    # do any of these prefixes exist within the content?
+    prefixFound = False
+    for prefix in prefixes:
+        if prefix in content:
+            prefixFound = True
+            break
+
+    # if there are no prefixes then just keep the content we have
+    if not prefixFound:
         return content
 
     maxLinkLength = 40
@@ -143,56 +150,43 @@ def addWebLinks(content: str) -> str:
     for w in words:
         if ':' not in w:
             continue
-        if w.startswith('https://') or \
-           w.startswith('http://') or \
-           w.startswith('i2p://') or \
-           w.startswith('briar:') or \
-           w.startswith('gnunet://') or \
-           w.startswith('gemini://') or \
-           w.startswith('gopher://') or \
-           w.startswith('hyper://') or \
-           w.startswith('dat://'):
-            if w.endswith('.') or w.endswith(';'):
-                w = w[:-1]
-            markup = '<a href="' + w + \
-                '" rel="nofollow noopener" target="_blank">'
-            if w.startswith('https://'):
-                markup += '<span class="invisible">https://</span>'
-            elif w.startswith('http://'):
-                markup += '<span class="invisible">http://</span>'
-            elif w.startswith('i2p://'):
-                markup += '<span class="invisible">i2p://</span>'
-            elif w.startswith('gnunet://'):
-                markup += '<span class="invisible">gnunet://</span>'
-            elif w.startswith('dat://'):
-                markup += '<span class="invisible">dat://</span>'
-            elif w.startswith('hyper://'):
-                markup += '<span class="invisible">hyper://</span>'
-            elif w.startswith('gemini://'):
-                markup += '<span class="invisible">gemini://</span>'
-            elif w.startswith('gopher://'):
-                markup += '<span class="invisible">gopher://</span>'
-            elif w.startswith('briar:'):
-                markup += '<span class="invisible">briar:</span>'
-            linkText = w.replace('https://', '').replace('http://', '')
-            linkText = linkText.replace('dat://', '').replace('i2p://', '')
-            linkText = linkText.replace('gnunet://', '')
-            linkText = linkText.replace('hyper://', '')
-            linkText = linkText.replace('gemini://', '')
-            linkText = linkText.replace('gopher://', '')
-            linkText = linkText.replace('briar:', '')
-            # prevent links from becoming too long
-            if len(linkText) > maxLinkLength:
-                markup += '<span class="ellipsis">' + \
-                    linkText[:maxLinkLength] + '</span>'
-                markup += '<span class="invisible">' + \
-                    linkText[maxLinkLength:] + '</span></a>'
-            else:
-                markup += '<span class="ellipsis">' + linkText + '</span></a>'
-            replaceDict[w] = markup
+        # does the word begin with a prefix?
+        prefixFound = False
+        for prefix in prefixes:
+            if w.startswith(prefix):
+                prefixFound = True
+                break
+        if not prefixFound:
+            continue
+        # the word contains a prefix
+        if w.endswith('.') or w.endswith(';'):
+            w = w[:-1]
+        markup = '<a href="' + w + \
+            '" rel="nofollow noopener" target="_blank">'
+        for prefix in prefixes:
+            if w.startswith(prefix):
+                markup += '<span class="invisible">' + prefix + '</span>'
+                break
+        linkText = w
+        for prefix in prefixes:
+            linkText = linkText.replace(prefix, '')
+        # prevent links from becoming too long
+        if len(linkText) > maxLinkLength:
+            markup += '<span class="ellipsis">' + \
+                linkText[:maxLinkLength] + '</span>'
+            markup += '<span class="invisible">' + \
+                linkText[maxLinkLength:] + '</span></a>'
+        else:
+            markup += '<span class="ellipsis">' + linkText + '</span></a>'
+        replaceDict[w] = markup
+
+    # do the replacements
     for url, markup in replaceDict.items():
         content = content.replace(url, markup)
+
+    # replace any line breaks
     content = content.replace(' --linebreak-- ', '<br>')
+
     return content
 
 
