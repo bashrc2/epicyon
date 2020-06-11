@@ -242,8 +242,7 @@ def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
     port = None
-    prefixes = ('https://', 'http://', 'dat://', 'i2p://', 'gnunet://',
-                'hyper://', 'gemini://', 'gopher://')
+    prefixes = getProtocolPrefixes()
     if '/profile/' in actor:
         domain = actor.split('/profile/')[0]
         for prefix in prefixes:
