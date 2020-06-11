@@ -270,7 +270,7 @@ def setThemeStarlight(baseDir: str):
         "cw-glow-color5": "#a3d5f0",
         "cw-background": "black",
         "timeline-border-radius": "20px",
-        "image-corners": "2%"
+        "image-corners": "2%",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.ttf') format('truetype')"
     }
