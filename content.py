@@ -126,6 +126,9 @@ def addMusicTag(content: str, tag: str) -> str:
 def addWebLinks(content: str) -> str:
     """Adds markup for web links
     """
+    if ':' not in content:
+        return content
+
     if not ('https://' in content or 'http://' in content or
             'i2p://' in content or 'gnunet://' in content or
             'gemini://' in content or 'gopher://' in content or
@@ -138,6 +141,8 @@ def addWebLinks(content: str) -> str:
     words = content.replace('\n', ' --linebreak-- ').split(' ')
     replaceDict = {}
     for w in words:
+        if ':' not in w:
+            continue
         if w.startswith('https://') or \
            w.startswith('http://') or \
            w.startswith('i2p://') or \
