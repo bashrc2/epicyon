@@ -270,6 +270,7 @@ def setThemeStarlight(baseDir: str):
         "cw-glow-color5": "#a3d5f0",
         "cw-background": "black",
         "timeline-border-radius": "20px",
+        "image-corners": "2%"
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.ttf') format('truetype')"
     }
@@ -454,7 +455,8 @@ def setThemeHacker(baseDir: str):
         "event-foreground": "black",
         "title-text": "black",
         "title-background": "darkgreen",
-        "gallery-text-color": "green"
+        "gallery-text-color": "green",
+        "image-corners": "0%"
     }
     setThemeFromDict(baseDir, 'hacker', themeParams)
 
