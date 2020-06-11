@@ -34,6 +34,7 @@
     --button-height: 10px;
     --button-height-padding-mobile: 20px;
     --button-height-padding: 10px;
+    --image-corners: 10%,
     --gallery-border: #ccc;
     --gallery-hover: #777;
     --gallery-text-color: #ccc;
@@ -697,7 +698,7 @@ div.gallery img {
         width: 5%;
         padding: 0px 7px;
         margin-right: 20px;
-        border-radius: 10%;
+        border-radius: var(--image-corners);
     }
     .container img.emojisearch {
         width: 10%;
@@ -1047,7 +1048,7 @@ div.gallery img {
         width: 15%;
         padding: 0px 7px;
         margin-right: 20px;
-        border-radius: 10%;
+        border-radius: var(--image-corners);
     }
     .container img.emojisearch {
         width: 12%;
