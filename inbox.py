@@ -62,6 +62,7 @@ from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
+from semantic import labelAccusatoryPost
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1316,7 +1317,7 @@ def receiveAnnounce(recentPostsCache: {},
                     httpPrefix: str, domain: str, onionDomain: str, port: int,
                     sendThreads: [], postLog: [], cachedWebfingers: {},
                     personCache: {}, messageJson: {}, federationList: [],
-                    debug: bool) -> bool:
+                    debug: bool, translate: {}) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1398,7 +1399,7 @@ def receiveAnnounce(recentPostsCache: {},
               ' -> ' + messageJson['object'])
     postJsonObject = downloadAnnounce(session, baseDir, httpPrefix,
                                       nickname, domain, messageJson,
-                                      __version__)
+                                      __version__, translate)
     if postJsonObject:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
@@ -2007,6 +2008,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
 
+    labelAccusatoryPost(messageJson, translate)
+
     if receiveAnnounce(recentPostsCache,
                        session, handle, isGroup,
                        baseDir, httpPrefix,
@@ -2016,7 +2019,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                        personCache,
                        messageJson,
                        federationList,
-                       debug):
+                       debug, translate):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2171,7 +2174,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                                 '/users/' + nickname + '/tlreplies')
 
             if isImageMedia(session, baseDir, httpPrefix,
-                            nickname, domain, postJsonObject):
+                            nickname, domain, postJsonObject,
+                            translate):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):

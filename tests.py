@@ -68,6 +68,7 @@ from content import addHtmlTags
 from content import removeLongWords
 from content import replaceContentDuplicates
 from theme import setCSSparam
+from semantic import isAccusatory
 
 testServerAliceRunning = False
 testServerBobRunning = False
@@ -1787,8 +1788,17 @@ def testRecentPostsCache():
     assert len(recentPostsCache['html'].items()) == maxRecentPosts
 
 
+def testAccusatory():
+    print('testAccusatory')
+    testStr = 'This is not an accusatory post'
+    assert(not isAccusatory(testStr, None, 3))
+    testStr = "If you x, and you're y then you are z"
+    assert(isAccusatory(testStr, None, 3))
+
+
 def runAllTests():
     print('Running tests...')
+    testAccusatory()
     testWebLinks()
     testRecentPostsCache()
     testTheme()

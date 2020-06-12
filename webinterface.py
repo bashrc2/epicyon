@@ -3599,7 +3599,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
-                             projectVersion)
+                             projectVersion, translate)
         if not postJsonAnnounce:
             return ''
         postJsonObject = postJsonAnnounce

@@ -51,6 +51,7 @@ from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
 from git import convertPostToPatch
+from semantic import labelAccusatoryPost
 # try:
 #     from BeautifulSoup import BeautifulSoup
 # except ImportError:
@@ -2306,14 +2307,14 @@ def isDM(postJsonObject: {}) -> bool:
 
 def isImageMedia(session, baseDir: str, httpPrefix: str,
                  nickname: str, domain: str,
-                 postJsonObject: {}) -> bool:
+                 postJsonObject: {}, translate: {}) -> bool:
     """Returns true if the given post has attached image media
     """
     if postJsonObject['type'] == 'Announce':
         postJsonAnnounce = \
             downloadAnnounce(session, baseDir, httpPrefix,
                              nickname, domain, postJsonObject,
-                             __version__)
+                             __version__, translate)
         if postJsonAnnounce:
             postJsonObject = postJsonAnnounce
     if postJsonObject['type'] != 'Create':
@@ -2981,7 +2982,8 @@ def rejectAnnounce(announceFilename: str):
 
 def downloadAnnounce(session, baseDir: str, httpPrefix: str,
                      nickname: str, domain: str,
-                     postJsonObject: {}, projectVersion: str) -> {}:
+                     postJsonObject: {}, projectVersion: str,
+                     translate: {}) -> {}:
     """Download the post referenced by an announce
     """
     if not postJsonObject.get('object'):
@@ -3094,6 +3096,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             # pprint(announcedJson)
             return None
 
+        labelAccusatoryPost(postJsonObject, translate)
         # set the id to the original status
         announcedJson['id'] = postJsonObject['object']
         announcedJson['object']['id'] = postJsonObject['object']
