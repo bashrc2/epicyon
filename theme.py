@@ -18,7 +18,7 @@ def getThemesList() -> []:
     also used to create the web interface dropdown list
     and to lookup function names
     """
-    return ('Default', 'Blue', 'Hacker', 'HighVis',
+    return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
             'LCD', 'Light', 'Night', 'Purple', 'Starlight', 'Zen')
 
 
@@ -275,6 +275,57 @@ def setThemeStarlight(baseDir: str):
         "*src": "url('fonts/bgrove.ttf') format('truetype')"
     }
     setThemeFromDict(baseDir, 'starlight', themeParams)
+
+
+def setThemeHenge(baseDir: str):
+    removeTheme(baseDir)
+    setThemeInConfig(baseDir, 'henge')
+    themeParams = {
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "main-bg-color": "#20260e",
+        "text-entry-background": "#20260e",
+        "link-bg-color": "#20260e",
+        "main-link-color": "#ffc4bc",
+        "main-visited-color": "#e1c4bc",
+        "main-fg-color": "#ffc4bc",
+        "main-bg-color-dm": "#0b0a0a",
+        "border-color": "#69282c",
+        "border-width": "3px",
+        "main-bg-color-reply": "#20260e",
+        "main-bg-color-report": "#20260e",
+        "hashtag-vertical-spacing3": "100px",
+        "hashtag-vertical-spacing4": "150px",
+        "button-background": "#69282c",
+        "button-selected": "#a34046",
+        "calendar-bg-color": "#20260e",
+        "title-text": "#ffc4bc",
+        "title-background": "#69282c",
+        "lines-color": "#ffc4bc",
+        "day-number": "#ffc4bc",
+        "day-number2": "#aaa",
+        "event-background": "#111",
+        "cw-glow-radius1": "30px",
+        "cw-glow-radius2": "40px",
+        "cw-glow-radius3": "50px",
+        "cw-glow-radius4": "60px",
+        "cw-glow-radius5": "70px",
+        "cw-glow-color1": "#a3d5f0",
+        "cw-glow-color2": "#a3d5f0",
+        "cw-glow-color3": "#a3d5f0",
+        "cw-glow-color4": "#a3d5f0",
+        "cw-glow-color5": "#a3d5f0",
+        "cw-background": "#20260e",
+        "timeline-border-radius": "20px",
+        "image-corners": "8%",
+        "*font-family": "'bgrove'",
+        "*src": "url('fonts/bgrove.ttf') format('truetype')"
+    }
+    setThemeFromDict(baseDir, 'henge', themeParams)
 
 
 def setThemeZen(baseDir: str):
