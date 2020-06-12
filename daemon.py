@@ -7926,6 +7926,9 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         print('System language: ' + systemLanguage)
         httpd.systemLanguage = systemLanguage
         httpd.translate = loadJson(translationsFile)
+        if not httpd.translate:
+            print('ERROR: no translations loaded from ' + translationsFile)
+            sys.exit()            
 
     if registration == 'open':
         httpd.registration = True
