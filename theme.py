@@ -293,7 +293,7 @@ def setThemeHenge(baseDir: str):
         "main-link-color": "white",
         "main-visited-color": "#e1c4bc",
         "main-fg-color": "white",
-        "main-bg-color-dm": "#0b0a0a",
+        "main-bg-color-dm": "#343335",
         "border-color": "#222",
         "border-width": "5px",
         "main-bg-color-reply": "#383335",
