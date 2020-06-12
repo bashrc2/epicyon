@@ -7,6 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import sys
 import json
 import time
 import locale
