@@ -1,7 +1,8 @@
-
+``` Epicyon title
   █▀▀ █▀█ █ █▀▀ █▄█ █▀█ █▄░█
   ██▄ █▀▀ █ █▄▄ ░█░ █▄█ █░▀█
-
+```
+``` Epicyon logo
                      __
        ,           ," e`--o
       ((          (  | __,'
@@ -10,6 +11,7 @@
        /) .______.  )
       (( (      (( (
        ``-'      ``-'
+```
 
 Epicyon is an AGPL licensed ActivityPub protocol compliant federated social network server suitable for hosting a small number of accounts on low power systems requiring minimal maintenance, such as single board computers. It's the ActivityPub equivalent of an email server, storing posts as human readable JSON on file, rather than in a database. It also uses only a small amount of RAM.
 
