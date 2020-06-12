@@ -302,6 +302,10 @@ def setThemeHenge(baseDir: str):
         "hashtag-vertical-spacing4": "150px",
         "button-background": "#222",
         "button-selected": "black",
+        "dropdown-fg-color": "#dddddd",
+        "dropdown-bg-color": "#222",
+        "dropdown-bg-color-hover": "#333",
+        "dropdown-fg-color-hover": "#dddddd",
         "calendar-bg-color": "#383335",
         "title-text": "#c5d2b9",
         "title-background": "#69282c",
@@ -347,7 +351,7 @@ def setThemeZen(baseDir: str):
         "main-bg-color-dm": "#5c4a40",
         "main-header-color-roles": "#5c4e41",
         "cw-background": "#463b35",
-        "dropdown-bg-color": "#0b0a0a",
+        "dropdown-bg-color": "#504e41",
         "dropdown-bg-color-hover": "#444"
     }
     setThemeFromDict(baseDir, 'zen', themeParams)
