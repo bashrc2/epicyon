@@ -48,6 +48,10 @@ def labelAccusatoryPost(postJsonObject: {}, translate: {}, threshold=3):
         return
     if not postJsonObject['object'].get('content'):
         return
+    if not postJsonObject['object'].get('type'):
+        return
+    if postJsonObject['object']['type'] == 'Article':
+        return
     if postJsonObject['object'].get('inReplyTo'):
         return
     if not isinstance(postJsonObject['object']['content'], str):
