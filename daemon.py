@@ -1295,7 +1295,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.port,
                                          maxPostsInRSSFeed, 1)
                     if msg is not None:
-                        msg = msg.encode()
+                        msg = msg.encode('utf-8')
                         self._set_headers('text/xml', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
@@ -1331,7 +1331,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.port,
                                          maxPostsInRSSFeed, 1)
                     if msg is not None:
-                        msg = msg.encode()
+                        msg = msg.encode('utf-8')
                         self._set_headers('text/plain; charset=utf-8',
                                           len(msg), cookie, callingDomain)
                         self._write(msg)
@@ -1361,7 +1361,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.port,
                                    maxPostsInBlogsFeed)
                 if msg is not None:
-                    msg = msg.encode()
+                    msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
@@ -1407,7 +1407,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.domain, self.server.port,
                                    maxPostsInBlogsFeed, pageNumber)
                 if msg is not None:
-                    msg = msg.encode()
+                    msg = msg.encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
@@ -1462,7 +1462,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             xmppAddress, matrixAddress,
                                             ssbAddress, blogAddress,
                                             toxAddress, PGPpubKey,
-                                            emailAddress).encode()
+                                            emailAddress).encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
                     self._write(msg)
@@ -1501,7 +1501,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.domainFull,
                                        postJsonObject)
                     if msg is not None:
-                        msg = msg.encode()
+                        msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
@@ -1521,7 +1521,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull + usersPath
             msg = htmlRemoveSharedItem(self.server.translate,
                                        self.server.baseDir,
-                                       actor, shareName).encode()
+                                       actor, shareName).encode('utf-8')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -1543,15 +1543,16 @@ class PubServer(BaseHTTPRequestHandler):
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 msg = htmlTermsOfService(self.server.baseDir, 'http',
-                                         self.server.onionDomain).encode()
+                                         self.server.onionDomain)
             elif (callingDomain.endswith('.i2p') and
                   self.server.i2pDomain):
                 msg = htmlTermsOfService(self.server.baseDir, 'i2p',
-                                         self.server.i2pDomain).encode()
+                                         self.server.i2pDomain)
             else:
                 msg = htmlTermsOfService(self.server.baseDir,
                                          self.server.httpPrefix,
-                                         self.server.domainFull).encode()
+                                         self.server.domainFull)
+            msg = msg.encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             return
@@ -1563,18 +1564,19 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlAbout(self.server.baseDir, 'http',
                               self.server.onionDomain,
-                              None).encode()
+                              None)
             elif callingDomain.endswith('.i2p'):
                 msg = \
                     htmlAbout(self.server.baseDir, 'i2p',
                               self.server.i2pDomain,
-                              None).encode()
+                              None)
             else:
                 msg = \
                     htmlAbout(self.server.baseDir,
                               self.server.httpPrefix,
                               self.server.domainFull,
-                              self.server.onionDomain).encode()
+                              self.server.onionDomain)
+            msg = msg.encode('utf-8')
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg)
             return
@@ -2125,7 +2127,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.httpPrefix,
                                   self.server.projectVersion)
             if hashtagStr:
-                msg = hashtagStr.encode()
+                msg = hashtagStr.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -2176,7 +2178,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # show the search screen
                 msg = htmlSearch(self.server.translate,
                                  self.server.baseDir, self.path,
-                                 self.server.domain).encode()
+                                 self.server.domain).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -2191,7 +2193,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = htmlCalendar(self.server.translate,
                                    self.server.baseDir, self.path,
                                    self.server.httpPrefix,
-                                   self.server.domainFull).encode()
+                                   self.server.domainFull).encode('utf-8')
                 self._set_headers('text/html', len(msg), cookie, callingDomain)
                 self._write(msg)
                 self.server.GETbusy = False
@@ -2243,7 +2245,7 @@ class PubServer(BaseHTTPRequestHandler):
                     self._redirect_headers(actor + '/calendar',
                                            cookie, callingDomain)
                     return
-                msg = msg.encode()
+                msg = msg.encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -2258,7 +2260,7 @@ class PubServer(BaseHTTPRequestHandler):
                 # show the search screen
                 msg = htmlSearchEmojiTextEntry(self.server.translate,
                                                self.server.baseDir,
-                                               self.path).encode()
+                                               self.path).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -2986,7 +2988,7 @@ class PubServer(BaseHTTPRequestHandler):
                 if deleteStr:
                     self._set_headers('text/html', len(deleteStr),
                                       cookie, callingDomain)
-                    self._write(deleteStr.encode())
+                    self._write(deleteStr.encode('utf-8'))
                     self.server.GETbusy = False
                     return
             self.server.GETbusy = False
@@ -3201,7 +3203,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname, self.server.domain,
                                        postUrl)
                     if msg:
-                        msg = msg.encode()
+                        msg = msg.encode('utf-8')
                         self._set_headers('text/html', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
@@ -3214,7 +3216,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       self.path, self.server.domain,
                                       self.server.port,
-                                      self.server.httpPrefix).encode()
+                                      self.server.httpPrefix).encode('utf-8')
                 if msg:
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -3243,7 +3245,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   replyToList,
                                   shareDescription,
                                   replyPageNumber,
-                                  nickname, self.server.domain).encode()
+                                  nickname, self.server.domain).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -7330,7 +7332,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.baseDir,
                                        originPathStr,
                                        optionsActor,
-                                       optionsAvatarUrl).encode()
+                                       optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -7344,7 +7346,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.baseDir,
                                       originPathStr,
                                       optionsActor,
-                                      optionsAvatarUrl).encode()
+                                      optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -7358,7 +7360,7 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.baseDir,
                                         originPathStr,
                                         optionsActor,
-                                        optionsAvatarUrl).encode()
+                                        optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -7375,7 +7377,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   [optionsActor], None,
                                   pageNumber,
                                   chooserNickname,
-                                  self.server.domain).encode()
+                                  self.server.domain).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -7442,7 +7444,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   reportPath, None, [],
                                   postUrl, pageNumber,
                                   chooserNickname,
-                                  self.server.domain).encode()
+                                  self.server.domain).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
