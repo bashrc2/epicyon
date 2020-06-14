@@ -10,7 +10,7 @@ __status__ = "Production"
 def isAccusatory(content: str, translate: {}, threshold=3) -> bool:
     """Indicates whether the given content is an accusatory post
     """
-    words = ('you', 'your', "you're", 'if you', 'you are')
+    words = ('your', "you're", 'if you', 'you are', 'you')
 
     if translate:
         wordsTranslated = []
@@ -31,7 +31,10 @@ def isAccusatory(content: str, translate: {}, threshold=3) -> bool:
     contentLower = content.lower()
     ctr = 0
     for wrd in wordsTranslated:
-        ctr += contentLower.count(wrd + ' ')
+        wordCount = contentLower.count(wrd + ' ')
+        if wordCount > 0:
+            ctr += wordCount
+            contentLower = contentLower.replace(wrd + ' ', '')
     if ctr >= threshold:
         return True
     return False
