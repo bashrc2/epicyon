@@ -1600,7 +1600,8 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
                   messageJson['object']['content']):
         return True
     # check for bad html
-    invalidStrings = ('<script>', '<canvas>', '<style>',
+    invalidStrings = ('<script>', '</script>', '</canvas>',
+                      '</style>', '</abbr>',
                       '</html>', '</body>', '<br>', '<hr>')
     for badStr in invalidStrings:
         if badStr in messageJson['object']['content']:
