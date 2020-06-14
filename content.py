@@ -390,13 +390,13 @@ def removeTextFormatting(content: str) -> str:
     """
     if '<' not in content:
         return content
-    content = content.replace('<b>', '').replace('</b>', '')
-    content = content.replace('<i>', '').replace('</i>', '')
-    content = content.replace('<ul>', '').replace('</ul>', '')
-    content = content.replace('<ol>', '').replace('</ol>', '')
-    for level in range(1, 5):
-        content = content.replace('<h' + str(level) + '>', '')
-        content = content.replace('</h' + str(level) + '>', '')
+    removeMarkup = ('b', 'i', 'ul', 'ol', 'li', 'em', 'strong',
+                    'blockquote', 'h1', 'h2', 'h3', 'h4', 'h5')
+    for markup in removeMarkup:
+        content = content.replace('<' + markup + '>', '')
+        content = content.replace('</' + markup + '>', '')
+        content = content.replace('<' + markup.upper() + '>', '')
+        content = content.replace('</' + markup.upper() + '>', '')
     return content
 
 
