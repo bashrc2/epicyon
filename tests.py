@@ -67,6 +67,7 @@ from content import replaceEmojiFromTags
 from content import addHtmlTags
 from content import removeLongWords
 from content import replaceContentDuplicates
+from content import removeTextFormatting
 from theme import setCSSparam
 from semantic import isAccusatory
 
@@ -1798,8 +1799,19 @@ def testAccusatory():
     assert(not isAccusatory(testStr, None, 3))
 
 
+def testRemoveTextFormatting():
+    print('testRemoveTextFormatting')
+    testStr = '<p>Text without formatting</p>'
+    resultStr = removeTextFormatting(testStr)
+    assert(resultStr == testStr)
+    testStr = '<p>Text <i>with</i> <h3>formatting</h3></p>'
+    resultStr = removeTextFormatting(testStr)
+    assert(resultStr == '<p>Text with formatting</p>')
+
+
 def runAllTests():
     print('Running tests...')
+    testRemoveTextFormatting()
     testAccusatory()
     testWebLinks()
     testRecentPostsCache()

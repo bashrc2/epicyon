@@ -46,6 +46,7 @@ from media import replaceYouTube
 from content import removeLongWords
 from content import addHtmlTags
 from content import replaceEmojiFromTags
+from content import removeTextFormatting
 from auth import createBasicAuthHeader
 from config import getConfigParam
 from blocking import isBlocked
@@ -3085,6 +3086,10 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         # remove any long words
         announcedJson['content'] = \
             removeLongWords(announcedJson['content'], 40, [])
+
+        # remove text formatting, such as bold/italics
+        announcedJson['content'] = \
+            removeTextFormatting(announcedJson['content'])
 
         # wrap in create to be consistent with other posts
         announcedJson = \

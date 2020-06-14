@@ -56,6 +56,7 @@ from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from blocking import isBlockedHashtag
+from content import removeTextFormatting
 from content import switchWords
 from content import getMentionsFromHtml
 from content import addHtmlTags
@@ -4099,6 +4100,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if not isPatch:
         objectContent = \
             removeLongWords(postJsonObject['object']['content'], 40, [])
+        objectContent = removeTextFormatting(objectContent)
         objectContent = \
             switchWords(baseDir, nickname, domain, objectContent)
     else:

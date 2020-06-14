@@ -385,6 +385,21 @@ def replaceContentDuplicates(content: str) -> str:
     return content
 
 
+def removeTextFormatting(content: str) -> str:
+    """Removes markup for bold, italics, etc
+    """
+    if '<' not in content:
+        return content
+    content = content.replace('<b>', '').replace('</b>', '')
+    content = content.replace('<i>', '').replace('</i>', '')
+    content = content.replace('<ul>', '').replace('</ul>', '')
+    content = content.replace('<ol>', '').replace('</ol>', '')
+    for level in range(1, 5):
+        content = content.replace('<h' + str(level) + '>', '')
+        content = content.replace('</h' + str(level) + '>', '')
+    return content
+
+
 def removeLongWords(content: str, maxWordLength: int,
                     longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't
