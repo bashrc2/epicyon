@@ -1794,7 +1794,7 @@ def testAccusatory():
     assert(not isAccusatory(testStr, None, 3))
     testStr = "If you x, and you're y then you are z"
     assert(isAccusatory(testStr, None, 3))
-    testStr = '<p>Help someone to protect doing something real and decent, if you are able<br /><a href=\"https://www.permaculturenews.org/2020/06/09/hey-big-boy-fence-that-dream/\" rel=\"nofollow noopener noreferrer\" target=\"_blank\"><span class=\"invisible\">https://www.</span><span class=\"ellipsis\">permaculturenews.org/2020/06/0</span><span class=\"invisible\">9/hey-big-boy-fence-that-dream/</span></a></p>'
+    testStr = "If x, and if you are y then z"
     assert(not isAccusatory(testStr, None, 3))
 
 
