@@ -1419,12 +1419,13 @@ def sendPost(projectVersion: str,
         return 7
     postPath = inboxUrl.split(toDomain, 1)[1]
 
-    try:
-        signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
-        postJsonObject = signedPostJsonObject
-    except BaseException:
-        print('WARN: failed to JSON-LD sign post')
-        pass
+    if not postJsonObject.get('signature'):
+        try:
+            signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
+            postJsonObject = signedPostJsonObject
+        except BaseException:
+            print('WARN: failed to JSON-LD sign post')
+            pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
@@ -1749,12 +1750,13 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
 
     addFollowersToPublicPost(postJsonObject)
 
-    try:
-        signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
-        postJsonObject = signedPostJsonObject
-    except BaseException:
-        print('WARN: failed to JSON-LD sign post')
-        pass
+    if not postJsonObject.get('signature'):
+        try:
+            signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
+            postJsonObject = signedPostJsonObject
+        except BaseException:
+            print('WARN: failed to JSON-LD sign post')
+            pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
