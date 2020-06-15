@@ -16,6 +16,7 @@ RUN apt-get update && \
     python3-idna \
     libimage-exiftool-perl \
     python3-flake8 \
+    python3-pyld \
     tor
 RUN adduser --system --home=/opt/epicyon --group epicyon
 COPY --chown=epicyon:epicyon . /app
