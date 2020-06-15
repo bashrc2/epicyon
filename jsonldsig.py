@@ -137,13 +137,12 @@ def jsonldVerify(signedJldDocument: {}, publicKeyPem: str) -> bool:
     return verifyJws(normalizedJldHash, jwsSignature, publicKeyPem)
 
 
-def testSignJsonld(jldDocument: {}, privateKeyPem: str,
-                   expectedJldDocumentSigned=None):
+def testSignJsonld(jldDocument: {}, privateKeyPem: str) -> {}:
+    """Creates a test signature
+    """
     signedJldDocument = jsonldSign(jldDocument, privateKeyPem)
+
     # pop the created time key since its dynamic
     signedJldDocument['signature'].pop('created')
 
-    if expectedJldDocumentSigned:
-        assert signedJldDocument == expectedJldDocumentSigned
-    else:
-        return signedJldDocument
+    return signedJldDocument
