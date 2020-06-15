@@ -28,36 +28,36 @@ import base64
 import json
 
 
-def b64safeEncode(payload):
+def b64safeEncode(payload: {}) -> str:
     """
     b64 url safe encoding with the padding removed.
     """
     return base64.urlsafe_b64encode(payload).rstrip(b'=')
 
 
-def b64safeDecode(payload):
+def b64safeDecode(payload: {}) -> str:
     """
     b64 url safe decoding with the padding added.
     """
     return base64.urlsafe_b64decode(payload + b'=' * (4 - len(payload) % 4))
 
 
-def normalizeJson(payload):
+def normalizeJson(payload: {}) -> str:
     return json.dumps(payload, separators=(',', ':'),
                       sort_keys=True).encode('utf-8')
 
 
-def signRs256(payload, private_key):
+def signRs256(payload: {}, privateKey: str) -> str:
     """
     Produce a RS256 signature of the payload
     """
-    key = RSA.importKey(private_key)
+    key = RSA.importKey(privateKey)
     signer = PKCS1_v1_5.new(key)
     signature = signer.sign(SHA256.new(payload))
     return signature
 
 
-def verifyRs256(payload, signature, publicKeyPem):
+def verifyRs256(payload: {}, signature: str, publicKeyPem: str) -> bool:
     """
     Verifies a RS256 signature
     """
@@ -66,7 +66,7 @@ def verifyRs256(payload, signature, publicKeyPem):
     return verifier.verify(SHA256.new(payload), signature)
 
 
-def signJws(payload, private_key):
+def signJws(payload: {}, privateKey: str) -> str:
     """ Prepare payload to sign
     """
     header = {
@@ -78,14 +78,14 @@ def signJws(payload, private_key):
     encodedHeader = b64safeEncode(normalizedJson)
     preparedPayload = b'.'.join([encodedHeader, payload])
 
-    signature = signRs256(preparedPayload, private_key)
+    signature = signRs256(preparedPayload, privateKey)
     encodedSignature = b64safeEncode(signature)
     jwsSignature = b'..'.join([encodedHeader, encodedSignature])
 
     return jwsSignature
 
 
-def verifyJws(payload, jwsSignature, publicKeyPem: str):
+def verifyJws(payload: {}, jwsSignature: str, publicKeyPem: str) -> bool:
     # remove the encoded header from the signature
     encodedHeader, encodedSignature = jwsSignature.split(b'..')
     signature = b64safeDecode(encodedSignature)
