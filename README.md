@@ -23,6 +23,7 @@ sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
                imagemagick python-pillow python-requests \
 	       perl-image-exiftool python-numpy python-dateutil \
 	       certbot flake8
+suso pip3 install pyLD
 ```
 
 Or on Debian:
@@ -34,6 +35,7 @@ sudo apt install -y \
     python3-crypto python3-cryptodome \
     python3-dateutil python3-pil.imagetk
     python3-idna python3-requests \
+    python3-pyld \
     libimage-exiftool-perl python3-flake8 \
     certbot nginx
 ```

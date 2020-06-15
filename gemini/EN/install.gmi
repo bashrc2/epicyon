@@ -4,7 +4,7 @@ You will need python version 3.7 or later.
 
 On a Debian based system:
 
-    sudo apt install -y tor python3-socks imagemagick python3-numpy python3-setuptools python3-crypto python3-cryptodome python3-dateutil python3-pil.imagetk python3-idna python3-requests python3-flake8 libimage-exiftool-perl certbot nginx
+    sudo apt install -y tor python3-socks imagemagick python3-numpy python3-setuptools python3-crypto python3-cryptodome python3-dateutil python3-pil.imagetk python3-idna python3-requests python3-flake8 python3-pyld libimage-exiftool-perl certbot nginx
 
 The following instructions install Epicyon to the /opt directory. It's not essential that it be installed there, and it could be in any other preferred directory.
 
