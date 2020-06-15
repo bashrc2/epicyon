@@ -43,6 +43,9 @@ def b64safeDecode(payload: {}) -> str:
 
 
 def normalizeJson(payload: {}) -> str:
+    """
+    Normalize with URDNA2015
+    """
     return json.dumps(payload, separators=(',', ':'),
                       sort_keys=True).encode('utf-8')
 
@@ -141,7 +144,8 @@ def jsonldVerify(signedJldDocument: {}, publicKeyPem: str) -> bool:
 
 
 def testSignJsonld(jldDocument: {}, privateKeyPem: str) -> {}:
-    """Creates a test signature
+    """
+    Creates a test signature
     """
     signedJldDocument = jsonldSign(jldDocument, privateKeyPem)
 
