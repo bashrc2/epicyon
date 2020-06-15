@@ -1861,6 +1861,11 @@ def testJsonld():
 
     signedDocument = testSignJsonld(jldDocument, privateKeyPem)
     assert(signedDocument)
+    assert(signedDocument.get('signature'))
+    assert(signedDocument['signature'].get('signatureValue'))
+    assert(signedDocument['signature'].get('type'))
+    assert(len(signedDocument['signature']['signatureValue']) > 50)
+    assert(signedDocument['signature']['type'] == 'RsaSignatureSuite2017')
     assert(jsonldVerify(signedDocument, publicKeyPem))
 
 
