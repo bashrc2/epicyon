@@ -47,11 +47,11 @@ def normalizeJson(payload: {}) -> str:
                       sort_keys=True).encode('utf-8')
 
 
-def signRs256(payload: {}, privateKey: str) -> str:
+def signRs256(payload: {}, privateKeyPem: str) -> str:
     """
     Produce a RS256 signature of the payload
     """
-    key = RSA.importKey(privateKey)
+    key = RSA.importKey(privateKeyPem)
     signer = PKCS1_v1_5.new(key)
     signature = signer.sign(SHA256.new(payload))
     return signature
@@ -66,8 +66,9 @@ def verifyRs256(payload: {}, signature: str, publicKeyPem: str) -> bool:
     return verifier.verify(SHA256.new(payload), signature)
 
 
-def signJws(payload: {}, privateKey: str) -> str:
-    """ Prepare payload to sign
+def signJws(payload: {}, privateKeyPem: str) -> str:
+    """
+    Prepare payload to sign
     """
     header = {
         'alg': 'RS256',
@@ -78,7 +79,7 @@ def signJws(payload: {}, privateKey: str) -> str:
     encodedHeader = b64safeEncode(normalizedJson)
     preparedPayload = b'.'.join([encodedHeader, payload])
 
-    signature = signRs256(preparedPayload, privateKey)
+    signature = signRs256(preparedPayload, privateKeyPem)
     encodedSignature = b64safeEncode(signature)
     jwsSignature = b'..'.join([encodedHeader, encodedSignature])
 
@@ -86,7 +87,9 @@ def signJws(payload: {}, privateKey: str) -> str:
 
 
 def verifyJws(payload: {}, jwsSignature: str, publicKeyPem: str) -> bool:
-    # remove the encoded header from the signature
+    """
+    Verifies a signature using the given public key
+    """
     encodedHeader, encodedSignature = jwsSignature.split(b'..')
     signature = b64safeDecode(encodedSignature)
     payload = b'.'.join([encodedHeader, payload])
