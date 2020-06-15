@@ -53,6 +53,7 @@ from blocking import isBlocked
 from filters import isFiltered
 from git import convertPostToPatch
 from semantic import labelAccusatoryPost
+from jsonldsig import jsonldSign
 # try:
 #     from BeautifulSoup import BeautifulSoup
 # except ImportError:
@@ -1418,6 +1419,13 @@ def sendPost(projectVersion: str,
         return 7
     postPath = inboxUrl.split(toDomain, 1)[1]
 
+    try:
+        signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
+        postJsonObject = signedPostJsonObject
+    except BaseException:
+        print('WARN: failed to JSON-LD sign post')
+        pass
+
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
     postJsonStr = json.dumps(postJsonObject)
@@ -1740,6 +1748,13 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     postPath = inboxUrl.split(toDomain, 1)[1]
 
     addFollowersToPublicPost(postJsonObject)
+
+    try:
+        signedPostJsonObject = jsonldSign(postJsonObject, privateKeyPem)
+        postJsonObject = signedPostJsonObject
+    except BaseException:
+        print('WARN: failed to JSON-LD sign post')
+        pass
 
     # convert json to string so that there are no
     # subsequent conversions after creating message body digest
