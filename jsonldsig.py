@@ -16,7 +16,7 @@ import pytz
 try:
     from Cryptodome.PublicKey import RSA
     from Cryptodome.Hash import SHA256
-    from Cryptodome.Signature import pkcs1_15 as PKCS1_v1_5
+    from Cryptodome.Signature import pkcs1_5 as PKCS1_v1_5
 except ImportError:
     from Crypto.PublicKey import RSA
     from Crypto.Hash import SHA256
@@ -57,11 +57,11 @@ def signRs256(payload, private_key):
     return signature
 
 
-def verifyRs256(payload, signature, public_key):
+def verifyRs256(payload, signature, publicKeyPem):
     """
     Verifies a RS256 signature
     """
-    key = RSA.importKey(public_key)
+    key = RSA.importKey(publicKeyPem)
     verifier = PKCS1_v1_5.new(key)
     return verifier.verify(SHA256.new(payload), signature)
 
@@ -85,12 +85,12 @@ def signJws(payload, private_key):
     return jwsSignature
 
 
-def verifyJws(payload, jws_signature, public_key):
+def verifyJws(payload, jwsSignature, publicKeyPem: str):
     # remove the encoded header from the signature
-    encodedHeader, encodedSignature = jws_signature.split(b'..')
+    encodedHeader, encodedSignature = jwsSignature.split(b'..')
     signature = b64safeDecode(encodedSignature)
     payload = b'.'.join([encodedHeader, payload])
-    return verifyRs256(payload, signature, public_key)
+    return verifyRs256(payload, signature, publicKeyPem)
 
 
 def jsonldNormalize(jldDocument: str):
