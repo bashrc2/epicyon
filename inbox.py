@@ -62,7 +62,6 @@ from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
-from semantic import labelAccusatoryPost
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:

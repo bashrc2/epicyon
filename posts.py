@@ -52,7 +52,6 @@ from config import getConfigParam
 from blocking import isBlocked
 from filters import isFiltered
 from git import convertPostToPatch
-from semantic import labelAccusatoryPost
 from jsonldsig import jsonldSign
 # try:
 #     from BeautifulSoup import BeautifulSoup

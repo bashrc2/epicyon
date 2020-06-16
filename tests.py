@@ -70,7 +70,6 @@ from content import removeLongWords
 from content import replaceContentDuplicates
 from content import removeTextFormatting
 from theme import setCSSparam
-from semantic import isAccusatory
 from jsonldsig import testSignJsonld
 from jsonldsig import jsonldVerify
 
@@ -1792,16 +1791,6 @@ def testRecentPostsCache():
     assert len(recentPostsCache['html'].items()) == maxRecentPosts
 
 
-def testAccusatory():
-    print('testAccusatory')
-    testStr = 'This is not an accusatory post'
-    assert(not isAccusatory(testStr, None, 3))
-    testStr = "If you x, and you're y then you are z"
-    assert(isAccusatory(testStr, None, 3))
-    testStr = "If x, and if you are y then z"
-    assert(not isAccusatory(testStr, None, 3))
-
-
 def testRemoveTextFormatting():
     print('testRemoveTextFormatting')
     testStr = '<p>Text without formatting</p>'
@@ -1873,7 +1862,6 @@ def runAllTests():
     print('Running tests...')
     testJsonld()
     testRemoveTextFormatting()
-    testAccusatory()
     testWebLinks()
     testRecentPostsCache()
     testTheme()
