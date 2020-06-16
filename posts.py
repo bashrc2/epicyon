@@ -3118,7 +3118,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             # pprint(announcedJson)
             return None
 
-        labelAccusatoryPost(postJsonObject, translate)
+        # labelAccusatoryPost(postJsonObject, translate)
         # set the id to the original status
         announcedJson['id'] = postJsonObject['object']
         announcedJson['object']['id'] = postJsonObject['object']

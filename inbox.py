@@ -2009,7 +2009,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
             print('DEBUG: Undo bookmark accepted from ' + actor)
         return False
 
-    labelAccusatoryPost(messageJson, translate)
+    # labelAccusatoryPost(messageJson, translate)
 
     if receiveAnnounce(recentPostsCache,
                        session, handle, isGroup,
