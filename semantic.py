@@ -7,7 +7,7 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 
-def isAccusatory(content: str, translate: {}, threshold=3) -> bool:
+def isAccusatory(content: str, translate: {}, threshold=5) -> bool:
     """Indicates whether the given content is an accusatory post
     """
     words = ('your', "you're", 'if you', 'you are', 'you')
