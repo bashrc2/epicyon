@@ -1561,7 +1561,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # show a list of who you are following
         if htmlGET and authorized and '/users/' in self.path and \
-           self.path.endswith('/following'):
+           self.path.endswith('/followingaccounts'):
             nickname = getNicknameFromActor(self.path)
             followingFilename = \
                 self.baseDir + '/accounts/' + \
