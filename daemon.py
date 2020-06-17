@@ -1559,6 +1559,23 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 11)
 
+        # show a list of who you are following
+        if htmlGET and authorized and '/users/' in self.path and \
+           self.path.endswith('/following'):
+            nickname = getNicknameFromActor(self.path)
+            followingFilename = \
+                self.baseDir + '/accounts/' + \
+                nickname + '@' + self.domain + '/following.txt'
+            if not os.path.isfile(followingFilename):
+                self._404()
+                return
+            msg = ''
+            with open(followingFilename, 'r') as followingFile:
+                msg = followingFile.read()
+            self._login_headers('text/plain', len(msg), callingDomain)
+            self._write(msg.encode('utf-8'))
+            return
+
         if self.path.startswith('/about'):
             if callingDomain.endswith('.onion'):
                 msg = \
