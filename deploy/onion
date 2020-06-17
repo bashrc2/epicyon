@@ -1,5 +1,27 @@
 #!/bin/bash
 
+if [[ "$1" == 'remove' ]]; then
+    echo 'Removing Epicyon onion instance'
+    systemctl stop tor
+    rm /etc/torrc.d/epicyon
+    rm -rf /var/lib/tor/hidden_service_epicyon
+    systemctl restart tor
+
+    systemctl stop epicyon
+    systemctl disable epicyon
+    rm /etc/nginx/sites-enabled/epicyon
+    rm /etc/nginx/sites-availale/epicyon
+    rm -rf /opt/epicyon
+    if [ -d /var/www/cache ]; then
+	rm -rf /var/www/cache
+    fi
+    if [ -d /srv/http/cache ]; then
+	rm -rf /srv/http/cache
+    fi
+    echo 'Epicyon onion instance removed'
+    exit 0
+fi
+
 clear
 echo 'Installing Epicyon on an onion domain'
 
