@@ -4189,6 +4189,17 @@ def isQuestion(postObjectJson: {}) -> bool:
     return True
 
 
+def htmlHighlightLabel(label: str, highlight: bool) -> str:
+    """If the give text should be highlighted then return
+    the appropriate markup.
+    This is so that in shell browsers, like lynx, it's possible
+    to see if the replies or DM button are highlighted.
+    """
+    if not highlight:
+        return label
+    return '<u>' + label + '</u>'
+
+
 def htmlTimeline(defaultTimeline: str,
                  recentPostsCache: {}, maxRecentPosts: int,
                  translate: {}, pageNumber: int,
@@ -4204,10 +4215,12 @@ def htmlTimeline(defaultTimeline: str,
     accountDir = baseDir + '/accounts/' + nickname + '@' + domain
 
     # should the calendar icon be highlighted?
+    newCalendarEvent = False
     calendarImage = 'calendar.png'
     calendarPath = '/calendar'
     calendarFile = accountDir + '/.newCalendar'
     if os.path.isfile(calendarFile):
+        newCalendarEvent = True
         calendarImage = 'calendar_notify.png'
         with open(calendarFile, 'r') as calfile:
             calendarPath = calfile.read().replace('##sent##', '')
@@ -4352,14 +4365,16 @@ def htmlTimeline(defaultTimeline: str,
             '<a href="' + usersPath + \
             '/moderation"><button class="' + \
             moderationButton + '"><span>' + \
-            translate['Mod'] + ' </span></button></a>'
+            htmlHighlightLabel(translate['Mod'], newReport) + \
+            ' </span></button></a>'
 
     sharesButtonStr = ''
     bookmarksButtonStr = ''
     if not minimal:
         sharesButtonStr = \
             '<a href="' + usersPath + '/tlshares"><button class="' + \
-            sharesButton + '"><span>' + translate['Shares'] + \
+            sharesButton + '"><span>' + \
+            htmlHighlightLabel(translate['Shares'], newShare) + \
             ' </span></button></a>'
 
         bookmarksButtonStr = \
@@ -4441,10 +4456,13 @@ def htmlTimeline(defaultTimeline: str,
 
     tlStr += \
         '    <a href="' + usersPath + '/dm"><button class="' + dmButton + \
-        '"><span>' + translate['DM'] + '</span></button></a>'
+        '"><span>' + htmlHighlightLabel(translate['DM'], newDM) + \
+        '</span></button></a>'
+
     tlStr += \
         '    <a href="' + usersPath + '/tlreplies"><button class="' + \
-        repliesButton + '"><span>' + translate['Replies'] + \
+        repliesButton + '"><span>' + \
+        htmlHighlightLabel(translate['Replies'], newReply) + \
         '</span></button></a>'
 
     # typically the media button
@@ -4493,12 +4511,17 @@ def htmlTimeline(defaultTimeline: str,
         iconsDir + '/search.png" title="' + \
         translate['Search and follow'] + '" alt="' + \
         translate['Search and follow'] + '" class="timelineicon"/></a>'
+
+    calendarAltText = translate['Calendar']
+    if newCalendarEvent:
+        # indicate that the calendar icon is highlighted
+        calendarAltText = '*' + calendarAltText + '*'
     tlStr += \
         '    <a href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
         calendarImage + '" title="' + translate['Calendar'] + \
-        '" alt="' + translate['Calendar'] + \
-        '" class="timelineicon"/></a>'
+        '" alt="' + calendarAltText + '" class="timelineicon"/></a>'
+
     tlStr += \
         '    <a href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
