@@ -4197,7 +4197,7 @@ def htmlHighlightLabel(label: str, highlight: bool) -> str:
     """
     if not highlight:
         return label
-    return '[' + label + ']'
+    return '*' + label + '*'
 
 
 def htmlTimeline(defaultTimeline: str,
@@ -4515,7 +4515,7 @@ def htmlTimeline(defaultTimeline: str,
     calendarAltText = translate['Calendar']
     if newCalendarEvent:
         # indicate that the calendar icon is highlighted
-        calendarAltText = '[' + calendarAltText + ']'
+        calendarAltText = '*' + calendarAltText + '*'
     tlStr += \
         '    <a href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
