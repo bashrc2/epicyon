@@ -4391,7 +4391,7 @@ def htmlTimeline(defaultTimeline: str,
                     '<a href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
-                    translate['Create a new post'] + '" alt="' + \
+                    translate['Create a new post'] + '" alt="| ' + \
                     translate['Create a new post'] + \
                     '" class="timelineicon"/></a>'
             else:
@@ -4400,14 +4400,14 @@ def htmlTimeline(defaultTimeline: str,
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + \
-                    '" alt="' + translate['Create a new post'] + \
+                    '" alt="| ' + translate['Create a new post'] + \
                     '" class="timelineicon"/></a>'
         else:
             newPostButtonStr = \
                 '<a href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
-                translate['Create a new post'] + '" alt="' + \
+                translate['Create a new post'] + '" alt="| ' + \
                 translate['Create a new post'] + \
                 '" class="timelineicon"/></a>'
     else:
@@ -4416,7 +4416,7 @@ def htmlTimeline(defaultTimeline: str,
             '/newdm"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new DM'] + \
-            '" alt="' + translate['Create a new DM'] + \
+            '" alt="| ' + translate['Create a new DM'] + \
             '" class="timelineicon"/></a>'
 
     # This creates a link to the profile page when viewed
@@ -4509,7 +4509,7 @@ def htmlTimeline(defaultTimeline: str,
         '    <a href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
         iconsDir + '/search.png" title="' + \
-        translate['Search and follow'] + '" alt="' + \
+        translate['Search and follow'] + '" alt="| ' + \
         translate['Search and follow'] + '" class="timelineicon"/></a>'
 
     calendarAltText = translate['Calendar']
@@ -4520,13 +4520,13 @@ def htmlTimeline(defaultTimeline: str,
         '    <a href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
         calendarImage + '" title="' + translate['Calendar'] + \
-        '" alt="' + calendarAltText + '" class="timelineicon"/></a>'
+        '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>'
 
     tlStr += \
         '    <a href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
-        '" alt="' + translate['Show/Hide Buttons'] + \
+        '" alt="| ' + translate['Show/Hide Buttons'] + \
         '" class="timelineicon"/></a>'
     tlStr += followApprovals
     tlStr += '</div>'
