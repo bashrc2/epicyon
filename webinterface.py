@@ -1233,6 +1233,8 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
         bioStr + '</textarea>'
+    editProfileForm += '<a href="/users/' + nickname + \
+        '/followingaccounts">' + translate['Following'] + '</a><br>'
     editProfileForm += '<label class="labels">' + \
         translate['Donations link'] + '</label><br>'
     editProfileForm += \
