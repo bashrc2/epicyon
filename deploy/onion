@@ -1,0 +1,269 @@
+#!/bin/bash
+
+clear
+echo 'Installing Epicyon on an onion domain'
+
+username='epicyon'
+NGINX_PORT=9552
+EPICYON_PORT=7156
+
+if [ -f /usr/bin/pacman ]; then
+    pacman -Syy
+    pacman -S --noconfirm tor python-pip python-pysocks python-pycryptodome \
+           imagemagick python-pillow python-requests \
+	   perl-image-exiftool python-numpy python-dateutil \
+	   certbot flake8 git
+    pip3 install pyLD
+else
+    apt-get update
+    apt-get -y install imagemagick python3-crypto python3-cryptodome \
+	    python3-dateutil python3-idna python3-requests \
+	    python3-numpy python3-pil.imagetk python3-pip \
+	    python3-setuptools python3-socks python3-idna \
+	    libimage-exiftool-perl python3-flake8 python3-pyld \
+	    tor nginx git
+fi
+
+if [ ! -d /opt/epicyon ]; then
+    git clone https://gitlab.com/bashrc2/epicyon /opt/epicyon
+
+    if [ ! -d /opt/epicyon ]; then
+	echo 'Epicyon repo failed to clone'
+	exit 3
+    fi
+fi
+
+if [ -f /usr/bin/pacman ]; then
+    groupadd epicyon
+    useradd --system -g epicyon --home-dir=/opt/epicyon $username
+    groupadd www-data
+    useradd --system -g www-data --home-dir=/srv/http www-data
+else
+    adduser --system --home=/opt/epicyon --group $username
+fi
+
+chown -R epicyon:epicyon /opt/epicyon
+
+if [ ! -d /etc/torrc.d ]; then
+    mkdir /etc/torrc.d
+fi
+if ! grep -q '%include /etc/torrc.d' /etc/tor/torrc; then
+    echo '%include /etc/torrc.d' >> /etc/tor/torrc
+fi
+
+if [ ! -f /etc/torrc.d/epicyon ]; then
+    { echo 'HiddenServiceDir /var/lib/tor/hidden_service_epicyon/';
+      echo 'HiddenServiceVersion 3';
+      echo "HiddenServicePort 80 127.0.0.1:${NGINX_PORT}"; } > /etc/torrc.d/epicyon
+fi
+
+systemctl restart tor
+
+sleep 5
+
+if [ ! -f /var/lib/tor/hidden_service_epicyon/hostname ]; then
+    sleep 5
+fi
+
+if [ ! -f /var/lib/tor/hidden_service_epicyon/hostname ]; then
+    echo 'Could not create onion address for epicyon'
+fi
+ONION_DOMAIN=$(cat /var/lib/tor/hidden_service_epicyon/hostname)
+if [ ! "$ONION_DOMAIN" ]; then
+    echo 'No onion domain at /var/lib/tor/hidden_service_epicyon/hostname'
+    exit 1
+fi
+
+{ echo '[Unit]';
+  echo "Description=$username";
+  echo 'After=syslog.target';
+  echo 'After=network.target';
+  echo '';
+  echo '[Service]';
+  echo 'Type=simple';
+  echo "User=$username";
+  echo "Group=$username";
+  echo 'WorkingDirectory=/opt/epicyon';
+  echo "ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --http --port 80 --proxy ${EPICYON_PORT} --domain ${ONION_DOMAIN} --registration open";
+  echo "Environment=USER=$username";
+  echo 'Environment=PYTHONUNBUFFERED=true';
+  echo 'Restart=always';
+  echo 'StandardError=syslog';
+  echo '';
+  echo '[Install]';
+  echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/epicyon.service
+
+systemctl daemon-reload
+systemctl enable epicyon
+systemctl restart epicyon
+
+if [ ! -f /etc/nginx/nginx.conf ]; then
+    { echo 'user www-data;';
+      echo 'pid /run/nginx.pid;';
+      echo '';
+      echo 'events {';
+      echo '        worker_connections 50;';
+      echo '        # multi_accept on;';
+      echo '}';
+      echo '';
+      echo 'http {';
+      echo '        # limit the number of connections per single IP';
+      echo "        limit_conn_zone \$binary_remote_addr zone=conn_limit_per_ip:10m;";
+      echo '';
+      echo '        # limit the number of requests for a given session';
+      echo "        limit_req_zone \$binary_remote_addr zone=req_limit_per_ip:10m rate=140r/s;";
+      echo '';
+      echo '        # if the request body size is more than the buffer size, then the entire (or partial) request body is written into a temporary file';
+      echo '        client_body_buffer_size  128k;';
+      echo '';
+      echo '        # headerbuffer size for the request header from client, its set for testing purpose';
+      echo '        client_header_buffer_size 3m;';
+      echo '';
+      echo '        # maximum number and size of buffers for large headers to read from client request';
+      echo '        large_client_header_buffers 4 256k;';
+      echo '';
+      echo '        # read timeout for the request body from client, its set for testing purpose';
+      echo '        client_body_timeout   3m;';
+      echo '';
+      echo '        # how long to wait for the client to send a request header, its set for testing purpose';
+      echo '        client_header_timeout 3m;';
+      echo '';
+      echo '        sendfile on;';
+      echo '        tcp_nopush on;';
+      echo '        tcp_nodelay on;';
+      echo '        keepalive_timeout 65;';
+      echo '        types_hash_max_size 2048;';
+      echo '        server_tokens off;';
+      echo '';
+      echo '        include /etc/nginx/mime.types;';
+      echo '        default_type application/octet-stream;';
+      echo '';
+      echo '        access_log /dev/null;';
+      echo '        error_log /dev/null;';
+      echo '';
+      echo '        gzip on;';
+      echo '        gzip_disable "msie6";';
+      echo '';
+      echo '        include /etc/nginx/conf.d/*.conf;';
+      echo '        include /etc/nginx/sites-enabled/*;';
+      echo '}'; } > /etc/nginx/nginx.conf
+else
+    if ! grep -q 'include /etc/nginx/sites-enabled' /etc/nginx/nginx.conf; then
+	echo 'include /etc/nginx/sites-enabled/*.conf;' >> /etc/nginx/nginx.conf
+    fi
+fi
+if [ ! -d /etc/nginx/conf.d ]; then
+    mkdir /etc/nginx/conf.d
+fi
+if [ ! -d /etc/nginx/sites-available ]; then
+    mkdir /etc/nginx/sites-available
+fi
+if [ ! -d /etc/nginx/sites-enabled ]; then
+    mkdir /etc/nginx/sites-enabled
+fi
+
+if [ -f /usr/bin/pacman ]; then
+    if [ ! -f /lib/systemd/system/nginx.service ]; then
+	{ echo '[Unit]';
+	  echo 'Description=A high performance web server and a reverse proxy server';
+	  echo 'Documentation=man:nginx(8)';
+	  echo 'After=network.target nss-lookup.target';
+	  echo ''
+	  echo '[Service]';
+	  echo 'Type=forking';
+	  echo 'PIDFile=/run/nginx.pid';
+	  echo "ExecStartPre=$(which nginx) -t -q -g 'daemon on; master_process on;'";
+	  echo "ExecStart=$(which nginx) -g 'daemon on; master_process on;'";
+	  echo "ExecReload=$(which nginx) -g 'daemon on; master_process on;' -s reload";
+	  echo 'ExecStop=-/sbin/start-stop-daemon --quiet --stop --retry QUIT/5 --pidfile /run/nginx.pid';
+	  echo 'TimeoutStopSec=5';
+	  echo 'KillMode=mixed';
+	  echo '';
+	  echo '[Install]';
+	  echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/nginx.service
+	systemctl enable nginx
+    fi
+fi
+
+web_dir=/var/www
+if [ -f /usr/bin/pacman ]; then
+    web_dir=/srv/http
+fi
+if [ ! -d ${web_dir}/cache ]; then
+    mkdir ${web_dir}/cache
+fi
+
+{ echo "proxy_cache_path ${web_dir}/cache levels=1:2 keys_zone=my_cache:10m max_size=10g";
+  echo '                 inactive=60m use_temp_path=off;'
+  echo '';
+  echo 'server {';
+  echo "    listen 127.0.0.1:${NGINX_PORT} default_server;";
+  echo "    server_name ${ONION_DOMAIN};"
+  echo '';
+  echo '    gzip            on;';
+  echo '    gzip_min_length 1000;';
+  echo '    gzip_proxied    expired no-cache no-store private auth;';
+  echo '    gzip_types      text/plain application/xml;';
+  echo '';
+  echo '    add_header X-Content-Type-Options nosniff;';
+  echo '    add_header X-XSS-Protection "1; mode=block";';
+  echo '    add_header X-Download-Options noopen;';
+  echo '    add_header X-Permitted-Cross-Domain-Policies none;';
+  echo '';
+  echo '    access_log /dev/null;';
+  echo '    error_log /dev/null;';
+  echo '';
+  echo '  index index.html;';
+  echo '  location / {';
+  echo '    proxy_http_version 1.1;';
+  echo '    client_max_body_size 31M;';
+  echo "    proxy_set_header Upgrade \$http_upgrade;";
+  echo '    proxy_set_header Connection "upgrade";';
+  echo "    proxy_set_header Host \$http_host;";
+  echo "    proxy_set_header X-Real-IP \$remote_addr;";
+  echo "    proxy_set_header X-Forward-For \$proxy_add_x_forwarded_for;";
+  echo '    proxy_set_header X-Forward-Proto http;';
+  echo '    proxy_set_header X-Nginx-Proxy true;';
+  echo '    expires epoch;';
+  echo '    proxy_no_cache 1;';
+  echo '    proxy_temp_file_write_size 64k;';
+  echo '    proxy_connect_timeout 10080s;';
+  echo '    proxy_send_timeout 10080;';
+  echo '    proxy_read_timeout 10080;';
+  echo '    proxy_buffer_size 64k;';
+  echo '    proxy_buffers 16 32k;';
+  echo '    proxy_busy_buffers_size 64k;';
+  echo '    proxy_redirect off;';
+  echo '    proxy_request_buffering off;';
+  echo '    proxy_buffering on;';
+  echo '    proxy_cache my_cache;';
+  echo '    proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;';
+  echo "    location ~ ^/(icons|images|media|emoji)/(.*)/(.*).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {";
+  echo '        expires 7d;';
+  echo "        proxy_pass http://localhost:${EPICYON_PORT};";
+  echo '    }';
+  echo "    location ~ ^/icons/(.*)/(like|repeat|calendar)(.*).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {";
+  echo '        expires epoch;';
+  echo '        proxy_no_cache 1;';
+  echo "        proxy_pass http://localhost:${EPICYON_PORT};";
+  echo '    }';
+  echo "    location ~ ^/icons/(like|repeat|calendar)(.*).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {";
+  echo '        expires epoch;';
+  echo '        proxy_no_cache 1;';
+  echo "        proxy_pass http://localhost:${EPICYON_PORT};";
+  echo '    }';
+  echo "    location ~ ^/users/(.*)/(image|banner).(png|jpg|gif|webp|mp3|ogv|ogg|mp4) {";
+  echo '        expires epoch;';
+  echo '        proxy_no_cache 1;';
+  echo "        proxy_pass http://localhost:${EPICYON_PORT};";
+  echo '    }';
+  echo "    proxy_pass http://localhost:${EPICYON_PORT};";
+  echo '  }';
+  echo '}'; } > /etc/nginx/sites-available/epicyon
+
+ln -s /etc/nginx/sites-available/epicyon /etc/nginx/sites-enabled/
+systemctl restart nginx
+
+echo "Your onion Epicyon instance is now installed."
+echo "In a Tor browser navigate to $ONION_DOMAIN and register an account"
+exit 0
