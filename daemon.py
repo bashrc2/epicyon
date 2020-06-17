@@ -1564,8 +1564,8 @@ class PubServer(BaseHTTPRequestHandler):
            self.path.endswith('/followingaccounts'):
             nickname = getNicknameFromActor(self.path)
             followingFilename = \
-                self.baseDir + '/accounts/' + \
-                nickname + '@' + self.domain + '/following.txt'
+                self.server.baseDir + '/accounts/' + \
+                nickname + '@' + self.server.domain + '/following.txt'
             if not os.path.isfile(followingFilename):
                 self._404()
                 return
