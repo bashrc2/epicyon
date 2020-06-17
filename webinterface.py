@@ -3697,7 +3697,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
         replyStr += \
             '<img loading="lazy" title="' + \
-            translate['Reply to this post'] + ' |" alt="' + \
+            translate['Reply to this post'] + '" alt="' + \
             translate['Reply to this post'] + \
             ' |" src="/' + iconsDir + '/reply.png"/></a>'
 
@@ -3712,7 +3712,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                     '?actor=' + actorNickname + \
                     '" title="' + translate['Edit blog post'] + '">' + \
                     '<img loading="lazy" title="' + \
-                    translate['Edit blog post'] + ' |" alt="' + \
+                    translate['Edit blog post'] + '" alt="' + \
                     translate['Edit blog post'] + \
                     ' |" src="/' + iconsDir + '/edit.png"/></a>'
 
@@ -3737,7 +3737,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '?tl=' + boxName + '" title="' + announceTitle + '">'
         announceStr += \
             '<img loading="lazy" title="' + translate['Repeat this post'] + \
-            ' |" alt="' + translate['Repeat this post'] + \
+            '" alt="' + translate['Repeat this post'] + \
             ' |" src="/' + iconsDir + '/' + announceIcon + '"/></a>'
 
     likeStr = ''
@@ -3759,7 +3759,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '?tl=' + boxName + '" title="' + likeTitle + '">'
         likeStr += \
             '<img loading="lazy" title="' + likeTitle + \
-            ' |" alt="' + likeTitle + \
+            '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>'
 
     bookmarkStr = ''
@@ -3779,7 +3779,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             '?bm=' + timelinePostBookmark + \
             '?tl=' + boxName + '" title="' + bookmarkTitle + '">'
         bookmarkStr += \
-            '<img loading="lazy" title="' + bookmarkTitle + ' |" alt="' + \
+            '<img loading="lazy" title="' + bookmarkTitle + '" alt="' + \
             bookmarkTitle + ' |" src="/' + iconsDir + \
             '/' + bookmarkIcon + '"/></a>'
 
@@ -3798,7 +3798,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             deleteStr += \
                 '<img loading="lazy" alt="' + translate['Delete this post'] + \
                 ' |" title="' + translate['Delete this post'] + \
-                ' |" src="/' + iconsDir + '/delete.png"/></a>'
+                '" src="/' + iconsDir + '/delete.png"/></a>'
     else:
         if not isMuted:
             muteStr = \
@@ -3810,7 +3810,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 '<img loading="lazy" alt="' + \
                 translate['Mute this post'] + \
                 ' |" title="' + translate['Mute this post'] + \
-                ' |" src="/' + iconsDir + '/mute.png"/></a>'
+                '" src="/' + iconsDir + '/mute.png"/></a>'
         else:
             muteStr = \
                 '<a href="/users/' + nickname + '?unmute=' + messageId + \
@@ -3820,7 +3820,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             muteStr += \
                 '<img loading="lazy" alt="' + translate['Undo mute'] + \
                 ' |" title="' + translate['Undo mute'] + \
-                ' |" src="/' + iconsDir+'/unmute.png"/></a>'
+                '" src="/' + iconsDir+'/unmute.png"/></a>'
 
     replyAvatarImageInPost = ''
     if showRepeatIcon:
@@ -5550,7 +5550,7 @@ def htmlCalendarDay(translate: {},
                     '?time=' + eventTime + \
                     '"><img class="calendardayicon" loading="lazy" alt="' + \
                     translate['Delete this event'] + ' |" title="' + \
-                    translate['Delete this event'] + ' |" src="/' + \
+                    translate['Delete this event'] + '" src="/' + \
                     iconsDir + '/delete.png" /></a></td>'
 
             if eventTime and eventDescription and eventPlace:
