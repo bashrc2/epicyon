@@ -1233,8 +1233,6 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
         bioStr + '</textarea>'
-    editProfileForm += '<a href="/users/' + nickname + \
-        '/followingaccounts">' + translate['Following'] + '</a><br>'
     editProfileForm += '<label class="labels">' + \
         translate['Donations link'] + '</label><br>'
     editProfileForm += \
@@ -1275,6 +1273,9 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         '      <textarea id="message" placeholder=' + \
         '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
         'style="height:100px">' + PGPpubKey + '</textarea>'
+    editProfileForm += '<a href="/users/' + nickname + \
+        '/followingaccounts"><label class="labels">' + \
+        translate['Following'] + '</label></a><br>'
     editProfileForm += '    </div>'
     editProfileForm += '    <div class="container">'
     idx = 'The files attached below should be no larger than ' + \
