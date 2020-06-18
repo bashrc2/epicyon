@@ -1,11 +1,16 @@
 #!/bin/bash
 
 if [[ "$1" == 'remove' ]]; then
-    echo 'Removing Epicyon onion instance'
-    systemctl stop tor
-    rm /etc/torrc.d/epicyon
-    rm -rf /var/lib/tor/hidden_service_epicyon
-    systemctl restart tor
+    echo 'Removing Epicyon i2p instance'
+    systemctl stop i2pd
+    if [ -f /var/lib/i2pd/tunnels.d/epicyon ]; then
+	rm /var/lib/i2pd/tunnels.d/epicyon
+    fi
+    if [ -f /etc/i2pd/tunnels.conf.d/epicyon ]; then
+	rm /etc/i2pd/tunnels.conf.d/epicyon
+    fi
+    rm /var/lib/i2pd/epicyon.dat
+    systemctl restart i2pd
 
     systemctl stop epicyon
     systemctl disable epicyon
@@ -18,24 +23,38 @@ if [[ "$1" == 'remove' ]]; then
     if [ -d /srv/http/cache ]; then
 	rm -rf /srv/http/cache
     fi
-    echo 'Epicyon onion instance removed'
+    echo 'Epicyon i2p instance removed'
     exit 0
 fi
 
+if [[ "$1" == 'removei2p' ]]; then
+    if [ -f /usr/bin/pacman ]; then
+	pacman -R --noconfirm i2pd
+    else
+	apt-get -y remove --purge i2pd
+    fi
+    rm -rf /etc/i2pd
+    rm -rf /var/lib/i2pd
+    if [ -f /var/log/i2pd/i2pd.log ]; then
+	rm /var/log/i2pd/i2pd.log
+    fi
+fi
+
 clear
-echo 'Installing Epicyon on an onion domain'
+echo 'Installing Epicyon on an i2p domain'
 
 username='epicyon'
 NGINX_PORT=9552
 EPICYON_PORT=7156
+tunnels_dir=/var/lib/i2pd/tunnels.d
 
 echo 'Adding Epicyon dependencies'
 if [ -f /usr/bin/pacman ]; then
     pacman -Syy
-    pacman -S --noconfirm tor python-pip python-pysocks python-pycryptodome \
+    pacman -S --noconfirm python-pip python-pysocks python-pycryptodome \
            imagemagick python-pillow python-requests \
 	   perl-image-exiftool python-numpy python-dateutil \
-	   certbot flake8 git
+	   certbot flake8 git i2pd
     pip3 install pyLD
 else
     apt-get update
@@ -44,7 +63,7 @@ else
 	    python3-numpy python3-pil.imagetk python3-pip \
 	    python3-setuptools python3-socks python3-idna \
 	    libimage-exiftool-perl python3-flake8 python3-pyld \
-	    tor nginx git
+	    nginx git i2pd
 fi
 
 echo 'Cloning the epicyon repo'
@@ -69,40 +88,108 @@ fi
 
 chown -R epicyon:epicyon /opt/epicyon
 
-echo 'Creating onion site configuration'
-if [ ! -d /etc/torrc.d ]; then
-    mkdir /etc/torrc.d
+echo 'Creating a command script to obtain i2p domain names from dat files'
+{ echo '#!/usr/bin/env python3';
+  echo 'import base64, hashlib, sys';
+  echo "with open(sys.argv[1], 'rb') as f:";
+  echo '    isRead=False';
+  echo '    try:';
+  echo "        print(base64.b32encode(hashlib.sha256(base64.b64decode(f.read(), '-~')).digest()).decode().strip('=').lower()+\".b32.i2p\")";
+  echo '        isRead=True';
+  echo '    except:';
+  echo '        pass';
+  echo '    if not isRead:';
+  echo "        print(base64.b32encode(hashlib.sha256(base64.b64decode(f.read(516), '-~')).digest()).decode().strip('=').lower()+\".b32.i2p\")"; } > /usr/bin/i2pdomain
+chmod +x /usr/bin/i2pdomain
+
+echo 'Creating Epicyon i2p tunnel file'
+if [ ! -d "$tunnels_dir" ]; then
+    ln -s /etc/i2pd/tunnels.conf.d /var/lib/i2pd/tunnels.d
 fi
-if ! grep -q '%include /etc/torrc.d' /etc/tor/torrc; then
-    echo '%include /etc/torrc.d' >> /etc/tor/torrc
+
+if ! grep -q 'epicyon.dat' /var/lib/i2pd/tunnels.conf; then
+    { echo '';
+      echo '[epicyon]';
+      echo 'type = http';
+      echo 'host = 127.0.0.1';
+      echo 'inport = 80';
+      echo "port = ${NGINX_PORT}";
+      echo 'destination = epicyon.i2p';
+      echo 'inbound.length = 1';
+      echo 'inbound.quantity = 5';
+      echo 'outbound.length = 1';
+      echo 'outbound.quantity = 5';
+      echo "keys = epicyon.dat"; } >> /var/lib/i2pd/tunnels.conf
 fi
+rm "$tunnels_dir"/*~
 
-if [ ! -f /etc/torrc.d/epicyon ]; then
-    { echo 'HiddenServiceDir /var/lib/tor/hidden_service_epicyon/';
-      echo 'HiddenServiceVersion 3';
-      echo "HiddenServicePort 80 127.0.0.1:${NGINX_PORT}"; } > /etc/torrc.d/epicyon
+echo 'Setting i2p tunnels directory'
+sed -i 's|#tunnelsdir =|tunnelsdir =|g' /etc/i2pd/i2pd.conf
+sed -i 's|# tunnelsdir =|tunnelsdir =|g' /etc/i2pd/i2pd.conf
+sed -i "s|tunnelsdir =.*|tunnelsdir = $tunnels_dir|g" /etc/i2pd/i2pd.conf
+
+echo 'Enabling ipv6'
+if [ -f /etc/sysctl.conf ]; then
+    if grep -q 'net.ipv6.conf.all.disable_ipv6' /etc/sysctl.conf; then
+	sed -i 's|net.ipv6.conf.all.disable_ipv6.*|net.ipv6.conf.all.disable_ipv6 = 0|g' /etc/sysctl.conf
+	/sbin/sysctl -p -q
+    fi
 fi
+sed -i 's|#ipv6 =|ipv6 =|g' /etc/i2pd/i2pd.conf
+sed -i 's|# ipv6 =|ipv6 =|g' /etc/i2pd/i2pd.conf
+sed -i 's|ipv6 =.*|ipv6 = false|g' /etc/i2pd/i2pd.conf
 
-systemctl restart tor
+echo 'Disabling i2p logging'
+#sed -i 's|#logfile =|logfile =|g' /etc/i2pd/i2pd.conf
+#sed -i 's|# logfile =|logfile =|g' /etc/i2pd/i2pd.conf
+#sed -i 's|logfile =.*|logfile = /dev/null|g' /etc/i2pd/i2pd.conf
 
-echo 'Waiting for tor daemon to restart'
+echo 'Enabling i2p NAT traversal'
+sed -i 's|#nat =|nat =|g' /etc/i2pd/i2pd.conf
+sed -i 's|# nat =|nat =|g' /etc/i2pd/i2pd.conf
+sed -i 's|nat =.*|nat = true|g' /etc/i2pd/i2pd.conf
 
+if [ ! -d /run/i2pd ]; then
+    mkdir /run/i2pd    
+fi
+chown -R i2pd:i2pd /run/i2pd
+
+#if [ -f /usr/bin/pacman ]; then
+#    sed -i 's|ExecStart=.*|ExecStart=/usr/sbin/i2pd --conf=/etc/i2pd/i2pd.conf --tunconf=/etc/i2pd/tunnels.conf --tunnelsdir=/etc/i2pd/tunnels.conf.d --service|g' /lib/systemd/system/i2pd.service
+#    sed -i 's|Type=.*|Type=simple|g' /lib/systemd/system/i2pd.service
+#fi
+
+echo 'Setting file permissions'
+chown -R i2pd:i2pd "$tunnels_dir"
+chmod 644 "$tunnels_dir"/*
+chmod 755 "$tunnels_dir"
+# chown -R i2pd:i2pd /etc/i2pd
+systemctl daemon-reload
+systemctl enable i2pd
+systemctl restart i2pd
+
+echo 'Waiting for i2p daemon restart'
 sleep 5
-
-if [ ! -f /var/lib/tor/hidden_service_epicyon/hostname ]; then
-    echo 'Waiting for tor daemon to restart...'
+if [ ! -f /var/lib/i2pd/epicyon.dat ]; then
+    echo 'Waiting for i2p daemon restart...'
     sleep 5
 fi
 
-if [ ! -f /var/lib/tor/hidden_service_epicyon/hostname ]; then
-    echo 'Could not create onion address for epicyon'
+if [ ! -f /var/lib/i2pd/epicyon.dat ]; then
+    echo '/var/lib/i2pd/epicyon.dat not created'
+    exit 6
 fi
-ONION_DOMAIN=$(cat /var/lib/tor/hidden_service_epicyon/hostname)
-if [ ! "$ONION_DOMAIN" ]; then
-    echo 'No onion domain at /var/lib/tor/hidden_service_epicyon/hostname'
+
+echo '/var/lib/i2pd/epicyon.dat file was created'
+
+I2P_DOMAIN=$(i2pdomain /var/lib/i2pd/epicyon.dat)
+if [[ "$I2P_DOMAIN" != *'.i2p' ]]; then
+    echo 'Epicyon i2p domain not created'
+    echo "$I2P_DOMAIN"
     exit 1
 fi
-echo "Onion domain created: $ONION_DOMAIN"
+
+echo "i2p domain: http://${I2P_DOMAIN}"
 
 echo 'Creating Epicyon daemon'
 { echo '[Unit]';
@@ -115,7 +202,7 @@ echo 'Creating Epicyon daemon'
   echo "User=$username";
   echo "Group=$username";
   echo 'WorkingDirectory=/opt/epicyon';
-  echo "ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --http --port 80 --proxy ${EPICYON_PORT} --domain ${ONION_DOMAIN} --registration open";
+  echo "ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --http --i2p --port 80 --proxy ${EPICYON_PORT} --domain ${I2P_DOMAIN} --registration open";
   echo "Environment=USER=$username";
   echo 'Environment=PYTHONUNBUFFERED=true';
   echo 'Restart=always';
@@ -226,13 +313,13 @@ if [ ! -d ${web_dir}/cache ]; then
     mkdir ${web_dir}/cache
 fi
 
-echo "Creating nginx virtual host for ${ONION_DOMAIN}"
+echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
 { echo "proxy_cache_path ${web_dir}/cache levels=1:2 keys_zone=my_cache:10m max_size=10g";
   echo '                 inactive=60m use_temp_path=off;'
   echo '';
   echo 'server {';
   echo "    listen 127.0.0.1:${NGINX_PORT} default_server;";
-  echo "    server_name ${ONION_DOMAIN};"
+  echo "    server_name ${I2P_DOMAIN};"
   echo '';
   echo '    gzip            on;';
   echo '    gzip_min_length 1000;';
@@ -298,6 +385,7 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
 ln -s /etc/nginx/sites-available/epicyon /etc/nginx/sites-enabled/
 systemctl restart nginx
 
-echo "Your onion Epicyon instance is now installed."
-echo "In a Tor browser navigate to $ONION_DOMAIN and register an account"
+echo "Your Epicyon i2p instance is now installed."
+echo 'In Firefox see preferences/network settings, manual proxy and uncheck DNS over HTTPS'
+echo "In a browser proxied through 127.0.0.1 port 4444 with socks5 proxy on 127.0.0.1 port 4447 navigate to http://${I2P_DOMAIN} and register an account"
 exit 0
