@@ -54,7 +54,7 @@ if [ -f /usr/bin/pacman ]; then
     pacman -S --noconfirm python-pip python-pysocks python-pycryptodome \
            imagemagick python-pillow python-requests \
 	   perl-image-exiftool python-numpy python-dateutil \
-	   certbot flake8 git i2pd
+	   certbot flake8 git i2pd wget
     pip3 install pyLD
 else
     apt-get update
@@ -63,7 +63,7 @@ else
 	    python3-numpy python3-pil.imagetk python3-pip \
 	    python3-setuptools python3-socks python3-idna \
 	    libimage-exiftool-perl python3-flake8 python3-pyld \
-	    nginx git i2pd
+	    nginx git i2pd wget
 fi
 
 echo 'Cloning the epicyon repo'
@@ -338,8 +338,8 @@ echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
   echo '    location / {';
   echo '        proxy_http_version 1.1;';
   echo '        client_max_body_size 31M;';
-  echo "        proxy_set_header Upgrade \$http_upgrade;";
-  echo '        proxy_set_header Connection "upgrade";';
+  echo "        proxy_hide_header Upgrade;";
+  echo '        proxy_hide_header Connection;';
   echo "        proxy_set_header Host \$http_host;";
   echo "        proxy_set_header X-Real-IP \$remote_addr;";
   echo "        proxy_set_header X-Forward-For \$proxy_add_x_forwarded_for;";
