@@ -89,17 +89,18 @@ fi
 chown -R epicyon:epicyon /opt/epicyon
 
 echo 'Creating a command script to obtain i2p domain names from dat files'
-{ echo '#!/usr/bin/env python3';
-  echo 'import base64, hashlib, sys';
-  echo "with open(sys.argv[1], 'rb') as f:";
-  echo '    isRead=False';
-  echo '    try:';
-  echo "        print(base64.b32encode(hashlib.sha256(base64.b64decode(f.read(), '-~')).digest()).decode().strip('=').lower()+\".b32.i2p\")";
-  echo '        isRead=True';
-  echo '    except:';
-  echo '        pass';
-  echo '    if not isRead:';
-  echo "        print(base64.b32encode(hashlib.sha256(base64.b64decode(f.read(516), '-~')).digest()).decode().strip('=').lower()+\".b32.i2p\")"; } > /usr/bin/i2pdomain
+{ echo '#!/bin/bash';
+  echo "tunnelname=\"\$1\"";
+  echo 'domainfile=/tmp/i2pdomain.txt';
+  echo "if [ -f \${domainfile} ]; then";
+  echo "    rm \${domainfile}";
+  echo 'fi';
+  echo "wget http://127.0.0.1:7070/?page=i2p_tunnels -O \${domainfile} 2> /dev/null";
+  echo "if [ ! -f \${domainfile} ]; then";
+  echo '    exit 9';
+  echo 'fi';
+  echo "awk -F \">\${tunnelname}<\" '{print \$2}' < \${domainfile} | awk -F ';' '{print \$2}' | awk -F ':' '{print \$1}' | tr -d '[:space:]'";
+  echo "rm \${domainfile}"; } > /usr/bin/i2pdomain
 chmod +x /usr/bin/i2pdomain
 
 echo 'Creating Epicyon i2p tunnel file'
@@ -182,7 +183,7 @@ fi
 
 echo '/var/lib/i2pd/epicyon.dat file was created'
 
-I2P_DOMAIN=$(i2pdomain /var/lib/i2pd/epicyon.dat)
+I2P_DOMAIN=$(i2pdomain epicyon)
 if [[ "$I2P_DOMAIN" != *'.i2p' ]]; then
     echo 'Epicyon i2p domain not created'
     echo "$I2P_DOMAIN"
