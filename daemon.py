@@ -591,6 +591,11 @@ class PubServer(BaseHTTPRequestHandler):
         self._write(msg)
         return True
 
+    def _hasAccept(self, callingDomain: str) -> bool:
+        if self.headers.get('Accept') or callingDomain.endswith('.b32.i2p'):
+            return True
+        return False
+
     def _mastoApi(self, callingDomain: str) -> bool:
         """This is a vestigil mastodon API for the purpose
         of returning an empty result to sites like
@@ -622,7 +627,7 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.systemLanguage,
                                  self.server.projectVersion)
             msg = json.dumps(instanceJson).encode('utf-8')
-            if self.headers.get('Accept'):
+            if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', len(msg),
                                       None, callingDomain)
@@ -643,7 +648,7 @@ class PubServer(BaseHTTPRequestHandler):
             # information about the interests of a small number of accounts
             msg = json.dumps(['mastodon.social',
                               self.server.domainFull]).encode('utf-8')
-            if self.headers.get('Accept'):
+            if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', len(msg),
                                       None, callingDomain)
@@ -659,7 +664,7 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path.startswith('/api/v1/instance/activity'):
             # This is just a dummy result.
             msg = json.dumps([]).encode('utf-8')
-            if self.headers.get('Accept'):
+            if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', len(msg),
                                       None, callingDomain)
@@ -685,7 +690,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.projectVersion)
         if info:
             msg = json.dumps(info).encode('utf-8')
-            if self.headers.get('Accept'):
+            if self._hasAccept(callingDomain):
                 if 'application/ld+json' in self.headers['Accept']:
                     self._set_headers('application/ld+json', len(msg),
                                       None, callingDomain)
@@ -745,7 +750,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       self.server.domainFull)
             if wfResult:
                 msg = json.dumps(wfResult).encode('utf-8')
-                if self.headers.get('Accept'):
+                if self._hasAccept(callingDomain):
                     if 'application/ld+json' in self.headers['Accept']:
                         self._set_headers('application/ld+json', len(msg),
                                           None, callingDomain)
@@ -1129,7 +1134,7 @@ class PubServer(BaseHTTPRequestHandler):
         if 'favicon.ico' in self.path:
             favType = 'image/x-icon'
             favFilename = 'favicon.ico'
-            if self.headers.get('Accept'):
+            if self._hasAccept(callingDomain):
                 if 'image/webp' in self.headers['Accept']:
                     favType = 'image/webp'
                     favFilename = 'favicon.webp'
@@ -1188,7 +1193,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # is this a html request?
         htmlGET = False
-        if self.headers.get('Accept'):
+        if self._hasAccept(callingDomain):
             if self._requestHTTP():
                 htmlGET = True
         else:
