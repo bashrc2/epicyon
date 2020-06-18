@@ -593,6 +593,10 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _hasAccept(self, callingDomain: str) -> bool:
         if self.headers.get('Accept') or callingDomain.endswith('.b32.i2p'):
+            if not self.headers.get('Accept'):
+                self.headers['Accept'] = \
+                    'text/html,application/xhtml+xml,' \
+                    'application/xml;q=0.9,image/webp,*/*;q=0.8'
             return True
         return False
 
