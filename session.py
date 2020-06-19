@@ -29,8 +29,8 @@ def createSession(proxyType: str):
         session.proxies['https'] = 'socks5h://localhost:9050'
     elif proxyType == 'i2p':
         session.proxies = {}
-        session.proxies['http'] = 'socks5h://localhost:4444'
-        session.proxies['https'] = 'socks5h://localhost:4444'
+        session.proxies['http'] = 'socks5h://localhost:4447'
+        session.proxies['https'] = 'socks5h://localhost:4447'
     elif proxyType == 'gnunet':
         session.proxies = {}
         session.proxies['http'] = 'socks5h://localhost:7777'
