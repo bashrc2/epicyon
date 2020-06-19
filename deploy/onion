@@ -10,8 +10,8 @@ if [[ "$1" == 'remove' ]]; then
     rm -rf /var/lib/tor/hidden_service_epicyon
     systemctl restart tor
 
-    systemctl stop "${username}"
-    systemctl disable "${username}"
+    systemctl stop "${username}.service"
+    systemctl disable "${username}.service"
     rm "/etc/nginx/sites-enabled/${username}"
     rm "/etc/nginx/sites-availale/${username}"
     rm -rf ${install_destination}
@@ -21,6 +21,7 @@ if [[ "$1" == 'remove' ]]; then
     if [ -d /srv/http/cache ]; then
 	rm -rf /srv/http/cache
     fi
+    userdel -r ${username}
     echo 'Epicyon onion instance removed'
     exit 0
 fi
@@ -61,8 +62,8 @@ fi
 
 echo 'Adding an epicyon system user account'
 if [ -f /usr/bin/pacman ]; then
-    groupadd epicyon
-    useradd --system -g epicyon --home-dir=${install_destination} $username
+    groupadd ${username}
+    useradd --system -g ${username} --home-dir=${install_destination} $username
     groupadd www-data
     useradd --system -g www-data --home-dir=/srv/http www-data
 else
@@ -127,8 +128,8 @@ echo 'Creating Epicyon daemon'
   echo 'WantedBy=multi-user.target'; } > "/etc/systemd/system/${username}.service"
 
 systemctl daemon-reload
-systemctl enable ${username}
-systemctl restart ${username}
+systemctl enable "${username}.service"
+systemctl restart "${username}.service"
 
 echo 'Creating nginx configuration'
 if [ ! -f /etc/nginx/nginx.conf ]; then
