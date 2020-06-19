@@ -530,37 +530,23 @@ class PubServer(BaseHTTPRequestHandler):
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
 
-        if not httpRedirect:
-            print('Redirect from existing headers: ' + str(self.headers))
-            self.headers = []
-            if cookie:
-                if not cookie.startswith('SET:'):
-                    self.headers['Cookie'] = cookie
-                else:
-                    self.send_header('Set-Cookie', cookie)
-            self.Path = redirect.replace(callingDomain, '')
-            print('Redirect path: ' + self.Path)
-            self.headers['Location'] = redirect
-            self.headers['Host'] = callingDomain
-            self.headers['InstanceID'] = self.server.instanceId
-            self.headers['Content-type'] = 'text/html; charset=utf-8'
-            self.headers['Content-Length'] = '0'
-            self.headers['X-Robots-Tag'] = 'noindex'
-            self.do_GET()
-        else:
+        if httpRedirect:
             self.send_response(303)
-            if cookie:
-                if not cookie.startswith('SET:'):
-                    self.send_header('Cookie', cookie)
-                else:
-                    self.send_header('Set-Cookie',
-                                     cookie.replace('SET:', '').strip())
-            self.send_header('Location', redirect)
-            self.send_header('Host', callingDomain)
-            self.send_header('InstanceID', self.server.instanceId)
-            self.send_header('Content-Length', '0')
-            self.send_header('X-Robots-Tag', 'noindex')
-            self.end_headers()
+
+        if cookie:
+            if not cookie.startswith('SET:'):
+                self.send_header('Cookie', cookie)
+            else:
+                self.send_header('Set-Cookie',
+                                 cookie.replace('SET:', '').strip())
+        self.send_header('Location', redirect)
+        self.send_header('Host', callingDomain)
+        self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('Content-Length', '0')
+        self.send_header('X-Robots-Tag', 'noindex')
+        self.end_headers()
+        if not httpRedirect:
+            self.do_GET()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str) -> None:
         msg = "<html><head></head><body><h1>" + str(httpCode) + " " + \
