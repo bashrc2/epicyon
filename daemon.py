@@ -751,7 +751,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif (callingDomain.endswith('.i2p') and
                   self.server.i2pDomain):
                 wfResult = \
-                    webfingerMeta('i2p', self.server.i2pDomain)
+                    webfingerMeta('http', self.server.i2pDomain)
             else:
                 wfResult = \
                     webfingerMeta(self.server.httpPrefix,
@@ -772,7 +772,7 @@ class PubServer(BaseHTTPRequestHandler):
             elif (callingDomain.endswith('.i2p') and
                   self.server.i2pDomain):
                 wfResult = \
-                    webfingerNodeInfo('i2p', self.server.i2pDomain)
+                    webfingerNodeInfo('http', self.server.i2pDomain)
             else:
                 wfResult = \
                     webfingerNodeInfo(self.server.httpPrefix,
@@ -1576,7 +1576,7 @@ class PubServer(BaseHTTPRequestHandler):
                                          self.server.onionDomain)
             elif (callingDomain.endswith('.i2p') and
                   self.server.i2pDomain):
-                msg = htmlTermsOfService(self.server.baseDir, 'i2p',
+                msg = htmlTermsOfService(self.server.baseDir, 'http',
                                          self.server.i2pDomain)
             else:
                 msg = htmlTermsOfService(self.server.baseDir,
@@ -1614,7 +1614,7 @@ class PubServer(BaseHTTPRequestHandler):
                               None)
             elif callingDomain.endswith('.i2p'):
                 msg = \
-                    htmlAbout(self.server.baseDir, 'i2p',
+                    htmlAbout(self.server.baseDir, 'http',
                               self.server.i2pDomain,
                               None)
             else:

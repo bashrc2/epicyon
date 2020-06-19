@@ -1651,10 +1651,8 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
         return 8
     withDigest = True
 
-    if toDomain.endswith('.onion'):
+    if toDomain.endswith('.onion') or toDomain.endswith('.i2p'):
         httpPrefix = 'http'
-    elif toDomain.endswith('.i2p'):
-        httpPrefix = 'i2p'
 
 #    sharedInbox = False
     if toNickname == 'inbox':
@@ -1965,7 +1963,7 @@ def sendToNamedAddresses(session, baseDir: str,
         elif i2pDomain:
             if toDomain.endswith('.i2p'):
                 fromDomain = i2pDomain
-                fromHttpPrefix = 'i2p'
+                fromHttpPrefix = 'http'
         cc = []
         sendSignedJson(postJsonObject, session, baseDir,
                        nickname, fromDomain, port,
@@ -2054,7 +2052,7 @@ def sendToFollowers(session, baseDir: str,
         elif i2pDomain:
             if toDomain.endswith('.i2p'):
                 fromDomain = i2pDomain
-                fromHttpPrefix = 'i2p'
+                fromHttpPrefix = 'http'
 
         if withSharedInbox:
             toNickname = followerHandles[index].split('@')[0]
