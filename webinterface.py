@@ -5960,9 +5960,13 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             if searchPortStr.isdigit():
                 searchPort = int(searchPortStr)
             searchDomain = searchDomain.split(':')[0]
-    print('DEBUG: Search for handle ' +
-          str(searchNickname) + '@' + str(searchDomain) + ':' +
-          str(searchPort))
+    if searchPort:
+        print('DEBUG: Search for handle ' +
+              str(searchNickname) + '@' + str(searchDomain) + ':' +
+              str(searchPort))
+    else:
+        print('DEBUG: Search for handle ' +
+              str(searchNickname) + '@' + str(searchDomain))
     if not searchNickname:
         print('DEBUG: No nickname found in ' + profileHandle)
         return None
