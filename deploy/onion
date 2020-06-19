@@ -1,6 +1,7 @@
 #!/bin/bash
 
 install_destination=/opt/epicyon-onion
+username='epicyon-onion'
 
 if [[ "$1" == 'remove' ]]; then
     echo 'Removing Epicyon onion instance'
@@ -9,10 +10,10 @@ if [[ "$1" == 'remove' ]]; then
     rm -rf /var/lib/tor/hidden_service_epicyon
     systemctl restart tor
 
-    systemctl stop epicyon
-    systemctl disable epicyon
-    rm /etc/nginx/sites-enabled/epicyon
-    rm /etc/nginx/sites-availale/epicyon
+    systemctl stop "${username}"
+    systemctl disable "${username}"
+    rm "/etc/nginx/sites-enabled/${username}"
+    rm "/etc/nginx/sites-availale/${username}"
     rm -rf ${install_destination}
     if [ -d /var/www/cache ]; then
 	rm -rf /var/www/cache
@@ -27,7 +28,6 @@ fi
 clear
 echo 'Installing Epicyon on an onion domain'
 
-username='epicyon-onion'
 NGINX_PORT=9553
 EPICYON_PORT=7157
 
@@ -124,11 +124,11 @@ echo 'Creating Epicyon daemon'
   echo 'StandardError=syslog';
   echo '';
   echo '[Install]';
-  echo 'WantedBy=multi-user.target'; } > /etc/systemd/system/epicyon.service
+  echo 'WantedBy=multi-user.target'; } > "/etc/systemd/system/${username}.service"
 
 systemctl daemon-reload
-systemctl enable epicyon
-systemctl restart epicyon
+systemctl enable ${username}
+systemctl restart ${username}
 
 echo 'Creating nginx configuration'
 if [ ! -f /etc/nginx/nginx.conf ]; then
@@ -295,9 +295,9 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '        }';
   echo "        proxy_pass http://localhost:${EPICYON_PORT};";
   echo '    }';
-  echo '}'; } > /etc/nginx/sites-available/epicyon-onion
+  echo '}'; } > "/etc/nginx/sites-available/${username}"
 
-ln -s /etc/nginx/sites-available/epicyon-onion /etc/nginx/sites-enabled/
+ln -s "/etc/nginx/sites-available/${username}" /etc/nginx/sites-enabled/
 systemctl restart nginx
 
 echo -n "$ONION_DOMAIN" | qrencode
