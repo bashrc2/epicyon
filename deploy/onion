@@ -300,7 +300,7 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
 ln -s "/etc/nginx/sites-available/${username}" /etc/nginx/sites-enabled/
 systemctl restart nginx
 
-echo -n "$ONION_DOMAIN" | qrencode
+echo -n "$ONION_DOMAIN" | qrencode -t ANSI
 echo "Your onion Epicyon instance is now installed."
 echo "In a Tor browser navigate to $ONION_DOMAIN and register an account"
 exit 0

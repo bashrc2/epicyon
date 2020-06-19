@@ -388,7 +388,7 @@ echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
 ln -s /etc/nginx/sites-available/epicyon-i2p /etc/nginx/sites-enabled/
 systemctl restart nginx
 
-echo -n "$I2P_DOMAIN" | qrencode
+echo -n "$I2P_DOMAIN" | qrencode -t ANSI
 echo "Your Epicyon i2p instance is now installed."
 echo 'In Firefox see preferences/network settings, manual proxy and uncheck DNS over HTTPS. In about:config and find the property media.peerConnection.ice.proxy_only and set it to true.'
 echo "In a browser proxied through 127.0.0.1 port 4444 navigate to http://${I2P_DOMAIN} and register an account"
