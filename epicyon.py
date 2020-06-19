@@ -374,10 +374,8 @@ if args.testsnetwork:
     sys.exit()
 
 httpPrefix = 'https'
-if args.http:
+if args.http or args.i2p:
     httpPrefix = 'http'
-if args.i2p:
-    httpPrefix = 'i2p'
 elif args.gnunet:
     httpPrefix = 'gnunet'
 
@@ -1033,7 +1031,7 @@ if args.dat:
 if args.hyper:
     httpPrefix = 'hyper'
 if args.i2p:
-    httpPrefix = 'i2p'
+    httpPrefix = 'http'
 
 if args.actor:
     originalActor = args.actor
@@ -1083,7 +1081,7 @@ if args.actor:
         port = 80
         proxyType = 'tor'
     elif domain.endswith('.i2p'):
-        httpPrefix = 'i2p'
+        httpPrefix = 'http'
         port = 80
         proxyType = 'i2p'
     elif args.gnunet:

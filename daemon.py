@@ -525,7 +525,7 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _redirect_headers(self, redirect: str, cookie: str,
-                          callingDomain: str, httpRedirect=False) -> None:
+                          callingDomain: str, httpRedirect=True) -> None:
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
