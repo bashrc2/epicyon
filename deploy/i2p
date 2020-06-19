@@ -1,6 +1,6 @@
 #!/bin/bash
 
-install_destination=/opt/epicyon
+install_destination=/opt/epicyon-i2p
 
 if [[ "$1" == 'remove' ]]; then
     echo 'Removing Epicyon i2p instance'

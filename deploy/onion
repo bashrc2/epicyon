@@ -1,6 +1,6 @@
 #!/bin/bash
 
-install_destination=/opt/epicyon
+install_destination=/opt/epicyon-onion
 
 if [[ "$1" == 'remove' ]]; then
     echo 'Removing Epicyon onion instance'
