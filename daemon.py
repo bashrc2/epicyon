@@ -525,23 +525,40 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _redirect_headers(self, redirect: str, cookie: str,
-                          callingDomain: str) -> None:
-        self.send_response(303)
-        if cookie:
-            if not cookie.startswith('SET:'):
-                self.send_header('Cookie', cookie)
-            else:
-                self.send_header('Set-Cookie',
-                                 cookie.replace('SET:', '').strip())
+                          callingDomain: str, httpRedirect=False) -> None:
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
-        self.send_header('Location', redirect)
-        self.send_header('Host', callingDomain)
-        self.send_header('InstanceID', self.server.instanceId)
-        self.send_header('Content-Length', '0')
-        self.send_header('X-Robots-Tag', 'noindex')
-        self.end_headers()
+
+        if not httpRedirect:
+            self.headers = []
+            if cookie:
+                if not cookie.startswith('SET:'):
+                    self.headers['Cookie'] = cookie
+                else:
+                    self.send_header('Set-Cookie', cookie)
+            self.Path = redirect.replace(callingDomain, '')
+            print('Redirect path: ' + self.Path)
+            self.headers['Location'] = redirect
+            self.headers['Host'] = callingDomain
+            self.headers['InstanceID'] = self.server.instanceId
+            self.headers['Content-Length'] = '0'
+            self.headers['X-Robots-Tag'] = 'noindex'
+            self.do_GET()
+        else:
+            self.send_response(303)
+            if cookie:
+                if not cookie.startswith('SET:'):
+                    self.send_header('Cookie', cookie)
+                else:
+                    self.send_header('Set-Cookie',
+                                     cookie.replace('SET:', '').strip())
+            self.send_header('Location', redirect)
+            self.send_header('Host', callingDomain)
+            self.send_header('InstanceID', self.server.instanceId)
+            self.send_header('Content-Length', '0')
+            self.send_header('X-Robots-Tag', 'noindex')
+            self.end_headers()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str) -> None:
         msg = "<html><head></head><body><h1>" + str(httpCode) + " " + \
