@@ -45,7 +45,7 @@ fi
 clear
 echo 'Installing Epicyon on an i2p domain'
 
-username='epicyon'
+username='epicyon-i2p'
 NGINX_PORT=9554
 EPICYON_PORT=7158
 tunnels_dir=/var/lib/i2pd/tunnels.d
@@ -88,7 +88,7 @@ else
     adduser --system --home=${install_destination} --group $username
 fi
 
-chown -R epicyon:epicyon ${install_destination}
+chown -R ${username}:${username} ${install_destination}
 
 echo 'Creating a command script to obtain i2p domain names from dat files'
 { echo '#!/bin/bash';

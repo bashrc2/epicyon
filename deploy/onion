@@ -27,7 +27,7 @@ fi
 clear
 echo 'Installing Epicyon on an onion domain'
 
-username='epicyon'
+username='epicyon-onion'
 NGINX_PORT=9553
 EPICYON_PORT=7157
 
@@ -69,7 +69,7 @@ else
     adduser --system --home=${install_destination} --group $username
 fi
 
-chown -R epicyon:epicyon ${install_destination}
+chown -R ${username}:${username} ${install_destination}
 
 echo 'Creating onion site configuration'
 if [ ! -d /etc/torrc.d ]; then
