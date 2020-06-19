@@ -527,9 +527,12 @@ class PubServer(BaseHTTPRequestHandler):
     def _redirect_headers(self, redirect: str, cookie: str,
                           callingDomain: str) -> None:
         self.send_response(303)
-#        self.send_header('Content-type', 'text/html')
         if cookie:
-            self.send_header('Cookie', cookie)
+            if not cookie.startswith('SET:'):
+                self.send_header('Cookie', cookie)
+            else:
+                self.send_header('Set-Cookie',
+                                 cookie.replace('SET:', '').strip())
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
@@ -986,21 +989,17 @@ class PubServer(BaseHTTPRequestHandler):
                   self.headers['Authorization'])
         return False
 
-    def _clearLoginDetails(self, nickname: str):
+    def _clearLoginDetails(self, nickname: str, callingDomain: str):
         """Clears login details for the given account
         """
         # remove any token
         if self.server.tokens.get(nickname):
             del self.server.tokensLookup[self.server.tokens[nickname]]
             del self.server.tokens[nickname]
-        self.send_response(303)
-        self.send_header('Content-Length', '0')
-        self.send_header('Set-Cookie', 'epicyon=; SameSite=Strict')
-        self.send_header('Location',
-                         self.server.httpPrefix + '://' +
-                         self.server.domainFull + '/login')
-        self.send_header('X-Robots-Tag', 'noindex')
-        self.end_headers()
+        self._redirect_headers(self.server.httpPrefix + '://' +
+                               self.server.domainFull + '/login',
+                               'epicyon=; SameSite=Strict',
+                               callingDomain)
 
     def _benchmarkGETtimings(self, GETstartTime, GETtimings: [], getID: int):
         """Updates a list containing how long each segment of GET takes
@@ -1642,24 +1641,22 @@ class PubServer(BaseHTTPRequestHandler):
                               str(divertToLoginScreen))
                         print('DEBUG: authorized=' + str(authorized))
                         print('DEBUG: path=' + self.path)
-                    self.send_response(303)
                     if callingDomain.endswith('.onion') and \
                        self.server.onionDomain:
-                        self.send_header('Location',
-                                         'http://' +
-                                         self.server.onionDomain + '/login')
+                        self._redirect_headers('http://' +
+                                               self.server.onionDomain +
+                                               '/login',
+                                               None, callingDomain)
                     elif (callingDomain.endswith('.i2p') and
                           self.server.i2pDomain):
-                        self.send_header('Location',
-                                         'i2p://' +
-                                         self.server.i2pDomain + '/login')
+                        self._redirect_headers('http://' +
+                                               self.server.i2pDomain +
+                                               '/login',
+                                               None, callingDomain)
                     else:
-                        self.send_header('Location',
-                                         self.server.httpPrefix + '://' +
-                                         self.server.domainFull + '/login')
-                    self.send_header('Content-Length', '0')
-                    self.send_header('X-Robots-Tag', 'noindex')
-                    self.end_headers()
+                        self._redirect_headers(self.server.httpPrefix + '://' +
+                                               self.server.domainFull +
+                                               '/login', None, callingDomain)
                     return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 14)
@@ -5658,7 +5655,7 @@ class PubServer(BaseHTTPRequestHandler):
                                       loginNickname + '/outbox',
                                       authHeader, False):
                     print('Login failed: ' + loginNickname)
-                    self._clearLoginDetails(loginNickname)
+                    self._clearLoginDetails(loginNickname, callingDomain)
                     self.server.POSTbusy = False
                     return
                 else:
@@ -5672,7 +5669,6 @@ class PubServer(BaseHTTPRequestHandler):
                         return
                     # login success - redirect with authorization
                     print('Login success: ' + loginNickname)
-                    self.send_response(303)
                     # re-activate account if needed
                     activateAccount(self.server.baseDir, loginNickname,
                                     self.server.domain)
@@ -5717,33 +5713,31 @@ class PubServer(BaseHTTPRequestHandler):
 
                     index = self.server.tokens[loginNickname]
                     self.server.tokensLookup[index] = loginNickname
-                    self.send_header('Set-Cookie',
-                                     'epicyon=' +
-                                     self.server.tokens[loginNickname] +
-                                     '; SameSite=Strict')
+                    cookieStr = 'SET:epicyon=' + \
+                        self.server.tokens[loginNickname] + '; SameSite=Strict'
                     if callingDomain.endswith('.onion') and \
                        self.server.onionDomain:
-                        self.send_header('Location',
-                                         'http://' +
-                                         self.server.onionDomain +
-                                         '/users/' + loginNickname + '/' +
-                                         self.server.defaultTimeline)
+                        self._redirect_headers('http://' +
+                                               self.server.onionDomain +
+                                               '/users/' +
+                                               loginNickname + '/' +
+                                               self.server.defaultTimeline,
+                                               cookieStr, callingDomain)
                     elif (callingDomain.endswith('.i2p') and
                           self.server.i2pDomain):
-                        self.send_header('Location',
-                                         'i2p://' +
-                                         self.server.i2pDomain +
-                                         '/users/' + loginNickname + '/' +
-                                         self.server.defaultTimeline)
+                        self._redirect_headers('http://' +
+                                               self.server.i2pDomain +
+                                               '/users/' +
+                                               loginNickname + '/' +
+                                               self.server.defaultTimeline,
+                                               cookieStr, callingDomain)
                     else:
-                        self.send_header('Location',
-                                         self.server.httpPrefix+'://' +
-                                         self.server.domainFull +
-                                         '/users/' + loginNickname + '/' +
-                                         self.server.defaultTimeline)
-                    self.send_header('Content-Length', '0')
-                    self.send_header('X-Robots-Tag', 'noindex')
-                    self.end_headers()
+                        self._redirect_headers(self.server.httpPrefix+'://' +
+                                               self.server.domainFull +
+                                               '/users/' +
+                                               loginNickname + '/' +
+                                               self.server.defaultTimeline,
+                                               cookieStr, callingDomain)
                     self.server.POSTbusy = False
                     return
             self._200()
@@ -6362,7 +6356,8 @@ class PubServer(BaseHTTPRequestHandler):
                                 deactivateAccount(self.server.baseDir,
                                                   nickname,
                                                   self.server.domain)
-                                self._clearLoginDetails(nickname)
+                                self._clearLoginDetails(nickname,
+                                                        callingDomain)
                                 self.server.POSTbusy = False
                                 return
             if callingDomain.endswith('.onion') and \
