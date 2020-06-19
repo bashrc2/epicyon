@@ -531,6 +531,7 @@ class PubServer(BaseHTTPRequestHandler):
                   redirect)
 
         if not httpRedirect:
+            print('Redirect from existing headers: ' + str(self.headers))
             self.headers = []
             if cookie:
                 if not cookie.startswith('SET:'):
@@ -542,6 +543,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.headers['Location'] = redirect
             self.headers['Host'] = callingDomain
             self.headers['InstanceID'] = self.server.instanceId
+            self.headers['Content-type'] = 'text/html; charset=utf-8'
             self.headers['Content-Length'] = '0'
             self.headers['X-Robots-Tag'] = 'noindex'
             self.do_GET()
