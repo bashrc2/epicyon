@@ -1660,8 +1660,7 @@ def htmlHashtagBlocked(baseDir: str) -> str:
         cssFilename = baseDir + '/suspended.css'
     with open(cssFilename, 'r') as cssFile:
         blockedHashtagCSS = cssFile.read()
-        blockedHashtagForm = htmlHeader(cssFilename,
-                                        blockedHashtagCSS)
+        blockedHashtagForm = htmlHeader(cssFilename, blockedHashtagCSS)
         blockedHashtagForm += '<div><center>'
         blockedHashtagForm += '  <p class="screentitle">Hashtag Blocked</p>'
         blockedHashtagForm += \
@@ -2078,31 +2077,12 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     return newPostForm
 
 
-def htmlHeader(cssFilename: str, css=None, refreshSec=0, lang='en') -> str:
-    if refreshSec == 0:
-        meta = '  <meta charset="utf-8">\n'
-    else:
-        meta = \
-            '  <meta http-equiv="Refresh" content="' + \
-            str(refreshSec) + '" charset="utf-8">\n'
-
-    if not css:
-        if '/' in cssFilename:
-            cssFilename = cssFilename.split('/')[-1]
-        htmlStr = '<!DOCTYPE html>\n'
-        htmlStr += '<html lang="' + lang + '">\n'
-        htmlStr += meta
-        htmlStr += '  <style>\n'
-        htmlStr += '    @import url("' + cssFilename + '");\n'
-        htmlStr += '    background-color: #282c37'
-        htmlStr += '  </style>\n'
-        htmlStr += '  <body>\n'
-    else:
-        htmlStr = '<!DOCTYPE html>\n'
-        htmlStr += '<html lang="' + lang + '">\n'
-        htmlStr += meta
-        htmlStr += '  <style>\n' + css + '</style>\n'
-        htmlStr += '  <body>\n'
+def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
+    htmlStr = '<!DOCTYPE html>\n'
+    htmlStr += '<html lang="' + lang + '">\n'
+    htmlStr += '  <meta charset="utf-8">\n'
+    htmlStr += '  <style>\n' + css + '</style>\n'
+    htmlStr += '  <body>\n'
     return htmlStr
 
 
