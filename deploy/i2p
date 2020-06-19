@@ -1,5 +1,7 @@
 #!/bin/bash
 
+install_destination=/opt/epicyon
+
 if [[ "$1" == 'remove' ]]; then
     echo 'Removing Epicyon i2p instance'
     systemctl stop i2pd
@@ -16,7 +18,7 @@ if [[ "$1" == 'remove' ]]; then
     systemctl disable epicyon
     rm /etc/nginx/sites-enabled/epicyon
     rm /etc/nginx/sites-availale/epicyon
-    rm -rf /opt/epicyon
+    rm -rf ${install_destination}
     if [ -d /var/www/cache ]; then
 	rm -rf /var/www/cache
     fi
@@ -67,10 +69,10 @@ else
 fi
 
 echo 'Cloning the epicyon repo'
-if [ ! -d /opt/epicyon ]; then
-    git clone https://gitlab.com/bashrc2/epicyon /opt/epicyon
+if [ ! -d ${install_destination} ]; then
+    git clone https://gitlab.com/bashrc2/epicyon ${install_destination}
 
-    if [ ! -d /opt/epicyon ]; then
+    if [ ! -d ${install_destination} ]; then
 	echo 'Epicyon repo failed to clone'
 	exit 3
     fi
@@ -79,14 +81,14 @@ fi
 echo 'Adding an epicyon system user account'
 if [ -f /usr/bin/pacman ]; then
     groupadd epicyon
-    useradd --system -g epicyon --home-dir=/opt/epicyon $username
+    useradd --system -g epicyon --home-dir=${install_destination} $username
     groupadd www-data
     useradd --system -g www-data --home-dir=/srv/http www-data
 else
-    adduser --system --home=/opt/epicyon --group $username
+    adduser --system --home=${install_destination} --group $username
 fi
 
-chown -R epicyon:epicyon /opt/epicyon
+chown -R epicyon:epicyon ${install_destination}
 
 echo 'Creating a command script to obtain i2p domain names from dat files'
 { echo '#!/bin/bash';
@@ -201,8 +203,8 @@ echo 'Creating Epicyon daemon'
   echo 'Type=simple';
   echo "User=$username";
   echo "Group=$username";
-  echo 'WorkingDirectory=/opt/epicyon';
-  echo "ExecStart=/usr/bin/python3 /opt/epicyon/epicyon.py --http --i2p --port 80 --proxy ${EPICYON_PORT} --domain ${I2P_DOMAIN} --registration open";
+  echo "WorkingDirectory=${install_destination}";
+  echo "ExecStart=/usr/bin/python3 ${install_destination}/epicyon.py --http --i2p --port 80 --proxy ${EPICYON_PORT} --domain ${I2P_DOMAIN} --registration open";
   echo "Environment=USER=$username";
   echo 'Environment=PYTHONUNBUFFERED=true';
   echo 'Restart=always';
