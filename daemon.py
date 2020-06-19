@@ -542,11 +542,13 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Location', redirect)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
+        self.send_header('Content-type', 'text/html; charset=utf-8')
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
         if not httpRedirect:
             self.Path = redirect.replace(callingDomain, '')
+            print('Redirect path: ' + self.Path)
             self.do_GET()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str) -> None:
