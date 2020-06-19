@@ -140,9 +140,9 @@ sed -i 's|# ipv6 =|ipv6 =|g' /etc/i2pd/i2pd.conf
 sed -i 's|ipv6 =.*|ipv6 = true|g' /etc/i2pd/i2pd.conf
 
 echo 'Disabling i2p logging'
-#sed -i 's|#logfile =|logfile =|g' /etc/i2pd/i2pd.conf
-#sed -i 's|# logfile =|logfile =|g' /etc/i2pd/i2pd.conf
-#sed -i 's|logfile =.*|logfile = /dev/null|g' /etc/i2pd/i2pd.conf
+sed -i 's|#logfile =|logfile =|g' /etc/i2pd/i2pd.conf
+sed -i 's|# logfile =|logfile =|g' /etc/i2pd/i2pd.conf
+sed -i 's|logfile =.*|logfile = /dev/null|g' /etc/i2pd/i2pd.conf
 
 echo 'Enabling i2p NAT traversal'
 sed -i 's|#nat =|nat =|g' /etc/i2pd/i2pd.conf
