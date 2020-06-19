@@ -295,9 +295,9 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '        }';
   echo "        proxy_pass http://localhost:${EPICYON_PORT};";
   echo '    }';
-  echo '}'; } > /etc/nginx/sites-available/epicyon
+  echo '}'; } > /etc/nginx/sites-available/epicyon-onion
 
-ln -s /etc/nginx/sites-available/epicyon /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/epicyon-onion /etc/nginx/sites-enabled/
 systemctl restart nginx
 
 echo -n "$ONION_DOMAIN" | qrencode

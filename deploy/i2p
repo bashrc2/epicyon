@@ -383,9 +383,9 @@ echo "Creating nginx virtual host for http://${I2P_DOMAIN}"
   echo '        }';
   echo "        proxy_pass http://localhost:${EPICYON_PORT};";
   echo '    }';
-  echo '}'; } > /etc/nginx/sites-available/epicyon
+  echo '}'; } > /etc/nginx/sites-available/epicyon-i2p
 
-ln -s /etc/nginx/sites-available/epicyon /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/epicyon-i2p /etc/nginx/sites-enabled/
 systemctl restart nginx
 
 echo -n "$I2P_DOMAIN" | qrencode
