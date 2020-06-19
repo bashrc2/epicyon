@@ -32,7 +32,7 @@ Or on Debian:
 sudo apt install -y \
     tor python3-socks imagemagick \
     python3-numpy python3-setuptools \
-    python3-crypto python3-cryptodome \
+    python3-crypto python3-pycryptodome \
     python3-dateutil python3-pil.imagetk
     python3-idna python3-requests \
     python3-pyld \

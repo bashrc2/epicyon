@@ -61,12 +61,17 @@ if [ -f /usr/bin/pacman ]; then
     pip3 install pyLD
 else
     apt-get update
-    apt-get -y install imagemagick python3-crypto python3-cryptodome \
+    apt-get -y install imagemagick python3-crypto python3-pycryptodome \
 	    python3-dateutil python3-idna python3-requests \
 	    python3-numpy python3-pil.imagetk python3-pip \
 	    python3-setuptools python3-socks python3-idna \
 	    libimage-exiftool-perl python3-flake8 python3-pyld \
 	    nginx git i2pd wget qrencode
+fi
+
+if [ ! -d /etc/i2pd ]; then
+    echo 'i2pd was not installed'
+    exit 5
 fi
 
 echo 'Cloning the epicyon repo'
