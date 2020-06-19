@@ -28,8 +28,8 @@ clear
 echo 'Installing Epicyon on an onion domain'
 
 username='epicyon'
-NGINX_PORT=9552
-EPICYON_PORT=7156
+NGINX_PORT=9553
+EPICYON_PORT=7157
 
 echo 'Adding Epicyon dependencies'
 if [ -f /usr/bin/pacman ]; then
