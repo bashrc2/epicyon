@@ -254,8 +254,8 @@ echo "Creating nginx virtual host for ${ONION_DOMAIN}"
   echo '    location / {';
   echo '        proxy_http_version 1.1;';
   echo '        client_max_body_size 31M;';
-  echo "        proxy_set_header Upgrade \$http_upgrade;";
-  echo '        proxy_set_header Connection "upgrade";';
+  echo "        proxy_hide_header Upgrade;";
+  echo '        proxy_hide_header Connection;';
   echo "        proxy_set_header Host \$http_host;";
   echo "        proxy_set_header X-Real-IP \$remote_addr;";
   echo "        proxy_set_header X-Forward-For \$proxy_add_x_forwarded_for;";
