@@ -1617,7 +1617,8 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings, 13)
 
         # if not authorized then show the login screen
-        if htmlGET and self.path != '/login' and self.path != '/':
+        if htmlGET and self.path != '/login' and \
+           not self.path.endswith('.png') and self.path != '/':
             if '/media/' not in self.path and \
                '/sharefiles/' not in self.path and \
                '/statuses/' not in self.path and \
