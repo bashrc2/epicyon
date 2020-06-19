@@ -17,6 +17,7 @@ RUN apt-get update && \
     libimage-exiftool-perl \
     python3-flake8 \
     python3-pyld \
+    python3-django-timezone-field \
     tor
 RUN adduser --system --home=/opt/epicyon --group epicyon
 COPY --chown=epicyon:epicyon . /app

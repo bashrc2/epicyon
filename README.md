@@ -35,7 +35,7 @@ sudo apt install -y \
     python3-crypto python3-pycryptodome \
     python3-dateutil python3-pil.imagetk
     python3-idna python3-requests \
-    python3-pyld \
+    python3-pyld python3-django-timezone-field \
     libimage-exiftool-perl python3-flake8 \
     certbot nginx
 ```

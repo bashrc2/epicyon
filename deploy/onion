@@ -47,7 +47,7 @@ else
 	    python3-numpy python3-pil.imagetk python3-pip \
 	    python3-setuptools python3-socks python3-idna \
 	    libimage-exiftool-perl python3-flake8 python3-pyld \
-	    tor nginx git qrencode
+	    python3-django-timezone-field tor nginx git qrencode
 fi
 
 echo 'Cloning the epicyon repo'
