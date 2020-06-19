@@ -546,6 +546,7 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
         if not httpRedirect:
+            self.Path = redirect.replace(callingDomain, '')
             self.do_GET()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str) -> None:
