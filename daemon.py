@@ -220,6 +220,14 @@ def readFollowList(filename: str) -> None:
 class PubServer(BaseHTTPRequestHandler):
     protocol_version = 'HTTP/1.1'
 
+    def _pathIsImage(self) -> bool:
+        if self.path.endswith('.png') or \
+           self.path.endswith('.jpg') or \
+           self.path.endswith('.gif') or \
+           self.path.endswith('.webp'):
+            return True
+        return False
+
     def handle_error(self, request, client_address):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
@@ -1618,7 +1626,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # if not authorized then show the login screen
         if htmlGET and self.path != '/login' and \
-           not self.path.endswith('.png') and self.path != '/':
+           not self._pathIsImage() and self.path != '/':
             if '/media/' not in self.path and \
                '/sharefiles/' not in self.path and \
                '/statuses/' not in self.path and \
@@ -1824,9 +1832,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # emoji images
         if '/emoji/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.gif'):
+            if self._pathIsImage():
                 emojiStr = self.path.split('/emoji/')[1]
                 emojiFilename = \
                     self.server.baseDir + '/emoji/' + emojiStr
@@ -1861,10 +1867,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show media
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.gif') or \
-               self.path.endswith('.webp') or \
+            if self._pathIsImage() or \
                self.path.endswith('.mp4') or \
                self.path.endswith('.ogv') or \
                self.path.endswith('.mp3') or \
@@ -1911,10 +1914,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show shared item images
         # Note that this comes before the busy flag to avoid conflicts
         if '/sharefiles/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.webp') or \
-               self.path.endswith('.gif'):
+            if self._pathIsImage():
                 mediaStr = self.path.split('/sharefiles/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/sharefiles/' + mediaStr
@@ -2031,10 +2031,7 @@ class PubServer(BaseHTTPRequestHandler):
         # show avatar or background image
         # Note that this comes before the busy flag to avoid conflicts
         if '/users/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.webp') or \
-               self.path.endswith('.gif'):
+            if self._pathIsImage():
                 avatarStr = self.path.split('/users/')[1]
                 if '/' in avatarStr and '.temp.' not in self.path:
                     avatarNickname = avatarStr.split('/')[0]
@@ -4922,10 +4919,7 @@ class PubServer(BaseHTTPRequestHandler):
         fileLength = -1
 
         if '/media/' in self.path:
-            if self.path.endswith('.png') or \
-               self.path.endswith('.jpg') or \
-               self.path.endswith('.gif') or \
-               self.path.endswith('.webp') or \
+            if self._pathIsImage() or \
                self.path.endswith('.mp4') or \
                self.path.endswith('.ogv') or \
                self.path.endswith('.mp3') or \
