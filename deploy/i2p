@@ -137,7 +137,7 @@ if [ -f /etc/sysctl.conf ]; then
 fi
 sed -i 's|#ipv6 =|ipv6 =|g' /etc/i2pd/i2pd.conf
 sed -i 's|# ipv6 =|ipv6 =|g' /etc/i2pd/i2pd.conf
-sed -i 's|ipv6 =.*|ipv6 = false|g' /etc/i2pd/i2pd.conf
+sed -i 's|ipv6 =.*|ipv6 = true|g' /etc/i2pd/i2pd.conf
 
 echo 'Disabling i2p logging'
 #sed -i 's|#logfile =|logfile =|g' /etc/i2pd/i2pd.conf
