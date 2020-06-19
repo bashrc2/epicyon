@@ -525,13 +525,12 @@ class PubServer(BaseHTTPRequestHandler):
         return False
 
     def _redirect_headers(self, redirect: str, cookie: str,
-                          callingDomain: str, httpRedirect=True) -> None:
+                          callingDomain: str) -> None:
         if '://' not in redirect:
             print('REDIRECT ERROR: redirect is not an absolute url ' +
                   redirect)
 
-        if httpRedirect:
-            self.send_response(303)
+        self.send_response(303)
 
         if cookie:
             if not cookie.startswith('SET:'):
@@ -546,10 +545,6 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('Content-Length', '0')
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
-        if not httpRedirect:
-            self.Path = redirect.replace(callingDomain, '')
-            print('Redirect path: ' + self.Path)
-            self.do_GET()
 
     def _httpReturnCode(self, httpCode: int, httpDescription: str) -> None:
         msg = "<html><head></head><body><h1>" + str(httpCode) + " " + \
