@@ -228,6 +228,18 @@ class PubServer(BaseHTTPRequestHandler):
             return True
         return False
 
+    def _pathIsVideo(self) -> bool:
+        if self.path.endswith('.ogv') or \
+           self.path.endswith('.mp4'):
+            return True
+        return False
+
+    def _pathIsAudio(self) -> bool:
+        if self.path.endswith('.ogg') or \
+           self.path.endswith('.mp3'):
+            return True
+        return False
+
     def handle_error(self, request, client_address):
         print('ERROR: http server error: ' + str(request) + ', ' +
               str(client_address))
@@ -1868,10 +1880,8 @@ class PubServer(BaseHTTPRequestHandler):
         # Note that this comes before the busy flag to avoid conflicts
         if '/media/' in self.path:
             if self._pathIsImage() or \
-               self.path.endswith('.mp4') or \
-               self.path.endswith('.ogv') or \
-               self.path.endswith('.mp3') or \
-               self.path.endswith('.ogg'):
+               self._pathIsVideo() or \
+               self._pathIsAudio():
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr
@@ -4920,10 +4930,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         if '/media/' in self.path:
             if self._pathIsImage() or \
-               self.path.endswith('.mp4') or \
-               self.path.endswith('.ogv') or \
-               self.path.endswith('.mp3') or \
-               self.path.endswith('.ogg'):
+               self._pathIsVideo() or \
+               self._pathIsAudio():
                 mediaStr = self.path.split('/media/')[1]
                 mediaFilename = \
                     self.server.baseDir + '/media/' + mediaStr
