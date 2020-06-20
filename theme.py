@@ -219,6 +219,9 @@ def setThemeNight(baseDir: str):
         "lines-color": "#7961ab",
         "day-number": "#7961ab",
         "day-number2": "#555",
+        "time-color": "#7961ab",
+        "place-color": "#7961ab",
+        "event-color": "#7961ab",
         "event-background": "#222",
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
@@ -270,6 +273,9 @@ def setThemeStarlight(baseDir: str):
         "cw-glow-color5": "#a3d5f0",
         "cw-background": "black",
         "timeline-border-radius": "20px",
+        "time-color": "#ffc4bc",
+        "place-color": "#ffc4bc",
+        "event-color": "#ffc4bc",
         "image-corners": "2%",
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.ttf') format('truetype')"
@@ -426,6 +432,9 @@ def setThemeLCD(baseDir: str):
         "font-color-header": "#9fb42b",
         "lines-color": "#33390d",
         "title-background": "#33390d",
+        "time-color": "#33390d",
+        "place-color": "#33390d",
+        "event-color": "#33390d",
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
     }
@@ -470,6 +479,9 @@ def setThemePurple(baseDir: str):
         "title-text": "white",
         "title-background": "#ff42a0",
         "gallery-text-color": "#ccc",
+        "time-color": "#f98bb0",
+        "place-color": "#f98bb0",
+        "event-color": "#f98bb0",
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
@@ -511,6 +523,9 @@ def setThemeHacker(baseDir: str):
         "title-text": "black",
         "title-background": "darkgreen",
         "gallery-text-color": "green",
+        "time-color": "#00ff00",
+        "place-color": "#00ff00",
+        "event-color": "#00ff00",
         "image-corners": "0%"
     }
     setThemeFromDict(baseDir, 'hacker', themeParams)
