@@ -22,7 +22,7 @@ On Arch/Parabola:
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
                imagemagick python-pillow python-requests \
 	       perl-image-exiftool python-numpy python-dateutil \
-	       certbot flake8
+	       python-qrcode python-png certbot flake8
 suso pip3 install pyLD
 ```
 
@@ -37,7 +37,7 @@ sudo apt install -y \
     python3-idna python3-requests \
     python3-pyld python3-django-timezone-field \
     libimage-exiftool-perl python3-flake8 \
-    certbot nginx
+    python3-pyqrcode python3-png certbot nginx
 ```
 
 ## Installation

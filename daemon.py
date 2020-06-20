@@ -13,6 +13,7 @@ import time
 import locale
 import urllib.parse
 from functools import partial
+import pyqrcode
 # for saving images
 from hashlib import sha256
 from hashlib import sha1
@@ -199,6 +200,16 @@ followsPerPage = 12
 
 # number of item shares per page
 sharesPerPage = 12
+
+
+def saveDomainQrcode(baseDir: str, httpPrefix: str,
+                     domainFull: str, scale=6) -> None:
+    """Saves a qrcode image for the domain name
+    This helps to transfer onion or i2p domains to a mobile device
+    """
+    qrcodeFilename = baseDir + '/accounts/qrcode.png'
+    url = pyqrcode.create(httpPrefix + '://' + domainFull)
+    url.png(qrcodeFilename, scale)
 
 
 def readFollowList(filename: str) -> None:
@@ -1708,12 +1719,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 15)
 
-        # image on login screen
+        # image on login screen or qrcode
         if self.path == '/login.png' or \
            self.path == '/login.gif' or \
            self.path == '/login.webp' or \
            self.path == '/login.jpeg' or \
-           self.path == '/login.jpg':
+           self.path == '/login.jpg' or \
+           self.path == '/qrcode.png':
             mediaFilename = \
                 self.server.baseDir + '/accounts' + self.path
             if os.path.isfile(mediaFilename):
@@ -7981,6 +7993,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
         if port != 80 and port != 443:
             if ':' not in domain:
                 httpd.domainFull = domain + ':' + str(port)
+    saveDomainQrcode(baseDir, httpPrefix, httpd.domainFull)
     httpd.httpPrefix = httpPrefix
     httpd.debug = debug
     httpd.federationList = fedList.copy()
