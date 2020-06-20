@@ -222,7 +222,7 @@ def setThemeNight(baseDir: str):
         "time-color": "#7961ab",
         "place-color": "#7961ab",
         "event-color": "#7961ab",
-        "event-background": "#222",
+        "event-background": "#333",
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
@@ -264,7 +264,7 @@ def setThemeStarlight(baseDir: str):
         "lines-color": "#ffc4bc",
         "day-number": "#ffc4bc",
         "day-number2": "#aaa",
-        "event-background": "#222",
+        "event-background": "#12435f",
         "cw-glow-radius1": "30px",
         "cw-glow-radius2": "40px",
         "cw-glow-radius3": "50px",
@@ -322,7 +322,7 @@ def setThemeHenge(baseDir: str):
         "lines-color": "#c5d2b9",
         "day-number": "#c5d2b9",
         "day-number2": "#ccc",
-        "event-background": "#222",
+        "event-background": "#333",
         "cw-glow-radius1": "10px",
         "cw-glow-radius2": "12px",
         "cw-glow-radius3": "14px",
