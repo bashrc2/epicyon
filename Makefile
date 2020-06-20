@@ -8,6 +8,7 @@ source:
 	rm -f translations/*~
 	rm -f orgs/*~
 	rm -f scripts/*~
+	rm -f deploy/*~
 	rm -rf __pycache__
 	rm -f \#* \.#* src/*~
 	rm -fr deb.*
@@ -19,4 +20,5 @@ clean:
 	rm -f website/EN/*~
 	rm -f gemini/EN/*~
 	rm -f scripts/*~
+	rm -f deploy/*~
 	rm -rf __pycache__
