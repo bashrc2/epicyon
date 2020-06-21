@@ -565,7 +565,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         if cookie:
             if not cookie.startswith('SET:'):
-                self.send_header('Cookie', cookie)
+                cookieStr = cookie
+                if self.server.httpPrefix == 'https':
+                    cookieStr += '; Secure'
+                cookieStr += '; HttpOnly; SameSite=Strict'
+                self.send_header('Cookie', cookieStr)
             else:
                 setCookieStr = cookie.replace('SET:', '').strip()
                 if self.server.httpPrefix == 'https':
