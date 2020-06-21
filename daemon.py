@@ -489,7 +489,12 @@ class PubServer(BaseHTTPRequestHandler):
         if length > -1:
             self.send_header('Content-Length', str(length))
         if cookie:
-            self.send_header('Cookie', cookie)
+            cookieStr = cookie
+            if 'HttpOnly;' not in cookieStr:
+                if self.server.httpPrefix == 'https':
+                    cookieStr += '; Secure'
+                cookieStr += '; HttpOnly; SameSite=Strict'            
+            self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
         self.send_header('X-Robots-Tag', 'noindex')
@@ -564,18 +569,15 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_response(303)
 
         if cookie:
-            if not cookie.startswith('SET:'):
-                cookieStr = cookie
+            cookieStr = cookie.replace('SET:', '').strip()
+            if 'HttpOnly;' not in cookieStr:
                 if self.server.httpPrefix == 'https':
                     cookieStr += '; Secure'
                 cookieStr += '; HttpOnly; SameSite=Strict'
+            if not cookie.startswith('SET:'):
                 self.send_header('Cookie', cookieStr)
             else:
-                setCookieStr = cookie.replace('SET:', '').strip()
-                if self.server.httpPrefix == 'https':
-                    setCookieStr += '; Secure'
-                setCookieStr += '; HttpOnly; SameSite=Strict'
-                self.send_header('Set-Cookie', setCookieStr)
+                self.send_header('Set-Cookie', cookieStr)
         self.send_header('Location', redirect)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
