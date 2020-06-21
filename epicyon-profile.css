@@ -17,6 +17,7 @@
     --border-color: #505050;
     --border-width: 2px;
     --font-size-header: 18px;
+    --font-size-header-mobile: 32px;
     --font-color-header: #ccc;
     --font-size-button-mobile: 34px;
     --font-size: 30px;
@@ -159,17 +160,6 @@ a:link {
 
 .hero-image img {
     width: 50%;
-}
-
-.hero-text {
-    text-align: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--font-color-header);
-    font-size: var(--font-size-header);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .new-post-text {
@@ -1034,6 +1024,16 @@ div.gallery img {
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
     }
+    .hero-text {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--font-color-header);
+        font-size: var(--font-size-header);
+        font-family: Arial, Helvetica, sans-serif;
+    }
     .hero-text img.qrcode {
         border-radius: 1%;
         width: 5%;
@@ -1390,6 +1390,16 @@ div.gallery img {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
+    }
+    .hero-text {
+        text-align: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--font-color-header);
+        font-size: var(--font-size-header-mobile);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .hero-text img.qrcode {
         border-radius: 1%;
