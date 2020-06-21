@@ -1029,6 +1029,7 @@ div.gallery img {
         position: absolute;
         top: 50%;
         left: 50%;
+	width: 90%;
         transform: translate(-50%, -50%);
         color: var(--font-color-header);
         font-size: var(--font-size-header);
@@ -1396,6 +1397,7 @@ div.gallery img {
         position: absolute;
         top: 50%;
         left: 50%;
+	width: 90%;
         transform: translate(-50%, -50%);
         color: var(--font-color-header);
         font-size: var(--font-size-header-mobile);
