@@ -205,12 +205,6 @@ a:link {
     min-width: 200px;
 }
 
-.hero-text img.qrcode {
-    border-radius: 1%;
-    width: 10%;
-    min-width: 20px;
-}
-
 .hero-text img.emoji {
     width: 50px;
     padding: 0 0;
@@ -1040,6 +1034,11 @@ div.gallery img {
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
     }
+    .hero-text img.qrcode {
+        border-radius: 1%;
+        width: 5%;
+        min-width: 20px;
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -1391,5 +1390,10 @@ div.gallery img {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;
         opacity: 0.7;
+    }
+    .hero-text img.qrcode {
+        border-radius: 1%;
+        width: 15%;
+        min-width: 20px;
     }
 }

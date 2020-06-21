@@ -2562,10 +2562,11 @@ def htmlProfile(defaultTimeline: str,
     profileHeaderStr += '    <h1>' + displayName + '</h1>'
     iconsDir = getIconsDir(baseDir)
     profileHeaderStr += \
-        '    <p><b>@' + nickname + '@' + domainFull + \
-        '</b> <a href="/users/' + nickname + \
+        '<p><a href="/users/' + nickname + \
         '/qrcode.png" alt="QR Code" title="QR Code">' + \
         '<img class="qrcode" src="/' + iconsDir + '/qrcode.png" /></a></p>'
+    profileHeaderStr += \
+        '<p><b>@' + nickname + '@' + domainFull + '</b></p>'
     profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>'
     profileHeaderStr += loginButton
     profileHeaderStr += '  </div>'
