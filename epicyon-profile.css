@@ -205,6 +205,12 @@ a:link {
     min-width: 200px;
 }
 
+.hero-text img.qrcode {
+    border-radius: 1%;
+    width: 10%;
+    min-width: 20px;
+}
+
 .hero-text img.emoji {
     width: 50px;
     padding: 0 0;
