@@ -1,0 +1,176 @@
+#!/bin/bash
+#
+# This can be called from a crontab entry to send notifications
+# when Epicyon events occur
+#
+# License
+# =======
+#
+# Copyright (C) 2020 Bob Mottram <bob@freedombone.net>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+PROJECT_NAME=epicyon
+epicyonInstallDir=/opt/${PROJECT_NAME}
+
+function notification_translate_text {
+    text="$1"
+    if ! grep -q '"language":' "${epicyonInstallDir}/config.json"; then
+	echo "$text"
+	return
+    fi
+    language=$(cat "${epicyonInstallDir}/config.json" | awk -F '"language":' '{print $2}' | awk -F '"' '{print $2}')
+    translationsFilename="${epicyonInstallDir}/translations/${language}.json"
+    if [ ! -f "$translationsFilename" ]; then
+	echo "$text"
+	return
+    fi
+    if ! grep -q "\"$text\":" "$translationsFilename"; then
+	echo "$text"
+	return
+    fi
+    grep "\"$text\":" "$translationsFilename" | awk -F '"' '{print $4}'
+}
+
+function sendNotification {
+    USERNAME="$1"
+    SUBJECT="$2"
+    MESSAGE="$3"
+    sensitive="$4"
+}
+
+function notifications {
+    # checks if DMs or replies have arrived and sends notifications to users
+    if [ ! -f "$epicyonInstallDir/config.json" ]; then
+        return
+    fi
+
+    if [ ! -f "${epicyonInstallDir}/config.json" ]; then
+	return
+    fi
+
+    # shellcheck disable=SC2002
+    EPICYON_DOMAIN_NAME=$(cat "${epicyonInstallDir}/config.json" | awk -F '"domain":' '{print $2}' | awk -F '"' '{print $2}')
+    for d in ${epicyonInstallDir}/accounts/*/ ; do
+	if [[ "$d" != *'@'* ]]; then
+	    continue
+	fi
+	epicyonDir="${d::-1}"
+	USERNAME=$(echo "$epicyonDir" | awk -F '/' '{print $5}' | awk -F '@' '{print $1}')
+
+        # send notifications for calendar events to XMPP/email users
+        epicyonCalendarfile="$epicyonDir/.newCalendar"
+        if [ -f "$epicyonCalendarfile" ]; then
+            if ! grep -q "##sent##" "$epicyonCalendarfile"; then
+                epicyonCalendarmessage=$(notification_translate_text 'New calendar event')
+                epicyonCalendarfileContent=$(echo "$epicyonCalendarmessage")" "$(cat "$epicyonCalendarfile")
+                if [[ "$epicyonCalendarfileContent" == '/calendar'* ]]; then
+                    epicyonCalendarmessage="Epicyon: ${EPICYON_DOMAIN_NAME}/users/${USERNAME}${epicyonCalendarfileContent}"
+                fi
+		sendNotification "$USERNAME" "Epicyon" "$epicyonCalendarmessage" "yes"
+                echo "##sent##" >> "$epicyonCalendarfile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonCalendarfile"
+            fi
+        fi
+
+        # send notifications for DMs to XMPP/email users
+        epicyonDMfile="$epicyonDir/.newDM"
+        if [ -f "$epicyonDMfile" ]; then
+            if ! grep -q "##sent##" "$epicyonDMfile"; then
+                epicyonDMmessage=$(notification_translate_text 'New direct message')
+                epicyonDMfileContent=$(echo "$epicyonDMmessage")" "$(cat "$epicyonDMfile")
+                if [[ "$epicyonDMfileContent" == *':'* ]]; then
+                    epicyonDMmessage="Epicyon: $epicyonDMfileContent"
+                fi
+		sendNotification "$USERNAME" "Epicyon" "$epicyonDMmessage" "yes"
+                echo "##sent##" > "$epicyonDMfile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonDMfile"
+            fi
+        fi
+
+        # send notifications for replies to XMPP/email users
+        epicyonReplyFile="$epicyonDir/.newReply"
+        if [ -f "$epicyonReplyFile" ]; then
+            if ! grep -q "##sent##" "$epicyonReplyFile"; then
+                epicyonReplyMessage=$(notification_translate_text 'New reply')
+                epicyonReplyFileContent=$(echo "$epicyonReplyMessage")" "$(cat "$epicyonReplyFile")
+                if [[ "$epicyonReplyFileContent" == *':'* ]]; then
+                    epicyonReplyMessage="Epicyon: $epicyonReplyFileContent"
+                fi
+		sendNotification "$USERNAME" "Epicyon" "$epicyonReplyMessage" "yes"
+                echo "##sent##" > "$epicyonReplyFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonReplyFile"
+            fi
+        fi
+
+        # send notifications for git patches to XMPP/email users
+        epicyonPatchFile="$epicyonDir/.newPatch"
+        if [ -f "$epicyonPatchFile" ]; then
+            if [ -f "${epicyonPatchFile}Content" ]; then
+		if ! grep -q "##sent##" "$epicyonPatchFile"; then
+		    epicyonPatchMessage=$(cat "$epicyonPatchFile")
+		    if [ "$epicyonPatchMessage" ]; then
+			# notify the member
+			sendNotification "$USERNAME" "Epicyon" "$epicyonPatchMessage" "yes"
+			echo "##sent##" > "$epicyonPatchFile"
+			chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonPatchFile"
+			# send the patch to them by email
+			cat "${epicyonPatchFile}Content" | mail -s "[Epicyon] $epicyonPatchMessage" "${USERNAME}@${HOSTNAME}"
+			rm "${epicyonPatchFile}Content"
+		    fi
+		fi
+            fi
+        fi
+
+        # send notifications for new shared items to XMPP/email users
+        epicyonShareFile="$epicyonDir/.newShare"
+        if [ -f "$epicyonShareFile" ]; then
+            if ! grep -q "##sent##" "$epicyonShareFile"; then
+                epicyonShareMessage=$(notification_translate_text 'New shared item')
+                epicyonShareFileContent=$(echo "$epicyonShareMessage")" "$(cat "$epicyonShareFile")
+                if [[ "$epicyonShareFileContent" == *':'* ]]; then
+                    epicyonShareMessage="Epicyon: $epicyonShareFileContent"
+                fi
+		sendNotification "$USERNAME" "Epicyon" "$epicyonShareMessage" "yes"
+                echo "##sent##" > "$epicyonShareFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonShareFile"
+            fi
+        fi
+
+        # send notifications for follow requests to XMPP/email users
+        epicyonFollowFile="$epicyonDir/followrequests.txt"
+        epicyonFollowNotificationsFile="$epicyonDir/follownotifications.txt"
+        if [ -f "$epicyonFollowFile" ]; then
+            if [ -s "$epicyonFollowFile" ]; then
+                epicyonNotify=
+                if [ -f "$epicyonFollowNotificationsFile" ]; then
+                    hash1=$(sha256sum "$epicyonFollowFile" | awk -F ' ' '{print $1}')
+                    hash2=$(sha256sum "$epicyonFollowNotificationsFile" | awk -F ' ' '{print $1}')
+                    if [[ "$hash1" != "$hash2" ]]; then
+                        epicyonNotify=1
+                    fi
+                else
+                    epicyonNotify=1
+                fi
+                if [ $epicyonNotify ]; then
+                    cp "$epicyonFollowFile" "$epicyonFollowNotificationsFile"
+                    chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonFollowNotificationsFile"
+                    
+                    epicyonFollowMessage=$(notification_translate_text "New follow request")" ${EPICYON_DOMAIN_NAME}/users/${USERNAME}"
+		    sendNotification "$USERNAME" "Epicyon" "$epicyonFollowMessage" "yes"
+                fi
+            fi
+        fi
+    done    
+}
