@@ -24,6 +24,12 @@
 PROJECT_NAME=epicyon
 epicyonInstallDir=/opt/${PROJECT_NAME}
 
+local_domain=$HOSTNAME
+if [ -f /var/lib/tor/hidden_service_epicyon/hostname ]; then
+    local_domain=$(cat /var/lib/tor/hidden_service_epicyon/hostname)
+fi
+
+
 function notification_translate_text {
     text="$1"
     if ! grep -q '"language":' "${epicyonInstallDir}/config.json"; then
@@ -43,11 +49,83 @@ function notification_translate_text {
     grep "\"$text\":" "$translationsFilename" | awk -F '"' '{print $4}'
 }
 
+function kill_sendxmpp_process {
+    # Sometimes the process can get stuck, so ensure that
+    # it gets killed if necessary
+    # shellcheck disable=SC2009
+    sendxmpp_pid=$(ps ax | grep /usr/bin/sendxmpp | grep -v grep | awk -F ' ' '{print $1}')
+    if [ "$sendxmpp_pid" ]; then
+        kill -9 "$sendxmpp_pid"
+    fi
+}
+
+function matrix_server_message {
+    admin_username="$1"
+    notifications_username="$2"
+    message="$3"
+
+    MATRIX_DATA_DIR='/var/lib/matrix'
+    homeserver_config="${MATRIX_DATA_DIR}/homeserver.yaml"
+    
+    # shellcheck disable=SC2002
+    MATRIX_DOMAIN_NAME=$(cat "$homeserver_config" | grep "server_name:" | head -n 1 | awk -F '"' '{print $2}')
+    if [ ! "$MATRIX_DOMAIN_NAME" ]; then
+        return
+    fi
+
+    # get the curl command and domain to send to
+    curl_command='curl'
+    homebase="https://$MATRIX_DOMAIN_NAME"
+    if [ -f /var/lib/tor/hidden_service_matrix/hostname ]; then
+        curl_command='torsocks curl'
+        homebase="http://$(cat /var/lib/tor/hidden_service_matrix/hostname)"
+    fi
+
+    # get the token for the matrix admin user
+    MATRIXADMIN="@${admin_username}:$MATRIX_DOMAIN_NAME"
+    MATRIXUSER="@${notifications_username}:$MATRIX_DOMAIN_NAME"
+    cd "$MATRIX_DATA_DIR" || return
+    TOKEN=$(sqlite3 homeserver.db "select token from access_tokens where user_id like '$MATRIXADMIN' order by id desc limit 1;")
+    if [ ! "$TOKEN" ]; then
+        admin_username="${notifications_username}"
+        TOKEN=$(sqlite3 homeserver.db "select token from access_tokens where user_id like '$MATRIXUSER' order by id desc limit 1;")
+        if [ ! "$TOKEN" ]; then
+            echo "No matrix token for $MATRIXADMIN"
+            return
+        fi
+    fi
+    # send server notice
+    MATRIXPOST="${homebase}/_synapse/admin/v1/send_server_notice?access_token=${TOKEN}"
+    MATRIXMESSAGE="{\"user_id\": \"${MATRIXUSER}\",\"content\": { \"msgtype\": \"m.text\",\"body\": \"${message}\" }}"
+    # shellcheck disable=SC2086
+    ${curl_command} --request POST --silent --header "Content-Type: application/json" --data "${MATRIXMESSAGE}" ${MATRIXPOST} > /dev/null
+}
+
 function sendNotification {
     USERNAME="$1"
     SUBJECT="$2"
     MESSAGE="$3"
-    sensitive="$4"
+    
+    if [ -d /etc/prosody ]; then
+        if [ -f /usr/bin/sendxmpp ]; then
+            notification_user_password=$(openssl rand -base64 32 | tr -dc A-Za-z0-9 | head -c 30 ; echo -n '')
+            if prosodyctl register "notification" "$local_domain" "$notification_user_password"; then
+                if [[ "$SUBJECT" == *' Tor '* ]]; then
+                    MESSAGE="$SUBJECT"
+                fi
+
+                if [ -f /usr/bin/sendxmpp ]; then
+                    kill_sendxmpp_process
+                    echo "${MESSAGE}" | /usr/bin/sendxmpp -u notification -p "${notification_user_password}" -j localhost -o ${local_domain} --message-type=headline -n -t -s ${PROJECT_NAME} ${USERNAME}@${local_domain}
+                fi
+            fi
+            prosodyctl deluser "notification@$local_domain"
+        fi
+    fi
+
+    if [ -d /etc/matrix ]; then
+        matrix_server_message "${USERNAME}" "${USERNAME}" "$MESSAGE"
+    fi
 }
 
 function notifications {
@@ -78,7 +156,7 @@ function notifications {
                 if [[ "$epicyonCalendarfileContent" == '/calendar'* ]]; then
                     epicyonCalendarmessage="Epicyon: ${EPICYON_DOMAIN_NAME}/users/${USERNAME}${epicyonCalendarfileContent}"
                 fi
-		sendNotification "$USERNAME" "Epicyon" "$epicyonCalendarmessage" "yes"
+		sendNotification "$USERNAME" "Epicyon" "$epicyonCalendarmessage"
                 echo "##sent##" >> "$epicyonCalendarfile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonCalendarfile"
             fi
@@ -93,7 +171,7 @@ function notifications {
                 if [[ "$epicyonDMfileContent" == *':'* ]]; then
                     epicyonDMmessage="Epicyon: $epicyonDMfileContent"
                 fi
-		sendNotification "$USERNAME" "Epicyon" "$epicyonDMmessage" "yes"
+		sendNotification "$USERNAME" "Epicyon" "$epicyonDMmessage"
                 echo "##sent##" > "$epicyonDMfile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonDMfile"
             fi
@@ -108,7 +186,7 @@ function notifications {
                 if [[ "$epicyonReplyFileContent" == *':'* ]]; then
                     epicyonReplyMessage="Epicyon: $epicyonReplyFileContent"
                 fi
-		sendNotification "$USERNAME" "Epicyon" "$epicyonReplyMessage" "yes"
+		sendNotification "$USERNAME" "Epicyon" "$epicyonReplyMessage"
                 echo "##sent##" > "$epicyonReplyFile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonReplyFile"
             fi
@@ -122,7 +200,7 @@ function notifications {
 		    epicyonPatchMessage=$(cat "$epicyonPatchFile")
 		    if [ "$epicyonPatchMessage" ]; then
 			# notify the member
-			sendNotification "$USERNAME" "Epicyon" "$epicyonPatchMessage" "yes"
+			sendNotification "$USERNAME" "Epicyon" "$epicyonPatchMessage"
 			echo "##sent##" > "$epicyonPatchFile"
 			chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonPatchFile"
 			# send the patch to them by email
@@ -142,7 +220,7 @@ function notifications {
                 if [[ "$epicyonShareFileContent" == *':'* ]]; then
                     epicyonShareMessage="Epicyon: $epicyonShareFileContent"
                 fi
-		sendNotification "$USERNAME" "Epicyon" "$epicyonShareMessage" "yes"
+		sendNotification "$USERNAME" "Epicyon" "$epicyonShareMessage"
                 echo "##sent##" > "$epicyonShareFile"
                 chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonShareFile"
             fi
@@ -168,9 +246,11 @@ function notifications {
                     chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonFollowNotificationsFile"
                     
                     epicyonFollowMessage=$(notification_translate_text "New follow request")" ${EPICYON_DOMAIN_NAME}/users/${USERNAME}"
-		    sendNotification "$USERNAME" "Epicyon" "$epicyonFollowMessage" "yes"
+		    sendNotification "$USERNAME" "Epicyon" "$epicyonFollowMessage"
                 fi
             fi
         fi
     done    
 }
+
+notifications
