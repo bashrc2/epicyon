@@ -39,6 +39,7 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import savePersonQrcode
 from person import randomizeActorImages
 from person import personUpgradeActor
 from person import activateAccount
@@ -1770,6 +1771,42 @@ class PubServer(BaseHTTPRequestHandler):
         if self.path == '/login-background.png':
             mediaFilename = \
                 self.server.baseDir + '/accounts/login-background.png'
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                tries = 0
+                mediaBinary = None
+                while tries < 5:
+                    try:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries += 1
+                if mediaBinary:
+                    self._set_headers_etag(mediaFilename, 'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                    return
+            self._404()
+            return
+
+        # QR code for account handle
+        if '/users/' in self.path and \
+           self.path.endswith('/qrcode.png'):
+            nickname = getNicknameFromActor(self.path)
+            savePersonQrcode(self.server.baseDir,
+                             nickname, self.server.domain,
+                             self.server.port)
+            mediaFilename = \
+                self.server.baseDir + '/accounts/' + \
+                nickname + '@' + self.server.domain + '/qrcode.png'
             if os.path.isfile(mediaFilename):
                 if self._etag_exists(mediaFilename):
                     # The file has not changed
