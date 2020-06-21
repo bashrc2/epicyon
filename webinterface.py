@@ -2563,7 +2563,7 @@ def htmlProfile(defaultTimeline: str,
     profileHeaderStr += \
         '    <p><b>@' + nickname + '@' + domainFull + \
         '</b> <a href="/users/' + nickname + \
-        '/qrcode.png" alt="QR Code" title="QR Code">🔲</a></p>'
+        '/qrcode.png" alt="QR Code" title="QR Code">📱</a></p>'
     profileHeaderStr += '    <p>' + profileDescriptionShort + '</p>'
     profileHeaderStr += loginButton
     profileHeaderStr += '  </div>'
