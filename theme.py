@@ -158,6 +158,7 @@ def setThemeBlue(baseDir: str):
     setThemeInConfig(baseDir, 'blue')
     themeParams = {
         "font-size-header": "22px",
+        "font-size-header-mobile": "32px",
         "font-size": "45px",
         "font-size2": "45px",
         "font-size3": "45px",
@@ -370,6 +371,7 @@ def setThemeZen(baseDir: str):
 def setThemeHighVis(baseDir: str):
     themeParams = {
         "font-size-header": "22px",
+        "font-size-header-mobile": "32px",
         "font-size": "45px",
         "font-size2": "45px",
         "font-size3": "45px",
@@ -417,6 +419,7 @@ def setThemeLCD(baseDir: str):
         "title-text": "white",
         "gallery-text-color": "#33390d",
         "font-size-header": "22px",
+        "font-size-header-mobile": "32px",
         "font-size": "45px",
         "font-size2": "45px",
         "font-size3": "45px",
