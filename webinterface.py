@@ -6090,7 +6090,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         profileStr += \
             '    <img loading="lazy" src="' + avatarUrl + \
             '" alt="' + avatarDescription + '" title="' + \
-            avatarDescription + '">'
+            avatarDescription + '" class="title">'
         profileStr += '    <h1>' + displayName + '</h1>'
         profileStr += '    <p><b>@' + searchNickname + '@' + \
             searchDomainFull + '</b></p>'

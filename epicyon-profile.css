@@ -189,12 +189,6 @@ a:link {
     background-color: var(--main-bg-color);
 }
 
-.hero-text img.title {
-    border-radius: 1%;
-    width: 30%;
-    min-width: 200px;
-}
-
 .hero-text img.emoji {
     width: 50px;
     padding: 0 0;
@@ -1040,6 +1034,10 @@ div.gallery img {
         width: 5%;
         min-width: 20px;
     }
+    .hero-text img.title {
+        border-radius: 1%;
+        width: 15%;
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -1407,5 +1405,9 @@ div.gallery img {
         border-radius: 1%;
         width: 15%;
         min-width: 20px;
+    }
+    .hero-text img.title {
+        border-radius: 1%;
+        width: 25%;
     }
 }
