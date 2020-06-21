@@ -10,6 +10,7 @@ import time
 import os
 import subprocess
 import shutil
+import pyqrcode
 from random import randint
 from pathlib import Path
 try:
@@ -380,6 +381,24 @@ def createGroup(baseDir: str, nickname: str, domain: str, port: int,
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 
+def savePersonQrcode(baseDir: str,
+                     nickname: str, domain: str, port: int,
+                     scale=6) -> None:
+    """Saves a qrcode image for the handle of the person
+    This helps to transfer onion or i2p handles to a mobile device
+    """
+    qrcodeFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/qrcode.png'
+    if os.path.isfile(qrcodeFilename):
+        return
+    handle = '@' + nickname + '@' + domain
+    if port:
+        if port != 80 and port != 443:
+            handle = handle + ':' + str(port)
+    url = pyqrcode.create(handle)
+    url.png(qrcodeFilename, scale)
+
+
 def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  httpPrefix: str, saveToFile: bool,
                  password=None) -> (str, str, {}, {}):
@@ -436,6 +455,7 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         registrationsRemaining -= 1
         setConfigParam(baseDir, 'registrationsRemaining',
                        str(registrationsRemaining))
+    savePersonQrcode(baseDir, nickname, domain, port)
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
 

@@ -493,7 +493,7 @@ class PubServer(BaseHTTPRequestHandler):
             if 'HttpOnly;' not in cookieStr:
                 if self.server.httpPrefix == 'https':
                     cookieStr += '; Secure'
-                cookieStr += '; HttpOnly; SameSite=Strict'            
+                cookieStr += '; HttpOnly; SameSite=Strict'
             self.send_header('Cookie', cookieStr)
         self.send_header('Host', callingDomain)
         self.send_header('InstanceID', self.server.instanceId)
