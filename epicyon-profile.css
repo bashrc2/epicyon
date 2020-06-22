@@ -55,12 +55,12 @@
     --cw-glow-radius3: 0px;
     --cw-glow-radius4: 0px;
     --cw-glow-radius5: 0px;
-    --cw-glow-color0: #fff;
-    --cw-glow-color1: red;
-    --cw-glow-color2: red;
-    --cw-glow-color3: red;
-    --cw-glow-color4: red;
-    --cw-glow-color5: red;
+    --cw-glow-color0: black;
+    --cw-glow-color1: black;
+    --cw-glow-color2: black;
+    --cw-glow-color3: black;
+    --cw-glow-color4: black;
+    --cw-glow-color5: black;
     --icons-side: right;
 }
 
