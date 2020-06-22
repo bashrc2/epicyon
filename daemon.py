@@ -586,9 +586,18 @@ class PubServer(BaseHTTPRequestHandler):
         self.send_header('X-Robots-Tag', 'noindex')
         self.end_headers()
 
-    def _httpReturnCode(self, httpCode: int, httpDescription: str) -> None:
-        msg = "<html><head></head><body><h1>" + str(httpCode) + " " + \
-            httpDescription + "</h1></body></html>"
+    def _httpReturnCode(self, httpCode: int, httpDescription: str,
+                        longDescription: str) -> None:
+        msg = \
+            '<html><head><title>' + str(httpCode) + '</title></head>' \
+            '<body bgcolor="linen" text="black">' \
+            '<div style="font-size: 400px; ' \
+            'text-align: center;">' + str(httpCode) + '</div>' \
+            '<div style="font-size: 128px; ' \
+            'text-align: center; font-variant: ' \
+            'small-caps;">' + httpDescription + '</div>' \
+            '<div style="text-align: center;">' + longDescription + '</div>' \
+            '</body></html>'
         msg = msg.encode('utf-8')
         self.send_response(httpCode)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -602,19 +611,25 @@ class PubServer(BaseHTTPRequestHandler):
             print(e)
 
     def _200(self) -> None:
-        self._httpReturnCode(200, 'Ok')
+        self._httpReturnCode(200, 'Ok',
+                             'This is nothing less than an utter triumph.')
 
     def _404(self) -> None:
-        self._httpReturnCode(404, 'Not Found')
+        self._httpReturnCode(404, 'Not Found',
+                             'These are not the droids you are looking for.')
 
     def _304(self) -> None:
-        self._httpReturnCode(304, 'Resource has not changed')
+        self._httpReturnCode(304, 'Not changed',
+                             'The contents of your local cache are ' +
+                             'up to date.')
 
     def _400(self) -> None:
-        self._httpReturnCode(400, 'Bad Request')
+        self._httpReturnCode(400, 'Bad Request',
+                             'Better luck next time.')
 
     def _503(self) -> None:
-        self._httpReturnCode(503, 'Service Unavailable')
+        self._httpReturnCode(503, 'Unavailable',
+                             'The server is busy. Please try again later.')
 
     def _write(self, msg) -> None:
         tries = 0
