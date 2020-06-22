@@ -38,8 +38,8 @@ if [ -f /usr/bin/pacman ]; then
     pacman -S --noconfirm tor python-pip python-pysocks python-pycryptodome \
            imagemagick python-pillow python-requests \
 	   perl-image-exiftool python-numpy python-dateutil \
-	   python-qrcode certbot flake8 git qrencode
-    pip3 install pyLD
+	   certbot flake8 git qrencode
+    pip3 install pyLD pyqrcode pypng
 else
     apt-get update
     apt-get -y install imagemagick python3-crypto python3-pycryptodome \

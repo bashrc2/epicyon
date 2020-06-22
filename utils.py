@@ -11,6 +11,8 @@ import time
 import shutil
 import datetime
 import json
+from urllib.request import urlopen
+from urllib.request import URLError
 from pprint import pprint
 from calendar import monthrange
 
@@ -1066,3 +1068,15 @@ def updateAnnounceCollection(recentPostsCache: {},
             print('DEBUG: saving post with shares (announcements) added')
             pprint(postJsonObject)
         saveJson(postJsonObject, postFilename)
+
+
+def siteIsActive(url: str) -> bool:
+    """Returns true if the current url is resolvable.
+    This can be used to check that an instance is online before
+    trying to send posts to it.
+    """
+    try:
+        urlopen(url, timeout=10)
+        return True
+    except URLError as err:
+        return False

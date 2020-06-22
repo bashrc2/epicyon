@@ -22,8 +22,8 @@ On Arch/Parabola:
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
                imagemagick python-pillow python-requests \
 	       perl-image-exiftool python-numpy python-dateutil \
-	       python-qrcode python-png certbot flake8
-suso pip3 install pyLD
+	       certbot flake8
+sudo pip3 install pyLD pyqrcode pypng
 ```
 
 Or on Debian:

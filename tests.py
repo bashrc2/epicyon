@@ -31,6 +31,7 @@ from follow import clearFollows
 from follow import clearFollowers
 from follow import sendFollowRequestViaServer
 from follow import sendUnfollowRequestViaServer
+from utils import siteIsActive
 from utils import updateRecentPostsCache
 from utils import followPerson
 from utils import getNicknameFromActor
@@ -1858,8 +1859,15 @@ def testJsonld():
     assert(jsonldVerify(signedDocument, publicKeyPem))
 
 
+def testSiteIsActive():
+    print('testSiteIsActive')
+    assert(siteIsActive('https://mastodon.social'))
+    assert(not siteIsActive('https://notarealwebsite.a.b.c'))
+
+
 def runAllTests():
     print('Running tests...')
+    testSiteIsActive()
     testJsonld()
     testRemoveTextFormatting()
     testWebLinks()
