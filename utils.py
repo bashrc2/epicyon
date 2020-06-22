@@ -12,7 +12,6 @@ import shutil
 import datetime
 import json
 from urllib.request import urlopen
-from urllib.request import URLError
 from pprint import pprint
 from calendar import monthrange
 
@@ -1078,5 +1077,5 @@ def siteIsActive(url: str) -> bool:
     try:
         urlopen(url, timeout=10)
         return True
-    except URLError as err:
+    except BaseException:
         return False
