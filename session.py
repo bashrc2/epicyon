@@ -20,11 +20,16 @@ def createSession(proxyType: str):
     session = None
     try:
         session = requests.session()
+    except ValueError as e:
+        print('WARN: error during createSession')
+        print(e)
+        return None
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during createSession')
         else:
-            print('WARN: session request failed')
+            print('WARN: socket error during createSession')
+        print(e)
         return None
     if not session:
         return None
@@ -65,12 +70,14 @@ def getJson(session, url: str, headers: {}, params: {},
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
-    except SocketError as e:
-        if e.errno == errno.ECONNRESET:
-            print('WARN: connection was reset during getJson')
+    except ValueError as e:
         print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
               'params: ' + str(sessionParams) + '\n')
+        print(e)
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during getJson')
         print(e)
     return None
 
@@ -92,11 +99,14 @@ def postJson(session, postJsonObject: {}, federationList: [],
             session.post(url=inboxUrl,
                          data=json.dumps(postJsonObject),
                          headers=headers)
+    except ValueError as e:
+        print('ERROR: postJson failed ' + inboxUrl + ' ' +
+              json.dumps(postJsonObject) + ' ' + str(headers))
+        print(e)
+        return None
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during postJson')
-        print('ERROR: postJson failed ' + inboxUrl + ' ' +
-              json.dumps(postJsonObject) + ' ' + str(headers))
         return None
     if postResult:
         return postResult.text
@@ -126,6 +136,10 @@ def postJsonString(session, postJsonStr: str,
     try:
         postResult = \
             session.post(url=inboxUrl, data=postJsonStr, headers=headers)
+    except ValueError as e:
+        print('WARN: error during postJsonString')
+        print(e)
+        return None, None
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during postJsonString')
@@ -181,11 +195,16 @@ def postImage(session, attachImageFilename: str, federationList: [],
         try:
             postResult = session.post(url=inboxUrl, data=mediaBinary,
                                       headers=headers)
+        except ValueError as e:
+            print('WARN: error during postImage')
+            print(e)
+            return None
         except SocketError as e:
             if e.errno == errno.ECONNRESET:
                 print('WARN: connection was reset during postImage')
             print('ERROR: postImage failed ' + inboxUrl + ' ' +
                   str(headers))
+            print(e)
             return None
         if postResult:
             return postResult.text
