@@ -19,7 +19,7 @@ baseDirectory = None
 def createSession(proxyType: str):
     session = None
     try:
-        session = requests.session(config={'keep_alive': True})
+        session = requests.session()
     except requests.exceptions.RequestException as e:
         print('WARN: requests error during createSession')
         print(e)
