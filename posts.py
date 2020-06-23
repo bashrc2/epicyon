@@ -27,6 +27,7 @@ from session import postJsonString
 from session import postImage
 from webfinger import webfingerHandle
 from httpsig import createSignedHeader
+from utils import siteIsActive
 from utils import removePostFromCache
 from utils import getCachedPostFilename
 from utils import getStatusNumber
@@ -1665,7 +1666,11 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
             if ':' not in toDomain:
                 toDomain = toDomain + ':' + str(toPort)
 
-    handleBase = httpPrefix + '://' + toDomain + '/@'
+    toDomainUrl = httpPrefix + '://' + toDomain
+    if not siteIsActive(toDomainUrl):
+        print('Domain is inactive: ' + toDomainUrl)
+        return 9
+    handleBase = toDomainUrl + '/@'
     if toNickname:
         handle = handleBase + toNickname
     else:
@@ -2025,6 +2030,14 @@ def sendToFollowers(session, baseDir: str,
         if debug:
             print('DEBUG: follower handles for ' + followerDomain)
             pprint(followerHandles)
+
+        # check that the follower's domain is active
+        followerDomainUrl = httpPrefix + '://' + followerDomain
+        if not siteIsActive(followerDomainUrl):
+            print('Domain is inactive: ' + followerDomainUrl)
+            continue
+        print('Domain is active: ' + followerDomainUrl)
+
         withSharedInbox = hasSharedInbox(session, httpPrefix, followerDomain)
         if debug:
             if withSharedInbox:
