@@ -1610,10 +1610,6 @@ def groupFollowersByDomain(baseDir: str, nickname: str, domain: str) -> {}:
                     grouped[followerDomain] = [fHandle]
                 else:
                     grouped[followerDomain].append(fHandle)
-    if grouped:
-        # put the dictionary into random order
-        keys = grouped.keys()
-        random.shuffle(keys)
     return grouped
 
 
