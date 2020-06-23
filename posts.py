@@ -2167,7 +2167,16 @@ def sendToFollowersThread(session, baseDir: str,
                               cachedWebfingers, personCache,
                               postJsonObject.copy(), debug,
                               projectVersion), daemon=True)
-    sendThread.start()
+    try:
+        sendThread.start()
+    except SocketError as e:
+        print('WARN: socket error while starting ' +
+              'thread to send to followers. ' + str(e))
+        return None
+    except BaseException:
+        print('WARN: error while starting ' +
+              'thread to send to followers. ' + str(e))
+        return None
     return sendThread
 
 
