@@ -12,6 +12,8 @@ import json
 import time
 import locale
 import urllib.parse
+from socket import error as SocketError
+import errno
 from functools import partial
 import pyqrcode
 # for saving images
@@ -5575,6 +5577,13 @@ class PubServer(BaseHTTPRequestHandler):
 
                 try:
                     postBytes = self.rfile.read(length)
+                except SocketError as e:
+                    if e.errno == errno.ECONNRESET:
+                        print('WARN: POST postBytes ' +
+                              'connection reset by peer')
+                    else:
+                        print('WARN: POST postBytes socket error')
+                    return None
                 except BaseException:
                     print('ERROR: POST postBytes rfile.read failed')
                     return None
@@ -5689,8 +5698,18 @@ class PubServer(BaseHTTPRequestHandler):
 
             try:
                 loginParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST login read ' +
+                          'connection reset by peer')
+                else:
+                    print('WARN: POST login read socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
-                print('ERROR: POST rfile.read failed')
+                print('ERROR: POST login read failed')
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -5868,6 +5887,17 @@ class PubServer(BaseHTTPRequestHandler):
                 try:
                     # read the bytes of the http form POST
                     postBytes = self.rfile.read(length)
+                except SocketError as e:
+                    if e.errno == errno.ECONNRESET:
+                        print('WARN: connection was reset while ' +
+                              'reading bytes from http form POST')
+                    else:
+                        print('WARN: error while reading bytes ' +
+                              'from http form POST')
+                    self.send_response(400)
+                    self.end_headers()
+                    self.server.POSTbusy = False
+                    return
                 except BaseException:
                     print('ERROR: failed to read bytes for POST')
                     self.send_response(400)
@@ -6461,6 +6491,16 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 moderationParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST moderationParams connection was reset')
+                else:
+                    print('WARN: POST moderationParams ' +
+                          'rfile.read socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST moderationParams rfile.read failed')
                 self.send_response(400)
@@ -6631,6 +6671,15 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 questionParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST questionParams connection was reset')
+                else:
+                    print('WARN: POST questionParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST questionParams rfile.read failed')
                 self.send_response(400)
@@ -6689,6 +6738,15 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 searchParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST searchParams connection was reset')
+                else:
+                    print('WARN: POST searchParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST searchParams rfile.read failed')
                 self.send_response(400)
@@ -6894,6 +6952,16 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 removeShareConfirmParams = \
                     self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST removeShareConfirmParams ' +
+                          'connection was reset')
+                else:
+                    print('WARN: POST removeShareConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST removeShareConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -6942,6 +7010,16 @@ class PubServer(BaseHTTPRequestHandler):
             try:
                 removePostConfirmParams = \
                     self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST removePostConfirmParams ' +
+                          'connection was reset')
+                else:
+                    print('WARN: POST removePostConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST removePostConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -7023,6 +7101,16 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 followConfirmParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST followConfirmParams ' +
+                          'connection was reset')
+                else:
+                    print('WARN: POST followConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST followConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -7094,6 +7182,16 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 followConfirmParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST followConfirmParams ' +
+                          'connection was reset')
+                else:
+                    print('WARN: POST followConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST followConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -7177,6 +7275,16 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 blockConfirmParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST blockConfirmParams ' +
+                          'connection was reset')
+                else:
+                    print('WARN: POST blockConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST blockConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -7263,6 +7371,16 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 blockConfirmParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST blockConfirmParams ' +
+                          'connection was reset')
+                else:
+                    print('WARN: POST blockConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST blockConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -7351,6 +7469,16 @@ class PubServer(BaseHTTPRequestHandler):
             length = int(self.headers['Content-length'])
             try:
                 optionsConfirmParams = self.rfile.read(length).decode('utf-8')
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST optionsConfirmParams ' +
+                          'connection reset by peer')
+                else:
+                    print('WARN: POST optionsConfirmParams socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST optionsConfirmParams rfile.read failed')
                 self.send_response(400)
@@ -7681,6 +7809,16 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             try:
                 mediaBytes = self.rfile.read(length)
+            except SocketError as e:
+                if e.errno == errno.ECONNRESET:
+                    print('WARN: POST mediaBytes ' +
+                          'connection reset by peer')
+                else:
+                    print('WARN: POST mediaBytes socket error')
+                self.send_response(400)
+                self.end_headers()
+                self.server.POSTbusy = False
+                return
             except BaseException:
                 print('ERROR: POST mediaBytes rfile.read failed')
                 self.send_response(400)
@@ -7714,6 +7852,16 @@ class PubServer(BaseHTTPRequestHandler):
                 if length < self.server.maxPostLength:
                     try:
                         unknownPost = self.rfile.read(length).decode('utf-8')
+                    except SocketError as e:
+                        if e.errno == errno.ECONNRESET:
+                            print('WARN: POST unknownPost ' +
+                                  'connection reset by peer')
+                        else:
+                            print('WARN: POST unknownPost socket error')
+                        self.send_response(400)
+                        self.end_headers()
+                        self.server.POSTbusy = False
+                        return
                     except BaseException:
                         print('ERROR: POST unknownPost rfile.read failed')
                         self.send_response(400)
@@ -7748,6 +7896,16 @@ class PubServer(BaseHTTPRequestHandler):
 
         try:
             messageBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST messageBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST messageBytes socket error')
+            self.send_response(400)
+            self.end_headers()
+            self.server.POSTbusy = False
+            return
         except BaseException:
             print('ERROR: POST messageBytes rfile.read failed')
             self.send_response(400)
