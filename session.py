@@ -20,8 +20,8 @@ def createSession(proxyType: str):
     session = None
     try:
         session = requests.session()
-    except ValueError as e:
-        print('WARN: error during createSession')
+    except requests.exceptions.RequestException as e:
+        print('WARN: requests error during createSession')
         print(e)
         return None
     except SocketError as e:
@@ -29,6 +29,10 @@ def createSession(proxyType: str):
             print('WARN: connection was reset during createSession')
         else:
             print('WARN: socket error during createSession')
+        print(e)
+        return None
+    except ValueError as e:
+        print('WARN: error during createSession')
         print(e)
         return None
     if not session:
@@ -70,6 +74,11 @@ def getJson(session, url: str, headers: {}, params: {},
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
+    except requests.exceptions.RequestException as e:
+        print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
+              'headers: ' + str(sessionHeaders) + '\n' +
+              'params: ' + str(sessionParams) + '\n')
+        print(e)
     except ValueError as e:
         print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
@@ -99,14 +108,19 @@ def postJson(session, postJsonObject: {}, federationList: [],
             session.post(url=inboxUrl,
                          data=json.dumps(postJsonObject),
                          headers=headers)
-    except ValueError as e:
-        print('ERROR: postJson failed ' + inboxUrl + ' ' +
+    except requests.exceptions.RequestException as e:
+        print('ERROR: postJson requests failed ' + inboxUrl + ' ' +
               json.dumps(postJsonObject) + ' ' + str(headers))
         print(e)
         return None
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during postJson')
+        return None
+    except ValueError as e:
+        print('ERROR: postJson failed ' + inboxUrl + ' ' +
+              json.dumps(postJsonObject) + ' ' + str(headers))
+        print(e)
         return None
     if postResult:
         return postResult.text
@@ -136,8 +150,8 @@ def postJsonString(session, postJsonStr: str,
     try:
         postResult = \
             session.post(url=inboxUrl, data=postJsonStr, headers=headers)
-    except ValueError as e:
-        print('WARN: error during postJsonString')
+    except requests.exceptions.RequestException as e:
+        print('WARN: error during postJsonString requests')
         print(e)
         return None, None
     except SocketError as e:
@@ -145,6 +159,10 @@ def postJsonString(session, postJsonStr: str,
             print('WARN: connection was reset during postJsonString')
         print('ERROR: postJsonString failed ' + inboxUrl + ' ' +
               postJsonStr + ' ' + str(headers))
+        return None, None
+    except ValueError as e:
+        print('WARN: error during postJsonString')
+        print(e)
         return None, None
     if postResult.status_code < 200 or postResult.status_code > 202:
         if postResult.status_code >= 400 and \
@@ -195,8 +213,8 @@ def postImage(session, attachImageFilename: str, federationList: [],
         try:
             postResult = session.post(url=inboxUrl, data=mediaBinary,
                                       headers=headers)
-        except ValueError as e:
-            print('WARN: error during postImage')
+        except requests.exceptions.RequestException as e:
+            print('WARN: error during postImage requests')
             print(e)
             return None
         except SocketError as e:
@@ -204,6 +222,10 @@ def postImage(session, attachImageFilename: str, federationList: [],
                 print('WARN: connection was reset during postImage')
             print('ERROR: postImage failed ' + inboxUrl + ' ' +
                   str(headers))
+            print(e)
+            return None
+        except ValueError as e:
+            print('WARN: error during postImage')
             print(e)
             return None
         if postResult:

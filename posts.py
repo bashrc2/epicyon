@@ -6,7 +6,6 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
-import random
 import json
 import html
 import datetime
@@ -14,6 +13,7 @@ import os
 import shutil
 import sys
 import time
+from socket import error as SocketError
 from time import gmtime, strftime
 from collections import OrderedDict
 from threads import threadWithTrace
@@ -2173,7 +2173,7 @@ def sendToFollowersThread(session, baseDir: str,
         print('WARN: socket error while starting ' +
               'thread to send to followers. ' + str(e))
         return None
-    except BaseException:
+    except ValueError as e:
         print('WARN: error while starting ' +
               'thread to send to followers. ' + str(e))
         return None
