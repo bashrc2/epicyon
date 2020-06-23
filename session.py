@@ -10,6 +10,8 @@ import os
 import requests
 from utils import urlPermitted
 import json
+from socket import error as SocketError
+import errno
 
 baseDirectory = None
 
@@ -18,8 +20,11 @@ def createSession(proxyType: str):
     session = None
     try:
         session = requests.session()
-    except BaseException:
-        print('ERROR: session request failed')
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during createSession')
+        else:
+            print('WARN: session request failed')
         return None
     if not session:
         return None
@@ -60,7 +65,9 @@ def getJson(session, url: str, headers: {}, params: {},
     try:
         result = session.get(url, headers=sessionHeaders, params=sessionParams)
         return result.json()
-    except Exception as e:
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during getJson')
         print('ERROR: getJson failed\nurl: ' + str(url) + '\n' +
               'headers: ' + str(sessionHeaders) + '\n' +
               'params: ' + str(sessionParams) + '\n')
@@ -85,7 +92,9 @@ def postJson(session, postJsonObject: {}, federationList: [],
             session.post(url=inboxUrl,
                          data=json.dumps(postJsonObject),
                          headers=headers)
-    except BaseException:
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during postJson')
         print('ERROR: postJson failed ' + inboxUrl + ' ' +
               json.dumps(postJsonObject) + ' ' + str(headers))
         return None
@@ -117,7 +126,9 @@ def postJsonString(session, postJsonStr: str,
     try:
         postResult = \
             session.post(url=inboxUrl, data=postJsonStr, headers=headers)
-    except BaseException:
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during postJsonString')
         print('ERROR: postJsonString failed ' + inboxUrl + ' ' +
               postJsonStr + ' ' + str(headers))
         return None, None
@@ -170,7 +181,9 @@ def postImage(session, attachImageFilename: str, federationList: [],
         try:
             postResult = session.post(url=inboxUrl, data=mediaBinary,
                                       headers=headers)
-        except BaseException:
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: connection was reset during postImage')
             print('ERROR: postImage failed ' + inboxUrl + ' ' +
                   str(headers))
             return None

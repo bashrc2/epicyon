@@ -11,6 +11,8 @@ import time
 import shutil
 import datetime
 import json
+from socket import error as SocketError
+import errno
 from urllib.request import urlopen
 from pprint import pprint
 from calendar import monthrange
@@ -1077,5 +1079,7 @@ def siteIsActive(url: str) -> bool:
     try:
         urlopen(url, timeout=10)
         return True
-    except BaseException:
+    except SocketError as e:
+        if e.errno == errno.ECONNRESET:
+            print('WARN: connection was reset during siteIsActive')
         return False
