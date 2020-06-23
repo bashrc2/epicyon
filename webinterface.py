@@ -6003,6 +6003,11 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             print('DEBUG: httpPrefix ' + httpPrefix)
             print('DEBUG: domain ' + domain)
             return None
+        if not isinstance(wf, dict):
+            print('WARN: Webfinger for ' + handle +
+                  ' did not return a dict. ' +
+                  str(wf))
+            return None
 
         personUrl = None
         if wf.get('errors'):

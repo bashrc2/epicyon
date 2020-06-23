@@ -47,7 +47,7 @@ def parseHandle(handle: str) -> (str, str):
 def webfingerHandle(session, handle: str, httpPrefix: str,
                     cachedWebfingers: {},
                     fromDomain: str, projectVersion: str) -> {}:
-    """
+    """Gets webfinger result for the given ActivityPub handle
     """
     if not session:
         print('WARN: No session specified for webfingerHandle')

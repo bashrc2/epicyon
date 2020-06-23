@@ -1095,11 +1095,16 @@ if args.actor:
     if nickname == 'inbox':
         nickname = domain
 
-    wfRequest = webfingerHandle(session, nickname + '@' + domain,
+    handle = nickname + '@' + domain
+    wfRequest = webfingerHandle(session, handle,
                                 httpPrefix, cachedWebfingers,
                                 None, __version__)
     if not wfRequest:
-        print('Unable to webfinger ' + nickname + '@' + domain)
+        print('Unable to webfinger ' + handle)
+        sys.exit()
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
         sys.exit()
 
     pprint(wfRequest)

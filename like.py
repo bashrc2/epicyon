@@ -256,6 +256,10 @@ def sendLikeViaServer(baseDir: str, session,
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
         return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return 1
 
     postToBox = 'outbox'
 
@@ -336,6 +340,10 @@ def sendUndoLikeViaServer(baseDir: str, session,
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
         return 1
 
     postToBox = 'outbox'

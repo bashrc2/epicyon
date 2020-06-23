@@ -1368,6 +1368,10 @@ def sendPost(projectVersion: str,
                                 domain, projectVersion)
     if not wfRequest:
         return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return 1
 
     if not clientToServer:
         postToBox = 'inbox'
@@ -1487,6 +1491,10 @@ def sendPostViaServer(projectVersion: str,
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
         return 1
 
     postToBox = 'outbox'
@@ -1670,6 +1678,7 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     if not siteIsActive(toDomainUrl):
         print('Domain is inactive: ' + toDomainUrl)
         return 9
+    print('Domain is active: ' + toDomainUrl)
     handleBase = toDomainUrl + '/@'
     if toNickname:
         handle = handleBase + toNickname
@@ -1686,6 +1695,10 @@ def sendSignedJson(postJsonObject: {}, session, baseDir: str,
     if not wfRequest:
         if debug:
             print('DEBUG: webfinger for ' + handle + ' failed')
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
         return 1
 
     if wfRequest.get('errors'):
@@ -1986,8 +1999,9 @@ def hasSharedInbox(session, httpPrefix: str, domain: str) -> bool:
                                 httpPrefix, {},
                                 None, __version__)
     if wfRequest:
-        if not wfRequest.get('errors'):
-            return True
+        if isinstance(wfRequest, dict):
+            if not wfRequest.get('errors'):
+                return True
     return False
 
 
@@ -2877,6 +2891,10 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                         domain, projectVersion)
     if not wfRequest:
         sys.exit()
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        sys.exit()
 
     (personUrl, pubKeyId, pubKey,
      personId, shaedInbox,
@@ -3257,6 +3275,10 @@ def sendBlockViaServer(baseDir: str, session,
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
         return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return 1
 
     postToBox = 'outbox'
 
@@ -3341,6 +3363,10 @@ def sendUndoBlockViaServer(baseDir: str, session,
     if not wfRequest:
         if debug:
             print('DEBUG: announce webfinger failed for ' + handle)
+        return 1
+    if not isinstance(wfRequest, dict):
+        print('WARN: Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
         return 1
 
     postToBox = 'outbox'
