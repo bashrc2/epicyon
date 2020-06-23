@@ -5584,8 +5584,9 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         print('WARN: POST postBytes socket error')
                     return None
-                except BaseException:
+                except ValueError as e:
                     print('ERROR: POST postBytes rfile.read failed')
+                    print(e)
                     return None
 
                 # second length check from the bytes received
@@ -5708,8 +5709,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST login read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -5898,8 +5900,9 @@ class PubServer(BaseHTTPRequestHandler):
                     self.end_headers()
                     self.server.POSTbusy = False
                     return
-                except BaseException:
+                except ValueError as e:
                     print('ERROR: failed to read bytes for POST')
+                    print(e)
                     self.send_response(400)
                     self.end_headers()
                     self.server.POSTbusy = False
@@ -6501,8 +6504,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST moderationParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -6680,8 +6684,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST questionParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -6747,8 +6752,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST searchParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -6962,8 +6968,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST removeShareConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7020,8 +7027,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST removePostConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7111,8 +7119,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST followConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7192,8 +7201,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST followConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7285,8 +7295,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST blockConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7381,8 +7392,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST blockConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7479,8 +7491,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST optionsConfirmParams rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7819,8 +7832,9 @@ class PubServer(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.server.POSTbusy = False
                 return
-            except BaseException:
+            except ValueError as e:
                 print('ERROR: POST mediaBytes rfile.read failed')
+                print(e)
                 self.send_response(400)
                 self.end_headers()
                 self.server.POSTbusy = False
@@ -7862,8 +7876,9 @@ class PubServer(BaseHTTPRequestHandler):
                         self.end_headers()
                         self.server.POSTbusy = False
                         return
-                    except BaseException:
+                    except ValueError as e:
                         print('ERROR: POST unknownPost rfile.read failed')
+                        print(e)
                         self.send_response(400)
                         self.end_headers()
                         self.server.POSTbusy = False
@@ -7906,8 +7921,9 @@ class PubServer(BaseHTTPRequestHandler):
             self.end_headers()
             self.server.POSTbusy = False
             return
-        except BaseException:
+        except ValueError as e:
             print('ERROR: POST messageBytes rfile.read failed')
+            print(e)
             self.send_response(400)
             self.end_headers()
             self.server.POSTbusy = False
