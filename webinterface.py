@@ -6004,7 +6004,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             print('DEBUG: domain ' + domain)
             return None
         if not isinstance(wf, dict):
-            print('WARN: Webfinger for ' + handle +
+            print('WARN: Webfinger for ' +
+                  searchNickname + '@' + searchDomainFull +
                   ' did not return a dict. ' +
                   str(wf))
             return None
