@@ -6,6 +6,7 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+import random
 import json
 import html
 import datetime
@@ -1609,6 +1610,10 @@ def groupFollowersByDomain(baseDir: str, nickname: str, domain: str) -> {}:
                     grouped[followerDomain] = [fHandle]
                 else:
                     grouped[followerDomain].append(fHandle)
+    if grouped:
+        # put the dictionary into random order
+        keys = grouped.keys()
+        random.shuffle(keys)
     return grouped
 
 
