@@ -66,7 +66,6 @@ from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
 from posts import createDirectMessagePost
-from posts import createReminderPost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
@@ -5439,33 +5438,28 @@ class PubServer(BaseHTTPRequestHandler):
                         return -1
             elif postType == 'newreminder':
                 messageJson = None
-                print('A reminder was posted for ' +
-                      nickname + '@' + self.server.domainFull)
+                handle = nickname + '@' + self.server.domainFull
+                print('A reminder was posted for ' + handle)
+                if handle not in fields['message']:
+                    fields['message'] = handle + ' ' + fields['message']
                 messageJson = \
-                    createReminderPost(self.server.baseDir,
-                                       nickname,
-                                       self.server.domain,
-                                       self.server.port,
-                                       self.server.httpPrefix,
-                                       fields['message'],
-                                       True, False, False,
-                                       filename, attachmentMediaType,
-                                       fields['imageDescription'],
-                                       self.server.useBlurHash,
-                                       fields['subject'],
-                                       True, fields['schedulePost'],
-                                       fields['eventDate'],
-                                       fields['eventTime'],
-                                       fields['location'])
+                    createDirectMessagePost(self.server.baseDir,
+                                            nickname,
+                                            self.server.domain,
+                                            self.server.port,
+                                            self.server.httpPrefix,
+                                            fields['message'],
+                                            True, False, False,
+                                            filename, attachmentMediaType,
+                                            fields['imageDescription'],
+                                            self.server.useBlurHash,
+                                            None, None,
+                                            fields['subject'],
+                                            True, fields['schedulePost'],
+                                            fields['eventDate'],
+                                            fields['eventTime'],
+                                            fields['location'])
                 if messageJson:
-                    # ensure that this is only being sent to the author
-                    messageJson['object']['cc'] = []
-                    messageJson['cc'] = []
-                    messageJson['object']['to'] = [
-                        self.server.httpPrefix + ':\\' +
-                        self.server.domainFull + '/users/' + nickname
-                    ]
-                    messageJson['to'] = messageJson['object']['to']
                     if fields['schedulePost']:
                         return 1
                     print('DEBUG: new reminder to ' +

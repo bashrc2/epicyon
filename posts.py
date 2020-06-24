@@ -1177,49 +1177,6 @@ def createDirectMessagePost(baseDir: str,
     return messageJson
 
 
-def createReminderPost(baseDir: str,
-                       nickname: str, domain: str, port: int,
-                       httpPrefix: str,
-                       content: str, followersOnly: bool,
-                       saveToFile: bool, clientToServer: bool,
-                       attachImageFilename: str, mediaType: str,
-                       imageDescription: str, useBlurhash: bool,
-                       subject=None, debug=False,
-                       schedulePost=False,
-                       eventDate=None, eventTime=None,
-                       location=None) -> {}:
-    """Reminder post to self
-    For example, adding something to your calendar to remind you of an event
-    """
-    postTo = None
-    postCc = None
-    domainFull = domain
-    if port:
-        if port != 80 and port != 443:
-            domainFull = domain + ':' + str(port)
-    handle = '@' + nickname + '@' + domainFull
-    if handle not in content:
-        content = handle + ' ' + content
-    messageJson = \
-        createPostBase(baseDir, nickname, domain, port,
-                       postTo, postCc,
-                       httpPrefix, content, followersOnly, saveToFile,
-                       clientToServer,
-                       attachImageFilename, mediaType,
-                       imageDescription, useBlurhash,
-                       False, False, None, None, subject,
-                       schedulePost, eventDate, eventTime, location)
-    # mentioned recipients go into To rather than Cc
-    messageJson['to'] = messageJson['object']['cc']
-    messageJson['object']['to'] = messageJson['to']
-    messageJson['cc'] = []
-    messageJson['object']['cc'] = []
-    if schedulePost:
-        savePostToBox(baseDir, httpPrefix, messageJson['object']['id'],
-                      nickname, domain, messageJson, 'scheduled')
-    return messageJson
-
-
 def createReportPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
