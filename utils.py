@@ -464,12 +464,14 @@ def deletePost(baseDir: str, httpPrefix: str,
             return
 
         # remove from recent posts cache in memory
-        postId = \
-            postJsonObject['id'].replace('/activity', '').replace('/', '#')
-        if postId in recentPostsCache['index']:
-            recentPostsCache['index'].remove(postId)
-        if recentPostsCache['json'].get(postId):
-            del recentPostsCache['json'][postId]
+        if recentPostsCache:
+            postId = \
+                postJsonObject['id'].replace('/activity', '').replace('/', '#')
+            if recentPostsCache.get('index'):
+                if postId in recentPostsCache['index']:
+                    recentPostsCache['index'].remove(postId)
+            if recentPostsCache['json'].get(postId):
+                del recentPostsCache['json'][postId]
 
         # remove any attachment
         removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
