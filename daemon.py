@@ -66,6 +66,7 @@ from posts import createReportPost
 from posts import createUnlistedPost
 from posts import createFollowersOnlyPost
 from posts import createDirectMessagePost
+from posts import createReminderPost
 from posts import populateRepliesJson
 from posts import addToField
 from posts import expireCache
@@ -3360,6 +3361,7 @@ class PubServer(BaseHTTPRequestHandler):
             if ('/users/' in self.path and
                 (self.path.endswith('/newpost') or
                  self.path.endswith('/newblog') or
+                 self.path.endswith('/newreminder') or
                  self.path.endswith('/newunlisted') or
                  self.path.endswith('/newfollowers') or
                  self.path.endswith('/newdm') or
@@ -5432,6 +5434,44 @@ class PubServer(BaseHTTPRequestHandler):
                                         messageJson,
                                         self.server.maxReplies,
                                         self.server.debug)
+                        return 1
+                    else:
+                        return -1
+            elif postType == 'newreminder':
+                messageJson = None
+                print('A reminder was posted for ' +
+                      nickname + '@' + self.server.domainFull)
+                messageJson = \
+                    createReminderPost(self.server.baseDir,
+                                       nickname,
+                                       self.server.domain,
+                                       self.server.port,
+                                       self.server.httpPrefix,
+                                       fields['message'],
+                                       True, False, False,
+                                       filename, attachmentMediaType,
+                                       fields['imageDescription'],
+                                       self.server.useBlurHash,
+                                       None, None,
+                                       fields['subject'],
+                                       True, fields['schedulePost'],
+                                       fields['eventDate'],
+                                       fields['eventTime'],
+                                       fields['location'])
+                if messageJson:
+                    # ensure that this is only being sent to the author
+                    messageJson['object']['cc'] = []
+                    messageJson['cc'] = []
+                    messageJson['object']['to'] = [
+                        self.server.httpPrefix + ':\\' +
+                        self.server.domainFull + '/users/' + nickname
+                    ]
+                    messageJson['to'] = messageJson['object']['to']
+                    if fields['schedulePost']:
+                        return 1
+                    print('DEBUG: new reminder to ' +
+                          str(messageJson['object']['to']))
+                    if self._postToOutbox(messageJson, __version__, nickname):
                         return 1
                     else:
                         return -1
@@ -7732,7 +7772,7 @@ class PubServer(BaseHTTPRequestHandler):
         # receive different types of post created by htmlNewPost
         postTypes = ("newpost", "newblog", "newunlisted", "newfollowers",
                      "newdm", "newreport", "newshare", "newquestion",
-                     "editblogpost")
+                     "editblogpost", "newreminder")
         for currPostType in postTypes:
             if not authorized:
                 break

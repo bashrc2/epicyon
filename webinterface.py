@@ -1703,7 +1703,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
 
     if not path.endswith('/newshare'):
         if not path.endswith('/newreport'):
-            if not inReplyTo:
+            if not inReplyTo or path.endswith('/newreminder'):
                 newPostText = '<p class="new-post-text">' + \
                     translate['Write your post text below.'] + '</p>'
             else:
@@ -1781,6 +1781,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     pathBase = path.replace('/newreport', '').replace('/newpost', '')
     pathBase = pathBase.replace('/newblog', '').replace('/newshare', '')
     pathBase = pathBase.replace('/newunlisted', '')
+    pathBase = pathBase.replace('/newreminder', '')
     pathBase = pathBase.replace('/newfollowers', '').replace('/newdm', '')
 
     newPostImageSection = '    <div class="container">'
@@ -1819,6 +1820,10 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         scopeIcon = 'scope_dm.png'
         scopeDescription = translate['DM']
         endpoint = 'newdm'
+    elif path.endswith('/newreminder'):
+        scopeIcon = 'scope_reminder.png'
+        scopeDescription = translate['Reminder']
+        endpoint = 'newreminder'
     elif path.endswith('/newreport'):
         scopeIcon = 'scope_report.png'
         scopeDescription = translate['Report']
@@ -1941,6 +1946,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     dropdownUnlistedSuffix = '/newunlisted'
     dropdownFollowersSuffix = '/newfollowers'
     dropdownDMSuffix = '/newdm'
+    dropdownReminderSuffix = '/newreminder'
     dropdownReportSuffix = '/newreport'
     if inReplyTo or mentions:
         dropdownNewPostSuffix = ''
@@ -1948,6 +1954,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropdownUnlistedSuffix = ''
         dropdownFollowersSuffix = ''
         dropdownDMSuffix = ''
+        dropdownReminderSuffix = ''
         dropdownReportSuffix = ''
     if inReplyTo:
         dropdownNewPostSuffix += '?replyto=' + inReplyTo
@@ -1998,6 +2005,12 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             '"><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_dm.png"/><b>' + translate['DM'] + \
             '</b><br>' + translate['Only to mentioned people'] + '</a>'
+        dropDownContent += \
+            '          <a href="' + \
+            pathBase + dropdownReminderSuffix + \
+            '"><img loading="lazy" alt="" title="" src="/' + \
+            iconsDir + '/scope_reminder.png"/><b>' + translate['Reminder'] + \
+            '</b><br>' + translate['Scheduled note to yourself'] + '</a>'
         dropDownContent += \
             '          <a href="' + pathBase + dropdownReportSuffix + \
             '"><img loading="lazy" alt="" title="" src="/' + iconsDir + \

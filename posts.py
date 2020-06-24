@@ -1177,6 +1177,38 @@ def createDirectMessagePost(baseDir: str,
     return messageJson
 
 
+def createReminderPost(baseDir: str,
+                       nickname: str, domain: str, port: int,
+                       httpPrefix: str,
+                       content: str, followersOnly: bool,
+                       saveToFile: bool, clientToServer: bool,
+                       attachImageFilename: str, mediaType: str,
+                       imageDescription: str, useBlurhash: bool,
+                       inReplyTo=None, inReplyToAtomUri=None,
+                       subject=None, debug=False,
+                       schedulePost=False,
+                       eventDate=None, eventTime=None,
+                       location=None) -> {}:
+    """Reminder post to self
+    For example, adding something to your calendar to remind you of an event
+    """
+    postTo = None
+    postCc = None
+    messageJson = \
+        createPostBase(baseDir, nickname, domain, port,
+                       postTo, postCc,
+                       httpPrefix, content, followersOnly, saveToFile,
+                       clientToServer,
+                       attachImageFilename, mediaType,
+                       imageDescription, useBlurhash,
+                       False, False, inReplyTo, inReplyToAtomUri, subject,
+                       schedulePost, eventDate, eventTime, location)
+    if schedulePost:
+        savePostToBox(baseDir, httpPrefix, messageJson['object']['id'],
+                      nickname, domain, messageJson, 'scheduled')
+    return messageJson
+
+
 def createReportPost(baseDir: str,
                      nickname: str, domain: str, port: int, httpPrefix: str,
                      content: str, followersOnly: bool, saveToFile: bool,
