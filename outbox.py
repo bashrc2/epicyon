@@ -299,7 +299,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
     outboxDelete(baseDir, httpPrefix,
                  postToNickname, domain,
                  messageJson, debug,
-                 allowDeletion)
+                 allowDeletion,
+                 recentPostsCache)
 
     if debug:
         print('DEBUG: handle block requests')

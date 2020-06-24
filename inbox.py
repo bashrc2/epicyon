@@ -1240,7 +1240,8 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
                   httpPrefix: str, domain: str, port: int,
                   sendThreads: [], postLog: [], cachedWebfingers: {},
                   personCache: {}, messageJson: {}, federationList: [],
-                  debug: bool, allowDeletion: bool) -> bool:
+                  debug: bool, allowDeletion: bool,
+                  recentPostsCache: {}) -> bool:
     """Receives a Delete activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Delete':
@@ -1305,7 +1306,8 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
             print(messageId)
         return True
     deletePost(baseDir, httpPrefix, handle.split('@')[0],
-               handle.split('@')[1], postFilename, debug)
+               handle.split('@')[1], postFilename, debug,
+               recentPostsCache)
     if debug:
         print('DEBUG: post deleted - ' + postFilename)
     return True
@@ -2045,7 +2047,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                      personCache,
                      messageJson,
                      federationList,
-                     debug, allowDeletion):
+                     debug, allowDeletion,
+                     recentPostsCache):
         if debug:
             print('DEBUG: Delete accepted from ' + actor)
         return False

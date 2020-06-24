@@ -6671,7 +6671,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.httpPrefix,
                                                nickname, self.server.domain,
                                                postFilename,
-                                               self.server.debug)
+                                               self.server.debug,
+                                               self.server.recentPostsCache)
             if callingDomain.endswith('.onion') and \
                self.server.onionDomain:
                 actorStr = \

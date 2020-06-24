@@ -227,7 +227,8 @@ def deletePostPub(session, baseDir: str, federationList: [],
 def outboxDelete(baseDir: str, httpPrefix: str,
                  nickname: str, domain: str,
                  messageJson: {}, debug: bool,
-                 allowDeletion: bool) -> None:
+                 allowDeletion: bool,
+                 recentPostsCache: {}) -> None:
     """ When a delete request is received by the outbox from c2s
     """
     if not messageJson.get('type'):
@@ -289,6 +290,6 @@ def outboxDelete(baseDir: str, httpPrefix: str,
             print(messageId)
         return True
     deletePost(baseDir, httpPrefix, deleteNickname, deleteDomain,
-               postFilename, debug)
+               postFilename, debug, recentPostsCache)
     if debug:
         print('DEBUG: post deleted via c2s - ' + postFilename)

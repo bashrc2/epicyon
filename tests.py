@@ -1076,8 +1076,8 @@ def testCreatePerson():
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
     setDisplayNickname(baseDir, nickname, domain, 'badger')
     setBio(baseDir, nickname, domain, 'Randomly roaming in your backyard')
-    archivePostsForPerson(nickname, domain, baseDir, 'inbox', None, 4)
-    archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, 4)
+    archivePostsForPerson(nickname, domain, baseDir, 'inbox', None, {}, 4)
+    archivePostsForPerson(nickname, domain, baseDir, 'outbox', None, {}, 4)
     createPublicPost(baseDir, nickname, domain, port, httpPrefix,
                      "G'day world!", False, True, clientToServer,
                      None, None, useBlurhash, None, None,

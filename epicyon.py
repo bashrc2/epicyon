@@ -1313,7 +1313,7 @@ if args.archive:
     else:
         print('Archiving to ' + args.archive + '...')
     archiveMedia(baseDir, args.archive, archiveWeeks)
-    archivePosts(baseDir, httpPrefix, args.archive, archiveMaxPosts)
+    archivePosts(baseDir, httpPrefix, args.archive, {}, archiveMaxPosts)
     print('Archiving complete')
     sys.exit()
 

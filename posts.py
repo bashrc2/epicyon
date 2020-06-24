@@ -2718,17 +2718,21 @@ def createBoxIndexed(recentPostsCache: {},
 
 
 def expireCache(baseDir: str, personCache: {},
-                httpPrefix: str, archiveDir: str, maxPostsInBox=32000):
+                httpPrefix: str, archiveDir: str,
+                recentPostsCache: {},
+                maxPostsInBox=32000):
     """Thread used to expire actors from the cache and archive old posts
     """
     while True:
         # once per day
         time.sleep(60 * 60 * 24)
         expirePersonCache(baseDir, personCache)
-        archivePosts(baseDir, httpPrefix, archiveDir, maxPostsInBox)
+        archivePosts(baseDir, httpPrefix, archiveDir, recentPostsCache,
+                     maxPostsInBox)
 
 
 def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
+                 recentPostsCache: {},
                  maxPostsInBox=32000) -> None:
     """Archives posts for all accounts
     """
@@ -2760,18 +2764,19 @@ def archivePosts(baseDir: str, httpPrefix: str, archiveDir: str,
                         handle + '/inbox'
                 archivePostsForPerson(httpPrefix, nickname, domain, baseDir,
                                       'inbox', archiveSubdir,
-                                      maxPostsInBox)
+                                      recentPostsCache, maxPostsInBox)
                 if archiveDir:
                     archiveSubdir = archiveDir + '/accounts/' + \
                         handle + '/outbox'
                 archivePostsForPerson(httpPrefix, nickname, domain, baseDir,
                                       'outbox', archiveSubdir,
-                                      maxPostsInBox)
+                                      recentPostsCache, maxPostsInBox)
 
 
 def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
                           baseDir: str,
                           boxname: str, archiveDir: str,
+                          recentPostsCache: {},
                           maxPostsInBox=32000) -> None:
     """Retain a maximum number of posts within the given box
     Move any others to an archive directory
@@ -2855,7 +2860,8 @@ def archivePostsForPerson(httpPrefix: str, nickname: str, domain: str,
             if os.path.isfile(repliesPath):
                 os.rename(repliesPath, archivePath)
         else:
-            deletePost(baseDir, httpPrefix, nickname, domain, filePath, False)
+            deletePost(baseDir, httpPrefix, nickname, domain,
+                       filePath, False, recentPostsCache)
 
         # remove cached html posts
         postCacheFilename = \

@@ -444,7 +444,7 @@ def isReplyToBlogPost(baseDir: str, nickname: str, domain: str,
 
 def deletePost(baseDir: str, httpPrefix: str,
                nickname: str, domain: str, postFilename: str,
-               debug: bool) -> None:
+               debug: bool, recentPostsCache: {}) -> None:
     """Recursively deletes a post and its replies and attachments
     """
     postJsonObject = loadJson(postFilename, 1)
@@ -462,6 +462,14 @@ def deletePost(baseDir: str, httpPrefix: str,
         if isReplyToBlogPost(baseDir, nickname, domain,
                              postJsonObject):
             return
+
+        # remove from recent posts cache in memory
+        postId = \
+            postJsonObject['id'].replace('/activity', '').replace('/', '#')
+        if postId in recentPostsCache['index']:
+            recentPostsCache['index'].remove(postId)
+        if recentPostsCache['json'].get(postId):
+            del recentPostsCache['json'][postId]
 
         # remove any attachment
         removeAttachment(baseDir, httpPrefix, domain, postJsonObject)
@@ -543,7 +551,8 @@ def deletePost(baseDir: str, httpPrefix: str,
                 if replyFile:
                     if os.path.isfile(replyFile):
                         deletePost(baseDir, httpPrefix,
-                                   nickname, domain, replyFile, debug)
+                                   nickname, domain, replyFile, debug,
+                                   recentPostsCache)
         # remove the replies file
         os.remove(repliesFilename)
     # finally, remove the post itself
