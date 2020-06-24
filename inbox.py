@@ -2303,6 +2303,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
     """
     currSessionTime = int(time.time())
     sessionLastUpdate = currSessionTime
+    print('Starting new session when starting inbox queue')
     session = createSession(proxyType)
     inboxHandle = 'inbox@' + domain
     if debug:
@@ -2349,7 +2350,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
 
         # recreate the session periodically
         if not session or currTime - sessionLastUpdate > 1200:
-            print('Creating inbox session')
+            print('Creating inbox queue session at 20min interval')
             session = createSession(proxyType)
             if not session:
                 continue

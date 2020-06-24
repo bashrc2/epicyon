@@ -431,11 +431,11 @@ class PubServer(BaseHTTPRequestHandler):
             return False
         # make sure we have a session
         if not self.server.session:
-            if self.server.debug:
-                print('DEBUG: creating new session during authenticated fetch')
+            print('DEBUG: creating new session during authenticated fetch')
             self.server.session = createSession(self.server.proxyType)
             if not self.server.session:
-                print('ERROR: GET failed to create session 1')
+                print('ERROR: GET failed to create session during ' +
+                      'authenticated fetch')
                 return False
         # obtain the public key
         pubKey = \
@@ -1245,10 +1245,10 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings, 5)
 
         if not self.server.session:
-            print('Starting new session')
+            print('Starting new session during GET')
             self.server.session = createSession(self.server.proxyType)
             if not self.server.session:
-                print('ERROR: GET failed to create session 2')
+                print('ERROR: GET failed to create session duing GET')
                 self._404()
                 return
 
@@ -1345,10 +1345,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  '/accounts/' + nickname +
                                  '@' + self.server.domain):
                     if not self.server.session:
+                        print('Starting new session during RSS request')
                         self.server.session = \
                             createSession(self.server.proxyType)
                         if not self.server.session:
-                            print('ERROR: GET failed to create session 3')
+                            print('ERROR: GET failed to create session ' +
+                                  'during RSS request')
                             self._404()
                             return
 
@@ -1382,10 +1384,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  '/accounts/' + nickname +
                                  '@' + self.server.domain):
                     if not self.server.session:
+                        print('Starting new session during RSS3 request')
                         self.server.session = \
                             createSession(self.server.proxyType)
                         if not self.server.session:
-                            print('ERROR: GET failed to create session 4')
+                            print('ERROR: GET failed to create session ' +
+                                  'during RSS3 request')
                             self._404()
                             return
                     msg = \
@@ -1414,10 +1418,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self.path == '/blogs/'):
             if '/rss.xml' not in self.path:
                 if not self.server.session:
+                    print('Starting new session during blog view')
                     self.server.session = \
                         createSession(self.server.proxyType)
                     if not self.server.session:
-                        print('ERROR: GET failed to create session 5')
+                        print('ERROR: GET failed to create session ' +
+                              'during blog view')
                         self._404()
                         return
                 msg = htmlBlogView(authorized,
@@ -1460,10 +1466,12 @@ class PubServer(BaseHTTPRequestHandler):
                         elif pageNumber > 10:
                             pageNumber = 10
                 if not self.server.session:
+                    print('Starting new session during blog page')
                     self.server.session = \
                         createSession(self.server.proxyType)
                     if not self.server.session:
-                        print('ERROR: GET failed to create session 6')
+                        print('ERROR: GET failed to create session ' +
+                              'during blog page')
                         self._404()
                         return
                 msg = htmlBlogPage(authorized,
@@ -2425,9 +2433,11 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
+                print('Starting new session during repeat button')
                 self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
-                    print('ERROR: GET failed to create session 7')
+                    print('ERROR: GET failed to create session ' +
+                          'during repeat button')
                     self._404()
                     self.server.GETbusy = False
                     return
@@ -2520,9 +2530,11 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
+                print('Starting new session during undo repeat')
                 self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
-                    print('ERROR: GET failed to create session 8')
+                    print('ERROR: GET failed to create session ' +
+                          'during undo repeat')
                     self._404()
                     self.server.GETbusy = False
                     return
@@ -2570,9 +2582,11 @@ class PubServer(BaseHTTPRequestHandler):
             followingHandle = self.path.split('/followapprove=')[1]
             if '@' in followingHandle:
                 if not self.server.session:
+                    print('Starting new session during follow approval')
                     self.server.session = createSession(self.server.proxyType)
                     if not self.server.session:
-                        print('ERROR: GET failed to create session 9')
+                        print('ERROR: GET failed to create session ' +
+                              'during follow approval')
                         self._404()
                         self.server.GETbusy = False
                         return
@@ -2694,9 +2708,10 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
+                print('Starting new session during like')
                 self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
-                    print('ERROR: GET failed to create session 10')
+                    print('ERROR: GET failed to create session during like')
                     self._404()
                     self.server.GETbusy = False
                     return
@@ -2793,9 +2808,11 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
+                print('Starting new session during undo like')
                 self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
-                    print('ERROR: GET failed to create session 11')
+                    print('ERROR: GET failed to create session ' +
+                          'during undo like')
                     self._404()
                     self.server.GETbusy = False
                     return
@@ -2894,9 +2911,11 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
+                print('Starting new session during bookmark')
                 self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
-                    print('ERROR: GET failed to create session 12')
+                    print('ERROR: GET failed to create session ' +
+                          'during bookmark')
                     self._404()
                     self.server.GETbusy = False
                     return
@@ -2980,9 +2999,11 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 return
             if not self.server.session:
+                print('Starting new session during undo bookmark')
                 self.server.session = createSession(self.server.proxyType)
                 if not self.server.session:
-                    print('ERROR: GET failed to create session 13')
+                    print('ERROR: GET failed to create session ' +
+                          'during undo bookmark')
                     self._404()
                     self.server.GETbusy = False
                     return
@@ -3077,9 +3098,11 @@ class PubServer(BaseHTTPRequestHandler):
                                            cookie, callingDomain)
                     return
                 if not self.server.session:
+                    print('Starting new session during delete')
                     self.server.session = createSession(self.server.proxyType)
                     if not self.server.session:
-                        print('ERROR: GET failed to create session 14')
+                        print('ERROR: GET failed to create session ' +
+                              'during delete')
                         self._404()
                         self.server.GETbusy = False
                         return
@@ -3505,16 +3528,17 @@ class PubServer(BaseHTTPRequestHandler):
                                     }
                                     if self._requestHTTP():
                                         if not self.server.session:
-                                            if self.server.debug:
-                                                print('DEBUG: ' +
-                                                      'creating new session')
+                                            print('DEBUG: ' +
+                                                  'creating new session ' +
+                                                  'during get replies')
                                             proxyType = \
                                                 self.server.proxyType
                                             self.server.session = \
                                                 createSession(proxyType)
                                             if not self.server.session:
                                                 print('ERROR: GET failed to ' +
-                                                      'create session 15')
+                                                      'create session ' +
+                                                      'during get replies')
                                                 self._404()
                                                 self.server.GETbusy = False
                                                 return
@@ -3606,15 +3630,16 @@ class PubServer(BaseHTTPRequestHandler):
                                     # send the replies json
                                     if self._requestHTTP():
                                         if not self.server.session:
-                                            if self.server.debug:
-                                                print('DEBUG: ' +
-                                                      'creating new session')
+                                            print('DEBUG: ' +
+                                                  'creating new session ' +
+                                                  'during get replies 2')
                                             proxyType = self.server.proxyType
                                             self.server.session = \
                                                 createSession(proxyType)
                                             if not self.server.session:
                                                 print('ERROR: GET failed to ' +
-                                                      'create session 16')
+                                                      'create session ' +
+                                                      'during get replies 2')
                                                 self._404()
                                                 self.server.GETbusy = False
                                                 return
@@ -4688,12 +4713,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
-                        if self.server.debug:
-                            print('DEBUG: creating new session')
+                        print('Starting new session during profile')
                         self.server.session = \
                             createSession(self.server.proxyType)
                         if not self.server.session:
-                            print('ERROR: GET failed to create session 17')
+                            print('ERROR: GET failed to create session ' +
+                                  'during profile')
                             self._404()
                             self.server.GETbusy = False
                             return
@@ -4767,12 +4792,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
-                        if self.server.debug:
-                            print('DEBUG: creating new session')
+                        print('Starting new session during following')
                         self.server.session = \
                             createSession(self.server.proxyType)
                         if not self.server.session:
-                            print('ERROR: GET failed to create session 18')
+                            print('ERROR: GET failed to create session ' +
+                                  'during following')
                             self._404()
                             self.server.GETbusy = False
                             return
@@ -4846,12 +4871,12 @@ class PubServer(BaseHTTPRequestHandler):
                                  self.server.baseDir)
                 if getPerson:
                     if not self.server.session:
-                        if self.server.debug:
-                            print('DEBUG: creating new session')
+                        print('Starting new session during following2')
                         self.server.session = \
                             createSession(self.server.proxyType)
                         if not self.server.session:
-                            print('ERROR: GET failed to create session 19')
+                            print('ERROR: GET failed to create session ' +
+                                  'during following2')
                             self._404()
                             self.server.GETbusy = False
                             return
@@ -4900,12 +4925,12 @@ class PubServer(BaseHTTPRequestHandler):
         if getPerson:
             if self._requestHTTP():
                 if not self.server.session:
-                    if self.server.debug:
-                        print('DEBUG: creating new session')
+                    print('Starting new session during person lookup')
                     self.server.session = \
                         createSession(self.server.proxyType)
                     if not self.server.session:
-                        print('ERROR: GET failed to create session 20')
+                        print('ERROR: GET failed to create session ' +
+                              'during person lookup')
                         self._404()
                         self.server.GETbusy = False
                         return
@@ -5614,7 +5639,7 @@ class PubServer(BaseHTTPRequestHandler):
             self.server.session = \
                 createSession(self.server.proxyType)
             if not self.server.session:
-                print('ERROR: POST failed to create session 1')
+                print('ERROR: POST failed to create session during POST')
                 self._404()
                 return
 
@@ -6856,10 +6881,12 @@ class PubServer(BaseHTTPRequestHandler):
                     # profile search
                     nickname = getNicknameFromActor(actorStr)
                     if not self.server.session:
+                        print('Starting new session during handle search')
                         self.server.session = \
                             createSession(self.server.proxyType)
                         if not self.server.session:
-                            print('ERROR: POST failed to create session 2')
+                            print('ERROR: POST failed to create session ' +
+                                  'during handle search')
                             self._404()
                             self.server.POSTbusy = False
                             return

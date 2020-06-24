@@ -212,8 +212,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
             print('DEBUG: Updated announcements (shares) collection ' +
                   'for the post associated with the Announce activity')
     if not server.session:
-        if debug:
-            print('DEBUG: creating new session for c2s')
+        print('DEBUG: creating new session for c2s')
         server.session = createSession(proxyType)
         if not server.session:
             print('ERROR: Failed to create session for postMessageToOutbox')

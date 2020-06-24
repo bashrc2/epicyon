@@ -2883,6 +2883,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
                            debug: bool, projectVersion: str) -> None:
     """ This is really just for test purposes
     """
+    print('Starting new session for getting public posts')
     session = createSession(proxyType)
     if not session:
         return
