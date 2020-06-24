@@ -1184,7 +1184,6 @@ def createReminderPost(baseDir: str,
                        saveToFile: bool, clientToServer: bool,
                        attachImageFilename: str, mediaType: str,
                        imageDescription: str, useBlurhash: bool,
-                       inReplyTo=None, inReplyToAtomUri=None,
                        subject=None, debug=False,
                        schedulePost=False,
                        eventDate=None, eventTime=None,
@@ -1194,6 +1193,13 @@ def createReminderPost(baseDir: str,
     """
     postTo = None
     postCc = None
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
+    handle = '@' + nickname + '@' + domainFull
+    if handle not in content:
+        content = handle + ' ' + content
     messageJson = \
         createPostBase(baseDir, nickname, domain, port,
                        postTo, postCc,
@@ -1201,8 +1207,13 @@ def createReminderPost(baseDir: str,
                        clientToServer,
                        attachImageFilename, mediaType,
                        imageDescription, useBlurhash,
-                       False, False, inReplyTo, inReplyToAtomUri, subject,
+                       False, False, None, None, subject,
                        schedulePost, eventDate, eventTime, location)
+    # mentioned recipients go into To rather than Cc
+    messageJson['to'] = messageJson['object']['cc']
+    messageJson['object']['to'] = messageJson['to']
+    messageJson['cc'] = []
+    messageJson['object']['cc'] = []
     if schedulePost:
         savePostToBox(baseDir, httpPrefix, messageJson['object']['id'],
                       nickname, domain, messageJson, 'scheduled')

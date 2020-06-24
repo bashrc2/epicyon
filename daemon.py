@@ -5452,7 +5452,6 @@ class PubServer(BaseHTTPRequestHandler):
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
                                        self.server.useBlurHash,
-                                       None, None,
                                        fields['subject'],
                                        True, fields['schedulePost'],
                                        fields['eventDate'],
