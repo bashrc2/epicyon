@@ -3360,10 +3360,10 @@ class PubServer(BaseHTTPRequestHandler):
             if ('/users/' in self.path and
                 (self.path.endswith('/newpost') or
                  self.path.endswith('/newblog') or
-                 self.path.endswith('/newreminder') or
                  self.path.endswith('/newunlisted') or
                  self.path.endswith('/newfollowers') or
                  self.path.endswith('/newdm') or
+                 self.path.endswith('/newreminder') or
                  self.path.endswith('/newreport') or
                  self.path.endswith('/newquestion') or
                  self.path.endswith('/newshare'))):
@@ -5440,8 +5440,8 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson = None
                 handle = nickname + '@' + self.server.domainFull
                 print('A reminder was posted for ' + handle)
-                if handle not in fields['message']:
-                    fields['message'] = handle + ' ' + fields['message']
+                if '@' + handle not in fields['message']:
+                    fields['message'] = '@' + handle + ' ' + fields['message']
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
