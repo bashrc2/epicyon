@@ -1968,6 +1968,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropdownDMSuffix += '?mention=' + mentionedActor
         dropdownReportSuffix += '?mention=' + mentionedActor
 
+    dropDownContent = ''
     # dropDownContent = \
     #     '<img loading="lazy" alt="" title="" src="/' + iconsDir + \
     #     '/' + scopeIcon + '"/><b class="scope-desc">' + \
