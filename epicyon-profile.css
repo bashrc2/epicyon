@@ -686,7 +686,7 @@ a, button, input:focus, input[type='button'], input[type='reset'], input[type='s
     padding:1rem 1rem;
     margin:0 1rem;
     transition:all .5s ease;
-    color:#41403E;
+    color:var(--dropdown-fg-color);
     font-size:2rem;
     letter-spacing:1px;
     outline:none;
@@ -738,7 +738,8 @@ aside .toggle-inside li {
   font-size: 14px;
   text-align: left;
   list-style: none;
-  background-color: #fff;
+  color: var(--dropdown-fg-color);
+  background-color: var(--dropdown-bg-color);
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
   border: 1px solid #ccc;
@@ -808,9 +809,8 @@ footer .msgscope {
     text-decoration: none;
     display: inline-block;
     font-weight: bold;
-    box-shadow: 0px 3px 2px #CCC;
-    box-shadow: 0px 2px 1px rgba(204, 204, 204, 0.74);
-    background-color: #e85c41;
+    background-color: var(--dropdown-bg-color);
+    color: var(--dropdown-fg-color);
     display: inline-block;
     margin-bottom: 0;
     text-align: center;
@@ -880,16 +880,6 @@ footer .msgscope {
     text-align: left;
     float: left;
 }
-
-a:visited,  a:link, a {
-    text-decoration: none;
-    color: #2c9ab7;
-}
-a:focus, a:hover {
-    text-decoration: underline;
-    color: #195760 !important;
-}
-
 #msgscope label div {
     color: #fff !important;
     -webkit-transition: all 0.1s ease-in-out;
