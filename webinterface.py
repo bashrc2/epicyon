@@ -1910,15 +1910,15 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     questionOptionOnDropdown = ''
     if not replyStr:
         shareOptionOnDropdown = \
-            '        <li><a href="' + pathBase + \
-            '/newshare"><img loading="lazy" alt="" title="" src="/' + \
+            '        <a href="' + pathBase + \
+            '/newshare"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_share.png"/><b>' + translate['Shares'] + \
-            '</b><br>' + translate['Describe a shared item'] + '</a></li>\n'
+            '</b><br>' + translate['Describe a shared item'] + '</li></a>\n'
         questionOptionOnDropdown = \
-            '        <li><a href="' + pathBase + \
-            '/newquestion"><img loading="lazy" alt="" title="" src="/' + \
+            '        <a href="' + pathBase + \
+            '/newquestion"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_question.png"/><b>' + translate['Question'] + \
-            '</b><br>' + translate['Ask a question'] + '</a></li>\n'
+            '</b><br>' + translate['Ask a question'] + '</li></a>\n'
 
     mentionsStr = ''
     for m in mentions:
@@ -1991,47 +1991,47 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropDownContent += "class='dropdown-menutoggle'>\n"
 
         if showPublicOnDropdown:
-            dropDownContent += "        <li>" \
+            dropDownContent += "        " \
                 '<a href="' + pathBase + dropdownNewPostSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '"><li><img loading="lazy" alt="" title="" src="/' + \
                 iconsDir + '/scope_public.png"/><b>' + \
                 translate['Public'] + '</b><br>' + \
-                translate['Visible to anyone'] + '</a></li>\n'
-            dropDownContent += "        <li>" \
+                translate['Visible to anyone'] + '</li></a>\n'
+            dropDownContent += "        " \
                 '<a href="' + pathBase + dropdownNewBlogSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '"><li><img loading="lazy" alt="" title="" src="/' + \
                 iconsDir + '/edit.png"/><b>' + \
                 translate['Blog'] + '</b><br>' + \
-                translate['Publicly visible post'] + '</a></li>\n'
-            dropDownContent += "        <li>" \
+                translate['Publicly visible post'] + '</li></a>\n'
+            dropDownContent += "        " \
                 '<a href="' + pathBase + dropdownUnlistedSuffix + \
-                '"><img loading="lazy" alt="" title="" src="/' + \
+                '"><li><img loading="lazy" alt="" title="" src="/' + \
                 iconsDir+'/scope_unlisted.png"/><b>' + \
                 translate['Unlisted'] + '</b><br>' + \
-                translate['Not on public timeline'] + '</a></li>\n'
-        dropDownContent += "        <li>" \
+                translate['Not on public timeline'] + '</li></a>\n'
+        dropDownContent += "        " \
             '<a href="' + pathBase + dropdownFollowersSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
+            '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_followers.png"/><b>' + \
             translate['Followers'] + '</b><br>' + \
-            translate['Only to followers'] + '</a></li>\n'
-        dropDownContent += "        <li>" \
+            translate['Only to followers'] + '</li></a>\n'
+        dropDownContent += "        " \
             '<a href="' + pathBase + dropdownDMSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
+            '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_dm.png"/><b>' + translate['DM'] + \
             '</b><br>' + translate['Only to mentioned people'] + \
-            '</a></li>\n'
-        dropDownContent += "        <li>" \
+            '</li></a>\n'
+        dropDownContent += "        " \
             '<a href="' + pathBase + dropdownReminderSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + \
+            '"><li><img loading="lazy" alt="" title="" src="/' + \
             iconsDir + '/scope_reminder.png"/><b>' + translate['Reminder'] + \
             '</b><br>' + translate['Scheduled note to yourself'] + \
-            '</a></li>\n'
-        dropDownContent += "        <li>" \
+            '</li></a>\n'
+        dropDownContent += "        " \
             '<a href="' + pathBase + dropdownReportSuffix + \
-            '"><img loading="lazy" alt="" title="" src="/' + iconsDir + \
+            '"><li><img loading="lazy" alt="" title="" src="/' + iconsDir + \
             '/scope_report.png"/><b>' + translate['Report'] + \
-            '</b><br>' + translate['Send to moderators'] + '</a></li>\n'
+            '</b><br>' + translate['Send to moderators'] + '</li></a>\n'
         dropDownContent += questionOptionOnDropdown + shareOptionOnDropdown
         dropDownContent += '      </ul>\n'
         dropDownContent += '    </div>\n'
