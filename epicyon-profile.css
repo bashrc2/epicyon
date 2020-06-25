@@ -49,18 +49,6 @@
     --gallery-font-size-mobile: 35px;
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
-    --cw-background: #554;
-    --cw-glow-radius1: 0px;
-    --cw-glow-radius2: 0px;
-    --cw-glow-radius3: 0px;
-    --cw-glow-radius4: 0px;
-    --cw-glow-radius5: 0px;
-    --cw-glow-color0: black;
-    --cw-glow-color1: black;
-    --cw-glow-color2: black;
-    --cw-glow-color3: black;
-    --cw-glow-color4: black;
-    --cw-glow-color5: black;
     --icons-side: right;
 }
 
@@ -98,10 +86,6 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
-}
-
-.cwText {
-    display: none;
 }
 
 .timeline-banner {
@@ -770,19 +754,6 @@ div.gallery img {
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
     }
-    .cwButton {
-        border-radius: var(--button-corner-radius);
-        background-color: var(--cw-background);
-        border: none;
-        color: #FFFFFE;
-        text-align: center;
-        font-size: var(--font-size5);
-        font-family: Arial, Helvetica, sans-serif;
-        padding: 2px;
-        cursor: pointer;
-        margin: 5px;
-	text-shadow: 0 0 10px var(--cw-glow-color0), 0 0 20px var(--cw-glow-color0), 0 0 var(--cw-glow-radius1) var(--cw-glow-color1), 0 0 var(--cw-glow-radius2) var(--cw-glow-color2), 0 0 var(--cw-glow-radius3) var(--cw-glow-color3), 0 0 var(--cw-glow-radius4) var(--cw-glow-color4), 0 0 var(--cw-glow-radius5) var(--cw-glow-color5);
-    }
     .buttonevent {
         border-radius: var(--button-corner-radius);
         background-color: var(--button-highlighted);
@@ -1140,20 +1111,6 @@ div.gallery img {
         padding: 0px 0px;
         -ms-transform: translateY(-10%);
         transform: translateY(-10%);
-    }
-    .cwButton {
-        border-radius: var(--button-corner-radius);
-        background-color: var(--cw-background);
-        border: none;
-        color: #FFFFFE;
-        text-align: center;
-        font-size: var(--font-size3);
-        font-family: Arial, Helvetica, sans-serif;
-        font-family: Arial, Helvetica, sans-serif;
-        padding: 2px;
-        cursor: pointer;
-        margin: 5px;
-        text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 var(--cw-glow-radius1) var(--cw-glow-color1), 0 0 var(--cw-glow-radius2) var(--cw-glow-color2), 0 0 var(--cw-glow-radius3) var(--cw-glow-color3), 0 0 var(--cw-glow-radius4) var(--cw-glow-color4), 0 0 var(--cw-glow-radius5) var(--cw-glow-color5);
     }
     .buttonevent {
         border-radius: var(--button-corner-radius);
