@@ -10,7 +10,6 @@ import os
 from datetime import datetime
 
 from content import replaceEmojiFromTags
-from webinterface import contentWarningScriptOpen
 from webinterface import getIconsDir
 from webinterface import getPostAttachmentsAsHtml
 from webinterface import htmlHeader
@@ -256,7 +255,6 @@ def htmlBlogPostContent(authorized: bool,
         blogStr += '<br><br><br>' + blogSeparator + '\n'
     else:
         blogStr += blogSeparator + '<h1>' + translate['Replies'] + '</h1>\n'
-        blogStr += '<script>' + contentWarningScriptOpen() + '</script>\n'
         if not titleStr:
             blogStr += getBlogReplies(baseDir, httpPrefix, translate,
                                       nickname, domain, domainFull,

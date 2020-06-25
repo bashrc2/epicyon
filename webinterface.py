@@ -79,10 +79,10 @@ def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
     """
-    return '<button class="cwButton" onclick="showContentWarning(' + \
-        "'" + postID + "'" + ')">' + translate['SHOW MORE'] + '</button>' + \
-        '<div class="cwText" id="' + postID + '">' + \
-        content + '</div>'
+    return '<details><summary class="cwButton">' + \
+        translate['SHOW MORE'] + '</summary>' + \
+        '<div class="cwText" id="' + postID + '">' + content + \
+        '</div></details>'
 
 
 def getBlogAddress(actorJson: {}) -> str:
@@ -653,7 +653,6 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
 
     # add the page title
     hashtagSearchForm = htmlHeader(cssFilename, hashtagSearchCSS)
-    hashtagSearchForm += '<script>' + contentWarningScript() + '</script>'
     hashtagSearchForm += '<center><h1>#' + hashtag + '</h1></center>'
 
     if startIndex > 0:
@@ -883,7 +882,6 @@ def htmlHistorySearch(translate: {}, baseDir: str,
                 historySearchCSS.replace('https://',
                                          httpPrefix + '://')
     historySearchForm = htmlHeader(cssFilename, historySearchCSS)
-    historySearchForm += '<script>' + contentWarningScript() + '</script>'
 
     # add the page title
     historySearchForm += \
@@ -2118,7 +2116,6 @@ def htmlProfilePosts(recentPostsCache: {}, maxRecentPosts: int,
     iconsDir = getIconsDir(baseDir)
     profileStr = ''
     maxItems = 4
-    profileStr += '<script>' + contentWarningScript() + '</script>'
     ctr = 0
     currPage = 1
     while ctr < maxItems and currPage < 4:
@@ -2757,31 +2754,6 @@ def cursorToEndOfMessageScript() -> str:
     script += "var replyTextArea=document.getElementById('message')\n"
     script += 'replyTextArea.onFocus=function() {\n'
     script += '  focusOnMessage();'
-    script += '}\n'
-    return script
-
-
-def contentWarningScript() -> str:
-    """Returns a script used for content warnings
-    """
-    script = 'function showContentWarning(postID) {\n'
-    script += '  var x=document.getElementById(postID);\n'
-    script += '  if (x.style.display !== "block") {\n'
-    script += '    x.style.display="block";\n'
-    script += '  } else {\n'
-    script += '    x.style.display="none";\n'
-    script += '  }\n'
-    script += '}\n'
-    return script
-
-
-def contentWarningScriptOpen() -> str:
-    """Returns a script used for content warnings
-    The warning is open by default. This is used on blog replies.
-    """
-    script = 'function showContentWarning(postID) {\n'
-    script += '  var x=document.getElementById(postID);\n'
-    script += '  x.style.display="block";\n'
     script += '}\n'
     return script
 
@@ -4580,9 +4552,6 @@ def htmlTimeline(defaultTimeline: str,
                                    maxSharesPerAccount, httpPrefix) +
                 htmlFooter())
 
-    # add the javascript for content warnings
-    tlStr += '<script>' + contentWarningScript() + '</script>'
-
     # show todays events buttons on the first inbox page
     if boxName == 'inbox' and pageNumber == 1:
         if todaysEventsCheck(baseDir, nickname, domain):
@@ -4861,8 +4830,7 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
     """Show an individual post as html
     """
     iconsDir = getIconsDir(baseDir)
-    postStr = '<script>' + contentWarningScript() + '</script>'
-    postStr += \
+    postStr = \
         individualPostAsHtml(recentPostsCache, maxRecentPosts,
                              iconsDir, translate, None,
                              baseDir, session, wfRequest, personCache,
@@ -5059,7 +5027,6 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
             profileStyle = profileStyle.replace('https://',
                                                 httpPrefix + '://')
         deletePostStr = htmlHeader(cssFilename, profileStyle)
-        deletePostStr += '<script>' + contentWarningScript() + '</script>'
         deletePostStr += \
             individualPostAsHtml(recentPostsCache, maxRecentPosts,
                                  iconsDir, translate, pageNumber,
@@ -6135,8 +6102,6 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         profileStr += '    </center>'
         profileStr += '  </form>'
         profileStr += '</div>'
-
-        profileStr += '<script>' + contentWarningScript() + '</script>'
 
         iconsDir = getIconsDir(baseDir)
         i = 0
