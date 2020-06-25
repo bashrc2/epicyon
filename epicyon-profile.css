@@ -672,6 +672,7 @@ a, button, input:focus, input[type='button'], input[type='reset'], input[type='s
     -ms-transition: all 0.1s ease-in-out;
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
+    text-decoration: none;
 }
 .button-msgScope {
     display:flex;
@@ -699,36 +700,6 @@ aside .toggle-msgScope input[type='checkbox'] {
   float: right;
 }
 
-.dropdown-menutoggle {
-  -webkit-margin-start: 0px;
-  -webkit-margin-end: 0px;
-  -webkit-padding-start: 40px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  position: absolute;
-  top: 100%;
-  left: 21px;
-  width: 300%;
-  min-width: 100%;
-  z-index: 1000;
-  display: block;
-  float: left;
-  padding: 0 17px !important;
-  margin: 2px 0 0 !important;
-  font-size: var(--font-size2);
-  text-align: left;
-  list-style: none;
-  color: var(--dropdown-fg-color);
-  background-color: var(--dropdown-bg-color);
-  -webkit-background-clip: padding-box;
-  background-clip: padding-box;
-}
-
-.dropdown-menutoggle a {
-  box-shadow: none !important;
-}
-
-/******************TOGGLE ****************/
 .toggle-msgScope {
     position: relative;
     overflow: hidden;
@@ -736,13 +707,7 @@ aside .toggle-msgScope input[type='checkbox'] {
     line-height: 2rem;
     font-size: 2.5rem;
 }
-.toggle-msgScope img {
-    width: 32px;
-    height: 32px;
-    padding: 0px 0px;
-} 
 .toggle-msgScope div[class*='toggle-inside'] {
-   /* margin: -22px 0 13px 0;*/
     overflow: hidden;
     box-sizing: border-box;
     display: none;
@@ -769,7 +734,6 @@ aside .toggle-inside li {
     -ms-transition: all 0.1s ease-in-out;
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
-    /*width: 170px;*/
     margin: 0 auto;
     font-size: 1.5rem;
     text-decoration: none;
@@ -813,12 +777,12 @@ aside .toggle-inside li {
     transition:all 500ms ease;
 }
 [id*='toggle'toggle'toggle'] + label div:after {
-    content:&#39;\002b&#39;; /*OPEN*/
+    content:&#39;\002b&#39;; /* open */
     text-align: left;
     float: left;
 }
 [id*='toggle'toggle'toggle']:checked + label div:after {
-    content:&#39;\2212&#39;; /*close*/
+    content:&#39;\2212&#39;; /* close */
     text-align: left;
     float: left;
 }
@@ -828,15 +792,11 @@ aside .toggle-inside li {
     -ms-transition: all 0.1s ease-in-out;
     -o-transition: all 0.1s ease-in-out;
     transition: all 0.1s ease-in-out;
-    /*width: 170px;*/
+    width: 170px;
     margin: 0 auto;
-    font-size: 1.5rem;
     text-decoration: none;
     display: inline-block;
     font-weight: bold;
-    box-shadow: 0px 3px 2px #CCC;
-    box-shadow: 0px 2px 1px rgba(204, 204, 204, 0.74);
-    background-color: #e85c41;
     display: inline-block;
     margin-bottom: 0;
     text-align: left;
@@ -850,7 +810,6 @@ aside .toggle-inside li {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    margin-top: 10px;
 }
 [id*='toggle'] .container, [class*='toggle'] .container  {
     transition: margin 300ms cubic-bezier(0.17, 0.04, 0.03, 0.94);
@@ -1252,6 +1211,40 @@ aside .toggle-inside li {
         border-radius: 1%;
         width: 15%;
     }
+    #msgscope label img {
+        width: 46px;
+        height: 46px;
+        padding: 0px 0px;
+    }
+    .toggle-msgScope img {
+        width: 32px;
+        height: 32px;
+        padding: 0px 0px;
+    }
+    .dropdown-menutoggle {
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	-webkit-padding-start: 40px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	position: absolute;
+	top: 100%;
+	left: 21px;
+	width: 300%;
+	min-width: 100%;
+	z-index: 1000;
+	display: block;
+	float: left;
+	padding: 0 17px !important;
+	margin: 2px 0 0 !important;
+	font-size: var(--font-size2);
+	text-align: left;
+	list-style: none;
+	color: var(--dropdown-fg-color);
+	background-color: var(--dropdown-bg-color);
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+    }
 }
 
 @media screen and (min-width: 2200px) {
@@ -1609,5 +1602,39 @@ aside .toggle-inside li {
     .hero-text img.title {
         border-radius: 1%;
         width: 25%;
+    }
+    #msgscope label  img {
+        width: 64px;
+        height: 64px;
+        padding: 0px 0px;
+    }
+    .toggle-msgScope img {
+        width: 64px;
+        height: 64px;
+        padding: 0px 0px;
+    }
+    .dropdown-menutoggle {
+	-webkit-margin-start: 0px;
+	-webkit-margin-end: 0px;
+	-webkit-padding-start: 40px;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	position: absolute;
+	top: 100%;
+	left: 21px;
+	width: 460%;
+	min-width: 100%;
+	z-index: 1000;
+	display: block;
+	float: left;
+	padding: 0 17px !important;
+	margin: 2px 0 0 !important;
+	font-size: var(--font-size3);
+	text-align: left;
+	list-style: none;
+	color: var(--dropdown-fg-color);
+	background-color: var(--dropdown-bg-color);
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
     }
 }

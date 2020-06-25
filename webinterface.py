@@ -1969,10 +1969,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropdownReportSuffix += '?mention=' + mentionedActor
 
     dropDownContent = ''
-    # dropDownContent = \
-    #     '<img loading="lazy" alt="" title="" src="/' + iconsDir + \
-    #     '/' + scopeIcon + '"/><b class="scope-desc">' + \
-    #     scopeDescription + '</b>'
     if not reportUrl:
         dropDownContent += "<div class='msgscope-collapse collapse "
         dropDownContent += "right desktoponly' id='msgscope'>\n"
