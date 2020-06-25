@@ -2038,6 +2038,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         dropDownContent += '  </div>\n'
         dropDownContent += '  </li>\n'
         dropDownContent += '  </ul>\n'
+        dropDownContent += '</div>\n'
     else:
         mentionsStr = 'Re: ' + reportUrl + '\n\n' + mentionsStr
 
@@ -2055,7 +2056,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
-        translate['Search for emoji'] + '"/></a></div>\n'
+        translate['Search for emoji'] + '"/></a>\n'
     newPostForm += '    </div>\n'
     newPostForm += '    <div class="container"><center>\n'
     newPostForm += \
