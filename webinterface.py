@@ -2081,6 +2081,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += '    <input type="text" name="subject">'
     newPostForm += ''
 
+    selectedStr = ' selected'
     if inReplyTo or endpoint == 'newdm':
         if inReplyTo:
             newPostForm += \
@@ -2088,12 +2089,13 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 '</label><br>'
         else:
             newPostForm += \
-                '    <label class="labels">' + translate['Send to'] + \
-                '</label><br>'
+                '    <label class="labels">' + \
+                translate['Send to'] + ':' + '</label><br>'
         newPostForm += \
             '    <input type="text" name="mentions" value="' + \
-            mentionsStr + '">'
+            mentionsStr + '" selected>'
         newPostForm += ''
+        selectedStr = ''
 
     newPostForm += \
         '    <br><label class="labels">' + placeholderMessage + '</label>'
@@ -2108,7 +2110,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px"></textarea>\n'
+        str(messageBoxHeight) + 'px"' + selectedStr + '></textarea>\n'
     newPostForm += extraFields+dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
