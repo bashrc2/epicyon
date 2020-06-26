@@ -898,7 +898,7 @@ aside .toggle-inside li {
         border-radius: var(--image-corners);
     }
     .container img.emojisearch {
-        width: 10%;
+        width: 15%;
         float: right;
         vertical-align: middle;
     }
@@ -1290,7 +1290,7 @@ aside .toggle-inside li {
         border-radius: var(--image-corners);
     }
     .container img.emojisearch {
-        width: 12%;
+        width: 25%;
         float: right;
         vertical-align: middle;
     }
