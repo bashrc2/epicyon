@@ -26,7 +26,7 @@ When creating a new post you can optionally also add a date, time and place. Thi
 
 ## Noone Left Behind
 
-Epicyon's lack of javascript makes it much more usable in shell based web browsers such as Lynx. As new web systems are deployed we should not be leaving anyone with minority use cases behind.
+Epicyon's absence of javascript makes it much more usable in shell based web browsers such as Lynx. As new web systems are deployed we should not be leaving anyone with minority use cases behind.
 
 ## Media Timeline
 

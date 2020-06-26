@@ -17,7 +17,7 @@ Epicyon is an AGPL licensed ActivityPub protocol compliant federated social netw
 
 ## An Internet of People, Not Corporate Agendas
 
-Epicyon is written in Python with a HTML+CSS web interface and uses almost no javascript which makes display in a web browser very lightweight.
+Epicyon is written in Python with a HTML+CSS web interface and uses no javascript which makes display in a web browser very lightweight.
 
 Emojis, hashtags, photos, video and audio attachments, instance and account level blocking controls, moderation functions and reports are all supported. Build the community you want and avoid the stuff you don't. No ads. No blockchains or other Silicon Valley garbage.
 
