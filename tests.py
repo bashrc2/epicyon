@@ -64,7 +64,6 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
-from content import getMentionsString
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -1866,24 +1865,8 @@ def testSiteIsActive():
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
 
-def testGetMentionsString():
-    print('testGetMentionsString')
-    content = 'This post has no mentions'
-    result = getMentionsString(content)
-    assert len(result) == 2
-    assert not result[0]
-    assert result[1] == 'This post has no mentions'
-
-    content = '@nick@abc @sue@def This post has no mentions'
-    result = getMentionsString(content)
-    assert len(result) == 2
-    assert result[0] == '@nick@abc @sue@def'
-    assert result[1] == 'This post has no mentions'
-
-
 def runAllTests():
     print('Running tests...')
-    testGetMentionsString()
     testSiteIsActive()
     testJsonld()
     testRemoveTextFormatting()

@@ -14,31 +14,6 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
-def getMentionsString(content: str) -> []:
-    """Returns the initial string containing mentions from the post content
-    and the content string without the initial mentions
-    """
-    if ' ' not in content:
-        # Doesn't contain any distinct words
-        return ['', content]
-    if '@' not in content:
-        # Nothing which could be a mention
-        return ['', content]
-    messageStr = content.strip()
-    if not messageStr.startswith('@'):
-        # There are no mentions
-        return ['', content]
-    words = messageStr.split(' ')
-    # get each mentioned handle
-    mentions = ''
-    for handle in words:
-        if not handle.startswith('@'):
-            break
-        mentions += handle + ' '
-    messageStr = content.replace(mentions, '')
-    return [mentions.strip(), messageStr]
-
-
 def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
