@@ -2055,15 +2055,15 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
     newPostForm += '    <div class="container">\n'
-    newPostForm += '      <div class="flex-container">\n'
-    newPostForm += dropDownContent
+    newPostForm += '      <table border="0"><tr>\n'
+    newPostForm += '<td>' + dropDownContent + '</td>\n'
     newPostForm += \
-        '      <div><a href="' + pathBase + \
+        '      <td><a href="' + pathBase + \
         '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
-        translate['Search for emoji'] + '"/></a></div>\n'
-    newPostForm += '      </div>\n'
+        translate['Search for emoji'] + '"/></a></td>\n'
+    newPostForm += '      </tr></table>\n'
     newPostForm += '    </div>\n'
     newPostForm += '    <div class="container"><center>\n'
     newPostForm += \

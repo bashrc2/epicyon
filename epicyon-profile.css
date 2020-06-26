@@ -661,10 +661,6 @@ div.gallery img {
     text-decoration: none;
 }
 
-.flex-container {
-  display: flex;
-}
-
 li { list-style:none;}
 .msgscope-collapse { position: relative; }
 .nav { width: 150px; }
