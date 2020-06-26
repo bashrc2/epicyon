@@ -2050,18 +2050,20 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
         'accept-charset="UTF-8" action="' + \
-        path + '?' + endpoint + '?page=' + str(pageNumber) + '">'
-    newPostForm += '  <div class="vertical-center">'
+        path + '?' + endpoint + '?page=' + str(pageNumber) + '">\n'
+    newPostForm += '  <div class="vertical-center">\n'
     newPostForm += \
-        '    <label for="nickname"><b>' + newPostText + '</b></label>'
+        '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
     newPostForm += '    <div class="container">\n'
+    newPostForm += '      <div class="flex-container">\n'
     newPostForm += dropDownContent
     newPostForm += \
-        '      <a href="' + pathBase + \
+        '      <div><a href="' + pathBase + \
         '/searchemoji"><img loading="lazy" class="emojisearch" ' + \
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
-        translate['Search for emoji'] + '"/></a>\n'
+        translate['Search for emoji'] + '"/></a></div>\n'
+    newPostForm += '      </div>\n'
     newPostForm += '    </div>\n'
     newPostForm += '    <div class="container"><center>\n'
     newPostForm += \
