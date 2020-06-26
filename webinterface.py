@@ -2055,7 +2055,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += \
         '    <label for="nickname"><b>' + newPostText + '</b></label>\n'
     newPostForm += '    <div class="container">\n'
-    newPostForm += '      <table border="0"><tr>\n'
+    newPostForm += '      <table style="width:100%" border="0"><tr>\n'
     newPostForm += '<td>' + dropDownContent + '</td>\n'
     newPostForm += \
         '      <td><a href="' + pathBase + \
