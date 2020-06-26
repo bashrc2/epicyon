@@ -2081,9 +2081,15 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += '    <input type="text" name="subject">'
     newPostForm += ''
 
-    if inReplyTo:
-        newPostForm += \
-            '    <label class="labels">' + placeholderMentions + '</label><br>'
+    if inReplyTo or endpoint == 'newdm':
+        if inReplyTo:
+            newPostForm += \
+                '    <label class="labels">' + placeholderMentions + \
+                '</label><br>'
+        else:
+            newPostForm += \
+                '    <label class="labels">' + translate['Send to'] + \
+                '</label><br>'
         newPostForm += \
             '    <input type="text" name="mentions" value="' + \
             mentionsStr + '">'
