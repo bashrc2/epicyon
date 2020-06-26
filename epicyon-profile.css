@@ -900,7 +900,6 @@ aside .toggle-inside li {
     .container img.emojisearch {
         width: 15%;
         float: right;
-        vertical-align: middle;
     }
     .container img.emojicalendar {
         float: left;
@@ -1292,7 +1291,6 @@ aside .toggle-inside li {
     .container img.emojisearch {
         width: 25%;
         float: right;
-        vertical-align: middle;
     }
     .container img.emojicalendar {
         float: left;
@@ -1611,7 +1609,8 @@ aside .toggle-inside li {
     .toggle-msgScope img {
         width: 64px;
         height: 64px;
-        padding: 0px 0px;
+        margin: -15px 0px;
+        padding: 0px 20px;
     }
     .dropdown-menutoggle {
 	-webkit-margin-start: 0px;
