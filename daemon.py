@@ -5205,6 +5205,9 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
 
+            mentionsStr = ''
+            if fields.get('mentions'):
+                mentionsStr = fields['mentions'].strip() + ' '
             if postType == 'newpost':
                 messageJson = \
                     createPublicPost(self.server.baseDir,
@@ -5212,7 +5215,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      self.server.domain,
                                      self.server.port,
                                      self.server.httpPrefix,
-                                     fields['message'],
+                                     mentionsStr + fields['message'],
                                      False, False, False,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],
@@ -5341,7 +5344,7 @@ class PubServer(BaseHTTPRequestHandler):
                                        nickname,
                                        self.server.domain, self.server.port,
                                        self.server.httpPrefix,
-                                       fields['message'],
+                                       mentionsStr + fields['message'],
                                        False, False, False,
                                        filename, attachmentMediaType,
                                        fields['imageDescription'],
@@ -5373,7 +5376,7 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.domain,
                                             self.server.port,
                                             self.server.httpPrefix,
-                                            fields['message'],
+                                            mentionsStr + fields['message'],
                                             True, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
@@ -5401,13 +5404,14 @@ class PubServer(BaseHTTPRequestHandler):
             elif postType == 'newdm':
                 messageJson = None
                 print('A DM was posted')
-                if '@' in fields['message']:
+                if '@' in mentionsStr:
                     messageJson = \
                         createDirectMessagePost(self.server.baseDir,
                                                 nickname,
                                                 self.server.domain,
                                                 self.server.port,
                                                 self.server.httpPrefix,
+                                                mentionsStr +
                                                 fields['message'],
                                                 True, False, False,
                                                 filename, attachmentMediaType,
@@ -5440,15 +5444,15 @@ class PubServer(BaseHTTPRequestHandler):
                 messageJson = None
                 handle = nickname + '@' + self.server.domainFull
                 print('A reminder was posted for ' + handle)
-                if '@' + handle not in fields['message']:
-                    fields['message'] = '@' + handle + ' ' + fields['message']
+                if '@' + handle not in mentionsStr:
+                    mentionsStr = '@' + handle + ' ' + mentionsStr
                 messageJson = \
                     createDirectMessagePost(self.server.baseDir,
                                             nickname,
                                             self.server.domain,
                                             self.server.port,
                                             self.server.httpPrefix,
-                                            fields['message'],
+                                            mentionsStr + fields['message'],
                                             True, False, False,
                                             filename, attachmentMediaType,
                                             fields['imageDescription'],
@@ -5481,7 +5485,7 @@ class PubServer(BaseHTTPRequestHandler):
                                      nickname,
                                      self.server.domain, self.server.port,
                                      self.server.httpPrefix,
-                                     fields['message'],
+                                     mentionsStr + fields['message'],
                                      True, False, False,
                                      filename, attachmentMediaType,
                                      fields['imageDescription'],

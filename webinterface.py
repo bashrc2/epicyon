@@ -1798,6 +1798,11 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     scopeDescription = translate['Public']
     placeholderSubject = \
         translate['Subject or Content Warning (optional)'] + '...'
+    placeholderMentions = ''
+    if inReplyTo:
+        # mentionsAndContent = getMentionsString(content)
+        placeholderMentions = \
+            translate['Replying to'] + '...'
     placeholderMessage = translate['Write something'] + '...'
     extraFields = ''
     endpoint = 'newpost'
@@ -2070,10 +2075,20 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += replyStr
     if mediaInstance and not replyStr:
         newPostForm += newPostImageSection
+
     newPostForm += \
         '    <label class="labels">' + placeholderSubject + '</label><br>'
     newPostForm += '    <input type="text" name="subject">'
     newPostForm += ''
+
+    if inReplyTo:
+        newPostForm += \
+            '    <label class="labels">' + placeholderMentions + '</label><br>'
+        newPostForm += \
+            '    <input type="text" name="mentions" value="' + \
+            mentionsStr + '">'
+        newPostForm += ''
+
     newPostForm += \
         '    <br><label class="labels">' + placeholderMessage + '</label>'
     messageBoxHeight = 400
@@ -2087,7 +2102,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
 
     newPostForm += \
         '    <textarea id="message" name="message" style="height:' + \
-        str(messageBoxHeight) + 'px">' + mentionsStr + '</textarea>\n'
+        str(messageBoxHeight) + 'px"></textarea>\n'
     newPostForm += extraFields+dateAndLocation
     if not mediaInstance or replyStr:
         newPostForm += newPostImageSection
@@ -2095,8 +2110,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += '</form>\n'
 
     if not reportUrl:
-        newPostForm += \
-            '<script>' + cursorToEndOfMessageScript() + '</script>'
         newPostForm = \
             newPostForm.replace('<body>', '<body onload="focusOnMessage()">')
 
@@ -2741,27 +2754,6 @@ def individualFollowAsHtml(translate: {},
     resultStr += titleStr + '</a>' + buttonsStr + '</p>'
     resultStr += '</div>\n'
     return resultStr
-
-
-def cursorToEndOfMessageScript() -> str:
-    """Moves the cursor to the end of the text in a textarea
-    This avoids the cursor being in the wrong position when replying
-    """
-    script = 'function focusOnMessage() {\n'
-    script += "  var replyTextArea=document.getElementById('message');\n"
-    script += '  val=replyTextArea.value;\n'
-    script += '  if ((val.length>0) && (val.charAt(val.length-1) != " ")) {\n'
-    script += '    val += " ";\n'
-    script += '  }\n'
-    script += '  replyTextArea.focus();\n'
-    script += '  replyTextArea.value="";\n'
-    script += '  replyTextArea.value=val;\n'
-    script += '}\n'
-    script += "var replyTextArea=document.getElementById('message')\n"
-    script += 'replyTextArea.onFocus=function() {\n'
-    script += '  focusOnMessage();'
-    script += '}\n'
-    return script
 
 
 def addEmbeddedAudio(translate: {}, content: str) -> str:
