@@ -3377,6 +3377,11 @@ class PubServer(BaseHTTPRequestHandler):
                                   shareDescription,
                                   replyPageNumber,
                                   nickname, self.server.domain).encode('utf-8')
+                if not msg:
+                    print('Error replying to ' + inReplyToUrl)
+                    self._404()
+                    self.server.GETbusy = False
+                    return                    
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
