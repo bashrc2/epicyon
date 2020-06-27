@@ -429,8 +429,8 @@ for d in /home/*/ ; do
 	  echo 'Terminal=false';
 	  echo 'Categories=Internet;SocialNetwork;';
 	  echo 'StartupWMClass=Epicyon';
-	  echo 'Keywords=Epicyon;P2P;I2P;'; } > "/home/${CURRUSER}/Desktop/${username}"
-	chown "$CURRUSER":"$CURRUSER" "/home/${CURRUSER}/Desktop/${username}"
+	  echo 'Keywords=Epicyon;P2P;I2P;'; } > "/home/${CURRUSER}/Desktop/${username}.desktop"
+	chown "$CURRUSER":"$CURRUSER" "/home/${CURRUSER}/Desktop/${username}.desktop"
     fi
 done
 
