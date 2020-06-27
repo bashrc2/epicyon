@@ -176,7 +176,7 @@ def setThemeBlue(baseDir: str):
         "hashtag-vertical-spacing4": "150px",
         "time-vertical-align": "-10px",
         "*font-family": "'Domestic_Manners'",
-        "*src": "url('./fonts/Domestic_Manners.ttf') format('truetype')"
+        "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, 'blue', themeParams)
 
@@ -185,7 +185,7 @@ def setThemeNight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, 'night')
     fontStr = \
-        "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
+        "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -261,7 +261,7 @@ def setThemeStarlight(baseDir: str):
         "event-color": "#ffc4bc",
         "image-corners": "2%",
         "*font-family": "'bgrove'",
-        "*src": "url('fonts/bgrove.ttf') format('truetype')"
+        "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, 'starlight', themeParams)
 
@@ -305,7 +305,7 @@ def setThemeHenge(baseDir: str):
         "timeline-border-radius": "20px",
         "image-corners": "8%",
         "*font-family": "'bgrove'",
-        "*src": "url('fonts/bgrove.ttf') format('truetype')"
+        "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, 'henge', themeParams)
 
@@ -349,7 +349,7 @@ def setThemeHighVis(baseDir: str):
         "hashtag-vertical-spacing4": "150px",
         "time-vertical-align": "-10px",
         "*font-family": "'LinBiolinum_Rah'",
-        "*src": "url('./fonts/LinBiolinum_Rah.ttf') format('truetype')"
+        "*src": "url('./fonts/LinBiolinum_Rah.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, 'highvis', themeParams)
 
@@ -405,14 +405,14 @@ def setThemeLCD(baseDir: str):
         "place-color": "#33390d",
         "event-color": "#33390d",
         "*font-family": "'LcdSolid'",
-        "*src": "url('./fonts/LcdSolid.ttf') format('truetype')"
+        "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, 'lcd', themeParams)
 
 
 def setThemePurple(baseDir: str):
     fontStr = \
-        "url('./fonts/CheGuevaraTextSans-Regular.ttf') format('truetype')"
+        "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
