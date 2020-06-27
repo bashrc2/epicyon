@@ -51,6 +51,12 @@ NGINX_PORT=9554
 EPICYON_PORT=7158
 tunnels_dir=/var/lib/i2pd/tunnels.d
 
+# if proxychains already exists then make a copy of the
+# older config
+if [ -f /etc/proxychains.conf ]; then
+    mv /etc/proxychains.conf /etc/proxychains.conf.old
+fi
+
 echo 'Adding Epicyon dependencies'
 if [ -f /usr/bin/pacman ]; then
     pacman -Syy
