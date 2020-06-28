@@ -1651,13 +1651,15 @@ class PubServer(BaseHTTPRequestHandler):
             with open(followingFilename, 'r') as followingFile:
                 msg = followingFile.read()
                 followingList = msg.split('\n').sort()
-                followingListHtml = '<html><body>'
-                for followingAddress in followingList:
-                    followingListHtml += '<h3>' + followingAddress + '</h3>'
-                followingListHtml += '</body></html>'
-                msg = followingListHtml.encode('utf-8')
+                print('followingList: ' + str(followingList))
+                if followingList:
+                    followingListHtml = '<html><body>'
+                    for followingAddress in followingList:
+                        followingListHtml += '<h3>' + followingAddress + '</h3>'
+                    followingListHtml += '</body></html>'
+                    msg = followingListHtml
             self._login_headers('text/html', len(msg), callingDomain)
-            self._write(msg)
+            self._write(msg.encode('utf-8'))
             return
 
         if self.path.startswith('/about'):
