@@ -951,7 +951,7 @@ def updateLikesCollection(recentPostsCache: {},
     if debug:
         print('DEBUG: saving post with likes added')
         pprint(postJsonObject)
-        saveJson(postJsonObject, postFilename)
+    saveJson(postJsonObject, postFilename)
 
 
 def undoAnnounceCollectionEntry(recentPostsCache: {},
