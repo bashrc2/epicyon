@@ -2064,14 +2064,6 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
     newPostForm += '      </tr>\n'
-
-    if endpoint == 'newdm':
-        newPostForm += '<tr>' \
-            '<td><a href="/users/' + nickname + \
-            '/followingaccounts"><label class="labels">' + \
-            translate['Following'] + '</label></a>' \
-            '</td><td></td></tr>\n'
-
     newPostForm += '</table>\n'
     newPostForm += '    </div>\n'
     newPostForm += '    <div class="container"><center>\n'
@@ -2100,8 +2092,9 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 '</label><br>'
         else:
             newPostForm += \
-                '    <label class="labels">' + \
-                translate['Send to'] + ':' + '</label><br>'
+                '    <a href="/users/' + nickname + \
+                '/followingaccounts"><label class="labels">' + \
+                translate['Send to'] + ':' + '</label></a><br>'
         newPostForm += \
             '    <input type="text" name="mentions" value="' + \
             mentionsStr + '" selected>'
