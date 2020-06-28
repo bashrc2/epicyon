@@ -2594,7 +2594,7 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
             if len(queue) > 0:
                 queue.pop(0)
             print('Queue: Follow activity for ' + keyId +
-                  ' removed from accepted from queue')
+                  ' removed from queue')
             continue
         else:
             if debug:

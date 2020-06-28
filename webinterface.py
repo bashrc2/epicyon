@@ -6077,7 +6077,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         avatarDescription = ''
         if profileJson.get('summary'):
             if isinstance(profileJson['summary'], str):
-                avatarDescription = profileJson['summary'].replace('<br>', '\n')
+                avatarDescription = \
+                    profileJson['summary'].replace('<br>', '\n')
                 avatarDescription = avatarDescription.replace('<p>', '')
                 avatarDescription = avatarDescription.replace('</p>', '')
         profileStr = ' <div class="hero-image">'

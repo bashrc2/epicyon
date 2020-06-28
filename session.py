@@ -169,9 +169,8 @@ def postJsonString(session, postJsonStr: str,
         if postResult.status_code >= 400 and \
            postResult.status_code <= 405 and \
            postResult.status_code != 404:
-            print('WARN: >>> Post to ' + inboxUrl +
-                  ' is unauthorized. Code ' +
-                  str(postResult.status_code) + ' <<<')
+            print('WARN: Post to ' + inboxUrl + ' is unauthorized. Code ' +
+                  str(postResult.status_code))
             return False, True
         else:
             print('WARN: Failed to post to ' + inboxUrl +

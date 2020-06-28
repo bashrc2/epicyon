@@ -3383,7 +3383,7 @@ class PubServer(BaseHTTPRequestHandler):
                     print('Error replying to ' + inReplyToUrl)
                     self._404()
                     self.server.GETbusy = False
-                    return                    
+                    return
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
