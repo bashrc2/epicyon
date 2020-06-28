@@ -6074,7 +6074,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
         if len(profileDescriptionShort) > 256:
             profileDescriptionShort = ''
         # remove formatting from profile description used on title
-        avatarDescription = ' '
+        avatarDescription = ''
         if profileJson.get('summary'):
             if isinstance(profileJson['summary'], str):
                 avatarDescription = profileJson['summary'].replace('<br>', '\n')
@@ -6082,11 +6082,11 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                 avatarDescription = avatarDescription.replace('</p>', '')
         profileStr = ' <div class="hero-image">'
         profileStr += '  <div class="hero-text">'
-        print('avatarDescription: ' + str(avatarDescription))
-        profileStr += \
-            '    <img loading="lazy" src="' + avatarUrl + \
-            '" alt="' + avatarDescription + '" title="' + \
-            avatarDescription + '" class="title">'
+        if avatarUrl:
+            profileStr += \
+                '    <img loading="lazy" src="' + avatarUrl + \
+                '" alt="' + avatarDescription + '" title="' + \
+                avatarDescription + '" class="title">'
         profileStr += '    <h1>' + displayName + '</h1>'
         profileStr += '    <p><b>@' + searchNickname + '@' + \
             searchDomainFull + '</b></p>'
