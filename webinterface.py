@@ -2063,7 +2063,16 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         'src="/emoji/1F601.png" title="' + \
         translate['Search for emoji'] + '" alt="' + \
         translate['Search for emoji'] + '"/></a></td>\n'
-    newPostForm += '      </tr></table>\n'
+    newPostForm += '      </tr>\n'
+
+    if endpoint == 'newdm':
+        newPostForm += '<tr>' \
+            '<td><a href="/users/' + nickname + \
+            '/followingaccounts"><label class="labels">' + \
+            translate['Following'] + '</label></a>' \
+            '</td><td></td></tr>\n'
+
+    newpostForm += '</table>\n'
     newPostForm += '    </div>\n'
     newPostForm += '    <div class="container"><center>\n'
     newPostForm += \
