@@ -898,58 +898,59 @@ def updateLikesCollection(recentPostsCache: {},
     """Updates the likes collection within a post
     """
     postJsonObject = loadJson(postFilename)
-    if postJsonObject:
-        # remove any cached version of this post so that the
-        # like icon is changed
-        nickname = getNicknameFromActor(actor)
-        cachedPostFilename = getCachedPostFilename(baseDir, nickname,
-                                                   domain, postJsonObject)
-        if cachedPostFilename:
-            if os.path.isfile(cachedPostFilename):
-                os.remove(cachedPostFilename)
-        removePostFromCache(postJsonObject, recentPostsCache)
+    if not postJsonObject:
+        return
+    # remove any cached version of this post so that the
+    # like icon is changed
+    nickname = getNicknameFromActor(actor)
+    cachedPostFilename = getCachedPostFilename(baseDir, nickname,
+                                               domain, postJsonObject)
+    if cachedPostFilename:
+        if os.path.isfile(cachedPostFilename):
+            os.remove(cachedPostFilename)
+    removePostFromCache(postJsonObject, recentPostsCache)
 
-        if not postJsonObject.get('object'):
-            if debug:
-                pprint(postJsonObject)
-                print('DEBUG: post ' + objectUrl + ' has no object')
-            return
-        if not isinstance(postJsonObject['object'], dict):
-            return
-        if not objectUrl.endswith('/likes'):
-            objectUrl = objectUrl + '/likes'
-        if not postJsonObject['object'].get('likes'):
-            if debug:
-                print('DEBUG: Adding initial like to ' + objectUrl)
-            likesJson = {
-                "@context": "https://www.w3.org/ns/activitystreams",
-                'id': objectUrl,
-                'type': 'Collection',
-                "totalItems": 1,
-                'items': [{
-                    'type': 'Like',
-                    'actor': actor
-                }]
-            }
-            postJsonObject['object']['likes'] = likesJson
-        else:
-            if not postJsonObject['object']['likes'].get('items'):
-                postJsonObject['object']['likes']['items'] = []
-            for likeItem in postJsonObject['object']['likes']['items']:
-                if likeItem.get('actor'):
-                    if likeItem['actor'] == actor:
-                        return
-            newLike = {
+    if not postJsonObject.get('object'):
+        if debug:
+            pprint(postJsonObject)
+            print('DEBUG: post ' + objectUrl + ' has no object')
+        return
+    if not isinstance(postJsonObject['object'], dict):
+        return
+    if not objectUrl.endswith('/likes'):
+        objectUrl = objectUrl + '/likes'
+    if not postJsonObject['object'].get('likes'):
+        if debug:
+            print('DEBUG: Adding initial like to ' + objectUrl)
+        likesJson = {
+            "@context": "https://www.w3.org/ns/activitystreams",
+            'id': objectUrl,
+            'type': 'Collection',
+            "totalItems": 1,
+            'items': [{
                 'type': 'Like',
                 'actor': actor
-            }
-            postJsonObject['object']['likes']['items'].append(newLike)
-            itlen = len(postJsonObject['object']['likes']['items'])
-            postJsonObject['object']['likes']['totalItems'] = itlen
+            }]
+        }
+        postJsonObject['object']['likes'] = likesJson
+    else:
+        if not postJsonObject['object']['likes'].get('items'):
+            postJsonObject['object']['likes']['items'] = []
+        for likeItem in postJsonObject['object']['likes']['items']:
+            if likeItem.get('actor'):
+                if likeItem['actor'] == actor:
+                    return
+        newLike = {
+            'type': 'Like',
+            'actor': actor
+        }
+        postJsonObject['object']['likes']['items'].append(newLike)
+        itlen = len(postJsonObject['object']['likes']['items'])
+        postJsonObject['object']['likes']['totalItems'] = itlen
 
-        if debug:
-            print('DEBUG: saving post with likes added')
-            pprint(postJsonObject)
+    if debug:
+        print('DEBUG: saving post with likes added')
+        pprint(postJsonObject)
         saveJson(postJsonObject, postFilename)
 
 
