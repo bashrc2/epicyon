@@ -1025,6 +1025,8 @@ class PubServer(BaseHTTPRequestHandler):
                     # to be authorized to use an account you don't own
                     if '/' + nickname + '/' in self.path:
                         return True
+                    if '/' + nickname + '?' in self.path:
+                        return True
                     if self.path.endswith('/'+nickname):
                         return True
                     print('AUTH: nickname ' + nickname +
