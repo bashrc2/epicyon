@@ -164,11 +164,13 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
 
     if nextUrl:
         if isinstance(nextUrl, str):
-            userFeed = parseUserFeed(session, nextUrl, asHeader,
-                                     projectVersion, httpPrefix,
-                                     domain)
-            for item in userFeed:
-                yield item
+            if '?max_id=0' not in nextUrl:
+                userFeed = \
+                    parseUserFeed(session, nextUrl, asHeader,
+                                  projectVersion, httpPrefix,
+                                  domain)
+                for item in userFeed:
+                    yield item
         elif isinstance(nextUrl, dict):
             userFeed = nextUrl
             if userFeed.get('orderedItems'):
