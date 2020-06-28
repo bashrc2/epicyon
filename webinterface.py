@@ -2094,7 +2094,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             newPostForm += \
                 '    <a href="/users/' + nickname + \
                 '/followingaccounts"><label class="labels">' + \
-                translate['Send to'] + ':' + '</label></a><br>'
+                translate['Send to'] + ':' + '</label>📄</a><br>'
         newPostForm += \
             '    <input type="text" name="mentions" value="' + \
             mentionsStr + '" selected>'
