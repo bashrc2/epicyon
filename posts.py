@@ -150,6 +150,7 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
                        projectVersion, httpPrefix, domain)
     if not feedJson:
         return
+    print('parseUserFeed: ' + str(feedJson))
 
     if 'orderedItems' in feedJson:
         for item in feedJson['orderedItems']:
