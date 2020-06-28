@@ -1650,12 +1650,14 @@ class PubServer(BaseHTTPRequestHandler):
             msg = ''
             with open(followingFilename, 'r') as followingFile:
                 msg = followingFile.read()
-                followingList = msg.split('\n').sort()
-                print('followingList: ' + str(followingList))
+                followingList = msg.split('\n')
+                followingList.sort()
                 if followingList:
                     followingListHtml = '<html><body>'
                     for followingAddress in followingList:
-                        followingListHtml += '<h3>' + followingAddress + '</h3>'
+                        if followingAddress:
+                            followingListHtml += \
+                                '<h3>' + followingAddress + '</h3>'
                     followingListHtml += '</body></html>'
                     msg = followingListHtml
             self._login_headers('text/html', len(msg), callingDomain)
