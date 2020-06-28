@@ -292,6 +292,30 @@ def getPersonAvatarUrl(baseDir: str, personUrl: str, personCache: {}) -> str:
     return None
 
 
+def htmlFollowingList(baseDir: str, followingFilename: str) -> str:
+    """Returns a list of handles being followed
+    """
+    with open(followingFilename, 'r') as followingFile:
+        msg = followingFile.read()
+        followingList = msg.split('\n')
+        followingList.sort()
+        if followingList:
+            cssFilename = baseDir + '/epicyon-profile.css'
+            if os.path.isfile(baseDir + '/epicyon.css'):
+                cssFilename = baseDir + '/epicyon.css'
+            with open(cssFilename, 'r') as cssFile:
+                profileCSS = cssFile.read()
+                followingListHtml = htmlHeader(cssFilename, profileCSS)
+                for followingAddress in followingList:
+                    if followingAddress:
+                        followingListHtml += \
+                            '<h3>' + followingAddress + '</h3>'
+                followingListHtml += htmlFooter()
+                msg = followingListHtml
+        return msg
+    return ''
+
+
 def htmlSearchEmoji(translate: {}, baseDir: str, httpPrefix: str,
                     searchStr: str) -> str:
     """Search results for emoji

@@ -105,6 +105,7 @@ from blog import htmlBlogView
 from blog import htmlBlogPage
 from blog import htmlBlogPost
 from blog import htmlEditBlog
+from webinterface import htmlFollowingList
 from webinterface import getBlogAddress
 from webinterface import setBlogAddress
 from webinterface import htmlCalendarDeleteConfirm
@@ -1647,19 +1648,7 @@ class PubServer(BaseHTTPRequestHandler):
             if not os.path.isfile(followingFilename):
                 self._404()
                 return
-            msg = ''
-            with open(followingFilename, 'r') as followingFile:
-                msg = followingFile.read()
-                followingList = msg.split('\n')
-                followingList.sort()
-                if followingList:
-                    followingListHtml = '<html><body>'
-                    for followingAddress in followingList:
-                        if followingAddress:
-                            followingListHtml += \
-                                '<h3>' + followingAddress + '</h3>'
-                    followingListHtml += '</body></html>'
-                    msg = followingListHtml
+            msg = htmlFollowingList(self.server.baseDir, followingFilename)
             self._login_headers('text/html', len(msg), callingDomain)
             self._write(msg.encode('utf-8'))
             return
