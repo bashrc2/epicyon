@@ -309,7 +309,7 @@ def htmlFollowingList(baseDir: str, followingFilename: str) -> str:
                 for followingAddress in followingList:
                     if followingAddress:
                         followingListHtml += \
-                            '<h3>' + followingAddress + '</h3>'
+                            '<h3>@' + followingAddress + '</h3>'
                 followingListHtml += htmlFooter()
                 msg = followingListHtml
         return msg
