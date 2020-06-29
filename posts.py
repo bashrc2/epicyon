@@ -55,6 +55,7 @@ from blocking import isBlocked
 from filters import isFiltered
 from git import convertPostToPatch
 from jsonldsig import jsonldSign
+from petnames import resolvePetnames
 # try:
 #     from BeautifulSoup import BeautifulSoup
 # except ImportError:
@@ -1151,6 +1152,7 @@ def createDirectMessagePost(baseDir: str,
                             location=None) -> {}:
     """Direct Message post
     """
+    content = resolvePetnames(baseDir, nickname, domain, content)
     mentionedPeople = \
         getMentionedPeople(baseDir, httpPrefix, content, domain, debug)
     if debug:

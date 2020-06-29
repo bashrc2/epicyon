@@ -75,3 +75,46 @@ def getPetName(baseDir: str, nickname: str, domain: str,
                 if pet.endswith(' ' + handle):
                     return pet.replace(' ' + handle, '').strip()
     return ''
+
+
+def getPetNameHandle(baseDir: str, nickname: str, domain: str,
+                     petname: str) -> str:
+    """Given a petname returns the handle
+    """
+    if petname.startswith('@'):
+        petname = petname[1:]
+    petnamesFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/petnames.txt'
+
+    if not os.path.isfile(petnamesFilename):
+        return ''
+    with open(petnamesFilename, 'r') as petnamesFile:
+        petnamesStr = petnamesFile.read()
+        if petname + ' ' in petnamesStr:
+            petnamesList = petnamesStr.split('\n')
+            for pet in petnamesList:
+                if pet.startswith(petname + ' '):
+                    return pet.replace(petname + ' ', '').strip()
+    return ''
+
+
+def resolvePetnames(baseDir: str, nickname: str, domain: str,
+                    content: str) -> str:
+    """Replaces petnames with their full handles
+    """
+    if not content:
+        return content
+    if ' ' not in content:
+        return content
+    words = content.strip().split(' ')
+    for wrd in words:
+        # check initial words beginning with @
+        if not wrd.startswith('@'):
+            break
+        # does a petname handle exist for this?
+        handle = getPetNameHandle(baseDir, nickname, domain, wrd)
+        if not handle:
+            continue
+        # replace the petname with the handle
+        content = content.replace(wrd + ' ', handle)
+    return content
