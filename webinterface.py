@@ -5420,7 +5420,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         optionsStr += \
             '<p>' + translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
-            petname + '">' \
+            petname + '" size="14">' \
             '<button type="submit" class="button" name="submitPetname">' + \
             translate['Submit'] + '</button></p>'
     optionsStr += optionsLinkStr
