@@ -59,14 +59,14 @@ def getPetName(baseDir: str, nickname: str, domain: str,
     """Given a handle returns the petname
     """
     if '@' not in handle:
-        return None
+        return ''
     if handle.startswith('@'):
         handle = handle[1:]
     petnamesFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/petnames.txt'
 
     if not os.path.isfile(petnamesFilename):
-        return None
+        return ''
     with open(petnamesFilename, 'r') as petnamesFile:
         petnamesStr = petnamesFile.read()
         if ' ' + handle + '\n' in petnamesStr:
@@ -74,4 +74,4 @@ def getPetName(baseDir: str, nickname: str, domain: str,
             for pet in petnamesList:
                 if pet.endswith(' ' + handle):
                     return pet.replace(' ' + handle, '').strip()
-    return None
+    return ''

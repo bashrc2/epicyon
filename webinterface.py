@@ -73,6 +73,7 @@ from happening import getCalendarEvents
 from happening import getTodaysEvents
 from git import isGitPatch
 from theme import getThemesList
+from petnames import getPetName
 
 
 def getContentWarningButton(postID: str, translate: {},
@@ -5312,6 +5313,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     """Show options for a person: view/follow/block/report
     """
     optionsDomain, optionsPort = getDomainFromActor(optionsActor)
+    optionsDomainFull = optionsDomain
+    if optionsPort:
+        if optionsPort != 80 and optionsPort != 443:
+            optionsDomainFull = optionsDomain + ':' + str(optionsPort)
 
     if os.path.isfile(baseDir + '/img/options-background.png'):
         if not os.path.isfile(baseDir + '/accounts/options-background.png'):
@@ -5321,6 +5326,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     followStr = 'Follow'
     blockStr = 'Block'
     nickname = None
+    optionsNickname = None
     if originPathStr.startswith('/users/'):
         nickname = originPathStr.split('/users/')[1]
         if '/' in nickname:
@@ -5408,6 +5414,13 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         optionsActor + '">'
     optionsStr += '    <input type="hidden" name="avatarUrl" value="' + \
         optionsProfileUrl + '">'
+    if optionsNickname:
+        handle = optionsNickname + '@' + optionsDomainFull
+        petname = getPetName(baseDir, nickname, domain, handle)
+        optionsStr += \
+            '<p>' + translate['Petname'] + ': ' + \
+            '<input type="text" name="optionpetname" value="' + \
+            petname + '"></p>'
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
