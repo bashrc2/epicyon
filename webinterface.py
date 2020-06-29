@@ -5356,6 +5356,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         cssFilename = baseDir + '/follow.css'
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
+        profileStyle = \
+            profileStyle.replace('--follow-text-entry-width: 90%;',
+                                 '--follow-text-entry-width: 20%;')
 
     # To snooze, or not to snooze? That is the question
     snoozeButtonStr = 'Snooze'
@@ -5420,7 +5423,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         optionsStr += \
             '<p>' + translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
-            petname + '" size="14" maxlength="14">' \
+            petname + '">' \
             '<button type="submit" class="button" name="submitPetname">' + \
             translate['Submit'] + '</button></p>'
     optionsStr += optionsLinkStr
