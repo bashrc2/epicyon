@@ -184,6 +184,7 @@ from outbox import postMessageToOutbox
 from happening import removeCalendarEvent
 from bookmarks import bookmark
 from bookmarks import undoBookmark
+from petnames import setPetName
 import os
 
 
@@ -7593,6 +7594,11 @@ class PubServer(BaseHTTPRequestHandler):
                 postUrl = optionsConfirmParams.split('postUrl=')[1]
                 if '&' in postUrl:
                     postUrl = postUrl.split('&')[0]
+            petname = None
+            if 'optionpetname' in optionsConfirmParams:
+                petname = optionsConfirmParams.split('optionpetname=')[1]
+                if '&' in petname:
+                    petname = petname.split('&')[0]
 
             optionsNickname = getNicknameFromActor(optionsActor)
             if not optionsNickname:
@@ -7624,6 +7630,18 @@ class PubServer(BaseHTTPRequestHandler):
             if '&submitView=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Viewing ' + optionsActor)
+                self._redirect_headers(optionsActor,
+                                       cookie, callingDomain)
+                self.server.POSTbusy = False
+                return
+            if '&submitPetname=' in optionsConfirmParams and petname:
+                if self.server.debug:
+                    print('Change petname to ' + petname)
+                handle = optionsNickname + '@' + optionsDomainFull
+                setPetName(self.server.baseDir,
+                           chooserNickname,
+                           self.server.domain,
+                           handle, petname)
                 self._redirect_headers(optionsActor,
                                        cookie, callingDomain)
                 self.server.POSTbusy = False
