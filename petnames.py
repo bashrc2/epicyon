@@ -91,14 +91,11 @@ def getPetNameHandle(baseDir: str, nickname: str, domain: str,
     with open(petnamesFilename, 'r') as petnamesFile:
         petnamesStr = petnamesFile.read()
         if petname + ' ' in petnamesStr:
-            print('resolvePetnames: petname exists')
             petnamesList = petnamesStr.split('\n')
             for pet in petnamesList:
                 if pet.startswith(petname + ' '):
                     handle = pet.replace(petname + ' ', '').strip()
-                    print('resolvePetnames: handle found ' + handle)
                     return handle
-    print('resolvePetnames: no petname found for ' + petname)
     return ''
 
 
@@ -110,19 +107,15 @@ def resolvePetnames(baseDir: str, nickname: str, domain: str,
         return content
     if ' ' not in content:
         return content
-    print('resolvePetnames: ' + content)
     words = content.strip().split(' ')
     for wrd in words:
         # check initial words beginning with @
         if not wrd.startswith('@'):
             break
-        print('resolvePetnames: ' + wrd)
         # does a petname handle exist for this?
         handle = getPetNameHandle(baseDir, nickname, domain, wrd)
         if not handle:
-            print('resolvePetnames: not a petname - ' + wrd)
             continue
         # replace the petname with the handle
         content = content.replace(wrd + ' ', '@' + handle + ' ')
-    print('resolvePetnames: ' + content)
     return content
