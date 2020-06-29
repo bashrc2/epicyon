@@ -5421,11 +5421,11 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         handle = optionsNickname + '@' + optionsDomainFull
         petname = getPetName(baseDir, nickname, domain, handle)
         optionsStr += \
-            '<p>' + translate['Petname'] + ': ' + \
+            translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
             petname + '">' \
             '<button type="submit" class="button" name="submitPetname">' + \
-            translate['Submit'] + '</button></p>'
+            translate['Submit'] + '</button><br>'
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
