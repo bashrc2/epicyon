@@ -2122,8 +2122,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 '<label class="labels">' + \
                 translate['Send to'] + ':' + '</label> 📄</a><br>'
         newPostForm += \
-            '    <input type="text" name="mentions" value="' + \
-            mentionsStr + '" selected>'
+            '    <input type="text" name="mentions" ' + \
+            'autocomplete="on" value="' + mentionsStr + '" selected>'
         newPostForm += ''
         selectedStr = ''
 
