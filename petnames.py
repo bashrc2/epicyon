@@ -116,5 +116,5 @@ def resolvePetnames(baseDir: str, nickname: str, domain: str,
         if not handle:
             continue
         # replace the petname with the handle
-        content = content.replace(wrd + ' ', handle)
+        content = content.replace(wrd + ' ', handle + ' ')
     return content
