@@ -326,8 +326,26 @@ def htmlFollowingDataList(baseDir: str, nickname: str,
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
             msg = followingFile.read()
+            # add your own handle, so that you can send DMs
+            # to yourself as reminders
             msg += nickname + '@' + domainFull + '\n'
-            followingList = msg.split('\n')
+            # include petnames
+            petnamesFilename = \
+                baseDir + '/accounts/' + \
+                nickname + '@' + domain + '/petnames.txt'
+            if os.path.isfile(petnamesFilename):
+                followingList = []
+                with open(petnamesFilename, 'r') as petnamesFile:
+                    petStr = petnamesFile.read()
+                    # extract each petname and append it
+                    petnamesList = petStr.split('\n')
+                    for pet in petnamesList:
+                        followingList.append(pet.split(' ')[0])
+                # add the following.txt entries
+                followingList += msg.split('\n')
+            else:
+                # no petnames list exists - just use following.txt
+                followingList = msg.split('\n')
             followingList.sort()
             if followingList:
                 for followingAddress in followingList:

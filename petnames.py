@@ -15,6 +15,8 @@ def setPetName(baseDir: str, nickname: str, domain: str,
     """
     if '@' not in handle:
         return False
+    if ' ' in petname:
+        petname = petname.replace(' ', '_')
     if handle.startswith('@'):
         handle = handle[1:]
     if petname.startswith('@'):
