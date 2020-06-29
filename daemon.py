@@ -7599,6 +7599,11 @@ class PubServer(BaseHTTPRequestHandler):
                 petname = optionsConfirmParams.split('optionpetname=')[1]
                 if '&' in petname:
                     petname = petname.split('&')[0]
+                # Limit the length of the petname
+                if len(petname) > 20 or \
+                   ' ' in petname or '/' in petname or \
+                   '?' in petname or '#' in petname:
+                    petname = None
 
             optionsNickname = getNicknameFromActor(optionsActor)
             if not optionsNickname:
