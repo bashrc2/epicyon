@@ -316,6 +316,26 @@ def htmlFollowingList(baseDir: str, followingFilename: str) -> str:
     return ''
 
 
+def htmlFollowingDataList(baseDir: str, nickname: str, domain: str) -> str:
+    """Returns a datalist of handles being followed
+    """
+    listStr = '<datalist id="followingHandles">\n'
+    followingFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + '/following.txt'
+    if os.path.isfile(followingFilename):
+        with open(followingFilename, 'r') as followingFile:
+            msg = followingFile.read()
+            followingList = msg.split('\n')
+            followingList.sort()
+            if followingList:
+                for followingAddress in followingList:
+                    if followingAddress:
+                        listStr += \
+                            '<option>@' + followingAddress + '</option>\n'
+    listStr += '</datalist>\n'
+    return listStr
+
+
 def htmlSearchEmoji(translate: {}, baseDir: str, httpPrefix: str,
                     searchStr: str) -> str:
     """Search results for emoji
@@ -2113,17 +2133,18 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         if inReplyTo:
             newPostForm += \
                 '    <label class="labels">' + placeholderMentions + \
-                '</label><br>'
+                '</label><br>\n'
         else:
             newPostForm += \
                 '    <a href="/users/' + nickname + \
                 '/followingaccounts" title="' + \
                 translate['Show a list of addresses to send to'] + '">' \
                 '<label class="labels">' + \
-                translate['Send to'] + ':' + '</label> 📄</a><br>'
+                translate['Send to'] + ':' + '</label> 📄</a><br>\n'
         newPostForm += \
             '    <input type="text" name="mentions" ' + \
-            'autocomplete="on" value="' + mentionsStr + '" selected>'
+            'list="followingHandles" value="' + mentionsStr + '" selected>\n'
+        newPostForm += htmlFollowingDataList(baseDir, nickname, domain)
         newPostForm += ''
         selectedStr = ''
 
