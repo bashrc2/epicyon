@@ -7647,8 +7647,10 @@ class PubServer(BaseHTTPRequestHandler):
                            chooserNickname,
                            self.server.domain,
                            handle, petname)
-                self._redirect_headers(optionsActor,
-                                       cookie, callingDomain)
+                self._redirect_headers(originPathStr + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page='+str(pageNumber), cookie,
+                                       callingDomain)
                 self.server.POSTbusy = False
                 return
             if '&submitBlock=' in optionsConfirmParams:
