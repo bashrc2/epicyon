@@ -123,6 +123,6 @@ def resolvePetnames(baseDir: str, nickname: str, domain: str,
             print('resolvePetnames: not a petname - ' + wrd)
             continue
         # replace the petname with the handle
-        content = content.replace(wrd + ' ', handle + ' ')
+        content = content.replace(wrd + ' ', '@' + handle + ' ')
     print('resolvePetnames: ' + content)
     return content
