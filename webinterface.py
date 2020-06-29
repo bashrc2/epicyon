@@ -316,7 +316,8 @@ def htmlFollowingList(baseDir: str, followingFilename: str) -> str:
     return ''
 
 
-def htmlFollowingDataList(baseDir: str, nickname: str, domain: str) -> str:
+def htmlFollowingDataList(baseDir: str, nickname: str,
+                          domain: str, domainFull: str) -> str:
     """Returns a datalist of handles being followed
     """
     listStr = '<datalist id="followingHandles">\n'
@@ -325,6 +326,7 @@ def htmlFollowingDataList(baseDir: str, nickname: str, domain: str) -> str:
     if os.path.isfile(followingFilename):
         with open(followingFilename, 'r') as followingFile:
             msg = followingFile.read()
+            msg += nickname + '@' + domainFull + '\n'
             followingList = msg.split('\n')
             followingList.sort()
             if followingList:
@@ -1735,7 +1737,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                 path: str, inReplyTo: str,
                 mentions: [],
                 reportUrl: str, pageNumber: int,
-                nickname: str, domain: str) -> str:
+                nickname: str, domain: str,
+                domainFull: str) -> str:
     """New post screen
     """
     iconsDir = getIconsDir(baseDir)
@@ -2144,7 +2147,8 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         newPostForm += \
             '    <input type="text" name="mentions" ' + \
             'list="followingHandles" value="' + mentionsStr + '" selected>\n'
-        newPostForm += htmlFollowingDataList(baseDir, nickname, domain)
+        newPostForm += \
+            htmlFollowingDataList(baseDir, nickname, domain, domainFull)
         newPostForm += ''
         selectedStr = ''
 

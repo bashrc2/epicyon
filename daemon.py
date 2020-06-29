@@ -3377,7 +3377,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   replyToList,
                                   shareDescription,
                                   replyPageNumber,
-                                  nickname, self.server.domain).encode('utf-8')
+                                  nickname, self.server.domain,
+                                  self.server.domainFull).encode('utf-8')
                 if not msg:
                     print('Error replying to ' + inReplyToUrl)
                     self._404()
@@ -7687,7 +7688,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   [optionsActor], None,
                                   pageNumber,
                                   chooserNickname,
-                                  self.server.domain).encode('utf-8')
+                                  self.server.domain,
+                                  self.server.domainFull).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
@@ -7754,7 +7756,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   reportPath, None, [],
                                   postUrl, pageNumber,
                                   chooserNickname,
-                                  self.server.domain).encode('utf-8')
+                                  self.server.domain,
+                                  self.server.domainFull).encode('utf-8')
                 self._set_headers('text/html', len(msg),
                                   cookie, callingDomain)
                 self._write(msg)
