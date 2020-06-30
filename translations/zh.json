@@ -237,5 +237,14 @@
     "Replying to": "回覆",
     "Send to": "发给",
     "Show a list of addresses to send to": "显示要发送到的地址列表",
-    "Petname": "宠物名"
+    "Petname": "宠物名",
+    "Ok": "好",
+    "This is nothing less than an utter triumph": "这无非是胜利",
+    "These are not the droids you are looking for": "这些不是您要寻找的机器人",
+    "Not changed": "没有改变",
+    "The contents of your local cache are up to date": "您本地缓存的内容是最新的",
+    "Bad Request": "错误的请求",
+    "Better luck next time": "下次好运",
+    "Unavailable": "不可用",
+    "The server is busy. Please try again later": "服务器忙。 请稍后再试"
 }

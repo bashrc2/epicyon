@@ -238,5 +238,14 @@
     "Replying to": "Отвечать на",
     "Send to": "Отправить",
     "Show a list of addresses to send to": "Показать список адресов для отправки",
-    "Petname": "Имя питомца"
+    "Petname": "Имя питомца",
+    "Ok": "Хорошо",
+    "This is nothing less than an utter triumph": "Это не что иное, как полный триумф",
+    "These are not the droids you are looking for": "Это не те дроиды, которых вы ищете",
+    "Not changed": "Не изменился",
+    "The contents of your local cache are up to date": "Содержимое вашего локального кэша обновлено",
+    "Bad Request": "Неверный запрос",
+    "Better luck next time": "Повезет в следующий раз",
+    "Unavailable": "Недоступен",
+    "The server is busy. Please try again later": "Сервер занят. Пожалуйста, попробуйте позже"
 }

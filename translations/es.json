@@ -238,5 +238,14 @@
     "Replying to": "Respondiendo a",
     "Send to": "Enviar a",
     "Show a list of addresses to send to": "Mostrar una lista de direcciones para enviar",
-    "Petname": "Nombre de mascota"
+    "Petname": "Nombre de mascota",
+    "Ok": "Okay",
+    "This is nothing less than an utter triumph": "Esto es nada menos que un triunfo absoluto",
+    "These are not the droids you are looking for": "Estos no son los droides que estás buscando",
+    "Not changed": "Sin cambio",
+    "The contents of your local cache are up to date": "El contenido de su caché local está actualizado",
+    "Bad Request": "Solicitud incorrecta",
+    "Better luck next time": "Mejor suerte la próxima vez",
+    "Unavailable": "Indisponible",
+    "The server is busy. Please try again later": "El servidor esta ocupado. Por favor, inténtelo de nuevo más tarde"
 }

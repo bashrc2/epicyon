@@ -238,5 +238,14 @@
     "Replying to": "Ymateb i",
     "Send to": "Anfon i",
     "Show a list of addresses to send to": "Dangoswch restr o gyfeiriadau i anfon atynt",
-    "Petname": "Enw anwes"
+    "Petname": "Enw anwes",
+    "Ok": "Iawn",
+    "This is nothing less than an utter triumph": "Nid yw hyn yn ddim llai na buddugoliaeth lwyr",
+    "These are not the droids you are looking for": "Nid dyma'r droids rydych chi'n edrych amdanyn nhw",
+    "Not changed": "Heb ei newid",
+    "The contents of your local cache are up to date": "Mae cynnwys eich storfa leol yn gyfredol",
+    "Bad Request": "Cais drwg",
+    "Better luck next time": "Gwell lwc y tro nesaf",
+    "Unavailable": "Ddim ar gael",
+    "The server is busy. Please try again later": "Mae'r gweinydd yn brysur. Rho gynnig Arni eto'n hwyrach"
 }

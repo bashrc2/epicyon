@@ -238,5 +238,14 @@
     "Replying to": "Replying to",
     "Send to": "Send to",
     "Show a list of addresses to send to": "Show a list of addresses to send to",
-    "Petname": "Petname"
+    "Petname": "Petname",
+    "Ok": "Ok",
+    "This is nothing less than an utter triumph": "This is nothing less than an utter triumph",
+    "These are not the droids you are looking for": "These are not the droids you are looking for",
+    "Not changed": "Not changed",
+    "The contents of your local cache are up to date": "The contents of your local cache are up to date",
+    "Bad Request": "Bad Request",
+    "Better luck next time": "Better luck next time",
+    "Unavailable": "Unavailable",
+    "The server is busy. Please try again later": "The server is busy. Please try again later"
 }

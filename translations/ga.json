@@ -238,5 +238,14 @@
     "Replying to": "Ag freagairt do",
     "Send to": "Sheoladh chuig",
     "Show a list of addresses to send to": "Taispeáin liosta seoltaí le seoladh chucu",
-    "Petname": "Ainmainm"
+    "Petname": "Ainmainm",
+    "Ok": "Ceart go leor",
+    "This is nothing less than an utter triumph": "Ní lú ná bua iomlán é seo",
+    "These are not the droids you are looking for": "Ní hiad seo na droids atá á lorg agat",
+    "Not changed": "Gan athrú",
+    "The contents of your local cache are up to date": "Tá ábhar do thaisce áitiúil cothrom le dáta",
+    "Bad Request": "Droch-Iarraidh",
+    "Better luck next time": "Ádh níos fearr an chéad uair eile",
+    "Unavailable": "Níl sé ar fáil",
+    "The server is busy. Please try again later": "Tá an freastalaí gnóthach. Bain triail eile as níos déanaí"
 }

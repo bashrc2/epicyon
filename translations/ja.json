@@ -238,5 +238,14 @@
     "Replying to": "に返信しています",
     "Send to": "に送る",
     "Show a list of addresses to send to": "送信するアドレスのリストを表示する",
-    "Petname": "ペットネーム"
+    "Petname": "ペットネーム",
+    "Ok": "OK",
+    "This is nothing less than an utter triumph": "これは完全な勝利に他ならない",
+    "These are not the droids you are looking for": "これらはあなたが探しているドロイドではありません",
+    "Not changed": "変わらない",
+    "The contents of your local cache are up to date": "ローカルキャッシュの内容は最新です",
+    "Bad Request": "要求の形式が正しくありません",
+    "Better luck next time": "次回は幸運を",
+    "Unavailable": "利用できません",
+    "The server is busy. Please try again later": "サーバーはビジーです。 後でもう一度やり直してください"
 }

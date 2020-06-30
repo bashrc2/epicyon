@@ -238,5 +238,14 @@
     "Replying to": "In risposta a",
     "Send to": "Inviare a",
     "Show a list of addresses to send to": "Mostra un elenco di indirizzi a cui inviare",
-    "Petname": "Nome del cucciolo"
+    "Petname": "Nome del cucciolo",
+    "Ok": "Ok",
+    "This is nothing less than an utter triumph": "Questo non è altro che un trionfo assoluto",
+    "These are not the droids you are looking for": "Questi non sono i droidi che stai cercando",
+    "Not changed": "Non cambiato",
+    "The contents of your local cache are up to date": "I contenuti della cache locale sono aggiornati",
+    "Bad Request": "Brutta richiesta",
+    "Better luck next time": "La prossima volta sarai più fortunato",
+    "Unavailable": "non disponibile",
+    "The server is busy. Please try again later": "Il server è occupato. Per favore riprova più tardi"
 }

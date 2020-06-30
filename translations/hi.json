@@ -238,5 +238,14 @@
     "Replying to": "को जवाब दे रहा है",
     "Send to": "भेजना",
     "Show a list of addresses to send to": "भेजने के लिए पते की एक सूची दिखाएं",
-    "Petname": "अल्पार्थक नाम"
+    "Petname": "अल्पार्थक नाम",
+    "Ok": "ठीक",
+    "This is nothing less than an utter triumph": "यह एक पूरी तरह से जीत से कम नहीं है",
+    "These are not the droids you are looking for": "ये वे डायरियां नहीं हैं जिनकी आप तलाश कर रहे हैं",
+    "Not changed": "परिवर्तन नहीं हुआ है",
+    "The contents of your local cache are up to date": "आपके स्थानीय कैश की सामग्री अप टू डेट है",
+    "Bad Request": "खराब अनुरोध",
+    "Better luck next time": "अगली बार किस्मत तुम्हारा साथ देगी",
+    "Unavailable": "अनुपलब्ध",
+    "The server is busy. Please try again later": "सर्वर व्यस्त है। बाद में पुन: प्रयास करें"
 }
