@@ -1403,10 +1403,18 @@ def testClientToServer():
                     '/followers.txt').read():
                 if os.path.isfile(bobDir + '/accounts/bob@' + bobDomain +
                                   '/following.txt'):
-                    if 'alice@' + aliceDomain + ':' + str(alicePort) in \
+                    aliceHandleStr = \
+                        'alice@' + aliceDomain + ':' + str(alicePort)
+                    if aliceHandleStr in \
                        open(bobDir + '/accounts/bob@' + bobDomain +
                             '/following.txt').read():
-                        break
+                        if os.path.isfile(bobDir + '/accounts/bob@' +
+                                          bobDomain +
+                                          '/followingCalendar.txt'):
+                            if aliceHandleStr in \
+                               open(bobDir + '/accounts/bob@' + bobDomain +
+                                    '/followingCalendar.txt').read():
+                                break
         time.sleep(1)
 
     assert os.path.isfile(aliceDir + '/accounts/alice@' + aliceDomain +
