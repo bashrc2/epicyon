@@ -617,30 +617,59 @@ class PubServer(BaseHTTPRequestHandler):
             print(e)
 
     def _200(self) -> None:
-        self._httpReturnCode(200, self.server.translate['Ok'],
-                             self.server.translate['This is nothing less ' +
-                                                   'than an utter triumph'])
+        if self.server.translate:
+            self._httpReturnCode(200, self.server.translate['Ok'],
+                                 self.server.translate['This is nothing ' +
+                                                       'less than an utter ' +
+                                                       'triumph'])
+        else:
+            self._httpReturnCode(200, 'Ok',
+                                 'This is nothing less ' +
+                                 'than an utter triumph')
 
     def _404(self) -> None:
-        self._httpReturnCode(404, self.server.translate['Not Found'],
-                             self.server.translate['These are not the ' +
-                                                   'droids you are ' +
-                                                   'looking for'])
+        if self.server.translate:
+            self._httpReturnCode(404, self.server.translate['Not Found'],
+                                 self.server.translate['These are not the ' +
+                                                       'droids you are ' +
+                                                       'looking for'])
+        else:
+            self._httpReturnCode(404, 'Not Found',
+                                 'These are not the ' +
+                                 'droids you are ' +
+                                 'looking for')
 
     def _304(self) -> None:
-        self._httpReturnCode(304, self.server.translate['Not changed'],
-                             self.server.translate['The contents of your ' +
-                                                   'local cache are up ' +
-                                                   'to date'])
+        if self.server.translate:
+            self._httpReturnCode(304, self.server.translate['Not changed'],
+                                 self.server.translate['The contents of ' +
+                                                       'your local cache ' +
+                                                       'are up to date'])
+        else:
+            self._httpReturnCode(304, 'Not changed',
+                                 'The contents of ' +
+                                 'your local cache ' +
+                                 'are up to date')
 
     def _400(self) -> None:
-        self._httpReturnCode(400, self.server.translate['Bad Request'],
-                             self.server.translate['Better luck next time'])
+        if self.server.translate:
+            self._httpReturnCode(400, self.server.translate['Bad Request'],
+                                 self.server.translate['Better luck ' +
+                                                       'next time'])
+        else:
+            self._httpReturnCode(400, 'Bad Request',
+                                 'Better luck next time')
 
     def _503(self) -> None:
-        self._httpReturnCode(503, self.server.translate['Unavailable'],
-                             self.server.translate['The server is busy. ' +
-                                                   'Please try again later'])
+        if self.server.translate:
+            self._httpReturnCode(503, self.server.translate['Unavailable'],
+                                 self.server.translate['The server is busy. ' +
+                                                       'Please try again ' +
+                                                       'later'])
+        else:
+            self._httpReturnCode(503, 'Unavailable',
+                                 'The server is busy. Please try again ' +
+                                 'later')
 
     def _write(self, msg) -> None:
         tries = 0
