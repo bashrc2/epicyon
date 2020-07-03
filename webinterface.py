@@ -5438,7 +5438,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             optionsStr += \
                 '<input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar" ' + \
-                'selected>' + \
+                'checked>' + \
                 translate['Receive calendar events from this account'] + \
                 '<button type="submit" class="button" ' + \
                 'name="submitOnCalendar">' + \
