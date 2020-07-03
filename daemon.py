@@ -185,6 +185,8 @@ from happening import removeCalendarEvent
 from bookmarks import bookmark
 from bookmarks import undoBookmark
 from petnames import setPetName
+from followingCalendar import addPersonToCalendar
+from followingCalendar import removePersonFromCalendar
 import os
 
 
@@ -7652,6 +7654,26 @@ class PubServer(BaseHTTPRequestHandler):
                            chooserNickname,
                            self.server.domain,
                            handle, petname)
+                self._redirect_headers(originPathStr + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page='+str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+            if '&submitOnCalendar=' in optionsConfirmParams:
+                if fields.get('onCalendar'):
+                    if fields['onCalendar'] == 'on':
+                        addPersonToCalendar(self.server.baseDir,
+                                            chooserNickname,
+                                            self.server.domain,
+                                            optionsNickname,
+                                            optionsDomainFull)
+                    else:
+                        removePersonFromCalendar(self.server.baseDir,
+                                                 chooserNickname,
+                                                 self.server.domain,
+                                                 optionsNickname,
+                                                 optionsDomainFull)
                 self._redirect_headers(originPathStr + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
