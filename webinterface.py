@@ -5437,20 +5437,19 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                                    optionsNickname, optionsDomainFull):
             optionsStr += \
                 '<input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar" ' + \
-                'checked>' + \
+                'class="profilecheckbox" name="onCalendar" checked> ' + \
                 translate['Receive calendar events from this account'] + \
                 '<button type="submit" class="button" ' + \
                 'name="submitOnCalendar">' + \
-                translate['Submit'] + '</button><br>'
+                translate['Submit'] + '</button><br>\n'
         else:
             optionsStr += \
                 '<input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar">' + \
+                'class="profilecheckbox" name="onCalendar"> ' + \
                 translate['Receive calendar events from this account'] + \
                 '<button type="submit" class="button" ' + \
                 'name="submitOnCalendar">' + \
-                translate['Submit'] + '</button><br>'
+                translate['Submit'] + '</button><br>\n'
 
     optionsStr += optionsLinkStr
     optionsStr += \
