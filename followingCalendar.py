@@ -19,7 +19,15 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
         nickname + '@' + domain + '/followingCalendar.txt'
     handle = followingNickname + '@' + followingDomain
     if not os.path.isfile(calendarFilename):
-        return False
+        followingFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/following.txt'
+        if not os.path.isfile(followingFilename):
+            return False
+        # create a new calendar file from the following file
+        with open(followingFilename, 'r') as followingFile:
+            followingHandles = followingFile.read()
+            with open(calendarFilename, 'w') as fp:
+                fp.write(followingHandles)
     return handle + '\n' in open(calendarFilename).read()
 
 
