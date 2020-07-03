@@ -74,6 +74,7 @@ from happening import getTodaysEvents
 from git import isGitPatch
 from theme import getThemesList
 from petnames import getPetName
+from calendar import receivingCalendarEvents
 
 
 def getContentWarningButton(postID: str, translate: {},
@@ -5450,6 +5451,22 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
         translate['Report'] + '</button>'
+    if isFollowingActor(baseDir, nickname, domain, optionsActor):
+        actorNickname = getNicknameFromActor(optionsActor)
+        actorDomain, actorPort = getDomainFromActor(optionsActor)
+        if receivingCalendarEvents(baseDir, nickname, domain,
+                                   actorNickname, actorDomain):
+            optionsStr += \
+                '<br><input type="checkbox" ' + \
+                'class="profilecheckbox" name="onCalendar" ' + \
+                'checked>' + \
+                translate['Receive calendar events from this account']
+        else:
+            optionsStr += \
+                '<br><input type="checkbox" ' + \
+                'class="profilecheckbox" name="onCalendar">' + \
+                translate['Receive calendar events from this account']
+
     optionsStr += '  </form>'
     optionsStr += '</center>'
     optionsStr += '</div>'
