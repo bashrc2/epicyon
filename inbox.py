@@ -62,6 +62,7 @@ from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
+from calendar import receivingCalendarEvents
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1844,6 +1845,8 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
     and if so saves the post id to a file in the calendar directory
     for the account
     """
+    if not postJsonObject.get('actor'):
+        return
     if not postJsonObject.get('object'):
         return
     if not isinstance(postJsonObject['object'], dict):
@@ -1857,6 +1860,15 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
     if not os.path.isdir(calendarPath):
         os.mkdir(calendarPath)
 
+    actor = postJsonObject['actor']
+    actorNickname = getNicknameFromActor(actor)
+    actorDomain, actorPort = getDomainFromActor(actor)
+    if not receivingCalendarEvents(baseDir,
+                                   handle.split('@')[0],
+                                   handle.split('@')[1],
+                                   actorNickname,
+                                   actorDomain):
+        return
     for tagDict in postJsonObject['object']['tag']:
         if tagDict['type'] != 'Event':
             continue

@@ -50,6 +50,12 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(calendarFilename):
         with open(calendarFilename, 'r') as calendarFile:
             followingHandles = calendarFile.read()
+    else:
+        # create a new calendar file from the following file
+        with open(followingFilename, 'r') as followingFile:
+            followingHandles = followingFile.read()
+            with open(calendarFilename, 'w') as fp:
+                fp.write(followingHandles)
 
     # already in the calendar file?
     if handle + '\n' in followingHandles:
