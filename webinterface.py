@@ -5431,6 +5431,27 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             petname + '">' \
             '<button type="submit" class="button" name="submitPetname">' + \
             translate['Submit'] + '</button><br>'
+
+    if isFollowingActor(baseDir, nickname, domain, optionsActor):
+        if receivingCalendarEvents(baseDir, nickname, domain,
+                                   optionsNickname, optionsDomainFull):
+            optionsStr += \
+                '<br><input type="checkbox" ' + \
+                'class="profilecheckbox" name="onCalendar" ' + \
+                'selected>' + \
+                translate['Receive calendar events from this account'] + \
+                '<button type="submit" class="button" ' + \
+                'name="submitOnCalendar">' + \
+                translate['Submit'] + '</button>'
+        else:
+            optionsStr += \
+                '<br><input type="checkbox" ' + \
+                'class="profilecheckbox" name="onCalendar">' + \
+                translate['Receive calendar events from this account'] + \
+                '<button type="submit" class="button" ' + \
+                'name="submitOnCalendar">' + \
+                translate['Submit'] + '</button>'
+
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
@@ -5451,27 +5472,6 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
         translate['Report'] + '</button>'
-    if isFollowingActor(baseDir, nickname, domain, optionsActor):
-        actorNickname = getNicknameFromActor(optionsActor)
-        actorDomain, actorPort = getDomainFromActor(optionsActor)
-        if receivingCalendarEvents(baseDir, nickname, domain,
-                                   actorNickname, actorDomain):
-            optionsStr += \
-                '<br><input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar" ' + \
-                'checked>' + \
-                translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="button" ' + \
-                'name="submitOnCalendar">' + \
-                translate['Submit'] + '</button>'
-        else:
-            optionsStr += \
-                '<br><input type="checkbox" ' + \
-                'class="profilecheckbox" name="onCalendar">' + \
-                translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="button" ' + \
-                'name="submitOnCalendar">' + \
-                translate['Submit'] + '</button>'
 
     optionsStr += '  </form>'
     optionsStr += '</center>'
