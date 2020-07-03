@@ -62,7 +62,7 @@ from question import questionUpdateVotes
 from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
-from calendar import receivingCalendarEvents
+from followingCalendar import receivingCalendarEvents
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:

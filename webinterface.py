@@ -74,7 +74,7 @@ from happening import getTodaysEvents
 from git import isGitPatch
 from theme import getThemesList
 from petnames import getPetName
-from calendar import receivingCalendarEvents
+from followingCalendar import receivingCalendarEvents
 
 
 def getContentWarningButton(postID: str, translate: {},
