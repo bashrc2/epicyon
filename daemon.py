@@ -7661,13 +7661,11 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             if '&submitOnCalendar=' in optionsConfirmParams:
-                onCalendar = ''
+                onCalendar = None
                 if 'onCalendar=' in optionsConfirmParams:
                     onCalendar = optionsConfirmParams.split('onCalendar=')[1]
                     if '&' in onCalendar:
                         onCalendar = onCalendar.split('&')[0]
-                print('optionsConfirmParams: ' + optionsConfirmParams)
-                print('onCalendar: ' + onCalendar)
                 if onCalendar == 'on':
                     addPersonToCalendar(self.server.baseDir,
                                         chooserNickname,
