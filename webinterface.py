@@ -4182,8 +4182,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             cwContentStr = \
                 insertQuestion(baseDir, translate, nickname, domain, port,
                                cwContentStr, postJsonObject, pageNumber)
-        # get the content warning button
-        contentStr += getContentWarningButton(postID, translate, cwContentStr)
+        if not isBlogPost(postJsonObject):
+            # get the content warning button
+            contentStr += getContentWarningButton(postID, translate, cwContentStr)            
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
