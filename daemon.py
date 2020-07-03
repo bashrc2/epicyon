@@ -7661,19 +7661,22 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             if '&submitOnCalendar=' in optionsConfirmParams:
-                if fields.get('onCalendar'):
-                    if fields['onCalendar'] == 'on':
-                        addPersonToCalendar(self.server.baseDir,
-                                            chooserNickname,
-                                            self.server.domain,
-                                            optionsNickname,
-                                            optionsDomainFull)
-                    else:
-                        removePersonFromCalendar(self.server.baseDir,
-                                                 chooserNickname,
-                                                 self.server.domain,
-                                                 optionsNickname,
-                                                 optionsDomainFull)
+                onCalendar = optionsConfirmParams.split('onCalendar=')[1]
+                if '&' in onCalendar:
+                    onCalendar = onCalendar.split('&')[0]
+                print('onCalendar: ' + onCalendar)
+                if onCalendar == 'on':
+                    addPersonToCalendar(self.server.baseDir,
+                                        chooserNickname,
+                                        self.server.domain,
+                                        optionsNickname,
+                                        optionsDomainFull)
+                else:
+                    removePersonFromCalendar(self.server.baseDir,
+                                             chooserNickname,
+                                             self.server.domain,
+                                             optionsNickname,
+                                             optionsDomainFull)
                 self._redirect_headers(originPathStr + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
