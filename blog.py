@@ -316,6 +316,18 @@ def htmlBlogPostRSS3(authorized: bool,
     return rssStr
 
 
+def htmlBlogRemoveCwButton(blogStr: str, translate: {}) -> str:
+    """Removes the CW button from blog posts, where the
+    summary field is instead used as the blog title
+    """
+    blogStr = blogStr.replace('<details>', '<b>')
+    blogStr = blogStr.replace('</details>', '</b>')
+    blogStr = blogStr.replace('<summary>', '')
+    blogStr = blogStr.replace('</summary>', '')
+    blogStr = blogStr.replace(translate['SHOW MORE'], '')
+    return blogStr
+
+
 def htmlBlogPost(authorized: bool,
                  baseDir: str, httpPrefix: str, translate: {},
                  nickname: str, domain: str, domainFull: str,
@@ -330,6 +342,7 @@ def htmlBlogPost(authorized: bool,
     with open(cssFilename, 'r') as cssFile:
         blogCSS = cssFile.read()
         blogStr = htmlHeader(cssFilename, blogCSS)
+        htmlBlogRemoveCwButton(blogStr, translate)
 
         blogStr += htmlBlogPostContent(authorized, baseDir,
                                        httpPrefix, translate,
@@ -376,6 +389,7 @@ def htmlBlogPage(authorized: bool, session,
     with open(cssFilename, 'r') as cssFile:
         blogCSS = cssFile.read()
         blogStr = htmlHeader(cssFilename, blogCSS)
+        htmlBlogRemoveCwButton(blogStr, translate)
 
         blogsIndex = baseDir + '/accounts/' + \
             nickname + '@' + domain + '/tlblogs.index'
