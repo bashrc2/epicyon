@@ -763,5 +763,9 @@
     "sad": "sad",
     "globe": "1F30D",
     "world": "1F30E",
-    "planet": "1F30D"
+    "planet": "1F30D",
+    "parrot": "1F99C",
+    "budgie": "1F424",
+    "canary": "1F424",
+    "linux": "1F427"
 }
