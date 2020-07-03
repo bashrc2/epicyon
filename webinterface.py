@@ -1252,7 +1252,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
            os.path.isfile(baseDir + '/fonts/custom.ttf'):
             themesDropdown += \
                 '      <input type="checkbox" class="profilecheckbox" ' + \
-                'name="removeCustomFont">' + \
+                'name="removeCustomFont"> ' + \
                 translate['Remove the custom font'] + '<br>'
         themesDropdown += '</div>'
         themeName = getConfigParam(baseDir, 'theme')
@@ -1282,7 +1282,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         editProfileForm += '    <div class="container">'
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="removeScheduledPosts">' + \
+            'name="removeScheduledPosts"> ' + \
             translate['Remove scheduled posts'] + '<br>'
         editProfileForm += '    </div>'
 
@@ -1385,27 +1385,27 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '>' + translate['Approve follower requests'] + '<br>'
+        '> ' + translate['Approve follower requests'] + '<br>'
     editProfileForm += \
         '      <input type="checkbox" ' + \
         'class="profilecheckbox" name="isBot" ' + \
-        isBot + '>' + translate['This is a bot account'] + '<br>'
+        isBot + '> ' + translate['This is a bot account'] + '<br>'
     editProfileForm += \
         '      <input type="checkbox" ' + \
-        'class="profilecheckbox" name="isGroup" ' + isGroup + '>' + \
+        'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
         translate['This is a group account'] + '<br>'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="followDMs" ' + followDMs + '>' + \
+        'name="followDMs" ' + followDMs + '> ' + \
         translate['Only people I follow can send me DMs'] + '<br>'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
-        'name="removeTwitter" ' + removeTwitter + '>' + \
+        'name="removeTwitter" ' + removeTwitter + '> ' + \
         translate['Remove Twitter posts'] + '<br>'
     if path.startswith('/users/' + adminNickname + '/'):
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
-            'name="mediaInstance" ' + mediaInstanceStr + '>' + \
+            'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
             translate['This is a media instance'] + '<br>'
 
     editProfileForm += \
@@ -1477,7 +1477,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         translate['Danger Zone'] + '</label></b><br>'
     editProfileForm += \
         '      <input type="checkbox" class=dangercheckbox" ' + \
-        'name="deactivateThisAccount">' + \
+        'name="deactivateThisAccount"> ' + \
         translate['Deactivate this account'] + '<br>'
     editProfileForm += '    </div>'
     editProfileForm += '  </div>'
@@ -1955,7 +1955,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         if not inReplyTo:
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
-                'name="schedulePost"><label class="labels">' + \
+                'name="schedulePost"><label class="labels"> ' + \
                 translate['This is a scheduled post.'] + '</label></p>'
 
         dateAndLocation += \
