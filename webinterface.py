@@ -4184,7 +4184,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                cwContentStr, postJsonObject, pageNumber)
         if not isBlogPost(postJsonObject):
             # get the content warning button
-            contentStr += getContentWarningButton(postID, translate, cwContentStr)            
+            contentStr += \
+                getContentWarningButton(postID, translate, cwContentStr)
+        else:
+            contentStr += cwContentStr
 
     if postJsonObject['object'].get('tag') and not isPatch:
         contentStr = \
