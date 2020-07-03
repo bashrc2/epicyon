@@ -16,6 +16,7 @@ import errno
 from urllib.request import urlopen
 from pprint import pprint
 from calendar import monthrange
+from followingCalendar import addPersonToCalendar
 
 
 def getProtocolPrefixes() -> []:
@@ -339,6 +340,12 @@ def followPerson(baseDir: str, nickname: str, domain: str,
         except Exception as e:
             print('WARN: Failed to write entry to follow file ' +
                   filename + ' ' + str(e))
+
+        if followFile == 'following.txt':
+            # if following a person add them to the list of
+            # calendar follows
+            addPersonToCalendar(baseDir, nickname, domain,
+                                followNickname, followDomain)
     if debug:
         print('DEBUG: creating new following file to follow ' + handleToFollow)
     with open(filename, "w") as followfile:
