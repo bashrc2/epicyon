@@ -255,12 +255,12 @@ input[type=text] {
     }
     input[type=checkbox]
     {
-	-ms-transform: scale(4);
-	-moz-transform: scale(4);
-	-webkit-transform: scale(4);
-	-o-transform: scale(4);
-	transform: scale(4);
-	padding: 20px;
-	margin: 30px 40px;
+        -ms-transform: scale(4);
+        -moz-transform: scale(4);
+        -webkit-transform: scale(4);
+        -o-transform: scale(4);
+        transform: scale(4);
+        padding: 20px;
+        margin: 30px 40px;
     }
 }

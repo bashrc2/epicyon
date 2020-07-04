@@ -1612,37 +1612,37 @@ aside .toggle-inside li {
         padding: 0px 20px;
     }
     .dropdown-menutoggle {
-	-webkit-margin-start: 0px;
-	-webkit-margin-end: 0px;
-	-webkit-padding-start: 40px;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	position: absolute;
-	top: 100%;
-	left: 21px;
-	width: 460%;
-	min-width: 100%;
-	z-index: 1000;
-	display: block;
-	float: left;
-	padding: 0 17px !important;
-	margin: 2px 0 0 !important;
-	font-size: var(--font-size3);
-	text-align: left;
-	list-style: none;
-	color: var(--dropdown-fg-color);
-	background-color: var(--dropdown-bg-color);
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
+        -webkit-margin-start: 0px;
+        -webkit-margin-end: 0px;
+        -webkit-padding-start: 40px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        position: absolute;
+        top: 100%;
+        left: 21px;
+        width: 460%;
+        min-width: 100%;
+        z-index: 1000;
+        display: block;
+        float: left;
+        padding: 0 17px !important;
+        margin: 2px 0 0 !important;
+        font-size: var(--font-size3);
+        text-align: left;
+        list-style: none;
+        color: var(--dropdown-fg-color);
+        background-color: var(--dropdown-bg-color);
+        -webkit-background-clip: padding-box;
+        background-clip: padding-box;
     }
     input[type=checkbox]
     {
-	-ms-transform: scale(4);
-	-moz-transform: scale(4);
-	-webkit-transform: scale(4);
-	-o-transform: scale(4);
-	transform: scale(4);
-	padding: 20px;
+        -ms-transform: scale(4);
+        -moz-transform: scale(4);
+        -webkit-transform: scale(4);
+        -o-transform: scale(4);
+        transform: scale(4);
+        padding: 20px;
 	margin: 30px 40px;
     }
 }
