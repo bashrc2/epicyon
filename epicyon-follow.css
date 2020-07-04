@@ -171,6 +171,17 @@ input[type=text] {
     width: 15%;
 }
 
+input[type=checkbox]
+{
+    -ms-transform: scale(2);
+    -moz-transform: scale(2);
+    -webkit-transform: scale(2);
+    -o-transform: scale(2);
+    transform: scale(2);
+    padding: 10px;
+    margin: 20px 30px;
+}
+
 @media screen and (min-width: 400px) {
     .hashtagswarm {
         font-size: var(--hashtag-size1);
