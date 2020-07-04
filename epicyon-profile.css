@@ -1642,7 +1642,7 @@ aside .toggle-inside li {
 	-webkit-transform: scale(4);
 	-o-transform: scale(4);
 	transform: scale(4);
-	padding: 10px;
-	margin: 20px 30px;
+	padding: 20px;
+	margin: 30px 40px;
     }
 }
