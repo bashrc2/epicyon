@@ -171,17 +171,6 @@ input[type=text] {
     width: 15%;
 }
 
-input[type=checkbox]
-{
-    -ms-transform: scale(2);
-    -moz-transform: scale(2);
-    -webkit-transform: scale(2);
-    -o-transform: scale(2);
-    transform: scale(2);
-    padding: 10px;
-    margin: 20px 30px;
-}
-
 @media screen and (min-width: 400px) {
     .hashtagswarm {
         font-size: var(--hashtag-size1);
@@ -216,6 +205,16 @@ input[type=checkbox]
         min-width: 100px;
         cursor: pointer;
         margin: 30px;
+    }
+    input[type=checkbox]
+    {
+	-ms-transform: scale(2);
+	-moz-transform: scale(2);
+	-webkit-transform: scale(2);
+	-o-transform: scale(2);
+	transform: scale(2);
+	padding: 10px;
+	margin: 20px 30px;
     }
 }
 
@@ -253,5 +252,15 @@ input[type=checkbox]
         min-width: 100px;
         cursor: pointer;
         margin: 30px;
+    }
+    input[type=checkbox]
+    {
+	-ms-transform: scale(4);
+	-moz-transform: scale(4);
+	-webkit-transform: scale(4);
+	-o-transform: scale(4);
+	transform: scale(4);
+	padding: 10px;
+	margin: 20px 30px;
     }
 }
