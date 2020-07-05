@@ -1,3 +1,7 @@
+This is a mirror of http://code.freedombone.net/bashrc/epicyon
+
+Add issues on https://gitlab.com/bashrc2/epicyon/-/issues
+
 <blockquote><b>Epicyon</b>, meaning <i>"more than a dog"</i>. Largest of the <i>Borophaginae</i> which lived in North America 20-5 million years ago.</blockquote>
 
 <img src="https://code.freedombone.net/bashrc/epicyon/raw/master/img/mobile.jpg?raw=true" width="30%"/>
