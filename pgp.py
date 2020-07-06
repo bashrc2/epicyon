@@ -78,6 +78,14 @@ def getPGPfingerprint(actorJson: {}) -> str:
 def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
     """Sets the email address for the given actor
     """
+    notEmailAddress = False
+    if '@' not in emailAddress:
+        notEmailAddress = True
+    if '.' not in emailAddress:
+        notEmailAddress = True
+    if emailAddress.startswith('@'):
+        notEmailAddress = True
+
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
@@ -94,12 +102,7 @@ def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
-
-    if '@' not in emailAddress:
-        return
-    if '.' not in emailAddress:
-        return
-    if emailAddress.startswith('@'):
+    if notEmailAddress:
         return
 
     for propertyValue in actorJson['attachment']:
