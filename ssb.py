@@ -41,6 +41,18 @@ def getSSBAddress(actorJson: {}) -> str:
 def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
     """Sets an ssb address for the given actor
     """
+    notSSBAddress = False
+    if not ssbAddress.startswith('@'):
+        notSSBAddress = True
+    if '=.' not in ssbAddress:
+        notSSBAddress = True
+    if '"' in ssbAddress:
+        notSSBAddress = True
+    if ' ' in ssbAddress:
+        notSSBAddress = True
+    if ',' in ssbAddress:
+        notSSBAddress = True
+
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
@@ -57,16 +69,7 @@ def setSSBAddress(actorJson: {}, ssbAddress: str) -> None:
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
-
-    if not ssbAddress.startswith('@'):
-        return
-    if '=.' not in ssbAddress:
-        return
-    if '"' in ssbAddress:
-        return
-    if ' ' in ssbAddress:
-        return
-    if ',' in ssbAddress:
+    if notSSBAddress:
         return
 
     for propertyValue in actorJson['attachment']:
