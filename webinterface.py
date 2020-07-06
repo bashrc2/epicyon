@@ -19,6 +19,7 @@ from person import personBoxJson
 from person import isPersonSnoozed
 from pgp import getEmailAddress
 from pgp import getPGPpubKey
+from pgp import getPGPfingerprint
 from xmpp import getXmppAddress
 from ssb import getSSBAddress
 from tox import getToxAddress
@@ -1050,6 +1051,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     donateUrl = ''
     emailAddress = ''
     PGPpubKey = ''
+    PGPfingerprint = ''
     xmppAddress = ''
     matrixAddress = ''
     ssbAddress = ''
@@ -1066,6 +1068,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         toxAddress = getToxAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
+        PGPfingerprint = getPGPfingerprint(actorJson)
         if actorJson.get('name'):
             displayNickname = actorJson['name']
         if actorJson.get('summary'):
@@ -1331,6 +1334,12 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         translate['Email'] + '</label><br>'
     editProfileForm += \
         '      <input type="text" name="email" value="' + emailAddress + '">'
+    editProfileForm += \
+        '<label class="labels">' + \
+        translate['PGP Fingerprint'] + '</label><br>'
+    editProfileForm += \
+        '      <input type="text" name="openpgp" value="' + \
+        PGPfingerprint + '">'
     editProfileForm += \
         '<label class="labels">' + translate['PGP'] + '</label><br>'
     editProfileForm += \
@@ -2550,13 +2559,15 @@ def htmlProfile(defaultTimeline: str,
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
     PGPpubKey = getPGPpubKey(profileJson)
+    PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
     xmppAddress = getXmppAddress(profileJson)
     matrixAddress = getMatrixAddress(profileJson)
     ssbAddress = getSSBAddress(profileJson)
     toxAddress = getToxAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or PGPpubKey or emailAddress:
+       ssbAddress or toxAddress or PGPpubKey or \
+       PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
         if donateUrl:
@@ -2583,6 +2594,10 @@ def htmlProfile(defaultTimeline: str,
             donateSection += \
                 '<p>Tox: <label class="ssbaddr">' + \
                 toxAddress + '</label></p>\n'
+        if PGPfingerprint:
+            donateSection += \
+                '<p class="pgp">PGP: ' + \
+                PGPfingerprint.replace('\n', '<br>') + '</p>\n'
         if PGPpubKey:
             donateSection += \
                 '<p class="pgp">' + PGPpubKey.replace('\n', '<br>') + '</p>\n'
@@ -5314,6 +5329,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                       blogAddress: str,
                       toxAddress: str,
                       PGPpubKey: str,
+                      PGPfingerprint: str,
                       emailAddress) -> str:
     """Show options for a person: view/follow/block/report
     """
@@ -5411,6 +5427,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     if toxAddress:
         optionsStr += \
             '<p class="imText">Tox: ' + toxAddress + '</p>'
+    if PGPfingerprint:
+        optionsStr += '<p class="pgp">PGP: ' + \
+            PGPfingerprint.replace('\n', '<br>') + '</p>'
     if PGPpubKey:
         optionsStr += '<p class="pgp">' + \
             PGPpubKey.replace('\n', '<br>') + '</p>'

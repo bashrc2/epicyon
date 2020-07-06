@@ -30,7 +30,9 @@ from metadata import metaDataNodeInfo
 from pgp import getEmailAddress
 from pgp import setEmailAddress
 from pgp import getPGPpubKey
+from pgp import getPGPfingerprint
 from pgp import setPGPpubKey
+from pgp import setPGPfingerprint
 from xmpp import getXmppAddress
 from xmpp import setXmppAddress
 from ssb import getSSBAddress
@@ -1549,6 +1551,7 @@ class PubServer(BaseHTTPRequestHandler):
                         optionsLink = optionsList[3]
                     donateUrl = None
                     PGPpubKey = None
+                    PGPfingerprint = None
                     xmppAddress = None
                     matrixAddress = None
                     blogAddress = None
@@ -1567,6 +1570,7 @@ class PubServer(BaseHTTPRequestHandler):
                         toxAddress = getToxAddress(actorJson)
                         emailAddress = getEmailAddress(actorJson)
                         PGPpubKey = getPGPpubKey(actorJson)
+                        PGPfingerprint = getPGPfingerprint(actorJson)
                     msg = htmlPersonOptions(self.server.translate,
                                             self.server.baseDir,
                                             self.server.domain,
@@ -1577,7 +1581,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             pageNumber, donateUrl,
                                             xmppAddress, matrixAddress,
                                             ssbAddress, blogAddress,
-                                            toxAddress, PGPpubKey,
+                                            toxAddress,
+                                            PGPpubKey, PGPfingerprint,
                                             emailAddress).encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -6240,6 +6245,17 @@ class PubServer(BaseHTTPRequestHandler):
                         else:
                             if currentPGPpubKey:
                                 setPGPpubKey(actorJson, '')
+                                actorChanged = True
+
+                        currentPGPfingerprint = getPGPfingerprint(actorJson)
+                        if fields.get('openpgp'):
+                            if fields['openpgp'] != currentPGPfingerprint:
+                                setPGPfingerprint(actorJson,
+                                                  fields['openpgp'])
+                                actorChanged = True
+                        else:
+                            if currentPGPfingerprint:
+                                setPGPfingerprint(actorJson, '')
                                 actorChanged = True
 
                         currentDonateUrl = getDonationUrl(actorJson)

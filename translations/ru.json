@@ -206,6 +206,7 @@
     "Matrix": "Matrix",
     "Email": "Эл. адрес",
     "PGP": "PGP",
+    "PGP Fingerprint": "PGP Отпечаток пальца",
     "This is a scheduled post.": "Это запланированный пост.",
     "Remove scheduled posts": "Удалить запланированные сообщения",
     "Remove Twitter posts": "Удалить сообщения из Твиттера",
