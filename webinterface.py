@@ -63,6 +63,7 @@ from content import getMentionsFromHtml
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeLongWords
+from content import removeHtml
 from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
@@ -6215,6 +6216,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                     profileJson['summary'].replace('<br>', '\n')
                 avatarDescription = avatarDescription.replace('<p>', '')
                 avatarDescription = avatarDescription.replace('</p>', '')
+                if '<' in avatarDescription:
+                    avatarDescription = removeHtml(avatarDescription)
         profileStr = ' <div class="hero-image">'
         profileStr += '  <div class="hero-text">'
         if avatarUrl:

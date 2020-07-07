@@ -64,6 +64,7 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
+from content import removeHtml
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -1873,8 +1874,18 @@ def testSiteIsActive():
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
 
+def testRemoveHtml():
+    print('testRemoveHtml')
+    testStr = 'This string has no html.'
+    assert(removeHtml(testStr) == testStr)
+    testStr = 'This string <a href="1234.567">has html</a>.'
+    print(removeHtml(testStr))
+    assert(removeHtml(testStr) == 'This string has html.')
+
+
 def runAllTests():
     print('Running tests...')
+    testRemoveHtml()
     testSiteIsActive()
     testJsonld()
     testRemoveTextFormatting()

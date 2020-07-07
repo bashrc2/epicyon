@@ -747,7 +747,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg)
             print('instance metadata sent')
             return True
-        if self.path.startswith('/api/v1/instance/peers'):
+        if self.path.startswith('/api/v1/instance/peers'):            
             # This is just a dummy result.
             # Showing the full list of peers would have privacy implications.
             # On a large instance you are somewhat lost in the crowd, but on

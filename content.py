@@ -400,6 +400,24 @@ def removeTextFormatting(content: str) -> str:
     return content
 
 
+def removeHtml(content: str) -> str:
+    """Removes html links from the given content.
+    Used to ensure that profile descriptions don't contain dubious content
+    """
+    if '<' not in content:
+        return content
+    removing = False
+    result = ''
+    for ch in content:
+        if ch == '<':
+            removing = True
+        elif ch == '>':
+            removing = False
+        elif not removing:
+            result += ch
+    return result
+
+
 def removeLongWords(content: str, maxWordLength: int,
                     longWordsList: []) -> str:
     """Breaks up long words so that on mobile screens this doesn't
