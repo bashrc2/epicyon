@@ -153,16 +153,14 @@ def randomizeActorImages(personJson: {}) -> None:
     existingExtension = lastPartOfFilename.split('.')[1]
     # NOTE: these files don't need to have cryptographically
     # secure names
+    randStr = str(randint(10000000000000, 99999999999999))  # nosec
     personJson['icon']['url'] = \
-        personId + '/avatar' + \
-        str(randint(10000000000000, 99999999999999)) + \ # nosec
-        '.' + existingExtension
+        personId + '/avatar' + randStr + '.' + existingExtension
     lastPartOfFilename = personJson['image']['url'].split('/')[-1]
     existingExtension = lastPartOfFilename.split('.')[1]
+    randStr = str(randint(10000000000000, 99999999999999))  # nosec
     personJson['image']['url'] = \
-        personId + '/image' + \
-        str(randint(10000000000000, 99999999999999)) + \ # nosec
-        '.' + existingExtension
+        personId + '/image' + randStr + '.' + existingExtension
 
 
 def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
@@ -206,11 +204,11 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
 
     imageUrl = \
         personId + '/image' + \
-        str(randint(10000000000000, 99999999999999)) + '.png' # nosec
+        str(randint(10000000000000, 99999999999999)) + '.png'  # nosec
 
     iconUrl = \
         personId + '/avatar' + \
-        str(randint(10000000000000, 99999999999999)) + '.png' # nosec
+        str(randint(10000000000000, 99999999999999)) + '.png'  # nosec
 
     contextDict = {
         'Emoji': 'toot:Emoji',

@@ -1099,9 +1099,8 @@ def siteIsActive(url: str) -> bool:
         return False
     try:
         req = urllib.request.Request(url)
-        with urllib.request.urlopen(req, timeout=10) as res: # nosec
-            # testStr = response.read()
-            return True
+        urllib.request.urlopen(req, timeout=10)  # nosec
+        return True
     except SocketError as e:
         if e.errno == errno.ECONNRESET:
             print('WARN: connection was reset during siteIsActive')

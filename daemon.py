@@ -535,7 +535,7 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
         if not etag:
-            etag = sha1(data).hexdigest() # nosec
+            etag = sha1(data).hexdigest()  # nosec
             try:
                 with open(mediaFilename + '.etag', 'w') as etagFile:
                     etagFile.write(etag)
@@ -5098,7 +5098,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            etag = sha1(mediaBinary).hexdigest() # nosec
+                            etag = sha1(mediaBinary).hexdigest()  # nosec
                             try:
                                 with open(mediaTagFilename, 'w') as etagFile:
                                     etagFile.write(etag)
