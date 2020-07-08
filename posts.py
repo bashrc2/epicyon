@@ -146,11 +146,14 @@ def getUserUrl(wfRequest: {}) -> str:
 
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
-                  domain: str) -> None:
+                  domain: str,depth=0) -> {}:
+    if depth > 10:
+        return None
+
     feedJson = getJson(session, feedUrl, asHeader, None,
                        projectVersion, httpPrefix, domain)
     if not feedJson:
-        return
+        return None
 
     if 'orderedItems' in feedJson:
         for item in feedJson['orderedItems']:
@@ -168,9 +171,10 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
                 userFeed = \
                     parseUserFeed(session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
-                                  domain)
-                for item in userFeed:
-                    yield item
+                                  domain, depth+1)
+                if userFeed:
+                    for item in userFeed:
+                        yield item
         elif isinstance(nextUrl, dict):
             userFeed = nextUrl
             if userFeed.get('orderedItems'):
@@ -444,8 +448,8 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    maxMentions: int,
                    maxEmoji: int, maxAttachments: int,
                    federationList: [],
-                   personCache: {}, raw: bool,
-                   simple: bool, debug: bool,
+                   personCache: {},
+                   debug: bool,
                    projectVersion: str, httpPrefix: str,
                    domain: str, domainList=[]) -> []:
     """Returns a list of domains referenced within public posts
@@ -467,6 +471,9 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
                              projectVersion, httpPrefix, domain)
     for item in userFeed:
+        i += 1
+        if i > maxPosts:
+            break
         if not item.get('object'):
             continue
         if not isinstance(item['object'], dict):
@@ -486,9 +493,6 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                             getDomainFromActor(tagItem['href'])
                         if postDomain not in postDomains:
                             postDomains.append(postDomain)
-        i += 1
-        if i == maxPosts:
-            break
     return postDomains
 
 
@@ -2986,8 +2990,7 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 
 
 def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
-                         raw: bool, simple: bool, proxyType: str,
-                         port: int, httpPrefix: str,
+                         proxyType: str, port: int, httpPrefix: str,
                          debug: bool, projectVersion: str,
                          domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts
@@ -3028,7 +3031,7 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
     postDomains = \
         getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                        maxAttachments, federationList,
-                       personCache, raw, simple, debug,
+                       personCache, debug,
                        projectVersion, httpPrefix, domain, domainList)
     postDomains.sort()
     return postDomains

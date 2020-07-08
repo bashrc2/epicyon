@@ -67,6 +67,7 @@ from shares import sendUndoShareViaServer
 from shares import addShare
 from theme import setTheme
 from announce import sendAnnounceViaServer
+from socnet import instancesGraph
 import argparse
 
 
@@ -151,6 +152,10 @@ parser.add_argument('--postDomains', dest='postDomains', type=str,
                     default=None,
                     help='Show domains referenced in public '
                     'posts for the given handle')
+parser.add_argument('--socnet', dest='socnet', type=str,
+                    default=None,
+                    help='Show dot diagram for social network '
+                    'of federated instances')
 parser.add_argument('--postsraw', dest='postsraw', type=str,
                     default=None,
                     help='Show raw json of posts for the given handle')
@@ -449,11 +454,33 @@ if args.postDomains:
     elif args.gnunet:
         proxyType = 'gnunet'
     domainList = []
-    domainList = getPublicPostDomains(baseDir, nickname, domain, False, True,
-                                      proxyType, args.port, httpPrefix, debug,
+    domainList = getPublicPostDomains(baseDir, nickname, domain,
+                                      proxyType, args.port,
+                                      httpPrefix, debug,
                                       __version__, domainList)
     for postDomain in domainList:
         print(postDomain)
+    sys.exit()
+
+if args.socnet:
+    if ',' not in args.socnet:
+        print('Syntax: '
+              '--socnet nick1@domain1,nick2@domain2,nick3@domain3')
+        sys.exit()
+
+    if not args.http:
+        args.port = 443
+    proxyType = 'tor'
+    dotGraph = instancesGraph(baseDir, args.socnet,
+                              proxyType, args.port,
+                              httpPrefix, debug,
+                              __version__)
+    try:
+        with open('socnet.dot', 'w') as fp:
+            fp.write(dotGraph)
+            print('Saved to socnet.dot')
+    except BaseException:
+        pass
     sys.exit()
 
 if args.postsraw:
