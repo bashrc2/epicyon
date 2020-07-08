@@ -1035,7 +1035,7 @@ def receiveLike(recentPostsCache: {},
                           messageJson['actor'], domain, debug)
     print('likeNotify: ' + str(messageJson))
     likeNotify(baseDir, handle,
-               messageJson['actor'], messageJson['object'], httpPrefix)
+               messageJson['actor'], messageJson['object'])
     return True
 
 
@@ -1707,8 +1707,7 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
-def likeNotify(baseDir: str, handle: str, actor: str, url: str,
-               httpPrefix: str) -> None:
+def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
     accountDir = baseDir + '/accounts/' + handle
