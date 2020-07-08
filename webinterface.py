@@ -3816,7 +3816,11 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
         likeTitle = translate['Like this post']
-        if noOfLikes(postJsonObject) > 0:
+        likeCount = noOfLikes(postJsonObject)
+        likeCountStr = ''
+        if likeCount > 0:
+            if likeCount > 1:
+                likeCountStr = ' (' + str(likeCount) + ')'
             likeIcon = 'like.png'
             if likedByPerson(postJsonObject, nickname, fullDomain):
                 likeLink = 'unlike'
@@ -3827,9 +3831,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + likeTitle + '">'
+            '?tl=' + boxName + '" title="' + \
+            likeTitle + likeCountStr + '">'
         likeStr += \
-            '<img loading="lazy" title="' + likeTitle + \
+            '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>'
 
