@@ -136,6 +136,14 @@ If you want to view the raw json:
 python3 epicyon.py --postsraw nickname@domain
 ```
 
+## Listing referenced domains
+
+To list the domains referenced in public posts:
+
+``` bash
+python3 epicyon.py --postDomains nickname@domain
+```
+
 ## Delete posts
 
 To delete a post which you wrote you must first know its url. It is usually something like:
