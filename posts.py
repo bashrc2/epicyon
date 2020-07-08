@@ -447,7 +447,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
                    personCache: {}, raw: bool,
                    simple: bool, debug: bool,
                    projectVersion: str, httpPrefix: str,
-                   domain: str) -> []:
+                   domain: str, domainList=[]) -> []:
     """Returns a list of domains referenced within public posts
     """
     if not outboxUrl:
@@ -461,7 +461,7 @@ def getPostDomains(session, outboxUrl: str, maxPosts: int,
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
 
-    postDomains = []
+    postDomains = domainList
 
     i = 0
     userFeed = parseUserFeed(session, outboxUrl, asHeader,
@@ -2988,12 +2988,13 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
 def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
                          raw: bool, simple: bool, proxyType: str,
                          port: int, httpPrefix: str,
-                         debug: bool, projectVersion: str) -> []:
+                         debug: bool, projectVersion: str,
+                         domainList=[]) -> []:
     """ Returns a list of domains referenced within public posts
     """
     session = createSession(proxyType)
     if not session:
-        return
+        return domainList
     personCache = {}
     cachedWebfingers = {}
     federationList = []
@@ -3008,11 +3009,11 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
         webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
                         domain, projectVersion)
     if not wfRequest:
-        return []
+        return domainList
     if not isinstance(wfRequest, dict):
         print('Webfinger for ' + handle + ' did not return a dict. ' +
               str(wfRequest))
-        return []
+        return domainList
 
     (personUrl, pubKeyId, pubKey,
      personId, shaedInbox,
@@ -3025,10 +3026,10 @@ def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
     maxEmoji = 99
     maxAttachments = 5
     postDomains = \
-        getPostDomains(session, personUrl, 60, maxMentions, maxEmoji,
+        getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
                        maxAttachments, federationList,
                        personCache, raw, simple, debug,
-                       projectVersion, httpPrefix, domain)
+                       projectVersion, httpPrefix, domain, domainList)
     postDomains.sort()
     return postDomains
 
