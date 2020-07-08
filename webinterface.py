@@ -3820,7 +3820,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         likeCountStr = ''
         if likeCount > 0:
             if likeCount > 1:
-                likeCountStr = ' (' + str(likeCount) + ')'
+                if likeCount <= 10:
+                    likeCountStr = ' (' + str(likeCount) + ')'
+                else:
+                    likeCountStr = ' (10+)'
             likeIcon = 'like.png'
             if likedByPerson(postJsonObject, nickname, fullDomain):
                 likeLink = 'unlike'
