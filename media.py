@@ -38,12 +38,15 @@ def removeMetaData(imageFilename: str, outputFilename: str) -> None:
     so better to use a dedicated tool if one is installed
     """
     copyfile(imageFilename, outputFilename)
+    if not os.path.isfile(outputFilename):
+        print('ERROR: unable to remove metadata from ' + imageFilename)
+        return
     if os.path.isfile('/usr/bin/exiftool'):
         print('Removing metadata from ' + outputFilename + ' using exiftool')
         os.system('exiftool -all= ' + outputFilename)
     elif os.path.isfile('/usr/bin/mogrify'):
         print('Removing metadata from ' + outputFilename + ' using mogrify')
-        os.system('/usr/bin/mogrify -strip '+outputFilename)
+        os.system('/usr/bin/mogrify -strip ' + outputFilename)
 
 
 def getImageHash(imageFilename: str) -> str:
