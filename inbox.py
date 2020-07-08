@@ -1716,11 +1716,8 @@ def likeNotify(baseDir: str, handle: str, actor: str, url: str,
         return
     likeFile = accountDir + '/.newLike'
 
-    domain = handle.split('@')[1]
-    nickname = handle.split('@')[0]
-    actor = httpPrefix + '://' + domain + '/users/' + nickname
-    # the liked post is one which you made
-    if actor not in url:
+    # This is not you liking your own post
+    if actor in url:
         return
     likerNickname = getNicknameFromActor(actor)
     likerDomain, likerPort = getDomainFromActor(actor)
