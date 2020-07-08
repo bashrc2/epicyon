@@ -1713,6 +1713,8 @@ def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
     if not os.path.isdir(accountDir):
         return
     likeFile = accountDir + '/.newLike'
+    if os.path.isfile(likeFile):
+        return
 
     # This is not you liking your own post
     if actor in url:
