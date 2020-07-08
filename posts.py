@@ -440,6 +440,58 @@ def getPosts(session, outboxUrl: str, maxPosts: int,
     return personPosts
 
 
+def getPostDomains(session, outboxUrl: str, maxPosts: int,
+                   maxMentions: int,
+                   maxEmoji: int, maxAttachments: int,
+                   federationList: [],
+                   personCache: {}, raw: bool,
+                   simple: bool, debug: bool,
+                   projectVersion: str, httpPrefix: str,
+                   domain: str) -> []:
+    """Returns a list of domains referenced within public posts
+    """
+    if not outboxUrl:
+        return []
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if '/outbox/' in outboxUrl:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+
+    postDomains = []
+
+    i = 0
+    userFeed = parseUserFeed(session, outboxUrl, asHeader,
+                             projectVersion, httpPrefix, domain)
+    for item in userFeed:
+        if not item.get('object'):
+            continue
+        if not isinstance(item['object'], dict):
+            continue
+        if item['object'].get('inReplyTo'):
+            postDomain, postPort = \
+                getDomainFromActor(item['object']['inReplyTo'])
+            if postDomain not in postDomains:
+                postDomains.append(postDomain)
+
+        if item['object'].get('tag'):
+            for tagItem in item['object']['tag']:
+                tagType = tagItem['type'].lower()
+                if tagType == 'mention':
+                    if tagItem.get('href'):
+                        postDomain, postPort = \
+                            getDomainFromActor(tagItem['href'])
+                        if postDomain not in postDomains:
+                            postDomains.append(postDomain)
+        i += 1
+        if i == maxPosts:
+            break
+    return postDomains
+
+
 def deleteAllPosts(baseDir: str,
                    nickname: str, domain: str, boxname: str) -> None:
     """Deletes all posts for a person from inbox or outbox
@@ -2931,6 +2983,54 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
              maxAttachments, federationList,
              personCache, raw, simple, debug,
              projectVersion, httpPrefix, domain)
+
+
+def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
+                         raw: bool, simple: bool, proxyType: str,
+                         port: int, httpPrefix: str,
+                         debug: bool, projectVersion: str) -> []:
+    """ Returns a list of domains referenced within public posts
+    """
+    session = createSession(proxyType)
+    if not session:
+        return
+    personCache = {}
+    cachedWebfingers = {}
+    federationList = []
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            if ':' not in domain:
+                domainFull = domain + ':' + str(port)
+    handle = httpPrefix + "://" + domainFull + "/@" + nickname
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion)
+    if not wfRequest:
+        return []
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return []
+
+    (personUrl, pubKeyId, pubKey,
+     personId, shaedInbox,
+     capabilityAcquisition,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache,
+                                            projectVersion, httpPrefix,
+                                            nickname, domain, 'outbox')
+    maxMentions = 99
+    maxEmoji = 99
+    maxAttachments = 5
+    postDomains = \
+        getPostDomains(session, personUrl, 60, maxMentions, maxEmoji,
+                       maxAttachments, federationList,
+                       personCache, raw, simple, debug,
+                       projectVersion, httpPrefix, domain)
+    postDomains.sort()
+    return postDomains
 
 
 def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,
