@@ -1714,7 +1714,8 @@ def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
         return
     likeFile = accountDir + '/.newLike'
     if os.path.isfile(likeFile):
-        return
+        if '##sent##' not in open(likeFile).read():
+            return
 
     # This is not you liking your own post
     if actor in url:
