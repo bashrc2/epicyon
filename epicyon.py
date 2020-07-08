@@ -431,7 +431,7 @@ if args.postDomains:
                 if postsPort != 80 and postsPort != 443:
                     args.postDomains += ':' + str(postsPort)
         else:
-            print('Syntax: --posts nickname@domain')
+            print('Syntax: --postDomains nickname@domain')
             sys.exit()
     if not args.http:
         args.port = 443
