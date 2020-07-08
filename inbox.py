@@ -1719,9 +1719,15 @@ def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
     # the liked post is one which you made
     if actor not in url:
         return
+    likerNickname = None
+    likerDomain = None
     likerNickname = getNicknameFromActor(actor)
     likerDomain, likerPort = getDomainFromActor(actor)
-    likerHandle = likerNickname + '@' + likerDomain
+    if likerNickname and likerDomain:
+        likerHandle = likerNickname + '@' + likerDomain
+    else:
+        print('likeNotify actor: ' + str(actor))
+        likerHandle = actor
     if likerHandle != handle:
         with open(likeFile, 'w') as fp:
             fp.write(likerHandle + ' ' + url)
