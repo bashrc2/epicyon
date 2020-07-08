@@ -386,8 +386,16 @@ if baseDir.endswith('/'):
 
 if args.posts:
     if '@' not in args.posts:
-        print('Syntax: --posts nickname@domain')
-        sys.exit()
+        if '/users/' in args.posts:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.posts = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.posts += ':' + str(postsPort)
+        else:
+            print('Syntax: --posts nickname@domain')
+            sys.exit()
     if not args.http:
         args.port = 443
     nickname = args.posts.split('@')[0]
@@ -395,8 +403,12 @@ if args.posts:
     proxyType = None
     if args.tor or domain.endswith('.onion'):
         proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
         proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
