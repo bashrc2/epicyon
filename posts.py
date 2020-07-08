@@ -146,7 +146,7 @@ def getUserUrl(wfRequest: {}) -> str:
 
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
-                  domain: str,depth=0) -> {}:
+                  domain: str, depth=0) -> {}:
     if depth > 10:
         return None
 
