@@ -1033,6 +1033,7 @@ def receiveLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           messageJson['object'],
                           messageJson['actor'], domain, debug)
+    likeNotify(baseDir, handle, messageJson['actor'], messageJson['object'])
     return True
 
 
@@ -1702,6 +1703,28 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
     if not os.path.isfile(dmFile):
         with open(dmFile, 'w') as fp:
             fp.write(url)
+
+
+def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
+    """Creates a notification that a like has arrived
+    """
+    accountDir = baseDir + '/accounts/' + handle
+    if not os.path.isdir(accountDir):
+        return
+    likeFile = accountDir + '/.newLike'
+
+    domain = handle.split('@')[1]
+    nickname = handle.split('@')[0]
+    actor = '://' + domain + '/users/' + nickname
+    # the liked post is one which you made
+    if actor not in url:
+        return
+    likerNickname = getNicknameFromActor(actor)
+    likerDomain, likerPort = getDomainFromActor(actor)
+    likerHandle = likerNickname + '@' + likerDomain
+    if likerHandle != handle:
+        with open(likeFile, 'w') as fp:
+            fp.write(likerHandle + ' ' + url)
 
 
 def replyNotify(baseDir: str, handle: str, url: str) -> None:
