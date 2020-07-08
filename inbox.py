@@ -1033,7 +1033,9 @@ def receiveLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           messageJson['object'],
                           messageJson['actor'], domain, debug)
-    likeNotify(baseDir, handle, messageJson['actor'], messageJson['object'])
+    print('likeNotify: ' + str(messageJson))
+    likeNotify(baseDir, handle,
+               messageJson['actor'], messageJson['object'], httpPrefix)
     return True
 
 
@@ -1705,7 +1707,8 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
-def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
+def likeNotify(baseDir: str, handle: str, actor: str, url: str,
+               httpPrefix: str) -> None:
     """Creates a notification that a like has arrived
     """
     accountDir = baseDir + '/accounts/' + handle
@@ -1715,18 +1718,17 @@ def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
 
     domain = handle.split('@')[1]
     nickname = handle.split('@')[0]
-    actor = '://' + domain + '/users/' + nickname
+    actor = httpPrefix + '://' + domain + '/users/' + nickname
     # the liked post is one which you made
     if actor not in url:
         return
-    likerNickname = None
-    likerDomain = None
     likerNickname = getNicknameFromActor(actor)
     likerDomain, likerPort = getDomainFromActor(actor)
     if likerNickname and likerDomain:
         likerHandle = likerNickname + '@' + likerDomain
     else:
-        print('likeNotify actor: ' + str(actor))
+        print('likeNotify likerHandle: ' +
+              str(likerNickname) + '@' + str(likerDomain))
         likerHandle = actor
     if likerHandle != handle:
         with open(likeFile, 'w') as fp:
