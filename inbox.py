@@ -1033,7 +1033,6 @@ def receiveLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           messageJson['object'],
                           messageJson['actor'], domain, debug)
-    print('likeNotify: ' + str(messageJson))
     likeNotify(baseDir, handle,
                messageJson['actor'], messageJson['object'])
     return True
