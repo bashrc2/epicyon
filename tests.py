@@ -1879,7 +1879,6 @@ def testRemoveHtml():
     testStr = 'This string has no html.'
     assert(removeHtml(testStr) == testStr)
     testStr = 'This string <a href="1234.567">has html</a>.'
-    print(removeHtml(testStr))
     assert(removeHtml(testStr) == 'This string has html.')
 
 
