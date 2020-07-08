@@ -981,6 +981,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
 def receiveLike(recentPostsCache: {},
                 session, handle: str, isGroup: bool, baseDir: str,
                 httpPrefix: str, domain: str, port: int,
+                onionDomain: str,
                 sendThreads: [], postLog: [], cachedWebfingers: {},
                 personCache: {}, messageJson: {}, federationList: [],
                 debug: bool) -> bool:
@@ -1033,7 +1034,7 @@ def receiveLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           messageJson['object'],
                           messageJson['actor'], domain, debug)
-    likeNotify(baseDir, handle,
+    likeNotify(baseDir, domain, onionDomain, handle,
                messageJson['actor'], messageJson['object'])
     return True
 
@@ -1706,9 +1707,22 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
-def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
+def likeNotify(baseDir: str, domain: str, onionDomain: str,
+               handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
     """
+    # This is not you liking your own post
+    if actor in url:
+        return
+
+    # check that the liked post was by this handle
+    nickname = handle.split('@')[0]
+    if '/' + domain + '/users/' + nickname not in url:
+        if not onionDomain:
+            return
+        if '/' + onionDomain + '/users/' + nickname not in url:
+            return
+
     accountDir = baseDir + '/accounts/' + handle
     if not os.path.isdir(accountDir):
         return
@@ -1717,9 +1731,6 @@ def likeNotify(baseDir: str, handle: str, actor: str, url: str) -> None:
         if '##sent##' not in open(likeFile).read():
             return
 
-    # This is not you liking your own post
-    if actor in url:
-        return
     likerNickname = getNicknameFromActor(actor)
     likerDomain, likerPort = getDomainFromActor(actor)
     if likerNickname and likerDomain:
@@ -1999,6 +2010,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                    session, handle, isGroup,
                    baseDir, httpPrefix,
                    domain, port,
+                   onionDomain,
                    sendThreads, postLog,
                    cachedWebfingers,
                    personCache,
