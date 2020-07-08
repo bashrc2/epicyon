@@ -1740,8 +1740,19 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
               str(likerNickname) + '@' + str(likerDomain))
         likerHandle = actor
     if likerHandle != handle:
+        likeStr = likerHandle + ' ' + url
+        prevLikeFile = accountDir + '/.prevLike'
+        # was there a previous like notification?
+        if os.path.isfile(prevLikeFile):
+            # is it the same as the current notification ?
+            with open(prevLikeFile, 'r') as likeFile:
+                prevLikeStr = likeFile.read()
+                if prevLikeStr == likeStr:
+                    return
+        with open(prevLikeFile, 'w') as fp:
+            fp.write(likeStr)
         with open(likeFile, 'w') as fp:
-            fp.write(likerHandle + ' ' + url)
+            fp.write(likeStr)
 
 
 def replyNotify(baseDir: str, handle: str, url: str) -> None:
