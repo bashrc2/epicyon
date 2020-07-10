@@ -24,7 +24,7 @@ def dangerousMarkup(content: str) -> bool:
     contentSections = content.split('<')
     invalidStrings = ('script', 'canvas', 'style', 'abbr',
                       'frame', 'iframe', 'html', 'body',
-                      'hr', 'br')
+                      'hr')
     for markup in contentSections:
         if '>' not in markup:
             continue
