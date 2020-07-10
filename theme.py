@@ -164,7 +164,6 @@ def setCustomFont(baseDir: str):
 
 
 def enableGrayscale(baseDir: str):
-    removeTheme(baseDir)
     setSingleThemeParam(baseDir, 'grayscale', '100%')
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if not os.path.isfile(grayscaleFilename):
@@ -173,7 +172,6 @@ def enableGrayscale(baseDir: str):
 
 
 def disableGrayscale(baseDir: str):
-    removeTheme(baseDir)
     setSingleThemeParam(baseDir, 'grayscale', '0%')
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
