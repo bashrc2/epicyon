@@ -14,6 +14,32 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def dangerousMarkup(content: str) -> bool:
+    """Returns true if the given content contains dangerous html markup
+    """
+    if '<' not in content:
+        return False
+    if '>' not in content:
+        return False
+    contentSections = content.split('<')
+    invalidStrings = ('script', 'canvas', 'style', 'abbr',
+                      'frame', 'iframe', 'html', 'body',
+                      'hr', 'br')
+    for markup in contentSections:
+        if '>' not in markup:
+            continue
+        markup = markup.split('>')[0].strip()
+        if ' ' not in markup:
+            for badStr in invalidStrings:
+                if badStr in markup:
+                    return True
+        else:
+            for badStr in invalidStrings:
+                if badStr + ' ' in markup:
+                    return True
+    return False
+
+
 def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """

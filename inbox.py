@@ -63,6 +63,7 @@ from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
+from content import dangerousMarkup
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1599,22 +1600,20 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
+
     if isGitPatch(baseDir, nickname, domain,
                   messageJson['object']['type'],
                   messageJson['object']['summary'],
                   messageJson['object']['content']):
         return True
-    # check for bad html
-    invalidStrings = ('<script>', '</script>', '</canvas>',
-                      '</style>', '</abbr>',
-                      '</html>', '</body>', '<br>', '<hr>')
-    for badStr in invalidStrings:
-        if badStr in messageJson['object']['content']:
-            if messageJson['object'].get('id'):
-                print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
-            print('REJECT ARBITRARY HTML: bad string in post - ' +
-                  messageJson['object']['content'])
-            return False
+
+    if dangerousMarkup(messageJson['object']['content']):
+        if messageJson['object'].get('id'):
+            print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
+        print('REJECT ARBITRARY HTML: bad string in post - ' +
+              messageJson['object']['content'])
+        return False
+
     # check (rough) number of mentions
     mentionsEst = estimateNumberOfMentions(messageJson['object']['content'])
     if mentionsEst > maxMentions:
