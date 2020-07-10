@@ -106,6 +106,24 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
                 cssfile.write(css)
 
 
+def setSingleThemeParam(baseDir: str,
+                        paramName: str, paramValue: str) -> None:
+    """Sets a single theme parameter across all css files
+    """
+    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
+                  'suspended.css', 'calendar.css', 'blog.css')
+    for filename in themeFiles:
+        templateFilename = baseDir + '/' + filename
+        if not os.path.isfile(templateFilename):
+            continue
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
+            css = setCSSparam(css, paramName, paramValue)
+            filename = baseDir + '/' + filename
+            with open(filename, 'w') as cssfile:
+                cssfile.write(css)
+
+
 def setCustomFont(baseDir: str):
     """Uses a dictionary to set a theme
     """
@@ -147,10 +165,7 @@ def setCustomFont(baseDir: str):
 
 def enableGrayscale(baseDir: str):
     removeTheme(baseDir)
-    themeParams = {
-        "grayscale": "100%"
-    }
-    setThemeFromDict(baseDir, None, themeParams)
+    setSingleThemeParam(baseDir, 'grayscale', '100%')
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if not os.path.isfile(grayscaleFilename):
         with open(grayscaleFilename, 'w') as grayfile:
@@ -159,10 +174,7 @@ def enableGrayscale(baseDir: str):
 
 def disableGrayscale(baseDir: str):
     removeTheme(baseDir)
-    themeParams = {
-        "grayscale": "0%"
-    }
-    setThemeFromDict(baseDir, None, themeParams)
+    setSingleThemeParam(baseDir, 'grayscale', '0%')
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
         os.remove(grayscaleFilename)
