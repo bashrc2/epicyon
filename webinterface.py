@@ -1243,6 +1243,15 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         themes = getThemesList()
         themesDropdown = '<div class="container">'
         themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
+        grayscaleFilename = \
+            baseDir + '/accounts/.grayscale'
+        grayscale = ''
+        if os.path.isfile(grayscaleFilename):
+            grayscale = 'checked'
+        themesDropdown += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="grayscale" ' + grayscale + \
+            '> ' + translate['Grayscale'] + '<br>'
         themesDropdown += '  <select id="themeDropdown" ' + \
             'name="themeDropdown" class="theme">'
         for themeName in themes:

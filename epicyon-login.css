@@ -1,6 +1,7 @@
 @charset "UTF-8";
 
 :root {
+    --grayscale: 0%;
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
     --main-fg-color: #dddddd;
@@ -40,6 +41,7 @@ body, html {
     min-width: 600px;
     margin: 0 auto;
     font-size: var(--font-size);
+    filter: grayscale(--grayscale);
 }
 
 a, u {
@@ -96,11 +98,13 @@ button:hover {
 }
 
 .imgcontainer {
+    filter: grayscale(--grayscale);
     text-align: center;
     margin: 24px 0 12px 0;
 }
 
 img.avatar {
+    filter: grayscale(--grayscale);
     width: 40%;
     border-radius: 50%;
 }

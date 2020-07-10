@@ -1,4 +1,5 @@
 :root {
+    --grayscale: 0%;
     --main-bg-color: #282c37;
     --calendar-bg-color: #eee;
     --lines-color: black;
@@ -38,6 +39,7 @@ body {
     font-family: 'Montserrat';
     font-weight: 700;
     min-height: 100vh;
+    filter: grayscale(--grayscale);
 }
 
 main {
@@ -180,10 +182,12 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 .calendardayicon {
+    filter: grayscale(--grayscale);
     width: 100%
 }
 
 .buttonprev {
+    filter: grayscale(--grayscale);
     float: left;
     width: 10%;
     -ms-transform: translateY(30%);
@@ -191,6 +195,7 @@ tr:nth-child(even) > .calendar__day__cell:nth-child(even) {
 }
 
 .buttonnext {
+    filter: grayscale(--grayscale);
     float: right;
     width: 10%;
     -ms-transform: translateY(30%) scaleX(-1);

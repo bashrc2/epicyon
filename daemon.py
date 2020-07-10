@@ -179,6 +179,8 @@ from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 from theme import setTheme
 from theme import getTheme
+from theme import enableGrayscale
+from theme import disableGrayscale
 from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
@@ -6494,6 +6496,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 if actorJson['type'] != 'Person':
                                     actorJson['type'] = 'Person'
                                     actorChanged = True
+                        grayscale = False
+                        if fields.get('grayscale'):
+                            if fields['grayscale'] == 'on':
+                                grayscale = True
+                        if grayscale:
+                            enableGrayscale(self.server.baseDir)
+                        else:
+                            disableGrayscale(self.server.baseDir)
                         # save filtered words list
                         filterFilename = \
                             self.server.baseDir + '/accounts/' + \
