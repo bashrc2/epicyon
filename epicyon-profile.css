@@ -71,7 +71,7 @@ body, html {
     min-width: 950px;
     margin: 0 auto;
     font-size: var(--font-size);
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
 }
 
 a, u {
@@ -109,7 +109,7 @@ a:link {
 }
 
 .rssfeed img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 5%;
     float: right;
 }
@@ -147,7 +147,7 @@ a:link {
 }
 
 .hero-image img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 50%;
 }
 
@@ -179,7 +179,7 @@ a:link {
 }
 
 .hero-text img.emoji {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 50px;
     padding: 0 0;
     margin: 0 0;
@@ -311,7 +311,7 @@ a:link {
 }
 
 .container img.emoji {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     float: none;
     width: 50px;
     margin-left: 0px;
@@ -322,7 +322,7 @@ a:link {
 }
 
 .hero-text img.emojiprofile {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     float: none;
     width: 50px;
     margin-left: 0px;
@@ -356,7 +356,7 @@ a:link {
 }
 
 .container img.announceOrReply {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     float: none;
     width: 30px;
     margin: 0 0;
@@ -366,7 +366,7 @@ a:link {
 }
 
 .container img.DMicon {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     float: none;
     width: 40px;
     margin: 0 0;
@@ -389,14 +389,14 @@ a:link {
 }
 
 .container img.attachment {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     max-width: 120%;
     margin-left: 5%;
     width: 120%;
     padding-bottom: 3%;
 }
 .container img.right {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     float: var(--icons-side);
     margin-left: 0px;
     margin-right:0;
@@ -404,7 +404,7 @@ a:link {
     margin: 0 0;
 }
 .containericons img.right {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     float: var(--icons-side);
     margin-left: 20px;
     margin-right: 0;
@@ -538,7 +538,7 @@ input[type=submit]:hover {
 }
 
 .dropdown img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     opacity: 1.0;
     width: 32px;
     height: 32px;
@@ -563,7 +563,7 @@ input[type=submit]:hover {
 }
 
 .search-result img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 7%;
     padding: 0px 30px;
 }
@@ -588,7 +588,7 @@ input[type=submit]:hover {
 }
 
 .dropdown-content img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 32px;
     height: 32px;
     padding: 0px 0px;
@@ -638,7 +638,7 @@ input[type=submit]:hover {
 }
 
 .dropbtn img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     opacity: 1.0;
     width: 3%;
     height: 3%;
@@ -652,7 +652,7 @@ div.gallery:hover {
 }
 
 div.gallery img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 100%;
     height: auto;
 }
@@ -896,7 +896,7 @@ aside .toggle-inside li {
         text-align: center;
     }
     .container img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: left;
         max-width: 400px;
         width: 5%;
@@ -905,12 +905,12 @@ aside .toggle-inside li {
         border-radius: var(--image-corners);
     }
     .container img.emojisearch {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         width: 15%;
         float: right;
     }
     .container img.emojicalendar {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: left;
         max-width: 400px;
         width: 8%;
@@ -918,7 +918,7 @@ aside .toggle-inside li {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: var(--icons-side);
         margin-left: 0px;
         margin-right:0;
@@ -927,7 +927,7 @@ aside .toggle-inside li {
         width: 50px;
     }
     .container img.emojiheader {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: none;
         width: 25px;
         margin-left: 0px;
@@ -937,7 +937,7 @@ aside .toggle-inside li {
         vertical-align: middle;
     }
     .containericons img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: var(--icons-side);
         max-width: 200px;
         width: 3%;
@@ -945,7 +945,7 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     div.mediaicons img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: right;
         max-width: 200px;
         width: 6%;
@@ -953,7 +953,7 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     div.mediaavatar img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: left;
         max-width: 200px;
         width: 5%;
@@ -961,7 +961,7 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     .timeline-avatar img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         opacity: 1.0;
         width: 8%;
         height: 8%;
@@ -1217,24 +1217,24 @@ aside .toggle-inside li {
         font-family: Arial, Helvetica, sans-serif;
     }
     .hero-text img.qrcode {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         border-radius: 1%;
         width: 5%;
         min-width: 20px;
     }
     .hero-text img.title {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         border-radius: 1%;
         width: 15%;
     }
     #msgscope label img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         width: 46px;
         height: 46px;
         padding: 0px 0px;
     }
     .toggle-msgScope img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         width: 32px;
         height: 32px;
         padding: 0px 0px;
@@ -1310,7 +1310,7 @@ aside .toggle-inside li {
         text-align: center;
     }
     .container img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: left;
         max-width: 400px;
         width: 15%;
@@ -1319,12 +1319,12 @@ aside .toggle-inside li {
         border-radius: var(--image-corners);
     }
     .container img.emojisearch {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         width: 25%;
         float: right;
     }
     .container img.emojicalendar {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: left;
         max-width: 400px;
         width: 12%;
@@ -1332,7 +1332,7 @@ aside .toggle-inside li {
         transform: translateY(-25%);
     }
     .container img.timelineicon {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: var(--icons-side);
         margin-left: 0px;
         margin-right:0;
@@ -1341,7 +1341,7 @@ aside .toggle-inside li {
         width: 100px;
     }
     .container img.emojiheader {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: none;
         width: 45px;
         margin-left: 0px;
@@ -1351,7 +1351,7 @@ aside .toggle-inside li {
         vertical-align: middle;
     }
     div.mediaavatar img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: left;
         max-width: 200px;
         width: 8%;
@@ -1359,7 +1359,7 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     div.mediaicons img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: right;
         max-width: 200px;
         width: 10%;
@@ -1367,7 +1367,7 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     .containericons img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         float: var(--icons-side);
         max-width: 200px;
         width: 7%;
@@ -1375,7 +1375,7 @@ aside .toggle-inside li {
         border-radius: 0%;
     }
     .timeline-avatar img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         opacity: 1.0;
         width: 15%;
         height: 15%;
@@ -1631,24 +1631,24 @@ aside .toggle-inside li {
         font-family: Arial, Helvetica, sans-serif;
     }
     .hero-text img.qrcode {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         border-radius: 1%;
         width: 15%;
         min-width: 20px;
     }
     .hero-text img.title {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         border-radius: 1%;
         width: 25%;
     }
     #msgscope label  img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         width: 64px;
         height: 64px;
         padding: 0px 0px;
     }
     .toggle-msgScope img {
-	filter: grayscale(--grayscale);
+	filter: grayscale(var(--grayscale));
         width: 64px;
         height: 64px;
         margin: -15px 0px;

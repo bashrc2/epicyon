@@ -50,7 +50,7 @@ body, html {
     max-width: 100%;
     min-width: 600px;
     margin: 5% auto;
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
 }
 
 a, u {
@@ -91,7 +91,7 @@ a:link {
 }
 
 .followAvatar img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     border-radius: 10%;
     width: 20%;
     min-width: 200px;
@@ -171,7 +171,7 @@ input[type=text] {
 }
 
 .options img {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 15%;
 }
 

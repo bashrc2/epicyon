@@ -41,7 +41,7 @@ body, html {
     min-width: 600px;
     margin: 0 auto;
     font-size: var(--font-size);
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
 }
 
 a, u {
@@ -98,13 +98,13 @@ button:hover {
 }
 
 .imgcontainer {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     text-align: center;
     margin: 24px 0 12px 0;
 }
 
 img.avatar {
-    filter: grayscale(--grayscale);
+    filter: grayscale(var(--grayscale));
     width: 40%;
     border-radius: 50%;
 }
