@@ -12,6 +12,11 @@ from utils import saveJson
 from shutil import copyfile
 
 
+def getThemeFiles() -> []:
+    return ('epicyon.css', 'login.css', 'follow.css',
+            'suspended.css', 'calendar.css', 'blog.css')
+
+
 def getThemesList() -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
@@ -44,8 +49,7 @@ def getTheme(baseDir: str) -> str:
 
 
 def removeTheme(baseDir: str):
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
             os.remove(baseDir + '/' + filename)
@@ -89,8 +93,7 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
     """
     if name:
         setThemeInConfig(baseDir, name)
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/epicyon-' + filename
         if filename == 'epicyon.css':
@@ -109,8 +112,7 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
 def enableGrayscale(baseDir: str) -> None:
     """Enables grayscale for the current theme
     """
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -133,8 +135,7 @@ def enableGrayscale(baseDir: str) -> None:
 def disableGrayscale(baseDir: str) -> None:
     """Disables grayscale for the current theme
     """
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -171,8 +172,7 @@ def setCustomFont(baseDir: str):
     if not customFontExt:
         return
 
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
