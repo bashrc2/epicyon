@@ -1067,19 +1067,18 @@ class PubServer(BaseHTTPRequestHandler):
                     # to be authorized to use an account you don't own
                     if '/' + nickname + '/' in self.path:
                         return True
-                    if '/' + nickname + '?' in self.path:
+                    elif '/' + nickname + '?' in self.path:
                         return True
-                    if self.path.endswith('/'+nickname):
+                    elif self.path.endswith('/'+nickname):
                         return True
                     print('AUTH: nickname ' + nickname +
                           ' was not found in path ' + self.path)
                     return False
-                if self.server.debug:
-                    print('AUTH: epicyon cookie ' +
-                          'authorization failed, header=' +
-                          self.headers['Cookie'].replace('epicyon=', '') +
-                          ' tokenStr=' + tokenStr + ' tokens=' +
-                          str(self.server.tokensLookup))
+                print('AUTH: epicyon cookie ' +
+                      'authorization failed, header=' +
+                      self.headers['Cookie'].replace('epicyon=', '') +
+                      ' tokenStr=' + tokenStr + ' tokens=' +
+                      str(self.server.tokensLookup))
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
