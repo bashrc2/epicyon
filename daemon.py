@@ -5786,12 +5786,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if self.server.debug:
-            if authorized:
-                print('POST Authorization granted')
-            else:
-                print('POST Not authorized')
-                print(str(self.headers))
+        if authorized:
+            print('POST Authorization granted')
+        else:
+            print('POST Not authorized')
+            print(str(self.headers))
 
         # if this is a POST to the outbox then check authentication
         self.outboxAuthenticated = False
