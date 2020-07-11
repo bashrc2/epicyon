@@ -7142,6 +7142,12 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
 
         # removes a post
+        if not authorized and self.path.endswith('/rmpost'):
+            print('ERROR: attempt to remove post was not authorized. ' +
+                  self.path)
+            self._400()
+            self.server.POSTbusy = False
+            return
         if authorized and self.path.endswith('/rmpost'):
             pageNumber = 1
             usersPath = self.path.split('/rmpost')[0]
@@ -7952,7 +7958,6 @@ class PubServer(BaseHTTPRequestHandler):
         if not (self.path.endswith('/outbox') or
                 self.path.endswith('/inbox') or
                 self.path.endswith('/shares') or
-                self.path.endswith('/rmpost') or
                 self.path.endswith('/moderationaction') or
                 self.path.endswith('/caps/new') or
                 self.path == '/sharedInbox'):
