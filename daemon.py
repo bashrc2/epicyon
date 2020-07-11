@@ -3095,7 +3095,6 @@ class PubServer(BaseHTTPRequestHandler):
                 self._400()
                 self.server.GETbusy = False
                 return
-            print('Cookie for delete: ' + str(cookie))
             pageNumber = 1
             if '?page=' in self.path:
                 pageNumberStr = self.path.split('?page=')[1]
