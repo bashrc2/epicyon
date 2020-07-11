@@ -1918,8 +1918,7 @@ def addToField(activityType: str, postJsonObject: {},
 
 
 def sendToNamedAddresses(session, baseDir: str,
-                         nickname: str,
-                         domain: str,
+                         nickname: str, domain: str,
                          onionDomain: str, i2pDomain: str, port: int,
                          httpPrefix: str, federationList: [],
                          sendThreads: [], postLog: [],

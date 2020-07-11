@@ -1920,6 +1920,8 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
                                    actorNickname, actorDomain):
         return
     for tagDict in postJsonObject['object']['tag']:
+        if not tagDict.get('type'):
+            continue
         if tagDict['type'] != 'Event':
             continue
         if not tagDict.get('startTime'):
