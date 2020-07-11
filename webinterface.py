@@ -81,6 +81,7 @@ from followingCalendar import receivingCalendarEvents
 
 def getUrlPath(actor: str, domainFull: str, callingDomain: str) -> str:
     """Returns path from url
+    eg. https://somedomain/users/bob becomes /users/bob
     """
     postActor = actor
     if callingDomain not in actor and domainFull in actor:
