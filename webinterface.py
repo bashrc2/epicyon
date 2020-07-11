@@ -452,7 +452,8 @@ def htmlSearchSharedItems(translate: {},
                           pageNumber: int,
                           resultsPerPage: int,
                           httpPrefix: str,
-                          domainFull: str, actor: str) -> str:
+                          domainFull: str, actor: str,
+                          callingDomain: str) -> str:
     """Search results for shared items
     """
     iconsDir = getIconsDir(baseDir)
@@ -549,9 +550,13 @@ def htmlSearchSharedItems(translate: {},
                                     translate['Remove'] + '</button></a>'
                             sharedItemsForm += '</p></div>'
                             if not resultsExist and currPage > 1:
+                                postActor = \
+                                    getUrlPath(actor, domainFull,
+                                               callingDomain)
                                 # previous page link, needs to be a POST
                                 sharedItemsForm += \
-                                    '<form method="POST" action="' + actor + \
+                                    '<form method="POST" action="' + \
+                                    postActor + \
                                     '/searchhandle?page=' + \
                                     str(pageNumber - 1) + '">'
                                 sharedItemsForm += \
@@ -578,9 +583,13 @@ def htmlSearchSharedItems(translate: {},
                         if ctr >= resultsPerPage:
                             currPage += 1
                             if currPage > pageNumber:
+                                postActor = \
+                                    getUrlPath(actor, domainFull,
+                                               callingDomain)
                                 # next page link, needs to be a POST
                                 sharedItemsForm += \
-                                    '<form method="POST" action="' + actor + \
+                                    '<form method="POST" action="' + \
+                                    postActor + \
                                     '/searchhandle?page=' + \
                                     str(pageNumber + 1) + '">'
                                 sharedItemsForm += \
@@ -5060,12 +5069,17 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
 
 
 def htmlRemoveSharedItem(translate: {}, baseDir: str,
-                         actor: str, shareName: str) -> str:
+                         actor: str, shareName: str,
+                         callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
     itemID = getValidSharedItemID(shareName)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
     sharesFile = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/shares.json'
     if not os.path.isfile(sharesFile):
@@ -5103,7 +5117,8 @@ def htmlRemoveSharedItem(translate: {}, baseDir: str,
     sharesStr += \
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>'
-    sharesStr += '  <form method="POST" action="' + actor + '/rmshare">'
+    postActor = getUrlPath(actor, domainFull, callingDomain)
+    sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">'
     sharesStr += '    <input type="hidden" name="actor" value="' + actor + '">'
     sharesStr += '    <input type="hidden" name="shareName" value="' + \
         shareName + '">'

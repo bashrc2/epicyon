@@ -1643,7 +1643,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull + usersPath
             msg = htmlRemoveSharedItem(self.server.translate,
                                        self.server.baseDir,
-                                       actor, shareName).encode('utf-8')
+                                       actor, shareName,
+                                       callingDomain).encode('utf-8')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -7065,7 +7066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed,
                                               self.server.httpPrefix,
                                               self.server.domainFull,
-                                              actorStr)
+                                              actorStr, callingDomain)
                     if sharedItemsStr:
                         msg = sharedItemsStr.encode('utf-8')
                         self._login_headers('text/html',
