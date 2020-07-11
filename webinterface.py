@@ -5648,11 +5648,15 @@ def htmlCalendarDay(translate: {},
     with open(cssFilename, 'r') as cssFile:
         calendarStyle = cssFile.read()
 
+    calActor = actor
+    if '/users/' in actor:
+        calActor = '/users/' + actor.split('/users/')[1]
+
     calendarStr = htmlHeader(cssFilename, calendarStyle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
-        '  <a href="' + actor + '/calendar?year=' + str(year) + \
+        '  <a href="' + calActor + '/calendar?year=' + str(year) + \
         '?month=' + str(monthNumber) + '">'
     calendarStr += \
         '  <h1>' + str(dayNumber) + ' ' + monthName + \
@@ -5687,7 +5691,7 @@ def htmlCalendarDay(translate: {},
             deleteButtonStr = ''
             if postId:
                 deleteButtonStr = \
-                    '<td class="calendar__day__icons"><a href="' + actor + \
+                    '<td class="calendar__day__icons"><a href="' + calActor + \
                     '/eventdelete?id=' + postId + '?year=' + str(year) + \
                     '?month=' + str(monthNumber) + '?day=' + str(dayNumber) + \
                     '?time=' + eventTime + \
