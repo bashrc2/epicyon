@@ -3164,7 +3164,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.session, self.server.baseDir,
                                    deleteUrl, self.server.httpPrefix,
                                    __version__, self.server.cachedWebfingers,
-                                   self.server.personCache)
+                                   self.server.personCache, callingDomain)
                 if deleteStr:
                     self._set_headers('text/html', len(deleteStr),
                                       cookie, callingDomain)

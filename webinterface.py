@@ -5112,7 +5112,8 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                    translate, pageNumber: int,
                    session, baseDir: str, messageId: str,
                    httpPrefix: str, projectVersion: str,
-                   wfRequest: {}, personCache: {}) -> str:
+                   wfRequest: {}, personCache: {},
+                   callingDomain: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -5121,6 +5122,10 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
 
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
@@ -5157,7 +5162,16 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
         deletePostStr += \
             '  <p class="followText">' + \
             translate['Delete this post?'] + '</p>'
-        deletePostStr += '  <form method="POST" action="' + actor + '/rmpost">'
+        postActor = actor
+        if callingDomain not in actor and domainFull in actor:
+            if callingDomain.endswith('.onion') or \
+               callingDomain.endswith('.i2p'):
+                postActor = \
+                    'http://' + callingDomain + actor.split(domainFull)[1]
+                print('Changed POST domain from ' + actor + ' to ' + postActor)
+
+        deletePostStr += \
+            '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += \
             '    <input type="hidden" name="pageNumber" value="' + \
             str(pageNumber) + '">'
