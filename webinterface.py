@@ -79,9 +79,9 @@ from petnames import getPetName
 from followingCalendar import receivingCalendarEvents
 
 
-def getUrlPath(actor: str, domainFull: str, callingDomain: str) -> str:
-    """Returns path from url
-    eg. https://somedomain/users/bob becomes /users/bob
+def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
+    """Returns alternate path from the actor
+    eg. https://clearnetdomain/path becomes http://oniondomain/path
     """
     postActor = actor
     if callingDomain not in actor and domainFull in actor:
@@ -552,7 +552,7 @@ def htmlSearchSharedItems(translate: {},
                             sharedItemsForm += '</p></div>'
                             if not resultsExist and currPage > 1:
                                 postActor = \
-                                    getUrlPath(actor, domainFull,
+                                    getAltPath(actor, domainFull,
                                                callingDomain)
                                 # previous page link, needs to be a POST
                                 sharedItemsForm += \
@@ -585,7 +585,7 @@ def htmlSearchSharedItems(translate: {},
                             currPage += 1
                             if currPage > pageNumber:
                                 postActor = \
-                                    getUrlPath(actor, domainFull,
+                                    getAltPath(actor, domainFull,
                                                callingDomain)
                                 # next page link, needs to be a POST
                                 sharedItemsForm += \
@@ -5118,7 +5118,7 @@ def htmlRemoveSharedItem(translate: {}, baseDir: str,
     sharesStr += \
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>'
-    postActor = getUrlPath(actor, domainFull, callingDomain)
+    postActor = getAltPath(actor, domainFull, callingDomain)
     sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">'
     sharesStr += '    <input type="hidden" name="actor" value="' + actor + '">'
     sharesStr += '    <input type="hidden" name="shareName" value="' + \
@@ -5192,7 +5192,7 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
             '  <p class="followText">' + \
             translate['Delete this post?'] + '</p>'
 
-        postActor = getUrlPath(actor, domainFull, callingDomain)
+        postActor = getAltPath(actor, domainFull, callingDomain)
         deletePostStr += \
             '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += \
@@ -5256,7 +5256,7 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
         deletePostStr += '  <p class="followText">' + \
             translate['Delete this event'] + '</p>'
 
-        postActor = getUrlPath(actor, domainFull, callingDomain)
+        postActor = getAltPath(actor, domainFull, callingDomain)
         deletePostStr += \
             '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += '    <input type="hidden" name="year" value="' + \
