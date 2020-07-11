@@ -2386,7 +2386,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.httpPrefix,
                                                 self.server.domainFull,
                                                 postId, postTime,
-                                                postYear, postMonth, postDay)
+                                                postYear, postMonth, postDay,
+                                                callingDomain)
                 if not msg:
                     actor = \
                         self.server.httpPrefix + '://' + \

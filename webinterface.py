@@ -79,6 +79,19 @@ from petnames import getPetName
 from followingCalendar import receivingCalendarEvents
 
 
+def getUrlPath(actor: str, domainFull: str, callingDomain: str) -> str:
+    """Returns path from url
+    """
+    postActor = actor
+    if callingDomain not in actor and domainFull in actor:
+        if callingDomain.endswith('.onion') or \
+           callingDomain.endswith('.i2p'):
+            postActor = \
+                'http://' + callingDomain + actor.split(domainFull)[1]
+            print('Changed POST domain from ' + actor + ' to ' + postActor)
+    return postActor
+
+
 def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
@@ -5162,14 +5175,8 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
         deletePostStr += \
             '  <p class="followText">' + \
             translate['Delete this post?'] + '</p>'
-        postActor = actor
-        if callingDomain not in actor and domainFull in actor:
-            if callingDomain.endswith('.onion') or \
-               callingDomain.endswith('.i2p'):
-                postActor = \
-                    'http://' + callingDomain + actor.split(domainFull)[1]
-                print('Changed POST domain from ' + actor + ' to ' + postActor)
 
+        postActor = getUrlPath(actor, domainFull, callingDomain)
         deletePostStr += \
             '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += \
@@ -5194,7 +5201,7 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
                               path: str, httpPrefix: str,
                               domainFull: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
-                              dayNumber: int) -> str:
+                              dayNumber: int, callingDomain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = getNicknameFromActor(path)
@@ -5232,7 +5239,10 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
         deletePostStr += '<center>'
         deletePostStr += '  <p class="followText">' + \
             translate['Delete this event'] + '</p>'
-        deletePostStr += '  <form method="POST" action="' + actor + '/rmpost">'
+
+        postActor = getUrlPath(actor, domainFull, callingDomain)
+        deletePostStr += \
+            '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += '    <input type="hidden" name="year" value="' + \
             str(year) + '">'
         deletePostStr += '    <input type="hidden" name="month" value="' + \
