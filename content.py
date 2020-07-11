@@ -14,6 +14,32 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def dangerousMarkup(content: str) -> bool:
+    """Returns true if the given content contains dangerous html markup
+    """
+    if '<' not in content:
+        return False
+    if '>' not in content:
+        return False
+    contentSections = content.split('<')
+    invalidStrings = ('script', 'canvas', 'style', 'abbr',
+                      'frame', 'iframe', 'html', 'body',
+                      'hr')
+    for markup in contentSections:
+        if '>' not in markup:
+            continue
+        markup = markup.split('>')[0].strip()
+        if ' ' not in markup:
+            for badStr in invalidStrings:
+                if badStr in markup:
+                    return True
+        else:
+            for badStr in invalidStrings:
+                if badStr + ' ' in markup:
+                    return True
+    return False
+
+
 def switchWords(baseDir: str, nickname: str, domain: str, content: str) -> str:
     """Performs word replacements. eg. Trump -> The Orange Menace
     """
@@ -398,6 +424,24 @@ def removeTextFormatting(content: str) -> str:
         content = content.replace('<' + markup.upper() + '>', '')
         content = content.replace('</' + markup.upper() + '>', '')
     return content
+
+
+def removeHtml(content: str) -> str:
+    """Removes html links from the given content.
+    Used to ensure that profile descriptions don't contain dubious content
+    """
+    if '<' not in content:
+        return content
+    removing = False
+    result = ''
+    for ch in content:
+        if ch == '<':
+            removing = True
+        elif ch == '>':
+            removing = False
+        elif not removing:
+            result += ch
+    return result
 
 
 def removeLongWords(content: str, maxWordLength: int,

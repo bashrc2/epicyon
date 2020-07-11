@@ -41,6 +41,14 @@ def getDonationUrl(actorJson: {}) -> str:
 def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
     """Sets a link used for donations
     """
+    notUrl = False
+    if '.' not in donateUrl:
+        notUrl = True
+    if '://' not in donateUrl:
+        notUrl = True
+    if ' ' in donateUrl:
+        notUrl = True
+
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
@@ -65,6 +73,8 @@ def setDonationUrl(actorJson: {}, donateUrl: str) -> None:
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
+    if notUrl:
+        return
 
     donateValue = \
         '<a href="' + donateUrl + \

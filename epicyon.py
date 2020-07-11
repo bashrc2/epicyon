@@ -15,6 +15,7 @@ from person import deactivateAccount
 from skills import setSkillLevel
 from roles import setRole
 from webfinger import webfingerHandle
+from posts import getPublicPostDomains
 from posts import sendBlockViaServer
 from posts import sendUndoBlockViaServer
 from posts import createPublicPost
@@ -66,6 +67,7 @@ from shares import sendUndoShareViaServer
 from shares import addShare
 from theme import setTheme
 from announce import sendAnnounceViaServer
+from socnet import instancesGraph
 import argparse
 
 
@@ -146,6 +148,14 @@ parser.add_argument('--actor', dest='actor', type=str,
 parser.add_argument('--posts', dest='posts', type=str,
                     default=None,
                     help='Show posts for the given handle')
+parser.add_argument('--postDomains', dest='postDomains', type=str,
+                    default=None,
+                    help='Show domains referenced in public '
+                    'posts for the given handle')
+parser.add_argument('--socnet', dest='socnet', type=str,
+                    default=None,
+                    help='Show dot diagram for social network '
+                    'of federated instances')
 parser.add_argument('--postsraw', dest='postsraw', type=str,
                     default=None,
                     help='Show raw json of posts for the given handle')
@@ -386,8 +396,16 @@ if baseDir.endswith('/'):
 
 if args.posts:
     if '@' not in args.posts:
-        print('Syntax: --posts nickname@domain')
-        sys.exit()
+        if '/users/' in args.posts:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.posts = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.posts += ':' + str(postsPort)
+        else:
+            print('Syntax: --posts nickname@domain')
+            sys.exit()
     if not args.http:
         args.port = 443
     nickname = args.posts.split('@')[0]
@@ -395,13 +413,74 @@ if args.posts:
     proxyType = None
     if args.tor or domain.endswith('.onion'):
         proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
     elif args.i2p or domain.endswith('.i2p'):
         proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
     elif args.gnunet:
         proxyType = 'gnunet'
     getPublicPostsOfPerson(baseDir, nickname, domain, False, True,
                            proxyType, args.port, httpPrefix, debug,
                            __version__)
+    sys.exit()
+
+if args.postDomains:
+    if '@' not in args.postDomains:
+        if '/users/' in args.postDomains:
+            postsNickname = getNicknameFromActor(args.posts)
+            postsDomain, postsPort = getDomainFromActor(args.posts)
+            args.postDomains = postsNickname + '@' + postsDomain
+            if postsPort:
+                if postsPort != 80 and postsPort != 443:
+                    args.postDomains += ':' + str(postsPort)
+        else:
+            print('Syntax: --postDomains nickname@domain')
+            sys.exit()
+    if not args.http:
+        args.port = 443
+    nickname = args.postDomains.split('@')[0]
+    domain = args.postDomains.split('@')[1]
+    proxyType = None
+    if args.tor or domain.endswith('.onion'):
+        proxyType = 'tor'
+        if domain.endswith('.onion'):
+            args.port = 80
+    elif args.i2p or domain.endswith('.i2p'):
+        proxyType = 'i2p'
+        if domain.endswith('.i2p'):
+            args.port = 80
+    elif args.gnunet:
+        proxyType = 'gnunet'
+    domainList = []
+    domainList = getPublicPostDomains(baseDir, nickname, domain,
+                                      proxyType, args.port,
+                                      httpPrefix, debug,
+                                      __version__, domainList)
+    for postDomain in domainList:
+        print(postDomain)
+    sys.exit()
+
+if args.socnet:
+    if ',' not in args.socnet:
+        print('Syntax: '
+              '--socnet nick1@domain1,nick2@domain2,nick3@domain3')
+        sys.exit()
+
+    if not args.http:
+        args.port = 443
+    proxyType = 'tor'
+    dotGraph = instancesGraph(baseDir, args.socnet,
+                              proxyType, args.port,
+                              httpPrefix, debug,
+                              __version__)
+    try:
+        with open('socnet.dot', 'w') as fp:
+            fp.write(dotGraph)
+            print('Saved to socnet.dot')
+    except BaseException:
+        pass
     sys.exit()
 
 if args.postsraw:

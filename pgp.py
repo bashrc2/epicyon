@@ -53,9 +53,39 @@ def getPGPpubKey(actorJson: {}) -> str:
     return ''
 
 
+def getPGPfingerprint(actorJson: {}) -> str:
+    """Returns PGP fingerprint for the given actor
+    """
+    if not actorJson.get('attachment'):
+        return ''
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue['name'].lower().startswith('openpgp'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue.get('value'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        if len(propertyValue['value']) < 10:
+            continue
+        return propertyValue['value']
+    return ''
+
+
 def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
     """Sets the email address for the given actor
     """
+    notEmailAddress = False
+    if '@' not in emailAddress:
+        notEmailAddress = True
+    if '.' not in emailAddress:
+        notEmailAddress = True
+    if emailAddress.startswith('@'):
+        notEmailAddress = True
+
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
@@ -72,12 +102,7 @@ def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
-
-    if '@' not in emailAddress:
-        return
-    if '.' not in emailAddress:
-        return
-    if emailAddress.startswith('@'):
+    if notEmailAddress:
         return
 
     for propertyValue in actorJson['attachment']:
@@ -103,6 +128,13 @@ def setEmailAddress(actorJson: {}, emailAddress: str) -> None:
 def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
     """Sets a PGP public key for the given actor
     """
+    removeKey = False
+    if not PGPpubKey:
+        removeKey = True
+    else:
+        if '--BEGIN PGP PUBLIC KEY' not in PGPpubKey:
+            removeKey = True
+
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
@@ -119,8 +151,7 @@ def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyValue)
-
-    if '--BEGIN PGP PUBLIC KEY' not in PGPpubKey:
+    if removeKey:
         return
 
     for propertyValue in actorJson['attachment']:
@@ -141,3 +172,52 @@ def setPGPpubKey(actorJson: {}, PGPpubKey: str) -> None:
         "value": PGPpubKey
     }
     actorJson['attachment'].append(newPGPpubKey)
+
+
+def setPGPfingerprint(actorJson: {}, fingerprint: str) -> None:
+    """Sets a PGP fingerprint for the given actor
+    """
+    removeFingerprint = False
+    if not fingerprint:
+        removeFingerprint = True
+    else:
+        if len(fingerprint) < 10:
+            removeFingerprint = True
+
+    if not actorJson.get('attachment'):
+        actorJson['attachment'] = []
+
+    # remove any existing value
+    propertyFound = None
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower().startswith('openpgp'):
+            continue
+        propertyFound = propertyValue
+        break
+    if propertyFound:
+        actorJson['attachment'].remove(propertyValue)
+    if removeFingerprint:
+        return
+
+    for propertyValue in actorJson['attachment']:
+        if not propertyValue.get('name'):
+            continue
+        if not propertyValue.get('type'):
+            continue
+        if not propertyValue['name'].lower().startswith('openpgp'):
+            continue
+        if propertyValue['type'] != 'PropertyValue':
+            continue
+        propertyValue['value'] = fingerprint.strip()
+        return
+
+    newPGPfingerprint = {
+        "name": "OpenPGP",
+        "type": "PropertyValue",
+        "value": fingerprint
+    }
+    actorJson['attachment'].append(newPGPfingerprint)

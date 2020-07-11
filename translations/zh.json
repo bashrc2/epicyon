@@ -205,6 +205,7 @@
     "Matrix": "Matrix",
     "Email": "电子邮件",
     "PGP": "PGP",
+    "PGP Fingerprint": "PGP指纹",
     "This is a scheduled post.": "这是预定的帖子。",
     "Remove scheduled posts": "删除预定的帖子",
     "Remove Twitter posts": "删除Twitter帖子",
@@ -248,5 +249,6 @@
     "Better luck next time": "下次好运",
     "Unavailable": "不可用",
     "The server is busy. Please try again later": "服务器忙。 请稍后再试",
-    "Receive calendar events from this account": "从该帐户接收日历事件"
+    "Receive calendar events from this account": "从该帐户接收日历事件",
+    "Grayscale": "灰阶"
 }

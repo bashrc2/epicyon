@@ -38,7 +38,7 @@ if [ -f /usr/bin/pacman ]; then
     pacman -S --noconfirm tor python-pip python-pysocks python-pycryptodome \
            imagemagick python-pillow python-requests \
 	   perl-image-exiftool python-numpy python-dateutil \
-	   certbot flake8 git qrencode
+	   certbot flake8 git qrencode bandit
     pip3 install pyLD pyqrcode pypng
 else
     apt-get update
@@ -48,7 +48,7 @@ else
 	    python3-setuptools python3-socks python3-idna \
 	    libimage-exiftool-perl python3-flake8 python3-pyld \
 	    python3-django-timezone-field tor nginx git qrencode \
-	    python3-pyqrcode python3-png
+	    python3-pyqrcode python3-png python3-bandit
 fi
 
 echo 'Cloning the epicyon repo'

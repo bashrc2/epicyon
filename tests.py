@@ -64,6 +64,8 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
+from content import dangerousMarkup
+from content import removeHtml
 from content import addWebLinks
 from content import replaceEmojiFromTags
 from content import addHtmlTags
@@ -1873,8 +1875,49 @@ def testSiteIsActive():
     assert(not siteIsActive('https://notarealwebsite.a.b.c'))
 
 
+def testRemoveHtml():
+    print('testRemoveHtml')
+    testStr = 'This string has no html.'
+    assert(removeHtml(testStr) == testStr)
+    testStr = 'This string <a href="1234.567">has html</a>.'
+    assert(removeHtml(testStr) == 'This string has html.')
+
+
+def testDangerousMarkup():
+    print('testDangerousMarkup')
+    content = '<p>This is a valid message</p>'
+    assert(not dangerousMarkup(content))
+    content = 'This is a valid message without markup'
+    assert(not dangerousMarkup(content))
+    content = '<p>This is a valid-looking message. But wait... ' + \
+        '<script>document.getElementById("concentrated")' + \
+        '.innerHTML = "evil";</script></p>'
+    assert(dangerousMarkup(content))
+    content = '<p>This is a valid-looking message. But wait... ' + \
+        '<script src="https://evilsite/payload.js" /></p>'
+    assert(dangerousMarkup(content))
+    content = '<p>This message embeds an evil frame.' + \
+        '<iframe src="somesite"></iframe></p>'
+    assert(dangerousMarkup(content))
+    content = '<p>This message tries to obfuscate an evil frame.' + \
+        '<  iframe     src = "somesite"></    iframe  ></p>'
+    assert(dangerousMarkup(content))
+    content = '<p>This message is not necessarily evil, but annoying.' + \
+        '<hr><br><br><br><br><br><br><br><hr><hr></p>'
+    assert(dangerousMarkup(content))
+    content = '<p>This message contans a ' + \
+        '<a href="https://validsite/index.html">valid link.</a></p>'
+    assert(not dangerousMarkup(content))
+    content = '<p>This message contans a ' + \
+        '<a href="https://validsite/iframe.html">' + \
+        'valid link having invalid but harmless name.</a></p>'
+    assert(not dangerousMarkup(content))
+
+
 def runAllTests():
     print('Running tests...')
+    testDangerousMarkup()
+    testRemoveHtml()
     testSiteIsActive()
     testJsonld()
     testRemoveTextFormatting()

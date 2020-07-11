@@ -26,7 +26,7 @@ On Arch/Parabola:
 sudo pacman -S tor python-pip python-pysocks python-pycryptodome \
                imagemagick python-pillow python-requests \
 	       perl-image-exiftool python-numpy python-dateutil \
-	       certbot flake8
+	       certbot flake8 bandit
 sudo pip3 install pyLD pyqrcode pypng
 ```
 
@@ -41,7 +41,8 @@ sudo apt install -y \
     python3-idna python3-requests \
     python3-pyld python3-django-timezone-field \
     libimage-exiftool-perl python3-flake8 \
-    python3-pyqrcode python3-png certbot nginx
+    python3-pyqrcode python3-png python3-bandit \
+    certbot nginx
 ```
 
 ## Installation
@@ -199,6 +200,16 @@ Static analysis can be run with:
 ``` bash
 ./static_analysis
 ```
+
+## Running a security audit
+
+To run a security audit:
+
+``` bash
+./security_audit
+```
+
+Note that not all of the issues identified will necessarily be relevant to this project.
 
 ## Installing on Onion or i2p domains
 

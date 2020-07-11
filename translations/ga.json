@@ -206,6 +206,7 @@
     "Matrix": "Matrix",
     "Email": "Ríomhphost",
     "PGP": "PGP",
+    "PGP Fingerprint": "Méarlorg PGP",
     "This is a scheduled post.": "Is post sceidealta é seo.",
     "Remove scheduled posts": "Bain na poist sceidealta",
     "Remove Twitter posts": "Bain poist Twitter",
@@ -249,5 +250,6 @@
     "Better luck next time": "Ádh níos fearr an chéad uair eile",
     "Unavailable": "Níl sé ar fáil",
     "The server is busy. Please try again later": "Tá an freastalaí gnóthach. Bain triail eile as níos déanaí",
-    "Receive calendar events from this account": "Faigh imeachtaí féilire ón gcuntas seo"
+    "Receive calendar events from this account": "Faigh imeachtaí féilire ón gcuntas seo",
+    "Grayscale": "Liathscála"
 }

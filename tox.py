@@ -43,6 +43,21 @@ def getToxAddress(actorJson: {}) -> str:
 def setToxAddress(actorJson: {}, toxAddress: str) -> None:
     """Sets an tox address for the given actor
     """
+    notToxAddress = False
+
+    if len(toxAddress) != 76:
+        notToxAddress = True
+    if toxAddress.upper() != toxAddress:
+        notToxAddress = True
+    if '"' in toxAddress:
+        notToxAddress = True
+    if ' ' in toxAddress:
+        notToxAddress = True
+    if '.' in toxAddress:
+        notToxAddress = True
+    if ',' in toxAddress:
+        notToxAddress = True
+
     if not actorJson.get('attachment'):
         actorJson['attachment'] = []
 
@@ -59,18 +74,7 @@ def setToxAddress(actorJson: {}, toxAddress: str) -> None:
         break
     if propertyFound:
         actorJson['attachment'].remove(propertyFound)
-
-    if len(toxAddress) != 76:
-        return
-    if toxAddress.upper() != toxAddress:
-        return
-    if '"' in toxAddress:
-        return
-    if ' ' in toxAddress:
-        return
-    if '.' in toxAddress:
-        return
-    if ',' in toxAddress:
+    if notToxAddress:
         return
 
     for propertyValue in actorJson['attachment']:

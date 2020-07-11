@@ -177,6 +177,21 @@ function notifications {
             fi
         fi
 
+        # send notifications for likes to XMPP/email users
+        epicyonLikeFile="$epicyonDir/.newLike"
+        if [ -f "$epicyonLikeFile" ]; then
+            if ! grep -q "##sent##" "$epicyonLikeFile"; then
+                epicyonLikeMessage=$(notification_translate_text 'liked your post')
+                epicyonLikeFileContent=$(cat "$epicyonLikeFile" | awk -F ' ' '{print $1}')" "$(echo "$epicyonLikeMessage")" "$(cat "$epicyonLikeFile" | awk -F ' ' '{print $2}')
+                if [[ "$epicyonLikeFileContent" == *':'* ]]; then
+                    epicyonLikeMessage="Epicyon: $epicyonLikeFileContent"
+                fi
+                "${PROJECT_NAME}-notification" -u "$USERNAME" -s "Epicyon" -m "$epicyonLikeMessage" --sensitive yes
+                echo "##sent##" > "$epicyonLikeFile"
+                chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonLkeFile"
+            fi
+        fi
+
         # send notifications for replies to XMPP/email users
         epicyonReplyFile="$epicyonDir/.newReply"
         if [ -f "$epicyonReplyFile" ]; then

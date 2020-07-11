@@ -30,7 +30,9 @@ from metadata import metaDataNodeInfo
 from pgp import getEmailAddress
 from pgp import setEmailAddress
 from pgp import getPGPpubKey
+from pgp import getPGPfingerprint
 from pgp import setPGPpubKey
+from pgp import setPGPfingerprint
 from xmpp import getXmppAddress
 from xmpp import setXmppAddress
 from ssb import getSSBAddress
@@ -177,6 +179,8 @@ from cache import getPersonFromCache
 from httpsig import verifyPostHeaders
 from theme import setTheme
 from theme import getTheme
+from theme import enableGrayscale
+from theme import disableGrayscale
 from schedule import runPostSchedule
 from schedule import runPostScheduleWatchdog
 from schedule import removeScheduledPosts
@@ -533,7 +537,7 @@ class PubServer(BaseHTTPRequestHandler):
             except BaseException:
                 pass
         if not etag:
-            etag = sha1(data).hexdigest()
+            etag = sha1(data).hexdigest()  # nosec
             try:
                 with open(mediaFilename + '.etag', 'w') as etagFile:
                     etagFile.write(etag)
@@ -1549,6 +1553,7 @@ class PubServer(BaseHTTPRequestHandler):
                         optionsLink = optionsList[3]
                     donateUrl = None
                     PGPpubKey = None
+                    PGPfingerprint = None
                     xmppAddress = None
                     matrixAddress = None
                     blogAddress = None
@@ -1567,6 +1572,7 @@ class PubServer(BaseHTTPRequestHandler):
                         toxAddress = getToxAddress(actorJson)
                         emailAddress = getEmailAddress(actorJson)
                         PGPpubKey = getPGPpubKey(actorJson)
+                        PGPfingerprint = getPGPfingerprint(actorJson)
                     msg = htmlPersonOptions(self.server.translate,
                                             self.server.baseDir,
                                             self.server.domain,
@@ -1577,7 +1583,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             pageNumber, donateUrl,
                                             xmppAddress, matrixAddress,
                                             ssbAddress, blogAddress,
-                                            toxAddress, PGPpubKey,
+                                            toxAddress,
+                                            PGPpubKey, PGPfingerprint,
                                             emailAddress).encode('utf-8')
                     self._set_headers('text/html', len(msg),
                                       cookie, callingDomain)
@@ -5093,7 +5100,7 @@ class PubServer(BaseHTTPRequestHandler):
                     else:
                         with open(mediaFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
-                            etag = sha1(mediaBinary).hexdigest()
+                            etag = sha1(mediaBinary).hexdigest()  # nosec
                             try:
                                 with open(mediaTagFilename, 'w') as etagFile:
                                     etagFile.write(etag)
@@ -6242,6 +6249,17 @@ class PubServer(BaseHTTPRequestHandler):
                                 setPGPpubKey(actorJson, '')
                                 actorChanged = True
 
+                        currentPGPfingerprint = getPGPfingerprint(actorJson)
+                        if fields.get('openpgp'):
+                            if fields['openpgp'] != currentPGPfingerprint:
+                                setPGPfingerprint(actorJson,
+                                                  fields['openpgp'])
+                                actorChanged = True
+                        else:
+                            if currentPGPfingerprint:
+                                setPGPfingerprint(actorJson, '')
+                                actorChanged = True
+
                         currentDonateUrl = getDonationUrl(actorJson)
                         if fields.get('donateUrl'):
                             if fields['donateUrl'] != currentDonateUrl:
@@ -6478,6 +6496,14 @@ class PubServer(BaseHTTPRequestHandler):
                                 if actorJson['type'] != 'Person':
                                     actorJson['type'] = 'Person'
                                     actorChanged = True
+                        grayscale = False
+                        if fields.get('grayscale'):
+                            if fields['grayscale'] == 'on':
+                                grayscale = True
+                        if grayscale:
+                            enableGrayscale(self.server.baseDir)
+                        else:
+                            disableGrayscale(self.server.baseDir)
                         # save filtered words list
                         filterFilename = \
                             self.server.baseDir + '/accounts/' + \

@@ -146,11 +146,14 @@ def getUserUrl(wfRequest: {}) -> str:
 
 def parseUserFeed(session, feedUrl: str, asHeader: {},
                   projectVersion: str, httpPrefix: str,
-                  domain: str) -> None:
+                  domain: str, depth=0) -> {}:
+    if depth > 10:
+        return None
+
     feedJson = getJson(session, feedUrl, asHeader, None,
                        projectVersion, httpPrefix, domain)
     if not feedJson:
-        return
+        return None
 
     if 'orderedItems' in feedJson:
         for item in feedJson['orderedItems']:
@@ -168,9 +171,10 @@ def parseUserFeed(session, feedUrl: str, asHeader: {},
                 userFeed = \
                     parseUserFeed(session, nextUrl, asHeader,
                                   projectVersion, httpPrefix,
-                                  domain)
-                for item in userFeed:
-                    yield item
+                                  domain, depth+1)
+                if userFeed:
+                    for item in userFeed:
+                        yield item
         elif isinstance(nextUrl, dict):
             userFeed = nextUrl
             if userFeed.get('orderedItems'):
@@ -438,6 +442,58 @@ def getPosts(session, outboxUrl: str, maxPosts: int,
         if i == maxPosts:
             break
     return personPosts
+
+
+def getPostDomains(session, outboxUrl: str, maxPosts: int,
+                   maxMentions: int,
+                   maxEmoji: int, maxAttachments: int,
+                   federationList: [],
+                   personCache: {},
+                   debug: bool,
+                   projectVersion: str, httpPrefix: str,
+                   domain: str, domainList=[]) -> []:
+    """Returns a list of domains referenced within public posts
+    """
+    if not outboxUrl:
+        return []
+    profileStr = 'https://www.w3.org/ns/activitystreams'
+    asHeader = {
+        'Accept': 'application/activity+json; profile="' + profileStr + '"'
+    }
+    if '/outbox/' in outboxUrl:
+        asHeader = {
+            'Accept': 'application/ld+json; profile="' + profileStr + '"'
+        }
+
+    postDomains = domainList
+
+    i = 0
+    userFeed = parseUserFeed(session, outboxUrl, asHeader,
+                             projectVersion, httpPrefix, domain)
+    for item in userFeed:
+        i += 1
+        if i > maxPosts:
+            break
+        if not item.get('object'):
+            continue
+        if not isinstance(item['object'], dict):
+            continue
+        if item['object'].get('inReplyTo'):
+            postDomain, postPort = \
+                getDomainFromActor(item['object']['inReplyTo'])
+            if postDomain not in postDomains:
+                postDomains.append(postDomain)
+
+        if item['object'].get('tag'):
+            for tagItem in item['object']['tag']:
+                tagType = tagItem['type'].lower()
+                if tagType == 'mention':
+                    if tagItem.get('href'):
+                        postDomain, postPort = \
+                            getDomainFromActor(tagItem['href'])
+                        if postDomain not in postDomains:
+                            postDomains.append(postDomain)
+    return postDomains
 
 
 def deleteAllPosts(baseDir: str,
@@ -2931,6 +2987,54 @@ def getPublicPostsOfPerson(baseDir: str, nickname: str, domain: str,
              maxAttachments, federationList,
              personCache, raw, simple, debug,
              projectVersion, httpPrefix, domain)
+
+
+def getPublicPostDomains(baseDir: str, nickname: str, domain: str,
+                         proxyType: str, port: int, httpPrefix: str,
+                         debug: bool, projectVersion: str,
+                         domainList=[]) -> []:
+    """ Returns a list of domains referenced within public posts
+    """
+    session = createSession(proxyType)
+    if not session:
+        return domainList
+    personCache = {}
+    cachedWebfingers = {}
+    federationList = []
+
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            if ':' not in domain:
+                domainFull = domain + ':' + str(port)
+    handle = httpPrefix + "://" + domainFull + "/@" + nickname
+    wfRequest = \
+        webfingerHandle(session, handle, httpPrefix, cachedWebfingers,
+                        domain, projectVersion)
+    if not wfRequest:
+        return domainList
+    if not isinstance(wfRequest, dict):
+        print('Webfinger for ' + handle + ' did not return a dict. ' +
+              str(wfRequest))
+        return domainList
+
+    (personUrl, pubKeyId, pubKey,
+     personId, shaedInbox,
+     capabilityAcquisition,
+     avatarUrl, displayName) = getPersonBox(baseDir, session, wfRequest,
+                                            personCache,
+                                            projectVersion, httpPrefix,
+                                            nickname, domain, 'outbox')
+    maxMentions = 99
+    maxEmoji = 99
+    maxAttachments = 5
+    postDomains = \
+        getPostDomains(session, personUrl, 64, maxMentions, maxEmoji,
+                       maxAttachments, federationList,
+                       personCache, debug,
+                       projectVersion, httpPrefix, domain, domainList)
+    postDomains.sort()
+    return postDomains
 
 
 def sendCapabilitiesUpdate(session, baseDir: str, httpPrefix: str,

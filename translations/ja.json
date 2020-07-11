@@ -206,6 +206,7 @@
     "Matrix": "Matrix",
     "Email": "Eメール",
     "PGP": "PGP",
+    "PGP Fingerprint": "PGPフィンガープリント",
     "This is a scheduled post.": "これはスケジュールされた投稿です。",
     "Remove scheduled posts": "スケジュールされた投稿を削除する",
     "Remove Twitter posts": "Twitterの投稿を削除する",
@@ -249,5 +250,6 @@
     "Better luck next time": "次回は幸運を",
     "Unavailable": "利用できません",
     "The server is busy. Please try again later": "サーバーはビジーです。 後でもう一度やり直してください",
-    "Receive calendar events from this account": "このアカウントからカレンダーイベントを受信します"
+    "Receive calendar events from this account": "このアカウントからカレンダーイベントを受信します",
+    "Grayscale": "グレースケール"
 }

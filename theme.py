@@ -12,6 +12,11 @@ from utils import saveJson
 from shutil import copyfile
 
 
+def getThemeFiles() -> []:
+    return ('epicyon.css', 'login.css', 'follow.css',
+            'suspended.css', 'calendar.css', 'blog.css')
+
+
 def getThemesList() -> []:
     """Returns the list of available themes
     Note that these should be capitalized, since they're
@@ -44,8 +49,7 @@ def getTheme(baseDir: str) -> str:
 
 
 def removeTheme(baseDir: str):
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         if os.path.isfile(baseDir + '/' + filename):
             os.remove(baseDir + '/' + filename)
@@ -87,9 +91,9 @@ def setCSSparam(css: str, param: str, value: str) -> str:
 def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
     """Uses a dictionary to set a theme
     """
-    setThemeInConfig(baseDir, name)
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    if name:
+        setThemeInConfig(baseDir, name)
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/epicyon-' + filename
         if filename == 'epicyon.css':
@@ -103,6 +107,50 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
             filename = baseDir + '/' + filename
             with open(filename, 'w') as cssfile:
                 cssfile.write(css)
+
+
+def enableGrayscale(baseDir: str) -> None:
+    """Enables grayscale for the current theme
+    """
+    themeFiles = getThemeFiles()
+    for filename in themeFiles:
+        templateFilename = baseDir + '/' + filename
+        if not os.path.isfile(templateFilename):
+            continue
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
+            if 'grayscale' not in css:
+                css = \
+                    css.replace('body, html {',
+                                'body, html {\n    filter: grayscale(100%);')
+                filename = baseDir + '/' + filename
+                with open(filename, 'w') as cssfile:
+                    cssfile.write(css)
+    grayscaleFilename = baseDir + '/accounts/.grayscale'
+    if not os.path.isfile(grayscaleFilename):
+        with open(grayscaleFilename, 'w') as grayfile:
+            grayfile.write(' ')
+
+
+def disableGrayscale(baseDir: str) -> None:
+    """Disables grayscale for the current theme
+    """
+    themeFiles = getThemeFiles()
+    for filename in themeFiles:
+        templateFilename = baseDir + '/' + filename
+        if not os.path.isfile(templateFilename):
+            continue
+        with open(templateFilename, 'r') as cssfile:
+            css = cssfile.read()
+            if 'grayscale' in css:
+                css = \
+                    css.replace('\n    filter: grayscale(100%);', '')
+                filename = baseDir + '/' + filename
+                with open(filename, 'w') as cssfile:
+                    cssfile.write(css)
+    grayscaleFilename = baseDir + '/accounts/.grayscale'
+    if os.path.isfile(grayscaleFilename):
+        os.remove(grayscaleFilename)
 
 
 def setCustomFont(baseDir: str):
@@ -124,8 +172,7 @@ def setCustomFont(baseDir: str):
     if not customFontExt:
         return
 
-    themeFiles = ('epicyon.css', 'login.css', 'follow.css',
-                  'suspended.css', 'calendar.css', 'blog.css')
+    themeFiles = getThemeFiles()
     for filename in themeFiles:
         templateFilename = baseDir + '/' + filename
         if not os.path.isfile(templateFilename):
@@ -613,4 +660,9 @@ def setTheme(baseDir: str, name: str) -> bool:
         result = True
 
     setCustomFont(baseDir)
+    grayscaleFilename = baseDir + '/accounts/.grayscale'
+    if os.path.isfile(grayscaleFilename):
+        enableGrayscale(baseDir)
+    else:
+        disableGrayscale(baseDir)
     return result

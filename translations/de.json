@@ -206,6 +206,7 @@
     "Matrix": "Matrix",
     "Email": "Email",
     "PGP": "PGP",
+    "PGP Fingerprint": "PGP Fingerabdruck",
     "This is a scheduled post.": "Dies ist ein geplanter Beitrag.",
     "Remove scheduled posts": "Geplante Posts entfernen",
     "Remove Twitter posts": "Entfernen Sie Twitter-Posts",
@@ -249,5 +250,6 @@
     "Better luck next time": "Viel Glück beim nächsten Mal",
     "Unavailable": "Nicht verfügbar",
     "The server is busy. Please try again later": "Der Server ist beschäftigt. Bitte versuchen Sie es später noch einmal",
-    "Receive calendar events from this account": "Erhalten Sie Kalenderereignisse von diesem Konto"
+    "Receive calendar events from this account": "Erhalten Sie Kalenderereignisse von diesem Konto",
+    "Grayscale": "Graustufen"
 }

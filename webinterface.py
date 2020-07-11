@@ -19,6 +19,7 @@ from person import personBoxJson
 from person import isPersonSnoozed
 from pgp import getEmailAddress
 from pgp import getPGPpubKey
+from pgp import getPGPfingerprint
 from xmpp import getXmppAddress
 from ssb import getSSBAddress
 from tox import getToxAddress
@@ -62,6 +63,7 @@ from content import getMentionsFromHtml
 from content import addHtmlTags
 from content import replaceEmojiFromTags
 from content import removeLongWords
+from content import removeHtml
 from config import getConfigParam
 from skills import getSkills
 from cache import getPersonFromCache
@@ -1050,6 +1052,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     donateUrl = ''
     emailAddress = ''
     PGPpubKey = ''
+    PGPfingerprint = ''
     xmppAddress = ''
     matrixAddress = ''
     ssbAddress = ''
@@ -1066,6 +1069,7 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         toxAddress = getToxAddress(actorJson)
         emailAddress = getEmailAddress(actorJson)
         PGPpubKey = getPGPpubKey(actorJson)
+        PGPfingerprint = getPGPfingerprint(actorJson)
         if actorJson.get('name'):
             displayNickname = actorJson['name']
         if actorJson.get('summary'):
@@ -1239,6 +1243,15 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         themes = getThemesList()
         themesDropdown = '<div class="container">'
         themesDropdown += '  <b>' + translate['Theme'] + '</b><br>'
+        grayscaleFilename = \
+            baseDir + '/accounts/.grayscale'
+        grayscale = ''
+        if os.path.isfile(grayscaleFilename):
+            grayscale = 'checked'
+        themesDropdown += \
+            '      <input type="checkbox" class="profilecheckbox" ' + \
+            'name="grayscale" ' + grayscale + \
+            '> ' + translate['Grayscale'] + '<br>'
         themesDropdown += '  <select id="themeDropdown" ' + \
             'name="themeDropdown" class="theme">'
         for themeName in themes:
@@ -1331,6 +1344,12 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         translate['Email'] + '</label><br>'
     editProfileForm += \
         '      <input type="text" name="email" value="' + emailAddress + '">'
+    editProfileForm += \
+        '<label class="labels">' + \
+        translate['PGP Fingerprint'] + '</label><br>'
+    editProfileForm += \
+        '      <input type="text" name="openpgp" value="' + \
+        PGPfingerprint + '">'
     editProfileForm += \
         '<label class="labels">' + translate['PGP'] + '</label><br>'
     editProfileForm += \
@@ -2550,13 +2569,15 @@ def htmlProfile(defaultTimeline: str,
     donateSection = ''
     donateUrl = getDonationUrl(profileJson)
     PGPpubKey = getPGPpubKey(profileJson)
+    PGPfingerprint = getPGPfingerprint(profileJson)
     emailAddress = getEmailAddress(profileJson)
     xmppAddress = getXmppAddress(profileJson)
     matrixAddress = getMatrixAddress(profileJson)
     ssbAddress = getSSBAddress(profileJson)
     toxAddress = getToxAddress(profileJson)
     if donateUrl or xmppAddress or matrixAddress or \
-       ssbAddress or toxAddress or PGPpubKey or emailAddress:
+       ssbAddress or toxAddress or PGPpubKey or \
+       PGPfingerprint or emailAddress:
         donateSection = '<div class="container">\n'
         donateSection += '  <center>\n'
         if donateUrl:
@@ -2583,6 +2604,10 @@ def htmlProfile(defaultTimeline: str,
             donateSection += \
                 '<p>Tox: <label class="ssbaddr">' + \
                 toxAddress + '</label></p>\n'
+        if PGPfingerprint:
+            donateSection += \
+                '<p class="pgp">PGP: ' + \
+                PGPfingerprint.replace('\n', '<br>') + '</p>\n'
         if PGPpubKey:
             donateSection += \
                 '<p class="pgp">' + PGPpubKey.replace('\n', '<br>') + '</p>\n'
@@ -3800,7 +3825,14 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         likeIcon = 'like_inactive.png'
         likeLink = 'like'
         likeTitle = translate['Like this post']
-        if noOfLikes(postJsonObject) > 0:
+        likeCount = noOfLikes(postJsonObject)
+        likeCountStr = ''
+        if likeCount > 0:
+            if likeCount > 1:
+                if likeCount <= 10:
+                    likeCountStr = ' (' + str(likeCount) + ')'
+                else:
+                    likeCountStr = ' (10+)'
             likeIcon = 'like.png'
             if likedByPerson(postJsonObject, nickname, fullDomain):
                 likeLink = 'unlike'
@@ -3811,9 +3843,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
-            '?tl=' + boxName + '" title="' + likeTitle + '">'
+            '?tl=' + boxName + '" title="' + \
+            likeTitle + likeCountStr + '">'
         likeStr += \
-            '<img loading="lazy" title="' + likeTitle + \
+            '<img loading="lazy" title="' + likeTitle + likeCountStr + \
             '" alt="' + likeTitle + \
             ' |" src="/' + iconsDir + '/' + likeIcon + '"/></a>'
 
@@ -5314,6 +5347,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                       blogAddress: str,
                       toxAddress: str,
                       PGPpubKey: str,
+                      PGPfingerprint: str,
                       emailAddress) -> str:
     """Show options for a person: view/follow/block/report
     """
@@ -5411,6 +5445,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     if toxAddress:
         optionsStr += \
             '<p class="imText">Tox: ' + toxAddress + '</p>'
+    if PGPfingerprint:
+        optionsStr += '<p class="pgp">PGP: ' + \
+            PGPfingerprint.replace('\n', '<br>') + '</p>'
     if PGPpubKey:
         optionsStr += '<p class="pgp">' + \
             PGPpubKey.replace('\n', '<br>') + '</p>'
@@ -6196,6 +6233,8 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
                     profileJson['summary'].replace('<br>', '\n')
                 avatarDescription = avatarDescription.replace('<p>', '')
                 avatarDescription = avatarDescription.replace('</p>', '')
+                if '<' in avatarDescription:
+                    avatarDescription = removeHtml(avatarDescription)
         profileStr = ' <div class="hero-image">'
         profileStr += '  <div class="hero-text">'
         if avatarUrl:

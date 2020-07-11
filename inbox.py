@@ -63,6 +63,7 @@ from media import replaceYouTube
 from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
+from content import dangerousMarkup
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -981,6 +982,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
 def receiveLike(recentPostsCache: {},
                 session, handle: str, isGroup: bool, baseDir: str,
                 httpPrefix: str, domain: str, port: int,
+                onionDomain: str,
                 sendThreads: [], postLog: [], cachedWebfingers: {},
                 personCache: {}, messageJson: {}, federationList: [],
                 debug: bool) -> bool:
@@ -1033,6 +1035,8 @@ def receiveLike(recentPostsCache: {},
     updateLikesCollection(recentPostsCache, baseDir, postFilename,
                           messageJson['object'],
                           messageJson['actor'], domain, debug)
+    likeNotify(baseDir, domain, onionDomain, handle,
+               messageJson['actor'], messageJson['object'])
     return True
 
 
@@ -1596,22 +1600,20 @@ def validPostContent(baseDir: str, nickname: str, domain: str,
         return False
     if 'Z' not in messageJson['object']['published']:
         return False
+
     if isGitPatch(baseDir, nickname, domain,
                   messageJson['object']['type'],
                   messageJson['object']['summary'],
                   messageJson['object']['content']):
         return True
-    # check for bad html
-    invalidStrings = ('<script>', '</script>', '</canvas>',
-                      '</style>', '</abbr>',
-                      '</html>', '</body>', '<br>', '<hr>')
-    for badStr in invalidStrings:
-        if badStr in messageJson['object']['content']:
-            if messageJson['object'].get('id'):
-                print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
-            print('REJECT ARBITRARY HTML: bad string in post - ' +
-                  messageJson['object']['content'])
-            return False
+
+    if dangerousMarkup(messageJson['object']['content']):
+        if messageJson['object'].get('id'):
+            print('REJECT ARBITRARY HTML: ' + messageJson['object']['id'])
+        print('REJECT ARBITRARY HTML: bad string in post - ' +
+              messageJson['object']['content'])
+        return False
+
     # check (rough) number of mentions
     mentionsEst = estimateNumberOfMentions(messageJson['object']['content'])
     if mentionsEst > maxMentions:
@@ -1702,6 +1704,54 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
     if not os.path.isfile(dmFile):
         with open(dmFile, 'w') as fp:
             fp.write(url)
+
+
+def likeNotify(baseDir: str, domain: str, onionDomain: str,
+               handle: str, actor: str, url: str) -> None:
+    """Creates a notification that a like has arrived
+    """
+    # This is not you liking your own post
+    if actor in url:
+        return
+
+    # check that the liked post was by this handle
+    nickname = handle.split('@')[0]
+    if '/' + domain + '/users/' + nickname not in url:
+        if not onionDomain:
+            return
+        if '/' + onionDomain + '/users/' + nickname not in url:
+            return
+
+    accountDir = baseDir + '/accounts/' + handle
+    if not os.path.isdir(accountDir):
+        return
+    likeFile = accountDir + '/.newLike'
+    if os.path.isfile(likeFile):
+        if '##sent##' not in open(likeFile).read():
+            return
+
+    likerNickname = getNicknameFromActor(actor)
+    likerDomain, likerPort = getDomainFromActor(actor)
+    if likerNickname and likerDomain:
+        likerHandle = likerNickname + '@' + likerDomain
+    else:
+        print('likeNotify likerHandle: ' +
+              str(likerNickname) + '@' + str(likerDomain))
+        likerHandle = actor
+    if likerHandle != handle:
+        likeStr = likerHandle + ' ' + url
+        prevLikeFile = accountDir + '/.prevLike'
+        # was there a previous like notification?
+        if os.path.isfile(prevLikeFile):
+            # is it the same as the current notification ?
+            with open(prevLikeFile, 'r') as likeFile:
+                prevLikeStr = likeFile.read()
+                if prevLikeStr == likeStr:
+                    return
+        with open(prevLikeFile, 'w') as fp:
+            fp.write(likeStr)
+        with open(likeFile, 'w') as fp:
+            fp.write(likeStr)
 
 
 def replyNotify(baseDir: str, handle: str, url: str) -> None:
@@ -1970,6 +2020,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                    session, handle, isGroup,
                    baseDir, httpPrefix,
                    domain, port,
+                   onionDomain,
                    sendThreads, postLog,
                    cachedWebfingers,
                    personCache,

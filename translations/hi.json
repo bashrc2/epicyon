@@ -205,7 +205,8 @@
     "XMPP": "XMPP",
     "Matrix": "Matrix",
     "Email": "ईमेल",
-    "PGP": "PGP",
+    "PGP": "पीजीपी",
+    "PGP Fingerprint": "पीजीपी फिंगरप्रिंट",
     "This is a scheduled post.": "यह एक अनुसूचित पद है।",
     "Remove scheduled posts": "अनुसूचित पदों को हटा दें",
     "Remove Twitter posts": "ट्विटर पोस्ट हटाएं",
@@ -249,5 +250,6 @@
     "Better luck next time": "अगली बार किस्मत तुम्हारा साथ देगी",
     "Unavailable": "अनुपलब्ध",
     "The server is busy. Please try again later": "सर्वर व्यस्त है। बाद में पुन: प्रयास करें",
-    "Receive calendar events from this account": "इस खाते से कैलेंडर ईवेंट प्राप्त करें"
+    "Receive calendar events from this account": "इस खाते से कैलेंडर ईवेंट प्राप्त करें",
+    "Grayscale": "ग्रेस्केल"
 }

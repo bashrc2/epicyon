@@ -10,7 +10,7 @@ import base64
 import hashlib
 import binascii
 import os
-import random
+import secrets
 
 
 def hashPassword(password: str) -> str:
@@ -162,4 +162,4 @@ def authorize(baseDir: str, path: str, authHeader: str, debug: bool) -> bool:
 def createPassword(length=10):
     validChars = 'abcdefghijklmnopqrstuvwxyz' + \
         'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    return ''.join((random.choice(validChars) for i in range(length)))
+    return ''.join((secrets.choice(validChars) for i in range(length)))

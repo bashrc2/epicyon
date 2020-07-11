@@ -205,7 +205,8 @@
     "XMPP": "XMPP",
     "Matrix": "Matrix",
     "Email": "Email",
-    "PGP": "PGP",
+    "PGP": "PGP Key",
+    "PGP Fingerprint": "PGP Fingerprint",
     "This is a scheduled post.": "This is a scheduled post.",
     "Remove scheduled posts": "Remove scheduled posts",
     "Remove Twitter posts": "Remove Twitter posts",
@@ -249,5 +250,6 @@
     "Better luck next time": "Better luck next time",
     "Unavailable": "Unavailable",
     "The server is busy. Please try again later": "The server is busy. Please try again later",
-    "Receive calendar events from this account": "Receive calendar events from this account"
+    "Receive calendar events from this account": "Receive calendar events from this account",
+    "Grayscale": "Grayscale"
 }
