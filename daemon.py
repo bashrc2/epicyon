@@ -5786,9 +5786,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if authorized:
-            print('POST Authorization granted')
-        else:
+        if not authorized:
             print('POST Not authorized')
             print(str(self.headers))
 
