@@ -5829,20 +5829,24 @@ def htmlCalendar(translate: {},
     with open(cssFilename, 'r') as cssFile:
         calendarStyle = cssFile.read()
 
+    calActor = actor
+    if '/users/' in actor:
+        calActor = '/users/' + actor.split('/users/')[1]
+
     calendarStr = htmlHeader(cssFilename, calendarStyle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
-        '  <a href="' + actor + '/calendar?year=' + str(prevYear) + \
+        '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/' + iconsDir + \
         '/prev.png" class="buttonprev"/></a>\n'
-    calendarStr += '  <a href="' + actor + '/inbox">'
+    calendarStr += '  <a href="' + calActor + '/inbox">'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
-        '  <a href="' + actor + '/calendar?year=' + str(nextYear) + \
+        '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
         '?month=' + str(nextMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
@@ -5884,7 +5888,7 @@ def htmlCalendar(translate: {},
                         if dayOfMonth == currDate.day:
                             isToday = True
                 if events.get(str(dayOfMonth)):
-                    url = actor + '/calendar?year=' + str(year) + '?month=' + \
+                    url = calActor + '/calendar?year=' + str(year) + '?month=' + \
                         str(monthNumber) + '?day=' + str(dayOfMonth)
                     dayLink = '<a href="' + url + '">' + \
                         str(dayOfMonth) + '</a>'
