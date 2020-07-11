@@ -1067,19 +1067,18 @@ class PubServer(BaseHTTPRequestHandler):
                     # to be authorized to use an account you don't own
                     if '/' + nickname + '/' in self.path:
                         return True
-                    if '/' + nickname + '?' in self.path:
+                    elif '/' + nickname + '?' in self.path:
                         return True
-                    if self.path.endswith('/'+nickname):
+                    elif self.path.endswith('/'+nickname):
                         return True
                     print('AUTH: nickname ' + nickname +
                           ' was not found in path ' + self.path)
                     return False
-                if self.server.debug:
-                    print('AUTH: epicyon cookie ' +
-                          'authorization failed, header=' +
-                          self.headers['Cookie'].replace('epicyon=', '') +
-                          ' tokenStr=' + tokenStr + ' tokens=' +
-                          str(self.server.tokensLookup))
+                print('AUTH: epicyon cookie ' +
+                      'authorization failed, header=' +
+                      self.headers['Cookie'].replace('epicyon=', '') +
+                      ' tokenStr=' + tokenStr + ' tokens=' +
+                      str(self.server.tokensLookup))
                 return False
             print('AUTH: Header cookie was not authorized')
             return False
@@ -1644,7 +1643,8 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.domainFull + usersPath
             msg = htmlRemoveSharedItem(self.server.translate,
                                        self.server.baseDir,
-                                       actor, shareName).encode('utf-8')
+                                       actor, shareName,
+                                       callingDomain).encode('utf-8')
             if not msg:
                 if callingDomain.endswith('.onion') and \
                    self.server.onionDomain:
@@ -2387,7 +2387,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                 self.server.httpPrefix,
                                                 self.server.domainFull,
                                                 postId, postTime,
-                                                postYear, postMonth, postDay)
+                                                postYear, postMonth, postDay,
+                                                callingDomain)
                 if not msg:
                     actor = \
                         self.server.httpPrefix + '://' + \
@@ -3091,6 +3092,11 @@ class PubServer(BaseHTTPRequestHandler):
 
         # delete a post from the web interface icon
         if htmlGET and '?delete=' in self.path:
+            if not cookie:
+                print('ERROR: no cookie given when deleting')
+                self._400()
+                self.server.GETbusy = False
+                return
             pageNumber = 1
             if '?page=' in self.path:
                 pageNumberStr = self.path.split('?page=')[1]
@@ -3159,7 +3165,7 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.session, self.server.baseDir,
                                    deleteUrl, self.server.httpPrefix,
                                    __version__, self.server.cachedWebfingers,
-                                   self.server.personCache)
+                                   self.server.personCache, callingDomain)
                 if deleteStr:
                     self._set_headers('text/html', len(deleteStr),
                                       cookie, callingDomain)
@@ -5787,12 +5793,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         # check authorization
         authorized = self._isAuthorized()
-        if self.server.debug:
-            if authorized:
-                print('POST Authorization granted')
-            else:
-                print('POST Not authorized')
-                print(str(self.headers))
+        if not authorized:
+            print('POST Not authorized')
+            print(str(self.headers))
 
         # if this is a POST to the outbox then check authentication
         self.outboxAuthenticated = False
@@ -7063,7 +7066,7 @@ class PubServer(BaseHTTPRequestHandler):
                                               maxPostsInFeed,
                                               self.server.httpPrefix,
                                               self.server.domainFull,
-                                              actorStr)
+                                              actorStr, callingDomain)
                     if sharedItemsStr:
                         msg = sharedItemsStr.encode('utf-8')
                         self._login_headers('text/html',
@@ -7142,6 +7145,12 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkPOSTtimings(POSTstartTime, POSTtimings, 8)
 
         # removes a post
+        if not authorized and self.path.endswith('/rmpost'):
+            print('ERROR: attempt to remove post was not authorized. ' +
+                  self.path)
+            self._400()
+            self.server.POSTbusy = False
+            return
         if authorized and self.path.endswith('/rmpost'):
             pageNumber = 1
             usersPath = self.path.split('/rmpost')[0]

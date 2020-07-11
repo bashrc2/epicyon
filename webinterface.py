@@ -79,6 +79,20 @@ from petnames import getPetName
 from followingCalendar import receivingCalendarEvents
 
 
+def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
+    """Returns alternate path from the actor
+    eg. https://clearnetdomain/path becomes http://oniondomain/path
+    """
+    postActor = actor
+    if callingDomain not in actor and domainFull in actor:
+        if callingDomain.endswith('.onion') or \
+           callingDomain.endswith('.i2p'):
+            postActor = \
+                'http://' + callingDomain + actor.split(domainFull)[1]
+            print('Changed POST domain from ' + actor + ' to ' + postActor)
+    return postActor
+
+
 def getContentWarningButton(postID: str, translate: {},
                             content: str) -> str:
     """Returns the markup for a content warning button
@@ -439,7 +453,8 @@ def htmlSearchSharedItems(translate: {},
                           pageNumber: int,
                           resultsPerPage: int,
                           httpPrefix: str,
-                          domainFull: str, actor: str) -> str:
+                          domainFull: str, actor: str,
+                          callingDomain: str) -> str:
     """Search results for shared items
     """
     iconsDir = getIconsDir(baseDir)
@@ -536,9 +551,13 @@ def htmlSearchSharedItems(translate: {},
                                     translate['Remove'] + '</button></a>'
                             sharedItemsForm += '</p></div>'
                             if not resultsExist and currPage > 1:
+                                postActor = \
+                                    getAltPath(actor, domainFull,
+                                               callingDomain)
                                 # previous page link, needs to be a POST
                                 sharedItemsForm += \
-                                    '<form method="POST" action="' + actor + \
+                                    '<form method="POST" action="' + \
+                                    postActor + \
                                     '/searchhandle?page=' + \
                                     str(pageNumber - 1) + '">'
                                 sharedItemsForm += \
@@ -565,9 +584,13 @@ def htmlSearchSharedItems(translate: {},
                         if ctr >= resultsPerPage:
                             currPage += 1
                             if currPage > pageNumber:
+                                postActor = \
+                                    getAltPath(actor, domainFull,
+                                               callingDomain)
                                 # next page link, needs to be a POST
                                 sharedItemsForm += \
-                                    '<form method="POST" action="' + actor + \
+                                    '<form method="POST" action="' + \
+                                    postActor + \
                                     '/searchhandle?page=' + \
                                     str(pageNumber + 1) + '">'
                                 sharedItemsForm += \
@@ -5047,12 +5070,17 @@ def htmlPostReplies(recentPostsCache: {}, maxRecentPosts: int,
 
 
 def htmlRemoveSharedItem(translate: {}, baseDir: str,
-                         actor: str, shareName: str) -> str:
+                         actor: str, shareName: str,
+                         callingDomain: str) -> str:
     """Shows a screen asking to confirm the removal of a shared item
     """
     itemID = getValidSharedItemID(shareName)
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
     sharesFile = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/shares.json'
     if not os.path.isfile(sharesFile):
@@ -5090,7 +5118,8 @@ def htmlRemoveSharedItem(translate: {}, baseDir: str,
     sharesStr += \
         '  <p class="followText">' + translate['Remove'] + \
         ' ' + sharedItemDisplayName + ' ?</p>'
-    sharesStr += '  <form method="POST" action="' + actor + '/rmshare">'
+    postActor = getAltPath(actor, domainFull, callingDomain)
+    sharesStr += '  <form method="POST" action="' + postActor + '/rmshare">'
     sharesStr += '    <input type="hidden" name="actor" value="' + actor + '">'
     sharesStr += '    <input type="hidden" name="shareName" value="' + \
         shareName + '">'
@@ -5112,7 +5141,8 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
                    translate, pageNumber: int,
                    session, baseDir: str, messageId: str,
                    httpPrefix: str, projectVersion: str,
-                   wfRequest: {}, personCache: {}) -> str:
+                   wfRequest: {}, personCache: {},
+                   callingDomain: str) -> str:
     """Shows a screen asking to confirm the deletion of a post
     """
     if '/statuses/' not in messageId:
@@ -5121,6 +5151,10 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
     actor = messageId.split('/statuses/')[0]
     nickname = getNicknameFromActor(actor)
     domain, port = getDomainFromActor(actor)
+    domainFull = domain
+    if port:
+        if port != 80 and port != 443:
+            domainFull = domain + ':' + str(port)
 
     postFilename = locatePost(baseDir, nickname, domain, messageId)
     if not postFilename:
@@ -5157,7 +5191,10 @@ def htmlDeletePost(recentPostsCache: {}, maxRecentPosts: int,
         deletePostStr += \
             '  <p class="followText">' + \
             translate['Delete this post?'] + '</p>'
-        deletePostStr += '  <form method="POST" action="' + actor + '/rmpost">'
+
+        postActor = getAltPath(actor, domainFull, callingDomain)
+        deletePostStr += \
+            '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += \
             '    <input type="hidden" name="pageNumber" value="' + \
             str(pageNumber) + '">'
@@ -5180,7 +5217,7 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
                               path: str, httpPrefix: str,
                               domainFull: str, postId: str, postTime: str,
                               year: int, monthNumber: int,
-                              dayNumber: int) -> str:
+                              dayNumber: int, callingDomain: str) -> str:
     """Shows a screen asking to confirm the deletion of a calendar event
     """
     nickname = getNicknameFromActor(path)
@@ -5218,7 +5255,10 @@ def htmlCalendarDeleteConfirm(translate: {}, baseDir: str,
         deletePostStr += '<center>'
         deletePostStr += '  <p class="followText">' + \
             translate['Delete this event'] + '</p>'
-        deletePostStr += '  <form method="POST" action="' + actor + '/rmpost">'
+
+        postActor = getAltPath(actor, domainFull, callingDomain)
+        deletePostStr += \
+            '  <form method="POST" action="' + postActor + '/rmpost">'
         deletePostStr += '    <input type="hidden" name="year" value="' + \
             str(year) + '">'
         deletePostStr += '    <input type="hidden" name="month" value="' + \
@@ -5634,11 +5674,15 @@ def htmlCalendarDay(translate: {},
     with open(cssFilename, 'r') as cssFile:
         calendarStyle = cssFile.read()
 
+    calActor = actor
+    if '/users/' in actor:
+        calActor = '/users/' + actor.split('/users/')[1]
+
     calendarStr = htmlHeader(cssFilename, calendarStyle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
-        '  <a href="' + actor + '/calendar?year=' + str(year) + \
+        '  <a href="' + calActor + '/calendar?year=' + str(year) + \
         '?month=' + str(monthNumber) + '">'
     calendarStr += \
         '  <h1>' + str(dayNumber) + ' ' + monthName + \
@@ -5673,7 +5717,7 @@ def htmlCalendarDay(translate: {},
             deleteButtonStr = ''
             if postId:
                 deleteButtonStr = \
-                    '<td class="calendar__day__icons"><a href="' + actor + \
+                    '<td class="calendar__day__icons"><a href="' + calActor + \
                     '/eventdelete?id=' + postId + '?year=' + str(year) + \
                     '?month=' + str(monthNumber) + '?day=' + str(dayNumber) + \
                     '?time=' + eventTime + \
@@ -5815,20 +5859,24 @@ def htmlCalendar(translate: {},
     with open(cssFilename, 'r') as cssFile:
         calendarStyle = cssFile.read()
 
+    calActor = actor
+    if '/users/' in actor:
+        calActor = '/users/' + actor.split('/users/')[1]
+
     calendarStr = htmlHeader(cssFilename, calendarStyle)
     calendarStr += '<main><table class="calendar">\n'
     calendarStr += '<caption class="calendar__banner--month">\n'
     calendarStr += \
-        '  <a href="' + actor + '/calendar?year=' + str(prevYear) + \
+        '  <a href="' + calActor + '/calendar?year=' + str(prevYear) + \
         '?month=' + str(prevMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Previous month'] + \
         '" title="' + translate['Previous month'] + '" src="/' + iconsDir + \
         '/prev.png" class="buttonprev"/></a>\n'
-    calendarStr += '  <a href="' + actor + '/inbox">'
+    calendarStr += '  <a href="' + calActor + '/inbox">'
     calendarStr += '  <h1>' + monthName + '</h1></a>\n'
     calendarStr += \
-        '  <a href="' + actor + '/calendar?year=' + str(nextYear) + \
+        '  <a href="' + calActor + '/calendar?year=' + str(nextYear) + \
         '?month=' + str(nextMonthNumber) + '">'
     calendarStr += \
         '  <img loading="lazy" alt="' + translate['Next month'] + \
@@ -5870,7 +5918,8 @@ def htmlCalendar(translate: {},
                         if dayOfMonth == currDate.day:
                             isToday = True
                 if events.get(str(dayOfMonth)):
-                    url = actor + '/calendar?year=' + str(year) + '?month=' + \
+                    url = calActor + '/calendar?year=' + \
+                        str(year) + '?month=' + \
                         str(monthNumber) + '?day=' + str(dayOfMonth)
                     dayLink = '<a href="' + url + '">' + \
                         str(dayOfMonth) + '</a>'

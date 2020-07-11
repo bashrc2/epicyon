@@ -15,6 +15,9 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
     """Returns true if receiving calendar events from the given
     account from following.txt
     """
+    if followingNickname == nickname and followingDomain == domain:
+        # reminder post
+        return True
     calendarFilename = baseDir + '/accounts/' + \
         nickname + '@' + domain + '/followingCalendar.txt'
     handle = followingNickname + '@' + followingDomain
