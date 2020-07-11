@@ -3090,6 +3090,12 @@ class PubServer(BaseHTTPRequestHandler):
 
         # delete a post from the web interface icon
         if htmlGET and '?delete=' in self.path:
+            if not cookie:
+                print('ERROR: no cookie given when deleting')
+                self._400()
+                self.server.GETbusy = False
+                return
+            print('Cookie for delete: ' + str(cookie))
             pageNumber = 1
             if '?page=' in self.path:
                 pageNumberStr = self.path.split('?page=')[1]
