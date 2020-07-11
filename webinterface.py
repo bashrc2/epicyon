@@ -5892,7 +5892,8 @@ def htmlCalendar(translate: {},
                         if dayOfMonth == currDate.day:
                             isToday = True
                 if events.get(str(dayOfMonth)):
-                    url = calActor + '/calendar?year=' + str(year) + '?month=' + \
+                    url = calActor + '/calendar?year=' + \
+                        str(year) + '?month=' + \
                         str(monthNumber) + '?day=' + str(dayOfMonth)
                     dayLink = '<a href="' + url + '">' + \
                         str(dayOfMonth) + '</a>'
