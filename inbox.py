@@ -1913,11 +1913,11 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
     actor = postJsonObject['actor']
     actorNickname = getNicknameFromActor(actor)
     actorDomain, actorPort = getDomainFromActor(actor)
+    handleNickname = handle.split('@')[0]
+    handleDomain = handle.split('@')[1]
     if not receivingCalendarEvents(baseDir,
-                                   handle.split('@')[0],
-                                   handle.split('@')[1],
-                                   actorNickname,
-                                   actorDomain):
+                                   handleNickname, handleDomain,
+                                   actorNickname, actorDomain):
         return
     for tagDict in postJsonObject['object']['tag']:
         if tagDict['type'] != 'Event':
