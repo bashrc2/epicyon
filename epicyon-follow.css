@@ -1,7 +1,6 @@
 @charset "UTF-8";
 
 :root {
-    --grayscale: 0%;
     --main-bg-color: #282c37;
     --link-bg-color: #282c37;
     --main-fg-color: #dddddd;
@@ -50,7 +49,6 @@ body, html {
     max-width: 100%;
     min-width: 600px;
     margin: 5% auto;
-    filter: grayscale(var(--grayscale));
 }
 
 a, u {
@@ -91,7 +89,6 @@ a:link {
 }
 
 .followAvatar img {
-    filter: grayscale(var(--grayscale));
     border-radius: 10%;
     width: 20%;
     min-width: 200px;
@@ -171,7 +168,6 @@ input[type=text] {
 }
 
 .options img {
-    filter: grayscale(var(--grayscale));
     width: 15%;
 }
 
