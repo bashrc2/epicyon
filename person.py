@@ -439,6 +439,12 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
         setRole(baseDir, nickname, domain, 'instance', 'delegator')
         setConfigParam(baseDir, 'admin', nickname)
 
+    if manualFollowerApproval:
+        followDMsFilename = baseDir + '/accounts/' + \
+            nickname + '@' + domain + '/.followDMs'
+        with open(followDMsFilename, "w") as fFile:
+            fFile.write('\n')
+
     if not os.path.isdir(baseDir + '/accounts'):
         os.mkdir(baseDir + '/accounts')
     if not os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
