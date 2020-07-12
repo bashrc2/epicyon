@@ -184,7 +184,8 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                 domain = domain + ':' + str(port)
 
     personType = 'Person'
-    approveFollowers = False
+    # Enable follower approval by default
+    approveFollowers = True
     personName = nickname
     personId = httpPrefix + '://' + domain + '/users/' + nickname
     inboxStr = personId + '/inbox'
