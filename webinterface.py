@@ -2259,7 +2259,7 @@ def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     fontName, fontFormat = getFontFromCss(css)
     if fontName:
         htmlStr += '  <link rel="preload" as="font" type="' + \
-            fontFormat + '" href="' + fontName + '" crossorigin>'
+            fontFormat + '" href="' + fontName + '" crossorigin>\n'
     htmlStr += '  <style>\n' + css + '</style>\n'
     htmlStr += '  <body>\n'
     return htmlStr
