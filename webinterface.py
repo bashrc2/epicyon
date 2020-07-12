@@ -2242,10 +2242,24 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     return newPostForm
 
 
+def getFontFromCss(css: str) -> (str, str):
+    """Returns the font name and format
+    """
+    if 'src: url(' not in css:
+        return None, None
+    fontName = css.split("src: url('")[1].split("')")[0]
+    fontFormat = css.split(" format('")[1].split("')")[0]
+    return fontName, fontFormat
+
+
 def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     htmlStr = '<!DOCTYPE html>\n'
     htmlStr += '<html lang="' + lang + '">\n'
     htmlStr += '  <meta charset="utf-8">\n'
+    fontName, fontFormat = getFontFromCss(css)
+    if fontName:
+        htmlStr += '  <link rel="preload" as="font" type="' + \
+            fontFormat + '" href="' + fontName + '" crossorigin>'
     htmlStr += '  <style>\n' + css + '</style>\n'
     htmlStr += '  <body>\n'
     return htmlStr
