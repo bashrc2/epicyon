@@ -1702,7 +1702,7 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
         return
     dmFile = accountDir + '/.newDM'
     if not os.path.isfile(dmFile):
-        with open(dmFile, 'w') as fp:
+        with open(dmFile, 'w+') as fp:
             fp.write(url)
 
 
@@ -1748,10 +1748,16 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
                 prevLikeStr = likeFile.read()
                 if prevLikeStr == likeStr:
                     return
-        with open(prevLikeFile, 'w') as fp:
-            fp.write(likeStr)
-        with open(likeFile, 'w') as fp:
-            fp.write(likeStr)
+        try:
+            with open(prevLikeFile, 'w+') as fp:
+                fp.write(likeStr)
+        except BaseException:
+            pass
+        try:
+            with open(likeFile, 'w+') as fp:
+                fp.write(likeStr)
+        except BaseException:
+            pass
 
 
 def replyNotify(baseDir: str, handle: str, url: str) -> None:
@@ -1762,7 +1768,7 @@ def replyNotify(baseDir: str, handle: str, url: str) -> None:
         return
     replyFile = accountDir + '/.newReply'
     if not os.path.isfile(replyFile):
-        with open(replyFile, 'w') as fp:
+        with open(replyFile, 'w+') as fp:
             fp.write(url)
 
 
@@ -1777,7 +1783,7 @@ def gitPatchNotify(baseDir: str, handle: str,
     patchFile = accountDir + '/.newPatch'
     subject = subject.replace('[PATCH]', '').strip()
     handle = '@' + fromNickname + '@' + fromDomain
-    with open(patchFile, 'w') as fp:
+    with open(patchFile, 'w+') as fp:
         fp.write('git ' + handle + ' ' + subject)
 
 
@@ -1949,7 +1955,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
             calendarNotificationFilename = \
                 baseDir + '/accounts/' + handle + '/.newCalendar'
             calendarNotificationFile = \
-                open(calendarNotificationFilename, 'w')
+                open(calendarNotificationFilename, 'w+')
             if calendarNotificationFile:
                 calendarNotificationFile.write('/calendar?year=' +
                                                str(eventYear) +

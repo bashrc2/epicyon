@@ -1004,7 +1004,7 @@ def isPersonSnoozed(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            writeSnoozedFile = open(snoozedFilename, 'w')
+            writeSnoozedFile = open(snoozedFilename, 'w+')
             if writeSnoozedFile:
                 writeSnoozedFile.write(content)
                 writeSnoozedFile.close()
@@ -1057,7 +1057,7 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
         with open(snoozedFilename, 'r') as snoozedFile:
             content = snoozedFile.read().replace(replaceStr, '')
         if content:
-            writeSnoozedFile = open(snoozedFilename, 'w')
+            writeSnoozedFile = open(snoozedFilename, 'w+')
             if writeSnoozedFile:
                 writeSnoozedFile.write(content)
                 writeSnoozedFile.close()

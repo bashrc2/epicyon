@@ -3337,7 +3337,7 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,
         os.mkdir(htmlPostCacheDir)
 
     try:
-        with open(cachedPostFilename, 'w') as fp:
+        with open(cachedPostFilename, 'w+') as fp:
             fp.write(postHtml)
             return True
     except Exception as e:

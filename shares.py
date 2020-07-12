@@ -181,7 +181,7 @@ def addShare(baseDir: str,
             if not os.path.isfile(newShareFile):
                 nickname = handle.split('@')[0]
                 try:
-                    with open(newShareFile, 'w') as fp:
+                    with open(newShareFile, 'w+') as fp:
                         fp.write(httpPrefix + '://' + domainFull +
                                  '/users/' + nickname + '/tlshares')
                 except BaseException:

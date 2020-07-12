@@ -292,7 +292,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not minimal and minimalFileExists:
             os.remove(minimalFilename)
         elif minimal and not minimalFileExists:
-            with open(minimalFilename, 'w') as fp:
+            with open(minimalFilename, 'w+') as fp:
                 fp.write('\n')
 
     def _sendReplyToQuestion(self, nickname: str, messageId: str,
@@ -539,7 +539,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not etag:
             etag = sha1(data).hexdigest()  # nosec
             try:
-                with open(mediaFilename + '.etag', 'w') as etagFile:
+                with open(mediaFilename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
             except BaseException:
                 pass
@@ -5108,7 +5108,7 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaBinary = avFile.read()
                             etag = sha1(mediaBinary).hexdigest()  # nosec
                             try:
-                                with open(mediaTagFilename, 'w') as etagFile:
+                                with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
                             except BaseException:
                                 pass
@@ -5255,7 +5255,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.baseDir + '/accounts/' + \
                 nickname + '@' + self.server.domain + '/.lastUsed'
             try:
-                lastUsedFile = open(lastUsedFilename, 'w')
+                lastUsedFile = open(lastUsedFilename, 'w+')
                 if lastUsedFile:
                     lastUsedFile.write(str(int(time.time())))
                     lastUsedFile.close()
@@ -5903,7 +5903,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   loginNickname + ' ' + str(e))
                     else:
                         try:
-                            with open(saltFilename, 'w') as fp:
+                            with open(saltFilename, 'w+') as fp:
                                 fp.write(salt)
                         except Exception as e:
                             print('WARN: Unable to save salt for ' +
@@ -5917,7 +5917,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.baseDir+'/accounts/' + \
                         loginHandle + '/.token'
                     try:
-                        with open(tokenFilename, 'w') as fp:
+                        with open(tokenFilename, 'w+') as fp:
                             fp.write(token)
                     except Exception as e:
                         print('WARN: Unable to save token for ' +

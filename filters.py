@@ -32,7 +32,7 @@ def removeFilter(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(filtersFilename):
         if words in open(filtersFilename).read():
             with open(filtersFilename, 'r') as fp:
-                with open(filtersFilename + '.new', 'w') as fpnew:
+                with open(filtersFilename + '.new', 'w+') as fpnew:
                     for line in fp:
                         line = line.replace('\n', '')
                         if line != words:

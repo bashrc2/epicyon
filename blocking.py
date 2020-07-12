@@ -67,7 +67,7 @@ def removeGlobalBlock(baseDir: str,
         if os.path.isfile(unblockingFilename):
             if unblockHandle in open(unblockingFilename).read():
                 with open(unblockingFilename, 'r') as fp:
-                    with open(unblockingFilename + '.new', 'w') as fpnew:
+                    with open(unblockingFilename + '.new', 'w+') as fpnew:
                         for line in fp:
                             handle = line.replace('\n', '').replace('\r', '')
                             if unblockHandle not in line:
@@ -80,7 +80,7 @@ def removeGlobalBlock(baseDir: str,
         if os.path.isfile(unblockingFilename):
             if unblockHashtag + '\n' in open(unblockingFilename).read():
                 with open(unblockingFilename, 'r') as fp:
-                    with open(unblockingFilename + '.new', 'w') as fpnew:
+                    with open(unblockingFilename + '.new', 'w+') as fpnew:
                         for line in fp:
                             blockLine = \
                                 line.replace('\n', '').replace('\r', '')
@@ -104,7 +104,7 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
     if os.path.isfile(unblockingFilename):
         if unblockHandle in open(unblockingFilename).read():
             with open(unblockingFilename, 'r') as fp:
-                with open(unblockingFilename + '.new', 'w') as fpnew:
+                with open(unblockingFilename + '.new', 'w+') as fpnew:
                     for line in fp:
                         handle = line.replace('\n', '').replace('\r', '')
                         if unblockHandle not in line:

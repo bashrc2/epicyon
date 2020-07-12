@@ -105,7 +105,7 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
             for paramName, paramValue in themeParams.items():
                 css = setCSSparam(css, paramName, paramValue)
             filename = baseDir + '/' + filename
-            with open(filename, 'w') as cssfile:
+            with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
 
@@ -124,11 +124,11 @@ def enableGrayscale(baseDir: str) -> None:
                     css.replace('body, html {',
                                 'body, html {\n    filter: grayscale(100%);')
                 filename = baseDir + '/' + filename
-                with open(filename, 'w') as cssfile:
+                with open(filename, 'w+') as cssfile:
                     cssfile.write(css)
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if not os.path.isfile(grayscaleFilename):
-        with open(grayscaleFilename, 'w') as grayfile:
+        with open(grayscaleFilename, 'w+') as grayfile:
             grayfile.write(' ')
 
 
@@ -146,7 +146,7 @@ def disableGrayscale(baseDir: str) -> None:
                 css = \
                     css.replace('\n    filter: grayscale(100%);', '')
                 filename = baseDir + '/' + filename
-                with open(filename, 'w') as cssfile:
+                with open(filename, 'w+') as cssfile:
                     cssfile.write(css)
     grayscaleFilename = baseDir + '/accounts/.grayscale'
     if os.path.isfile(grayscaleFilename):
@@ -187,7 +187,7 @@ def setCustomFont(baseDir: str):
                             customFontType + "')")
             css = setCSSparam(css, "*font-family", "'CustomFont'")
             filename = baseDir + '/' + filename
-            with open(filename, 'w') as cssfile:
+            with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
 

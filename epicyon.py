@@ -479,7 +479,7 @@ if args.socnet:
                               httpPrefix, debug,
                               __version__)
     try:
-        with open('socnet.dot', 'w') as fp:
+        with open('socnet.dot', 'w+') as fp:
             fp.write(dotGraph)
             print('Saved to socnet.dot')
     except BaseException:
