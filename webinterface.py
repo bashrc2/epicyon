@@ -2245,9 +2245,9 @@ def htmlNewPost(mediaInstance: bool, translate: {},
 def getFontFromCss(css: str) -> (str, str):
     """Returns the font name and format
     """
-    if 'src: url(' not in css:
+    if ' url(' not in css:
         return None, None
-    fontName = css.split("src: url('")[1].split("')")[0]
+    fontName = css.split(" url('")[1].split("')")[0]
     fontFormat = css.split(" format('")[1].split("')")[0]
     return fontName, fontFormat
 
