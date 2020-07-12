@@ -2255,12 +2255,14 @@ def getFontFromCss(css: str) -> (str, str):
 def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     htmlStr = '<!DOCTYPE html>\n'
     htmlStr += '<html lang="' + lang + '">\n'
-    htmlStr += '  <meta charset="utf-8">\n'
+    htmlStr += '  <head>\n'
+    htmlStr += '    <meta charset="utf-8">\n'
     fontName, fontFormat = getFontFromCss(css)
     if fontName:
-        htmlStr += '  <link rel="preload" as="font" type="' + \
+        htmlStr += '    <link rel="preload" as="font" type="' + \
             fontFormat + '" href="' + fontName + '" crossorigin>\n'
-    htmlStr += '  <style>\n' + css + '</style>\n'
+    htmlStr += '    <style>\n' + css + '</style>\n'
+    htmlStr += '  </head>\n'
     htmlStr += '  <body>\n'
     return htmlStr
 
