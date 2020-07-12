@@ -5842,7 +5842,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.httpPrefix,
                                            self.server.domain,
                                            self.server.port,
-                                           loginNickname, loginPassword):
+                                           loginNickname,
+                                           loginPassword,
+                                           self.server.manualFollowerApproval):
                         self.server.POSTbusy = False
                         if callingDomain.endswith('.onion') and \
                            self.server.onionDomain:
@@ -8324,7 +8326,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
               domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
               allowDeletion=False, debug=False, unitTest=False,
               instanceOnlySkillsSearch=False, sendThreads=[],
-              useBlurHash=False) -> None:
+              useBlurHash=False,
+              manualFollowerApproval=True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
@@ -8356,6 +8359,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.blocklistUpdateInterval = 100
     httpd.domainBlocklist = getDomainBlocklist(baseDir)
 
+    httpd.manualFollowerApproval = manualFollowerApproval
     httpd.onionDomain = onionDomain
     httpd.i2pDomain = i2pDomain
     httpd.useBlurHash = useBlurHash

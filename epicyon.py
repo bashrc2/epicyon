@@ -163,6 +163,9 @@ parser.add_argument('--json', dest='json', type=str, default=None,
                     help='Show the json for a given activitypub url')
 parser.add_argument('-f', '--federate', nargs='+', dest='federationList',
                     help='Specify federation list separated by spaces')
+parser.add_argument("--noapproval", type=str2bool, nargs='?',
+                    const=True, default=False,
+                    help="Allow followers without approval")
 parser.add_argument("--mediainstance", type=str2bool, nargs='?',
                     const=True, default=False,
                     help="Media Instance - favor media over text")
@@ -1265,7 +1268,7 @@ if args.addaccount:
         print('Account is deactivated')
         sys.exit()
     createPerson(baseDir, nickname, domain, port, httpPrefix,
-                 True, args.password.strip())
+                 True, not args.noapproval, args.password.strip())
     if os.path.isdir(baseDir + '/accounts/' + nickname + '@' + domain):
         print('Account created for ' + nickname + '@' + domain)
     else:
@@ -1696,16 +1699,16 @@ if args.testdata:
                    str(maxRegistrations))
 
     createPerson(baseDir, 'maxboardroom', domain, port, httpPrefix,
-                 True, password)
+                 True, False, password)
     createPerson(baseDir, 'ultrapancake', domain, port, httpPrefix,
-                 True, password)
+                 True, False, password)
     createPerson(baseDir, 'drokk', domain, port, httpPrefix,
-                 True, password)
+                 True, False, password)
     createPerson(baseDir, 'sausagedog', domain, port, httpPrefix,
-                 True, password)
+                 True, False, password)
 
     createPerson(baseDir, nickname, domain, port, httpPrefix,
-                 True, 'likewhateveryouwantscoob')
+                 True, False, 'likewhateveryouwantscoob')
     setSkillLevel(baseDir, nickname, domain, 'testing', 60)
     setSkillLevel(baseDir, nickname, domain, 'typing', 50)
     setRole(baseDir, nickname, domain, 'instance', 'admin')
@@ -1807,4 +1810,4 @@ runDaemon(args.blogsinstance, args.mediainstance,
           args.accountMaxPostsPerDay,
           args.allowdeletion, debug, False,
           args.instanceOnlySkillsSearch, [],
-          args.blurhash)
+          args.blurhash, not args.noapproval)

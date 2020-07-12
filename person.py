@@ -165,6 +165,7 @@ def randomizeActorImages(personJson: {}) -> None:
 
 def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, saveToFile: bool,
+                     manualFollowerApproval: bool,
                      password=None) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
@@ -185,7 +186,7 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
 
     personType = 'Person'
     # Enable follower approval by default
-    approveFollowers = True
+    approveFollowers = manualFollowerApproval
     personName = nickname
     personId = httpPrefix + '://' + domain + '/users/' + nickname
     inboxStr = personId + '/inbox'
@@ -352,7 +353,8 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
 
 
 def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
-                    nickname: str, password: str) -> bool:
+                    nickname: str, password: str,
+                    manualFollowerApproval: bool) -> bool:
     """Registers a new account from the web interface
     """
     if accountExists(baseDir, nickname, domain):
@@ -367,6 +369,7 @@ def registerAccount(baseDir: str, httpPrefix: str, domain: str, port: int,
      newPerson, webfingerEndpoint) = createPerson(baseDir, nickname,
                                                   domain, port,
                                                   httpPrefix, True,
+                                                  manualFollowerApproval,
                                                   password)
     if privateKeyPem:
         return True
@@ -382,7 +385,7 @@ def createGroup(baseDir: str, nickname: str, domain: str, port: int,
      newPerson, webfingerEndpoint) = createPerson(baseDir, nickname,
                                                   domain, port,
                                                   httpPrefix, saveToFile,
-                                                  password)
+                                                  False, password)
     newPerson['type'] = 'Group'
     return privateKeyPem, publicKeyPem, newPerson, webfingerEndpoint
 
@@ -407,6 +410,7 @@ def savePersonQrcode(baseDir: str,
 
 def createPerson(baseDir: str, nickname: str, domain: str, port: int,
                  httpPrefix: str, saveToFile: bool,
+                 manualFollowerApproval: bool,
                  password=None) -> (str, str, {}, {}):
     """Returns the private key, public key, actor and webfinger endpoint
     """
@@ -425,7 +429,9 @@ def createPerson(baseDir: str, nickname: str, domain: str, port: int,
      newPerson, webfingerEndpoint) = createPersonBase(baseDir, nickname,
                                                       domain, port,
                                                       httpPrefix,
-                                                      saveToFile, password)
+                                                      saveToFile,
+                                                      manualFollowerApproval,
+                                                      password)
     if noOfAccounts(baseDir) == 1:
         # print(nickname+' becomes the instance admin and a moderator')
         setRole(baseDir, nickname, domain, 'instance', 'admin')
@@ -470,7 +476,7 @@ def createSharedInbox(baseDir: str, nickname: str, domain: str, port: int,
     """Generates the shared inbox
     """
     return createPersonBase(baseDir, nickname, domain, port, httpPrefix,
-                            True, None)
+                            True, True, None)
 
 
 def createCapabilitiesInbox(baseDir: str, nickname: str,
@@ -479,7 +485,7 @@ def createCapabilitiesInbox(baseDir: str, nickname: str,
     """Generates the capabilities inbox to sign requests
     """
     return createPersonBase(baseDir, nickname, domain, port,
-                            httpPrefix, True, None)
+                            httpPrefix, True, True, None)
 
 
 def personUpgradeActor(baseDir: str, personJson: {},
