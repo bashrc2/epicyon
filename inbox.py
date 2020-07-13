@@ -1744,8 +1744,8 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
         # was there a previous like notification?
         if os.path.isfile(prevLikeFile):
             # is it the same as the current notification ?
-            with open(prevLikeFile, 'r') as likeFile:
-                prevLikeStr = likeFile.read()
+            with open(prevLikeFile, 'r') as fp:
+                prevLikeStr = fp.read()
                 if prevLikeStr == likeStr:
                     return
         try:
