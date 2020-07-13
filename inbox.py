@@ -1775,7 +1775,7 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
               str(likerNickname) + '@' + str(likerDomain))
         likerHandle = actor
     if likerHandle != handle:
-        likeStr = likerHandle + ' ' + url
+        likeStr = likerHandle + ' ' + url + '?likedBy=' + actor
         prevLikeFile = accountDir + '/.prevLike'
         # was there a previous like notification?
         if os.path.isfile(prevLikeFile):

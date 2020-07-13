@@ -4983,11 +4983,22 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
                        baseDir: str, session, wfRequest: {}, personCache: {},
                        nickname: str, domain: str, port: int, authorized: bool,
                        postJsonObject: {}, httpPrefix: str,
-                       projectVersion: str) -> str:
+                       projectVersion: str, likedBy: str) -> str:
     """Show an individual post as html
     """
     iconsDir = getIconsDir(baseDir)
-    postStr = \
+    postStr = ''
+    if likedBy:
+        likedByNickname = getNicknameFromActor(likedBy)
+        likedByDomain, likedByPort = getDomainFromActor(likedBy)
+        if likedByPort:
+            if likedByPort != 80 and likedByPort != 443:
+                likedByDomain += ':' + str(likedByPort)
+        postStr += \
+            '<p>' + translate['Liked by'] + \
+            ' <a href="' + likedBy + '">@' + \
+            likedByNickname + '@' + likedByDomain + '</a></p>\n'
+    postStr += \
         individualPostAsHtml(recentPostsCache, maxRecentPosts,
                              iconsDir, translate, None,
                              baseDir, session, wfRequest, personCache,
