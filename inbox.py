@@ -1752,11 +1752,15 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
             with open(prevLikeFile, 'w+') as fp:
                 fp.write(likeStr)
         except BaseException:
+            print('ERROR: unable to save previous like notification ' +
+                  prevLikeFile)
             pass
         try:
             with open(likeFile, 'w+') as fp:
                 fp.write(likeStr)
         except BaseException:
+            print('ERROR: unable to write like notification file ' +
+                  likeFile)
             pass
 
 
