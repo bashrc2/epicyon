@@ -122,7 +122,7 @@ def updateEtag(mediaFilename: str) -> None:
     etag = sha1(data).hexdigest()  # nosec
     # save the hash
     try:
-        with open(mediaFilename + '.etag', 'w') as etagFile:
+        with open(mediaFilename + '.etag', 'w+') as etagFile:
             etagFile.write(etag)
     except BaseException:
         pass

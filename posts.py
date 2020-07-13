@@ -599,7 +599,7 @@ def addSchedulePost(baseDir: str, nickname: str, domain: str,
                 print('WARN: Failed to write entry to scheduled posts index ' +
                       scheduleIndexFilename + ' ' + str(e))
     else:
-        scheduleFile = open(scheduleIndexFilename, 'w')
+        scheduleFile = open(scheduleIndexFilename, 'w+')
         if scheduleFile:
             scheduleFile.write(indexStr + '\n')
             scheduleFile.close()
@@ -1337,7 +1337,7 @@ def createReportPost(baseDir: str,
         if os.path.isfile(newReportFile):
             continue
         try:
-            with open(newReportFile, 'w') as fp:
+            with open(newReportFile, 'w+') as fp:
                 fp.write(toUrl + '/moderation')
         except BaseException:
             pass

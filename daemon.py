@@ -292,7 +292,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not minimal and minimalFileExists:
             os.remove(minimalFilename)
         elif minimal and not minimalFileExists:
-            with open(minimalFilename, 'w') as fp:
+            with open(minimalFilename, 'w+') as fp:
                 fp.write('\n')
 
     def _sendReplyToQuestion(self, nickname: str, messageId: str,
@@ -539,7 +539,7 @@ class PubServer(BaseHTTPRequestHandler):
         if not etag:
             etag = sha1(data).hexdigest()  # nosec
             try:
-                with open(mediaFilename + '.etag', 'w') as etagFile:
+                with open(mediaFilename + '.etag', 'w+') as etagFile:
                     etagFile.write(etag)
             except BaseException:
                 pass
@@ -5108,7 +5108,7 @@ class PubServer(BaseHTTPRequestHandler):
                             mediaBinary = avFile.read()
                             etag = sha1(mediaBinary).hexdigest()  # nosec
                             try:
-                                with open(mediaTagFilename, 'w') as etagFile:
+                                with open(mediaTagFilename, 'w+') as etagFile:
                                     etagFile.write(etag)
                             except BaseException:
                                 pass
@@ -5255,7 +5255,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.baseDir + '/accounts/' + \
                 nickname + '@' + self.server.domain + '/.lastUsed'
             try:
-                lastUsedFile = open(lastUsedFilename, 'w')
+                lastUsedFile = open(lastUsedFilename, 'w+')
                 if lastUsedFile:
                     lastUsedFile.write(str(int(time.time())))
                     lastUsedFile.close()
@@ -5842,7 +5842,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.httpPrefix,
                                            self.server.domain,
                                            self.server.port,
-                                           loginNickname, loginPassword):
+                                           loginNickname,
+                                           loginPassword,
+                                           self.server.manualFollowerApproval):
                         self.server.POSTbusy = False
                         if callingDomain.endswith('.onion') and \
                            self.server.onionDomain:
@@ -5901,7 +5903,7 @@ class PubServer(BaseHTTPRequestHandler):
                                   loginNickname + ' ' + str(e))
                     else:
                         try:
-                            with open(saltFilename, 'w') as fp:
+                            with open(saltFilename, 'w+') as fp:
                                 fp.write(salt)
                         except Exception as e:
                             print('WARN: Unable to save salt for ' +
@@ -5915,7 +5917,7 @@ class PubServer(BaseHTTPRequestHandler):
                         self.server.baseDir+'/accounts/' + \
                         loginHandle + '/.token'
                     try:
-                        with open(tokenFilename, 'w') as fp:
+                        with open(tokenFilename, 'w+') as fp:
                             fp.write(token)
                     except Exception as e:
                         print('WARN: Unable to save token for ' +
@@ -8324,7 +8326,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
               domainMaxPostsPerDay=8640, accountMaxPostsPerDay=864,
               allowDeletion=False, debug=False, unitTest=False,
               instanceOnlySkillsSearch=False, sendThreads=[],
-              useBlurHash=False) -> None:
+              useBlurHash=False,
+              manualFollowerApproval=True) -> None:
     if len(domain) == 0:
         domain = 'localhost'
     if '.' not in domain:
@@ -8356,6 +8359,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
     httpd.blocklistUpdateInterval = 100
     httpd.domainBlocklist = getDomainBlocklist(baseDir)
 
+    httpd.manualFollowerApproval = manualFollowerApproval
     httpd.onionDomain = onionDomain
     httpd.i2pDomain = i2pDomain
     httpd.useBlurHash = useBlurHash

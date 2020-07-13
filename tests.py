@@ -101,7 +101,8 @@ def testHttpsigBase(withDigest):
     port = 5576
     password = 'SuperSecretPassword'
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, False, password)
+        createPerson(path, nickname, domain, port, httpPrefix,
+                     False, False, password)
     assert privateKeyPem
     messageBodyJson = {
         "a key": "a value",
@@ -253,7 +254,8 @@ def createServerAlice(path: str, domain: str, port: int,
     accountMaxPostsPerDay = 1000
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, True, password)
+        createPerson(path, nickname, domain, port, httpPrefix, True,
+                     False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     assert setSkillLevel(path, nickname, domain, 'hacking', 90)
@@ -289,7 +291,8 @@ def createServerAlice(path: str, domain: str, port: int,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
-              allowDeletion, True, True, False, sendThreads, False)
+              allowDeletion, True, True, False, sendThreads, False,
+              False)
 
 
 def createServerBob(path: str, domain: str, port: int,
@@ -317,7 +320,8 @@ def createServerBob(path: str, domain: str, port: int,
     accountMaxPostsPerDay = 1000
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, True, password)
+        createPerson(path, nickname, domain, port, httpPrefix, True,
+                     False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     assert setRole(path, nickname, domain, 'bandname', 'bass player')
@@ -352,7 +356,8 @@ def createServerBob(path: str, domain: str, port: int,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies,
               domainMaxPostsPerDay, accountMaxPostsPerDay,
-              allowDeletion, True, True, False, sendThreads, False)
+              allowDeletion, True, True, False, sendThreads, False,
+              False)
 
 
 def createServerEve(path: str, domain: str, port: int, federationList: [],
@@ -375,7 +380,8 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     maxReplies = 64
     allowDeletion = True
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
-        createPerson(path, nickname, domain, port, httpPrefix, True, password)
+        createPerson(path, nickname, domain, port, httpPrefix, True,
+                     False, password)
     deleteAllPosts(path, nickname, domain, 'inbox')
     deleteAllPosts(path, nickname, domain, 'outbox')
     global testServerEveRunning
@@ -391,7 +397,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies, allowDeletion, True, True, False,
-              sendThreads, False)
+              sendThreads, False, False)
 
 
 def testPostMessageBetweenServers():
@@ -840,15 +846,15 @@ def testFollowersOfPerson():
     os.mkdir(baseDir)
     os.chdir(baseDir)
     createPerson(baseDir, nickname, domain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'maxboardroom', domain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'ultrapancake', domain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'drokk', domain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'sausagedog', domain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
 
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'maxboardroom', domain,
@@ -889,15 +895,16 @@ def testNoOfFollowersOnDomain():
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port, httpPrefix, True, password)
+    createPerson(baseDir, nickname, domain, port, httpPrefix, True,
+                 False, password)
     createPerson(baseDir, 'maxboardroom', otherdomain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'ultrapancake', otherdomain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'drokk', otherdomain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
     createPerson(baseDir, 'sausagedog', otherdomain, port,
-                 httpPrefix, True, password)
+                 httpPrefix, True, False, password)
 
     followPerson(baseDir, 'drokk', otherdomain, nickname, domain,
                  federationList, False)
@@ -949,7 +956,8 @@ def testGroupFollowers():
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port, httpPrefix, True, password)
+    createPerson(baseDir, nickname, domain, port, httpPrefix, True,
+                 False, password)
 
     clearFollowers(baseDir, nickname, domain)
     followerOfPerson(baseDir, nickname, domain, 'badger', 'wild.domain',
@@ -992,7 +1000,8 @@ def testFollows():
         shutil.rmtree(baseDir)
     os.mkdir(baseDir)
     os.chdir(baseDir)
-    createPerson(baseDir, nickname, domain, port, httpPrefix, True, password)
+    createPerson(baseDir, nickname, domain, port, httpPrefix, True,
+                 False, password)
 
     clearFollows(baseDir, nickname, domain)
     followPerson(baseDir, nickname, domain, 'badger', 'wild.com',
@@ -1072,7 +1081,7 @@ def testCreatePerson():
 
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(baseDir, nickname, domain, port,
-                     httpPrefix, True, password)
+                     httpPrefix, True, False, password)
     assert os.path.isfile(baseDir + '/accounts/passwords')
     deleteAllPosts(baseDir, nickname, domain, 'inbox')
     deleteAllPosts(baseDir, nickname, domain, 'outbox')
@@ -1106,10 +1115,10 @@ def testDelegateRoles():
 
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(baseDir, nickname, domain, port,
-                     httpPrefix, True, password)
+                     httpPrefix, True, False, password)
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(baseDir, nicknameDelegated, domain, port,
-                     httpPrefix, True, 'insecure')
+                     httpPrefix, True, False, 'insecure')
 
     httpPrefix = 'http'
     project = 'artechoke'
@@ -1702,7 +1711,7 @@ def testAddEmoji():
     os.chdir(baseDir)
     privateKeyPem, publicKeyPem, person, wfEndpoint = \
         createPerson(baseDir, nickname, domain, port,
-                     httpPrefix, True, 'password')
+                     httpPrefix, True, False, 'password')
     contentModified = \
         addHtmlTags(baseDir, httpPrefix,
                     nickname, domain, content,

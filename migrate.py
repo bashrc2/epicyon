@@ -25,7 +25,7 @@ def migrateFollows(followFilename: str, oldHandle: str,
     newFollowData = followData.replace(oldHandle, newHandle)
     if followData == newFollowData:
         return
-    with open(followFilename, 'w') as followFile:
+    with open(followFilename, 'w+') as followFile:
         followFile.write(newFollowData)
 
 

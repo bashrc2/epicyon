@@ -2242,11 +2242,27 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     return newPostForm
 
 
+def getFontFromCss(css: str) -> (str, str):
+    """Returns the font name and format
+    """
+    if ' url(' not in css:
+        return None, None
+    fontName = css.split(" url('")[1].split("')")[0]
+    fontFormat = css.split(" format('")[1].split("')")[0]
+    return fontName, fontFormat
+
+
 def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
     htmlStr = '<!DOCTYPE html>\n'
     htmlStr += '<html lang="' + lang + '">\n'
-    htmlStr += '  <meta charset="utf-8">\n'
-    htmlStr += '  <style>\n' + css + '</style>\n'
+    htmlStr += '  <head>\n'
+    htmlStr += '    <meta charset="utf-8">\n'
+    fontName, fontFormat = getFontFromCss(css)
+    if fontName:
+        htmlStr += '    <link rel="preload" as="font" type="' + \
+            fontFormat + '" href="' + fontName + '" crossorigin>\n'
+    htmlStr += '    <style>\n' + css + '</style>\n'
+    htmlStr += '  </head>\n'
     htmlStr += '  <body>\n'
     return htmlStr
 
@@ -3321,7 +3337,7 @@ def saveIndividualPostAsHtmlToCache(baseDir: str,
         os.mkdir(htmlPostCacheDir)
 
     try:
-        with open(cachedPostFilename, 'w') as fp:
+        with open(cachedPostFilename, 'w+') as fp:
             fp.write(postHtml)
             return True
     except Exception as e:

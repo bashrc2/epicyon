@@ -29,7 +29,7 @@ def receivingCalendarEvents(baseDir: str, nickname: str, domain: str,
         # create a new calendar file from the following file
         with open(followingFilename, 'r') as followingFile:
             followingHandles = followingFile.read()
-            with open(calendarFilename, 'w') as fp:
+            with open(calendarFilename, 'w+') as fp:
                 fp.write(followingHandles)
     return handle + '\n' in open(calendarFilename).read()
 
@@ -65,7 +65,7 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
         # create a new calendar file from the following file
         with open(followingFilename, 'r') as followingFile:
             followingHandles = followingFile.read()
-            with open(calendarFilename, 'w') as fp:
+            with open(calendarFilename, 'w+') as fp:
                 fp.write(followingHandles)
 
     # already in the calendar file?
@@ -75,14 +75,14 @@ def receiveCalendarEvents(baseDir: str, nickname: str, domain: str,
             return
         # remove from calendar file
         followingHandles = followingHandles.replace(handle + '\n', '')
-        with open(calendarFilename, 'w') as fp:
+        with open(calendarFilename, 'w+') as fp:
             fp.write(followingHandles)
     else:
         # not already in the calendar file
         if add:
             # append to the list of handles
             followingHandles += handle + '\n'
-            with open(calendarFilename, 'w') as fp:
+            with open(calendarFilename, 'w+') as fp:
                 fp.write(followingHandles)
 
 

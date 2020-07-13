@@ -48,7 +48,7 @@
   font-family: 'Bedstead';
   font-style: normal;
   font-weight: normal;
-  font-display: swap;
+  font-display: block;
   src: url('./fonts/bedstead.otf') format('opentype');
 }
 

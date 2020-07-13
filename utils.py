@@ -51,7 +51,7 @@ def saveJson(jsonObject: {}, filename: str) -> bool:
     tries = 0
     while tries < 5:
         try:
-            with open(filename, 'w') as fp:
+            with open(filename, 'w+') as fp:
                 fp.write(json.dumps(jsonObject))
                 return True
         except BaseException:

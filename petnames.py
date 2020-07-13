@@ -40,7 +40,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
                     else:
                         newPetnamesStr += entry
                 # save the updated petnames file
-                with open(petnamesFilename, 'w') as petnamesFile:
+                with open(petnamesFilename, 'w+') as petnamesFile:
                     petnamesFile.write(newPetnamesStr)
                 return True
             # entry does not exist in the petnames file
@@ -49,7 +49,7 @@ def setPetName(baseDir: str, nickname: str, domain: str,
             return True
 
     # first entry
-    with open(petnamesFilename, 'w') as petnamesFile:
+    with open(petnamesFilename, 'w+') as petnamesFile:
         petnamesFile.write(entry)
     return True
 
