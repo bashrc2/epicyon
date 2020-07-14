@@ -4994,10 +4994,32 @@ def htmlIndividualPost(recentPostsCache: {}, maxRecentPosts: int,
         if likedByPort:
             if likedByPort != 80 and likedByPort != 443:
                 likedByDomain += ':' + str(likedByPort)
+        likedByHandle = likedByNickname + '@' + likedByDomain
         postStr += \
             '<p>' + translate['Liked by'] + \
             ' <a href="' + likedBy + '">@' + \
-            likedByNickname + '@' + likedByDomain + '</a></p>\n'
+            likedByHandle + '</a>'
+
+        domainFull = domain
+        if port:
+            if port != 80 and port != 443:
+                domainFull = domain + ':' + str(port)
+        actor = '/users/' + nickname
+        followStr = '  <form method="POST" ' + \
+            'accept-charset="UTF-8" action="' + actor + '/searchhandle">'
+        followStr += \
+            '    <input type="hidden" name="actor" value="' + actor + '">'
+        followStr += \
+            '    <input type="hidden" name="searchtext" value="' + \
+            likedByHandle + '">'
+        if not isFollowingActor(baseDir, nickname, domainFull, likedBy):
+            followStr += '    <button type="submit" class="button" ' + \
+                'name="submitSearch">' + translate['Follow'] + '</button>'
+        followStr += '    <button type="submit" class="button" ' + \
+            'name="submitBack">' + translate['Go Back'] + '</button>'
+        followStr += '  </form>'
+        postStr += followStr + '</p>\n'
+
     postStr += \
         individualPostAsHtml(recentPostsCache, maxRecentPosts,
                              iconsDir, translate, None,
