@@ -1744,7 +1744,9 @@ class PubServer(BaseHTTPRequestHandler):
                         divertToLoginScreen = False
                     else:
                         if self.path.endswith('/following') or \
+                           '/following?page=' in self.path or \
                            self.path.endswith('/followers') or \
+                           '/followers?page=' in self.path or \
                            self.path.endswith('/skills') or \
                            self.path.endswith('/roles') or \
                            self.path.endswith('/shares'):
