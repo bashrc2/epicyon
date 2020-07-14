@@ -2821,7 +2821,7 @@ def htmlProfile(defaultTimeline: str,
                                      domain, port, session,
                                      wfRequest, personCache, extraJson,
                                      projectVersion, ["unfollow"], selected,
-                                     actor, pageNumber, maxItemsPerPage)
+                                     usersPath, pageNumber, maxItemsPerPage)
         if selected == 'followers':
             profileStr += \
                 htmlProfileFollowing(translate, baseDir, httpPrefix,
@@ -2829,7 +2829,7 @@ def htmlProfile(defaultTimeline: str,
                                      domain, port, session,
                                      wfRequest, personCache, extraJson,
                                      projectVersion, ["block"],
-                                     selected, actor, pageNumber,
+                                     selected, usersPath, pageNumber,
                                      maxItemsPerPage)
         if selected == 'roles':
             profileStr += \
