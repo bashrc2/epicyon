@@ -21,4 +21,5 @@ clean:
 	rm -f gemini/EN/*~
 	rm -f scripts/*~
 	rm -f deploy/*~
+	rm -f translations/*~
 	rm -rf __pycache__

@@ -94,7 +94,7 @@ def isFollowingActor(baseDir: str,
     followingFile = baseDir + '/accounts/' + handle + '/following.txt'
     if not os.path.isfile(followingFile):
         return False
-    if actor in open(followingFile).read():
+    if actor.lower() in open(followingFile).read().lower():
         return True
     followingNickname = getNicknameFromActor(actor)
     if not followingNickname:
@@ -106,7 +106,7 @@ def isFollowingActor(baseDir: str,
         if followingPort != 80 and followingPort != 443:
             if ':' not in followingHandle:
                 followingHandle += ':' + str(followingPort)
-    if followingHandle in open(followingFile).read():
+    if followingHandle.lower() in open(followingFile).read().lower():
         return True
     return False
 
@@ -202,23 +202,25 @@ def unfollowPerson(baseDir: str, nickname: str, domain: str,
         if debug:
             print('DEBUG: follow file ' + filename + ' was not found')
         return False
-    if handleToUnfollow not in open(filename).read():
+    if handleToUnfollow.lower() not in open(filename).read().lower():
         if debug:
             print('DEBUG: handle to unfollow ' + handleToUnfollow +
                   ' is not in ' + filename)
         return
     with open(filename, "r") as f:
         lines = f.readlines()
+    handleToUnfollowLower = handleToUnfollow.lower()
     with open(filename, "w") as f:
         for line in lines:
-            if line.strip("\n").strip("\r") != handleToUnfollow:
+            if line.strip("\n").strip("\r").lower() != handleToUnfollowLower:
                 f.write(line)
 
     # write to an unfollowed file so that if a follow accept
     # later arrives then it can be ignored
     unfollowedFilename = baseDir + '/accounts/' + handle + '/unfollowed.txt'
     if os.path.isfile(unfollowedFilename):
-        if handleToUnfollow not in open(unfollowedFilename).read():
+        if handleToUnfollowLower not in \
+           open(unfollowedFilename).read().lower():
             with open(filename, "a+") as f:
                 f.write(handleToUnfollow + '\n')
     else:

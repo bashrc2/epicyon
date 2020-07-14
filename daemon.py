@@ -7808,7 +7808,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlUnfollowConfirm(self.server.translate,
                                         self.server.baseDir,
-                                        originPathStr,
+                                        usersPath,
                                         optionsActor,
                                         optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
