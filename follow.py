@@ -94,7 +94,7 @@ def isFollowingActor(baseDir: str,
     followingFile = baseDir + '/accounts/' + handle + '/following.txt'
     if not os.path.isfile(followingFile):
         return False
-    if actor in open(followingFile).read():
+    if actor.lower() in open(followingFile).read().lower():
         return True
     followingNickname = getNicknameFromActor(actor)
     if not followingNickname:
@@ -106,7 +106,7 @@ def isFollowingActor(baseDir: str,
         if followingPort != 80 and followingPort != 443:
             if ':' not in followingHandle:
                 followingHandle += ':' + str(followingPort)
-    if followingHandle in open(followingFile).read():
+    if followingHandle.lower() in open(followingFile).read().lower():
         return True
     return False
 
