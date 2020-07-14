@@ -1744,7 +1744,9 @@ class PubServer(BaseHTTPRequestHandler):
                         divertToLoginScreen = False
                     else:
                         if self.path.endswith('/following') or \
+                           '/following?page=' in self.path or \
                            self.path.endswith('/followers') or \
+                           '/followers?page=' in self.path or \
                            self.path.endswith('/skills') or \
                            self.path.endswith('/roles') or \
                            self.path.endswith('/shares'):
@@ -3444,6 +3446,13 @@ class PubServer(BaseHTTPRequestHandler):
 
         # get an individual post from the path /@nickname/statusnumber
         if '/@' in self.path:
+            likedBy = None
+            if '?likedBy=' in self.path:
+                likedBy = self.path.split('?likedBy=')[1].strip()
+                if '?' in likedBy:
+                    likedBy = likedBy.split('?')[0]
+                self.path = self.path.split('?likedBy=')[0]
+
             namedStatus = self.path.split('/@')[1]
             if '/' not in namedStatus:
                 # show actor
@@ -3504,7 +3513,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                            authorized,
                                                            postJsonObject,
                                                            httpPrefix,
-                                                           projectVersion)
+                                                           projectVersion,
+                                                           likedBy)
                                     msg = msg.encode('utf-8')
                                     self._set_headers('text/html', len(msg),
                                                       cookie, callingDomain)
@@ -3897,6 +3907,12 @@ class PubServer(BaseHTTPRequestHandler):
         # get an individual post from the path
         # /users/nickname/statuses/number
         if '/statuses/' in self.path and '/users/' in self.path:
+            likedBy = None
+            if '?likedBy=' in self.path:
+                likedBy = self.path.split('?likedBy=')[1].strip()
+                if '?' in likedBy:
+                    likedBy = likedBy.split('?')[0]
+                self.path = self.path.split('?likedBy=')[0]
             namedStatus = self.path.split('/users/')[1]
             if '/' in namedStatus:
                 postSections = namedStatus.split('/')
@@ -3957,7 +3973,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                            authorized,
                                                            postJsonObject,
                                                            httpPrefix,
-                                                           projectVersion)
+                                                           projectVersion,
+                                                           likedBy)
                                     msg = msg.encode('utf-8')
                                     self._set_headers('text/html',
                                                       len(msg),

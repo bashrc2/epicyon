@@ -1,7 +1,12 @@
 #!/bin/bash
 #
 # This can be called from a crontab entry to send notifications
-# when Epicyon events occur
+# when Epicyon events occur. You will need to have
+# sendxmpp+prosody or Synapse (matrix) installed.
+#
+# Something like:
+#
+# */1 * * * * root /usr/local/bin/epicyon-notification --epicyon yes
 #
 # License
 # =======

@@ -1032,11 +1032,16 @@ def receiveLike(recentPostsCache: {},
     if debug:
         print('DEBUG: liked post found in inbox')
 
-    updateLikesCollection(recentPostsCache, baseDir, postFilename,
-                          messageJson['object'],
-                          messageJson['actor'], domain, debug)
-    likeNotify(baseDir, domain, onionDomain, handle,
-               messageJson['actor'], messageJson['object'])
+    if not alreadyLiked(baseDir,
+                        handle.split('@')[0],
+                        handle.split('@')[1],
+                        messageJson['object'],
+                        messageJson['actor']):
+        updateLikesCollection(recentPostsCache, baseDir, postFilename,
+                              messageJson['object'],
+                              messageJson['actor'], domain, debug)
+        likeNotify(baseDir, domain, onionDomain, handle,
+                   messageJson['actor'], messageJson['object'])
     return True
 
 
@@ -1706,6 +1711,37 @@ def dmNotify(baseDir: str, handle: str, url: str) -> None:
             fp.write(url)
 
 
+def alreadyLiked(baseDir: str, nickname: str, domain: str,
+                 postUrl: str, likerActor: str) -> bool:
+    """Is the given post already liked by the given handle?
+    """
+    postFilename = \
+        locatePost(baseDir, nickname, domain, postUrl)
+    if not postFilename:
+        return False
+    postJsonObject = loadJson(postFilename, 1)
+    if not postJsonObject:
+        return False
+    if not postJsonObject.get('object'):
+        return False
+    if not isinstance(postJsonObject['object'], dict):
+        return False
+    if not postJsonObject['object'].get('likes'):
+        return False
+    if not postJsonObject['object']['likes'].get('items'):
+        return False
+    for like in postJsonObject['object']['likes']['items']:
+        if not like.get('type'):
+            continue
+        if not like.get('actor'):
+            continue
+        if like['type'] != 'Like':
+            continue
+        if like['actor'] == likerActor:
+            return True
+    return False
+
+
 def likeNotify(baseDir: str, domain: str, onionDomain: str,
                handle: str, actor: str, url: str) -> None:
     """Creates a notification that a like has arrived
@@ -1739,7 +1775,7 @@ def likeNotify(baseDir: str, domain: str, onionDomain: str,
               str(likerNickname) + '@' + str(likerDomain))
         likerHandle = actor
     if likerHandle != handle:
-        likeStr = likerHandle + ' ' + url
+        likeStr = likerHandle + ' ' + url + '?likedBy=' + actor
         prevLikeFile = accountDir + '/.prevLike'
         # was there a previous like notification?
         if os.path.isfile(prevLikeFile):

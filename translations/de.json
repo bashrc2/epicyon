@@ -251,5 +251,6 @@
     "Unavailable": "Nicht verfügbar",
     "The server is busy. Please try again later": "Der Server ist beschäftigt. Bitte versuchen Sie es später noch einmal",
     "Receive calendar events from this account": "Erhalten Sie Kalenderereignisse von diesem Konto",
-    "Grayscale": "Graustufen"
+    "Grayscale": "Graustufen",
+    "Liked by": "Gefallen von"
 }

@@ -251,5 +251,6 @@
     "Unavailable": "利用できません",
     "The server is busy. Please try again later": "サーバーはビジーです。 後でもう一度やり直してください",
     "Receive calendar events from this account": "このアカウントからカレンダーイベントを受信します",
-    "Grayscale": "グレースケール"
+    "Grayscale": "グレースケール",
+    "Liked by": "好き"
 }
