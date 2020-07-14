@@ -7808,7 +7808,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlUnfollowConfirm(self.server.translate,
                                         self.server.baseDir,
-                                        originPathStr,
+                                        usersPath,
                                         optionsActor,
                                         optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -7980,7 +7980,6 @@ class PubServer(BaseHTTPRequestHandler):
         if not (self.path.endswith('/outbox') or
                 self.path.endswith('/inbox') or
                 self.path.endswith('/shares') or
-                self.path.endswith('/unfollowconfirm') or
                 self.path.endswith('/moderationaction') or
                 self.path.endswith('/caps/new') or
                 self.path == '/sharedInbox'):
