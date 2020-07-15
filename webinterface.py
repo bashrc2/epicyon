@@ -2699,8 +2699,7 @@ def htmlProfile(defaultTimeline: str,
                                     httpPrefix + '://' + \
                                     followerHandle.split('@')[1] + \
                                     '/users/' + followerHandle.split('@')[0]
-                            basePath = httpPrefix + '://' + domainFull + \
-                                '/users/' + nickname
+                            basePath = '/users/' + nickname
                             followApprovalsSection += '<div class="container">'
                             followApprovalsSection += \
                                 '<a href="' + followerActor + '">'
