@@ -265,7 +265,7 @@ function notifications {
                     cp "$epicyonFollowFile" "$epicyonFollowNotificationsFile"
                     chown ${PROJECT_NAME}:${PROJECT_NAME} "$epicyonFollowNotificationsFile"
                     
-                    epicyonFollowMessage=$(notification_translate_text "New follow request")" ${EPICYON_DOMAIN_NAME}/users/${USERNAME}"
+                    epicyonFollowMessage=$(notification_translate_text "New follow request")" ${EPICYON_DOMAIN_NAME}/users/${USERNAME}/followers"
 		    sendNotification "$USERNAME" "Epicyon" "$epicyonFollowMessage"
                 fi
             fi
