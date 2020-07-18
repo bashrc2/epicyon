@@ -1319,9 +1319,8 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # get fonts
-        if htmlGET and '/fonts/' in self.path:
+        if '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
-            print('fontStr: ' + fontStr)
             if fontStr.endswith('.otf') or \
                fontStr.endswith('.ttf') or \
                fontStr.endswith('.woff') or \
@@ -1737,6 +1736,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/emoji/' not in self.path and \
                '/tags/' not in self.path and \
                '/avatars/' not in self.path and \
+               '/fonts/' not in self.path and \
                '/icons/' not in self.path:
                 divertToLoginScreen = True
                 if self.path.startswith('/users/'):
