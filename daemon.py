@@ -1321,6 +1321,7 @@ class PubServer(BaseHTTPRequestHandler):
         # get fonts
         if htmlGET and '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
+            print('fontStr: ' + fontStr)
             if fontStr.endswith('.otf') or \
                fontStr.endswith('.ttf') or \
                fontStr.endswith('.woff') or \
@@ -1349,8 +1350,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 else:
                     if os.path.isfile(fontFilename):
-                        with open(fontFilename, 'rb') as avFile:
-                            fontBinary = avFile.read()
+                        with open(fontFilename, 'rb') as fontFile:
+                            fontBinary = fontFile.read()
                             self._set_headers_etag(fontFilename,
                                                    fontType,
                                                    fontBinary, cookie,
