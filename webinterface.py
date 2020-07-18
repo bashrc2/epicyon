@@ -2247,7 +2247,7 @@ def getFontFromCss(css: str) -> (str, str):
     """
     if ' url(' not in css:
         return None, None
-    fontName = css.split(" url('")[1].split("')")[0]
+    fontName = css.split(" url(")[1].split(")")[0].replace("'", '')
     fontFormat = css.split(" format('")[1].split("')")[0]
     return fontName, fontFormat
 
