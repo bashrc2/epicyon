@@ -1319,7 +1319,7 @@ class PubServer(BaseHTTPRequestHandler):
             return
 
         # get fonts
-        if htmlGET and '/fonts/' in self.path:
+        if '/fonts/' in self.path:
             fontStr = self.path.split('/fonts/')[1]
             if fontStr.endswith('.otf') or \
                fontStr.endswith('.ttf') or \
@@ -1349,8 +1349,8 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 else:
                     if os.path.isfile(fontFilename):
-                        with open(fontFilename, 'rb') as avFile:
-                            fontBinary = avFile.read()
+                        with open(fontFilename, 'rb') as fontFile:
+                            fontBinary = fontFile.read()
                             self._set_headers_etag(fontFilename,
                                                    fontType,
                                                    fontBinary, cookie,
@@ -1736,6 +1736,7 @@ class PubServer(BaseHTTPRequestHandler):
                '/emoji/' not in self.path and \
                '/tags/' not in self.path and \
                '/avatars/' not in self.path and \
+               '/fonts/' not in self.path and \
                '/icons/' not in self.path:
                 divertToLoginScreen = True
                 if self.path.startswith('/users/'):

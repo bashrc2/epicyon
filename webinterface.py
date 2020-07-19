@@ -2247,7 +2247,7 @@ def getFontFromCss(css: str) -> (str, str):
     """
     if ' url(' not in css:
         return None, None
-    fontName = css.split(" url('")[1].split("')")[0]
+    fontName = css.split(" url(")[1].split(")")[0].replace("'", '')
     fontFormat = css.split(" format('")[1].split("')")[0]
     return fontName, fontFormat
 
@@ -2699,8 +2699,7 @@ def htmlProfile(defaultTimeline: str,
                                     httpPrefix + '://' + \
                                     followerHandle.split('@')[1] + \
                                     '/users/' + followerHandle.split('@')[0]
-                            basePath = httpPrefix + '://' + domainFull + \
-                                '/users/' + nickname
+                            basePath = '/users/' + nickname
                             followApprovalsSection += '<div class="container">'
                             followApprovalsSection += \
                                 '<a href="' + followerActor + '">'
