@@ -598,6 +598,8 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/shares-background.png'
         deleteBackgroundImageFilename = \
             baseDir + '/img/delete-background.png'
+        followBackgroundImageFilename = \
+            baseDir + '/img/follow-background.png'
         profileImageFilename = \
             baseDir + '/img/image.png'
         bannerFilename = \
@@ -611,6 +613,8 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/shares_background_' + themeNameLower + '.png'
         deleteBackgroundImageFilename = \
             baseDir + '/img/delete_background_' + themeNameLower + '.png'
+        followBackgroundImageFilename = \
+            baseDir + '/img/follow_background_' + themeNameLower + '.png'
         profileImageFilename = \
             baseDir + '/img/image_' + themeNameLower + '.png'
         bannerFilename = \
@@ -661,6 +665,18 @@ def setThemeImages(baseDir: str, name: str) -> None:
             elif os.path.isfile(accountDir + '/delete-background.png'):
                 try:
                     os.remove(accountDir + '/delete-background.png')
+                except BaseException:
+                    pass
+
+            if os.path.isfile(followBackgroundImageFilename):
+                try:
+                    copyfile(followBackgroundImageFilename,
+                             accountDir + '/follow-background.png')
+                except BaseException:
+                    pass
+            elif os.path.isfile(accountDir + '/follow-background.png'):
+                try:
+                    os.remove(accountDir + '/follow-background.png')
                 except BaseException:
                     pass
 
