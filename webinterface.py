@@ -1580,9 +1580,10 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
     if not loginImageFilename:
         loginImageFilename = baseDir + '/accounts/' + loginImage
         copyfile(baseDir + '/img/login.png', loginImageFilename)
-    if os.path.isfile(baseDir + '/img/login-background.png'):
+
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.png'):
         if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/img/login-background.png',
+            copyfile(baseDir + '/accounts/login-background-custom.png',
                      baseDir + '/accounts/login-background.png')
 
     if accounts > 0:
@@ -1680,9 +1681,10 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
     if not os.path.isfile(baseDir + '/accounts/tos.txt'):
         copyfile(baseDir + '/default_tos.txt',
                  baseDir + '/accounts/tos.txt')
-    if os.path.isfile(baseDir + '/img/login-background.png'):
+
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.png'):
         if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/img/login-background.png',
+            copyfile(baseDir + '/accounts/login-background-custom.png',
                      baseDir + '/accounts/login-background.png')
 
     TOSText = 'Terms of Service go here.'
@@ -1720,9 +1722,10 @@ def htmlAbout(baseDir: str, httpPrefix: str,
     if not os.path.isfile(baseDir + '/accounts/about.txt'):
         copyfile(baseDir + '/default_about.txt',
                  baseDir + '/accounts/about.txt')
-    if os.path.isfile(baseDir + '/img/login-background.png'):
+
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.png'):
         if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/img/login-background.png',
+            copyfile(baseDir + '/accounts/login-background-custom.png',
                      baseDir + '/accounts/login-background.png')
 
     aboutText = 'Information about this instance goes here.'
@@ -5340,9 +5343,9 @@ def htmlFollowConfirm(translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/img/follow-background.png'):
+    if os.path.isfile(baseDir + '/accounts/follow-background-custom.png'):
         if not os.path.isfile(baseDir + '/accounts/follow-background.png'):
-            copyfile(baseDir + '/img/follow-background.png',
+            copyfile(baseDir + '/accounts/follow-background-custom.png',
                      baseDir + '/accounts/follow-background.png')
 
     cssFilename = baseDir + '/epicyon-follow.css'
@@ -5385,9 +5388,9 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/img/follow-background.png'):
+    if os.path.isfile(baseDir + '/accounts/follow-background-custom.png'):
         if not os.path.isfile(baseDir + '/accounts/follow-background.png'):
-            copyfile(baseDir + '/img/follow-background.png',
+            copyfile(baseDir + '/accounts/follow-background-custom.png',
                      baseDir + '/accounts/follow-background.png')
 
     cssFilename = baseDir + '/epicyon-follow.css'
