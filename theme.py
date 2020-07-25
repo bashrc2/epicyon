@@ -646,8 +646,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
                     else:
                         backgroundImageFilename = \
                             baseDir + '/img/' + backgroundType + \
-                            '_background_' + \
-                            themeNameLower + '.' + ext
+                            '_background_' + themeNameLower + '.' + ext
 
                     if os.path.isfile(backgroundImageFilename):
                         try:
