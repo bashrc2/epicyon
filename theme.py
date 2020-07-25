@@ -592,6 +592,8 @@ def setThemeImages(baseDir: str, name: str) -> None:
     themeNameLower = name.lower()
 
     if themeNameLower == 'default':
+        loginBackgroundImageFilename = \
+            baseDir + '/img/login-background.png'
         profileImageFilename = \
             baseDir + '/img/image.png'
         bannerFilename = \
@@ -599,24 +601,39 @@ def setThemeImages(baseDir: str, name: str) -> None:
         searchBannerFilename = \
             baseDir + '/img/search_banner.png'
     else:
+        loginBackgroundImageFilename = \
+            baseDir + '/img/login_background_' + themeNameLower + '.png'
         profileImageFilename = \
             baseDir + '/img/image_' + themeNameLower + '.png'
         bannerFilename = \
             baseDir + '/img/banner_' + themeNameLower + '.png'
         searchBannerFilename = \
             baseDir + '/img/search_banner_' + themeNameLower + '.png'
-    if os.path.isfile(profileImageFilename) and \
-       os.path.isfile(bannerFilename):
-        for subdir, dirs, files in os.walk(baseDir +
-                                           '/accounts'):
-            for acct in dirs:
-                if '@' not in acct:
-                    continue
-                if 'inbox@' in acct:
-                    continue
-                accountDir = \
-                    os.path.join(baseDir + '/accounts', acct)
 
+    for subdir, dirs, files in os.walk(baseDir +
+                                       '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct:
+                continue
+            accountDir = \
+                os.path.join(baseDir + '/accounts', acct)
+
+            if os.path.isfile(loginBackgroundImageFilename):
+                try:
+                    copyfile(loginBackgroundImageFilename,
+                             accountDir + '/login-background.png')
+                except BaseException:
+                    pass
+            elif os.path.isfile(accountDir + '/login-background.png'):
+                try:
+                    os.remove(accountDir + '/login-background.png')
+                except BaseException:
+                    pass
+
+            if os.path.isfile(profileImageFilename) and \
+               os.path.isfile(bannerFilename):
                 try:
                     copyfile(profileImageFilename,
                              accountDir + '/image.png')
