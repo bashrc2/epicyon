@@ -1840,37 +1840,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 16)
 
-        for ext in ('webp', 'gif', 'jpg', 'png'):
-            # login screen background image
-            if self.path == '/login-background.' + ext:
-                mediaFilename = \
-                    self.server.baseDir + '/accounts/login-background.' + ext
-                if os.path.isfile(mediaFilename):
-                    if self._etag_exists(mediaFilename):
-                        # The file has not changed
-                        self._304()
-                        return
-
-                    tries = 0
-                    mediaBinary = None
-                    while tries < 5:
-                        try:
-                            with open(mediaFilename, 'rb') as avFile:
-                                mediaBinary = avFile.read()
-                                break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries += 1
-                    if mediaBinary:
-                        self._set_headers_etag(mediaFilename, 'image/' + ext,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                        return
-                self._404()
-                return
-
         # QR code for account handle
         if '/users/' in self.path and \
            self.path.endswith('/qrcode.png'):
@@ -1943,35 +1912,38 @@ class PubServer(BaseHTTPRequestHandler):
         self._benchmarkGETtimings(GETstartTime, GETtimings, 17)
 
         for ext in ('webp', 'gif', 'jpg', 'png'):
-            # follow screen background image
-            if self.path == '/follow-background.' + ext:
-                mediaFilename = \
-                    self.server.baseDir + '/accounts/follow-background.' + ext
-                if os.path.isfile(mediaFilename):
-                    if self._etag_exists(mediaFilename):
-                        # The file has not changed
-                        self._304()
-                        return
+            for bg in ('follow', 'options', 'login'):
+                # follow screen background image
+                if self.path == '/' + bg + '-background.' + ext:
+                    mediaFilename = \
+                        self.server.baseDir + '/accounts/' + \
+                        bg + '-background.' + ext
+                    if os.path.isfile(mediaFilename):
+                        if self._etag_exists(mediaFilename):
+                            # The file has not changed
+                            self._304()
+                            return
 
-                    tries = 0
-                    mediaBinary = None
-                    while tries < 5:
-                        try:
-                            with open(mediaFilename, 'rb') as avFile:
-                                mediaBinary = avFile.read()
-                                break
-                        except Exception as e:
-                            print(e)
-                            time.sleep(1)
-                            tries += 1
-                    if mediaBinary:
-                        self._set_headers_etag(mediaFilename, 'image/' + ext,
-                                               mediaBinary, cookie,
-                                               callingDomain)
-                        self._write(mediaBinary)
-                        return
-                self._404()
-                return
+                        tries = 0
+                        mediaBinary = None
+                        while tries < 5:
+                            try:
+                                with open(mediaFilename, 'rb') as avFile:
+                                    mediaBinary = avFile.read()
+                                    break
+                            except Exception as e:
+                                print(e)
+                                time.sleep(1)
+                                tries += 1
+                        if mediaBinary:
+                            self._set_headers_etag(mediaFilename,
+                                                   'image/' + ext,
+                                                   mediaBinary, cookie,
+                                                   callingDomain)
+                            self._write(mediaBinary)
+                            return
+                    self._404()
+                    return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 18)
 
