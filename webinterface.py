@@ -5448,10 +5448,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         if optionsPort != 80 and optionsPort != 443:
             optionsDomainFull = optionsDomain + ':' + str(optionsPort)
 
-    if os.path.isfile(baseDir + '/img/options-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/options-background.png'):
-            copyfile(baseDir + '/img/options-background.png',
-                     baseDir + '/accounts/options-background.png')
+    if os.path.isfile(baseDir + '/accounts/options-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/options-background.jpg'):
+            copyfile(baseDir + '/accounts/options-background.jpg',
+                     baseDir + '/accounts/options-background.jpg')
 
     followStr = 'Follow'
     blockStr = 'Block'
@@ -5481,9 +5481,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         optionsLinkStr = \
             '    <input type="hidden" name="postUrl" value="' + \
             optionsLink + '">'
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = baseDir + '/epicyon-options.css'
+    if os.path.isfile(baseDir + '/options.css'):
+        cssFilename = baseDir + '/options.css'
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
         profileStyle = \
