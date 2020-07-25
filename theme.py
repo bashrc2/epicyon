@@ -121,7 +121,7 @@ def setBackgroundFormat(baseDir: str, name: str, extension: str) -> None:
             continue
         with open(cssFilename, 'r') as cssfile:
             css = cssfile.read()
-            css.replace('-background.png', '-background.' + extension)
+            css = css.replace('background.png', 'background.' + extension)
             with open(cssFilename, 'w+') as cssfile2:
                 cssfile2.write(css)
 
