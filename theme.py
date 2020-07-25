@@ -626,7 +626,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
-    extensions = ('png', 'jpg', 'gif')
+    extensions = ('gif', 'jpg', 'png')
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
@@ -653,7 +653,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
                             copyfile(backgroundImageFilename,
                                      baseDir + '/accounts/' + backgroundType +
                                      '-background.' + ext)
-                            break
+                            continue
                         except BaseException:
                             pass
                     # background image was not found
