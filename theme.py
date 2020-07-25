@@ -112,7 +112,7 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
 def setBackgroundFormat(baseDir: str, name: str, extension: str) -> None:
     """Sets the background file extension
     """
-    if extension == 'png':
+    if extension == 'jpg':
         return
     themeFiles = getThemeFiles()
     for filename in themeFiles:

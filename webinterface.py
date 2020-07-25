@@ -1581,10 +1581,10 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
         loginImageFilename = baseDir + '/accounts/' + loginImage
         copyfile(baseDir + '/img/login.png', loginImageFilename)
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.png'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/accounts/login-background-custom.png',
-                     baseDir + '/accounts/login-background.png')
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
+            copyfile(baseDir + '/accounts/login-background-custom.jpg',
+                     baseDir + '/accounts/login-background.jpg')
 
     if accounts > 0:
         loginText = \
@@ -1682,10 +1682,10 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
         copyfile(baseDir + '/default_tos.txt',
                  baseDir + '/accounts/tos.txt')
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.png'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/accounts/login-background-custom.png',
-                     baseDir + '/accounts/login-background.png')
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
+            copyfile(baseDir + '/accounts/login-background-custom.jpg',
+                     baseDir + '/accounts/login-background.jpg')
 
     TOSText = 'Terms of Service go here.'
     if os.path.isfile(baseDir + '/accounts/tos.txt'):
@@ -1723,10 +1723,10 @@ def htmlAbout(baseDir: str, httpPrefix: str,
         copyfile(baseDir + '/default_about.txt',
                  baseDir + '/accounts/about.txt')
 
-    if os.path.isfile(baseDir + '/accounts/login-background-custom.png'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/accounts/login-background-custom.png',
-                     baseDir + '/accounts/login-background.png')
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
+            copyfile(baseDir + '/accounts/login-background-custom.jpg',
+                     baseDir + '/accounts/login-background.jpg')
 
     aboutText = 'Information about this instance goes here.'
     if os.path.isfile(baseDir + '/accounts/about.txt'):
@@ -5343,10 +5343,10 @@ def htmlFollowConfirm(translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/accounts/follow-background-custom.png'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.png'):
-            copyfile(baseDir + '/accounts/follow-background-custom.png',
-                     baseDir + '/accounts/follow-background.png')
+    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
+            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
+                     baseDir + '/accounts/follow-background.jpg')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -5388,10 +5388,10 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/accounts/follow-background-custom.png'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.png'):
-            copyfile(baseDir + '/accounts/follow-background-custom.png',
-                     baseDir + '/accounts/follow-background.png')
+    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
+            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
+                     baseDir + '/accounts/follow-background.jpg')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
