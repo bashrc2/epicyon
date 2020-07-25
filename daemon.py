@@ -1840,7 +1840,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 16)
 
-        for ext in ('png', 'jpg', 'gif'):
+        for ext in ('webp', 'gif', 'jpg', 'png'):
             # login screen background image
             if self.path == '/login-background.' + ext:
                 mediaFilename = \
@@ -1942,7 +1942,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 17)
 
-        for ext in ('png', 'jpg', 'gif'):
+        for ext in ('webp', 'gif', 'jpg', 'png'):
             # follow screen background image
             if self.path == '/follow-background.' + ext:
                 mediaFilename = \
