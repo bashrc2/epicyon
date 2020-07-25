@@ -109,6 +109,23 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
                 cssfile.write(css)
 
 
+def setBackgroundFormat(baseDir: str, name: str, extension: str) -> None:
+    """Sets the background file extension
+    """
+    if extension == 'png':
+        return
+    themeFiles = getThemeFiles()
+    for filename in themeFiles:
+        cssFilename = baseDir + '/' + filename
+        if not os.path.isfile(cssFilename):
+            continue
+        with open(cssFilename, 'r') as cssfile:
+            css = cssfile.read()
+            css.replace('-background.png', '-background.' + extension)
+            with open(cssfilename, 'w+') as cssfile:
+                cssfile.write(css)
+
+
 def enableGrayscale(baseDir: str) -> None:
     """Enables grayscale for the current theme
     """
@@ -311,6 +328,7 @@ def setThemeStarlight(baseDir: str):
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
     setThemeFromDict(baseDir, 'starlight', themeParams)
+    setBackgroundFormat(baseDir, 'starlight', 'jpg')
 
 
 def setThemeHenge(baseDir: str):
