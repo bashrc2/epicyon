@@ -606,8 +606,10 @@ def setThemeImages(baseDir: str, name: str) -> None:
         searchBannerFilename = \
             baseDir + '/img/search_banner_' + themeNameLower + '.png'
 
-    for subdir, dirs, files in os.walk(baseDir +
-                                       '/accounts'):
+    backgroundNames = ('login', 'shares', 'delete', 'follow',
+                       'options', 'block', 'search', 'calendar')
+
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
             if '@' not in acct:
                 continue
@@ -616,8 +618,6 @@ def setThemeImages(baseDir: str, name: str) -> None:
             accountDir = \
                 os.path.join(baseDir + '/accounts', acct)
 
-            backgroundNames = ('login', 'shares', 'delete', 'follow',
-                               'options', 'block', 'search', 'calendar')
             for backgroundType in backgroundNames:
                 if themeNameLower == 'default':
                     backgroundImageFilename = \
@@ -630,14 +630,14 @@ def setThemeImages(baseDir: str, name: str) -> None:
                 if os.path.isfile(backgroundImageFilename):
                     try:
                         copyfile(backgroundImageFilename,
-                                 accountDir + '/' + backgroundType +
+                                 baseDir + '/accounts/' + backgroundType +
                                  '-background.png')
                     except BaseException:
                         pass
-                elif os.path.isfile(accountDir + '/' + backgroundType +
+                elif os.path.isfile(baseDir + '/accounts/' + backgroundType +
                                     '-background.png'):
                     try:
-                        os.remove(accountDir + '/' + backgroundType +
+                        os.remove(baseDir + '/accounts/' + backgroundType +
                                   '-background.png')
                     except BaseException:
                         pass
