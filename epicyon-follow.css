@@ -76,6 +76,11 @@ a:link {
 
 .follow {
     background-image: url("follow-background.png");
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
