@@ -608,6 +608,7 @@ def setThemeImages(baseDir: str, name: str) -> None:
 
     backgroundNames = ('login', 'shares', 'delete', 'follow',
                        'options', 'block', 'search', 'calendar')
+    extensions = ('png', 'jpg', 'gif')
 
     for subdir, dirs, files in os.walk(baseDir + '/accounts'):
         for acct in dirs:
@@ -619,28 +620,36 @@ def setThemeImages(baseDir: str, name: str) -> None:
                 os.path.join(baseDir + '/accounts', acct)
 
             for backgroundType in backgroundNames:
-                if themeNameLower == 'default':
-                    backgroundImageFilename = \
-                        baseDir + '/img/' + backgroundType + '-background.png'
-                else:
-                    backgroundImageFilename = \
-                        baseDir + '/img/' + backgroundType + '_background_' + \
-                        themeNameLower + '.png'
+                for ext in extensions:
+                    if themeNameLower == 'default':
+                        backgroundImageFilename = \
+                            baseDir + '/img/' + backgroundType + \
+                            '-background.' + ext
+                    else:
+                        backgroundImageFilename = \
+                            baseDir + '/img/' + backgroundType + \
+                            '_background_' + \
+                            themeNameLower + '.' + ext
 
-                if os.path.isfile(backgroundImageFilename):
-                    try:
-                        copyfile(backgroundImageFilename,
-                                 baseDir + '/accounts/' + backgroundType +
-                                 '-background.png')
-                    except BaseException:
-                        pass
-                elif os.path.isfile(baseDir + '/accounts/' + backgroundType +
-                                    '-background.png'):
-                    try:
-                        os.remove(baseDir + '/accounts/' + backgroundType +
-                                  '-background.png')
-                    except BaseException:
-                        pass
+                    if os.path.isfile(backgroundImageFilename):
+                        try:
+                            copyfile(backgroundImageFilename,
+                                     baseDir + '/accounts/' + backgroundType +
+                                     '-background.' + ext)
+                            break
+                        except BaseException:
+                            pass
+                    # background image was not found
+                    # so remove any existing file
+                    if os.path.isfile(baseDir + '/accounts/' +
+                                      backgroundType +
+                                      '-background.' + ext):
+                        try:
+                            os.remove(baseDir + '/accounts/' +
+                                      backgroundType +
+                                      '-background.' + ext)
+                        except BaseException:
+                            pass
 
             if os.path.isfile(profileImageFilename) and \
                os.path.isfile(bannerFilename):
