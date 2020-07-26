@@ -1916,35 +1916,37 @@ class PubServer(BaseHTTPRequestHandler):
                 for bg in ('follow', 'options', 'login'):
                     # follow screen background image
                     if self.path == '/' + bg + '-background.' + ext:
-                        mediaFilename = \
+                        bgFilename = \
                             self.server.baseDir + '/accounts/' + \
                             bg + '-background.' + ext
-                        if os.path.isfile(mediaFilename):
-                            if self._etag_exists(mediaFilename):
+                        if os.path.isfile(bgFilename):
+                            if self._etag_exists(bgFilename):
                                 # The file has not changed
                                 self._304()
                                 return
 
                             tries = 0
-                            mediaBinary = None
+                            bgBinary = None
                             while tries < 5:
                                 try:
-                                    with open(mediaFilename, 'rb') as avFile:
-                                        mediaBinary = avFile.read()
+                                    with open(bgFilename, 'rb') as avFile:
+                                        bgBinary = avFile.read()
                                         break
                                 except Exception as e:
                                     print(e)
                                     time.sleep(1)
                                     tries += 1
-                            if mediaBinary:
-                                self._set_headers_etag(mediaFilename,
+                            if bgBinary:
+                                if ext == 'jpg':
+                                    ext = 'jpeg'
+                                self._set_headers_etag(bgFilename,
                                                        'image/' + ext,
-                                                       mediaBinary, cookie,
+                                                       bgBinary, cookie,
                                                        callingDomain)
-                                self._write(mediaBinary)
+                                self._write(bgBinary)
                                 return
-                        self._404()
-                        return
+            self._404()
+            return
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 18)
 
