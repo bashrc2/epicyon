@@ -89,7 +89,8 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     return newcss.strip()
 
 
-def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
+def setThemeFromDict(baseDir: str, name: str,
+                     themeParams: {}, bgParams: {}) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
@@ -109,22 +110,28 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
 
+    if bgParams.get('login'):
+        setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
+    if bgParams.get('follow'):
+        setBackgroundFormat(baseDir, name, 'login', bgParams['follow'])
+    if bgParams.get('options'):
+        setBackgroundFormat(baseDir, name, 'login', bgParams['options'])
 
-def setBackgroundFormat(baseDir: str, name: str, extension: str) -> None:
+
+def setBackgroundFormat(baseDir: str, name: str,
+                        backgroundType: str, extension: str) -> None:
     """Sets the background file extension
     """
     if extension == 'jpg':
         return
-    themeFiles = getThemeFiles()
-    for filename in themeFiles:
-        cssFilename = baseDir + '/' + filename
-        if not os.path.isfile(cssFilename):
-            continue
-        with open(cssFilename, 'r') as cssfile:
-            css = cssfile.read()
-            css = css.replace('background.png', 'background.' + extension)
-            with open(cssFilename, 'w+') as cssfile2:
-                cssfile2.write(css)
+    cssFilename = baseDir + '/' + backgroundType + '.css'
+    if not os.path.isfile(cssFilename):
+        return
+    with open(cssFilename, 'r') as cssfile:
+        css = cssfile.read()
+        css = css.replace('background.jpg', 'background.' + extension)
+        with open(cssFilename, 'w+') as cssfile2:
+            cssfile2.write(css)
 
 
 def enableGrayscale(baseDir: str) -> None:
@@ -216,8 +223,12 @@ def setThemeDefault(baseDir: str):
     themeParams = {
         "dummyValue": "1234"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeBlue(baseDir: str):
@@ -246,8 +257,12 @@ def setThemeBlue(baseDir: str):
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeNight(baseDir: str):
@@ -286,8 +301,12 @@ def setThemeNight(baseDir: str):
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeStarlight(baseDir: str):
@@ -335,8 +354,12 @@ def setThemeStarlight(baseDir: str):
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeHenge(baseDir: str):
@@ -381,8 +404,12 @@ def setThemeHenge(baseDir: str):
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeZen(baseDir: str):
@@ -407,8 +434,12 @@ def setThemeZen(baseDir: str):
         "dropdown-bg-color": "#504e41",
         "dropdown-bg-color-hover": "#444"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeHighVis(baseDir: str):
@@ -429,8 +460,12 @@ def setThemeHighVis(baseDir: str):
         "*font-family": "'LinBiolinum_Rah'",
         "*src": "url('./fonts/LinBiolinum_Rah.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeLCD(baseDir: str):
@@ -487,8 +522,12 @@ def setThemeLCD(baseDir: str):
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemePurple(baseDir: str):
@@ -532,8 +571,12 @@ def setThemePurple(baseDir: str):
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeHacker(baseDir: str):
@@ -573,8 +616,12 @@ def setThemeHacker(baseDir: str):
         "event-color": "#00ff00",
         "image-corners": "0%"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeLight(baseDir: str):
@@ -621,8 +668,12 @@ def setThemeLight(baseDir: str):
         "*font-family": "'ElectrumADFExp-Regular'",
         "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
     }
-    setThemeFromDict(baseDir, name, themeParams)
-    setBackgroundFormat(baseDir, name, 'jpg')
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeImages(baseDir: str, name: str) -> None:
