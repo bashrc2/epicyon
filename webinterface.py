@@ -5508,7 +5508,8 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += '  <div class="optionsAvatar">\n'
     optionsStr += '  <center>\n'
     optionsStr += '  <a href="' + optionsActor + '">\n'
-    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + '"/></a>\n'
+    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
+        '"/></a>\n'
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + getNicknameFromActor(optionsActor) + '@' + \
@@ -5521,7 +5522,8 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     if xmppAddress:
         optionsStr += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + xmppAddress + '">' + xmppAddress + '</a></p>\n'
+            ': <a href="xmpp:' + xmppAddress + '">' + \
+            xmppAddress + '</a></p>\n'
     if matrixAddress:
         optionsStr += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
