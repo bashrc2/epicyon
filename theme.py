@@ -210,17 +210,20 @@ def setCustomFont(baseDir: str):
 
 
 def setThemeDefault(baseDir: str):
+    name = 'default'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'default')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "dummyValue": "1234"
     }
-    setThemeFromDict(baseDir, 'default', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeBlue(baseDir: str):
+    name = 'blue'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'blue')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
@@ -243,12 +246,14 @@ def setThemeBlue(baseDir: str):
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'blue', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeNight(baseDir: str):
+    name = 'night'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'night')
+    setThemeInConfig(baseDir, name)
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
@@ -281,12 +286,14 @@ def setThemeNight(baseDir: str):
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
-    setThemeFromDict(baseDir, 'night', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeStarlight(baseDir: str):
+    name = 'starlight'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'starlight')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -328,13 +335,14 @@ def setThemeStarlight(baseDir: str):
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'starlight', themeParams)
-    setBackgroundFormat(baseDir, 'starlight', 'jpg')
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeHenge(baseDir: str):
+    name = 'henge'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'henge')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -373,12 +381,14 @@ def setThemeHenge(baseDir: str):
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'henge', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeZen(baseDir: str):
+    name = 'zen'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'zen')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "main-bg-color": "#5c4e41",
         "text-entry-background": "#5c4e41",
@@ -397,10 +407,12 @@ def setThemeZen(baseDir: str):
         "dropdown-bg-color": "#504e41",
         "dropdown-bg-color-hover": "#444"
     }
-    setThemeFromDict(baseDir, 'zen', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeHighVis(baseDir: str):
+    name = 'highvis'
     themeParams = {
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
@@ -417,10 +429,12 @@ def setThemeHighVis(baseDir: str):
         "*font-family": "'LinBiolinum_Rah'",
         "*src": "url('./fonts/LinBiolinum_Rah.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'highvis', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeLCD(baseDir: str):
+    name = 'lcd'
     themeParams = {
         "main-bg-color": "#9fb42b",
         "link-bg-color": "#33390d",
@@ -473,10 +487,12 @@ def setThemeLCD(baseDir: str):
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'lcd', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemePurple(baseDir: str):
+    name = 'purple'
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
@@ -516,10 +532,12 @@ def setThemePurple(baseDir: str):
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
-    setThemeFromDict(baseDir, 'purple', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeHacker(baseDir: str):
+    name = 'hacker'
     themeParams = {
         "main-bg-color": "black",
         "link-bg-color": "black",
@@ -555,10 +573,12 @@ def setThemeHacker(baseDir: str):
         "event-color": "#00ff00",
         "image-corners": "0%"
     }
-    setThemeFromDict(baseDir, 'hacker', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeLight(baseDir: str):
+    name = 'light'
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -601,7 +621,8 @@ def setThemeLight(baseDir: str):
         "*font-family": "'ElectrumADFExp-Regular'",
         "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
     }
-    setThemeFromDict(baseDir, 'light', themeParams)
+    setThemeFromDict(baseDir, name, themeParams)
+    setBackgroundFormat(baseDir, name, 'jpg')
 
 
 def setThemeImages(baseDir: str, name: str) -> None:
