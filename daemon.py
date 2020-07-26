@@ -1915,7 +1915,7 @@ class PubServer(BaseHTTPRequestHandler):
             for ext in ('webp', 'gif', 'jpg', 'png'):
                 for bg in ('follow', 'options', 'login'):
                     # follow screen background image
-                    if self.path == '/' + bg + '-background.' + ext:
+                    if self.path.endswith('/' + bg + '-background.' + ext):
                         bgFilename = \
                             self.server.baseDir + '/accounts/' + \
                             bg + '-background.' + ext
