@@ -5504,61 +5504,61 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             translate['Donate'] + '</button></a>'
 
     optionsStr = htmlHeader(cssFilename, profileStyle)
-    optionsStr += '<div class="options">'
-    optionsStr += '  <div class="optionsAvatar">'
-    optionsStr += '  <center>'
-    optionsStr += '  <a href="' + optionsActor + '">'
-    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + '"/></a>'
+    optionsStr += '<div class="options">\n'
+    optionsStr += '  <div class="optionsAvatar">\n'
+    optionsStr += '  <center>\n'
+    optionsStr += '  <a href="' + optionsActor + '">\n'
+    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + '"/></a>\n'
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + getNicknameFromActor(optionsActor) + '@' + \
-        optionsDomain + '</p>'
+        optionsDomain + '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
-            emailAddress + '">' + emailAddress + '</a></p>'
+            emailAddress + '">' + emailAddress + '</a></p>\n'
     if xmppAddress:
         optionsStr += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + xmppAddress + '">' + xmppAddress + '</a></p>'
+            ': <a href="xmpp:' + xmppAddress + '">' + xmppAddress + '</a></p>\n'
     if matrixAddress:
         optionsStr += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
-            matrixAddress + '</p>'
+            matrixAddress + '</p>\n'
     if ssbAddress:
         optionsStr += \
-            '<p class="imText">SSB: ' + ssbAddress + '</p>'
+            '<p class="imText">SSB: ' + ssbAddress + '</p>\n'
     if blogAddress:
         optionsStr += \
             '<p class="imText">Blog: <a href="' + blogAddress + '">' + \
-            blogAddress + '</a></p>'
+            blogAddress + '</a></p>\n'
     if toxAddress:
         optionsStr += \
-            '<p class="imText">Tox: ' + toxAddress + '</p>'
+            '<p class="imText">Tox: ' + toxAddress + '</p>\n'
     if PGPfingerprint:
         optionsStr += '<p class="pgp">PGP: ' + \
-            PGPfingerprint.replace('\n', '<br>') + '</p>'
+            PGPfingerprint.replace('\n', '<br>') + '</p>\n'
     if PGPpubKey:
         optionsStr += '<p class="pgp">' + \
-            PGPpubKey.replace('\n', '<br>') + '</p>'
+            PGPpubKey.replace('\n', '<br>') + '</p>\n'
     optionsStr += '  <form method="POST" action="' + \
-        originPathStr + '/personoptions">'
+        originPathStr + '/personoptions">\n'
     optionsStr += '    <input type="hidden" name="pageNumber" value="' + \
-        str(pageNumber) + '">'
+        str(pageNumber) + '">\n'
     optionsStr += '    <input type="hidden" name="actor" value="' + \
-        optionsActor + '">'
+        optionsActor + '">\n'
     optionsStr += '    <input type="hidden" name="avatarUrl" value="' + \
-        optionsProfileUrl + '">'
+        optionsProfileUrl + '">\n'
     if optionsNickname:
         handle = optionsNickname + '@' + optionsDomainFull
         petname = getPetName(baseDir, nickname, domain, handle)
         optionsStr += \
             translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
-            petname + '">' \
+            petname + '">\n' \
             '<button type="submit" class="button" name="submitPetname">' + \
-            translate['Submit'] + '</button><br>'
+            translate['Submit'] + '</button><br>\n'
 
     if isFollowingActor(baseDir, nickname, domain, optionsActor):
         if receivingCalendarEvents(baseDir, nickname, domain,
@@ -5582,28 +5582,28 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>'
+        translate['View'] + '</button>\n'
     optionsStr += donateStr
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>'
+        followStr + '">' + translate[followStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>'
+        blockStr + '">' + translate[blockStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>'
+        translate['DM'] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>'
+        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>'
+        translate['Report'] + '</button>\n'
 
-    optionsStr += '  </form>'
-    optionsStr += '</center>'
-    optionsStr += '</div>'
-    optionsStr += '</div>'
+    optionsStr += '  </form>\n'
+    optionsStr += '</center>\n'
+    optionsStr += '</div>\n'
+    optionsStr += '</div>\n'
     optionsStr += htmlFooter()
     return optionsStr
 
