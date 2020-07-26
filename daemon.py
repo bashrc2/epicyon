@@ -1697,7 +1697,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg.encode('utf-8'))
             return
 
-        if self.path.startswith('/about'):
+        if self.path.endswith('/about'):
             if callingDomain.endswith('.onion'):
                 msg = \
                     htmlAbout(self.server.baseDir, 'http',

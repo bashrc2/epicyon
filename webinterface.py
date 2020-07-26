@@ -1730,28 +1730,27 @@ def htmlAbout(baseDir: str, httpPrefix: str,
 
     aboutText = 'Information about this instance goes here.'
     if os.path.isfile(baseDir + '/accounts/about.txt'):
-        with open(baseDir + '/accounts/about.txt', 'r') as file:
-            aboutText = file.read()
+        with open(baseDir + '/accounts/about.txt', 'r') as aboutFile:
+            aboutText = aboutFile.read()
 
     aboutForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
     with open(cssFilename, 'r') as cssFile:
-        termsCSS = cssFile.read()
+        aboutCSS = cssFile.read()
         if httpPrefix != 'http':
-            termsCSS = termsCSS.replace('https://',
+            aboutCSS = aboutCSS.replace('https://',
                                         httpPrefix + '://')
 
-        aboutForm = htmlHeader(cssFilename, termsCSS)
+        aboutForm = htmlHeader(cssFilename, aboutCSS)
         aboutForm += '<div class="container">' + aboutText + '</div>'
         if onionDomain:
             aboutForm += \
                 '<div class="container"><center><p class="administeredby">' + \
                 'http://' + onionDomain + '</p></center></div>'
         if adminNickname:
-            adminActor = \
-                httpPrefix + '://' + domainFull + '/users/' + adminNickname
+            adminActor = '/users/' + adminNickname
             aboutForm += \
                 '<div class="container"><center>' + \
                 '<p class="administeredby">Administered by <a href="' + \
