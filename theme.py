@@ -14,7 +14,8 @@ from shutil import copyfile
 
 def getThemeFiles() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
-            'suspended.css', 'calendar.css', 'blog.css')
+            'suspended.css', 'calendar.css', 'blog.css',
+            'options.css')
 
 
 def getThemesList() -> []:
@@ -88,7 +89,8 @@ def setCSSparam(css: str, param: str, value: str) -> str:
     return newcss.strip()
 
 
-def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
+def setThemeFromDict(baseDir: str, name: str,
+                     themeParams: {}, bgParams: {}) -> None:
     """Uses a dictionary to set a theme
     """
     if name:
@@ -107,6 +109,29 @@ def setThemeFromDict(baseDir: str, name: str, themeParams: {}) -> None:
             filename = baseDir + '/' + filename
             with open(filename, 'w+') as cssfile:
                 cssfile.write(css)
+
+    if bgParams.get('login'):
+        setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
+    if bgParams.get('follow'):
+        setBackgroundFormat(baseDir, name, 'login', bgParams['follow'])
+    if bgParams.get('options'):
+        setBackgroundFormat(baseDir, name, 'login', bgParams['options'])
+
+
+def setBackgroundFormat(baseDir: str, name: str,
+                        backgroundType: str, extension: str) -> None:
+    """Sets the background file extension
+    """
+    if extension == 'jpg':
+        return
+    cssFilename = baseDir + '/' + backgroundType + '.css'
+    if not os.path.isfile(cssFilename):
+        return
+    with open(cssFilename, 'r') as cssfile:
+        css = cssfile.read()
+        css = css.replace('background.jpg', 'background.' + extension)
+        with open(cssFilename, 'w+') as cssfile2:
+            cssfile2.write(css)
 
 
 def enableGrayscale(baseDir: str) -> None:
@@ -192,17 +217,24 @@ def setCustomFont(baseDir: str):
 
 
 def setThemeDefault(baseDir: str):
+    name = 'default'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'default')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "dummyValue": "1234"
     }
-    setThemeFromDict(baseDir, 'default', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeBlue(baseDir: str):
+    name = 'blue'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'blue')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
@@ -225,12 +257,18 @@ def setThemeBlue(baseDir: str):
         "*font-family": "'Domestic_Manners'",
         "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'blue', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeNight(baseDir: str):
+    name = 'night'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'night')
+    setThemeInConfig(baseDir, name)
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
@@ -263,12 +301,18 @@ def setThemeNight(baseDir: str):
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
-    setThemeFromDict(baseDir, 'night', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeStarlight(baseDir: str):
+    name = 'starlight'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'starlight')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -310,12 +354,18 @@ def setThemeStarlight(baseDir: str):
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'starlight', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeHenge(baseDir: str):
+    name = 'henge'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'henge')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -354,12 +404,18 @@ def setThemeHenge(baseDir: str):
         "*font-family": "'bgrove'",
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'henge', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeZen(baseDir: str):
+    name = 'zen'
     removeTheme(baseDir)
-    setThemeInConfig(baseDir, 'zen')
+    setThemeInConfig(baseDir, name)
     themeParams = {
         "main-bg-color": "#5c4e41",
         "text-entry-background": "#5c4e41",
@@ -378,10 +434,16 @@ def setThemeZen(baseDir: str):
         "dropdown-bg-color": "#504e41",
         "dropdown-bg-color-hover": "#444"
     }
-    setThemeFromDict(baseDir, 'zen', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeHighVis(baseDir: str):
+    name = 'highvis'
     themeParams = {
         "font-size-header": "22px",
         "font-size-header-mobile": "32px",
@@ -398,10 +460,16 @@ def setThemeHighVis(baseDir: str):
         "*font-family": "'LinBiolinum_Rah'",
         "*src": "url('./fonts/LinBiolinum_Rah.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'highvis', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeLCD(baseDir: str):
+    name = 'lcd'
     themeParams = {
         "main-bg-color": "#9fb42b",
         "link-bg-color": "#33390d",
@@ -454,10 +522,16 @@ def setThemeLCD(baseDir: str):
         "*font-family": "'LcdSolid'",
         "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
     }
-    setThemeFromDict(baseDir, 'lcd', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemePurple(baseDir: str):
+    name = 'purple'
     fontStr = \
         "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
     themeParams = {
@@ -497,10 +571,16 @@ def setThemePurple(baseDir: str):
         "*font-family": "'CheGuevaraTextSans-Regular'",
         "*src": fontStr
     }
-    setThemeFromDict(baseDir, 'purple', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeHacker(baseDir: str):
+    name = 'hacker'
     themeParams = {
         "main-bg-color": "black",
         "link-bg-color": "black",
@@ -536,10 +616,16 @@ def setThemeHacker(baseDir: str):
         "event-color": "#00ff00",
         "image-corners": "0%"
     }
-    setThemeFromDict(baseDir, 'hacker', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeLight(baseDir: str):
+    name = 'light'
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -582,7 +668,12 @@ def setThemeLight(baseDir: str):
         "*font-family": "'ElectrumADFExp-Regular'",
         "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
     }
-    setThemeFromDict(baseDir, 'light', themeParams)
+    bgParams = {
+        "login": 'jpg',
+        "follow": 'jpg',
+        "options": 'jpg'
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
 
 
 def setThemeImages(baseDir: str, name: str) -> None:
@@ -605,18 +696,53 @@ def setThemeImages(baseDir: str, name: str) -> None:
             baseDir + '/img/banner_' + themeNameLower + '.png'
         searchBannerFilename = \
             baseDir + '/img/search_banner_' + themeNameLower + '.png'
-    if os.path.isfile(profileImageFilename) and \
-       os.path.isfile(bannerFilename):
-        for subdir, dirs, files in os.walk(baseDir +
-                                           '/accounts'):
-            for acct in dirs:
-                if '@' not in acct:
-                    continue
-                if 'inbox@' in acct:
-                    continue
-                accountDir = \
-                    os.path.join(baseDir + '/accounts', acct)
 
+    backgroundNames = ('login', 'shares', 'delete', 'follow',
+                       'options', 'block', 'search', 'calendar')
+    extensions = ('webp', 'gif', 'jpg', 'png')
+
+    for subdir, dirs, files in os.walk(baseDir + '/accounts'):
+        for acct in dirs:
+            if '@' not in acct:
+                continue
+            if 'inbox@' in acct:
+                continue
+            accountDir = \
+                os.path.join(baseDir + '/accounts', acct)
+
+            for backgroundType in backgroundNames:
+                for ext in extensions:
+                    if themeNameLower == 'default':
+                        backgroundImageFilename = \
+                            baseDir + '/img/' + backgroundType + \
+                            '-background.' + ext
+                    else:
+                        backgroundImageFilename = \
+                            baseDir + '/img/' + backgroundType + \
+                            '_background_' + themeNameLower + '.' + ext
+
+                    if os.path.isfile(backgroundImageFilename):
+                        try:
+                            copyfile(backgroundImageFilename,
+                                     baseDir + '/accounts/' + backgroundType +
+                                     '-background.' + ext)
+                            continue
+                        except BaseException:
+                            pass
+                    # background image was not found
+                    # so remove any existing file
+                    if os.path.isfile(baseDir + '/accounts/' +
+                                      backgroundType +
+                                      '-background.' + ext):
+                        try:
+                            os.remove(baseDir + '/accounts/' +
+                                      backgroundType +
+                                      '-background.' + ext)
+                        except BaseException:
+                            pass
+
+            if os.path.isfile(profileImageFilename) and \
+               os.path.isfile(bannerFilename):
                 try:
                     copyfile(profileImageFilename,
                              accountDir + '/image.png')

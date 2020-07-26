@@ -1697,7 +1697,7 @@ class PubServer(BaseHTTPRequestHandler):
             self._write(msg.encode('utf-8'))
             return
 
-        if self.path.startswith('/about'):
+        if self.path.endswith('/about'):
             if callingDomain.endswith('.onion'):
                 msg = \
                     htmlAbout(self.server.baseDir, 'http',
@@ -1840,36 +1840,6 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 16)
 
-        # login screen background image
-        if self.path == '/login-background.png':
-            mediaFilename = \
-                self.server.baseDir + '/accounts/login-background.png'
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return
-
-                tries = 0
-                mediaBinary = None
-                while tries < 5:
-                    try:
-                        with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                if mediaBinary:
-                    self._set_headers_etag(mediaFilename, 'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    return
-            self._404()
-            return
-
         # QR code for account handle
         if '/users/' in self.path and \
            self.path.endswith('/qrcode.png'):
@@ -1941,33 +1911,40 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 17)
 
-        # follow screen background image
-        if self.path == '/follow-background.png':
-            mediaFilename = \
-                self.server.baseDir + '/accounts/follow-background.png'
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
-                    # The file has not changed
-                    self._304()
-                    return
+        if '-background.' in self.path:
+            for ext in ('webp', 'gif', 'jpg', 'png'):
+                for bg in ('follow', 'options', 'login'):
+                    # follow screen background image
+                    if self.path.endswith('/' + bg + '-background.' + ext):
+                        bgFilename = \
+                            self.server.baseDir + '/accounts/' + \
+                            bg + '-background.' + ext
+                        if os.path.isfile(bgFilename):
+                            if self._etag_exists(bgFilename):
+                                # The file has not changed
+                                self._304()
+                                return
 
-                tries = 0
-                mediaBinary = None
-                while tries < 5:
-                    try:
-                        with open(mediaFilename, 'rb') as avFile:
-                            mediaBinary = avFile.read()
-                            break
-                    except Exception as e:
-                        print(e)
-                        time.sleep(1)
-                        tries += 1
-                if mediaBinary:
-                    self._set_headers_etag(mediaFilename, 'image/png',
-                                           mediaBinary, cookie,
-                                           callingDomain)
-                    self._write(mediaBinary)
-                    return
+                            tries = 0
+                            bgBinary = None
+                            while tries < 5:
+                                try:
+                                    with open(bgFilename, 'rb') as avFile:
+                                        bgBinary = avFile.read()
+                                        break
+                                except Exception as e:
+                                    print(e)
+                                    time.sleep(1)
+                                    tries += 1
+                            if bgBinary:
+                                if ext == 'jpg':
+                                    ext = 'jpeg'
+                                self._set_headers_etag(bgFilename,
+                                                       'image/' + ext,
+                                                       bgBinary, cookie,
+                                                       callingDomain)
+                                self._write(bgBinary)
+                                return
             self._404()
             return
 

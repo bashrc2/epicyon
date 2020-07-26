@@ -41,6 +41,12 @@
 }
 
 body, html {
+    background-image: url("options-background.jpg");
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     background-color: var(--main-bg-color);
     color: var(--main-fg-color);
 
@@ -67,24 +73,8 @@ a:link {
     font-weight: bold;
 }
 
-.searchBanner {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("search_banner.png");
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 90%;
-}
-
 .follow {
-    background-image: url("follow-background.jpg");
-    background-size: cover;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
     height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
     position: relative;
     background-color: var(--main-bg-color);
 }
@@ -150,23 +140,6 @@ input[type=text] {
     background-color: var(--text-entry-background);
 }
 
-.cwButton {
-    border-radius: 4px;
-    background-color: #999;
-    border: none;
-    color: var(--button-text);
-    text-align: center;
-    font-size: var(--font-size);
-    font-family: Arial, Helvetica, sans-serif;
-    padding: 2px;
-    cursor: pointer;
-    margin: 5px;
-}
-
-.cwText {
-    display: none;
-}
-
 .options {
     font-size: var(--font-size);
     font-family: Arial, Helvetica, sans-serif;
@@ -177,12 +150,6 @@ input[type=text] {
 }
 
 @media screen and (min-width: 400px) {
-    .hashtagswarm {
-        font-size: var(--hashtag-size1);
-        font-family: Arial, Helvetica, sans-serif;
-        margin: var(--hashtag-margin);
-        line-height: var(--hashtag-vertical-spacing1);
-    }
     .followText {
         font-size: var(--follow-text-size1);
         font-family: Arial, Helvetica, sans-serif;
@@ -224,12 +191,6 @@ input[type=text] {
 }
 
 @media screen and (max-width: 1000px) {
-    .hashtagswarm {
-        font-size: var(--hashtag-size2);
-        font-family: Arial, Helvetica, sans-serif;
-        margin: var(--hashtag-margin);
-        line-height: var(--hashtag-vertical-spacing3);
-    }
     .followText {
         font-size: var(--follow-text-size2);
         font-family: Arial, Helvetica, sans-serif;

@@ -1580,10 +1580,11 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
     if not loginImageFilename:
         loginImageFilename = baseDir + '/accounts/' + loginImage
         copyfile(baseDir + '/img/login.png', loginImageFilename)
-    if os.path.isfile(baseDir + '/img/login-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/img/login-background.png',
-                     baseDir + '/accounts/login-background.png')
+
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
+            copyfile(baseDir + '/accounts/login-background-custom.jpg',
+                     baseDir + '/accounts/login-background.jpg')
 
     if accounts > 0:
         loginText = \
@@ -1661,7 +1662,7 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
         '    <input type="password" ' + autocompleteStr + \
         ' placeholder="' + translate['Enter Password'] + \
         '" name="password" required>'
-    loginForm += registerButtonStr + loginButtonStr
+    loginForm += loginButtonStr + registerButtonStr
     loginForm += '  </div>'
     loginForm += '</form>'
     loginForm += \
@@ -1680,10 +1681,11 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
     if not os.path.isfile(baseDir + '/accounts/tos.txt'):
         copyfile(baseDir + '/default_tos.txt',
                  baseDir + '/accounts/tos.txt')
-    if os.path.isfile(baseDir + '/img/login-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/img/login-background.png',
-                     baseDir + '/accounts/login-background.png')
+
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
+            copyfile(baseDir + '/accounts/login-background-custom.jpg',
+                     baseDir + '/accounts/login-background.jpg')
 
     TOSText = 'Terms of Service go here.'
     if os.path.isfile(baseDir + '/accounts/tos.txt'):
@@ -1720,35 +1722,35 @@ def htmlAbout(baseDir: str, httpPrefix: str,
     if not os.path.isfile(baseDir + '/accounts/about.txt'):
         copyfile(baseDir + '/default_about.txt',
                  baseDir + '/accounts/about.txt')
-    if os.path.isfile(baseDir + '/img/login-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/login-background.png'):
-            copyfile(baseDir + '/img/login-background.png',
-                     baseDir + '/accounts/login-background.png')
+
+    if os.path.isfile(baseDir + '/accounts/login-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/login-background.jpg'):
+            copyfile(baseDir + '/accounts/login-background-custom.jpg',
+                     baseDir + '/accounts/login-background.jpg')
 
     aboutText = 'Information about this instance goes here.'
     if os.path.isfile(baseDir + '/accounts/about.txt'):
-        with open(baseDir + '/accounts/about.txt', 'r') as file:
-            aboutText = file.read()
+        with open(baseDir + '/accounts/about.txt', 'r') as aboutFile:
+            aboutText = aboutFile.read()
 
     aboutForm = ''
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
         cssFilename = baseDir + '/epicyon.css'
     with open(cssFilename, 'r') as cssFile:
-        termsCSS = cssFile.read()
+        aboutCSS = cssFile.read()
         if httpPrefix != 'http':
-            termsCSS = termsCSS.replace('https://',
+            aboutCSS = aboutCSS.replace('https://',
                                         httpPrefix + '://')
 
-        aboutForm = htmlHeader(cssFilename, termsCSS)
+        aboutForm = htmlHeader(cssFilename, aboutCSS)
         aboutForm += '<div class="container">' + aboutText + '</div>'
         if onionDomain:
             aboutForm += \
                 '<div class="container"><center><p class="administeredby">' + \
                 'http://' + onionDomain + '</p></center></div>'
         if adminNickname:
-            adminActor = \
-                httpPrefix + '://' + domainFull + '/users/' + adminNickname
+            adminActor = '/users/' + adminNickname
             aboutForm += \
                 '<div class="container"><center>' + \
                 '<p class="administeredby">Administered by <a href="' + \
@@ -5340,10 +5342,10 @@ def htmlFollowConfirm(translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/img/follow-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.png'):
-            copyfile(baseDir + '/img/follow-background.png',
-                     baseDir + '/accounts/follow-background.png')
+    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
+            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
+                     baseDir + '/accounts/follow-background.jpg')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -5385,10 +5387,10 @@ def htmlUnfollowConfirm(translate: {}, baseDir: str,
     """
     followDomain, port = getDomainFromActor(followActor)
 
-    if os.path.isfile(baseDir + '/img/follow-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/follow-background.png'):
-            copyfile(baseDir + '/img/follow-background.png',
-                     baseDir + '/accounts/follow-background.png')
+    if os.path.isfile(baseDir + '/accounts/follow-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/follow-background.jpg'):
+            copyfile(baseDir + '/accounts/follow-background-custom.jpg',
+                     baseDir + '/accounts/follow-background.jpg')
 
     cssFilename = baseDir + '/epicyon-follow.css'
     if os.path.isfile(baseDir + '/follow.css'):
@@ -5445,10 +5447,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         if optionsPort != 80 and optionsPort != 443:
             optionsDomainFull = optionsDomain + ':' + str(optionsPort)
 
-    if os.path.isfile(baseDir + '/img/options-background.png'):
-        if not os.path.isfile(baseDir + '/accounts/options-background.png'):
-            copyfile(baseDir + '/img/options-background.png',
-                     baseDir + '/accounts/options-background.png')
+    if os.path.isfile(baseDir + '/accounts/options-background-custom.jpg'):
+        if not os.path.isfile(baseDir + '/accounts/options-background.jpg'):
+            copyfile(baseDir + '/accounts/options-background.jpg',
+                     baseDir + '/accounts/options-background.jpg')
 
     followStr = 'Follow'
     blockStr = 'Block'
@@ -5478,9 +5480,9 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         optionsLinkStr = \
             '    <input type="hidden" name="postUrl" value="' + \
             optionsLink + '">'
-    cssFilename = baseDir + '/epicyon-follow.css'
-    if os.path.isfile(baseDir + '/follow.css'):
-        cssFilename = baseDir + '/follow.css'
+    cssFilename = baseDir + '/epicyon-options.css'
+    if os.path.isfile(baseDir + '/options.css'):
+        cssFilename = baseDir + '/options.css'
     with open(cssFilename, 'r') as cssFile:
         profileStyle = cssFile.read()
         profileStyle = \
@@ -5501,61 +5503,63 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             translate['Donate'] + '</button></a>'
 
     optionsStr = htmlHeader(cssFilename, profileStyle)
-    optionsStr += '<div class="options">'
-    optionsStr += '  <div class="optionsAvatar">'
-    optionsStr += '  <center>'
-    optionsStr += '  <a href="' + optionsActor + '">'
-    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + '"/></a>'
+    optionsStr += '<div class="options">\n'
+    optionsStr += '  <div class="optionsAvatar">\n'
+    optionsStr += '  <center>\n'
+    optionsStr += '  <a href="' + optionsActor + '">\n'
+    optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
+        '"/></a>\n'
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
         ' @' + getNicknameFromActor(optionsActor) + '@' + \
-        optionsDomain + '</p>'
+        optionsDomain + '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
             ': <a href="mailto:' + \
-            emailAddress + '">' + emailAddress + '</a></p>'
+            emailAddress + '">' + emailAddress + '</a></p>\n'
     if xmppAddress:
         optionsStr += \
             '<p class="imText">' + translate['XMPP'] + \
-            ': <a href="xmpp:' + xmppAddress + '">' + xmppAddress + '</a></p>'
+            ': <a href="xmpp:' + xmppAddress + '">' + \
+            xmppAddress + '</a></p>\n'
     if matrixAddress:
         optionsStr += \
             '<p class="imText">' + translate['Matrix'] + ': ' + \
-            matrixAddress + '</p>'
+            matrixAddress + '</p>\n'
     if ssbAddress:
         optionsStr += \
-            '<p class="imText">SSB: ' + ssbAddress + '</p>'
+            '<p class="imText">SSB: ' + ssbAddress + '</p>\n'
     if blogAddress:
         optionsStr += \
             '<p class="imText">Blog: <a href="' + blogAddress + '">' + \
-            blogAddress + '</a></p>'
+            blogAddress + '</a></p>\n'
     if toxAddress:
         optionsStr += \
-            '<p class="imText">Tox: ' + toxAddress + '</p>'
+            '<p class="imText">Tox: ' + toxAddress + '</p>\n'
     if PGPfingerprint:
         optionsStr += '<p class="pgp">PGP: ' + \
-            PGPfingerprint.replace('\n', '<br>') + '</p>'
+            PGPfingerprint.replace('\n', '<br>') + '</p>\n'
     if PGPpubKey:
         optionsStr += '<p class="pgp">' + \
-            PGPpubKey.replace('\n', '<br>') + '</p>'
+            PGPpubKey.replace('\n', '<br>') + '</p>\n'
     optionsStr += '  <form method="POST" action="' + \
-        originPathStr + '/personoptions">'
+        originPathStr + '/personoptions">\n'
     optionsStr += '    <input type="hidden" name="pageNumber" value="' + \
-        str(pageNumber) + '">'
+        str(pageNumber) + '">\n'
     optionsStr += '    <input type="hidden" name="actor" value="' + \
-        optionsActor + '">'
+        optionsActor + '">\n'
     optionsStr += '    <input type="hidden" name="avatarUrl" value="' + \
-        optionsProfileUrl + '">'
+        optionsProfileUrl + '">\n'
     if optionsNickname:
         handle = optionsNickname + '@' + optionsDomainFull
         petname = getPetName(baseDir, nickname, domain, handle)
         optionsStr += \
             translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
-            petname + '">' \
+            petname + '">\n' \
             '<button type="submit" class="button" name="submitPetname">' + \
-            translate['Submit'] + '</button><br>'
+            translate['Submit'] + '</button><br>\n'
 
     if isFollowingActor(baseDir, nickname, domain, optionsActor):
         if receivingCalendarEvents(baseDir, nickname, domain,
@@ -5579,28 +5583,28 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += optionsLinkStr
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
-        translate['View'] + '</button>'
+        translate['View'] + '</button>\n'
     optionsStr += donateStr
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        followStr + '">' + translate[followStr] + '</button>'
+        followStr + '">' + translate[followStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        blockStr + '">' + translate[blockStr] + '</button>'
+        blockStr + '">' + translate[blockStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitDM">' + \
-        translate['DM'] + '</button>'
+        translate['DM'] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submit' + \
-        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>'
+        snoozeButtonStr + '">' + translate[snoozeButtonStr] + '</button>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
-        translate['Report'] + '</button>'
+        translate['Report'] + '</button>\n'
 
-    optionsStr += '  </form>'
-    optionsStr += '</center>'
-    optionsStr += '</div>'
-    optionsStr += '</div>'
+    optionsStr += '  </form>\n'
+    optionsStr += '</center>\n'
+    optionsStr += '</div>\n'
+    optionsStr += '</div>\n'
     optionsStr += htmlFooter()
     return optionsStr
 
