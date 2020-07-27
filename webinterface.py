@@ -6123,7 +6123,7 @@ def htmlSearch(translate: {},
             copyfile(baseDir + '/img/search-background.png',
                      baseDir + '/accounts/search-background.png')
 
-    cssFilename = baseDir + '/epicyon-follow.css'
+    cssFilename = baseDir + '/epicyon-search.css'
     if os.path.isfile(baseDir + '/follow.css'):
         cssFilename = baseDir + '/follow.css'
     with open(cssFilename, 'r') as cssFile:

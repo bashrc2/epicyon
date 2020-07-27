@@ -15,7 +15,7 @@ from shutil import copyfile
 def getThemeFiles() -> []:
     return ('epicyon.css', 'login.css', 'follow.css',
             'suspended.css', 'calendar.css', 'blog.css',
-            'options.css')
+            'options.css', 'search.css')
 
 
 def getThemesList() -> []:
@@ -113,9 +113,11 @@ def setThemeFromDict(baseDir: str, name: str,
     if bgParams.get('login'):
         setBackgroundFormat(baseDir, name, 'login', bgParams['login'])
     if bgParams.get('follow'):
-        setBackgroundFormat(baseDir, name, 'login', bgParams['follow'])
+        setBackgroundFormat(baseDir, name, 'follow', bgParams['follow'])
     if bgParams.get('options'):
-        setBackgroundFormat(baseDir, name, 'login', bgParams['options'])
+        setBackgroundFormat(baseDir, name, 'options', bgParams['options'])
+    if bgParams.get('search'):
+        setBackgroundFormat(baseDir, name, 'search', bgParams['search'])
 
 
 def setBackgroundFormat(baseDir: str, name: str,
@@ -224,9 +226,10 @@ def setThemeDefault(baseDir: str):
         "dummyValue": "1234"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -258,9 +261,10 @@ def setThemeBlue(baseDir: str):
         "*src": "url('./fonts/Domestic_Manners.woff2') format('woff2')"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -302,9 +306,10 @@ def setThemeNight(baseDir: str):
         "*src": fontStr
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -355,9 +360,10 @@ def setThemeStarlight(baseDir: str):
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -405,9 +411,10 @@ def setThemeHenge(baseDir: str):
         "*src": "url('fonts/bgrove.woff2') format('woff2')"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -435,9 +442,10 @@ def setThemeZen(baseDir: str):
         "dropdown-bg-color-hover": "#444"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -461,9 +469,10 @@ def setThemeHighVis(baseDir: str):
         "*src": "url('./fonts/LinBiolinum_Rah.woff2') format('woff2')"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -523,9 +532,10 @@ def setThemeLCD(baseDir: str):
         "*src": "url('./fonts/LcdSolid.woff2') format('woff2')"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -572,9 +582,10 @@ def setThemePurple(baseDir: str):
         "*src": fontStr
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -617,9 +628,10 @@ def setThemeHacker(baseDir: str):
         "image-corners": "0%"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
@@ -669,9 +681,10 @@ def setThemeLight(baseDir: str):
         "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
     }
     bgParams = {
-        "login": 'jpg',
-        "follow": 'jpg',
-        "options": 'jpg'
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
     }
     setThemeFromDict(baseDir, name, themeParams, bgParams)
 
