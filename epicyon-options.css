@@ -124,6 +124,7 @@ a:link {
         text-align: center;
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .button {
         border-radius: 4px;
@@ -163,6 +164,7 @@ a:link {
         text-align: center;
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
+        font-family: Arial, Helvetica, sans-serif;
     }
     .button {
         border-radius: 4px;
