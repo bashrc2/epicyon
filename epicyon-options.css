@@ -91,16 +91,13 @@ a:link {
 
 .imText {
     font-size: var(--font-size4);
-    font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
 }
 
 .pgp {
     font-size: var(--font-size5);
-    font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
     background: var(--link-bg-color);
-    font-family: 'monospace';
 }
 
 .button:hover {
@@ -110,7 +107,6 @@ a:link {
 
 .options {
     font-size: var(--font-size);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .options img {
@@ -120,13 +116,11 @@ a:link {
 @media screen and (min-width: 400px) {
     .followText {
         font-size: var(--follow-text-size1);
-        font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text] {
         width: var(--follow-text-entry-width);
         clear: both;
         font-size: 24px;
-        font-family: Arial, Helvetica, sans-serif;
         text-align: center;
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
@@ -134,12 +128,12 @@ a:link {
     .button {
         border-radius: 4px;
         background-color: var(--button-background);
+        font-family: Arial, Helvetica, sans-serif;
         border: none;
         color: var(--button-text);
         text-align: center;
         padding: 10px;
         font-size: 24px;
-        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
         max-width: 200px;
         min-width: 100px;
@@ -161,13 +155,11 @@ a:link {
 @media screen and (max-width: 1000px) {
     .followText {
         font-size: var(--follow-text-size2);
-        font-family: Arial, Helvetica, sans-serif;
     }
     input[type=text] {
         width: var(--follow-text-entry-width);
         clear: both;
         font-size: 40px;
-        font-family: Arial, Helvetica, sans-serif;
         text-align: center;
         color: var(--text-entry-foreground);
         background-color: var(--text-entry-background);
@@ -175,12 +167,12 @@ a:link {
     .button {
         border-radius: 4px;
         background-color: var(--button-background);
+        font-family: Arial, Helvetica, sans-serif;
         border: none;
         color: var(--button-text);
         text-align: center;
         padding: 10px;
         font-size: 40px;
-        font-family: Arial, Helvetica, sans-serif;
         width: 20%;
         max-width: 200px;
         min-width: 100px;
