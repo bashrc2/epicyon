@@ -129,13 +129,6 @@ span.psw {
     body, html {
         background-color: var(--main-bg-color);
         color: var(--main-fg-color);
-
-        background-image: url("/login-background.jpg");
-	background-size: cover;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
         max-width: 60%;
@@ -177,13 +170,6 @@ span.psw {
     body, html {
         background-color: var(--main-bg-color);
         color: var(--main-fg-color);
-
-        background-image: url("/login-background.jpg");
-	background-size: cover;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	background-repeat: no-repeat;
-	background-position: center;
         height: 100%;
         font-family: Arial, Helvetica, sans-serif;
         max-width: 95%;
