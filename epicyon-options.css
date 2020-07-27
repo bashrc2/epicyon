@@ -98,7 +98,6 @@ a:link {
     font-size: var(--font-size4);
     font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
-    background: var(--link-bg-color);
 }
 
 .pgp {
