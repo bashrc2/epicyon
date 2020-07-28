@@ -137,7 +137,6 @@ span.psw {
         font-size: var(--font-size);
         font-family: Arial, Helvetica, sans-serif;
         position: relative;
-        top: 3%;
     }
     .login-text {
         font-size: var(--font-size);
@@ -178,7 +177,6 @@ span.psw {
         font-size: var(--font-size-mobile);
         font-family: Arial, Helvetica, sans-serif;
         position: relative;
-        top: 5%;
     }
     .login-text {
         font-size: var(--font-size-mobile);
