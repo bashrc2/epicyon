@@ -5503,6 +5503,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             translate['Donate'] + '</button></a>'
 
     optionsStr = htmlHeader(cssFilename, profileStyle)
+    optionsStr += '<br><br>\n'
     optionsStr += '<div class="options">\n'
     optionsStr += '  <div class="optionsAvatar">\n'
     optionsStr += '  <center>\n'
