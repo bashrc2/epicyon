@@ -1641,7 +1641,7 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
         autocompleteStr = 'autocomplete="off" value=""'
 
     loginForm = htmlHeader(cssFilename, loginCSS)
-    loginForm += '<br><br>\n'
+    loginForm += '<br>\n'
     loginForm += '<form method="POST" action="/login">'
     loginForm += '  <div class="imgcontainer">'
     loginForm += \
