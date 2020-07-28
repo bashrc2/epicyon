@@ -1703,14 +1703,15 @@ def htmlTermsOfService(baseDir: str, httpPrefix: str, domainFull: str) -> str:
             termsCSS = termsCSS.replace('https://', httpPrefix+'://')
 
         TOSForm = htmlHeader(cssFilename, termsCSS)
-        TOSForm += '<div class="container">' + TOSText + '</div>'
+        TOSForm += '<div class="container">' + TOSText + '</div>\n'
         if adminNickname:
             adminActor = httpPrefix + '://' + domainFull + \
                 '/users/' + adminNickname
             TOSForm += \
-                '<div class="container"><center>' + \
+                '<div class="container"><center>\n' + \
                 '<p class="administeredby">Administered by <a href="' + \
-                adminActor + '">' + adminNickname + '</a></p></center></div>'
+                adminActor + '">' + adminNickname + '</a></p>\n' + \
+                '</center></div>\n'
         TOSForm += htmlFooter()
     return TOSForm
 
@@ -1748,14 +1749,16 @@ def htmlAbout(baseDir: str, httpPrefix: str,
         aboutForm += '<div class="container">' + aboutText + '</div>'
         if onionDomain:
             aboutForm += \
-                '<div class="container"><center><p class="administeredby">' + \
-                'http://' + onionDomain + '</p></center></div>'
+                '<div class="container"><center>\n' + \
+                '<p class="administeredby">' + \
+                'http://' + onionDomain + '</p>\n</center></div>\n'
         if adminNickname:
             adminActor = '/users/' + adminNickname
             aboutForm += \
-                '<div class="container"><center>' + \
+                '<div class="container"><center>\n' + \
                 '<p class="administeredby">Administered by <a href="' + \
-                adminActor + '">' + adminNickname + '</a></p></center></div>'
+                adminActor + '">' + adminNickname + '</a></p>\n' + \
+                '</center></div>\n'
         aboutForm += htmlFooter()
     return aboutForm
 
@@ -1770,11 +1773,11 @@ def htmlHashtagBlocked(baseDir: str) -> str:
     with open(cssFilename, 'r') as cssFile:
         blockedHashtagCSS = cssFile.read()
         blockedHashtagForm = htmlHeader(cssFilename, blockedHashtagCSS)
-        blockedHashtagForm += '<div><center>'
-        blockedHashtagForm += '  <p class="screentitle">Hashtag Blocked</p>'
+        blockedHashtagForm += '<div><center>\n'
+        blockedHashtagForm += '  <p class="screentitle">Hashtag Blocked</p>\n'
         blockedHashtagForm += \
-            '  <p>See <a href="/terms">Terms of Service</a></p>'
-        blockedHashtagForm += '</center></div>'
+            '  <p>See <a href="/terms">Terms of Service</a></p>\n'
+        blockedHashtagForm += '</center></div>\n'
         blockedHashtagForm += htmlFooter()
     return blockedHashtagForm
 
@@ -1789,10 +1792,10 @@ def htmlSuspended(baseDir: str) -> str:
     with open(cssFilename, 'r') as cssFile:
         suspendedCSS = cssFile.read()
         suspendedForm = htmlHeader(cssFilename, suspendedCSS)
-        suspendedForm += '<div><center>'
-        suspendedForm += '  <p class="screentitle">Account Suspended</p>'
-        suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>'
-        suspendedForm += '</center></div>'
+        suspendedForm += '<div><center>\n'
+        suspendedForm += '  <p class="screentitle">Account Suspended</p>\n'
+        suspendedForm += '  <p>See <a href="/terms">Terms of Service</a></p>\n'
+        suspendedForm += '</center></div>\n'
         suspendedForm += htmlFooter()
     return suspendedForm
 
@@ -1815,13 +1818,13 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         if not path.endswith('/newreport'):
             if not inReplyTo or path.endswith('/newreminder'):
                 newPostText = '<p class="new-post-text">' + \
-                    translate['Write your post text below.'] + '</p>'
+                    translate['Write your post text below.'] + '</p>\n'
             else:
                 newPostText = \
                     '<p class="new-post-text">' + \
                     translate['Write your reply to'] + \
                     ' <a href="' + inReplyTo + '">' + \
-                    translate['this post'] + '</a></p>'
+                    translate['this post'] + '</a></p>\n'
                 replyStr = '<input type="hidden" ' + \
                     'name="replyTo" value="' + inReplyTo + '">'
 
@@ -1840,7 +1843,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         else:
             newPostText = \
                 '<p class="new-post-text">' + \
-                translate['Write your report below.'] + '</p>'
+                translate['Write your report below.'] + '</p>\n'
 
             # custom report header with any additional instructions
             if os.path.isfile(baseDir + '/accounts/report.txt'):
@@ -1849,7 +1852,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
                     if '</p>' not in customReportText:
                         customReportText = \
                             '<p class="login-subtext">' + \
-                            customReportText + '</p>'
+                            customReportText + '</p>\n'
                         repStr = '<p class="login-subtext">'
                         customReportText = \
                             customReportText.replace('<p>', repStr)
@@ -1858,24 +1861,26 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             idx = 'This message only goes to moderators, even if it ' + \
                 'mentions other fediverse addresses.'
             newPostText += \
-                '<p class="new-post-subtext">' + translate[idx] + \
-                '</p><p class="new-post-subtext">' + translate['Also see'] + \
+                '<p class="new-post-subtext">' + translate[idx] + '</p>\n' + \
+                '<p class="new-post-subtext">' + translate['Also see'] + \
                 ' <a href="/terms">' + \
-                translate['Terms of Service'] + '</a></p>'
+                translate['Terms of Service'] + '</a></p>\n'
     else:
         newPostText = \
             '<p class="new-post-text">' + \
-            translate['Enter the details for your shared item below.'] + '</p>'
+            translate['Enter the details for your shared item below.'] + \
+            '</p>\n'
 
     if path.endswith('/newquestion'):
         newPostText = \
             '<p class="new-post-text">' + \
-            translate['Enter the choices for your question below.'] + '</p>'
+            translate['Enter the choices for your question below.'] + \
+            '</p>\n'
 
     if os.path.isfile(baseDir + '/accounts/newpost.txt'):
         with open(baseDir + '/accounts/newpost.txt', 'r') as file:
             newPostText = \
-                '<p class="new-post-text">' + file.read() + '</p>'
+                '<p class="new-post-text">' + file.read() + '</p>\n'
 
     cssFilename = baseDir + '/epicyon-profile.css'
     if os.path.isfile(baseDir + '/epicyon.css'):
@@ -1897,14 +1902,15 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostImageSection = '    <div class="container">'
     newPostImageSection += \
         '      <label class="labels">' + translate['Image description'] + \
-        '</label>'
-    newPostImageSection += '      <input type="text" name="imageDescription">'
+        '</label>\n'
+    newPostImageSection += \
+        '      <input type="text" name="imageDescription">\n'
     newPostImageSection += \
         '      <input type="file" id="attachpic" name="attachpic"'
     newPostImageSection += \
         '            accept=".png, .jpg, .jpeg, .gif, .webp, .mp4, ' + \
-        '.webm, .ogv, .mp3, .ogg">'
-    newPostImageSection += '    </div>'
+        '.webm, .ogv, .mp3, .ogg">\n'
+    newPostImageSection += '    </div>\n'
 
     scopeIcon = 'scope_public.png'
     scopeDescription = translate['Public']
@@ -1948,19 +1954,19 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         scopeDescription = translate['Question']
         placeholderMessage = translate['Enter your question'] + '...'
         endpoint = 'newquestion'
-        extraFields = '<div class="container">'
+        extraFields = '<div class="container">\n'
         extraFields += '  <label class="labels">' + \
-            translate['Possible answers'] + ':</label><br>'
+            translate['Possible answers'] + ':</label><br>\n'
         for questionCtr in range(8):
             extraFields += \
                 '  <input type="text" class="questionOption" placeholder="' + \
                 str(questionCtr + 1) + \
-                '" name="questionOption' + str(questionCtr) + '"><br>'
+                '" name="questionOption' + str(questionCtr) + '"><br>\n'
         extraFields += \
             '  <label class="labels">' + \
             translate['Duration of listing in days'] + \
             ':</label> <input type="number" name="duration" ' + \
-            'min="1" max="365" step="1" value="14"><br>'
+            'min="1" max="365" step="1" value="14"><br>\n'
         extraFields += '</div>'
     elif path.endswith('/newshare'):
         scopeIcon = 'scope_share.png'
@@ -1969,27 +1975,29 @@ def htmlNewPost(mediaInstance: bool, translate: {},
         placeholderMessage = \
             translate['Description of the item being shared'] + '...'
         endpoint = 'newshare'
-        extraFields = '<div class="container">'
+        extraFields = '<div class="container">\n'
         extraFields += \
             '  <label class="labels">' + \
-            translate['Type of shared item. eg. hat'] + ':</label>'
-        extraFields += '  <input type="text" class="itemType" name="itemType">'
+            translate['Type of shared item. eg. hat'] + ':</label>\n'
+        extraFields += \
+            '  <input type="text" class="itemType" name="itemType">\n'
         extraFields += \
             '  <br><label class="labels">' + \
-            translate['Category of shared item. eg. clothing'] + ':</label>'
-        extraFields += '  <input type="text" class="category" name="category">'
+            translate['Category of shared item. eg. clothing'] + ':</label>\n'
+        extraFields += \
+            '  <input type="text" class="category" name="category">\n'
         extraFields += \
             '  <br><label class="labels">' + \
-            translate['Duration of listing in days'] + ':</label>'
+            translate['Duration of listing in days'] + ':</label>\n'
         extraFields += '  <input type="number" name="duration" ' + \
-            'min="1" max="365" step="1" value="14">'
-        extraFields += '</div>'
-        extraFields += '<div class="container">'
+            'min="1" max="365" step="1" value="14">\n'
+        extraFields += '</div>\n'
+        extraFields += '<div class="container">\n'
         extraFields += \
             '<label class="labels">' + \
-            translate['City or location of the shared item'] + ':</label>'
-        extraFields += '<input type="text" name="location">'
-        extraFields += '</div>'
+            translate['City or location of the shared item'] + ':</label>\n'
+        extraFields += '<input type="text" name="location">\n'
+        extraFields += '</div>\n'
 
     dateAndLocation = ''
     if endpoint != 'newshare' and \
@@ -2001,24 +2009,24 @@ def htmlNewPost(mediaInstance: bool, translate: {},
             dateAndLocation += \
                 '<p><input type="checkbox" class="profilecheckbox" ' + \
                 'name="schedulePost"><label class="labels"> ' + \
-                translate['This is a scheduled post.'] + '</label></p>'
+                translate['This is a scheduled post.'] + '</label></p>\n'
 
         dateAndLocation += \
             '<p><img loading="lazy" alt="" title="" ' + \
             'class="emojicalendar" src="/' + \
-            iconsDir + '/calendar.png"/>'
+            iconsDir + '/calendar.png"/>\n'
         dateAndLocation += '<label class="labels">' + \
-            translate['Date'] + ': </label>'
-        dateAndLocation += '<input type="date" name="eventDate">'
+            translate['Date'] + ': </label>\n'
+        dateAndLocation += '<input type="date" name="eventDate">\n'
         dateAndLocation += '<label class="labelsright">' + \
             translate['Time'] + ':'
-        dateAndLocation += '<input type="time" name="eventTime"></label></p>'
-        dateAndLocation += '</div>'
-        dateAndLocation += '<div class="container">'
+        dateAndLocation += '<input type="time" name="eventTime"></label></p>\n'
+        dateAndLocation += '</div>\n'
+        dateAndLocation += '<div class="container">\n'
         dateAndLocation += '<br><label class="labels">' + \
-            translate['Location'] + ': </label>'
-        dateAndLocation += '<input type="text" name="location">'
-        dateAndLocation += '</div>'
+            translate['Location'] + ': </label>\n'
+        dateAndLocation += '<input type="text" name="location">\n'
+        dateAndLocation += '</div>\n'
 
     newPostForm = htmlHeader(cssFilename, newPostCSS)
 
@@ -2343,12 +2351,12 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if authorized and pageNumber > 1:
             # page up arrow
             profileStr += \
-                '<center><a href="' + actor + '/' + feedName + \
+                '<center>\n<a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber - 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsDir + '/pageup.png" title="' + \
                 translate['Page up'] + '" alt="' + \
-                translate['Page up'] + '"></a></center>'
+                translate['Page up'] + '"></a>\n</center>\n'
 
     for item in followingJson['orderedItems']:
         profileStr += \
@@ -2361,12 +2369,12 @@ def htmlProfileFollowing(translate: {}, baseDir: str, httpPrefix: str,
         if len(followingJson['orderedItems']) >= maxItemsPerPage:
             # page down arrow
             profileStr += \
-                '<center><a href="' + actor + '/' + feedName + \
+                '<center>\n<a href="' + actor + '/' + feedName + \
                 '?page=' + str(pageNumber + 1) + \
                 '"><img loading="lazy" class="pageicon" src="/' + \
                 iconsDir + '/pagedown.png" title="' + \
                 translate['Page down'] + '" alt="' + \
-                translate['Page down'] + '"></a></center>'
+                translate['Page down'] + '"></a>\n</center>\n'
     return profileStr
 
 
@@ -2377,16 +2385,16 @@ def htmlProfileRoles(translate: {}, nickname: str, domain: str,
     profileStr = ''
     for project, rolesList in rolesJson.items():
         profileStr += \
-            '<div class="roles"><h2>' + project + \
-            '</h2><div class="roles-inner">'
+            '<div class="roles">\n<h2>' + project + \
+            '</h2>\n<div class="roles-inner">\n'
         for role in rolesList:
-            profileStr += '<h3>' + role + '</h3>'
-        profileStr += '</div></div>'
+            profileStr += '<h3>' + role + '</h3>\n'
+        profileStr += '</div></div>\n'
     if len(profileStr) == 0:
         profileStr += \
-            '<p>@' + nickname + '@' + domain + ' has no roles assigned</p>'
+            '<p>@' + nickname + '@' + domain + ' has no roles assigned</p>\n'
     else:
-        profileStr = '<div>' + profileStr + '</div>'
+        profileStr = '<div>' + profileStr + '</div>\n'
     return profileStr
 
 
@@ -2399,10 +2407,10 @@ def htmlProfileSkills(translate: {}, nickname: str, domain: str,
         profileStr += \
             '<div>' + skill + \
             '<br><div id="myProgress"><div id="myBar" style="width:' + \
-            str(level) + '%"></div></div></div><br>'
+            str(level) + '%"></div></div></div>\n<br>\n'
     if len(profileStr) > 0:
         profileStr = '<center><div class="skill-title">' + \
-            profileStr + '</div></center>'
+            profileStr + '</div></center>\n'
     return profileStr
 
 
@@ -2410,33 +2418,33 @@ def htmlIndividualShare(actor: str, item: {}, translate: {},
                         showContact: bool, removeButton: bool) -> str:
     """Returns an individual shared item as html
     """
-    profileStr = '<div class="container">'
-    profileStr += '<p class="share-title">' + item['displayName'] + '</p>'
+    profileStr = '<div class="container">\n'
+    profileStr += '<p class="share-title">' + item['displayName'] + '</p>\n'
     if item.get('imageUrl'):
-        profileStr += '<a href="' + item['imageUrl'] + '">'
+        profileStr += '<a href="' + item['imageUrl'] + '">\n'
         profileStr += \
             '<img loading="lazy" src="' + item['imageUrl'] + \
-            '" alt="' + translate['Item image'] + '"></a>'
-    profileStr += '<p>' + item['summary'] + '</p>'
+            '" alt="' + translate['Item image'] + '">\n</a>\n'
+    profileStr += '<p>' + item['summary'] + '</p>\n'
     profileStr += \
         '<p><b>' + translate['Type'] + ':</b> ' + item['itemType'] + ' '
     profileStr += \
         '<b>' + translate['Category'] + ':</b> ' + item['category'] + ' '
     profileStr += \
-        '<b>' + translate['Location'] + ':</b> ' + item['location'] + '</p>'
+        '<b>' + translate['Location'] + ':</b> ' + item['location'] + '</p>\n'
     if showContact:
         contactActor = item['actor']
         profileStr += \
             '<p><a href="' + actor + \
             '?replydm=sharedesc:' + item['displayName'] + \
             '?mention=' + contactActor + '"><button class="button">' + \
-            translate['Contact'] + '</button></a>'
+            translate['Contact'] + '</button></a>\n'
     if removeButton:
         profileStr += \
             ' <a href="' + actor + '?rmshare=' + item['displayName'] + \
             '"><button class="button">' + \
-            translate['Remove'] + '</button></a>'
-    profileStr += '</div>'
+            translate['Remove'] + '</button></a>\n'
+    profileStr += '</div>\n'
     return profileStr
 
 
@@ -2448,7 +2456,7 @@ def htmlProfileShares(actor: str, translate: {},
     for item in sharesJson['orderedItems']:
         profileStr += htmlIndividualShare(actor, item, translate, False, False)
     if len(profileStr) > 0:
-        profileStr = '<div class="share-title">' + profileStr + '</div>'
+        profileStr = '<div class="share-title">' + profileStr + '</div>\n'
     return profileStr
 
 
@@ -2523,11 +2531,11 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if pageNumber > 1:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '<center><a href="' + actor + '/tlshares?page=' + \
+            '<center>\n<a href="' + actor + '/tlshares?page=' + \
             str(pageNumber - 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pageup.png" title="' + translate['Page up'] + \
-            '" alt="' + translate['Page up'] + '"></a></center>'
+            '" alt="' + translate['Page up'] + '"></a>\n</center>\n'
 
     for published, item in sharesJson.items():
         showContactButton = False
@@ -2543,11 +2551,11 @@ def htmlSharesTimeline(translate: {}, pageNumber: int, itemsPerPage: int,
     if not lastPage:
         iconsDir = getIconsDir(baseDir)
         timelineStr += \
-            '<center><a href="' + actor + '/tlshares?page=' + \
+            '<center>\n<a href="' + actor + '/tlshares?page=' + \
             str(pageNumber + 1) + \
             '"><img loading="lazy" class="pageicon" src="/' + \
             iconsDir + '/pagedown.png" title="' + translate['Page down'] + \
-            '" alt="' + translate['Page down'] + '"></a></center>'
+            '" alt="' + translate['Page down'] + '"></a>\n</center>\n'
 
     return timelineStr
 
