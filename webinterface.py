@@ -1642,35 +1642,35 @@ def htmlLogin(translate: {}, baseDir: str, autocomplete=True) -> str:
 
     loginForm = htmlHeader(cssFilename, loginCSS)
     loginForm += '<br>\n'
-    loginForm += '<form method="POST" action="/login">'
-    loginForm += '  <div class="imgcontainer">'
+    loginForm += '<form method="POST" action="/login">\n'
+    loginForm += '  <div class="imgcontainer">\n'
     loginForm += \
         '    <img loading="lazy" src="' + loginImage + \
-        '" alt="login image" class="loginimage">'
-    loginForm += loginText + TOSstr
-    loginForm += '  </div>'
-    loginForm += ''
-    loginForm += '  <div class="container">'
+        '" alt="login image" class="loginimage">\n'
+    loginForm += loginText + TOSstr + '\n'
+    loginForm += '  </div>\n'
+    loginForm += '\n'
+    loginForm += '  <div class="container">\n'
     loginForm += '    <label for="nickname"><b>' + \
-        translate['Nickname'] + '</b></label>'
+        translate['Nickname'] + '</b></label>\n'
     loginForm += \
         '    <input type="text" ' + autocompleteStr + ' placeholder="' + \
-        translate['Enter Nickname'] + '" name="username" required autofocus>'
-    loginForm += ''
+        translate['Enter Nickname'] + '" name="username" required autofocus>\n'
+    loginForm += '\n'
     loginForm += '    <label for="password"><b>' + \
-        translate['Password'] + '</b></label>'
+        translate['Password'] + '</b></label>\n'
     loginForm += \
         '    <input type="password" ' + autocompleteStr + \
         ' placeholder="' + translate['Enter Password'] + \
-        '" name="password" required>'
-    loginForm += loginButtonStr + registerButtonStr
-    loginForm += '  </div>'
-    loginForm += '</form>'
+        '" name="password" required>\n'
+    loginForm += loginButtonStr + registerButtonStr + '\n'
+    loginForm += '  </div>\n'
+    loginForm += '</form>\n'
     loginForm += \
         '<a href="https://gitlab.com/bashrc2/epicyon">' + \
         '<img loading="lazy" class="license" title="' + \
         translate['Get the source code'] + '" alt="' + \
-        translate['Get the source code'] + '" src="/icons/agpl.png" /></a>'
+        translate['Get the source code'] + '" src="/icons/agpl.png" /></a>\n'
     loginForm += htmlFooter()
     return loginForm
 
