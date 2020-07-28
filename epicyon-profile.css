@@ -50,6 +50,7 @@
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
     --icons-side: right;
+    --title-color: #999;
 }
 
 @font-face {
@@ -70,6 +71,10 @@ body, html {
     min-width: 950px;
     margin: 0 auto;
     font-size: var(--font-size);
+}
+
+h1 {
+    color: var(--title-color);
 }
 
 a, u {
