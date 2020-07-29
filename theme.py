@@ -274,7 +274,7 @@ def setThemeNight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     fontStr = \
-        "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
+        "url('./fonts/solidaric.woff2') format('woff2')"
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
