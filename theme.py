@@ -709,7 +709,7 @@ def setThemeSolidaric(baseDir: str):
         "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
         "main-bg-color": "white",
         "main-bg-color-dm": "white",
-        "link-bg-color": "#eee",
+        "link-bg-color": "white",
         "main-bg-color-reply": "white",
         "main-bg-color-report": "white",
         "main-header-color-roles": "#ebebf0",
