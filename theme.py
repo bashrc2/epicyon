@@ -25,7 +25,8 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'LCD', 'Light', 'Night', 'Purple', 'Starlight', 'Zen')
+            'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
+            'Starlight', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -302,7 +303,7 @@ def setThemeNight(baseDir: str):
         "place-color": "#7961ab",
         "event-color": "#7961ab",
         "event-background": "#333",
-        "*font-family": "'CheGuevaraTextSans-Regular'",
+        "*font-family": "'solidaric'",
         "*src": fontStr
     }
     bgParams = {
@@ -686,6 +687,60 @@ def setThemeLight(baseDir: str):
         "gallery-text-color": "black",
         "*font-family": "'ElectrumADFExp-Regular'",
         "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
+    }
+    bgParams = {
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
+
+
+def setThemeSolidaric(baseDir: str):
+    name = 'solidaric'
+    themeParams = {
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
+        "main-bg-color": "white",
+        "main-bg-color-dm": "#ddd",
+        "link-bg-color": "#e6ebf0",
+        "main-bg-color-reply": "#ddd",
+        "main-bg-color-report": "#ddd",
+        "main-header-color-roles": "#ebebf0",
+        "main-fg-color": "#2d2c37",
+        "border-color": "#c0cdd9",
+        "main-link-color": "#2a2c37",
+        "title-color": "#2a2c37",
+        "main-visited-color": "#232c37",
+        "text-entry-foreground": "#111",
+        "text-entry-background": "white",
+        "font-color-header": "black",
+        "dropdown-fg-color": "#222",
+        "dropdown-fg-color-hover": "#222",
+        "dropdown-bg-color": "white",
+        "dropdown-bg-color-hover": "lightgrey",
+        "color: #FFFFFE;": "color: black;",
+        "calendar-bg-color": "#e6ebf0",
+        "lines-color": "darkblue",
+        "day-number": "black",
+        "day-number2": "#282c37",
+        "place-color": "black",
+        "event-color": "#282c37",
+        "today-foreground": "white",
+        "today-circle": "red",
+        "event-background": "lightblue",
+        "event-foreground": "white",
+        "title-text": "#282c37",
+        "title-background": "#ccc",
+        "gallery-text-color": "black",
+        "*font-family": "'solidaric'",
+        "*src": "url('./fonts/solidaric.woff2') format('woff2')"
     }
     bgParams = {
         "login": "jpg",
