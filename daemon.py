@@ -7758,7 +7758,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlUnblockConfirm(self.server.translate,
                                        self.server.baseDir,
-                                       originPathStr,
+                                       usersPath,
                                        optionsActor,
                                        optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -7772,7 +7772,7 @@ class PubServer(BaseHTTPRequestHandler):
                 msg = \
                     htmlFollowConfirm(self.server.translate,
                                       self.server.baseDir,
-                                      originPathStr,
+                                      usersPath,
                                       optionsActor,
                                       optionsAvatarUrl).encode('utf-8')
                 self._set_headers('text/html', len(msg),
