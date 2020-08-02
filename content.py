@@ -41,6 +41,23 @@ def htmlReplaceQuoteMarks(content: str) -> str:
                 currChar = '”'
             openQuote = not openQuote
         newContent += currChar
+
+    if '&quot;' in newContent:
+        openQuote = True
+        content = newContent
+        newContent = ''
+        ctr = 0
+        sections = content.split('&quot;')
+        noOfSections = len(sections)
+        for s in sections:
+            newContent += s
+            if ctr < noOfSections - 1:
+                if openQuote:
+                    newContent += '“'
+                else:
+                    newContent += '”'
+                openQuote = not openQuote
+            ctr += 1
     return newContent
 
 
