@@ -36,9 +36,9 @@ def htmlReplaceQuoteMarks(content: str) -> str:
             markup = False
         elif ch == '"' and not markup:
             if openQuote:
-                currChar = '<q>'
+                currChar = '“'
             else:
-                currChar = '</q>'
+                currChar = '”'
             openQuote = not openQuote
         newContent += currChar
     return newContent
@@ -639,7 +639,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     if longWordsList:
         content = removeLongWords(content, maxWordLength, longWordsList)
     content = content.replace(' --linebreak-- ', '</p><p>')
-    return '<p>' + content + '</p>'
+    return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
 
 
 def getMentionsFromHtml(htmlText: str,

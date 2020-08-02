@@ -1928,7 +1928,7 @@ def runHtmlReplaceQuoteMarks():
     print('htmlReplaceQuoteMarks')
     testStr = 'The "cat" "sat" on the mat'
     result = htmlReplaceQuoteMarks(testStr)
-    assert result == 'The <q>cat</q> <q>sat</q> on the mat'
+    assert result == 'The “cat” “sat” on the mat'
 
     testStr = 'The cat sat on the mat'
     result = htmlReplaceQuoteMarks(testStr)
@@ -1936,11 +1936,11 @@ def runHtmlReplaceQuoteMarks():
 
     testStr = '"hello"'
     result = htmlReplaceQuoteMarks(testStr)
-    assert result == '<q>hello</q>'
+    assert result == '“hello”'
 
     testStr = '"hello" <a href="somesite.html">test html</a>'
     result = htmlReplaceQuoteMarks(testStr)
-    assert result == '<q>hello</q> <a href="somesite.html">test html</a>'
+    assert result == '“hello” <a href="somesite.html">test html</a>'
 
 
 def runAllTests():
