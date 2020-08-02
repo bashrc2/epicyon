@@ -44,7 +44,8 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                         federationList: [], sendThreads: [],
                         postLog: [], cachedWebfingers: {},
                         personCache: {}, allowDeletion: bool,
-                        proxyType: str, version: str, debug: bool) -> bool:
+                        proxyType: str, version: str, debug: bool,
+                        YTReplacementDomain: str) -> bool:
     """post is received by the outbox
     Client to server message post
     https://www.w3.org/TR/activitypub/#client-to-server-outbox-delivery
@@ -104,7 +105,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
                 print('DEBUG: domain is blocked: ' + messageJson['actor'])
             return False
         # replace youtube, so that google gets less tracking data
-        replaceYouTube(messageJson)
+        replaceYouTube(messageJson, YTReplacementDomain)
         # https://www.w3.org/TR/activitypub/#create-activity-outbox
         messageJson['object']['attributedTo'] = messageJson['actor']
         if messageJson['object'].get('attachment'):

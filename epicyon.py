@@ -115,6 +115,9 @@ parser.add_argument('--proxy', dest='proxyPort', type=int, default=None,
 parser.add_argument('--path', dest='baseDir',
                     type=str, default=os.getcwd(),
                     help='Directory in which to store posts')
+parser.add_argument('--ytdomain', dest='YTReplacementDomain',
+                    type=str, default=None,
+                    help='Domain used to replace youtube.com')
 parser.add_argument('--language', dest='language',
                     type=str, default=None,
                     help='Language code, eg. en/fr/de/es')
@@ -1791,6 +1794,10 @@ registration = getConfigParam(baseDir, 'registration')
 if not registration:
     registration = False
 
+YTDomain = getConfigParam(baseDir, 'youtubedomain')
+if YTDomain:
+    args.YTReplacementDomain = YTDomain
+
 if setTheme(baseDir, themeName):
     print('Theme set to ' + themeName)
 
@@ -1800,6 +1807,7 @@ runDaemon(args.blogsinstance, args.mediainstance,
           registration, args.language, __version__,
           instanceId, args.client, baseDir,
           domain, onionDomain, i2pDomain,
+          args.YTReplacementDomain,
           port, proxyPort, httpPrefix,
           federationList, args.maxMentions,
           args.maxEmoji, args.authenticatedFetch,

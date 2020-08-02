@@ -928,7 +928,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.personCache,
                                    self.server.allowDeletion,
                                    self.server.proxyType, version,
-                                   self.server.debug)
+                                   self.server.debug,
+                                   self.server.YTReplacementDomain)
 
     def _postToOutboxThread(self, messageJson: {}) -> bool:
         """Creates a thread to send a post
@@ -2266,7 +2267,8 @@ class PubServer(BaseHTTPRequestHandler):
                                   self.server.cachedWebfingers,
                                   self.server.personCache,
                                   self.server.httpPrefix,
-                                  self.server.projectVersion)
+                                  self.server.projectVersion,
+                                  self.server.YTReplacementDomain)
             if hashtagStr:
                 msg = hashtagStr.encode('utf-8')
                 self._set_headers('text/html', len(msg),
@@ -3771,6 +3773,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.recentPostsCache
                                     cachedWebfingers = \
                                         self.server.cachedWebfingers
+                                    YTReplacementDomain = \
+                                        self.server.YTReplacementDomain
                                     msg = \
                                         htmlProfile(defaultTimeline,
                                                     recentPostsCache,
@@ -3785,6 +3789,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.session,
                                                     cachedWebfingers,
                                                     self.server.personCache,
+                                                    YTReplacementDomain,
                                                     actorJson['roles'],
                                                     None, None)
                                     msg = msg.encode('utf-8')
@@ -3831,6 +3836,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.recentPostsCache
                                     cachedWebfingers = \
                                         self.server.cachedWebfingers
+                                    YTReplacementDomain = \
+                                        self.server.YTReplacementDomain
                                     msg = \
                                         htmlProfile(defaultTimeline,
                                                     recentPostsCache,
@@ -3845,6 +3852,7 @@ class PubServer(BaseHTTPRequestHandler):
                                                     self.server.session,
                                                     cachedWebfingers,
                                                     self.server.personCache,
+                                                    YTReplacementDomain,
                                                     actorJson['skills'],
                                                     None, None)
                                     msg = msg.encode('utf-8')
@@ -4035,7 +4043,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.allowDeletion,
                                             self.server.httpPrefix,
                                             self.server.projectVersion,
-                                            self._isMinimal(nickname))
+                                            self._isMinimal(nickname),
+                                            self.server.YTReplacementDomain)
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
@@ -4126,7 +4135,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.allowDeletion,
                                              self.server.httpPrefix,
                                              self.server.projectVersion,
-                                             self._isMinimal(nickname))
+                                             self._isMinimal(nickname),
+                                             self.server.YTReplacementDomain)
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
@@ -4216,7 +4226,8 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.allowDeletion,
                                              self.server.httpPrefix,
                                              self.server.projectVersion,
-                                             self._isMinimal(nickname))
+                                             self._isMinimal(nickname),
+                                             self.server.YTReplacementDomain)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -4307,7 +4318,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.allowDeletion,
                                            self.server.httpPrefix,
                                            self.server.projectVersion,
-                                           self._isMinimal(nickname))
+                                           self._isMinimal(nickname),
+                                           self.server.YTReplacementDomain)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -4396,7 +4408,8 @@ class PubServer(BaseHTTPRequestHandler):
                                            self.server.allowDeletion,
                                            self.server.httpPrefix,
                                            self.server.projectVersion,
-                                           self._isMinimal(nickname))
+                                           self._isMinimal(nickname),
+                                           self.server.YTReplacementDomain)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -4461,7 +4474,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        self.server.port,
                                        self.server.allowDeletion,
                                        self.server.httpPrefix,
-                                       self.server.projectVersion)
+                                       self.server.projectVersion,
+                                       self.server.YTReplacementDomain)
                         msg = msg.encode('utf-8')
                         self._set_headers('text/html',
                                           len(msg),
@@ -4538,7 +4552,8 @@ class PubServer(BaseHTTPRequestHandler):
                                               self.server.allowDeletion,
                                               self.server.httpPrefix,
                                               self.server.projectVersion,
-                                              self._isMinimal(nickname))
+                                              self._isMinimal(nickname),
+                                              self.server.YTReplacementDomain)
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
@@ -4624,7 +4639,8 @@ class PubServer(BaseHTTPRequestHandler):
                                self.server.allowDeletion,
                                self.server.httpPrefix,
                                self.server.projectVersion,
-                               self._isMinimal(nickname))
+                               self._isMinimal(nickname),
+                               self.server.YTReplacementDomain)
                 msg = msg.encode('utf-8')
                 self._set_headers('text/html',
                                   len(msg),
@@ -4701,7 +4717,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                moderationFeed,
                                                True,
                                                self.server.httpPrefix,
-                                               self.server.projectVersion)
+                                               self.server.projectVersion,
+                                               self.server.YTReplacementDomain)
                             msg = msg.encode('utf-8')
                             self._set_headers('text/html',
                                               len(msg),
@@ -4789,6 +4806,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
+                                    self.server.YTReplacementDomain,
                                     shares,
                                     pageNumber, sharesPerPage)
                     msg = msg.encode('utf-8')
@@ -4869,6 +4887,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
+                                    self.server.YTReplacementDomain,
                                     following,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -4947,6 +4966,7 @@ class PubServer(BaseHTTPRequestHandler):
                                     self.server.session,
                                     self.server.cachedWebfingers,
                                     self.server.personCache,
+                                    self.server.YTReplacementDomain,
                                     followers,
                                     pageNumber,
                                     followsPerPage).encode('utf-8')
@@ -5001,6 +5021,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 self.server.session,
                                 self.server.cachedWebfingers,
                                 self.server.personCache,
+                                self.server.YTReplacementDomain,
                                 None, None).encode('utf-8')
                 self._set_headers('text/html',
                                   len(msg),
@@ -5379,7 +5400,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             imgDescription,
                                             self.server.useBlurHash)
 
-                        replaceYouTube(postJsonObject)
+                        replaceYouTube(postJsonObject,
+                                       self.server.YTReplacementDomain)
                         saveJson(postJsonObject, postFilename)
                         print('Edited blog post, resaved ' + postFilename)
                         return 1
@@ -6933,7 +6955,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.cachedWebfingers,
                                           self.server.personCache,
                                           self.server.httpPrefix,
-                                          self.server.projectVersion)
+                                          self.server.projectVersion,
+                                          self.server.YTReplacementDomain)
                     if hashtagStr:
                         msg = hashtagStr.encode('utf-8')
                         self._login_headers('text/html',
@@ -6977,7 +7000,8 @@ class PubServer(BaseHTTPRequestHandler):
                                           self.server.session,
                                           self.server.cachedWebfingers,
                                           self.server.personCache,
-                                          self.server.port)
+                                          self.server.port,
+                                          self.server.YTReplacementDomain)
                     if historyStr:
                         msg = historyStr.encode('utf-8')
                         self._login_headers('text/html',
@@ -8312,6 +8336,7 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
               instanceId: str, clientToServer: bool,
               baseDir: str, domain: str,
               onionDomain: str, i2pDomain: str,
+              YTReplacementDomain: str,
               port=80, proxyPort=80, httpPrefix='https',
               fedList=[], maxMentions=10, maxEmoji=10,
               authenticatedFetch=False,
@@ -8347,6 +8372,8 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
 
         print('ERROR: HTTP server failed to start. ' + str(e))
         return False
+
+    httpd.YTReplacementDomain = YTReplacementDomain
 
     # This counter is used to update the list of blocked domains in memory.
     # It helps to avoid touching the disk and so improves flooding resistance
@@ -8535,8 +8562,9 @@ def runDaemon(blogsInstance: bool, mediaInstance: bool,
                               httpd.ocapAlways, maxReplies,
                               domainMaxPostsPerDay, accountMaxPostsPerDay,
                               allowDeletion, debug, maxMentions, maxEmoji,
-                              httpd.translate,
-                              unitTest, httpd.acceptedCaps), daemon=True)
+                              httpd.translate, unitTest,
+                              httpd.YTReplacementDomain,
+                              httpd.acceptedCaps), daemon=True)
     print('Creating scheduled post thread')
     httpd.thrPostSchedule = \
         threadWithTrace(target=runPostSchedule,

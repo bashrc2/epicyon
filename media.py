@@ -18,10 +18,12 @@ from shutil import rmtree
 from shutil import move
 
 
-def replaceYouTube(postJsonObject: {}) -> None:
-    """Replace YouTube with invidio.us
+def replaceYouTube(postJsonObject: {}, replacementDomain: str) -> None:
+    """Replace YouTube with a replacement domain
     This denies Google some, but not all, tracking data
     """
+    if not replacementDomain:
+        return
     if not isinstance(postJsonObject['object'], dict):
         return
     if not postJsonObject['object'].get('content'):
@@ -30,7 +32,7 @@ def replaceYouTube(postJsonObject: {}) -> None:
         return
     postJsonObject['object']['content'] = \
         postJsonObject['object']['content'].replace('www.youtube.com',
-                                                    'invidio.us')
+                                                    replacementDomain)
 
 
 def removeMetaData(imageFilename: str, outputFilename: str) -> None:
