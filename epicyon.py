@@ -1800,7 +1800,8 @@ if YTDomain:
         YTDomain = YTDomain.split('://')[1]
     if '/' in YTDomain:
         YTDomain = YTDomain.split('/')[0]
-    args.YTReplacementDomain = YTDomain
+    if '.' in YTDomain:
+        args.YTReplacementDomain = YTDomain
 
 if setTheme(baseDir, themeName):
     print('Theme set to ' + themeName)

@@ -6316,9 +6316,12 @@ class PubServer(BaseHTTPRequestHandler):
                                     newYTDomain = newYTDomain.split('://')[1]
                                 if '/' in newYTDomain:
                                     newYTDomain = newYTDomain.split('/')[0]
-                                setConfigParam(self.server.baseDir,
-                                               'youtubedomain', newYTDomain)
-                                self.server.YTReplacementDomain = newYTDomain
+                                if '.' in newYTDomain:
+                                    setConfigParam(self.server.baseDir,
+                                                   'youtubedomain',
+                                                   newYTDomain)
+                                    self.server.YTReplacementDomain = \
+                                        newYTDomain
 
                         currInstanceDescriptionShort = \
                             getConfigParam(self.server.baseDir,
