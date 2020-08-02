@@ -1505,6 +1505,16 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
         '      <textarea id="message" name="gitProjects" ' + \
         'style="height:100px">' + gitProjectsStr + '</textarea>'
 
+    editProfileForm += \
+        '      <br><b><label class="labels">' + \
+        translate['YouTube Replacement Domain'] + '</label></b>'
+    YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
+    if not YTReplacementDomain:
+        YTReplacementDomain = ''
+    editProfileForm += \
+        '      <input type="text" name="ytdomain" value="' + \
+        YTReplacementDomain + '">'
+
     editProfileForm += '    </div>'
     editProfileForm += '    <div class="container">'
     editProfileForm += \

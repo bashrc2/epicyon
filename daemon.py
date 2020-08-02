@@ -6307,6 +6307,16 @@ class PubServer(BaseHTTPRequestHandler):
                                 setConfigParam(self.server.baseDir,
                                                'instanceTitle',
                                                fields['instanceTitle'])
+
+                        if fields.get('ytdomain'):
+                            currYTDomain = self.server.YTReplacementDomain
+                            if fields['ytdomain'] != currYTDomain:
+                                setConfigParam(self.server.baseDir,
+                                               'youtubedomain',
+                                               fields['ytdomain'])
+                                self.server.YTReplacementDomain = \
+                                    fields['ytdomain']
+
                         currInstanceDescriptionShort = \
                             getConfigParam(self.server.baseDir,
                                            'instanceDescriptionShort')
