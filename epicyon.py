@@ -1796,6 +1796,10 @@ if not registration:
 
 YTDomain = getConfigParam(baseDir, 'youtubedomain')
 if YTDomain:
+    if '://' in YTDomain:
+        YTDomain = YTDomain.split('://')[1]
+    if '/' in YTDomain:
+        YTDomain = YTDomain.split('/')[0]
     args.YTReplacementDomain = YTDomain
 
 if setTheme(baseDir, themeName):
