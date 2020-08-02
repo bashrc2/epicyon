@@ -14,6 +14,33 @@ from utils import fileLastModified
 from utils import getLinkPrefixes
 
 
+def htmlReplaceQuoteMarks(content: str) -> str:
+    """Replaces quotes with html formatting
+    "hello" becomes <q>hello</q>
+    """
+    if '"' not in content:
+        return content
+
+    sections = content.split('"')
+    if len(sections) <= 2:
+        return content
+
+    newContent = ''
+    openQuote = True
+    noOfSections = len(sections)
+    ctr = 0
+    for s in sections:
+        newContent += s
+        if ctr < noOfSections - 1:
+            if openQuote:
+                newContent += '<q>'
+            else:
+                newContent += '</q>'
+            openQuote = not openQuote
+        ctr += 1
+    return newContent
+
+
 def dangerousMarkup(content: str) -> bool:
     """Returns true if the given content contains dangerous html markup
     """
@@ -433,6 +460,7 @@ def removeHtml(content: str) -> str:
     if '<' not in content:
         return content
     removing = False
+    content = content.replace('<q>', '"').replace('</q>', '"')
     result = ''
     for ch in content:
         if ch == '<':
@@ -608,7 +636,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     if longWordsList:
         content = removeLongWords(content, maxWordLength, longWordsList)
     content = content.replace(' --linebreak-- ', '</p><p>')
-    return '<p>' + content + '</p>'
+    return '<p>' + htmlReplaceQuoteMarks(content) + '</p>'
 
 
 def getMentionsFromHtml(htmlText: str,
