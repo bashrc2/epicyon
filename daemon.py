@@ -3480,6 +3480,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.httpPrefix
                                     projectVersion = \
                                         self.server.projectVersion
+                                    ytDomain = \
+                                        self.server.YTReplacementDomain
                                     msg = \
                                         htmlIndividualPost(recentPostsCache,
                                                            maxRecentPosts,
@@ -3494,7 +3496,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                            postJsonObject,
                                                            httpPrefix,
                                                            projectVersion,
-                                                           likedBy)
+                                                           likedBy,
+                                                           ytDomain)
                                     msg = msg.encode('utf-8')
                                     self._set_headers('text/html', len(msg),
                                                       cookie, callingDomain)
@@ -3945,6 +3948,8 @@ class PubServer(BaseHTTPRequestHandler):
                                         self.server.httpPrefix
                                     projectVersion = \
                                         self.server.projectVersion
+                                    ytDomain = \
+                                        self.server.YTReplacementDomain
                                     msg = \
                                         htmlIndividualPost(recentPostsCache,
                                                            maxRecentPosts,
@@ -3960,7 +3965,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                            postJsonObject,
                                                            httpPrefix,
                                                            projectVersion,
-                                                           likedBy)
+                                                           likedBy,
+                                                           ytDomain)
                                     msg = msg.encode('utf-8')
                                     self._set_headers('text/html',
                                                       len(msg),
