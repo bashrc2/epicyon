@@ -1938,6 +1938,10 @@ def runHtmlReplaceQuoteMarks():
     result = htmlReplaceQuoteMarks(testStr)
     assert result == '<q>hello</q>'
 
+    testStr = '"hello" <a href="somesite.html">test html</a>'
+    result = htmlReplaceQuoteMarks(testStr)
+    assert result == '<q>hello</q> <a href="somesite.html">test html</a>'
+
 
 def runAllTests():
     print('Running tests...')

@@ -27,17 +27,20 @@ def htmlReplaceQuoteMarks(content: str) -> str:
 
     newContent = ''
     openQuote = True
-    noOfSections = len(sections)
-    ctr = 0
-    for s in sections:
-        newContent += s
-        if ctr < noOfSections - 1:
+    markup = False
+    for ch in content:
+        currChar = ch
+        if ch == '<':
+            markup = True
+        elif ch == '>':
+            markup = False
+        elif ch == '"' and not markup:
             if openQuote:
-                newContent += '<q>'
+                currChar = '<q>'
             else:
-                newContent += '</q>'
+                currChar = '</q>'
             openQuote = not openQuote
-        ctr += 1
+        newContent += currChar
     return newContent
 
 
