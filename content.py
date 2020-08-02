@@ -556,7 +556,7 @@ def addHtmlTags(baseDir: str, httpPrefix: str,
     by matching against known following accounts
     """
     if content.startswith('<p>'):
-        return content
+        return htmlReplaceQuoteMarks(content)
     maxWordLength = 40
     content = content.replace('\r', '')
     content = content.replace('\n', ' --linebreak-- ')
