@@ -4264,7 +4264,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         objectContent = htmlReplaceQuoteMarks(objectContent)
     else:
         objectContent = \
-            htmlReplaceQuoteMarks(postJsonObject['object']['content'])
+            postJsonObject['object']['content']
 
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
