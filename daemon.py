@@ -6322,6 +6322,10 @@ class PubServer(BaseHTTPRequestHandler):
                                                    newYTDomain)
                                     self.server.YTReplacementDomain = \
                                         newYTDomain
+                        else:
+                            setConfigParam(self.server.baseDir,
+                                           'youtubedomain', '')
+                            self.server.YTReplacementDomain = None
 
                         currInstanceDescriptionShort = \
                             getConfigParam(self.server.baseDir,
