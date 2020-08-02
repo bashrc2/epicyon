@@ -57,6 +57,7 @@ from bookmarks import bookmarkedByPerson
 from announce import announcedByPerson
 from blocking import isBlocked
 from blocking import isBlockedHashtag
+from content import htmlReplaceQuoteMarks
 from content import removeTextFormatting
 from content import switchWords
 from content import getMentionsFromHtml
@@ -4260,8 +4261,10 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         objectContent = removeTextFormatting(objectContent)
         objectContent = \
             switchWords(baseDir, nickname, domain, objectContent)
+        objectContent = htmlReplaceQuoteMarks(objectContent)
     else:
-        objectContent = postJsonObject['object']['content']
+        objectContent = \
+            htmlReplaceQuoteMarks(postJsonObject['object']['content'])
 
     if not postIsSensitive:
         contentStr = objectContent + attachmentStr
