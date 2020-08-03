@@ -19,28 +19,29 @@ def htmlReplaceQuoteMarks(content: str) -> str:
     "hello" becomes <q>hello</q>
     """
     if '"' not in content:
-        return content
+        if '&quot;' not in content:
+            return content
 
-    sections = content.split('"')
-    if len(sections) <= 2:
-        return content
-
-    newContent = ''
-    openQuote = True
-    markup = False
-    for ch in content:
-        currChar = ch
-        if ch == '<':
-            markup = True
-        elif ch == '>':
+    newContent = content
+    if '"' in content:
+        sections = content.split('"')
+        if len(sections) > 1:
+            newContent = ''
+            openQuote = True
             markup = False
-        elif ch == '"' and not markup:
-            if openQuote:
-                currChar = '“'
-            else:
-                currChar = '”'
-            openQuote = not openQuote
-        newContent += currChar
+            for ch in content:
+                currChar = ch
+                if ch == '<':
+                    markup = True
+                elif ch == '>':
+                    markup = False
+                elif ch == '"' and not markup:
+                    if openQuote:
+                        currChar = '“'
+                    else:
+                        currChar = '”'
+                    openQuote = not openQuote
+                newContent += currChar
 
     if '&quot;' in newContent:
         openQuote = True
