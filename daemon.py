@@ -3147,7 +3147,8 @@ class PubServer(BaseHTTPRequestHandler):
                                    self.server.session, self.server.baseDir,
                                    deleteUrl, self.server.httpPrefix,
                                    __version__, self.server.cachedWebfingers,
-                                   self.server.personCache, callingDomain)
+                                   self.server.personCache, callingDomain,
+                                   self.server.TYReplacementDomain)
                 if deleteStr:
                     self._set_headers('text/html', len(deleteStr),
                                       cookie, callingDomain)
@@ -3611,6 +3612,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.httpPrefix
                                         projectVersion = \
                                             self.server.projectVersion
+                                        ytDomain = \
+                                            self.server.YTReplacementDomain
                                         msg = \
                                             htmlPostReplies(recentPostsCache,
                                                             maxRecentPosts,
@@ -3624,7 +3627,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.server.port,
                                                             repliesJson,
                                                             httpPrefix,
-                                                            projectVersion)
+                                                            projectVersion,
+                                                            ytDomain)
                                         msg = msg.encode('utf-8')
                                         self._set_headers('text/html',
                                                           len(msg),
@@ -3712,6 +3716,8 @@ class PubServer(BaseHTTPRequestHandler):
                                             self.server.httpPrefix
                                         projectVersion = \
                                             self.server.projectVersion
+                                        ytDomain = \
+                                            self.server.YTReplacementDomain
                                         msg = \
                                             htmlPostReplies(recentPostsCache,
                                                             maxRecentPosts,
@@ -3725,7 +3731,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                             self.server.port,
                                                             repliesJson,
                                                             httpPrefix,
-                                                            projectVersion)
+                                                            projectVersion,
+                                                            ytDomain)
                                         msg = msg.encode('utf-8')
                                         self._set_headers('text/html',
                                                           len(msg),
@@ -7064,7 +7071,8 @@ class PubServer(BaseHTTPRequestHandler):
                                                self.server.cachedWebfingers,
                                                self.server.personCache,
                                                self.server.debug,
-                                               self.server.projectVersion)
+                                               self.server.projectVersion,
+                                               self.server.YTReplacementDomain)
                     if profileStr:
                         msg = profileStr.encode('utf-8')
                         self._login_headers('text/html',
