@@ -25,7 +25,8 @@ def getThemesList() -> []:
     and to lookup function names
     """
     return ('Default', 'Blue', 'Hacker', 'Henge', 'HighVis',
-            'LCD', 'Light', 'Night', 'Purple', 'Starlight', 'Zen')
+            'LCD', 'Light', 'Night', 'Purple', 'Solidaric',
+            'Starlight', 'Zen')
 
 
 def setThemeInConfig(baseDir: str, name: str) -> bool:
@@ -274,7 +275,7 @@ def setThemeNight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     fontStr = \
-        "url('./fonts/CheGuevaraTextSans-Regular.woff2') format('woff2')"
+        "url('./fonts/solidaric.woff2') format('woff2')"
     themeParams = {
         "font-size-button-mobile": "36px",
         "font-size": "32px",
@@ -302,7 +303,7 @@ def setThemeNight(baseDir: str):
         "place-color": "#7961ab",
         "event-color": "#7961ab",
         "event-background": "#333",
-        "*font-family": "'CheGuevaraTextSans-Regular'",
+        "*font-family": "'solidaric'",
         "*src": fontStr
     }
     bgParams = {
@@ -329,6 +330,7 @@ def setThemeStarlight(baseDir: str):
         "text-entry-background": "#0f0d10",
         "link-bg-color": "#0f0d10",
         "main-link-color": "#ffc4bc",
+        "title-color": "#ffc4bc",
         "main-visited-color": "#e1c4bc",
         "main-fg-color": "#ffc4bc",
         "main-bg-color-dm": "#0b0a0a",
@@ -383,6 +385,7 @@ def setThemeHenge(baseDir: str):
         "text-entry-background": "#383335",
         "link-bg-color": "#383335",
         "main-link-color": "white",
+        "title-color": "white",
         "main-visited-color": "#e1c4bc",
         "main-fg-color": "white",
         "main-bg-color-dm": "#343335",
@@ -433,6 +436,7 @@ def setThemeZen(baseDir: str):
         "border-color": "#463b35",
         "border-width": "7px",
         "main-link-color": "#dddddd",
+        "title-color": "#dddddd",
         "main-visited-color": "#dddddd",
         "button-background": "#463b35",
         "button-selected": "#26201d",
@@ -492,6 +496,7 @@ def setThemeLCD(baseDir: str):
         "border-color": "#33390d",
         "border-width": "5px",
         "main-link-color": "#9fb42b",
+        "title-color": "#9fb42b",
         "main-visited-color": "#9fb42b",
         "button-selected": "black",
         "button-highlighted": "green",
@@ -559,6 +564,7 @@ def setThemePurple(baseDir: str):
         "main-fg-color": "#f98bb0",
         "border-color": "#3f2145",
         "main-link-color": "#ff42a0",
+        "title-color": "white",
         "main-visited-color": "#f93bb0",
         "button-selected": "#c042a0",
         "button-background": "#ff42a0",
@@ -602,6 +608,7 @@ def setThemeHacker(baseDir: str):
         "main-fg-color": "#00ff00",
         "border-color": "#035103",
         "main-link-color": "#2fff2f",
+        "title-color": "#2fff2f",
         "main-visited-color": "#3c8234",
         "button-selected": "#063200",
         "button-background": "#062200",
@@ -655,6 +662,7 @@ def setThemeLight(baseDir: str):
         "main-fg-color": "#2d2c37",
         "border-color": "#c0cdd9",
         "main-link-color": "#2a2c37",
+        "title-color": "#2a2c37",
         "main-visited-color": "#232c37",
         "text-entry-foreground": "#111",
         "text-entry-background": "white",
@@ -679,6 +687,60 @@ def setThemeLight(baseDir: str):
         "gallery-text-color": "black",
         "*font-family": "'ElectrumADFExp-Regular'",
         "*src": "url('./fonts/ElectrumADFExp-Regular.otf') format('opentype')"
+    }
+    bgParams = {
+        "login": "jpg",
+        "follow": "jpg",
+        "options": "jpg",
+        "search": "jpg"
+    }
+    setThemeFromDict(baseDir, name, themeParams, bgParams)
+
+
+def setThemeSolidaric(baseDir: str):
+    name = 'solidaric'
+    themeParams = {
+        "font-size-button-mobile": "36px",
+        "font-size": "32px",
+        "font-size2": "26px",
+        "font-size3": "40px",
+        "font-size4": "24px",
+        "font-size5": "22px",
+        "rgba(0, 0, 0, 0.5)": "rgba(0, 0, 0, 0.0)",
+        "main-bg-color": "white",
+        "main-bg-color-dm": "white",
+        "link-bg-color": "white",
+        "main-bg-color-reply": "white",
+        "main-bg-color-report": "white",
+        "main-header-color-roles": "#ebebf0",
+        "main-fg-color": "#2d2c37",
+        "border-color": "#c0cdd9",
+        "main-link-color": "#2a2c37",
+        "title-color": "#2a2c37",
+        "main-visited-color": "#232c37",
+        "text-entry-foreground": "#111",
+        "text-entry-background": "white",
+        "font-color-header": "black",
+        "dropdown-fg-color": "#222",
+        "dropdown-fg-color-hover": "#222",
+        "dropdown-bg-color": "white",
+        "dropdown-bg-color-hover": "lightgrey",
+        "color: #FFFFFE;": "color: black;",
+        "calendar-bg-color": "white",
+        "lines-color": "black",
+        "day-number": "black",
+        "day-number2": "#282c37",
+        "place-color": "black",
+        "event-color": "#282c37",
+        "today-foreground": "white",
+        "today-circle": "red",
+        "event-background": "lightblue",
+        "event-foreground": "white",
+        "title-text": "#282c37",
+        "title-background": "#ccc",
+        "gallery-text-color": "black",
+        "*font-family": "'solidaric'",
+        "*src": "url('./fonts/solidaric.woff2') format('woff2')"
     }
     bgParams = {
         "login": "jpg",

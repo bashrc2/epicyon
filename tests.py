@@ -64,6 +64,7 @@ from media import getAttachmentMediaType
 from delete import sendDeleteViaServer
 from inbox import validInbox
 from inbox import validInboxFilenames
+from content import htmlReplaceQuoteMarks
 from content import dangerousMarkup
 from content import removeHtml
 from content import addWebLinks
@@ -286,7 +287,7 @@ def createServerAlice(path: str, domain: str, port: int,
     print('Server running: Alice')
     runDaemon(False, False, 5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
-              onionDomain, i2pDomain, port, port,
+              onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies,
@@ -351,7 +352,7 @@ def createServerBob(path: str, domain: str, port: int,
     print('Server running: Bob')
     runDaemon(False, False, 5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
-              onionDomain, i2pDomain, port, port,
+              onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies,
@@ -393,7 +394,7 @@ def createServerEve(path: str, domain: str, port: int, federationList: [],
     print('Server running: Eve')
     runDaemon(False, False, 5, True, True, 'en', __version__,
               "instanceId", False, path, domain,
-              onionDomain, i2pDomain, port, port,
+              onionDomain, i2pDomain, None, port, port,
               httpPrefix, federationList, maxMentions, maxEmoji, False,
               noreply, nolike, nopics, noannounce, cw, ocapAlways,
               proxyType, maxReplies, allowDeletion, True, True, False,
@@ -1923,8 +1924,28 @@ def testDangerousMarkup():
     assert(not dangerousMarkup(content))
 
 
+def runHtmlReplaceQuoteMarks():
+    print('htmlReplaceQuoteMarks')
+    testStr = 'The "cat" "sat" on the mat'
+    result = htmlReplaceQuoteMarks(testStr)
+    assert result == 'The “cat” “sat” on the mat'
+
+    testStr = 'The cat sat on the mat'
+    result = htmlReplaceQuoteMarks(testStr)
+    assert result == 'The cat sat on the mat'
+
+    testStr = '"hello"'
+    result = htmlReplaceQuoteMarks(testStr)
+    assert result == '“hello”'
+
+    testStr = '"hello" <a href="somesite.html">&quot;test&quot; html</a>'
+    result = htmlReplaceQuoteMarks(testStr)
+    assert result == '“hello” <a href="somesite.html">“test” html</a>'
+
+
 def runAllTests():
     print('Running tests...')
+    runHtmlReplaceQuoteMarks()
     testDangerousMarkup()
     testRemoveHtml()
     testSiteIsActive()

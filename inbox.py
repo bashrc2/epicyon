@@ -1328,7 +1328,8 @@ def receiveAnnounce(recentPostsCache: {},
                     httpPrefix: str, domain: str, onionDomain: str, port: int,
                     sendThreads: [], postLog: [], cachedWebfingers: {},
                     personCache: {}, messageJson: {}, federationList: [],
-                    debug: bool, translate: {}) -> bool:
+                    debug: bool, translate: {},
+                    YTReplacementDomain: str) -> bool:
     """Receives an announce activity within the POST section of HTTPServer
     """
     if messageJson['type'] != 'Announce':
@@ -1410,7 +1411,8 @@ def receiveAnnounce(recentPostsCache: {},
               ' -> ' + messageJson['object'])
     postJsonObject = downloadAnnounce(session, baseDir, httpPrefix,
                                       nickname, domain, messageJson,
-                                      __version__, translate)
+                                      __version__, translate,
+                                      YTReplacementDomain)
     if postJsonObject:
         if debug:
             print('DEBUG: Announce post downloaded for ' +
@@ -2055,7 +2057,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                            queueFilename: str, destinationFilename: str,
                            maxReplies: int, allowDeletion: bool,
                            maxMentions: int, maxEmoji: int, translate: {},
-                           unitTest: bool) -> bool:
+                           unitTest: bool, YTReplacementDomain: str) -> bool:
     """ Anything which needs to be done after capabilities checks have passed
     """
     actor = keyId
@@ -2132,7 +2134,8 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                        personCache,
                        messageJson,
                        federationList,
-                       debug, translate):
+                       debug, translate,
+                       YTReplacementDomain):
         if debug:
             print('DEBUG: Announce accepted from ' + actor)
 
@@ -2207,7 +2210,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                     return False
 
         # replace YouTube links, so they get less tracking data
-        replaceYouTube(postJsonObject)
+        replaceYouTube(postJsonObject, YTReplacementDomain)
 
         # list of indexes to be updated
         updateIndexList = ['inbox']
@@ -2289,7 +2292,7 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
 
             if isImageMedia(session, baseDir, httpPrefix,
                             nickname, domain, postJsonObject,
-                            translate):
+                            translate, YTReplacementDomain):
                 # media index will be updated
                 updateIndexList.append('tlmedia')
             if isBlogPost(postJsonObject):
@@ -2411,9 +2414,10 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                   domainMaxPostsPerDay: int, accountMaxPostsPerDay: int,
                   allowDeletion: bool, debug: bool, maxMentions: int,
                   maxEmoji: int, translate: {}, unitTest: bool,
+                  YTReplacementDomain: str,
                   acceptedCaps=["inbox:write", "objects:read"]) -> None:
-    """Processes received items and moves them to
-    the appropriate directories
+    """Processes received items and moves them to the appropriate
+    directories
     """
     currSessionTime = int(time.time())
     sessionLastUpdate = currSessionTime
@@ -2829,7 +2833,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                            queueFilename, destination,
                                            maxReplies, allowDeletion,
                                            maxMentions, maxEmoji,
-                                           translate, unitTest)
+                                           translate, unitTest,
+                                           YTReplacementDomain)
                 else:
                     print('Queue: object capabilities check has failed')
                     if debug:
@@ -2852,7 +2857,8 @@ def runInboxQueue(recentPostsCache: {}, maxRecentPosts: int,
                                            queueFilename, destination,
                                            maxReplies, allowDeletion,
                                            maxMentions, maxEmoji,
-                                           translate, unitTest)
+                                           translate, unitTest,
+                                           YTReplacementDomain)
                 if debug:
                     pprint(queueJson['post'])
                     print('No capability list within post')

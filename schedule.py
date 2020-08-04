@@ -103,7 +103,8 @@ def updatePostSchedule(baseDir: str, handle: str, httpd,
                                        httpd.allowDeletion,
                                        httpd.proxyType,
                                        httpd.projectVersion,
-                                       httpd.debug):
+                                       httpd.debug,
+                                       httpd.YTReplacementDomain):
                 indexLines.remove(line)
                 os.remove(postFilename)
                 continue
