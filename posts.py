@@ -2467,6 +2467,7 @@ def isReply(postJsonObject: {}, actor: str) -> bool:
     if postJsonObject['object'].get('moderationStatus'):
         return False
     if postJsonObject['object']['type'] != 'Note' and \
+       postJsonObject['object']['type'] != 'EncryptedMessage' and \
        postJsonObject['object']['type'] != 'Article':
         return False
     if postJsonObject['object'].get('inReplyTo'):
@@ -2578,6 +2579,7 @@ def addPostStringToTimeline(postStr: str, boxname: str,
     """
     # must be a recognized ActivityPub type
     if ('"Note"' in postStr or
+        '"EncryptedMessage"' in postStr or
         '"Article"' in postStr or
         '"Patch"' in postStr or
         '"Announce"' in postStr or

@@ -189,6 +189,7 @@ def postMessageToOutbox(messageJson: {}, postToNickname: str,
         if messageJson['type'] == 'Create' or \
            messageJson['type'] == 'Question' or \
            messageJson['type'] == 'Note' or \
+           messageJson['type'] == 'EncryptedMessage' or \
            messageJson['type'] == 'Article' or \
            messageJson['type'] == 'Patch' or \
            messageJson['type'] == 'Announce':
