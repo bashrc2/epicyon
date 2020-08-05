@@ -7763,6 +7763,7 @@ class PubServer(BaseHTTPRequestHandler):
                 personNotes = optionsConfirmParams.split('optionnotes=')[1]
                 if '&' in personNotes:
                     personNotes = personNotes.split('&')[0]
+                personNotes = urllib.parse.unquote(personNotes.strip())
                 # Limit the length of the notes
                 if len(personNotes) > 64000:
                     personNotes = None
