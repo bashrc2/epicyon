@@ -163,6 +163,36 @@ def randomizeActorImages(personJson: {}) -> None:
         personId + '/image' + randStr + '.' + existingExtension
 
 
+def getDefaultPersonContext() -> str:
+    return {
+        'Emoji': 'toot:Emoji',
+        'Hashtag': 'as:Hashtag',
+        'IdentityProof': 'toot:IdentityProof',
+        'PropertyValue': 'schema:PropertyValue',
+        'alsoKnownAs': {
+            '@id': 'as:alsoKnownAs', '@type': '@id'
+        },
+        'focalPoint': {
+            '@container': '@list', '@id': 'toot:focalPoint'
+        },
+        'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
+        'movedTo': {
+            '@id': 'as:movedTo', '@type': '@id'
+        },
+        'schema': 'http://schema.org#',
+        'value': 'schema:value',
+        'Curve25519Key': 'toot:Curve25519Key',
+        'Device': 'toot:Device',
+        'Ed25519Key': 'toot:Ed25519Key',
+        'Ed25519Signature': 'toot:Ed25519Signature',
+        'EncryptedMessage': 'toot:EncryptedMessage',
+        'identityKey': {'@id': 'toot:identityKey', '@type': '@id'},
+        'fingerprintKey': {'@id': 'toot:fingerprintKey', '@type': '@id'},
+        'messageFranking': 'toot:messageFranking',
+        'publicKeyBase64': 'toot:publicKeyBase64'
+    }
+
+
 def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
                      httpPrefix: str, saveToFile: bool,
                      manualFollowerApproval: bool,
@@ -212,34 +242,16 @@ def createPersonBase(baseDir: str, nickname: str, domain: str, port: int,
         personId + '/avatar' + \
         str(randint(10000000000000, 99999999999999)) + '.png'  # nosec
 
-    contextDict = {
-        'Emoji': 'toot:Emoji',
-        'Hashtag': 'as:Hashtag',
-        'IdentityProof': 'toot:IdentityProof',
-        'PropertyValue': 'schema:PropertyValue',
-        'alsoKnownAs': {
-            '@id': 'as:alsoKnownAs', '@type': '@id'
-        },
-        'focalPoint': {
-            '@container': '@list', '@id': 'toot:focalPoint'
-        },
-        'manuallyApprovesFollowers': 'as:manuallyApprovesFollowers',
-        'movedTo': {
-            '@id': 'as:movedTo', '@type': '@id'
-        },
-        'schema': 'http://schema.org#',
-        'value': 'schema:value'
-    }
-
     newPerson = {
         '@context': [
             'https://www.w3.org/ns/activitystreams',
             'https://w3id.org/security/v1',
-            contextDict
+            getDefaultPersonContext()
         ],
         'attachment': [],
         'alsoKnownAs': [],
         'discoverable': False,
+        'devices': personId + '/collections/devices',
         'endpoints': {
             'id': personId+'/endpoints',
             'sharedInbox': httpPrefix+'://'+domain+'/inbox',
