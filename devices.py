@@ -8,6 +8,56 @@ __status__ = "Production"
 
 import os
 from utils import loadJson
+from utils import saveJson
+
+
+def removeDevice(baseDir: str, nickname: str, domain: str,
+                 deviceId: str) -> bool:
+    """Unregisters a device for e2ee
+    """
+    personDir = baseDir + '/accounts/' + nickname + '@' + domain
+    deviceFilename = personDir + '/devices/' + deviceId + '.json'
+    if os.path.isfile(deviceFilename):
+        os.remove(deviceFilename)
+        return True
+    return False
+
+
+def addDevice(baseDir: str, nickname: str, domain: str,
+              deviceId: str, name: str, claimUrl: str,
+              fingerprintPublicKey: str,
+              identityPublicKey: str,
+              fingerprintKeyType="Ed25519Key",
+              identityKeyType="Curve25519Key") -> bool:
+    """Registers a device for e2ee
+    claimUrl could be something like:
+        http://localhost:3000/users/admin/claim?id=11119
+    """
+    if ' ' in deviceId or '/' in deviceId or \
+       '?' in deviceId or '#' in deviceId or \
+       '.' in deviceId:
+        return False
+    personDir = baseDir + '/accounts/' + nickname + '@' + domain
+    if not os.path.isdir(personDir):
+        return False
+    if not os.path.isdir(personDir + '/devices'):
+        os.mkdir(personDir + '/devices')
+    deviceDict = {
+        "deviceId": deviceId,
+        "type": "Device",
+        "name": name,
+        "claim": claimUrl,
+        "fingerprintKey": {
+            "type": fingerprintKeyType,
+            "publicKeyBase64": fingerprintPublicKey
+        },
+        "identityKey": {
+            "type": identityKeyType,
+            "publicKeyBase64": identityPublicKey
+        }
+    }
+    deviceFilename = personDir + '/devices/' + deviceId + '.json'
+    return saveJson(deviceDict, deviceFilename)
 
 
 def devicesCollection(baseDir: str, nickname: str, domain: str,
