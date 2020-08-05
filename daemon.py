@@ -6733,9 +6733,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if '=' in moderationStr:
                             moderationText = \
                                 moderationStr.split('=')[1].strip()
-                            moderationText = moderationText.replace('+', ' ')
+                            modText = moderationText.replace('+', ' ')
                             moderationText = \
-                                urllib.parse.unquote_plus(moderationText.strip())
+                                urllib.parse.unquote_plus(modText.strip())
                     elif moderationStr.startswith('submitInfo'):
                         msg = htmlModerationInfo(self.server.translate,
                                                  self.server.baseDir,
