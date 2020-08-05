@@ -1539,7 +1539,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         # list of registered devices for e2ee
         # see https://github.com/tootsuite/mastodon/pull/13820
-        if not htmlGET and authorized and '/users/' in self.path:
+        if authorized and '/users/' in self.path:
             if self.path.endswith('/collections/devices'):
                 nickname = self.path.split('/users/')
                 if '/' in nickname:
