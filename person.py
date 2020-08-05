@@ -1089,7 +1089,7 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
         nickname + '@' + domain + '/notes'
     if not os.path.isdir(notesDir):
         os.mkdir(notesDir)
-    notesFilename = notesDir + '/' + handle + '.txt'    
+    notesFilename = notesDir + '/' + handle + '.txt'
     with open(notesFilename, 'w+') as notesFile:
         notesFile.write(notes)
     return True

@@ -7809,7 +7809,7 @@ class PubServer(BaseHTTPRequestHandler):
                            chooserNickname,
                            self.server.domain,
                            handle, petname)
-                self._redirect_headers(originPathStr + '/' +
+                self._redirect_headers(usersPath + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
                                        callingDomain)
@@ -7825,7 +7825,7 @@ class PubServer(BaseHTTPRequestHandler):
                                chooserNickname,
                                self.server.domain,
                                handle, personNotes)
-                self._redirect_headers(originPathStr + '/' +
+                self._redirect_headers(usersPath + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
                                        callingDomain)
@@ -7849,7 +7849,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.domain,
                                              optionsNickname,
                                              optionsDomainFull)
-                self._redirect_headers(originPathStr + '/' +
+                self._redirect_headers(usersPath + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
                                        callingDomain)
