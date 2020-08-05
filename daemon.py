@@ -192,6 +192,7 @@ from bookmarks import undoBookmark
 from petnames import setPetName
 from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
+from devices import devicesCollection
 import os
 
 
@@ -1535,6 +1536,24 @@ class PubServer(BaseHTTPRequestHandler):
                     return
                 self._404()
                 return
+
+        # list of registered devices for e2ee
+        # see https://github.com/tootsuite/mastodon/pull/13820
+        if not htmlGET and authorized and '/users/' in self.path:
+            if self.path.endswith('/collections/devices'):
+                nickname = self.path.split('/users/')
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                devJson = devicesCollection(self.server.baseDir,
+                                            nickname, self.server.domain,
+                                            self.server.domainFull,
+                                            self.server.httpPrefix)
+                msg = json.dumps(devJson,
+                                 ensure_ascii=False).encode('utf-8')
+                self._set_headers('application/json',
+                                  len(msg),
+                                  None, callingDomain)
+                self._write(msg)
 
         if htmlGET and '/users/' in self.path:
             # show the person options screen with view/follow/block/report
