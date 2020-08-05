@@ -5673,7 +5673,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
         translate['Submit'] + '</button><br>\n'
     optionsStr += \
         '    <textarea id="message" ' + \
-        'name="optionnotes" style="height:200px">' + \
+        'name="optionnotes" style="height:400px">' + \
         personNotes + '</textarea>\n'
 
     optionsStr += '  </form>\n'
