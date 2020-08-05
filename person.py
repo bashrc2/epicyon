@@ -1075,3 +1075,18 @@ def personUnsnooze(baseDir: str, nickname: str, domain: str,
             if writeSnoozedFile:
                 writeSnoozedFile.write(content)
                 writeSnoozedFile.close()
+
+
+def setPersonNotes(baseDir: str, nickname: str, domain: str,
+                   handle: str, notes: str) -> bool:
+    """Adds notes about a person
+    """
+    if '@' not in handle:
+        return False
+    if handle.startswith('@'):
+        handle = handle[1:]
+    notesFilename = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/notes/' + handle + '.txt'
+    with open(notesFilename, 'w+') as notesFile:
+        notesFile.write(notes)
+    return True

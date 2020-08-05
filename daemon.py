@@ -43,6 +43,7 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import setPersonNotes
 from person import getDefaultPersonContext
 from person import savePersonQrcode
 from person import randomizeActorImages
@@ -7757,6 +7758,15 @@ class PubServer(BaseHTTPRequestHandler):
                    '?' in petname or '#' in petname:
                     petname = None
 
+            personNotes = None
+            if 'optionnotes' in optionsConfirmParams:
+                personNotes = optionsConfirmParams.split('optionnotes=')[1]
+                if '&' in personNotes:
+                    personNotes = personNotes.split('&')[0]
+                # Limit the length of the notes
+                if len(personNotes) > 64000:
+                    personNotes = None
+
             optionsNickname = getNicknameFromActor(optionsActor)
             if not optionsNickname:
                 if callingDomain.endswith('.onion') and \
@@ -7799,6 +7809,20 @@ class PubServer(BaseHTTPRequestHandler):
                            chooserNickname,
                            self.server.domain,
                            handle, petname)
+                self._redirect_headers(originPathStr + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page='+str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+            if '&submitPersonNotes=' in optionsConfirmParams and personNotes:
+                if self.server.debug:
+                    print('Change person notes')
+                handle = optionsNickname + '@' + optionsDomainFull
+                setPersonNotes(self.server.baseDir,
+                               chooserNickname,
+                               self.server.domain,
+                               handle, personNotes)
                 self._redirect_headers(originPathStr + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,

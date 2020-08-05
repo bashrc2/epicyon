@@ -5566,10 +5566,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
         '"/></a>\n'
+    handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
-        ' @' + getNicknameFromActor(optionsActor) + '@' + \
-        optionsDomain + '</p>\n'
+        ' @' + handle + '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
@@ -5657,6 +5657,24 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
         translate['Report'] + '</button>\n'
+
+    personNotes = ''
+    personNotesFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/notes/' + handle + '.txt'
+    if os.path.isfile(personNotesFilename):
+        with open(personNotesFilename, 'r') as fp:
+            personNotes = fp.read()
+
+    optionsStr += \
+        '    <br><br>' + translate['Notes'] + ': \n'
+    optionsStr += '<button type="submit" class="button" ' + \
+        'name="submitPersonNotes">' + \
+        translate['Submit'] + '</button><br>\n'
+    optionsStr += \
+        '    <textarea id="message" ' + \
+        'name="optionnotes" style="height:200px">' + \
+        personNotes + '</textarea>\n'
 
     optionsStr += '  </form>\n'
     optionsStr += '</center>\n'
