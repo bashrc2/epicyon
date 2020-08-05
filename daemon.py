@@ -1658,7 +1658,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             shareName = self.path.split('?rmshare=')[1]
-            shareName = urllib.parse.unquote(shareName.strip())
+            shareName = urllib.parse.unquote_plus(shareName.strip())
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.httpPrefix + '://' + \
@@ -3357,7 +3357,7 @@ class PubServer(BaseHTTPRequestHandler):
                         shareDescription = \
                             inReplyToUrl.replace('sharedesc:', '')
                         shareDescription = \
-                            urllib.parse.unquote(shareDescription.strip())
+                            urllib.parse.unquote_plus(shareDescription.strip())
                 self.path = self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)
@@ -6735,7 +6735,7 @@ class PubServer(BaseHTTPRequestHandler):
                                 moderationStr.split('=')[1].strip()
                             moderationText = moderationText.replace('+', ' ')
                             moderationText = \
-                                urllib.parse.unquote(moderationText.strip())
+                                urllib.parse.unquote_plus(moderationText.strip())
                     elif moderationStr.startswith('submitInfo'):
                         msg = htmlModerationInfo(self.server.translate,
                                                  self.server.baseDir,
@@ -6909,7 +6909,7 @@ class PubServer(BaseHTTPRequestHandler):
             questionParams = questionParams.replace('+', ' ')
             questionParams = questionParams.replace('%3F', '')
             questionParams = \
-                urllib.parse.unquote(questionParams.strip())
+                urllib.parse.unquote_plus(questionParams.strip())
             # post being voted on
             messageId = None
             if 'messageId=' in questionParams:
@@ -6991,9 +6991,8 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr = searchStr.split('&')[0]
-                searchStr = searchStr.replace('+', ' ')
                 searchStr = \
-                    urllib.parse.unquote(searchStr.strip())
+                    urllib.parse.unquote_plus(searchStr.strip())
                 searchStr2 = searchStr.lower().strip('\n').strip('\r')
                 print('searchStr: ' + searchStr)
                 if searchForEmoji:
@@ -7199,7 +7198,7 @@ class PubServer(BaseHTTPRequestHandler):
                 removeShareConfirmParams = \
                     removeShareConfirmParams.replace('+', ' ').strip()
                 removeShareConfirmParams = \
-                    urllib.parse.unquote(removeShareConfirmParams)
+                    urllib.parse.unquote_plus(removeShareConfirmParams)
                 shareActor = removeShareConfirmParams.split('actor=')[1]
                 if '&' in shareActor:
                     shareActor = shareActor.split('&')[0]
@@ -7262,7 +7261,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in removePostConfirmParams:
                 removePostConfirmParams = \
-                    urllib.parse.unquote(removePostConfirmParams)
+                    urllib.parse.unquote_plus(removePostConfirmParams)
                 removeMessageId = \
                     removePostConfirmParams.split('messageId=')[1]
                 if '&' in removeMessageId:
@@ -7354,7 +7353,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitView=' in followConfirmParams:
                 followingActor = \
-                    urllib.parse.unquote(followConfirmParams)
+                    urllib.parse.unquote_plus(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -7363,7 +7362,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in followConfirmParams:
                 followingActor = \
-                    urllib.parse.unquote(followConfirmParams)
+                    urllib.parse.unquote_plus(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -7436,7 +7435,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in followConfirmParams:
                 followingActor = \
-                    urllib.parse.unquote(followConfirmParams)
+                    urllib.parse.unquote_plus(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -7530,7 +7529,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in blockConfirmParams:
                 blockingActor = \
-                    urllib.parse.unquote(blockConfirmParams)
+                    urllib.parse.unquote_plus(blockConfirmParams)
                 blockingActor = blockingActor.split('actor=')[1]
                 if '&' in blockingActor:
                     blockingActor = blockingActor.split('&')[0]
@@ -7627,7 +7626,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in blockConfirmParams:
                 blockingActor = \
-                    urllib.parse.unquote(blockConfirmParams)
+                    urllib.parse.unquote_plus(blockConfirmParams)
                 blockingActor = blockingActor.split('actor=')[1]
                 if '&' in blockingActor:
                     blockingActor = blockingActor.split('&')[0]
@@ -7725,7 +7724,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             optionsConfirmParams = \
-                urllib.parse.unquote(optionsConfirmParams)
+                urllib.parse.unquote_plus(optionsConfirmParams)
             # page number to return to
             if 'pageNumber=' in optionsConfirmParams:
                 pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
@@ -7763,7 +7762,7 @@ class PubServer(BaseHTTPRequestHandler):
                 personNotes = optionsConfirmParams.split('optionnotes=')[1]
                 if '&' in personNotes:
                     personNotes = personNotes.split('&')[0]
-                personNotes = urllib.parse.unquote(personNotes.strip())
+                personNotes = urllib.parse.unquote_plus(personNotes.strip())
                 # Limit the length of the notes
                 if len(personNotes) > 64000:
                     personNotes = None
