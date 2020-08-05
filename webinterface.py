@@ -78,6 +78,7 @@ from git import isGitPatch
 from theme import getThemesList
 from petnames import getPetName
 from followingCalendar import receivingCalendarEvents
+from devices import decryptMessageFromDevice
 
 
 def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
@@ -4248,8 +4249,13 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary'] = ''
 
+    if postJsonObject['object'].get('cipherText'):
+        postJsonObject['object']['content'] = \
+            decryptMessageFromDevice(postJsonObject['object'])
+
     if not postJsonObject['object'].get('content'):
         return ''
+
     isPatch = isGitPatch(baseDir, nickname, domain,
                          postJsonObject['object']['type'],
                          postJsonObject['object']['summary'],

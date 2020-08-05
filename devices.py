@@ -37,3 +37,32 @@ def devicesCollection(baseDir: str, nickname: str, domain: str,
         'items': deviceList
     }
     return devicesDict
+
+
+def decryptMessageFromDevice(messageJson: {}) -> str:
+    """Locally decrypts a message on the device.
+    This should probably be a link to a local script
+    or native app, such that what the user sees isn't
+    something which the server could get access to.
+    """
+    # TODO
+    #  {
+    #    "type": "EncryptedMessage",
+    #    "messageType": 0,
+    #    "cipherText": "...",
+    #    "digest": {
+    #      "type": "Digest",
+    #      "digestAlgorithm": "http://www.w3.org/2000/09/xmldsig#hmac-sha256",
+    #      "digestValue": "5f6ad31acd64995483d75c7..."
+    #    },
+    #    "messageFranking": "...",
+    #    "attributedTo": {
+    #      "type": "Device",
+    #      "deviceId": "11119"
+    #    },
+    #    "to": {
+    #      "type": "Device",
+    #      "deviceId": "11876"
+    #    }
+    #  }
+    return ''
