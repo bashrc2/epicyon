@@ -2400,6 +2400,7 @@ def isDM(postJsonObject: {}) -> bool:
         return False
     if postJsonObject['object']['type'] != 'Note' and \
        postJsonObject['object']['type'] != 'Patch' and \
+       postJsonObject['object']['type'] != 'EncryptedMessage' and \
        postJsonObject['object']['type'] != 'Article':
         return False
     if postJsonObject['object'].get('moderationStatus'):
