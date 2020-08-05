@@ -1085,8 +1085,11 @@ def setPersonNotes(baseDir: str, nickname: str, domain: str,
         return False
     if handle.startswith('@'):
         handle = handle[1:]
-    notesFilename = baseDir + '/accounts/' + \
-        nickname + '@' + domain + '/notes/' + handle + '.txt'
+    notesDir = baseDir + '/accounts/' + \
+        nickname + '@' + domain + '/notes'
+    if not os.path.isdir(notesDir):
+        os.mkdir(notesDir)
+    notesFilename = notesDir + '/' + handle + '.txt'    
     with open(notesFilename, 'w+') as notesFile:
         notesFile.write(notes)
     return True
