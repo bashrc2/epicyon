@@ -7815,10 +7815,12 @@ class PubServer(BaseHTTPRequestHandler):
                                        callingDomain)
                 self.server.POSTbusy = False
                 return
-            if '&submitPersonNotes=' in optionsConfirmParams and personNotes:
+            if '&submitPersonNotes=' in optionsConfirmParams:
                 if self.server.debug:
                     print('Change person notes')
                 handle = optionsNickname + '@' + optionsDomainFull
+                if not personNotes:
+                    personNotes = ''
                 setPersonNotes(self.server.baseDir,
                                chooserNickname,
                                self.server.domain,
