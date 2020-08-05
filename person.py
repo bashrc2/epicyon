@@ -164,6 +164,8 @@ def randomizeActorImages(personJson: {}) -> None:
 
 
 def getDefaultPersonContext() -> str:
+    """Gets the default actor context
+    """
     return {
         'Emoji': 'toot:Emoji',
         'Hashtag': 'as:Hashtag',

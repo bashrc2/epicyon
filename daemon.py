@@ -43,6 +43,7 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import getDefaultPersonContext
 from person import savePersonQrcode
 from person import randomizeActorImages
 from person import personUpgradeActor
@@ -6616,6 +6617,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(gitProjectsFilename)
                         # save actor json file within accounts
                         if actorChanged:
+                            # update the context for the actor
+                            actorJson['@context'] = [
+                                'https://www.w3.org/ns/activitystreams',
+                                'https://w3id.org/security/v1',
+                                getDefaultPersonContext()
+                            ]
                             randomizeActorImages(actorJson)
                             saveJson(actorJson, actorFilename)
                             webfingerUpdate(self.server.baseDir,
