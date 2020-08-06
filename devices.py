@@ -6,6 +6,29 @@ __maintainer__ = "Bob Mottram"
 __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
+# REST API overview
+#
+# To support Olm, the following APIs are required:
+#
+#  * Uploading keys for a device (current app)
+#    POST /api/v1/crypto/keys/upload
+#
+#  * Querying available devices of people you want to establish a session with
+#    POST /api/v1/crypto/keys/query
+#
+#  * Claiming a pre-key (one-time-key) for each device you want to establish
+#    a session with
+#    POST /api/v1/crypto/keys/claim
+#
+#  * Sending encrypted messages directly to specific devices of other people
+#    POST /api/v1/crypto/delivery
+#
+#  * Collect encrypted messages addressed to the current device
+#    GET /api/v1/crypto/encrypted_messages
+#
+#  * Clear all encrypted messages addressed to the current device
+#    POST /api/v1/crypto/encrypted_messages/clear
+
 import os
 from utils import loadJson
 from utils import saveJson
