@@ -194,6 +194,7 @@ from petnames import setPetName
 from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
 from devices import E2EEdevicesCollection
+from devices import E2EEvalidDevice
 import os
 
 
@@ -5776,9 +5777,46 @@ class PubServer(BaseHTTPRequestHandler):
                                             postBytes, boundary)
         return pageNumber
 
+    def _cryptoAPIreadJson(self) -> {}:
+        messageBytes = None
+        maxCryptoMessageLength = 10240
+        length = int(self.headers['Content-length'])
+        if length >= maxCryptoMessageLength:
+            print('WARN: post to crypto API is too long ' +
+                  str(length) + ' bytes')
+            return {}
+        try:
+            messageBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST messageBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST messageBytes socket error')
+            return {}
+        except ValueError as e:
+            print('ERROR: POST messageBytes rfile.read failed')
+            print(e)
+            return {}
+
+        lenMessage = len(messageBytes)
+        if lenMessage > 10240:
+            print('WARN: post to crypto API is too long ' +
+                  str(lenMessage) + ' bytes')
+            return {}
+
+        return json.loads(messageBytes)
+
     def _cryptoAPI(self, path: str, authorized: bool) -> None:
         # TODO
         if authorized and path.startswith('/api/v1/crypto/keys/upload'):
+            deviceKeys = self._cryptoAPIreadJson()
+            if not deviceKeys:
+                self._400()
+                return
+            if not E2EEvalidDevice(deviceKeys):
+                self._400()
+                return
             self._200()
         elif path.startswith('/api/v1/crypto/keys/query'):
             self._200()

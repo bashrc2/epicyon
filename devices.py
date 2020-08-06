@@ -46,6 +46,52 @@ def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
     return False
 
 
+def E2EEvalidDevice(deviceJson: {}) -> bool:
+    """Returns true if the given json contains valid device keys
+    """
+    if not isinstance(deviceJson, dict):
+        return False
+    if not deviceJson.get('deviceId'):
+        return False
+    if not isinstance(deviceJson['deviceId'], str):
+        return False
+    if not deviceJson.get('type'):
+        return False
+    if not isinstance(deviceJson['type'], str):
+        return False
+    if deviceJson['type'] != 'Device':
+        return False
+    if not deviceJson.get('claim'):
+        return False
+    if not isinstance(deviceJson['claim'], str):
+        return False
+    if not deviceJson.get('fingerprintKey'):
+        return False
+    if not isinstance(deviceJson['fingerprintKey'], dict):
+        return False
+    if not deviceJson['fingerprintKey'].get('type'):
+        return False
+    if not isinstance(deviceJson['fingerprintKey']['type'], str):
+        return False
+    if not deviceJson['fingerprintKey'].get('publicKeyBase64'):
+        return False
+    if not isinstance(deviceJson['fingerprintKey']['publicKeyBase64'], str):
+        return False
+    if not deviceJson.get('identityKey'):
+        return False
+    if not isinstance(deviceJson['identityKey'], dict):
+        return False
+    if not deviceJson['identityKey'].get('type'):
+        return False
+    if not isinstance(deviceJson['identityKey']['type'], str):
+        return False
+    if not deviceJson['identityKey'].get('publicKeyBase64'):
+        return False
+    if not isinstance(deviceJson['identityKey']['publicKeyBase64'], str):
+        return False
+    return True
+
+
 def E2EEaddDevice(baseDir: str, nickname: str, domain: str,
                   deviceId: str, name: str, claimUrl: str,
                   fingerprintPublicKey: str,
