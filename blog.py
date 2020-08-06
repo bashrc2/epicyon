@@ -170,8 +170,10 @@ def htmlBlogPostContent(authorized: bool,
 
     # get the handle of the author
     if postJsonObject['object'].get('attributedTo'):
-        actor = postJsonObject['object']['attributedTo']
-        authorNickname = getNicknameFromActor(actor)
+        authorNickname = None
+        if isinstance(postJsonObject['object']['attributedTo'], str):
+            actor = postJsonObject['object']['attributedTo']
+            authorNickname = getNicknameFromActor(actor)
         if authorNickname:
             authorDomain, authorPort = getDomainFromActor(actor)
             if authorDomain:

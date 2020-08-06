@@ -3813,8 +3813,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if showIcons:
         replyToLink = postJsonObject['object']['id']
         if postJsonObject['object'].get('attributedTo'):
-            replyToLink += \
-                '?mention=' + postJsonObject['object']['attributedTo']
+            if isinstance(postJsonObject['object']['attributedTo'], str):
+                replyToLink += \
+                    '?mention=' + postJsonObject['object']['attributedTo']
         if postJsonObject['object'].get('content'):
             mentionedActors = \
                 getMentionsFromHtml(postJsonObject['object']['content'])
@@ -3985,7 +3986,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
-                attributedTo = postJsonObject['object']['attributedTo']
+                attributedTo = ''
+                if isinstance(postJsonObject['object']['attributedTo'], str):
+                    attributedTo = postJsonObject['object']['attributedTo']
                 if attributedTo.startswith(postActor):
                     titleStr += \
                         ' <img loading="lazy" title="' + \
@@ -3994,8 +3997,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                         '" src="/' + iconsDir + \
                         '/repeat_inactive.png" class="announceOrReply"/>\n'
                 else:
-                    announceNickname = \
-                        getNicknameFromActor(attributedTo)
+                    announceNickname = None
+                    if attributedTo:
+                        announceNickname = getNicknameFromActor(attributedTo)
                     if announceNickname:
                         announceDomain, announcePort = \
                             getDomainFromActor(attributedTo)
