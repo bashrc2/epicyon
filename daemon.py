@@ -5777,15 +5777,16 @@ class PubServer(BaseHTTPRequestHandler):
 
     def _cryptoAPI(self, path: str, authorized: bool) -> None:
         # TODO
-        if path.startswith('/api/v1/crypto/keys/upload'):
+        if authorized and path.startswith('/api/v1/crypto/keys/upload'):
             self._200()
         elif path.startswith('/api/v1/crypto/keys/query'):
             self._200()
         elif path.startswith('/api/v1/crypto/keys/claim'):
             self._200()
-        elif path.startswith('/api/v1/crypto/delivery'):
+        elif authorized and path.startswith('/api/v1/crypto/delivery'):
             self._200()
-        elif path.startswith('/api/v1/crypto/encrypted_messages/clear'):
+        elif (authorized and
+              path.startswith('/api/v1/crypto/encrypted_messages/clear')):
             self._200()
         elif path.startswith('/api/v1/crypto/encrypted_messages'):
             self._200()
