@@ -34,8 +34,8 @@ from utils import loadJson
 from utils import saveJson
 
 
-def removeDevice(baseDir: str, nickname: str, domain: str,
-                 deviceId: str) -> bool:
+def E2EEremoveDevice(baseDir: str, nickname: str, domain: str,
+                     deviceId: str) -> bool:
     """Unregisters a device for e2ee
     """
     personDir = baseDir + '/accounts/' + nickname + '@' + domain
@@ -46,12 +46,12 @@ def removeDevice(baseDir: str, nickname: str, domain: str,
     return False
 
 
-def addDevice(baseDir: str, nickname: str, domain: str,
-              deviceId: str, name: str, claimUrl: str,
-              fingerprintPublicKey: str,
-              identityPublicKey: str,
-              fingerprintKeyType="Ed25519Key",
-              identityKeyType="Curve25519Key") -> bool:
+def E2EEaddDevice(baseDir: str, nickname: str, domain: str,
+                  deviceId: str, name: str, claimUrl: str,
+                  fingerprintPublicKey: str,
+                  identityPublicKey: str,
+                  fingerprintKeyType="Ed25519Key",
+                  identityKeyType="Curve25519Key") -> bool:
     """Registers a device for e2ee
     claimUrl could be something like:
         http://localhost:3000/users/admin/claim?id=11119
@@ -83,8 +83,8 @@ def addDevice(baseDir: str, nickname: str, domain: str,
     return saveJson(deviceDict, deviceFilename)
 
 
-def devicesCollection(baseDir: str, nickname: str, domain: str,
-                      domainFull: str, httpPrefix: str) -> {}:
+def E2EEdevicesCollection(baseDir: str, nickname: str, domain: str,
+                          domainFull: str, httpPrefix: str) -> {}:
     """Returns a list of registered devices
     """
     personDir = baseDir + '/accounts/' + nickname + '@' + domain
@@ -112,7 +112,7 @@ def devicesCollection(baseDir: str, nickname: str, domain: str,
     return devicesDict
 
 
-def decryptMessageFromDevice(messageJson: {}) -> str:
+def E2EEdecryptMessageFromDevice(messageJson: {}) -> str:
     """Locally decrypts a message on the device.
     This should probably be a link to a local script
     or native app, such that what the user sees isn't

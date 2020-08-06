@@ -193,7 +193,7 @@ from bookmarks import undoBookmark
 from petnames import setPetName
 from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
-from devices import devicesCollection
+from devices import E2EEdevicesCollection
 import os
 
 
@@ -1545,10 +1545,11 @@ class PubServer(BaseHTTPRequestHandler):
                 nickname = self.path.split('/users/')
                 if '/' in nickname:
                     nickname = nickname.split('/')[0]
-                devJson = devicesCollection(self.server.baseDir,
-                                            nickname, self.server.domain,
-                                            self.server.domainFull,
-                                            self.server.httpPrefix)
+                devJson = E2EEdevicesCollection(self.server.baseDir,
+                                                nickname,
+                                                self.server.domain,
+                                                self.server.domainFull,
+                                                self.server.httpPrefix)
                 msg = json.dumps(devJson,
                                  ensure_ascii=False).encode('utf-8')
                 self._set_headers('application/json',

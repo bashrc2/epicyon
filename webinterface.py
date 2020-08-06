@@ -78,7 +78,7 @@ from git import isGitPatch
 from theme import getThemesList
 from petnames import getPetName
 from followingCalendar import receivingCalendarEvents
-from devices import decryptMessageFromDevice
+from devices import E2EEdecryptMessageFromDevice
 
 
 def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
@@ -4255,7 +4255,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     if postJsonObject['object'].get('cipherText'):
         postJsonObject['object']['content'] = \
-            decryptMessageFromDevice(postJsonObject['object'])
+            E2EEdecryptMessageFromDevice(postJsonObject['object'])
 
     if not postJsonObject['object'].get('content'):
         return ''
