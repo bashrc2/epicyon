@@ -5775,6 +5775,23 @@ class PubServer(BaseHTTPRequestHandler):
                                             postBytes, boundary)
         return pageNumber
 
+    def _cryptoAPI(self, path: str, authorized: bool) -> None:
+        # TODO
+        if path.startswith('/api/v1/crypto/keys/upload'):
+            self._200()
+        elif path.startswith('/api/v1/crypto/keys/query'):
+            self._200()
+        elif path.startswith('/api/v1/crypto/keys/claim'):
+            self._200()
+        elif path.startswith('/api/v1/crypto/delivery'):
+            self._200()
+        elif path.startswith('/api/v1/crypto/encrypted_messages/clear'):
+            self._200()
+        elif path.startswith('/api/v1/crypto/encrypted_messages'):
+            self._200()
+        else:
+            self._400()
+
     def do_POST(self):
         POSTstartTime = time.time()
         POSTtimings = []
@@ -5847,6 +5864,11 @@ class PubServer(BaseHTTPRequestHandler):
         if not authorized:
             print('POST Not authorized')
             print(str(self.headers))
+
+        if self.path.startswith('/api/v1/crypto/'):
+            self._cryptoAPI(self.path, authorized)
+            self.server.POSTbusy = False
+            return
 
         # if this is a POST to the outbox then check authentication
         self.outboxAuthenticated = False
