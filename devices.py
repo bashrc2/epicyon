@@ -59,6 +59,10 @@ def E2EEvalidDevice(deviceJson: {}) -> bool:
         return False
     if not isinstance(deviceJson['type'], str):
         return False
+    if not deviceJson.get('name'):
+        return False
+    if not isinstance(deviceJson['name'], str):
+        return False
     if deviceJson['type'] != 'Device':
         return False
     if not deviceJson.get('claim'):

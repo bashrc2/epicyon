@@ -195,6 +195,7 @@ from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
 from devices import E2EEdevicesCollection
 from devices import E2EEvalidDevice
+from devices import E2EEaddDevice
 import os
 
 
@@ -1051,6 +1052,8 @@ class PubServer(BaseHTTPRequestHandler):
         return 1
 
     def _isAuthorized(self) -> bool:
+        self.authorizedNickname = None
+
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico'):
@@ -1064,6 +1067,7 @@ class PubServer(BaseHTTPRequestHandler):
                     tokenStr = tokenStr.split(';')[0].strip()
                 if self.server.tokensLookup.get(tokenStr):
                     nickname = self.server.tokensLookup[tokenStr]
+                    self.authorizedNickname = nickname
                     # default to the inbox of the person
                     if self.path == '/':
                         self.path = '/users/' + nickname + '/inbox'
@@ -5778,6 +5782,8 @@ class PubServer(BaseHTTPRequestHandler):
         return pageNumber
 
     def _cryptoAPIreadJson(self) -> {}:
+        """Obtains json from POST to the crypto API
+        """
         messageBytes = None
         maxCryptoMessageLength = 10240
         length = int(self.headers['Content-length'])
@@ -5808,8 +5814,10 @@ class PubServer(BaseHTTPRequestHandler):
         return json.loads(messageBytes)
 
     def _cryptoAPI(self, path: str, authorized: bool) -> None:
-        # TODO
         if authorized and path.startswith('/api/v1/crypto/keys/upload'):
+            if not self.authorizedNickname:
+                self._400()
+                return
             deviceKeys = self._cryptoAPIreadJson()
             if not deviceKeys:
                 self._400()
@@ -5817,17 +5825,32 @@ class PubServer(BaseHTTPRequestHandler):
             if not E2EEvalidDevice(deviceKeys):
                 self._400()
                 return
+            E2EEaddDevice(self.server.baseDir,
+                          self.authorizedNickname,
+                          self.server.domain,
+                          deviceKeys['deviceId'],
+                          deviceKeys['name'],
+                          deviceKeys['claim'],
+                          deviceKeys['fingerprintKey']['publicKeyBase64'],
+                          deviceKeys['identityKey']['publicKeyBase64'],
+                          deviceKeys['fingerprintKey']['type'],
+                          deviceKeys['identityKey']['type'])
             self._200()
         elif path.startswith('/api/v1/crypto/keys/query'):
+            # TODO
             self._200()
         elif path.startswith('/api/v1/crypto/keys/claim'):
+            # TODO
             self._200()
         elif authorized and path.startswith('/api/v1/crypto/delivery'):
+            # TODO
             self._200()
         elif (authorized and
               path.startswith('/api/v1/crypto/encrypted_messages/clear')):
+            # TODO
             self._200()
         elif path.startswith('/api/v1/crypto/encrypted_messages'):
+            # TODO
             self._200()
         else:
             self._400()
