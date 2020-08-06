@@ -5814,6 +5814,8 @@ class PubServer(BaseHTTPRequestHandler):
         return json.loads(messageBytes)
 
     def _cryptoAPI(self, path: str, authorized: bool) -> None:
+        """POST or GET with the crypto API
+        """
         if authorized and path.startswith('/api/v1/crypto/keys/upload'):
             if not self.authorizedNickname:
                 self._400()
