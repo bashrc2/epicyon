@@ -267,6 +267,9 @@ def addWebLinks(content: str) -> str:
 def validHashTag(hashtag: str) -> bool:
     """Returns true if the give hashtag contains valid characters
     """
+    # long hashtags are not valid
+    if len(hashtag) >= 32:
+        return False
     validChars = set('0123456789' +
                      'abcdefghijklmnopqrstuvwxyz' +
                      'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
