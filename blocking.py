@@ -118,6 +118,9 @@ def removeBlock(baseDir: str, nickname: str, domain: str,
 def isBlockedHashtag(baseDir: str, hashtag: str) -> bool:
     """Is the given hashtag blocked?
     """
+    # avoid very long hashtags
+    if len(hashtag) > 32:
+        return True
     globalBlockingFilename = baseDir + '/accounts/blocking.txt'
     if os.path.isfile(globalBlockingFilename):
         hashtag = hashtag.strip('\n').strip('\r')
