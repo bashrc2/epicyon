@@ -3060,7 +3060,10 @@ def addEmbeddedVideoFromSites(translate: {}, content: str,
             return content
 
     invidiousSites = ('https://invidio.us',
-                      'axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
+                      'https://invidious.snopyta.org',
+                      'http://c7hqkpkpemu6e7emz5b4vy' +
+                      'z7idjgdvgaaa3dyimmeojqbgpea3xqjoid.onion',
+                      'http://axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
                       'bzzsg2ii4fv2iid.onion')
     for videoSite in invidiousSites:
         if '"' + videoSite in content:
