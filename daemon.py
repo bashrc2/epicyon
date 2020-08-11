@@ -5914,6 +5914,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self._400()
         elif path.startswith('/api/v1/crypto/keys/query'):
+            # given a handle (nickname@domain) return the devices
+            # registered to that handle
             if not self._cryptoAPIQuery():
                 self._400()
         elif path.startswith('/api/v1/crypto/keys/claim'):
