@@ -5781,6 +5781,49 @@ class PubServer(BaseHTTPRequestHandler):
                                             postBytes, boundary)
         return pageNumber
 
+    def _cryptoAPIreadHandle(self):
+        """Reads handle
+        """
+        messageBytes = None
+        maxDeviceIdLength = 2048
+        length = int(self.headers['Content-length'])
+        if length >= maxDeviceIdLength:
+            print('WARN: handle post to crypto API is too long ' +
+                  str(length) + ' bytes')
+            return {}
+        try:
+            messageBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: handle POST messageBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: handle POST messageBytes socket error')
+            return {}
+        except ValueError as e:
+            print('ERROR: handle POST messageBytes rfile.read failed')
+            print(e)
+            return {}
+
+        lenMessage = len(messageBytes)
+        if lenMessage > 2048:
+            print('WARN: handle post to crypto API is too long ' +
+                  str(lenMessage) + ' bytes')
+            return {}
+
+        handle = messageBytes.decode("utf-8")
+        if not handle:
+            return None
+        if '@' not in handle:
+            return None
+        if '[' in handle:
+            return json.loads(messageBytes)
+        if handle.startswith('@'):
+            handle = handle[1:]
+        if '@' not in handle:
+            return None
+        return handle.strip()
+
     def _cryptoAPIreadJson(self) -> {}:
         """Obtains json from POST to the crypto API
         """
@@ -5812,6 +5855,34 @@ class PubServer(BaseHTTPRequestHandler):
             return {}
 
         return json.loads(messageBytes)
+
+    def _cryptoAPIQuery(self, callingDomain: str) -> bool:
+        handle = self._cryptoAPIreadHandle()
+        if not handle:
+            return False
+        if isinstance(handle, str):
+            personDir = self.server.baseDir + '/accounts/' + handle
+            if not os.path.isdir(personDir + '/devices'):
+                return False
+            devicesList = []
+            for subdir, dirs, files in os.walk(personDir + '/devices'):
+                for f in files:
+                    deviceFilename = os.path.join(personDir + '/devices', f)
+                    if not os.path.isfile(deviceFilename):
+                        continue
+                    contentJson = loadJson(deviceFilename)
+                    if contentJson:
+                        devicesList.append(contentJson)
+            # return the list of devices for this handle
+            msg = \
+                json.dumps(devicesList,
+                           ensure_ascii=False).encode('utf-8')
+            self._set_headers('application/json',
+                              len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            return True
+        return False
 
     def _cryptoAPI(self, path: str, authorized: bool) -> None:
         """POST or GET with the crypto API
@@ -5862,8 +5933,8 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self._400()
         elif path.startswith('/api/v1/crypto/keys/query'):
-            # TODO
-            self._200()
+            if not self._cryptoAPIQuery():
+                self._400()
         elif path.startswith('/api/v1/crypto/keys/claim'):
             # TODO
             self._200()
