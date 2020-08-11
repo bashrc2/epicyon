@@ -1684,6 +1684,13 @@ def testWebLinks():
         '<p>ｆｉｌｅｐｏｐｏｕｔ＝' + \
         'ＴｅｍｐｌａｔｅＡｔｔａｃｈｍｅｎｔＲｉｃｈＰｏｐｏｕｔ'
 
+    exampleText = \
+        '<p>Test1 test2 #YetAnotherExcessivelyLongwindedAndBoringHashtag</p>'
+    resultText = removeLongWords(addWebLinks(exampleText), 40, [])
+    assert(resultText ==
+           '<p>Test1 test2 '
+           '#YetAnotherExcessivelyLongwindedAndBorin\ngHashtag</p>')
+
 
 def testAddEmoji():
     print('testAddEmoji')

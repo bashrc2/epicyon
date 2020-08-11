@@ -78,6 +78,7 @@ from git import isGitPatch
 from theme import getThemesList
 from petnames import getPetName
 from followingCalendar import receivingCalendarEvents
+from devices import E2EEdecryptMessageFromDevice
 
 
 def getAltPath(actor: str, domainFull: str, callingDomain: str) -> str:
@@ -3059,7 +3060,10 @@ def addEmbeddedVideoFromSites(translate: {}, content: str,
             return content
 
     invidiousSites = ('https://invidio.us',
-                      'axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
+                      'https://invidious.snopyta.org',
+                      'http://c7hqkpkpemu6e7emz5b4vy' +
+                      'z7idjgdvgaaa3dyimmeojqbgpea3xqjoid.onion',
+                      'http://axqzx4s6s54s32yentfqojs3x5i7faxza6xo3ehd4' +
                       'bzzsg2ii4fv2iid.onion')
     for videoSite in invidiousSites:
         if '"' + videoSite in content:
@@ -3812,8 +3816,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if showIcons:
         replyToLink = postJsonObject['object']['id']
         if postJsonObject['object'].get('attributedTo'):
-            replyToLink += \
-                '?mention=' + postJsonObject['object']['attributedTo']
+            if isinstance(postJsonObject['object']['attributedTo'], str):
+                replyToLink += \
+                    '?mention=' + postJsonObject['object']['attributedTo']
         if postJsonObject['object'].get('content'):
             mentionedActors = \
                 getMentionsFromHtml(postJsonObject['object']['content'])
@@ -3984,7 +3989,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if showRepeatIcon:
         if isAnnounced:
             if postJsonObject['object'].get('attributedTo'):
-                attributedTo = postJsonObject['object']['attributedTo']
+                attributedTo = ''
+                if isinstance(postJsonObject['object']['attributedTo'], str):
+                    attributedTo = postJsonObject['object']['attributedTo']
                 if attributedTo.startswith(postActor):
                     titleStr += \
                         ' <img loading="lazy" title="' + \
@@ -3993,8 +4000,9 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                         '" src="/' + iconsDir + \
                         '/repeat_inactive.png" class="announceOrReply"/>\n'
                 else:
-                    announceNickname = \
-                        getNicknameFromActor(attributedTo)
+                    announceNickname = None
+                    if attributedTo:
+                        announceNickname = getNicknameFromActor(attributedTo)
                     if announceNickname:
                         announceDomain, announcePort = \
                             getDomainFromActor(attributedTo)
@@ -4248,8 +4256,13 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if not postJsonObject['object'].get('summary'):
         postJsonObject['object']['summary'] = ''
 
+    if postJsonObject['object'].get('cipherText'):
+        postJsonObject['object']['content'] = \
+            E2EEdecryptMessageFromDevice(postJsonObject['object'])
+
     if not postJsonObject['object'].get('content'):
         return ''
+
     isPatch = isGitPatch(baseDir, nickname, domain,
                          postJsonObject['object']['type'],
                          postJsonObject['object']['summary'],
@@ -5560,10 +5573,10 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += '  <a href="' + optionsActor + '">\n'
     optionsStr += '  <img loading="lazy" src="' + optionsProfileUrl + \
         '"/></a>\n'
+    handle = getNicknameFromActor(optionsActor) + '@' + optionsDomain
     optionsStr += \
         '  <p class="optionsText">' + translate['Options for'] + \
-        ' @' + getNicknameFromActor(optionsActor) + '@' + \
-        optionsDomain + '</p>\n'
+        ' @' + handle + '</p>\n'
     if emailAddress:
         optionsStr += \
             '<p class="imText">' + translate['Email'] + \
@@ -5651,6 +5664,24 @@ def htmlPersonOptions(translate: {}, baseDir: str,
     optionsStr += \
         '    <button type="submit" class="button" name="submitReport">' + \
         translate['Report'] + '</button>\n'
+
+    personNotes = ''
+    personNotesFilename = \
+        baseDir + '/accounts/' + nickname + '@' + domain + \
+        '/notes/' + handle + '.txt'
+    if os.path.isfile(personNotesFilename):
+        with open(personNotesFilename, 'r') as fp:
+            personNotes = fp.read()
+
+    optionsStr += \
+        '    <br><br>' + translate['Notes'] + ': \n'
+    optionsStr += '<button type="submit" class="button" ' + \
+        'name="submitPersonNotes">' + \
+        translate['Submit'] + '</button><br>\n'
+    optionsStr += \
+        '    <textarea id="message" ' + \
+        'name="optionnotes" style="height:400px">' + \
+        personNotes + '</textarea>\n'
 
     optionsStr += '  </form>\n'
     optionsStr += '</center>\n'

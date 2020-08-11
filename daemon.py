@@ -43,6 +43,8 @@ from matrix import getMatrixAddress
 from matrix import setMatrixAddress
 from donate import getDonationUrl
 from donate import setDonationUrl
+from person import setPersonNotes
+from person import getDefaultPersonContext
 from person import savePersonQrcode
 from person import randomizeActorImages
 from person import personUpgradeActor
@@ -191,6 +193,9 @@ from bookmarks import undoBookmark
 from petnames import setPetName
 from followingCalendar import addPersonToCalendar
 from followingCalendar import removePersonFromCalendar
+from devices import E2EEdevicesCollection
+from devices import E2EEvalidDevice
+from devices import E2EEaddDevice
 import os
 
 
@@ -1047,6 +1052,8 @@ class PubServer(BaseHTTPRequestHandler):
         return 1
 
     def _isAuthorized(self) -> bool:
+        self.authorizedNickname = None
+
         if self.path.startswith('/icons/') or \
            self.path.startswith('/avatars/') or \
            self.path.startswith('/favicon.ico'):
@@ -1060,6 +1067,7 @@ class PubServer(BaseHTTPRequestHandler):
                     tokenStr = tokenStr.split(';')[0].strip()
                 if self.server.tokensLookup.get(tokenStr):
                     nickname = self.server.tokensLookup[tokenStr]
+                    self.authorizedNickname = nickname
                     # default to the inbox of the person
                     if self.path == '/':
                         self.path = '/users/' + nickname + '/inbox'
@@ -1535,6 +1543,25 @@ class PubServer(BaseHTTPRequestHandler):
                 self._404()
                 return
 
+        # list of registered devices for e2ee
+        # see https://github.com/tootsuite/mastodon/pull/13820
+        if authorized and '/users/' in self.path:
+            if self.path.endswith('/collections/devices'):
+                nickname = self.path.split('/users/')
+                if '/' in nickname:
+                    nickname = nickname.split('/')[0]
+                devJson = E2EEdevicesCollection(self.server.baseDir,
+                                                nickname,
+                                                self.server.domain,
+                                                self.server.domainFull,
+                                                self.server.httpPrefix)
+                msg = json.dumps(devJson,
+                                 ensure_ascii=False).encode('utf-8')
+                self._set_headers('application/json',
+                                  len(msg),
+                                  None, callingDomain)
+                self._write(msg)
+
         if htmlGET and '/users/' in self.path:
             # show the person options screen with view/follow/block/report
             if '?options=' in self.path:
@@ -1637,7 +1664,7 @@ class PubServer(BaseHTTPRequestHandler):
         # remove a shared item
         if htmlGET and '?rmshare=' in self.path:
             shareName = self.path.split('?rmshare=')[1]
-            shareName = urllib.parse.unquote(shareName.strip())
+            shareName = urllib.parse.unquote_plus(shareName.strip())
             usersPath = self.path.split('?rmshare=')[0]
             actor = \
                 self.server.httpPrefix + '://' + \
@@ -3336,7 +3363,7 @@ class PubServer(BaseHTTPRequestHandler):
                         shareDescription = \
                             inReplyToUrl.replace('sharedesc:', '')
                         shareDescription = \
-                            urllib.parse.unquote(shareDescription.strip())
+                            urllib.parse.unquote_plus(shareDescription.strip())
                 self.path = self.path.split('?replydm=')[0]+'/newdm'
                 if self.server.debug:
                     print('DEBUG: replydm path ' + self.path)
@@ -5754,6 +5781,159 @@ class PubServer(BaseHTTPRequestHandler):
                                             postBytes, boundary)
         return pageNumber
 
+    def _cryptoAPIreadHandle(self):
+        """Reads handle
+        """
+        messageBytes = None
+        maxDeviceIdLength = 2048
+        length = int(self.headers['Content-length'])
+        if length >= maxDeviceIdLength:
+            print('WARN: handle post to crypto API is too long ' +
+                  str(length) + ' bytes')
+            return {}
+        try:
+            messageBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: handle POST messageBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: handle POST messageBytes socket error')
+            return {}
+        except ValueError as e:
+            print('ERROR: handle POST messageBytes rfile.read failed')
+            print(e)
+            return {}
+
+        lenMessage = len(messageBytes)
+        if lenMessage > 2048:
+            print('WARN: handle post to crypto API is too long ' +
+                  str(lenMessage) + ' bytes')
+            return {}
+
+        handle = messageBytes.decode("utf-8")
+        if not handle:
+            return None
+        if '@' not in handle:
+            return None
+        if '[' in handle:
+            return json.loads(messageBytes)
+        if handle.startswith('@'):
+            handle = handle[1:]
+        if '@' not in handle:
+            return None
+        return handle.strip()
+
+    def _cryptoAPIreadJson(self) -> {}:
+        """Obtains json from POST to the crypto API
+        """
+        messageBytes = None
+        maxCryptoMessageLength = 10240
+        length = int(self.headers['Content-length'])
+        if length >= maxCryptoMessageLength:
+            print('WARN: post to crypto API is too long ' +
+                  str(length) + ' bytes')
+            return {}
+        try:
+            messageBytes = self.rfile.read(length)
+        except SocketError as e:
+            if e.errno == errno.ECONNRESET:
+                print('WARN: POST messageBytes ' +
+                      'connection reset by peer')
+            else:
+                print('WARN: POST messageBytes socket error')
+            return {}
+        except ValueError as e:
+            print('ERROR: POST messageBytes rfile.read failed')
+            print(e)
+            return {}
+
+        lenMessage = len(messageBytes)
+        if lenMessage > 10240:
+            print('WARN: post to crypto API is too long ' +
+                  str(lenMessage) + ' bytes')
+            return {}
+
+        return json.loads(messageBytes)
+
+    def _cryptoAPIQuery(self, callingDomain: str) -> bool:
+        handle = self._cryptoAPIreadHandle()
+        if not handle:
+            return False
+        if isinstance(handle, str):
+            personDir = self.server.baseDir + '/accounts/' + handle
+            if not os.path.isdir(personDir + '/devices'):
+                return False
+            devicesList = []
+            for subdir, dirs, files in os.walk(personDir + '/devices'):
+                for f in files:
+                    deviceFilename = os.path.join(personDir + '/devices', f)
+                    if not os.path.isfile(deviceFilename):
+                        continue
+                    contentJson = loadJson(deviceFilename)
+                    if contentJson:
+                        devicesList.append(contentJson)
+            # return the list of devices for this handle
+            msg = \
+                json.dumps(devicesList,
+                           ensure_ascii=False).encode('utf-8')
+            self._set_headers('application/json',
+                              len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            return True
+        return False
+
+    def _cryptoAPI(self, path: str, authorized: bool) -> None:
+        """POST or GET with the crypto API
+        """
+        if authorized and path.startswith('/api/v1/crypto/keys/upload'):
+            # register a device to an authorized account
+            if not self.authorizedNickname:
+                self._400()
+                return
+            deviceKeys = self._cryptoAPIreadJson()
+            if not deviceKeys:
+                self._400()
+                return
+            if isinstance(deviceKeys, dict):
+                if not E2EEvalidDevice(deviceKeys):
+                    self._400()
+                    return
+                E2EEaddDevice(self.server.baseDir,
+                              self.authorizedNickname,
+                              self.server.domain,
+                              deviceKeys['deviceId'],
+                              deviceKeys['name'],
+                              deviceKeys['claim'],
+                              deviceKeys['fingerprintKey']['publicKeyBase64'],
+                              deviceKeys['identityKey']['publicKeyBase64'],
+                              deviceKeys['fingerprintKey']['type'],
+                              deviceKeys['identityKey']['type'])
+                self._200()
+                return
+            self._400()
+        elif path.startswith('/api/v1/crypto/keys/query'):
+            # given a handle (nickname@domain) return the devices
+            # registered to that handle
+            if not self._cryptoAPIQuery():
+                self._400()
+        elif path.startswith('/api/v1/crypto/keys/claim'):
+            # TODO
+            self._200()
+        elif authorized and path.startswith('/api/v1/crypto/delivery'):
+            # TODO
+            self._200()
+        elif (authorized and
+              path.startswith('/api/v1/crypto/encrypted_messages/clear')):
+            # TODO
+            self._200()
+        elif path.startswith('/api/v1/crypto/encrypted_messages'):
+            # TODO
+            self._200()
+        else:
+            self._400()
+
     def do_POST(self):
         POSTstartTime = time.time()
         POSTtimings = []
@@ -5826,6 +6006,11 @@ class PubServer(BaseHTTPRequestHandler):
         if not authorized:
             print('POST Not authorized')
             print(str(self.headers))
+
+        if self.path.startswith('/api/v1/crypto/'):
+            self._cryptoAPI(self.path, authorized)
+            self.server.POSTbusy = False
+            return
 
         # if this is a POST to the outbox then check authentication
         self.outboxAuthenticated = False
@@ -6616,6 +6801,12 @@ class PubServer(BaseHTTPRequestHandler):
                                 os.remove(gitProjectsFilename)
                         # save actor json file within accounts
                         if actorChanged:
+                            # update the context for the actor
+                            actorJson['@context'] = [
+                                'https://www.w3.org/ns/activitystreams',
+                                'https://w3id.org/security/v1',
+                                getDefaultPersonContext()
+                            ]
                             randomizeActorImages(actorJson)
                             saveJson(actorJson, actorFilename)
                             webfingerUpdate(self.server.baseDir,
@@ -6706,9 +6897,9 @@ class PubServer(BaseHTTPRequestHandler):
                         if '=' in moderationStr:
                             moderationText = \
                                 moderationStr.split('=')[1].strip()
-                            moderationText = moderationText.replace('+', ' ')
+                            modText = moderationText.replace('+', ' ')
                             moderationText = \
-                                urllib.parse.unquote(moderationText.strip())
+                                urllib.parse.unquote_plus(modText.strip())
                     elif moderationStr.startswith('submitInfo'):
                         msg = htmlModerationInfo(self.server.translate,
                                                  self.server.baseDir,
@@ -6882,7 +7073,7 @@ class PubServer(BaseHTTPRequestHandler):
             questionParams = questionParams.replace('+', ' ')
             questionParams = questionParams.replace('%3F', '')
             questionParams = \
-                urllib.parse.unquote(questionParams.strip())
+                urllib.parse.unquote_plus(questionParams.strip())
             # post being voted on
             messageId = None
             if 'messageId=' in questionParams:
@@ -6964,9 +7155,8 @@ class PubServer(BaseHTTPRequestHandler):
                 searchStr = searchParams.split('searchtext=')[1]
                 if '&' in searchStr:
                     searchStr = searchStr.split('&')[0]
-                searchStr = searchStr.replace('+', ' ')
                 searchStr = \
-                    urllib.parse.unquote(searchStr.strip())
+                    urllib.parse.unquote_plus(searchStr.strip())
                 searchStr2 = searchStr.lower().strip('\n').strip('\r')
                 print('searchStr: ' + searchStr)
                 if searchForEmoji:
@@ -7172,7 +7362,7 @@ class PubServer(BaseHTTPRequestHandler):
                 removeShareConfirmParams = \
                     removeShareConfirmParams.replace('+', ' ').strip()
                 removeShareConfirmParams = \
-                    urllib.parse.unquote(removeShareConfirmParams)
+                    urllib.parse.unquote_plus(removeShareConfirmParams)
                 shareActor = removeShareConfirmParams.split('actor=')[1]
                 if '&' in shareActor:
                     shareActor = shareActor.split('&')[0]
@@ -7235,7 +7425,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in removePostConfirmParams:
                 removePostConfirmParams = \
-                    urllib.parse.unquote(removePostConfirmParams)
+                    urllib.parse.unquote_plus(removePostConfirmParams)
                 removeMessageId = \
                     removePostConfirmParams.split('messageId=')[1]
                 if '&' in removeMessageId:
@@ -7327,7 +7517,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitView=' in followConfirmParams:
                 followingActor = \
-                    urllib.parse.unquote(followConfirmParams)
+                    urllib.parse.unquote_plus(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -7336,7 +7526,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in followConfirmParams:
                 followingActor = \
-                    urllib.parse.unquote(followConfirmParams)
+                    urllib.parse.unquote_plus(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -7409,7 +7599,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in followConfirmParams:
                 followingActor = \
-                    urllib.parse.unquote(followConfirmParams)
+                    urllib.parse.unquote_plus(followConfirmParams)
                 followingActor = followingActor.split('actor=')[1]
                 if '&' in followingActor:
                     followingActor = followingActor.split('&')[0]
@@ -7503,7 +7693,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in blockConfirmParams:
                 blockingActor = \
-                    urllib.parse.unquote(blockConfirmParams)
+                    urllib.parse.unquote_plus(blockConfirmParams)
                 blockingActor = blockingActor.split('actor=')[1]
                 if '&' in blockingActor:
                     blockingActor = blockingActor.split('&')[0]
@@ -7600,7 +7790,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             if '&submitYes=' in blockConfirmParams:
                 blockingActor = \
-                    urllib.parse.unquote(blockConfirmParams)
+                    urllib.parse.unquote_plus(blockConfirmParams)
                 blockingActor = blockingActor.split('actor=')[1]
                 if '&' in blockingActor:
                     blockingActor = blockingActor.split('&')[0]
@@ -7698,7 +7888,7 @@ class PubServer(BaseHTTPRequestHandler):
                 self.server.POSTbusy = False
                 return
             optionsConfirmParams = \
-                urllib.parse.unquote(optionsConfirmParams)
+                urllib.parse.unquote_plus(optionsConfirmParams)
             # page number to return to
             if 'pageNumber=' in optionsConfirmParams:
                 pageNumberStr = optionsConfirmParams.split('pageNumber=')[1]
@@ -7730,6 +7920,16 @@ class PubServer(BaseHTTPRequestHandler):
                    ' ' in petname or '/' in petname or \
                    '?' in petname or '#' in petname:
                     petname = None
+
+            personNotes = None
+            if 'optionnotes' in optionsConfirmParams:
+                personNotes = optionsConfirmParams.split('optionnotes=')[1]
+                if '&' in personNotes:
+                    personNotes = personNotes.split('&')[0]
+                personNotes = urllib.parse.unquote_plus(personNotes.strip())
+                # Limit the length of the notes
+                if len(personNotes) > 64000:
+                    personNotes = None
 
             optionsNickname = getNicknameFromActor(optionsActor)
             if not optionsNickname:
@@ -7773,7 +7973,23 @@ class PubServer(BaseHTTPRequestHandler):
                            chooserNickname,
                            self.server.domain,
                            handle, petname)
-                self._redirect_headers(originPathStr + '/' +
+                self._redirect_headers(usersPath + '/' +
+                                       self.server.defaultTimeline +
+                                       '?page='+str(pageNumber), cookie,
+                                       callingDomain)
+                self.server.POSTbusy = False
+                return
+            if '&submitPersonNotes=' in optionsConfirmParams:
+                if self.server.debug:
+                    print('Change person notes')
+                handle = optionsNickname + '@' + optionsDomainFull
+                if not personNotes:
+                    personNotes = ''
+                setPersonNotes(self.server.baseDir,
+                               chooserNickname,
+                               self.server.domain,
+                               handle, personNotes)
+                self._redirect_headers(usersPath + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
                                        callingDomain)
@@ -7797,7 +8013,7 @@ class PubServer(BaseHTTPRequestHandler):
                                              self.server.domain,
                                              optionsNickname,
                                              optionsDomainFull)
-                self._redirect_headers(originPathStr + '/' +
+                self._redirect_headers(usersPath + '/' +
                                        self.server.defaultTimeline +
                                        '?page='+str(pageNumber), cookie,
                                        callingDomain)

@@ -1422,12 +1422,15 @@ def receiveAnnounce(recentPostsCache: {},
         # so that their avatar can be shown
         lookupActor = None
         if postJsonObject.get('attributedTo'):
-            lookupActor = postJsonObject['attributedTo']
+            if isinstance(postJsonObject['attributedTo'], str):
+                lookupActor = postJsonObject['attributedTo']
         else:
             if postJsonObject.get('object'):
                 if isinstance(postJsonObject['object'], dict):
                     if postJsonObject['object'].get('attributedTo'):
-                        lookupActor = postJsonObject['object']['attributedTo']
+                        attrib = postJsonObject['object']['attributedTo']
+                        if isinstance(attrib, str):
+                            lookupActor = attrib
         if lookupActor:
             if '/users/' in lookupActor or \
                '/channel/' in lookupActor or \
@@ -2190,24 +2193,25 @@ def inboxAfterCapabilities(recentPostsCache: {}, maxRecentPosts: int,
                postJsonObject['object'].get('summary') and \
                postJsonObject['object'].get('attributedTo'):
                 attributedTo = postJsonObject['object']['attributedTo']
-                fromNickname = getNicknameFromActor(attributedTo)
-                fromDomain, fromPort = getDomainFromActor(attributedTo)
-                if fromPort:
-                    if fromPort != 80 and fromPort != 443:
-                        fromDomain += ':' + str(fromPort)
-                if receiveGitPatch(baseDir, nickname, domain,
-                                   postJsonObject['object']['type'],
-                                   postJsonObject['object']['summary'],
-                                   postJsonObject['object']['content'],
-                                   fromNickname, fromDomain):
-                    gitPatchNotify(baseDir, handle,
-                                   postJsonObject['object']['summary'],
-                                   postJsonObject['object']['content'],
-                                   fromNickname, fromDomain)
-                elif '[PATCH]' in postJsonObject['object']['content']:
-                    print('WARN: git patch not accepted - ' +
-                          postJsonObject['object']['summary'])
-                    return False
+                if isinstance(attributedTo, str):
+                    fromNickname = getNicknameFromActor(attributedTo)
+                    fromDomain, fromPort = getDomainFromActor(attributedTo)
+                    if fromPort:
+                        if fromPort != 80 and fromPort != 443:
+                            fromDomain += ':' + str(fromPort)
+                    if receiveGitPatch(baseDir, nickname, domain,
+                                       postJsonObject['object']['type'],
+                                       postJsonObject['object']['summary'],
+                                       postJsonObject['object']['content'],
+                                       fromNickname, fromDomain):
+                        gitPatchNotify(baseDir, handle,
+                                       postJsonObject['object']['summary'],
+                                       postJsonObject['object']['content'],
+                                       fromNickname, fromDomain)
+                    elif '[PATCH]' in postJsonObject['object']['content']:
+                        print('WARN: git patch not accepted - ' +
+                              postJsonObject['object']['summary'])
+                        return False
 
         # replace YouTube links, so they get less tracking data
         replaceYouTube(postJsonObject, YTReplacementDomain)

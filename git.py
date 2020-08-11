@@ -126,6 +126,8 @@ def convertPostToPatch(baseDir: str, nickname: str, domain: str,
         return False
     if not postJsonObject['object'].get('attributedTo'):
         return False
+    if not isinstance(postJsonObject['object']['attributedTo'], str):
+        return False
     if not isGitPatch(baseDir, nickname, domain,
                       postJsonObject['object']['type'],
                       postJsonObject['object']['summary'],
