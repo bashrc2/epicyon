@@ -5824,20 +5824,43 @@ class PubServer(BaseHTTPRequestHandler):
             if not deviceKeys:
                 self._400()
                 return
-            if not E2EEvalidDevice(deviceKeys):
-                self._400()
+            if isinstance(deviceKeys, list):
+                keyCtr = 0
+                for devKey in deviceKeys:
+                    if not E2EEvalidDevice(devKey):
+                        continue
+                    E2EEaddDevice(self.server.baseDir,
+                                  self.authorizedNickname,
+                                  self.server.domain,
+                                  devKey['deviceId'],
+                                  devKey['name'],
+                                  devKey['claim'],
+                                  devKey['fingerprintKey']['publicKeyBase64'],
+                                  devKey['identityKey']['publicKeyBase64'],
+                                  devKey['fingerprintKey']['type'],
+                                  devKey['identityKey']['type'])
+                    keyCtr += 1
+                    if keyCtr > 10:
+                        break
+                self._200()
                 return
-            E2EEaddDevice(self.server.baseDir,
-                          self.authorizedNickname,
-                          self.server.domain,
-                          deviceKeys['deviceId'],
-                          deviceKeys['name'],
-                          deviceKeys['claim'],
-                          deviceKeys['fingerprintKey']['publicKeyBase64'],
-                          deviceKeys['identityKey']['publicKeyBase64'],
-                          deviceKeys['fingerprintKey']['type'],
-                          deviceKeys['identityKey']['type'])
-            self._200()
+            elif isinstance(deviceKeys, dict):
+                if not E2EEvalidDevice(deviceKeys):
+                    self._400()
+                    return
+                E2EEaddDevice(self.server.baseDir,
+                              self.authorizedNickname,
+                              self.server.domain,
+                              deviceKeys['deviceId'],
+                              deviceKeys['name'],
+                              deviceKeys['claim'],
+                              deviceKeys['fingerprintKey']['publicKeyBase64'],
+                              deviceKeys['identityKey']['publicKeyBase64'],
+                              deviceKeys['fingerprintKey']['type'],
+                              deviceKeys['identityKey']['type'])
+                self._200()
+                return
+            self._400()
         elif path.startswith('/api/v1/crypto/keys/query'):
             # TODO
             self._200()
