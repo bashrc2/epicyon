@@ -114,15 +114,14 @@ a:link {
     width: 15%;
 }
 
-textarea {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: var(--font-size4);
-    width: 90%;
-    background-color: var(--text-entry-background);
-    color: white;
-}
-
 @media screen and (min-width: 400px) {
+    textarea {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size4);
+        width: 90%;
+        background-color: var(--text-entry-background);
+        color: white;
+    }
     .followText {
         font-size: var(--follow-text-size1);
     }
@@ -178,6 +177,13 @@ textarea {
 }
 
 @media screen and (max-width: 1000px) {
+    textarea {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size);
+        width: 90%;
+        background-color: var(--text-entry-background);
+        color: white;
+    }
     .followText {
         font-size: var(--follow-text-size2);
     }
