@@ -747,7 +747,13 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
 
     # add the page title
     hashtagSearchForm = htmlHeader(cssFilename, hashtagSearchCSS)
-    hashtagSearchForm += '<center><h1>#' + hashtag + '</h1></center>'
+    if nickname:
+        hashtagSearchForm += '<center>\n' + \
+            '<h1><a href="/users/' + nickname + '/search">#' + \
+            hashtag + '</a></h1>\n' + '</center>\n'
+    else:
+        hashtagSearchForm += '<center>\n' + \
+            '<h1>#' + hashtag + '</h1>\n' + '</center>\n'
 
     if startIndex > 0:
         # previous page link
@@ -758,7 +764,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
             iconsDir + '/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
-            '"></a></center>'
+            '"></a></center>\n'
     index = startIndex
     while index <= endIndex:
         postId = lines[index].strip('\n').strip('\r')
