@@ -81,7 +81,7 @@ def announcedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     # not to be confused with shared items
     if not postJsonObject['object'].get('shares'):
         return False
-    if not isinstance(postJsonObject['shares'], dict):
+    if not isinstance(postJsonObject['object']['shares'], dict):
         return False
     if not postJsonObject['object']['shares'].get('items'):
         return False
