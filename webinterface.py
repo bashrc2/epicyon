@@ -5624,7 +5624,8 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
             petname + '">\n' \
-            '<button type="submit" class="button" name="submitPetname">' + \
+            '<button type="submit" class="buttonsmall" ' + \
+            'name="submitPetname">' + \
             translate['Submit'] + '</button><br>\n'
 
     if isFollowingActor(baseDir, nickname, domain, optionsActor):
@@ -5634,7 +5635,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                 '<input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar" checked> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="button" ' + \
+                '<button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
         else:
@@ -5642,7 +5643,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                 '<input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar"> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="button" ' + \
+                '<button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
 
@@ -5677,7 +5678,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += \
         '    <br><br>' + translate['Notes'] + ': \n'
-    optionsStr += '<button type="submit" class="button" ' + \
+    optionsStr += '<button type="submit" class="buttonsmall" ' + \
         'name="submitPersonNotes">' + \
         translate['Submit'] + '</button><br>\n'
     optionsStr += \

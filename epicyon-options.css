@@ -146,6 +146,21 @@ textarea {
         cursor: pointer;
         margin: 30px;
     }
+    .buttonsmall {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        font-family: Arial, Helvetica, sans-serif;
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 24px;
+        width: 10%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
     input[type=checkbox]
     {
         -ms-transform: scale(2);
@@ -181,6 +196,21 @@ textarea {
         padding: 10px;
         font-size: 40px;
         width: 20%;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
+    .buttonsmall {
+        border-radius: 4px;
+        background-color: var(--button-background);
+        font-family: Arial, Helvetica, sans-serif;
+        border: none;
+        color: var(--button-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 40px;
+        width: 10%;
         max-width: 200px;
         min-width: 100px;
         cursor: pointer;
