@@ -81,6 +81,12 @@ def announcedByPerson(postJsonObject: {}, nickname: str, domain: str) -> bool:
     # not to be confused with shared items
     if not postJsonObject['object'].get('shares'):
         return False
+    if not isinstance(postJsonObject['shares'], dict):
+        return False
+    if not postJsonObject['object']['shares'].get('items'):
+        return False
+    if not isinstance(postJsonObject['object']['shares']['items'], list):
+        return False
     actorMatch = domain + '/users/' + nickname
     for item in postJsonObject['object']['shares']['items']:
         if item['actor'].endswith(actorMatch):
