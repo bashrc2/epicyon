@@ -2208,7 +2208,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += \
         '      <a href="' + pathBase + \
         '/inbox"><button class="cancelbtn">' + \
-        translate['Cancel'] + '</button></a>\n'
+        translate['Go Back'] + '</button></a>\n'
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
