@@ -6246,8 +6246,8 @@ def htmlSearch(translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
-    followStr += '    <button type="button" class="button" ' + \
-        'name="submitBack">' + translate['Go Back'] + '</button>\n'
+    followStr += '    <a href="/"><button type="button" class="button" ' + \
+        'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     followStr += '    <button type="submit" class="button" ' + \
         'name="submitSearch">' + translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
