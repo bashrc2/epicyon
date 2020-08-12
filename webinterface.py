@@ -1306,240 +1306,242 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm = htmlHeader(cssFilename, editProfileCSS)
     editProfileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
-        'accept-charset="UTF-8" action="' + path + '/profiledata">'
-    editProfileForm += '  <div class="vertical-center">'
+        'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
+    editProfileForm += '  <div class="vertical-center">\n'
     editProfileForm += \
         '    <p class="new-post-text">' + translate['Profile for'] + \
         ' ' + nickname + '@' + domainFull + '</p>'
-    editProfileForm += '    <div class="container">'
-    editProfileForm += \
-        '      <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Cancel'] + '</button></a>'
-    editProfileForm += '    </div>'
+        translate['Go Back'] + '</button></a>\n'
+    editProfileForm += \
+        '      <input type="submit" name="submitProfile" value="' + \
+        translate['Submit'] + '">\n'
+    editProfileForm += '    </div>\n'
 
     if scheduledPostsExist(baseDir, nickname, domain):
-        editProfileForm += '    <div class="container">'
+        editProfileForm += '    <div class="container">\n'
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="removeScheduledPosts"> ' + \
-            translate['Remove scheduled posts'] + '<br>'
-        editProfileForm += '    </div>'
+            translate['Remove scheduled posts'] + '<br>\n'
+        editProfileForm += '    </div>\n'
 
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <label class="labels">' + \
-        translate['Nickname'] + '</label>'
+        translate['Nickname'] + '</label>\n'
     editProfileForm += \
         '      <input type="text" name="displayNickname" value="' + \
-        displayNickname + '"><br>'
+        displayNickname + '"><br>\n'
     editProfileForm += \
-        '      <label class="labels">' + translate['Your bio'] + '</label>'
+        '      <label class="labels">' + translate['Your bio'] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
-        bioStr + '</textarea>'
+        bioStr + '</textarea>\n'
     editProfileForm += '<label class="labels">' + \
-        translate['Donations link'] + '</label><br>'
+        translate['Donations link'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" placeholder="https://..." ' + \
-        'name="donateUrl" value="' + donateUrl + '">'
+        'name="donateUrl" value="' + donateUrl + '">\n'
     editProfileForm += \
-        '<label class="labels">' + translate['XMPP'] + '</label><br>'
+        '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="xmppAddress" value="' + \
-        xmppAddress + '">'
+        xmppAddress + '">\n'
     editProfileForm += '<label class="labels">' + \
-        translate['Matrix'] + '</label><br>'
+        translate['Matrix'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="matrixAddress" value="' + \
-        matrixAddress+'">'
+        matrixAddress+'">\n'
 
-    editProfileForm += '<label class="labels">SSB</label><br>'
+    editProfileForm += '<label class="labels">SSB</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="ssbAddress" value="' + \
-        ssbAddress + '">'
+        ssbAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Blog</label><br>'
+    editProfileForm += '<label class="labels">Blog</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">'
+        blogAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Tox</label><br>'
+    editProfileForm += '<label class="labels">Tox</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
-        toxAddress + '">'
+        toxAddress + '">\n'
     editProfileForm += '<label class="labels">' + \
-        translate['Email'] + '</label><br>'
+        translate['Email'] + '</label><br>\n'
     editProfileForm += \
-        '      <input type="text" name="email" value="' + emailAddress + '">'
+        '      <input type="text" name="email" value="' + emailAddress + '">\n'
     editProfileForm += \
         '<label class="labels">' + \
-        translate['PGP Fingerprint'] + '</label><br>'
+        translate['PGP Fingerprint'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="openpgp" value="' + \
-        PGPfingerprint + '">'
+        PGPfingerprint + '">\n'
     editProfileForm += \
-        '<label class="labels">' + translate['PGP'] + '</label><br>'
+        '<label class="labels">' + translate['PGP'] + '</label><br>\n'
     editProfileForm += \
         '      <textarea id="message" placeholder=' + \
         '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:100px">' + PGPpubKey + '</textarea>'
+        'style="height:100px">' + PGPpubKey + '</textarea>\n'
     editProfileForm += '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>'
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+        translate['Following'] + '</label></a><br>\n'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm += \
-        '      <label class="labels">' + translate[idx] + '</label><br><br>'
+        '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
     editProfileForm += \
-        '      <label class="labels">' + translate['Avatar image'] + '</label>'
+        '      <label class="labels">' + translate['Avatar image'] + \
+        '</label>\n'
     editProfileForm += \
         '      <input type="file" id="avatar" name="avatar"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += \
         '      <br><label class="labels">' + \
-        translate['Background image'] + '</label>'
+        translate['Background image'] + '</label>\n'
     editProfileForm += '      <input type="file" id="image" name="image"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '      <br><label class="labels">' + \
-        translate['Timeline banner image'] + '</label>'
+        translate['Timeline banner image'] + '</label>\n'
     editProfileForm += '      <input type="file" id="banner" name="banner"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '      <br><label class="labels">' + \
-        translate['Search banner image'] + '</label>'
+        translate['Search banner image'] + '</label>\n'
     editProfileForm += '      <input type="file" id="search_banner" '
     editProfileForm += 'name="search_banner"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '<label class="labels">' + translate['Change Password'] + \
-        '</label><br>'
-    editProfileForm += '      <input type="text" name="password" value=""><br>'
+        '</label><br>\n'
+    editProfileForm += '      <input type="text" name="password" ' + \
+        'value=""><br>\n'
     editProfileForm += \
         '<label class="labels">' + translate['Confirm Password'] + \
-        '</label><br>'
+        '</label><br>\n'
     editProfileForm += \
-        '      <input type="text" name="passwordconfirm" value="">'
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+        '      <input type="text" name="passwordconfirm" value="">\n'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '> ' + translate['Approve follower requests'] + '<br>'
+        '> ' + translate['Approve follower requests'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" ' + \
         'class="profilecheckbox" name="isBot" ' + \
-        isBot + '> ' + translate['This is a bot account'] + '<br>'
+        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" ' + \
         'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
-        translate['This is a group account'] + '<br>'
+        translate['This is a group account'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="followDMs" ' + followDMs + '> ' + \
-        translate['Only people I follow can send me DMs'] + '<br>'
+        translate['Only people I follow can send me DMs'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="removeTwitter" ' + removeTwitter + '> ' + \
-        translate['Remove Twitter posts'] + '<br>'
+        translate['Remove Twitter posts'] + '<br>\n'
     if path.startswith('/users/' + adminNickname + '/'):
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-            translate['This is a media instance'] + '<br>'
+            translate['This is a media instance'] + '<br>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Filtered words'] + '</label></b>'
+        translate['Filtered words'] + '</label></b>\n'
     editProfileForm += '      <br><label class="labels">' + \
-        translate['One per line'] + '</label>'
+        translate['One per line'] + '</label>\n'
     editProfileForm += '      <textarea id="message" ' + \
         'name="filteredWords" style="height:200px">' + \
-        filterStr + '</textarea>'
+        filterStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Word Replacements'] + '</label></b>'
-    editProfileForm += '      <br><label class="labels">A -> B</label>'
+        translate['Word Replacements'] + '</label></b>\n'
+    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="switchWords" ' + \
-        'style="height:200px">' + switchStr + '</textarea>'
+        'style="height:200px">' + switchStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Blocked accounts'] + '</label></b>'
+        translate['Blocked accounts'] + '</label></b>\n'
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     editProfileForm += \
-        '      <br><label class="labels">' + translate[idx] + '</label>'
+        '      <br><label class="labels">' + translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="blocked" style="height:200px">' + \
-        blockedStr + '</textarea>'
+        blockedStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Federation list'] + '</label></b>'
+        translate['Federation list'] + '</label></b>\n'
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
     editProfileForm += \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>'
+        translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="allowedInstances" ' + \
-        'style="height:200px">' + allowedInstancesStr + '</textarea>'
+        'style="height:200px">' + allowedInstancesStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Git Projects'] + '</label></b>'
+        translate['Git Projects'] + '</label></b>\n'
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>'
+        translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="gitProjects" ' + \
-        'style="height:100px">' + gitProjectsStr + '</textarea>'
+        'style="height:100px">' + gitProjectsStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['YouTube Replacement Domain'] + '</label></b>'
+        translate['YouTube Replacement Domain'] + '</label></b>\n'
     YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
     if not YTReplacementDomain:
         YTReplacementDomain = ''
     editProfileForm += \
         '      <input type="text" name="ytdomain" value="' + \
-        YTReplacementDomain + '">'
+        YTReplacementDomain + '">\n'
 
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <b><label class="labels">' + \
-        translate['Skills'] + '</label></b><br>'
+        translate['Skills'] + '</label></b><br>\n'
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
     editProfileForm += '      <label class="labels">' + \
-        translate[idx] + '</label>'
+        translate[idx] + '</label>\n'
     editProfileForm += skillsStr + themesDropdown + moderatorsStr
-    editProfileForm += '    </div>' + instanceStr
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    </div>\n' + instanceStr
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
-        translate['Danger Zone'] + '</label></b><br>'
+        translate['Danger Zone'] + '</label></b><br>\n'
     editProfileForm += \
         '      <input type="checkbox" class=dangercheckbox" ' + \
         'name="deactivateThisAccount"> ' + \
-        translate['Deactivate this account'] + '<br>'
-    editProfileForm += '    </div>'
-    editProfileForm += '  </div>'
-    editProfileForm += '</form>'
+        translate['Deactivate this account'] + '<br>\n'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '  </div>\n'
+    editProfileForm += '</form>\n'
     editProfileForm += htmlFooter()
     return editProfileForm
 
@@ -6245,9 +6247,9 @@ def htmlSearch(translate: {},
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
     followStr += '    <button type="submit" class="button" ' + \
-        'name="submitSearch">' + translate['Submit'] + '</button>\n'
-    followStr += '    <button type="submit" class="button" ' + \
         'name="submitBack">' + translate['Go Back'] + '</button>\n'
+    followStr += '    <button type="submit" class="button" ' + \
+        'name="submitSearch">' + translate['Submit'] + '</button>\n'
     followStr += '  </form>\n'
     followStr += '  <p class="hashtagswarm">' + \
         htmlHashTagSwarm(baseDir, actor) + '</p>\n'
@@ -6441,14 +6443,14 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             '      <input type="hidden" name="actor" value="' + \
             personUrl + '">\n'
         profileStr += \
+            '      <a href="' + backUrl + '"><button class="button">' + \
+            translate['Go Back'] + '</button></a>\n'
+        profileStr += \
             '      <button type="submit" class="button" name="submitYes">' + \
             translate['Follow'] + '</button>\n'
         profileStr += \
             '      <button type="submit" class="button" name="submitView">' + \
             translate['View'] + '</button>\n'
-        profileStr += \
-            '      <a href="' + backUrl + '"><button class="button">' + \
-            translate['Go Back'] + '</button></a>\n'
         profileStr += '    </center>\n'
         profileStr += '  </form>\n'
         profileStr += '</div>\n'
