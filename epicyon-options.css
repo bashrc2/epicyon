@@ -18,7 +18,9 @@
     --text-entry-background: #111;
     --time-color: #aaa;
     --button-text: #FFFFFF;
+    --button-small-text: #FFFFFF;
     --button-background: #999;
+    --button-small-background: #999;
     --button-selected: #666;
     --hashtag-margin: 2%;
     --hashtag-vertical-spacing1: 50px;
@@ -148,10 +150,10 @@ textarea {
     }
     .buttonsmall {
         border-radius: 4px;
-        background-color: var(--button-background);
+        background-color: var(--button-small-background);
         font-family: Arial, Helvetica, sans-serif;
         border: none;
-        color: var(--button-text);
+        color: var(--button-small-text);
         text-align: center;
         padding: 10px;
         font-size: 24px;
@@ -203,10 +205,10 @@ textarea {
     }
     .buttonsmall {
         border-radius: 4px;
-        background-color: var(--button-background);
+        background-color: var(--button-small-background);
         font-family: Arial, Helvetica, sans-serif;
         border: none;
-        color: var(--button-text);
+        color: var(--button-small-text);
         text-align: center;
         padding: 10px;
         font-size: 40px;
