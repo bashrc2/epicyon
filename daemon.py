@@ -1245,6 +1245,61 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
 
+        if '/manifest.json' in self.path:
+            manifest = {
+                "name": "Epicyon",
+                "short_name": "Epicyon",
+                "start_url": "/index.html",
+                "display": "standalone",
+                "background_color": "black",
+                "theme_color": "grey",
+                "orientation": "portrait-primary",
+                "icons": [
+                    {
+                        "src": "/logo72.png",
+                        "type": "image/png",
+                        "sizes": "72x72"
+                    },
+                    {
+                        "src": "/logo96.png",
+                        "type": "image/png",
+                        "sizes": "96x96"
+                    },
+                    {
+                        "src": "/logo128.png",
+                        "type": "image/png",
+                        "sizes": "128x128"
+                    },
+                    {
+                        "src": "/logo144.png",
+                        "type": "image/png",
+                        "sizes": "144x144"
+                    },
+                    {
+                        "src": "/logo152.png",
+                        "type": "image/png",
+                        "sizes": "152x152"
+                    },
+                    {
+                        "src": "/logo192.png",
+                        "type": "image/png",
+                        "sizes": "192x192"
+                    },
+                    {
+                        "src": "/logo256.png",
+                        "type": "image/png",
+                        "sizes": "256x256"
+                    }
+                ]
+            }
+            msg = json.dumps(manifest,
+                             ensure_ascii=False).encode('utf-8')
+            self._set_headers('application/json',
+                              len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            return
+
         # favicon image
         if 'favicon.ico' in self.path:
             favType = 'image/x-icon'
@@ -1836,6 +1891,13 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/login.webp' or \
            self.path == '/login.jpeg' or \
            self.path == '/login.jpg' or \
+           self.path == '/logo72.png' or \
+           self.path == '/logo96.png' or \
+           self.path == '/logo128.png' or \
+           self.path == '/logo144.png' or \
+           self.path == '/logo152.png' or \
+           self.path == '/logo192.png' or \
+           self.path == '/logo256.png' or \
            self.path == '/qrcode.png':
             mediaFilename = \
                 self.server.baseDir + '/accounts' + self.path
