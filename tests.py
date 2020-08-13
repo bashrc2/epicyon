@@ -1585,6 +1585,30 @@ def testActorParsing():
     nickname = getNicknameFromActor(actor)
     assert nickname == 'mynick'
 
+    actor = 'https://element/accounts/badger'
+    domain, port = getDomainFromActor(actor)
+    assert domain == 'element'
+    nickname = getNicknameFromActor(actor)
+    assert nickname == 'badger'
+
+    actor = 'egg@chicken.com'
+    domain, port = getDomainFromActor(actor)
+    assert domain == 'chicken.com'
+    nickname = getNicknameFromActor(actor)
+    assert nickname == 'egg'
+
+    actor = '@waffle@cardboard'
+    domain, port = getDomainFromActor(actor)
+    assert domain == 'cardboard'
+    nickname = getNicknameFromActor(actor)
+    assert nickname == 'waffle'
+
+    actor = 'https://astral/channel/sky'
+    domain, port = getDomainFromActor(actor)
+    assert domain == 'astral'
+    nickname = getNicknameFromActor(actor)
+    assert nickname == 'sky'
+
     actor = 'https://randomain/users/rando'
     domain, port = getDomainFromActor(actor)
     assert domain == 'randomain'

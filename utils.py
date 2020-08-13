@@ -215,6 +215,8 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
 def getNicknameFromActor(actor: str) -> str:
     """Returns the nickname from an actor url
     """
+    if actor.startswith('@'):
+        actor = actor[1:]
     if '/users/' not in actor:
         if '/profile/' in actor:
             nickStr = actor.split('/profile/')[1].replace('@', '')
@@ -240,6 +242,9 @@ def getNicknameFromActor(actor: str) -> str:
             if '/' in nickStr:
                 nickStr = nickStr.split('/')[0]
             return nickStr
+        elif '@' in actor:
+            nickStr = actor.split('@')[0]
+            return nickStr
         return None
     nickStr = actor.split('/users/')[1].replace('@', '')
     if '/' not in nickStr:
@@ -251,6 +256,8 @@ def getNicknameFromActor(actor: str) -> str:
 def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
+    if actor.startswith('@'):
+        actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
     if '/profile/' in actor:
@@ -265,16 +272,22 @@ def getDomainFromActor(actor: str) -> (str, int):
         domain = actor.split('/channel/')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
-    elif '/users/' not in actor:
+    elif '/users/' in actor:
+        domain = actor.split('/users/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/@' in actor:
+        domain = actor.split('/@')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '@' in actor:
+        domain = actor.split('@')[1].strip()
+    else:
         domain = actor
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
         if '/' in actor:
             domain = domain.split('/')[0]
-    else:
-        domain = actor.split('/users/')[0]
-        for prefix in prefixes:
-            domain = domain.replace(prefix, '')
     if ':' in domain:
         portStr = domain.split(':')[1]
         if not portStr.isdigit():
