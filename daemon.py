@@ -7232,7 +7232,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.POSTbusy = False
                         return
-                elif '@' in searchStr:
+                elif ('@' in searchStr or
+                      ('://' in searchStr and
+                       ('/users/' in searchStr or
+                        '/profile/' in searchStr or
+                        '/accounts/' in searchStr or
+                        '/channel/' in searchStr))):
                     # profile search
                     nickname = getNicknameFromActor(actorStr)
                     if not self.server.session:
