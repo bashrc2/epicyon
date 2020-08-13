@@ -64,6 +64,7 @@ from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
+from happening import saveEvent
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -1957,10 +1958,6 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
     if not isinstance(postJsonObject['object']['tag'], list):
         return
 
-    calendarPath = baseDir + '/accounts/' + handle + '/calendar'
-    if not os.path.isdir(calendarPath):
-        os.mkdir(calendarPath)
-
     actor = postJsonObject['actor']
     actorNickname = getNicknameFromActor(actor)
     actorDomain, actorPort = getDomainFromActor(actor)
@@ -1971,6 +1968,9 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
                                    actorNickname, actorDomain):
         return
 
+    postId = \
+        postJsonObject['id'].replace('/activity', '').replace('/', '#')
+
     # look for events within the tags list
     for tagDict in postJsonObject['object']['tag']:
         if not tagDict.get('type'):
@@ -1979,50 +1979,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
             continue
         if not tagDict.get('startTime'):
             continue
-
-        # get the year, month and day from the event
-        eventTime = datetime.datetime.strptime(tagDict['startTime'],
-                                               "%Y-%m-%dT%H:%M:%S%z")
-        eventYear = int(eventTime.strftime("%Y"))
-        eventMonthNumber = int(eventTime.strftime("%m"))
-        eventDayOfMonth = int(eventTime.strftime("%d"))
-
-        # create a directory for the calendar year
-        if not os.path.isdir(calendarPath + '/' + str(eventYear)):
-            os.mkdir(calendarPath + '/' + str(eventYear))
-
-        # calendar month file containing event post Ids
-        calendarFilename = calendarPath + '/' + str(eventYear) + \
-            '/' + str(eventMonthNumber) + '.txt'
-        postId = \
-            postJsonObject['id'].replace('/activity', '').replace('/', '#')
-
-        # Does this event post already exist within the calendar month?
-        if os.path.isfile(calendarFilename):
-            if postId in open(calendarFilename).read():
-                # Event post already exists
-                return
-
-        # append the post Id to the file for the calendar month
-        calendarFile = open(calendarFilename, 'a+')
-        if calendarFile:
-            calendarFile.write(postId + '\n')
-            calendarFile.close()
-
-            # create a file which will trigger a notification that
-            # a new event has been added
-            calendarNotificationFilename = \
-                baseDir + '/accounts/' + handle + '/.newCalendar'
-            calendarNotificationFile = \
-                open(calendarNotificationFilename, 'w+')
-            if calendarNotificationFile:
-                calendarNotificationFile.write('/calendar?year=' +
-                                               str(eventYear) +
-                                               '?month=' +
-                                               str(eventMonthNumber) +
-                                               '?day=' +
-                                               str(eventDayOfMonth))
-                calendarNotificationFile.close()
+        saveEvent(baseDir, handle, postId, tagDict)
 
 
 def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,

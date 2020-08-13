@@ -15,6 +15,60 @@ from utils import daysInMonth
 from utils import mergeDicts
 
 
+def saveEvent(baseDir: str, handle: str, postId: str,
+              eventJson: {}) -> bool:
+    """Saves an event to the calendar
+    """
+    calendarPath = baseDir + '/accounts/' + handle + '/calendar'
+    if not os.path.isdir(calendarPath):
+        os.mkdir(calendarPath)
+
+    # get the year, month and day from the event
+    eventTime = datetime.strptime(eventJson['startTime'],
+                                  "%Y-%m-%dT%H:%M:%S%z")
+    eventYear = int(eventTime.strftime("%Y"))
+    eventMonthNumber = int(eventTime.strftime("%m"))
+    eventDayOfMonth = int(eventTime.strftime("%d"))
+
+    # create a directory for the calendar year
+    if not os.path.isdir(calendarPath + '/' + str(eventYear)):
+        os.mkdir(calendarPath + '/' + str(eventYear))
+
+    # calendar month file containing event post Ids
+    calendarFilename = calendarPath + '/' + str(eventYear) + \
+        '/' + str(eventMonthNumber) + '.txt'
+
+    # Does this event post already exist within the calendar month?
+    if os.path.isfile(calendarFilename):
+        if postId in open(calendarFilename).read():
+            # Event post already exists
+            return False
+
+    # append the post Id to the file for the calendar month
+    calendarFile = open(calendarFilename, 'a+')
+    if not calendarFile:
+        return False
+    calendarFile.write(postId + '\n')
+    calendarFile.close()
+
+    # create a file which will trigger a notification that
+    # a new event has been added
+    calendarNotificationFilename = \
+        baseDir + '/accounts/' + handle + '/.newCalendar'
+    calendarNotificationFile = \
+        open(calendarNotificationFilename, 'w+')
+    if not calendarNotificationFile:
+        return False
+    calendarNotificationFile.write('/calendar?year=' +
+                                   str(eventYear) +
+                                   '?month=' +
+                                   str(eventMonthNumber) +
+                                   '?day=' +
+                                   str(eventDayOfMonth))
+    calendarNotificationFile.close()
+    return True
+
+
 def isHappeningEvent(tag: {}) -> bool:
     """Is this tag an Event or Place ActivityStreams type?
     """
