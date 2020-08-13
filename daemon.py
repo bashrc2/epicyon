@@ -1890,20 +1890,51 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 15)
 
-        # image on login screen or qrcode
-        if self.path == '/login.png' or \
-           self.path == '/login.gif' or \
-           self.path == '/login.webp' or \
-           self.path == '/login.jpeg' or \
-           self.path == '/login.jpg' or \
-           self.path == '/logo72.png' or \
+        # manifest images used to create desktop icons
+        # for progressive web app
+        if self.path == '/logo72.png' or \
            self.path == '/logo96.png' or \
            self.path == '/logo128.png' or \
            self.path == '/logo144.png' or \
            self.path == '/logo152.png' or \
            self.path == '/logo192.png' or \
            self.path == '/logo256.png' or \
-           self.path == '/logo512.png' or \
+           self.path == '/logo512.png':
+            mediaFilename = \
+                self.server.baseDir + '/img' + self.path
+            if os.path.isfile(mediaFilename):
+                if self._etag_exists(mediaFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                tries = 0
+                mediaBinary = None
+                while tries < 5:
+                    try:
+                        with open(mediaFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries += 1
+                if mediaBinary:
+                    self._set_headers_etag(mediaFilename,
+                                           'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                    return
+            self._404()
+            return
+
+        # image on login screen or qrcode
+        if self.path == '/login.png' or \
+           self.path == '/login.gif' or \
+           self.path == '/login.webp' or \
+           self.path == '/login.jpeg' or \
+           self.path == '/login.jpg' or \
            self.path == '/qrcode.png':
             mediaFilename = \
                 self.server.baseDir + '/accounts' + self.path
