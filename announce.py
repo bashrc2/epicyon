@@ -147,6 +147,7 @@ def createAnnounce(session, baseDir: str, federationList: [],
     announceDomain = None
     announcePort = None
     if '/users/' in objectUrl or \
+       '/accounts/' in objectUrl or \
        '/channel/' in objectUrl or \
        '/profile/' in objectUrl:
         announceNickname = getNicknameFromActor(objectUrl)
@@ -263,6 +264,7 @@ def undoAnnounce(session, baseDir: str, federationList: [],
     announceDomain = None
     announcePort = None
     if '/users/' in objectUrl or \
+       '/accounts/' in objectUrl or \
        '/channel/' in objectUrl or \
        '/profile/' in objectUrl:
         announceNickname = getNicknameFromActor(objectUrl)

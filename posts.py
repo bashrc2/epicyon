@@ -136,6 +136,7 @@ def getUserUrl(wfRequest: {}) -> str:
             if link.get('type') and link.get('href'):
                 if link['type'] == 'application/activity+json':
                     if not ('/users/' in link['href'] or
+                            '/accounts/' in link['href'] or
                             '/profile/' in link['href'] or
                             '/channel/' in link['href']):
                         print('Webfinger activity+json contains ' +
@@ -207,7 +208,7 @@ def getPersonBox(baseDir: str, session, wfRequest: {},
         return None, None, None, None, None, None, None, None
     personJson = getPersonFromCache(baseDir, personUrl, personCache)
     if not personJson:
-        if '/channel/' in personUrl:
+        if '/channel/' in personUrl or '/accounts/' in personUrl:
             asHeader = {
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
@@ -3188,7 +3189,8 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
         asHeader = {
             'Accept': 'application/activity+json; profile="' + profileStr + '"'
         }
-        if '/channel/' in postJsonObject['actor']:
+        if '/channel/' in postJsonObject['actor'] or \
+           '/accounts/' in postJsonObject['actor']:
             asHeader = {
                 'Accept': 'application/ld+json; profile="' + profileStr + '"'
             }
@@ -3238,6 +3240,7 @@ def downloadAnnounce(session, baseDir: str, httpPrefix: str,
             rejectAnnounce(announceFilename)
             return None
         if '/users/' not in announcedJson['id'] and \
+           '/accounts/' not in announcedJson['id'] and \
            '/channel/' not in announcedJson['id'] and \
            '/profile/' not in announcedJson['id']:
             rejectAnnounce(announceFilename)

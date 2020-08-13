@@ -57,6 +57,7 @@ def authorizeBasic(baseDir: str, path: str, authHeader: str,
                   'contain a space character')
         return False
     if '/users/' not in path and \
+       '/accounts/' not in path and \
        '/channel/' not in path and \
        '/profile/' not in path:
         if debug:

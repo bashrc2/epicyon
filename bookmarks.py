@@ -262,6 +262,7 @@ def bookmark(recentPostsCache: {},
         bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
     else:
         if '/users/' in objectUrl or \
+           '/accounts/' in objectUrl or \
            '/channel/' in objectUrl or \
            '/profile/' in objectUrl:
             ou = objectUrl
@@ -362,6 +363,7 @@ def undoBookmark(recentPostsCache: {},
         bookmarkedPostDomain, bookmarkedPostPort = getDomainFromActor(acBm)
     else:
         if '/users/' in objectUrl or \
+           '/accounts/' in objectUrl or \
            '/channel/' in objectUrl or \
            '/profile/' in objectUrl:
             ou = objectUrl

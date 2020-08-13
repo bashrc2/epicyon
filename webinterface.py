@@ -252,7 +252,7 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
             print('Failed to download avatar image: ' + str(avatarUrl))
             print(e)
         prof = 'https://www.w3.org/ns/activitystreams'
-        if '/channel/' not in actor:
+        if '/channel/' not in actor or '/accounts/' not in actor:
             sessionHeaders = {
                 'Accept': 'application/activity+json; profile="' + prof + '"'
             }
@@ -6281,6 +6281,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
     """Show a profile page after a search for a fediverse address
     """
     if '/users/' in profileHandle or \
+       '/accounts/' in profileHandle or \
        '/channel/' in profileHandle or \
        '/profile/' in profileHandle or \
        '/@' in profileHandle:

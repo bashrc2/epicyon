@@ -661,6 +661,7 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request has no actor within object')
         return False
     if '/users/' not in messageJson['object']['actor'] and \
+       '/accounts/' not in messageJson['object']['actor'] and \
        '/channel/' not in messageJson['object']['actor'] and \
        '/profile/' not in messageJson['object']['actor']:
         if debug:
@@ -735,6 +736,7 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request has no actor')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -792,11 +794,13 @@ def personReceiveUpdate(baseDir: str,
         if actor not in personJson['id']:
             actor = updateDomainFull + '/channel/' + updateNickname
             if actor not in personJson['id']:
-                if debug:
-                    print('actor: ' + actor)
-                    print('id: ' + personJson['id'])
-                    print('DEBUG: Actor does not match id')
-                return False
+                actor = updateDomainFull + '/accounts/' + updateNickname
+                if actor not in personJson['id']:
+                    if debug:
+                        print('actor: ' + actor)
+                        print('id: ' + personJson['id'])
+                        print('DEBUG: Actor does not match id')
+                    return False
     if updateDomainFull == domainFull:
         if debug:
             print('DEBUG: You can only receive actor updates ' +
@@ -907,6 +911,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
             print('DEBUG: ' + messageJson['type'] + ' object has no type')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1008,6 +1013,7 @@ def receiveLike(recentPostsCache: {},
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1076,6 +1082,7 @@ def receiveUndoLike(recentPostsCache: {},
                   ' like object is not a string')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1288,6 +1295,7 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1358,6 +1366,7 @@ def receiveAnnounce(recentPostsCache: {},
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1366,6 +1375,7 @@ def receiveAnnounce(recentPostsCache: {},
                   messageJson['type'])
         return False
     if '/users/' not in messageJson['object'] and \
+       '/accounts/' not in messageJson['object'] and \
        '/channel/' not in messageJson['object'] and \
        '/profile/' not in messageJson['object']:
         if debug:
@@ -1434,6 +1444,7 @@ def receiveAnnounce(recentPostsCache: {},
                             lookupActor = attrib
         if lookupActor:
             if '/users/' in lookupActor or \
+               '/accounts/' in lookupActor or \
                '/channel/' in lookupActor or \
                '/profile/' in lookupActor:
                 if '/statuses/' in lookupActor:
@@ -1485,6 +1496,7 @@ def receiveUndoAnnounce(recentPostsCache: {},
     if messageJson['object']['type'] != 'Announce':
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1679,6 +1691,7 @@ def obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
         return
 
     if not ('/users/' in lookupActor or
+            '/accounts/' in lookupActor or
             '/channel/' in lookupActor or
             '/profile/' in lookupActor):
         return

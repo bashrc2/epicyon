@@ -64,7 +64,7 @@ def saveEvent(baseDir: str, handle: str, postId: str,
     if eventMonthNumber < 1 or eventMonthNumber > 12:
         return False
     eventDayOfMonth = int(eventTime.strftime("%d"))
-    if eventDayOfMonth < 1or eventDayOfMonth > 31:
+    if eventDayOfMonth < 1 or eventDayOfMonth > 31:
         return False
 
     if eventJson.get('name') and eventJson.get('actor') and \

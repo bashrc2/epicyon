@@ -222,14 +222,20 @@ def getNicknameFromActor(actor: str) -> str:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
-        if '/channel/' in actor:
+        elif '/channel/' in actor:
             nickStr = actor.split('/channel/')[1].replace('@', '')
             if '/' not in nickStr:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
-        # https://domain/@nick
-        if '/@' in actor:
+        elif '/accounts/' in actor:
+            nickStr = actor.split('/accounts/')[1].replace('@', '')
+            if '/' not in nickStr:
+                return nickStr
+            else:
+                return nickStr.split('/')[0]
+        elif '/@' in actor:
+            # https://domain/@nick
             nickStr = actor.split('/@')[1]
             if '/' in nickStr:
                 nickStr = nickStr.split('/')[0]
@@ -251,22 +257,24 @@ def getDomainFromActor(actor: str) -> (str, int):
         domain = actor.split('/profile/')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
+    elif '/accounts/' in actor:
+        domain = actor.split('/accounts/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/channel/' in actor:
+        domain = actor.split('/channel/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/users/' not in actor:
+        domain = actor
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+        if '/' in actor:
+            domain = domain.split('/')[0]
     else:
-        if '/channel/' in actor:
-            domain = actor.split('/channel/')[0]
-            for prefix in prefixes:
-                domain = domain.replace(prefix, '')
-        else:
-            if '/users/' not in actor:
-                domain = actor
-                for prefix in prefixes:
-                    domain = domain.replace(prefix, '')
-                if '/' in actor:
-                    domain = domain.split('/')[0]
-            else:
-                domain = actor.split('/users/')[0]
-                for prefix in prefixes:
-                    domain = domain.replace(prefix, '')
+        domain = actor.split('/users/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
     if ':' in domain:
         portStr = domain.split(':')[1]
         if not portStr.isdigit():
