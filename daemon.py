@@ -1289,6 +1289,11 @@ class PubServer(BaseHTTPRequestHandler):
                         "src": "/logo256.png",
                         "type": "image/png",
                         "sizes": "256x256"
+                    },
+                    {
+                        "src": "/logo512.png",
+                        "type": "image/png",
+                        "sizes": "512x512"
                     }
                 ]
             }
@@ -1898,6 +1903,7 @@ class PubServer(BaseHTTPRequestHandler):
            self.path == '/logo152.png' or \
            self.path == '/logo192.png' or \
            self.path == '/logo256.png' or \
+           self.path == '/logo512.png' or \
            self.path == '/qrcode.png':
             mediaFilename = \
                 self.server.baseDir + '/accounts' + self.path
