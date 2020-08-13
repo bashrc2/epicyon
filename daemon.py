@@ -1245,6 +1245,7 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
 
+        # manifest for progressive web apps
         if '/manifest.json' in self.path:
             manifest = {
                 "name": "Epicyon",
@@ -1890,8 +1891,9 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 15)
 
-        # manifest images used to create desktop icons
-        # for progressive web app
+        # manifest images used to create a home screen icon
+        # when selecting "add to home screen" in browsers
+        # which support progressive web apps
         if self.path == '/logo72.png' or \
            self.path == '/logo96.png' or \
            self.path == '/logo128.png' or \
