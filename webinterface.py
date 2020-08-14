@@ -4145,7 +4145,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                             '<div class=' + \
                                             '"timeline-avatar-reply">\n'
                                         replyAvatarImageInPost += \
-                                            '<a href="/users/' + nickname + \
+                                            '<a class="imageAnchor" ' + \
+                                            'href="/users/' + nickname + \
                                             '?options=' + replyActor + \
                                             ';' + str(pageNumber) + ';' + \
                                             replyAvatarUrl + \
@@ -4583,7 +4584,7 @@ def htmlTimeline(defaultTimeline: str,
         if boxName != 'tlblogs':
             if not manuallyApproveFollowers:
                 newPostButtonStr = \
-                    '<a href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
@@ -4591,7 +4592,7 @@ def htmlTimeline(defaultTimeline: str,
                     '" class="timelineicon"/></a>\n'
             else:
                 newPostButtonStr = \
-                    '<a href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + \
@@ -4599,7 +4600,7 @@ def htmlTimeline(defaultTimeline: str,
                     '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr = \
-                '<a href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -4607,7 +4608,7 @@ def htmlTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
     else:
         newPostButtonStr = \
-            '<a href="' + usersPath + \
+            '<a class="imageAnchor" href="' + usersPath + \
             '/newdm"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new DM'] + \
@@ -4701,7 +4702,7 @@ def htmlTimeline(defaultTimeline: str,
         sharesButtonStr + bookmarksButtonStr + \
         moderationButtonStr + newPostButtonStr
     tlStr += \
-        '    <a href="' + usersPath + \
+        '    <a class="imageAnchor" href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
         iconsDir + '/search.png" title="' + \
         translate['Search and follow'] + '" alt="| ' + \
@@ -4712,13 +4713,13 @@ def htmlTimeline(defaultTimeline: str,
         # indicate that the calendar icon is highlighted
         calendarAltText = '*' + calendarAltText + '*'
     tlStr += \
-        '    <a href="' + usersPath + calendarPath + \
+        '    <a class="imageAnchor" href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
         calendarImage + '" title="' + translate['Calendar'] + \
         '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
 
     tlStr += \
-        '    <a href="' + usersPath + '/minimal' + \
+        '    <a class="imageAnchor" href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
