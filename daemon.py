@@ -1258,6 +1258,23 @@ class PubServer(BaseHTTPRequestHandler):
                 "theme_color": "grey",
                 "orientation": "portrait-primary",
                 "categories": ["microblog", "fediverse", "activitypub"],
+                "screenshots" : [
+                    {
+                        "src": "/mobile.jpg",
+                        "sizes": "418x851",
+                        "type": "image/jpeg"
+                    },
+                    {
+                        "src": "mobile_person.jpg",
+                        "sizes": "429x860",
+                        "type": "image/jpeg"
+                    },
+                    {
+                        "src": "mobile_search.jpg",
+                        "sizes": "422x861",
+                        "type": "image/jpeg"
+                    }
+                ],
                 "icons": [
                     {
                         "src": "/logo72.png",
@@ -1944,17 +1961,14 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
-        # image on login screen or qrcode
-        if self.path == '/login.png' or \
-           self.path == '/login.gif' or \
-           self.path == '/login.webp' or \
-           self.path == '/login.jpeg' or \
-           self.path == '/login.jpg' or \
-           self.path == '/qrcode.png':
-            mediaFilename = \
-                self.server.baseDir + '/accounts' + self.path
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+        # manifest images used to show example screenshots
+        # for use by app stores
+        if self.path == '/screenshot1.jpg' or \
+           self.path == '/screenshot2.jpg':
+            screenFilename = \
+                self.server.baseDir + '/img' + self.path
+            if os.path.isfile(screenFilename):
+                if self._etag_exists(screenFilename):
                     # The file has not changed
                     self._304()
                     return
@@ -1963,7 +1977,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaBinary = None
                 while tries < 5:
                     try:
-                        with open(mediaFilename, 'rb') as avFile:
+                        with open(screenFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             break
                     except Exception as e:
@@ -1971,7 +1985,43 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename,
+                    self._set_headers_etag(screenFilename,
+                                           'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                    return
+            self._404()
+            return
+
+        # image on login screen or qrcode
+        if self.path == '/login.png' or \
+           self.path == '/login.gif' or \
+           self.path == '/login.webp' or \
+           self.path == '/login.jpeg' or \
+           self.path == '/login.jpg' or \
+           self.path == '/qrcode.png':
+            iconFilename = \
+                self.server.baseDir + '/accounts' + self.path
+            if os.path.isfile(iconFilename):
+                if self._etag_exists(iconFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                tries = 0
+                mediaBinary = None
+                while tries < 5:
+                    try:
+                        with open(iconFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries += 1
+                if mediaBinary:
+                    self._set_headers_etag(iconFilename,
                                            'image/png',
                                            mediaBinary, cookie,
                                            callingDomain)
@@ -1989,11 +2039,11 @@ class PubServer(BaseHTTPRequestHandler):
             savePersonQrcode(self.server.baseDir,
                              nickname, self.server.domain,
                              self.server.port)
-            mediaFilename = \
+            qrFilename = \
                 self.server.baseDir + '/accounts/' + \
                 nickname + '@' + self.server.domain + '/qrcode.png'
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+            if os.path.isfile(qrFilename):
+                if self._etag_exists(qrFilename):
                     # The file has not changed
                     self._304()
                     return
@@ -2002,7 +2052,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaBinary = None
                 while tries < 5:
                     try:
-                        with open(mediaFilename, 'rb') as avFile:
+                        with open(qrFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             break
                     except Exception as e:
@@ -2010,7 +2060,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename, 'image/png',
+                    self._set_headers_etag(qrFilename, 'image/png',
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -2022,11 +2072,11 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in self.path and \
            self.path.endswith('/search_banner.png'):
             nickname = getNicknameFromActor(self.path)
-            mediaFilename = \
+            bannerFilename = \
                 self.server.baseDir + '/accounts/' + \
                 nickname + '@' + self.server.domain + '/search_banner.png'
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+            if os.path.isfile(bannerFilename):
+                if self._etag_exists(bannerFilename):
                     # The file has not changed
                     self._304()
                     return
@@ -2035,7 +2085,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaBinary = None
                 while tries < 5:
                     try:
-                        with open(mediaFilename, 'rb') as avFile:
+                        with open(bannerFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             break
                     except Exception as e:
@@ -2043,7 +2093,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename, 'image/png',
+                    self._set_headers_etag(bannerFilename, 'image/png',
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
