@@ -101,6 +101,10 @@ a:link {
     font-weight: bold;
 }
 
+a:focus {
+    border: 2px solid var(--focus-color);
+}
+
 .timeline-banner {
     background-image: linear-gradient(rgba(0, 0, 0, 0.0), rgba(0, 0, 0, 0.5)), url("banner.png");
     height: 10%;

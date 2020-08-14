@@ -32,6 +32,7 @@
     --follow-text-size1: 24px;
     --follow-text-size2: 40px;
     --follow-text-entry-width: 90%;
+    --focus-color: white;
 }
 
 @font-face {
@@ -72,6 +73,10 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
+}
+
+a:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .follow {
