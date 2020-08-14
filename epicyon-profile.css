@@ -27,7 +27,8 @@
     --font-size5: 20px;
     --font-size-pgp-key: 16px;
     --font-size-pgp-key2: 11px;
-    --font-size-tox: 8px;
+    --font-size-tox: 16px;
+    --font-size-tox2: 8px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -1265,7 +1266,7 @@ aside .toggle-inside li {
 
 @media screen and (max-width: 1000px) {
     .toxaddr {
-	font-size: var(--font-size-tox);
+	font-size: var(--font-size-tox2);
 	font-family: Arial, Helvetica, sans-serif;
     }
     .ssbaddr {
