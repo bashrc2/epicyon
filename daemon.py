@@ -1296,6 +1296,16 @@ class PubServer(BaseHTTPRequestHandler):
                         "type": "image/png",
                         "sizes": "512x512"
                     }
+                ],
+                "related_applications": [
+                    {
+                        "platform": "fdroid",
+                        "url": "https://f-droid.org/en/packages/eu.siacs.conversations"
+                    },
+                    {
+                        "platform": "fdroid",
+                        "url": "https://staging.f-droid.org/en/packages/im.vector.app"
+                    }
                 ]
             }
             msg = json.dumps(manifest,
