@@ -1255,6 +1255,7 @@ class PubServer(BaseHTTPRequestHandler):
                 "background_color": "black",
                 "theme_color": "grey",
                 "orientation": "portrait-primary",
+                "categories": ["microblog", "fediverse", "activitypub"],
                 "icons": [
                     {
                         "src": "/logo72.png",
