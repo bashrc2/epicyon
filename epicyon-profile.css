@@ -346,13 +346,6 @@ a:link {
     background: var(--link-bg-color);
 }
 
-.pgp {
-    font-size: var(--font-size-pgp-key);
-    color: var(--main-link-color);
-    background: var(--link-bg-color);
-    font-family: 'monospace';
-}
-
 .container img.announceOrReply {
     float: none;
     width: 30px;
@@ -857,6 +850,13 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    .pgp {
+	width: 79ch;
+	font-size: var(--font-size-pgp-key);
+	color: var(--main-link-color);
+	background: var(--link-bg-color);
+	font-family: 'monospace';
+    }
     body, html {
         font-size: var(--font-size4);
         font-family: Arial, Helvetica, sans-serif;
@@ -1260,6 +1260,13 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    .pgp {
+	width: 40ch;
+	font-size: var(--font-size-pgp-key);
+	color: var(--main-link-color);
+	background: var(--link-bg-color);
+	font-family: 'monospace';
+    }
     body, html {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;
