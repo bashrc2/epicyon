@@ -54,6 +54,7 @@
     --timeline-border-radius: 30px;
     --icons-side: right;
     --title-color: #999;
+    --focus-color: white;
 }
 
 @font-face {
@@ -77,7 +78,7 @@ body, html {
 }
 
 .imageAnchor:focus img{
-    border: 2px solid blue;
+    border: 2px solid var(--focus-color);
 }
 
 h1 {
@@ -285,6 +286,14 @@ a:link {
 .message {
     margin-left: 7%;
     width: 90%;
+}
+
+.message:focus{
+    border: 2px solid var(--focus-color);
+}
+
+.message:focus img{
+    border: 2px solid var(--focus-color);
 }
 
 .gitpatch {
