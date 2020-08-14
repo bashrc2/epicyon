@@ -3718,7 +3718,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                           nickname, domain,
                                           displayName, False)
 
-    avatarLink = '    <a href="' + postActor + '">'
+    avatarLink = '    <a class="imageAnchor" href="' + postActor + '">'
     avatarLink += \
         '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
         translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>'
@@ -3726,7 +3726,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
         avatarLink = \
-            '    <a href="/users/' + nickname + '?options=' + postActor + \
+            '    <a class="imageAnchor" href="/users/' + \
+            nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
         avatarLink += \
             '    <img loading="lazy" title="' + \
@@ -3798,7 +3799,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
-            '<a href="/users/' + nickname + '?options=' + postActor + \
+            '<a class="imageAnchor" href="/users/' + \
+            nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">' + displayName + '</a>\n'
     else:
@@ -3812,7 +3814,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             # pprint(postJsonObject)
             print('ERROR: no actorDomain')
         titleStr += \
-            '<a href="/users/' + nickname + '?options=' + postActor + \
+            '<a class="imageAnchor" href="/users/' + \
+            nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
 
@@ -3843,19 +3846,20 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         replyStr = ''
         if isPublicRepeat:
             replyStr += \
-                '<a href="/users/' + nickname + '?replyto=' + replyToLink + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?replyto=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
                 '" title="' + translate['Reply to this post'] + '">\n'
         else:
             if isDM(postJsonObject):
                 replyStr += \
-                    '<a href="/users/' + nickname + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replydm=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
             else:
                 replyStr += \
-                    '<a href="/users/' + nickname + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replyfollowers=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
@@ -3871,7 +3875,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         if isBlogPost(postJsonObject):
             if '/statuses/' in postJsonObject['object']['id']:
                 editStr += \
-                    '<a href="/users/' + nickname + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
                     postJsonObject['object']['id'].split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
@@ -3895,7 +3899,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
         announceStr = \
-            '<a href="/users/' + nickname + '?' + announceLink + \
+            '<a class="imageAnchor" href="/users/' + \
+            nickname + '?' + announceLink + \
             '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
@@ -3923,7 +3928,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
         likeStr = \
-            '<a href="/users/' + nickname + '?' + \
+            '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -3945,7 +3950,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             bookmarkLink = 'unbookmark'
             bookmarkTitle = translate['Undo the bookmark']
         bookmarkStr = \
-            '<a href="/users/' + nickname + '?' + \
+            '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -3965,7 +3970,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             deleteStr = \
-                '<a href="/users/' + nickname + \
+                '<a class="imageAnchor" href="/users/' + nickname + \
                 '?delete=' + messageId + pageNumberParam + \
                 '" title="' + translate['Delete this post'] + '">\n'
             deleteStr += \
@@ -3975,7 +3980,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     else:
         if not isMuted:
             muteStr = \
-                '<a href="/users/' + nickname + \
+                '<a class="imageAnchor" href="/users/' + nickname + \
                 '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
                 '?bm=' + timelinePostBookmark + \
                 '" title="' + translate['Mute this post'] + '">\n'
@@ -3986,7 +3991,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 '" src="/' + iconsDir + '/mute.png"/></a>\n'
         else:
             muteStr = \
-                '<a href="/users/' + nickname + '?unmute=' + messageId + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?unmute=' + messageId + \
                 pageNumberParam + '?tl=' + boxName + '?bm=' + \
                 timelinePostBookmark + '" title="' + \
                 translate['Undo mute'] + '">\n'
@@ -4044,7 +4050,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
                                     '<div class="timeline-avatar-reply">\n' \
-                                    '<a href="/users/' + nickname + \
+                                    '<a class="imageAnchor" ' + \
+                                    'href="/users/' + nickname + \
                                     '?options=' + \
                                     announceActor + ';' + str(pageNumber) + \
                                     ';' + announceAvatarUrl + \

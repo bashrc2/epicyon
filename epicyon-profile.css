@@ -76,6 +76,10 @@ body, html {
     font-size: var(--font-size);
 }
 
+.imageAnchor:focus img{
+    border: 2px solid blue;
+}
+
 h1 {
     color: var(--title-color);
 }
