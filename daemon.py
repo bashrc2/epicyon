@@ -1247,6 +1247,8 @@ class PubServer(BaseHTTPRequestHandler):
 
         # manifest for progressive web apps
         if '/manifest.json' in self.path:
+            app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
+            app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
             manifest = {
                 "name": "Epicyon",
                 "short_name": "Epicyon",
@@ -1301,11 +1303,11 @@ class PubServer(BaseHTTPRequestHandler):
                 "related_applications": [
                     {
                         "platform": "fdroid",
-                        "url": "https://f-droid.org/en/packages/eu.siacs.conversations"
+                        "url": app1
                     },
                     {
                         "platform": "fdroid",
-                        "url": "https://staging.f-droid.org/en/packages/im.vector.app"
+                        "url": app2
                     }
                 ]
             }
