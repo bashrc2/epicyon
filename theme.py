@@ -277,6 +277,7 @@ def setThemeNight(baseDir: str):
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
     themeParams = {
+        "focus-color": "blue",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
@@ -604,6 +605,7 @@ def setThemePurple(baseDir: str):
 def setThemeHacker(baseDir: str):
     name = 'hacker'
     themeParams = {
+        "focus-color": "green",
         "main-bg-color": "black",
         "link-bg-color": "black",
         "main-bg-color-dm": "#0b0a0a",
@@ -653,6 +655,7 @@ def setThemeHacker(baseDir: str):
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
+        "focus-color": "grey",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
@@ -707,6 +710,7 @@ def setThemeLight(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "focus-color": "grey",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
