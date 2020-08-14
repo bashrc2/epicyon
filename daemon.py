@@ -1265,12 +1265,12 @@ class PubServer(BaseHTTPRequestHandler):
                         "type": "image/jpeg"
                     },
                     {
-                        "src": "mobile_person.jpg",
+                        "src": "/mobile_person.jpg",
                         "sizes": "429x860",
                         "type": "image/jpeg"
                     },
                     {
-                        "src": "mobile_search.jpg",
+                        "src": "/mobile_search.jpg",
                         "sizes": "422x861",
                         "type": "image/jpeg"
                     }
