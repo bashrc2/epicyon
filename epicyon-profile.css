@@ -288,11 +288,6 @@ a:link {
     font-family: 'monospace';
 }
 
-.container p.administeredby {
-    font-size: var(--font-size-header);
-    font-family: Arial, Helvetica, sans-serif;
-}
-
 .container::after {
     content: "";
     clear: both;
@@ -848,6 +843,10 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    .container p.administeredby {
+	font-size: var(--font-size-header);
+	font-family: Arial, Helvetica, sans-serif;
+    }
     .toxaddr {
 	font-size: var(--font-size-tox);
 	font-family: Arial, Helvetica, sans-serif;
@@ -1265,6 +1264,10 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    .container p.administeredby {
+	font-size: var(--font-size-tox2);
+	font-family: Arial, Helvetica, sans-serif;
+    }
     .toxaddr {
 	font-size: var(--font-size-tox2);
 	font-family: Arial, Helvetica, sans-serif;
