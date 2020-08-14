@@ -2681,7 +2681,7 @@ def htmlProfile(defaultTimeline: str,
                 ssbAddress + '</label></p>\n'
         if toxAddress:
             donateSection += \
-                '<p>Tox: <label class="ssbaddr">' + \
+                '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
         if PGPfingerprint:
             donateSection += \

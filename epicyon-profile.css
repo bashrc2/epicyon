@@ -26,6 +26,8 @@
     --font-size4: 22px;
     --font-size5: 20px;
     --font-size-pgp-key: 16px;
+    --font-size-pgp-key2: 11px;
+    --font-size-tox: 8px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -114,11 +116,6 @@ a:link {
 .rssfeed img {
     width: 5%;
     float: right;
-}
-
-.ssbaddr {
-    font-size: var(--font-size-pgp-key);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .about {
@@ -850,8 +847,15 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    .toxaddr {
+	font-size: var(--font-size-tox);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .ssbaddr {
+	font-size: var(--font-size-pgp-key);
+	font-family: Arial, Helvetica, sans-serif;
+    }
     .pgp {
-	width: 79ch;
 	font-size: var(--font-size-pgp-key);
 	color: var(--main-link-color);
 	background: var(--link-bg-color);
@@ -1260,9 +1264,16 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    .toxaddr {
+	font-size: var(--font-size-tox);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .ssbaddr {
+	font-size: var(--font-size-pgp-key2);
+	font-family: Arial, Helvetica, sans-serif;
+    }
     .pgp {
-	width: 40ch;
-	font-size: var(--font-size-pgp-key);
+	font-size: var(--font-size-pgp-key2);
 	color: var(--main-link-color);
 	background: var(--link-bg-color);
 	font-family: 'monospace';

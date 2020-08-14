@@ -1258,7 +1258,7 @@ class PubServer(BaseHTTPRequestHandler):
                 "theme_color": "grey",
                 "orientation": "portrait-primary",
                 "categories": ["microblog", "fediverse", "activitypub"],
-                "screenshots" : [
+                "screenshots": [
                     {
                         "src": "/mobile.jpg",
                         "sizes": "418x851",
