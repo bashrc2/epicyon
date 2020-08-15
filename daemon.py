@@ -1334,6 +1334,8 @@ class PubServer(BaseHTTPRequestHandler):
                               len(msg),
                               None, callingDomain)
             self._write(msg)
+            if self.server.debug:
+                print('Sent manifest: ' + callingDomain)
             return
 
         # favicon image
@@ -1353,6 +1355,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir + '/img/icons/' + favFilename
             if self._etag_exists(faviconFilename):
                 # The file has not changed
+                if self.server.debug:
+                    print('favicon icon has not changed: ' + callingDomain)
                 self._304()
                 return
             if self.server.iconsCache.get(favFilename):
@@ -1362,6 +1366,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        favBinary, cookie,
                                        callingDomain)
                 self._write(favBinary)
+                if self.server.debug:
+                    print('Sent favicon from cache: ' + callingDomain)
                 return
             else:
                 if os.path.isfile(faviconFilename):
@@ -1373,7 +1379,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                callingDomain)
                         self._write(favBinary)
                         self.server.iconsCache[favFilename] = favBinary
+                        if self.server.debug:
+                            print('Sent favicon from file: ' + callingDomain)
                         return
+            if self.server.debug:
+                print('favicon not sent: ' + callingDomain)
             self._404()
             return
 
@@ -1446,6 +1456,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            fontBinary, cookie,
                                            callingDomain)
                     self._write(fontBinary)
+                    if self.server.debug:
+                        print('font sent from cache: ' +
+                              self.path + ' ' + callingDomain)
                     return
                 else:
                     if os.path.isfile(fontFilename):
@@ -1457,7 +1470,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                    callingDomain)
                             self._write(fontBinary)
                             self.server.fontsCache[fontStr] = fontBinary
+                        if self.server.debug:
+                            print('font sent from file: ' +
+                                  self.path + ' ' + callingDomain)
                         return
+            if self.server.debug:
+                print('font not found: ' + self.path + ' ' + callingDomain)
             self._404()
             return
 
@@ -1512,9 +1530,15 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/xml', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        if self.server.debug:
+                            print('Sent rss2 feed: ' +
+                                  self.path + ' ' + callingDomain)
                         return
-                self._404()
-                return
+            if self.server.debug:
+                print('Failed to get rss2 feed: ' +
+                      self.path + ' ' + callingDomain)
+            self._404()
+            return
 
         # RSS 3.0
         if self.path.startswith('/blog/') and \
@@ -1550,9 +1574,15 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/plain; charset=utf-8',
                                           len(msg), cookie, callingDomain)
                         self._write(msg)
+                        if self.server.debug:
+                            print('Sent rss3 feed: ' +
+                                  self.path + ' ' + callingDomain)
                         return
-                self._404()
-                return
+            if self.server.debug:
+                print('Failed to get rss3 feed: ' +
+                      self.path + ' ' + callingDomain)
+            self._404()
+            return
 
         # show the main blog page
         if htmlGET and (self.path == '/blog' or
