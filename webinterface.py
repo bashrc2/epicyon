@@ -3734,7 +3734,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             translate['Show options for this person'] + \
             '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
     avatarImageInPost = \
-        '  <div class="timeline-avatar">' + avatarLink + '</div>\n'
+        '  <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -4208,7 +4208,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
-                                 isMuted, avatarLink,
+                                 isMuted, avatarLink.strip(),
                                  replyStr, announceStr, likeStr,
                                  bookmarkStr, deleteStr, muteStr)
 
