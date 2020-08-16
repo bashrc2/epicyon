@@ -321,6 +321,7 @@ def setThemeStarlight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "focus-color": "darkred",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
