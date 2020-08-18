@@ -13,6 +13,7 @@
     --event-foreground:white;
     --title-text: #282c37;
     --title-background: #ccc;
+    --focus-color: white;
 }
 
 @font-face {
@@ -65,6 +66,10 @@ a:link {
     z-index: 1;
     padding: 1rem;
     margin: -1rem;
+}
+
+a:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .calendar__day__header,

@@ -18,7 +18,9 @@
     --text-entry-background: #111;
     --time-color: #aaa;
     --button-text: #FFFFFF;
+    --button-small-text: #FFFFFF;
     --button-background: #999;
+    --button-small-background: #999;
     --button-selected: #666;
     --hashtag-margin: 2%;
     --hashtag-vertical-spacing1: 50px;
@@ -30,6 +32,7 @@
     --follow-text-size1: 24px;
     --follow-text-size2: 40px;
     --follow-text-entry-width: 90%;
+    --focus-color: white;
 }
 
 @font-face {
@@ -72,6 +75,10 @@ a:link {
     font-weight: bold;
 }
 
+a:focus {
+    border: 2px solid var(--focus-color);
+}
+
 .follow {
     height: 100%;
     position: relative;
@@ -112,13 +119,14 @@ a:link {
     width: 15%;
 }
 
-textarea {
-    font-size: var(--font-size4);
-    width: 90%;
-    background-color: var(--text-entry-background);
-}
-
 @media screen and (min-width: 400px) {
+    textarea {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size4);
+        width: 90%;
+        background-color: var(--text-entry-background);
+        color: white;
+    }
     .followText {
         font-size: var(--follow-text-size1);
     }
@@ -140,7 +148,22 @@ textarea {
         text-align: center;
         padding: 10px;
         font-size: 24px;
-        width: 20%;
+        width: 10ch;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
+    .buttonsmall {
+        border-radius: 4px;
+        background-color: var(--button-small-background);
+        font-family: Arial, Helvetica, sans-serif;
+        border: none;
+        color: var(--button-small-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 24px;
+        width: 7ch;
         max-width: 200px;
         min-width: 100px;
         cursor: pointer;
@@ -159,6 +182,13 @@ textarea {
 }
 
 @media screen and (max-width: 1000px) {
+    textarea {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: var(--font-size);
+        width: 90%;
+        background-color: var(--text-entry-background);
+        color: white;
+    }
     .followText {
         font-size: var(--follow-text-size2);
     }
@@ -180,7 +210,22 @@ textarea {
         text-align: center;
         padding: 10px;
         font-size: 40px;
-        width: 20%;
+        width: 10ch;
+        max-width: 200px;
+        min-width: 100px;
+        cursor: pointer;
+        margin: 30px;
+    }
+    .buttonsmall {
+        border-radius: 4px;
+        background-color: var(--button-small-background);
+        font-family: Arial, Helvetica, sans-serif;
+        border: none;
+        color: var(--button-small-text);
+        text-align: center;
+        padding: 10px;
+        font-size: 40px;
+        width: 7ch;
         max-width: 200px;
         min-width: 100px;
         cursor: pointer;

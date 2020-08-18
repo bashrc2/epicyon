@@ -202,6 +202,7 @@ def receiveAcceptReject(session, baseDir: str,
             print('DEBUG: ' + messageJson['type'] + ' has no actor')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:

@@ -42,6 +42,7 @@
     --gallery-font-size-mobile: 35px;
     --button-corner-radius: 15px;
     --timeline-border-radius: 30px;
+    --focus-color: white;
 }
 
 @font-face {
@@ -78,6 +79,10 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
+}
+
+a:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .cwText {

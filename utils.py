@@ -215,6 +215,8 @@ def getDisplayName(baseDir: str, actor: str, personCache: {}) -> str:
 def getNicknameFromActor(actor: str) -> str:
     """Returns the nickname from an actor url
     """
+    if actor.startswith('@'):
+        actor = actor[1:]
     if '/users/' not in actor:
         if '/profile/' in actor:
             nickStr = actor.split('/profile/')[1].replace('@', '')
@@ -222,17 +224,26 @@ def getNicknameFromActor(actor: str) -> str:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
-        if '/channel/' in actor:
+        elif '/channel/' in actor:
             nickStr = actor.split('/channel/')[1].replace('@', '')
             if '/' not in nickStr:
                 return nickStr
             else:
                 return nickStr.split('/')[0]
-        # https://domain/@nick
-        if '/@' in actor:
+        elif '/accounts/' in actor:
+            nickStr = actor.split('/accounts/')[1].replace('@', '')
+            if '/' not in nickStr:
+                return nickStr
+            else:
+                return nickStr.split('/')[0]
+        elif '/@' in actor:
+            # https://domain/@nick
             nickStr = actor.split('/@')[1]
             if '/' in nickStr:
                 nickStr = nickStr.split('/')[0]
+            return nickStr
+        elif '@' in actor:
+            nickStr = actor.split('@')[0]
             return nickStr
         return None
     nickStr = actor.split('/users/')[1].replace('@', '')
@@ -245,28 +256,38 @@ def getNicknameFromActor(actor: str) -> str:
 def getDomainFromActor(actor: str) -> (str, int):
     """Returns the domain name from an actor url
     """
+    if actor.startswith('@'):
+        actor = actor[1:]
     port = None
     prefixes = getProtocolPrefixes()
     if '/profile/' in actor:
         domain = actor.split('/profile/')[0]
         for prefix in prefixes:
             domain = domain.replace(prefix, '')
+    elif '/accounts/' in actor:
+        domain = actor.split('/accounts/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/channel/' in actor:
+        domain = actor.split('/channel/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/users/' in actor:
+        domain = actor.split('/users/')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '/@' in actor:
+        domain = actor.split('/@')[0]
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+    elif '@' in actor:
+        domain = actor.split('@')[1].strip()
     else:
-        if '/channel/' in actor:
-            domain = actor.split('/channel/')[0]
-            for prefix in prefixes:
-                domain = domain.replace(prefix, '')
-        else:
-            if '/users/' not in actor:
-                domain = actor
-                for prefix in prefixes:
-                    domain = domain.replace(prefix, '')
-                if '/' in actor:
-                    domain = domain.split('/')[0]
-            else:
-                domain = actor.split('/users/')[0]
-                for prefix in prefixes:
-                    domain = domain.replace(prefix, '')
+        domain = actor
+        for prefix in prefixes:
+            domain = domain.replace(prefix, '')
+        if '/' in actor:
+            domain = domain.split('/')[0]
     if ':' in domain:
         portStr = domain.split(':')[1]
         if not portStr.isdigit():
@@ -576,12 +597,13 @@ def validNickname(domain: str, nickname: str) -> bool:
     if nickname == domain:
         return False
     reservedNames = ('inbox', 'dm', 'outbox', 'following',
-                     'public', 'followers', 'profile',
+                     'public', 'followers',
                      'channel', 'capabilities', 'calendar',
                      'tlreplies', 'tlmedia', 'tlblogs',
                      'moderation', 'activity', 'undo',
                      'reply', 'replies', 'question', 'like',
                      'likes', 'users', 'statuses',
+                     'accounts', 'channels', 'profile',
                      'updates', 'repeat', 'announce',
                      'shares', 'fonts', 'icons')
     if nickname in reservedNames:

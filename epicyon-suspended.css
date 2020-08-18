@@ -19,6 +19,7 @@
     --button-text: #FFFFFF;
     --button-background: #999;
     --button-selected: #666;
+    --focus-color: white;
 }
 
 @font-face {
@@ -55,6 +56,10 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
+}
+
+a:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .screentitle {

@@ -26,6 +26,9 @@
     --font-size4: 22px;
     --font-size5: 20px;
     --font-size-pgp-key: 16px;
+    --font-size-pgp-key2: 8px;
+    --font-size-tox: 16px;
+    --font-size-tox2: 8px;
     --text-entry-foreground: #ccc;
     --text-entry-background: #111;
     --time-color: #aaa;
@@ -51,6 +54,7 @@
     --timeline-border-radius: 30px;
     --icons-side: right;
     --title-color: #999;
+    --focus-color: white;
 }
 
 @font-face {
@@ -73,6 +77,10 @@ body, html {
     font-size: var(--font-size);
 }
 
+.imageAnchor:focus img{
+    border: 2px solid var(--focus-color);
+}
+
 h1 {
     color: var(--title-color);
 }
@@ -91,6 +99,10 @@ a:link {
     color: var(--main-link-color);
     background: var(--link-bg-color);
     font-weight: bold;
+}
+
+a:focus {
+    border: 2px solid var(--focus-color);
 }
 
 .timeline-banner {
@@ -114,11 +126,6 @@ a:link {
 .rssfeed img {
     width: 5%;
     float: right;
-}
-
-.ssbaddr {
-    font-size: var(--font-size-pgp-key);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .about {
@@ -285,14 +292,17 @@ a:link {
     width: 90%;
 }
 
+.message:focus{
+    border: 2px solid var(--focus-color);
+}
+
+.message:focus img{
+    border: 2px solid var(--focus-color);
+}
+
 .gitpatch {
     width: 90%;
     font-family: 'monospace';
-}
-
-.container p.administeredby {
-    font-size: var(--font-size-header);
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .container::after {
@@ -344,13 +354,6 @@ a:link {
     font-family: Arial, Helvetica, sans-serif;
     color: var(--main-link-color);
     background: var(--link-bg-color);
-}
-
-.pgp {
-    font-size: var(--font-size-pgp-key);
-    color: var(--main-link-color);
-    background: var(--link-bg-color);
-    font-family: 'monospace';
 }
 
 .container img.announceOrReply {
@@ -857,6 +860,24 @@ aside .toggle-inside li {
 }
 
 @media screen and (min-width: 400px) {
+    .container p.administeredby {
+	font-size: var(--font-size-header);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .toxaddr {
+	font-size: var(--font-size-tox);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .ssbaddr {
+	font-size: var(--font-size-pgp-key);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .pgp {
+	font-size: var(--font-size-pgp-key);
+	color: var(--main-link-color);
+	background: var(--link-bg-color);
+	font-family: 'monospace';
+    }
     body, html {
         font-size: var(--font-size4);
         font-family: Arial, Helvetica, sans-serif;
@@ -1260,6 +1281,24 @@ aside .toggle-inside li {
 }
 
 @media screen and (max-width: 1000px) {
+    .container p.administeredby {
+	font-size: var(--font-size-tox2);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .toxaddr {
+	font-size: var(--font-size-tox2);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .ssbaddr {
+	font-size: var(--font-size-pgp-key2);
+	font-family: Arial, Helvetica, sans-serif;
+    }
+    .pgp {
+	font-size: var(--font-size-pgp-key2);
+	color: var(--main-link-color);
+	background: var(--link-bg-color);
+	font-family: 'monospace';
+    }
     body, html {
         font-size: var(--font-size3);
         font-family: Arial, Helvetica, sans-serif;

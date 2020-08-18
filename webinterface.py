@@ -252,7 +252,7 @@ def updateAvatarImageCache(session, baseDir: str, httpPrefix: str,
             print('Failed to download avatar image: ' + str(avatarUrl))
             print(e)
         prof = 'https://www.w3.org/ns/activitystreams'
-        if '/channel/' not in actor:
+        if '/channel/' not in actor or '/accounts/' not in actor:
             sessionHeaders = {
                 'Accept': 'application/activity+json; profile="' + prof + '"'
             }
@@ -747,7 +747,13 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
 
     # add the page title
     hashtagSearchForm = htmlHeader(cssFilename, hashtagSearchCSS)
-    hashtagSearchForm += '<center><h1>#' + hashtag + '</h1></center>'
+    if nickname:
+        hashtagSearchForm += '<center>\n' + \
+            '<h1><a href="/users/' + nickname + '/search">#' + \
+            hashtag + '</a></h1>\n' + '</center>\n'
+    else:
+        hashtagSearchForm += '<center>\n' + \
+            '<h1>#' + hashtag + '</h1>\n' + '</center>\n'
 
     if startIndex > 0:
         # previous page link
@@ -758,7 +764,7 @@ def htmlHashtagSearch(nickname: str, domain: str, port: int,
             iconsDir + '/pageup.png" title="' + \
             translate['Page up'] + \
             '" alt="' + translate['Page up'] + \
-            '"></a></center>'
+            '"></a></center>\n'
     index = startIndex
     while index <= endIndex:
         postId = lines[index].strip('\n').strip('\r')
@@ -1306,240 +1312,242 @@ def htmlEditProfile(translate: {}, baseDir: str, path: str,
     editProfileForm = htmlHeader(cssFilename, editProfileCSS)
     editProfileForm += \
         '<form enctype="multipart/form-data" method="POST" ' + \
-        'accept-charset="UTF-8" action="' + path + '/profiledata">'
-    editProfileForm += '  <div class="vertical-center">'
+        'accept-charset="UTF-8" action="' + path + '/profiledata">\n'
+    editProfileForm += '  <div class="vertical-center">\n'
     editProfileForm += \
         '    <p class="new-post-text">' + translate['Profile for'] + \
         ' ' + nickname + '@' + domainFull + '</p>'
-    editProfileForm += '    <div class="container">'
-    editProfileForm += \
-        '      <input type="submit" name="submitProfile" value="' + \
-        translate['Submit'] + '">'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <a href="' + pathOriginal + '"><button class="cancelbtn">' + \
-        translate['Cancel'] + '</button></a>'
-    editProfileForm += '    </div>'
+        translate['Go Back'] + '</button></a>\n'
+    editProfileForm += \
+        '      <input type="submit" name="submitProfile" value="' + \
+        translate['Submit'] + '">\n'
+    editProfileForm += '    </div>\n'
 
     if scheduledPostsExist(baseDir, nickname, domain):
-        editProfileForm += '    <div class="container">'
+        editProfileForm += '    <div class="container">\n'
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="removeScheduledPosts"> ' + \
-            translate['Remove scheduled posts'] + '<br>'
-        editProfileForm += '    </div>'
+            translate['Remove scheduled posts'] + '<br>\n'
+        editProfileForm += '    </div>\n'
 
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <label class="labels">' + \
-        translate['Nickname'] + '</label>'
+        translate['Nickname'] + '</label>\n'
     editProfileForm += \
         '      <input type="text" name="displayNickname" value="' + \
-        displayNickname + '"><br>'
+        displayNickname + '"><br>\n'
     editProfileForm += \
-        '      <label class="labels">' + translate['Your bio'] + '</label>'
+        '      <label class="labels">' + translate['Your bio'] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="bio" style="height:200px">' + \
-        bioStr + '</textarea>'
+        bioStr + '</textarea>\n'
     editProfileForm += '<label class="labels">' + \
-        translate['Donations link'] + '</label><br>'
+        translate['Donations link'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" placeholder="https://..." ' + \
-        'name="donateUrl" value="' + donateUrl + '">'
+        'name="donateUrl" value="' + donateUrl + '">\n'
     editProfileForm += \
-        '<label class="labels">' + translate['XMPP'] + '</label><br>'
+        '<label class="labels">' + translate['XMPP'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="xmppAddress" value="' + \
-        xmppAddress + '">'
+        xmppAddress + '">\n'
     editProfileForm += '<label class="labels">' + \
-        translate['Matrix'] + '</label><br>'
+        translate['Matrix'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="matrixAddress" value="' + \
-        matrixAddress+'">'
+        matrixAddress+'">\n'
 
-    editProfileForm += '<label class="labels">SSB</label><br>'
+    editProfileForm += '<label class="labels">SSB</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="ssbAddress" value="' + \
-        ssbAddress + '">'
+        ssbAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Blog</label><br>'
+    editProfileForm += '<label class="labels">Blog</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="blogAddress" value="' + \
-        blogAddress + '">'
+        blogAddress + '">\n'
 
-    editProfileForm += '<label class="labels">Tox</label><br>'
+    editProfileForm += '<label class="labels">Tox</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="toxAddress" value="' + \
-        toxAddress + '">'
+        toxAddress + '">\n'
     editProfileForm += '<label class="labels">' + \
-        translate['Email'] + '</label><br>'
+        translate['Email'] + '</label><br>\n'
     editProfileForm += \
-        '      <input type="text" name="email" value="' + emailAddress + '">'
+        '      <input type="text" name="email" value="' + emailAddress + '">\n'
     editProfileForm += \
         '<label class="labels">' + \
-        translate['PGP Fingerprint'] + '</label><br>'
+        translate['PGP Fingerprint'] + '</label><br>\n'
     editProfileForm += \
         '      <input type="text" name="openpgp" value="' + \
-        PGPfingerprint + '">'
+        PGPfingerprint + '">\n'
     editProfileForm += \
-        '<label class="labels">' + translate['PGP'] + '</label><br>'
+        '<label class="labels">' + translate['PGP'] + '</label><br>\n'
     editProfileForm += \
         '      <textarea id="message" placeholder=' + \
         '"-----BEGIN PGP PUBLIC KEY BLOCK-----" name="pgp" ' + \
-        'style="height:100px">' + PGPpubKey + '</textarea>'
+        'style="height:100px">' + PGPpubKey + '</textarea>\n'
     editProfileForm += '<a href="/users/' + nickname + \
         '/followingaccounts"><label class="labels">' + \
-        translate['Following'] + '</label></a><br>'
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+        translate['Following'] + '</label></a><br>\n'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     idx = 'The files attached below should be no larger than ' + \
         '10MB in total uploaded at once.'
     editProfileForm += \
-        '      <label class="labels">' + translate[idx] + '</label><br><br>'
+        '      <label class="labels">' + translate[idx] + '</label><br><br>\n'
     editProfileForm += \
-        '      <label class="labels">' + translate['Avatar image'] + '</label>'
+        '      <label class="labels">' + translate['Avatar image'] + \
+        '</label>\n'
     editProfileForm += \
         '      <input type="file" id="avatar" name="avatar"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += \
         '      <br><label class="labels">' + \
-        translate['Background image'] + '</label>'
+        translate['Background image'] + '</label>\n'
     editProfileForm += '      <input type="file" id="image" name="image"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '      <br><label class="labels">' + \
-        translate['Timeline banner image'] + '</label>'
+        translate['Timeline banner image'] + '</label>\n'
     editProfileForm += '      <input type="file" id="banner" name="banner"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
     editProfileForm += '      <br><label class="labels">' + \
-        translate['Search banner image'] + '</label>'
+        translate['Search banner image'] + '</label>\n'
     editProfileForm += '      <input type="file" id="search_banner" '
     editProfileForm += 'name="search_banner"'
-    editProfileForm += '            accept="' + imageFormats + '">'
+    editProfileForm += '            accept="' + imageFormats + '">\n'
 
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '<label class="labels">' + translate['Change Password'] + \
-        '</label><br>'
-    editProfileForm += '      <input type="text" name="password" value=""><br>'
+        '</label><br>\n'
+    editProfileForm += '      <input type="text" name="password" ' + \
+        'value=""><br>\n'
     editProfileForm += \
         '<label class="labels">' + translate['Confirm Password'] + \
-        '</label><br>'
+        '</label><br>\n'
     editProfileForm += \
-        '      <input type="text" name="passwordconfirm" value="">'
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+        '      <input type="text" name="passwordconfirm" value="">\n'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="approveFollowers" ' + manuallyApprovesFollowers + \
-        '> ' + translate['Approve follower requests'] + '<br>'
+        '> ' + translate['Approve follower requests'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" ' + \
         'class="profilecheckbox" name="isBot" ' + \
-        isBot + '> ' + translate['This is a bot account'] + '<br>'
+        isBot + '> ' + translate['This is a bot account'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" ' + \
         'class="profilecheckbox" name="isGroup" ' + isGroup + '> ' + \
-        translate['This is a group account'] + '<br>'
+        translate['This is a group account'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="followDMs" ' + followDMs + '> ' + \
-        translate['Only people I follow can send me DMs'] + '<br>'
+        translate['Only people I follow can send me DMs'] + '<br>\n'
     editProfileForm += \
         '      <input type="checkbox" class="profilecheckbox" ' + \
         'name="removeTwitter" ' + removeTwitter + '> ' + \
-        translate['Remove Twitter posts'] + '<br>'
+        translate['Remove Twitter posts'] + '<br>\n'
     if path.startswith('/users/' + adminNickname + '/'):
         editProfileForm += \
             '      <input type="checkbox" class="profilecheckbox" ' + \
             'name="mediaInstance" ' + mediaInstanceStr + '> ' + \
-            translate['This is a media instance'] + '<br>'
+            translate['This is a media instance'] + '<br>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Filtered words'] + '</label></b>'
+        translate['Filtered words'] + '</label></b>\n'
     editProfileForm += '      <br><label class="labels">' + \
-        translate['One per line'] + '</label>'
+        translate['One per line'] + '</label>\n'
     editProfileForm += '      <textarea id="message" ' + \
         'name="filteredWords" style="height:200px">' + \
-        filterStr + '</textarea>'
+        filterStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Word Replacements'] + '</label></b>'
-    editProfileForm += '      <br><label class="labels">A -> B</label>'
+        translate['Word Replacements'] + '</label></b>\n'
+    editProfileForm += '      <br><label class="labels">A -> B</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="switchWords" ' + \
-        'style="height:200px">' + switchStr + '</textarea>'
+        'style="height:200px">' + switchStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Blocked accounts'] + '</label></b>'
+        translate['Blocked accounts'] + '</label></b>\n'
     idx = 'Blocked accounts, one per line, in the form ' + \
         'nickname@domain or *@blockeddomain'
     editProfileForm += \
-        '      <br><label class="labels">' + translate[idx] + '</label>'
+        '      <br><label class="labels">' + translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="blocked" style="height:200px">' + \
-        blockedStr + '</textarea>'
+        blockedStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Federation list'] + '</label></b>'
+        translate['Federation list'] + '</label></b>\n'
     idx = 'Federate only with a defined set of instances. ' + \
         'One domain name per line.'
     editProfileForm += \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>'
+        translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="allowedInstances" ' + \
-        'style="height:200px">' + allowedInstancesStr + '</textarea>'
+        'style="height:200px">' + allowedInstancesStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['Git Projects'] + '</label></b>'
+        translate['Git Projects'] + '</label></b>\n'
     idx = 'List of project names that you wish to receive git patches for'
     editProfileForm += \
         '      <br><label class="labels">' + \
-        translate[idx] + '</label>'
+        translate[idx] + '</label>\n'
     editProfileForm += \
         '      <textarea id="message" name="gitProjects" ' + \
-        'style="height:100px">' + gitProjectsStr + '</textarea>'
+        'style="height:100px">' + gitProjectsStr + '</textarea>\n'
 
     editProfileForm += \
         '      <br><b><label class="labels">' + \
-        translate['YouTube Replacement Domain'] + '</label></b>'
+        translate['YouTube Replacement Domain'] + '</label></b>\n'
     YTReplacementDomain = getConfigParam(baseDir, "youtubedomain")
     if not YTReplacementDomain:
         YTReplacementDomain = ''
     editProfileForm += \
         '      <input type="text" name="ytdomain" value="' + \
-        YTReplacementDomain + '">'
+        YTReplacementDomain + '">\n'
 
-    editProfileForm += '    </div>'
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += \
         '      <b><label class="labels">' + \
-        translate['Skills'] + '</label></b><br>'
+        translate['Skills'] + '</label></b><br>\n'
     idx = 'If you want to participate within organizations then you ' + \
         'can indicate some skills that you have and approximate ' + \
         'proficiency levels. This helps organizers to construct ' + \
         'teams with an appropriate combination of skills.'
     editProfileForm += '      <label class="labels">' + \
-        translate[idx] + '</label>'
+        translate[idx] + '</label>\n'
     editProfileForm += skillsStr + themesDropdown + moderatorsStr
-    editProfileForm += '    </div>' + instanceStr
-    editProfileForm += '    <div class="container">'
+    editProfileForm += '    </div>\n' + instanceStr
+    editProfileForm += '    <div class="container">\n'
     editProfileForm += '      <b><label class="labels">' + \
-        translate['Danger Zone'] + '</label></b><br>'
+        translate['Danger Zone'] + '</label></b><br>\n'
     editProfileForm += \
         '      <input type="checkbox" class=dangercheckbox" ' + \
         'name="deactivateThisAccount"> ' + \
-        translate['Deactivate this account'] + '<br>'
-    editProfileForm += '    </div>'
-    editProfileForm += '  </div>'
-    editProfileForm += '</form>'
+        translate['Deactivate this account'] + '<br>\n'
+    editProfileForm += '    </div>\n'
+    editProfileForm += '  </div>\n'
+    editProfileForm += '</form>\n'
     editProfileForm += htmlFooter()
     return editProfileForm
 
@@ -2206,7 +2214,7 @@ def htmlNewPost(mediaInstance: bool, translate: {},
     newPostForm += \
         '      <a href="' + pathBase + \
         '/inbox"><button class="cancelbtn">' + \
-        translate['Cancel'] + '</button></a>\n'
+        translate['Go Back'] + '</button></a>\n'
     newPostForm += \
         '      <input type="submit" name="submitPost" value="' + \
         translate['Submit'] + '">\n'
@@ -2289,6 +2297,8 @@ def htmlHeader(cssFilename: str, css: str, lang='en') -> str:
         htmlStr += '    <link rel="preload" as="font" type="' + \
             fontFormat + '" href="' + fontName + '" crossorigin>\n'
     htmlStr += '    <style>\n' + css + '</style>\n'
+    htmlStr += '    <link rel="manifest" href="/manifest.json">\n'
+    htmlStr += '    <meta name="theme-color" content="grey">\n'
     htmlStr += '  </head>\n'
     htmlStr += '  <body>\n'
     return htmlStr
@@ -2671,7 +2681,7 @@ def htmlProfile(defaultTimeline: str,
                 ssbAddress + '</label></p>\n'
         if toxAddress:
             donateSection += \
-                '<p>Tox: <label class="ssbaddr">' + \
+                '<p>Tox: <label class="toxaddr">' + \
                 toxAddress + '</label></p>\n'
         if PGPfingerprint:
             donateSection += \
@@ -2791,30 +2801,32 @@ def htmlProfile(defaultTimeline: str,
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \
         linkToTimelineEnd + donateSection
-    profileStr += '<div class="container">\n'
+    profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
     profileStr += \
-        '    <a href="' + usersPath + '"><button class="' + postsButton + \
-        '"><span>' + translate['Posts'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/following"><button class="' + \
-        followingButton + '"><span>' + translate['Following'] + \
+        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+        postsButton + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
     profileStr += \
-        '    <a href="' + usersPath + '/followers"><button class="' + \
-        followersButton + '"><span>' + translate['Followers'] + \
+        '    <a href="' + usersPath + '/following#buttonheader">' + \
+        '<button class="' + followingButton + '"><span>' + \
+        translate['Following'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/followers#buttonheader">' + \
+        '<button class="' + followersButton + \
+        '"><span>' + translate['Followers'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/roles#buttonheader">' + \
+        '<button class="' + rolesButton + '"><span>' + translate['Roles'] + \
         ' </span></button></a>'
     profileStr += \
-        '    <a href="' + usersPath + '/roles"><button class="' + \
-        rolesButton + '"><span>' + translate['Roles'] + ' </span></button></a>'
+        '    <a href="' + usersPath + '/skills#buttonheader">' + \
+        '<button class="' + skillsButton + '"><span>' + \
+        translate['Skills'] + ' </span></button></a>'
     profileStr += \
-        '    <a href="' + usersPath + '/skills"><button class="' + \
-        skillsButton + '"><span>' + translate['Skills'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/shares"><button class="' + \
-        sharesButton + '"><span>' + translate['Shares'] + \
-        ' </span></button></a>'
+        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+        '<button class="' + sharesButton + '"><span>' + \
+        translate['Shares'] + ' </span></button></a>'
     profileStr += editProfileStr + logoutStr
     profileStr += '  </center>'
     profileStr += '</div>'
@@ -3708,7 +3720,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                           nickname, domain,
                                           displayName, False)
 
-    avatarLink = '    <a href="' + postActor + '">'
+    avatarLink = '    <a class="imageAnchor" href="' + postActor + '">'
     avatarLink += \
         '    <img loading="lazy" src="' + avatarUrl + '" title="' + \
         translate['Show profile'] + '" alt=" "' + avatarPosition + '/></a>'
@@ -3716,14 +3728,15 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     if showAvatarOptions and \
        fullDomain + '/users/' + nickname not in postActor:
         avatarLink = \
-            '    <a href="/users/' + nickname + '?options=' + postActor + \
+            '    <a class="imageAnchor" href="/users/' + \
+            nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + '">\n'
         avatarLink += \
             '    <img loading="lazy" title="' + \
             translate['Show options for this person'] + \
             '" src="' + avatarUrl + '" ' + avatarPosition + '/></a>\n'
     avatarImageInPost = \
-        '  <div class="timeline-avatar">' + avatarLink + '</div>\n'
+        '  <div class="timeline-avatar">' + avatarLink.strip() + '</div>\n'
 
     # don't create new html within the bookmarks timeline
     # it should already have been created for the inbox
@@ -3788,7 +3801,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                       nickname, domain,
                                       displayName, False)
         titleStr += \
-            '<a href="/users/' + nickname + '?options=' + postActor + \
+            '<a class="imageAnchor" href="/users/' + \
+            nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">' + displayName + '</a>\n'
     else:
@@ -3802,7 +3816,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             # pprint(postJsonObject)
             print('ERROR: no actorDomain')
         titleStr += \
-            '<a href="/users/' + nickname + '?options=' + postActor + \
+            '<a class="imageAnchor" href="/users/' + \
+            nickname + '?options=' + postActor + \
             ';' + str(pageNumber) + ';' + avatarUrl + messageIdStr + \
             '">@' + actorNickname + '@' + actorDomain + '</a>\n'
 
@@ -3833,19 +3848,20 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         replyStr = ''
         if isPublicRepeat:
             replyStr += \
-                '<a href="/users/' + nickname + '?replyto=' + replyToLink + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?replyto=' + replyToLink + \
                 '?actor=' + postJsonObject['actor'] + \
                 '" title="' + translate['Reply to this post'] + '">\n'
         else:
             if isDM(postJsonObject):
                 replyStr += \
-                    '<a href="/users/' + nickname + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replydm=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
             else:
                 replyStr += \
-                    '<a href="/users/' + nickname + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '?replyfollowers=' + replyToLink + \
                     '?actor=' + postJsonObject['actor'] + \
                     '" title="' + translate['Reply to this post'] + '">\n'
@@ -3861,7 +3877,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
         if isBlogPost(postJsonObject):
             if '/statuses/' in postJsonObject['object']['id']:
                 editStr += \
-                    '<a href="/users/' + nickname + \
+                    '<a class="imageAnchor" href="/users/' + nickname + \
                     '/tlblogs?editblogpost=' + \
                     postJsonObject['object']['id'].split('/statuses/')[1] + \
                     '?actor=' + actorNickname + \
@@ -3885,7 +3901,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 announceLink = 'unrepeatprivate'
             announceTitle = translate['Undo the repeat']
         announceStr = \
-            '<a href="/users/' + nickname + '?' + announceLink + \
+            '<a class="imageAnchor" href="/users/' + \
+            nickname + '?' + announceLink + \
             '=' + postJsonObject['object']['id'] + pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
             '?bm=' + timelinePostBookmark + \
@@ -3913,7 +3930,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 likeLink = 'unlike'
                 likeTitle = translate['Undo the like']
         likeStr = \
-            '<a href="/users/' + nickname + '?' + \
+            '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             likeLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -3935,7 +3952,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
             bookmarkLink = 'unbookmark'
             bookmarkTitle = translate['Undo the bookmark']
         bookmarkStr = \
-            '<a href="/users/' + nickname + '?' + \
+            '<a class="imageAnchor" href="/users/' + nickname + '?' + \
             bookmarkLink + '=' + postJsonObject['object']['id'] + \
             pageNumberParam + \
             '?actor=' + postJsonObject['actor'] + \
@@ -3955,7 +3972,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
          messageId.startswith(postActor))):
         if '/users/' + nickname + '/' in messageId:
             deleteStr = \
-                '<a href="/users/' + nickname + \
+                '<a class="imageAnchor" href="/users/' + nickname + \
                 '?delete=' + messageId + pageNumberParam + \
                 '" title="' + translate['Delete this post'] + '">\n'
             deleteStr += \
@@ -3965,7 +3982,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
     else:
         if not isMuted:
             muteStr = \
-                '<a href="/users/' + nickname + \
+                '<a class="imageAnchor" href="/users/' + nickname + \
                 '?mute=' + messageId + pageNumberParam + '?tl=' + boxName + \
                 '?bm=' + timelinePostBookmark + \
                 '" title="' + translate['Mute this post'] + '">\n'
@@ -3976,7 +3993,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                 '" src="/' + iconsDir + '/mute.png"/></a>\n'
         else:
             muteStr = \
-                '<a href="/users/' + nickname + '?unmute=' + messageId + \
+                '<a class="imageAnchor" href="/users/' + \
+                nickname + '?unmute=' + messageId + \
                 pageNumberParam + '?tl=' + boxName + '?bm=' + \
                 timelinePostBookmark + '" title="' + \
                 translate['Undo mute'] + '">\n'
@@ -4034,7 +4052,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                 idx = 'Show options for this person'
                                 replyAvatarImageInPost = \
                                     '<div class="timeline-avatar-reply">\n' \
-                                    '<a href="/users/' + nickname + \
+                                    '<a class="imageAnchor" ' + \
+                                    'href="/users/' + nickname + \
                                     '?options=' + \
                                     announceActor + ';' + str(pageNumber) + \
                                     ';' + announceAvatarUrl + \
@@ -4128,7 +4147,8 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
                                             '<div class=' + \
                                             '"timeline-avatar-reply">\n'
                                         replyAvatarImageInPost += \
-                                            '<a href="/users/' + nickname + \
+                                            '<a class="imageAnchor" ' + \
+                                            'href="/users/' + nickname + \
                                             '?options=' + replyActor + \
                                             ';' + str(pageNumber) + ';' + \
                                             replyAvatarUrl + \
@@ -4190,7 +4210,7 @@ def individualPostAsHtml(recentPostsCache: {}, maxRecentPosts: int,
 
     attachmentStr, galleryStr = \
         getPostAttachmentsAsHtml(postJsonObject, boxName, translate,
-                                 isMuted, avatarLink,
+                                 isMuted, avatarLink.strip(),
                                  replyStr, announceStr, likeStr,
                                  bookmarkStr, deleteStr, muteStr)
 
@@ -4530,7 +4550,8 @@ def htmlTimeline(defaultTimeline: str,
                     # show follow approvals icon
                     followApprovals = \
                         '<a href="' + usersPath + \
-                        '/followers"><img loading="lazy" ' + \
+                        '/followers#buttonheader">' + \
+                        '<img loading="lazy" ' + \
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
                         '" title="' + translate['Approve follow requests'] + \
@@ -4566,7 +4587,7 @@ def htmlTimeline(defaultTimeline: str,
         if boxName != 'tlblogs':
             if not manuallyApproveFollowers:
                 newPostButtonStr = \
-                    '<a href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newpost"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + '" alt="| ' + \
@@ -4574,7 +4595,7 @@ def htmlTimeline(defaultTimeline: str,
                     '" class="timelineicon"/></a>\n'
             else:
                 newPostButtonStr = \
-                    '<a href="' + usersPath + \
+                    '<a class="imageAnchor" href="' + usersPath + \
                     '/newfollowers"><img loading="lazy" src="/' + \
                     iconsDir + '/newpost.png" title="' + \
                     translate['Create a new post'] + \
@@ -4582,7 +4603,7 @@ def htmlTimeline(defaultTimeline: str,
                     '" class="timelineicon"/></a>\n'
         else:
             newPostButtonStr = \
-                '<a href="' + usersPath + \
+                '<a class="imageAnchor" href="' + usersPath + \
                 '/newblog"><img loading="lazy" src="/' + \
                 iconsDir + '/newpost.png" title="' + \
                 translate['Create a new post'] + '" alt="| ' + \
@@ -4590,7 +4611,7 @@ def htmlTimeline(defaultTimeline: str,
                 '" class="timelineicon"/></a>\n'
     else:
         newPostButtonStr = \
-            '<a href="' + usersPath + \
+            '<a class="imageAnchor" href="' + usersPath + \
             '/newdm"><img loading="lazy" src="/' + \
             iconsDir + '/newpost.png" title="' + \
             translate['Create a new DM'] + \
@@ -4684,7 +4705,7 @@ def htmlTimeline(defaultTimeline: str,
         sharesButtonStr + bookmarksButtonStr + \
         moderationButtonStr + newPostButtonStr
     tlStr += \
-        '    <a href="' + usersPath + \
+        '    <a class="imageAnchor" href="' + usersPath + \
         '/search"><img loading="lazy" src="/' + \
         iconsDir + '/search.png" title="' + \
         translate['Search and follow'] + '" alt="| ' + \
@@ -4695,13 +4716,13 @@ def htmlTimeline(defaultTimeline: str,
         # indicate that the calendar icon is highlighted
         calendarAltText = '*' + calendarAltText + '*'
     tlStr += \
-        '    <a href="' + usersPath + calendarPath + \
+        '    <a class="imageAnchor" href="' + usersPath + calendarPath + \
         '"><img loading="lazy" src="/' + iconsDir + '/' + \
         calendarImage + '" title="' + translate['Calendar'] + \
         '" alt="| ' + calendarAltText + '" class="timelineicon"/></a>\n'
 
     tlStr += \
-        '    <a href="' + usersPath + '/minimal' + \
+        '    <a class="imageAnchor" href="' + usersPath + '/minimal' + \
         '"><img loading="lazy" src="/' + iconsDir + \
         '/showhide.png" title="' + translate['Show/Hide Buttons'] + \
         '" alt="| ' + translate['Show/Hide Buttons'] + \
@@ -5622,7 +5643,8 @@ def htmlPersonOptions(translate: {}, baseDir: str,
             translate['Petname'] + ': ' + \
             '<input type="text" name="optionpetname" value="' + \
             petname + '">\n' \
-            '<button type="submit" class="button" name="submitPetname">' + \
+            '<button type="submit" class="buttonsmall" ' + \
+            'name="submitPetname">' + \
             translate['Submit'] + '</button><br>\n'
 
     if isFollowingActor(baseDir, nickname, domain, optionsActor):
@@ -5632,7 +5654,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                 '<input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar" checked> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="button" ' + \
+                '<button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
         else:
@@ -5640,11 +5662,14 @@ def htmlPersonOptions(translate: {}, baseDir: str,
                 '<input type="checkbox" ' + \
                 'class="profilecheckbox" name="onCalendar"> ' + \
                 translate['Receive calendar events from this account'] + \
-                '<button type="submit" class="button" ' + \
+                '<button type="submit" class="buttonsmall" ' + \
                 'name="submitOnCalendar">' + \
                 translate['Submit'] + '</button><br>\n'
 
     optionsStr += optionsLinkStr
+    optionsStr += \
+        '    <a href="/"><button type="button" class="button" ' + \
+        'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     optionsStr += \
         '    <button type="submit" class="button" name="submitView">' + \
         translate['View'] + '</button>\n'
@@ -5675,7 +5700,7 @@ def htmlPersonOptions(translate: {}, baseDir: str,
 
     optionsStr += \
         '    <br><br>' + translate['Notes'] + ': \n'
-    optionsStr += '<button type="submit" class="button" ' + \
+    optionsStr += '<button type="submit" class="buttonsmall" ' + \
         'name="submitPersonNotes">' + \
         translate['Submit'] + '</button><br>\n'
     optionsStr += \
@@ -6244,10 +6269,10 @@ def htmlSearch(translate: {},
     followStr += \
         '    <input type="hidden" name="actor" value="' + actor + '">\n'
     followStr += '    <input type="text" name="searchtext" autofocus><br>\n'
+    followStr += '    <a href="/"><button type="button" class="button" ' + \
+        'name="submitBack">' + translate['Go Back'] + '</button></a>\n'
     followStr += '    <button type="submit" class="button" ' + \
         'name="submitSearch">' + translate['Submit'] + '</button>\n'
-    followStr += '    <button type="submit" class="button" ' + \
-        'name="submitBack">' + translate['Go Back'] + '</button>\n'
     followStr += '  </form>\n'
     followStr += '  <p class="hashtagswarm">' + \
         htmlHashTagSwarm(baseDir, actor) + '</p>\n'
@@ -6269,6 +6294,7 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
     """Show a profile page after a search for a fediverse address
     """
     if '/users/' in profileHandle or \
+       '/accounts/' in profileHandle or \
        '/channel/' in profileHandle or \
        '/profile/' in profileHandle or \
        '/@' in profileHandle:
@@ -6441,14 +6467,14 @@ def htmlProfileAfterSearch(recentPostsCache: {}, maxRecentPosts: int,
             '      <input type="hidden" name="actor" value="' + \
             personUrl + '">\n'
         profileStr += \
+            '      <a href="' + backUrl + '"><button class="button">' + \
+            translate['Go Back'] + '</button></a>\n'
+        profileStr += \
             '      <button type="submit" class="button" name="submitYes">' + \
             translate['Follow'] + '</button>\n'
         profileStr += \
             '      <button type="submit" class="button" name="submitView">' + \
             translate['View'] + '</button>\n'
-        profileStr += \
-            '      <a href="' + backUrl + '"><button class="button">' + \
-            translate['Go Back'] + '</button></a>\n'
         profileStr += '    </center>\n'
         profileStr += '  </form>\n'
         profileStr += '</div>\n'

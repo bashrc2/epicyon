@@ -64,6 +64,7 @@ from git import isGitPatch
 from git import receiveGitPatch
 from followingCalendar import receivingCalendarEvents
 from content import dangerousMarkup
+from happening import saveEvent
 
 
 def storeHashTags(baseDir: str, nickname: str, postJsonObject: {}) -> None:
@@ -660,6 +661,7 @@ def receiveUndoFollow(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request has no actor within object')
         return False
     if '/users/' not in messageJson['object']['actor'] and \
+       '/accounts/' not in messageJson['object']['actor'] and \
        '/channel/' not in messageJson['object']['actor'] and \
        '/profile/' not in messageJson['object']['actor']:
         if debug:
@@ -734,6 +736,7 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request has no actor')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -791,11 +794,13 @@ def personReceiveUpdate(baseDir: str,
         if actor not in personJson['id']:
             actor = updateDomainFull + '/channel/' + updateNickname
             if actor not in personJson['id']:
-                if debug:
-                    print('actor: ' + actor)
-                    print('id: ' + personJson['id'])
-                    print('DEBUG: Actor does not match id')
-                return False
+                actor = updateDomainFull + '/accounts/' + updateNickname
+                if actor not in personJson['id']:
+                    if debug:
+                        print('actor: ' + actor)
+                        print('id: ' + personJson['id'])
+                        print('DEBUG: Actor does not match id')
+                    return False
     if updateDomainFull == domainFull:
         if debug:
             print('DEBUG: You can only receive actor updates ' +
@@ -906,6 +911,7 @@ def receiveUpdate(recentPostsCache: {}, session, baseDir: str,
             print('DEBUG: ' + messageJson['type'] + ' object has no type')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1007,6 +1013,7 @@ def receiveLike(recentPostsCache: {},
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1075,6 +1082,7 @@ def receiveUndoLike(recentPostsCache: {},
                   ' like object is not a string')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1287,6 +1295,7 @@ def receiveDelete(session, handle: str, isGroup: bool, baseDir: str,
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1357,6 +1366,7 @@ def receiveAnnounce(recentPostsCache: {},
             print('DEBUG: ' + messageJson['type'] + ' has no "to" list')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1365,6 +1375,7 @@ def receiveAnnounce(recentPostsCache: {},
                   messageJson['type'])
         return False
     if '/users/' not in messageJson['object'] and \
+       '/accounts/' not in messageJson['object'] and \
        '/channel/' not in messageJson['object'] and \
        '/profile/' not in messageJson['object']:
         if debug:
@@ -1433,6 +1444,7 @@ def receiveAnnounce(recentPostsCache: {},
                             lookupActor = attrib
         if lookupActor:
             if '/users/' in lookupActor or \
+               '/accounts/' in lookupActor or \
                '/channel/' in lookupActor or \
                '/profile/' in lookupActor:
                 if '/statuses/' in lookupActor:
@@ -1484,6 +1496,7 @@ def receiveUndoAnnounce(recentPostsCache: {},
     if messageJson['object']['type'] != 'Announce':
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -1678,6 +1691,7 @@ def obtainAvatarForReplyPost(session, baseDir: str, httpPrefix: str,
         return
 
     if not ('/users/' in lookupActor or
+            '/accounts/' in lookupActor or
             '/channel/' in lookupActor or
             '/profile/' in lookupActor):
         return
@@ -1957,10 +1971,6 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
     if not isinstance(postJsonObject['object']['tag'], list):
         return
 
-    calendarPath = baseDir + '/accounts/' + handle + '/calendar'
-    if not os.path.isdir(calendarPath):
-        os.mkdir(calendarPath)
-
     actor = postJsonObject['actor']
     actorNickname = getNicknameFromActor(actor)
     actorDomain, actorPort = getDomainFromActor(actor)
@@ -1970,6 +1980,11 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
                                    handleNickname, handleDomain,
                                    actorNickname, actorDomain):
         return
+
+    postId = \
+        postJsonObject['id'].replace('/activity', '').replace('/', '#')
+
+    # look for events within the tags list
     for tagDict in postJsonObject['object']['tag']:
         if not tagDict.get('type'):
             continue
@@ -1977,38 +1992,7 @@ def inboxUpdateCalendar(baseDir: str, handle: str, postJsonObject: {}) -> None:
             continue
         if not tagDict.get('startTime'):
             continue
-        # get the year and month from the event
-        eventTime = datetime.datetime.strptime(tagDict['startTime'],
-                                               "%Y-%m-%dT%H:%M:%S%z")
-        eventYear = int(eventTime.strftime("%Y"))
-        eventMonthNumber = int(eventTime.strftime("%m"))
-        eventDayOfMonth = int(eventTime.strftime("%d"))
-
-        if not os.path.isdir(calendarPath + '/' + str(eventYear)):
-            os.mkdir(calendarPath + '/' + str(eventYear))
-        calendarFilename = calendarPath + '/' + str(eventYear) + \
-            '/' + str(eventMonthNumber) + '.txt'
-        postId = \
-            postJsonObject['id'].replace('/activity', '').replace('/', '#')
-        if os.path.isfile(calendarFilename):
-            if postId in open(calendarFilename).read():
-                return
-        calendarFile = open(calendarFilename, 'a+')
-        if calendarFile:
-            calendarFile.write(postId + '\n')
-            calendarFile.close()
-            calendarNotificationFilename = \
-                baseDir + '/accounts/' + handle + '/.newCalendar'
-            calendarNotificationFile = \
-                open(calendarNotificationFilename, 'w+')
-            if calendarNotificationFile:
-                calendarNotificationFile.write('/calendar?year=' +
-                                               str(eventYear) +
-                                               '?month=' +
-                                               str(eventMonthNumber) +
-                                               '?day=' +
-                                               str(eventDayOfMonth))
-                calendarNotificationFile.close()
+        saveEvent(baseDir, handle, postId, tagDict)
 
 
 def inboxUpdateIndex(boxname: str, baseDir: str, handle: str,

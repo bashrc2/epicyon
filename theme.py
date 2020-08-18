@@ -277,6 +277,7 @@ def setThemeNight(baseDir: str):
     fontStr = \
         "url('./fonts/solidaric.woff2') format('woff2')"
     themeParams = {
+        "focus-color": "blue",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
@@ -320,6 +321,7 @@ def setThemeStarlight(baseDir: str):
     removeTheme(baseDir)
     setThemeInConfig(baseDir, name)
     themeParams = {
+        "focus-color": "darkred",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
@@ -341,6 +343,7 @@ def setThemeStarlight(baseDir: str):
         "hashtag-vertical-spacing3": "100px",
         "hashtag-vertical-spacing4": "150px",
         "button-background": "#69282c",
+        "button-small-background": "darkblue",
         "button-selected": "#a34046",
         "button-highlighted": "#12435f",
         "button-fg-highlighted": "white",
@@ -501,7 +504,9 @@ def setThemeLCD(baseDir: str):
         "button-selected": "black",
         "button-highlighted": "green",
         "button-background": "#33390d",
+        "button-small-background": "#33390d",
         "button-text": "#9fb42b",
+        "button-small-text": "#9fb42b",
         "color: #FFFFFE;": "color: #9fb42b;",
         "calendar-bg-color": "#eee",
         "day-number": "#3f2145",
@@ -568,7 +573,9 @@ def setThemePurple(baseDir: str):
         "main-visited-color": "#f93bb0",
         "button-selected": "#c042a0",
         "button-background": "#ff42a0",
+        "button-small-background": "#ff42a0",
         "button-text": "white",
+        "button-small-text": "white",
         "color: #FFFFFE;": "color: #1f152d;",
         "calendar-bg-color": "#eee",
         "lines-color": "#ff42a0",
@@ -599,6 +606,7 @@ def setThemePurple(baseDir: str):
 def setThemeHacker(baseDir: str):
     name = 'hacker'
     themeParams = {
+        "focus-color": "green",
         "main-bg-color": "black",
         "link-bg-color": "black",
         "main-bg-color-dm": "#0b0a0a",
@@ -612,7 +620,9 @@ def setThemeHacker(baseDir: str):
         "main-visited-color": "#3c8234",
         "button-selected": "#063200",
         "button-background": "#062200",
+        "button-small-background": "#062200",
         "button-text": "#00ff00",
+        "button-small-text": "#00ff00",
         "button-corner-radius": "4px",
         "timeline-border-radius": "4px",
         "*font-family": "'Bedstead'",
@@ -646,6 +656,7 @@ def setThemeHacker(baseDir: str):
 def setThemeLight(baseDir: str):
     name = 'light'
     themeParams = {
+        "focus-color": "grey",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",
@@ -700,6 +711,7 @@ def setThemeLight(baseDir: str):
 def setThemeSolidaric(baseDir: str):
     name = 'solidaric'
     themeParams = {
+        "focus-color": "grey",
         "font-size-button-mobile": "36px",
         "font-size": "32px",
         "font-size2": "26px",

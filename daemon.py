@@ -1245,6 +1245,99 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 4)
 
+        # manifest for progressive web apps
+        if '/manifest.json' in self.path:
+            app1 = "https://f-droid.org/en/packages/eu.siacs.conversations"
+            app2 = "https://staging.f-droid.org/en/packages/im.vector.app"
+            manifest = {
+                "name": "Epicyon",
+                "short_name": "Epicyon",
+                "start_url": "/index.html",
+                "display": "standalone",
+                "background_color": "black",
+                "theme_color": "grey",
+                "orientation": "portrait-primary",
+                "categories": ["microblog", "fediverse", "activitypub"],
+                "screenshots": [
+                    {
+                        "src": "/mobile.jpg",
+                        "sizes": "418x851",
+                        "type": "image/jpeg"
+                    },
+                    {
+                        "src": "/mobile_person.jpg",
+                        "sizes": "429x860",
+                        "type": "image/jpeg"
+                    },
+                    {
+                        "src": "/mobile_search.jpg",
+                        "sizes": "422x861",
+                        "type": "image/jpeg"
+                    }
+                ],
+                "icons": [
+                    {
+                        "src": "/logo72.png",
+                        "type": "image/png",
+                        "sizes": "72x72"
+                    },
+                    {
+                        "src": "/logo96.png",
+                        "type": "image/png",
+                        "sizes": "96x96"
+                    },
+                    {
+                        "src": "/logo128.png",
+                        "type": "image/png",
+                        "sizes": "128x128"
+                    },
+                    {
+                        "src": "/logo144.png",
+                        "type": "image/png",
+                        "sizes": "144x144"
+                    },
+                    {
+                        "src": "/logo152.png",
+                        "type": "image/png",
+                        "sizes": "152x152"
+                    },
+                    {
+                        "src": "/logo192.png",
+                        "type": "image/png",
+                        "sizes": "192x192"
+                    },
+                    {
+                        "src": "/logo256.png",
+                        "type": "image/png",
+                        "sizes": "256x256"
+                    },
+                    {
+                        "src": "/logo512.png",
+                        "type": "image/png",
+                        "sizes": "512x512"
+                    }
+                ],
+                "related_applications": [
+                    {
+                        "platform": "fdroid",
+                        "url": app1
+                    },
+                    {
+                        "platform": "fdroid",
+                        "url": app2
+                    }
+                ]
+            }
+            msg = json.dumps(manifest,
+                             ensure_ascii=False).encode('utf-8')
+            self._set_headers('application/json',
+                              len(msg),
+                              None, callingDomain)
+            self._write(msg)
+            if self.server.debug:
+                print('Sent manifest: ' + callingDomain)
+            return
+
         # favicon image
         if 'favicon.ico' in self.path:
             favType = 'image/x-icon'
@@ -1262,6 +1355,8 @@ class PubServer(BaseHTTPRequestHandler):
                     self.server.baseDir + '/img/icons/' + favFilename
             if self._etag_exists(faviconFilename):
                 # The file has not changed
+                if self.server.debug:
+                    print('favicon icon has not changed: ' + callingDomain)
                 self._304()
                 return
             if self.server.iconsCache.get(favFilename):
@@ -1271,6 +1366,8 @@ class PubServer(BaseHTTPRequestHandler):
                                        favBinary, cookie,
                                        callingDomain)
                 self._write(favBinary)
+                if self.server.debug:
+                    print('Sent favicon from cache: ' + callingDomain)
                 return
             else:
                 if os.path.isfile(faviconFilename):
@@ -1282,7 +1379,11 @@ class PubServer(BaseHTTPRequestHandler):
                                                callingDomain)
                         self._write(favBinary)
                         self.server.iconsCache[favFilename] = favBinary
+                        if self.server.debug:
+                            print('Sent favicon from file: ' + callingDomain)
                         return
+            if self.server.debug:
+                print('favicon not sent: ' + callingDomain)
             self._404()
             return
 
@@ -1355,6 +1456,9 @@ class PubServer(BaseHTTPRequestHandler):
                                            fontBinary, cookie,
                                            callingDomain)
                     self._write(fontBinary)
+                    if self.server.debug:
+                        print('font sent from cache: ' +
+                              self.path + ' ' + callingDomain)
                     return
                 else:
                     if os.path.isfile(fontFilename):
@@ -1366,7 +1470,12 @@ class PubServer(BaseHTTPRequestHandler):
                                                    callingDomain)
                             self._write(fontBinary)
                             self.server.fontsCache[fontStr] = fontBinary
+                        if self.server.debug:
+                            print('font sent from file: ' +
+                                  self.path + ' ' + callingDomain)
                         return
+            if self.server.debug:
+                print('font not found: ' + self.path + ' ' + callingDomain)
             self._404()
             return
 
@@ -1421,9 +1530,15 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/xml', len(msg),
                                           cookie, callingDomain)
                         self._write(msg)
+                        if self.server.debug:
+                            print('Sent rss2 feed: ' +
+                                  self.path + ' ' + callingDomain)
                         return
-                self._404()
-                return
+            if self.server.debug:
+                print('Failed to get rss2 feed: ' +
+                      self.path + ' ' + callingDomain)
+            self._404()
+            return
 
         # RSS 3.0
         if self.path.startswith('/blog/') and \
@@ -1459,9 +1574,15 @@ class PubServer(BaseHTTPRequestHandler):
                         self._set_headers('text/plain; charset=utf-8',
                                           len(msg), cookie, callingDomain)
                         self._write(msg)
+                        if self.server.debug:
+                            print('Sent rss3 feed: ' +
+                                  self.path + ' ' + callingDomain)
                         return
-                self._404()
-                return
+            if self.server.debug:
+                print('Failed to get rss3 feed: ' +
+                      self.path + ' ' + callingDomain)
+            self._404()
+            return
 
         # show the main blog page
         if htmlGET and (self.path == '/blog' or
@@ -1830,15 +1951,19 @@ class PubServer(BaseHTTPRequestHandler):
 
         self._benchmarkGETtimings(GETstartTime, GETtimings, 15)
 
-        # image on login screen or qrcode
-        if self.path == '/login.png' or \
-           self.path == '/login.gif' or \
-           self.path == '/login.webp' or \
-           self.path == '/login.jpeg' or \
-           self.path == '/login.jpg' or \
-           self.path == '/qrcode.png':
+        # manifest images used to create a home screen icon
+        # when selecting "add to home screen" in browsers
+        # which support progressive web apps
+        if self.path == '/logo72.png' or \
+           self.path == '/logo96.png' or \
+           self.path == '/logo128.png' or \
+           self.path == '/logo144.png' or \
+           self.path == '/logo152.png' or \
+           self.path == '/logo192.png' or \
+           self.path == '/logo256.png' or \
+           self.path == '/logo512.png':
             mediaFilename = \
-                self.server.baseDir + '/accounts' + self.path
+                self.server.baseDir + '/img' + self.path
             if os.path.isfile(mediaFilename):
                 if self._etag_exists(mediaFilename):
                     # The file has not changed
@@ -1866,6 +1991,75 @@ class PubServer(BaseHTTPRequestHandler):
             self._404()
             return
 
+        # manifest images used to show example screenshots
+        # for use by app stores
+        if self.path == '/screenshot1.jpg' or \
+           self.path == '/screenshot2.jpg':
+            screenFilename = \
+                self.server.baseDir + '/img' + self.path
+            if os.path.isfile(screenFilename):
+                if self._etag_exists(screenFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                tries = 0
+                mediaBinary = None
+                while tries < 5:
+                    try:
+                        with open(screenFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries += 1
+                if mediaBinary:
+                    self._set_headers_etag(screenFilename,
+                                           'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                    return
+            self._404()
+            return
+
+        # image on login screen or qrcode
+        if self.path == '/login.png' or \
+           self.path == '/login.gif' or \
+           self.path == '/login.webp' or \
+           self.path == '/login.jpeg' or \
+           self.path == '/login.jpg' or \
+           self.path == '/qrcode.png':
+            iconFilename = \
+                self.server.baseDir + '/accounts' + self.path
+            if os.path.isfile(iconFilename):
+                if self._etag_exists(iconFilename):
+                    # The file has not changed
+                    self._304()
+                    return
+
+                tries = 0
+                mediaBinary = None
+                while tries < 5:
+                    try:
+                        with open(iconFilename, 'rb') as avFile:
+                            mediaBinary = avFile.read()
+                            break
+                    except Exception as e:
+                        print(e)
+                        time.sleep(1)
+                        tries += 1
+                if mediaBinary:
+                    self._set_headers_etag(iconFilename,
+                                           'image/png',
+                                           mediaBinary, cookie,
+                                           callingDomain)
+                    self._write(mediaBinary)
+                    return
+            self._404()
+            return
+
         self._benchmarkGETtimings(GETstartTime, GETtimings, 16)
 
         # QR code for account handle
@@ -1875,11 +2069,11 @@ class PubServer(BaseHTTPRequestHandler):
             savePersonQrcode(self.server.baseDir,
                              nickname, self.server.domain,
                              self.server.port)
-            mediaFilename = \
+            qrFilename = \
                 self.server.baseDir + '/accounts/' + \
                 nickname + '@' + self.server.domain + '/qrcode.png'
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+            if os.path.isfile(qrFilename):
+                if self._etag_exists(qrFilename):
                     # The file has not changed
                     self._304()
                     return
@@ -1888,7 +2082,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaBinary = None
                 while tries < 5:
                     try:
-                        with open(mediaFilename, 'rb') as avFile:
+                        with open(qrFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             break
                     except Exception as e:
@@ -1896,7 +2090,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename, 'image/png',
+                    self._set_headers_etag(qrFilename, 'image/png',
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -1908,11 +2102,11 @@ class PubServer(BaseHTTPRequestHandler):
         if '/users/' in self.path and \
            self.path.endswith('/search_banner.png'):
             nickname = getNicknameFromActor(self.path)
-            mediaFilename = \
+            bannerFilename = \
                 self.server.baseDir + '/accounts/' + \
                 nickname + '@' + self.server.domain + '/search_banner.png'
-            if os.path.isfile(mediaFilename):
-                if self._etag_exists(mediaFilename):
+            if os.path.isfile(bannerFilename):
+                if self._etag_exists(bannerFilename):
                     # The file has not changed
                     self._304()
                     return
@@ -1921,7 +2115,7 @@ class PubServer(BaseHTTPRequestHandler):
                 mediaBinary = None
                 while tries < 5:
                     try:
-                        with open(mediaFilename, 'rb') as avFile:
+                        with open(bannerFilename, 'rb') as avFile:
                             mediaBinary = avFile.read()
                             break
                     except Exception as e:
@@ -1929,7 +2123,7 @@ class PubServer(BaseHTTPRequestHandler):
                         time.sleep(1)
                         tries += 1
                 if mediaBinary:
-                    self._set_headers_etag(mediaFilename, 'image/png',
+                    self._set_headers_etag(bannerFilename, 'image/png',
                                            mediaBinary, cookie,
                                            callingDomain)
                     self._write(mediaBinary)
@@ -5914,7 +6108,7 @@ class PubServer(BaseHTTPRequestHandler):
                 return
             self._400()
         elif path.startswith('/api/v1/crypto/keys/query'):
-            # given a handle (nickname@domain) return the devices
+            # given a handle (nickname@domain) return a list of the devices
             # registered to that handle
             if not self._cryptoAPIQuery():
                 self._400()
@@ -7232,7 +7426,12 @@ class PubServer(BaseHTTPRequestHandler):
                         self._write(msg)
                         self.server.POSTbusy = False
                         return
-                elif '@' in searchStr:
+                elif ('@' in searchStr or
+                      ('://' in searchStr and
+                       ('/users/' in searchStr or
+                        '/profile/' in searchStr or
+                        '/accounts/' in searchStr or
+                        '/channel/' in searchStr))):
                     # profile search
                     nickname = getNicknameFromActor(actorStr)
                     if not self.server.session:

@@ -1130,6 +1130,7 @@ if args.actor:
             args.actor = args.actor.replace(prefix, '')
         args.actor = args.actor.replace('/@', '/users/')
         if '/users/' not in args.actor and \
+           '/accounts/' not in args.actor and \
            '/channel/' not in args.actor and \
            '/profile/' not in args.actor:
             print('Expected actor format: ' +
@@ -1143,10 +1144,14 @@ if args.actor:
             nickname = args.actor.split('/profile/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.actor.split('/profile/')[0]
-        else:
+        elif '/channel/' in args.actor:
             nickname = args.actor.split('/channel/')[1]
             nickname = nickname.replace('\n', '').replace('\r', '')
             domain = args.actor.split('/channel/')[0]
+        elif '/accounts/' in args.actor:
+            nickname = args.actor.split('/accounts/')[1]
+            nickname = nickname.replace('\n', '').replace('\r', '')
+            domain = args.actor.split('/accounts/')[0]
     else:
         # format: @nick@domain
         if '@' not in args.actor:
@@ -1198,6 +1203,7 @@ if args.actor:
     if wfRequest.get('errors'):
         print('wfRequest error: ' + str(wfRequest['errors']))
         if '/users/' in args.actor or \
+           '/accounts/' in args.actor or \
            '/profile/' in args.actor or \
            '/channel/' in args.actor:
             personUrl = originalActor
@@ -1212,6 +1218,7 @@ if args.actor:
         personUrl = getUserUrl(wfRequest)
     if nickname == domain:
         personUrl = personUrl.replace('/users/', '/actor/')
+        personUrl = personUrl.replace('/accounts/', '/actor/')
         personUrl = personUrl.replace('/channel/', '/actor/')
         personUrl = personUrl.replace('/profile/', '/actor/')
     if not personUrl:
@@ -1221,7 +1228,7 @@ if args.actor:
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'
         }
-    if '/channel/' in personUrl:
+    if '/channel/' in personUrl or '/accounts/' in personUrl:
         profileStr = 'https://www.w3.org/ns/activitystreams'
         asHeader = {
             'Accept': 'application/ld+json; profile="' + profileStr + '"'

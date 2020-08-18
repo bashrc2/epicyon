@@ -7,12 +7,140 @@ __email__ = "bob@freedombone.net"
 __status__ = "Production"
 
 import os
+from uuid import UUID
 from datetime import datetime
 
 from utils import loadJson
+from utils import saveJson
 from utils import locatePost
 from utils import daysInMonth
 from utils import mergeDicts
+
+
+def validUuid(testUuid: str, version=4):
+    """Check if uuid_to_test is a valid UUID
+    """
+    try:
+        uuid_obj = UUID(testUuid, version=version)
+    except ValueError:
+        return False
+
+    return str(uuid_obj) == testUuid
+
+
+def removeEventFromTimeline(eventId: str, tlEventsFilename: str) -> None:
+    """Removes the given event Id from the timeline
+    """
+    if eventId + '\n' not in open(tlEventsFilename).read():
+        return
+    with open(tlEventsFilename, 'r') as fp:
+        eventsTimeline = fp.read().replace(eventId + '\n', '')
+        try:
+            with open(tlEventsFilename, 'w+') as fp2:
+                fp2.write(eventsTimeline)
+        except BaseException:
+            print('ERROR: unable to save events timeline')
+            pass
+
+
+def saveEvent(baseDir: str, handle: str, postId: str,
+              eventJson: {}) -> bool:
+    """Saves an event to the calendar and/or the events timeline
+    If an event has extra fields, as per Mobilizon,
+    Then it is saved as a separate entity and added to the
+    events timeline
+    """
+    calendarPath = baseDir + '/accounts/' + handle + '/calendar'
+    if not os.path.isdir(calendarPath):
+        os.mkdir(calendarPath)
+
+    # get the year, month and day from the event
+    eventTime = datetime.strptime(eventJson['startTime'],
+                                  "%Y-%m-%dT%H:%M:%S%z")
+    eventYear = int(eventTime.strftime("%Y"))
+    if eventYear < 2020 or eventYear >= 2100:
+        return False
+    eventMonthNumber = int(eventTime.strftime("%m"))
+    if eventMonthNumber < 1 or eventMonthNumber > 12:
+        return False
+    eventDayOfMonth = int(eventTime.strftime("%d"))
+    if eventDayOfMonth < 1 or eventDayOfMonth > 31:
+        return False
+
+    if eventJson.get('name') and eventJson.get('actor') and \
+       eventJson.get('uuid') and eventJson.get('content'):
+        if not validUuid(eventJson['uuid']):
+            return False
+        # if this is a full description of an event then save it
+        # as a separate json file
+        eventsPath = baseDir + '/accounts/' + handle + '/events'
+        if not os.path.isdir(eventsPath):
+            os.mkdir(eventsPath)
+        eventsYearPath = \
+            baseDir + '/accounts/' + handle + '/events/' + str(eventYear)
+        if not os.path.isdir(eventsYearPath):
+            os.mkdir(eventsYearPath)
+        eventId = str(eventYear) + '-' + eventTime.strftime("%m") + '-' + \
+            eventTime.strftime("%d") + '_' + eventJson['uuid']
+        eventFilename = eventsYearPath + '/' + eventId + '.json'
+
+        saveJson(eventJson, eventFilename)
+        # save to the events timeline
+        tlEventsFilename = baseDir + '/accounts/' + handle + '/events.txt'
+
+        if os.path.isfile(tlEventsFilename):
+            removeEventFromTimeline(eventId, tlEventsFilename)
+            try:
+                with open(tlEventsFilename, 'r+') as tlEventsFile:
+                    content = tlEventsFile.read()
+                    tlEventsFile.seek(0, 0)
+                    tlEventsFile.write(eventId + '\n' + content)
+            except Exception as e:
+                print('WARN: Failed to write entry to events file ' +
+                      tlEventsFilename + ' ' + str(e))
+                return False
+        else:
+            tlEventsFile = open(tlEventsFilename, 'w+')
+            tlEventsFile.write(eventId + '\n')
+            tlEventsFile.close()
+
+    # create a directory for the calendar year
+    if not os.path.isdir(calendarPath + '/' + str(eventYear)):
+        os.mkdir(calendarPath + '/' + str(eventYear))
+
+    # calendar month file containing event post Ids
+    calendarFilename = calendarPath + '/' + str(eventYear) + \
+        '/' + str(eventMonthNumber) + '.txt'
+
+    # Does this event post already exist within the calendar month?
+    if os.path.isfile(calendarFilename):
+        if postId in open(calendarFilename).read():
+            # Event post already exists
+            return False
+
+    # append the post Id to the file for the calendar month
+    calendarFile = open(calendarFilename, 'a+')
+    if not calendarFile:
+        return False
+    calendarFile.write(postId + '\n')
+    calendarFile.close()
+
+    # create a file which will trigger a notification that
+    # a new event has been added
+    calendarNotificationFilename = \
+        baseDir + '/accounts/' + handle + '/.newCalendar'
+    calendarNotificationFile = \
+        open(calendarNotificationFilename, 'w+')
+    if not calendarNotificationFile:
+        return False
+    calendarNotificationFile.write('/calendar?year=' +
+                                   str(eventYear) +
+                                   '?month=' +
+                                   str(eventMonthNumber) +
+                                   '?day=' +
+                                   str(eventDayOfMonth))
+    calendarNotificationFile.close()
+    return True
 
 
 def isHappeningEvent(tag: {}) -> bool:

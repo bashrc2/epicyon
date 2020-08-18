@@ -555,6 +555,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
             print('DEBUG: follow request has no actor')
         return False
     if '/users/' not in messageJson['actor'] and \
+       '/accounts/' not in messageJson['actor'] and \
        '/channel/' not in messageJson['actor'] and \
        '/profile/' not in messageJson['actor']:
         if debug:
@@ -582,6 +583,7 @@ def receiveFollowRequest(session, baseDir: str, httpPrefix: str,
     if not messageJson.get('to'):
         messageJson['to'] = messageJson['object']
     if '/users/' not in messageJson['object'] and \
+       '/accounts/' not in messageJson['object'] and \
        '/channel/' not in messageJson['object'] and \
        '/profile/' not in messageJson['object']:
         if debug:

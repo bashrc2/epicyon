@@ -90,6 +90,7 @@ def like(recentPostsCache: {},
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
     else:
         if '/users/' in objectUrl or \
+           '/accounts/' in objectUrl or \
            '/channel/' in objectUrl or \
            '/profile/' in objectUrl:
             likedPostNickname = getNicknameFromActor(objectUrl)
@@ -193,6 +194,7 @@ def undolike(recentPostsCache: {},
         likedPostDomain, likedPostPort = getDomainFromActor(actorLiked)
     else:
         if '/users/' in objectUrl or \
+           '/accounts/' in objectUrl or \
            '/channel/' in objectUrl or \
            '/profile/' in objectUrl:
             likedPostNickname = getNicknameFromActor(objectUrl)
