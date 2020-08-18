@@ -2801,30 +2801,32 @@ def htmlProfile(defaultTimeline: str,
     profileStr = \
         linkToTimelineStart + profileHeaderStr + \
         linkToTimelineEnd + donateSection
-    profileStr += '<div class="container">\n'
+    profileStr += '<div class="container" id="buttonheader">\n'
     profileStr += '  <center>'
     profileStr += \
-        '    <a href="' + usersPath + '"><button class="' + postsButton + \
-        '"><span>' + translate['Posts'] + ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/following"><button class="' + \
-        followingButton + '"><span>' + translate['Following'] + \
+        '    <a href="' + usersPath + '#buttonheader"><button class="' + \
+        postsButton + '"><span>' + translate['Posts'] + \
         ' </span></button></a>'
     profileStr += \
-        '    <a href="' + usersPath + '/followers"><button class="' + \
-        followersButton + '"><span>' + translate['Followers'] + \
+        '    <a href="' + usersPath + '/following#buttonheader">' + \
+        '<button class="' + followingButton + '"><span>' + \
+        translate['Following'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/followers#buttonheader">' + \
+        '<button class="' + followersButton + \
+        '"><span>' + translate['Followers'] + ' </span></button></a>'
+    profileStr += \
+        '    <a href="' + usersPath + '/roles#buttonheader">' + \
+        '<button class="' + rolesButton + '"><span>' + translate['Roles'] + \
         ' </span></button></a>'
     profileStr += \
-        '    <a href="' + usersPath + '/roles"><button class="' + \
-        rolesButton + '"><span>' + translate['Roles'] + ' </span></button></a>'
+        '    <a href="' + usersPath + '/skills#buttonheader">' + \
+        '<button class="' + skillsButton + '"><span>' + \
+        translate['Skills'] + ' </span></button></a>'
     profileStr += \
-        '    <a href="' + usersPath + '/skills"><button class="' + \
-        skillsButton + '"><span>' + translate['Skills'] + \
-        ' </span></button></a>'
-    profileStr += \
-        '    <a href="' + usersPath + '/shares"><button class="' + \
-        sharesButton + '"><span>' + translate['Shares'] + \
-        ' </span></button></a>'
+        '    <a href="' + usersPath + '/shares#buttonheader">' + \
+        '<button class="' + sharesButton + '"><span>' + \
+        translate['Shares'] + ' </span></button></a>'
     profileStr += editProfileStr + logoutStr
     profileStr += '  </center>'
     profileStr += '</div>'
@@ -4548,7 +4550,8 @@ def htmlTimeline(defaultTimeline: str,
                     # show follow approvals icon
                     followApprovals = \
                         '<a href="' + usersPath + \
-                        '/followers"><img loading="lazy" ' + \
+                        '/followers#buttonheader">' + \
+                        '<img loading="lazy" ' + \
                         'class="timelineicon" alt="' + \
                         translate['Approve follow requests'] + \
                         '" title="' + translate['Approve follow requests'] + \
