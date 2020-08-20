@@ -49,6 +49,8 @@ def saveEventPost(baseDir: str, handle: str, postId: str,
     If an event has extra fields, as per Mobilizon,
     Then it is saved as a separate entity and added to the
     events timeline
+    See https://framagit.org/framasoft/mobilizon/-/blob/
+    master/lib/federation/activity_stream/converter/event.ex
     """
     calendarPath = baseDir + '/accounts/' + handle + '/calendar'
     if not os.path.isdir(calendarPath):

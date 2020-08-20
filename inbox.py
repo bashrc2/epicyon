@@ -772,6 +772,8 @@ def receiveUndo(session, baseDir: str, httpPrefix: str,
 
 def isEventPost(messageJson: {}) -> bool:
     """Is the given post a mobilizon-type event activity?
+    See https://framagit.org/framasoft/mobilizon/-/blob/
+    master/lib/federation/activity_stream/converter/event.ex
     """
     if not messageJson.get('id'):
         return False
@@ -804,6 +806,8 @@ def receiveEventPost(recentPostsCache: {}, session, baseDir: str,
                      personCache: {}, messageJson: {}, federationList: [],
                      nickname: str, debug: bool) -> bool:
     """Receive a mobilizon-type event activity
+    See https://framagit.org/framasoft/mobilizon/-/blob/
+    master/lib/federation/activity_stream/converter/event.ex
     """
     if not isEventPost(messageJson):
         return
